@@ -51,7 +51,7 @@
            active
            before
            item-container-style
-           inactive-background-color
+           active-item-container-style
            blur?
            disabled
            id
@@ -81,18 +81,16 @@
         [notification-dot/notification-dot
          {:style style/notification-dot}])
       [rn/view
-       {:style (merge 
+       {:style (merge
                 (style/tab
                  {:size                   size
+                  :background-color       (if (and segmented? (not active))
+                                            :transparent
+                                            background-color)
                   :disabled               disabled
                   :segmented?             segmented?
                   :show-notification-dot? show-notification-dot?})
-                item-container-style
-                {:background-color       (if (and segmented? (not active)) 
-                                           :transparent 
-                                           (if inactive-background-color 
-                                             inactive-background-color 
-                                             background-color))})}
+                (if active active-item-container-style item-container-style))}
        (when before
          [rn/view
           [icons/icon before {:color icon-color}]])

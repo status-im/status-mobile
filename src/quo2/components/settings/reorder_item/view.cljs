@@ -28,9 +28,8 @@
 
 (defn reorder-item [data]
   (reagent/with-let [atom-data (reagent/atom data)] 
-    (fn []
       [rn/view
-           {:style style/container}
+           {:style (style/container)}
            [rn/draggable-flat-list
             {:key-fn               :id
              :accessibility-label  :sortable-list
@@ -41,4 +40,4 @@
              :content-container-style {:padding-vertical 20}
              :shows-vertical-scroll-indicator false
              :on-drag-end-fn       (fn [_ _ data]
-                                     (on-drag-end-fn data atom-data))}]])))
+                                     (on-drag-end-fn data atom-data))}]]))

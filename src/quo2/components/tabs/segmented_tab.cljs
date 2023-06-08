@@ -16,7 +16,7 @@
 (defn segmented-control
   [{:keys [default-active on-change]}]
   (let [active-tab-id (reagent/atom default-active)]
-    (fn [{:keys [data size override-theme blur? container-style item-container-style inactive-background-color]}]
+    (fn [{:keys [data size override-theme blur? container-style item-container-style active-item-container-style]}]
       (let [active-id @active-tab-id]
         [rn/view
          (merge 
@@ -37,7 +37,7 @@
              :flex        1}
             [tab/view
              {:id             id
-              :inactive-background-color inactive-background-color
+              :active-item-container-style active-item-container-style
               :item-container-style item-container-style
               :segmented?     true
               :size           size

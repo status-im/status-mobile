@@ -9,9 +9,9 @@
    {:on-long-press       drag
     :delay-long-press    100
     :accessibility-label :reorder-placerholder-drag-handle
-    :style               style/placeholder-container}
+    :style               (style/placeholder-container)}
    [text/text
-    {:style style/placeholder-text
+    {:style (style/placeholder-text)
      :weight :regular}
     label]
    ])

@@ -5,4 +5,4 @@
 (defn view
   []
   [rn/view
-   {:style style/skeleton-container}])
+   {:style (style/skeleton-container)}])

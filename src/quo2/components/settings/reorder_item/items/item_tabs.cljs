@@ -1,9 +1,9 @@
 (ns  quo2.components.settings.reorder-item.items.item-tabs
   (:require [quo2.components.tabs.segmented-tab :as quo2]
             [quo.react-native :as rn]
-            [quo2.foundations.colors :as colors]
             [quo.components.text :as text]
-            [quo2.components.settings.reorder-item.style :as style]))
+            [quo2.components.settings.reorder-item.style :as style]
+            [quo2.components.icon :as quo2-icons]))
 
 (defn transform-data
   [data]
@@ -15,7 +15,7 @@
                          [rn/image
                           {:source (:image %)
                            :style style/tab-item-image}]
-                         [rn/view {:style style/tab-item-image} (:icon %)])
+                         [rn/view {:style style/tab-item-image} (quo2-icons/icon (:icon %) (style/right-icon))])
                        [text/text
                         {:style style/tab-item-label
                          :width :medium}
@@ -28,8 +28,8 @@
    {:default-active default-active
     :size  32
     :blur? false
-    :container-style style/tab-container
-    :item-container-style style/segmented-tab-item-container
-    :inactive-background-color colors/neutral-30
+    :container-style (style/tab-container)
+    :item-container-style (style/segmented-tab-item-container)
+    :active-item-container-style (style/active-segmented-tab-item-container)
     :data           (transform-data data)
     :on-change      #(println "Active tab" %)}])

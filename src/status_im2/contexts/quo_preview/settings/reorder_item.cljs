@@ -2,34 +2,32 @@
   (:require
    [quo2.core :as quo]
    [react-native.core :as rn]
-   [status-im2.common.resources :as resources]
-   [quo2.components.icon :as quo2-icons]
-   [quo2.components.drawers.action-drawers.style :as style]))
+   [status-im2.common.resources :as resources]))
 
 (def mock-data
   [{:id 1
     :type "item"
     :image (resources/get-mock-image :diamond)
     :image-size 24
-    :right-icon [quo2-icons/icon :i/world style/right-icon]
+    :right-icon :i/world
     :title "Trip to Bahamas"}
    {:id 2
     :type "item"
     :image (resources/get-mock-image :status-logo)
     :image-size 24
-    :right-icon [quo2-icons/icon :i/world style/right-icon]
+    :right-icon :i/world
     :title "Status"}
    {:id 3
     :type "item"
     :image (resources/tokens :eth)
     :image-size 24
-    :right-icon [quo2-icons/icon :i/world style/right-icon]
+    :right-icon :i/world
     :title "Ethereum"}
    {:id 4
     :type "item"
     :image (resources/get-mock-image :monkey)
     :image-size 36
-    :right-icon [quo2-icons/icon :i/world style/right-icon]
+    :right-icon :i/world
     :title "3045"
     :subtitle "Bored Ape Yatch Club"}
    {:id 5
@@ -53,7 +51,7 @@
     :default-active 1
     :data [{:id 1
             :label "Everyone"
-            :icon (quo2-icons/icon :i/world style/right-icon)}
+            :icon :i/world}
            {:id 2
             :label "Contacts"
             :image (resources/get-mock-image :contact)}
@@ -65,7 +63,7 @@
     :default-active 1
     :data [{:id 1
             :label "Everyone"
-            :icon (quo2-icons/icon :i/world style/right-icon)}
+            :icon :i/world}
            {:id 2
             :label "Contacts"
             :image (resources/get-mock-image :contact)}
