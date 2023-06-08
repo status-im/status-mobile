@@ -33,6 +33,8 @@
 
 (defn max-pointers [gesture count] (.maxPointers ^js gesture count))
 
+(defn min-distance [gesture dist] (.minDistance ^js gesture dist))
+
 (defn number-of-taps [gesture count] (.numberOfTaps ^js gesture count))
 
 (defn enabled [gesture enabled?] (.enabled ^js gesture enabled?))
@@ -76,7 +78,6 @@
   [gesture-flat-list (rn-flat-list/base-list-props props)])
 
 (def scroll-view (reagent/adapt-react-class ScrollView))
-
 
 ;;; Custom gesture section-list
 (defn- flatten-sections

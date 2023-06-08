@@ -44,6 +44,9 @@
           :padding-horizontal 40
           :align-items      :center}
          [slide-button {:track-text "We gotta slide"
+                        :track-icon :face-id
+                        :size :large
+                        ;:disabled? true
                         :on-complete (fn []
                                        (js/alert "I don't wanna slide anymore"))
                         :on-state-change (fn [s]
