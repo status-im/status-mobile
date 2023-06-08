@@ -46,7 +46,6 @@
      [background/view true]
      [parallax/video
       {:layers  (resources/get-parallax-video :biometrics)
-       :offset  50
        :stretch 50}]
      [rn/view
       [navigation-bar/navigation-bar {:disable-back-button? true}]

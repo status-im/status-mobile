@@ -9,7 +9,7 @@ import { Platform } from 'react-native';
 
 const PI = Math.PI;
 
-export function sensorAnimatedImage(zIndex, offset) {
+export function sensorAnimatedImage(zIndex, offset, stretch) {
     'worklet'
     const sensor = useAnimatedSensor(SensorType.ROTATION, { interval: 30 })
     return useAnimatedStyle(function () {
@@ -22,14 +22,14 @@ export function sensorAnimatedImage(zIndex, offset) {
             interpolate(
                 pitch,
                 Platform.OS === 'ios' ? [-PI, PI] : [PI, -PI],
-                [(-offset * 3) / zIndex - offset, (offset * 3) / zIndex - offset]),
+                [(-offset * 3) / zIndex - offset + (offset - stretch), (offset * 3) / zIndex - offset + (offset - stretch)]),
             { duration: 10 }
         );
         const left = withTiming(
             interpolate(
                 roll,
                 [1, -1],
-                [(-offset * 2) / zIndex - offset, (offset * 2) / zIndex - offset]),
+                [(-offset * 2) / zIndex - offset + (offset - stretch), (offset * 2) / zIndex - offset + (offset - stretch)]),
             { duration: 10 }
         );
 

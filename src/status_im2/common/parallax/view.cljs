@@ -15,7 +15,7 @@
         {window-width  :width
          window-height :height} (rn/get-window)
         image-style             (if (not disable-parallax?)
-                                  (worklets.parallax/sensor-animated-image order offset)
+                                  (worklets.parallax/sensor-animated-image order offset stretch)
                                   {:top    0
                                    :right  0
                                    :bottom 0

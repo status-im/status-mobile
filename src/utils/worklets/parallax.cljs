@@ -3,5 +3,5 @@
 (def ^:private parallax-worklets (js/require "../src/js/worklets/parallax.js"))
 
 (defn sensor-animated-image
-  [order offset]
-  (.sensorAnimatedImage ^js parallax-worklets order offset))
+  [order offset stretch]
+  (.sensorAnimatedImage ^js parallax-worklets order offset stretch))
