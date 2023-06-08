@@ -1,39 +1,45 @@
 (ns status-im2.navigation.screens
   (:require
-    [status-im2.config :as config]
-    [status-im2.contexts.activity-center.view :as activity-center]
-    [status-im2.contexts.add-new-contact.views :as add-new-contact]
-    [status-im2.contexts.chat.lightbox.view :as lightbox]
-    [status-im2.contexts.chat.messages.view :as chat]
-    [status-im2.contexts.chat.photo-selector.view :as photo-selector]
-    [status-im2.contexts.communities.discover.view :as communities.discover]
-    [status-im2.contexts.communities.overview.view :as communities.overview]
-    [status-im2.contexts.onboarding.intro.view :as intro]
-    [status-im2.contexts.onboarding.create-password.view :as create-password]
-    [status-im2.contexts.onboarding.create-profile.view :as create-profile]
-    [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
-    [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
-    [status-im2.contexts.onboarding.identifiers.view :as identifiers]
-    [status-im2.contexts.onboarding.welcome.view :as welcome]
-    [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
-    [status-im2.contexts.onboarding.sign-in.view :as sign-in]
-    [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
-    [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
-    [status-im2.contexts.onboarding.profiles.view :as profiles]
-    [status-im2.contexts.quo-preview.main :as quo.preview]
-    [status-im2.contexts.shell.view :as shell]
-    [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
-    [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
-    [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
-    [status-im2.navigation.options :as options]
-    [status-im2.contexts.chat.group-details.view :as group-details]
-    [status-im.ui.screens.screens :as old-screens]
-    [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
-    [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
-    [status-im2.contexts.share.view :as share]
-    [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
-    [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
-    [status-im2.contexts.chat.new-chat.view :as new-chat]))
+   [status-im2.config :as config]
+   [status-im2.contexts.activity-center.view :as activity-center]
+   [status-im2.contexts.add-new-contact.views :as add-new-contact]
+   [status-im2.contexts.chat.lightbox.view :as lightbox]
+   [status-im2.contexts.chat.messages.view :as chat]
+   [status-im2.contexts.chat.photo-selector.view :as photo-selector]
+   [status-im2.contexts.communities.discover.view :as communities.discover]
+   [status-im2.contexts.communities.overview.view :as communities.overview]
+   [status-im2.contexts.onboarding.intro.view :as intro]
+   [status-im2.contexts.onboarding.create-password.view :as create-password]
+   [status-im2.contexts.onboarding.create-profile.view :as create-profile]
+   [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
+   [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
+   [status-im2.contexts.onboarding.enable-biometrics1.view :as enable-biometrics1]
+   [status-im2.contexts.onboarding.enable-notifications1.view :as enable-notifications1]
+   [status-im2.contexts.onboarding.enable-biometrics2.view :as enable-biometrics2]
+   [status-im2.contexts.onboarding.enable-notifications2.view :as enable-notifications2]
+   [status-im2.contexts.onboarding.identifiers.view :as identifiers]
+   [status-im2.contexts.onboarding.welcome.view :as welcome]
+   [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
+   [status-im2.contexts.onboarding.sign-in.view :as sign-in]
+   [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
+   [status-im2.contexts.onboarding.generating-keys1.view :as generating-keys1]
+   [status-im2.contexts.onboarding.generating-keys2.view :as generating-keys2]
+   [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
+   [status-im2.contexts.onboarding.profiles.view :as profiles]
+   [status-im2.contexts.quo-preview.main :as quo.preview]
+   [status-im2.contexts.shell.view :as shell]
+   [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
+   [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
+   [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
+   [status-im2.navigation.options :as options]
+   [status-im2.contexts.chat.group-details.view :as group-details]
+   [status-im.ui.screens.screens :as old-screens]
+   [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
+   [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
+   [status-im2.contexts.share.view :as share]
+   [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
+   [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
+   [status-im2.contexts.chat.new-chat.view :as new-chat]))
 
 (defn screens
   []
@@ -85,7 +91,7 @@
      :component how-to-pair/instructions}
 
     {:name      :discover-communities
-     :component communities.discover/discover}
+     :component generating-keys2/generating-keys}
 
     {:name      :community-overview
      :component communities.overview/overview}
@@ -130,6 +136,31 @@
                                       :popStackOnPress     false}}
      :component generating-keys/generating-keys}
 
+
+    {:name      :enable-biometrics1
+     :options   {:layout options/onboarding-layout}
+     :component enable-biometrics1/enable-biometrics}
+
+    {:name      :generating-keys1
+     :options   {:layout             options/onboarding-layout
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
+     :component generating-keys1/generating-keys}
+
+
+    {:name      :enable-biometrics2
+     :options   {:layout options/onboarding-layout}
+     :component enable-biometrics2/enable-biometrics}
+
+    {:name      :generating-keys2
+     :options   {:layout             options/onboarding-layout
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
+     :component generating-keys2/generating-keys}
+
+
     {:name      :enter-seed-phrase
      :options   {:layout options/onboarding-layout}
      :component enter-seed-phrase/enter-seed-phrase}
@@ -140,6 +171,20 @@
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
      :component enable-notifications/enable-notifications}
+
+    {:name      :enable-notifications1
+     :options   {:layout             options/onboarding-layout
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
+     :component enable-notifications1/enable-notifications}
+
+    {:name      :enable-notifications2
+     :options   {:layout             options/onboarding-layout
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
+     :component enable-notifications2/enable-notifications}
 
     {:name      :identifiers
      :component identifiers/view

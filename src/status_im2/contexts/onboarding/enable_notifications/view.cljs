@@ -39,8 +39,8 @@
       (i18n/label :t/intro-wizard-title6)]
      [quo/button
       {:on-press                  (fn []
-                                    (shell.animation/change-selected-stack-id :communities-stack true)
-                                    (rf/dispatch [:init-root :welcome]))
+                                    ;; (shell.animation/change-selected-stack-id :communities-stack true)
+                                    (rf/dispatch [:navigate-to :enable-notifications1]))
        :accessibility-label       :enable-notifications-later-button
        :override-background-color colors/white-opa-5
        :style                     {:margin-top 12}}

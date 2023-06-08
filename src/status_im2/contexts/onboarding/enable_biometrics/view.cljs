@@ -34,7 +34,7 @@
       (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
      [quo/button
       {:accessibility-label       :maybe-later-button
-       :on-press                  #(rf/dispatch [:onboarding-2/create-account-and-login])
+       :on-press                  #(rf/dispatch [:navigate-to :enable-biometrics1])
        :override-background-color colors/white-opa-5
        :style                     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
