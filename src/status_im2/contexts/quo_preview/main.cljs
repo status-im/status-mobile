@@ -77,7 +77,7 @@
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
     [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option] 
-    [status-im2.contexts.quo-preview.setting.reorder-item :as reorder-item]
+    [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
