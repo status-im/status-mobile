@@ -14,7 +14,8 @@
             [status-im2.navigation.screens :as screens]
             [status-im2.setup.hot-reload :as reloader]
             [utils.re-frame :as rf]
-            [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]))
+            [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]
+            [quo2.theme :as theme]))
 
 (defn get-screens
   []
@@ -53,15 +54,17 @@
   [key]
   (reagent.core/reactify-component
    (fn []
-     (let [{:keys [component options]}
-           (get (if js/goog.DEBUG (get-screens) screens) (keyword key)) ;; needed for hot reload
-           {:keys [insets sheet?]} options
-           background-color (or (get-in options [:layout :backgroundColor])
-                                (when sheet? :transparent))]
+     (let [{:keys [component options]}   (get (if js/goog.DEBUG
+                                                (get-screens)
+                                                screens)
+                                              (keyword key))
+           {:keys [insets sheet? theme]} options
+           user-theme                    (theme/get-theme)
+           background-color              (or (get-in options [:layout :backgroundColor])
+                                             (when sheet? :transparent))]
        ^{:key (str "root" key @reloader/cnt)}
-       [:<>
-        [rn/view
-         {:style (wrapped-screen-style insets background-color)}
+       [quo2.theme/provider {:theme (or theme user-theme)}
+        [rn/view {:style (wrapped-screen-style insets background-color)}
          [inactive]
          (if sheet?
            [:f> bottom-sheet-screen/f-view component]

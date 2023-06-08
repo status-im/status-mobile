@@ -204,7 +204,7 @@
          (when disabled
            {:opacity 0.3})))
 
-(defn button
+(defn- button-internal
   "with label
    [button opts \"label\"]
    opts
@@ -223,7 +223,7 @@
   (let [pressed-in (reagent/atom false)]
     (fn
       [{:keys [on-press disabled type size before after above icon-secondary-no-color
-               width customization-color override-theme override-background-color pressed
+               width customization-color theme override-background-color pressed
                on-long-press accessibility-label icon icon-no-color style inner-style test-ID]
         :or   {type                :primary
                size                40
@@ -231,9 +231,7 @@
        children]
       (let [{:keys [icon-color icon-secondary-color background-color label-color border-color]}
             (get-in (themes customization-color)
-                    [(or
-                      override-theme
-                      (theme/get-theme)) type])
+                    [theme type])
             state (cond disabled                 :disabled
                         (or @pressed-in pressed) :pressed
                         :else                    :default)
@@ -309,3 +307,5 @@
                 :no-color        icon-secondary-no-color
                 :color           icon-secondary-color
                 :size            icon-size}]])]]]))))
+
+(def button (theme/with-theme button-internal))
