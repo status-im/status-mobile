@@ -76,6 +76,8 @@
     [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
     [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
+    [status-im2.contexts.quo-preview.settings.category-list :as category-list]
+
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
@@ -313,7 +315,12 @@
                             :component accounts/preview-accounts}
                            {:name      :settings-list
                             :options   {:topBar {:visible true}}
-                            :component settings-list/preview-settings-list}]
+                            :component settings-list/preview-settings-list}
+                           {:name      :category-list
+                            :options   {:topBar {:visible true}}
+                            :component category-list/preview-category-list}
+                           
+                           ]
    :share                 [{:name      :qr-code
                             :options   {:topBar {:visible true}}
                             :component qr-code/preview-qr-code}

@@ -211,3 +211,4 @@
 (defn was-not-called
   [mock]
   (was-called-times mock 0))
+(defn get-byLabelText [arg1])
