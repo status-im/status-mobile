@@ -100,14 +100,6 @@
                                        {:content (fn [] [leave-menu/cancel-request-sheet id
                                                          request-id])}])})
 
-(defn edit-community
-  [id]
-  {:icon                :i/edit
-   :label               (i18n/label :t/edit-community)
-   :accessibility-label :edit-community
-   :on-press            #(rf/dispatch [:communities/open-edit-community id]
-                                      (rf/dispatch [:hide-bottom-sheet]))})
-
 (defn not-joined-options
   [id token-gated?]
   [[(when-not token-gated? (view-members id))
@@ -144,7 +136,6 @@
   [[(view-members id)
     (view-rules id)
     (when token-gated? (view-token-gating id))
-    (edit-community id)
     (mark-as-read id)
     (mute-community id muted?)
     (community-notification-settings id)

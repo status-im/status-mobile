@@ -88,7 +88,7 @@
           :keyboard-vertical-offset (- (max 20 (:bottom insets)))}
          (when sheet
            [:f>
-            bottom-sheet/view
+            bottom-sheet/f-view
             {:insets insets :hide? hide?}
             sheet])]]))))
 

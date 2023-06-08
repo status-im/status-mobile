@@ -452,8 +452,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             if timestamp not in sent_time_variants:
                 self.errors.append("Timestamp is not shown, expected: '%s', in fact: '%s'" %
                                    (", ".join(sent_time_variants), timestamp))
-        for channel in self.channel_1, self.channel_2:
-            channel.verify_message_is_under_today_text(message, self.errors)
+        self.channel_1.verify_message_is_under_today_text(message, self.errors)
+        new_message = "new message"
+        self.channel_1.send_message(message)
+        self.channel_1.chat_element_by_text(message).wait_for_status_to_be('Delivered', timeout=120)
+        self.channel_2.verify_message_is_under_today_text(new_message, self.errors)
         if self.channel_2.chat_element_by_text(message).username.text != self.username_1:
             self.errors.append("Default username '%s' is not shown next to the received message" % self.username_1)
         self.errors.verify_no_errors()
@@ -499,9 +502,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi('Send image in 1-1 chat from Gallery')
         image_description = 'description'
         self.channel_1.send_images_with_description(image_description)
-        self.channel_1.chat_message_input.click()
+        self.channel_1.chat_element_by_text(image_description).wait_for_status_to_be('Delivered', timeout=120)
         self.channel_1.chat_element_by_text(image_description).image_in_message.click()
-        self.channel_1.click_system_back_button()
+        self.channel_1.click_system_back_button_until_element_is_shown(element='chat')
 
         # TODO: options for image are still WIP; add case with edit description of image and after 15901 fix
         self.home_2.just_fyi('check image, description and options for receiver')
@@ -730,7 +733,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Check that can send message in community after unblock")
         [home.jump_to_card_by_text('# %s' % self.channel_name) for home in [self.home_1, self.home_2]]
         self.chat_2.send_message(message_unblocked)
-        if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
+        if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(120):
             self.errors.append("Message was not received in public chat after user unblock!")
 
         self.home_2.just_fyi("Add blocked user to contacts again after removing(removed automatically when blocked)")

@@ -1036,6 +1036,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_2.just_fyi("Send messages with non-latin symbols")
         self.home_1.jump_to_card_by_text(self.username_2)
         self.chat_1.send_message("just a text")  # Sending a message here so the next ones will be in a separate line
+
+        self.home_2.click_system_back_button_until_element_is_shown()
+        self.home_2.jump_to_card_by_text(self.username_1)
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
         [self.chat_2.send_message(message) for message in messages]
         for message in messages:
