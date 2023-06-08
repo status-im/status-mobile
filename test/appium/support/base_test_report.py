@@ -1,10 +1,9 @@
-import time
-import json
 import hmac
+import json
 import os
-from hashlib import md5
-from sauceclient import SauceException
 import re
+from hashlib import md5
+
 from support.test_data import SingleTestData
 
 
