@@ -15,7 +15,7 @@ from sauceclient import SauceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.wait import WebDriverWait
-from urllib3.exceptions import MaxRetryError
+from urllib3.exceptions import MaxRetryError, ProtocolError
 
 from support.api.network_api import NetworkApi
 from support.github_report import GithubHtmlReport
@@ -143,7 +143,7 @@ class AbstractTestCase:
                 test_suite_data.current_test.testruns[-1].error = "%s; also Unexpected Alert is shown: '%s'" % (
                     test_suite_data.current_test.testruns[-1].error, alert_text
                 )
-        except RemoteDisconnected:
+        except (RemoteDisconnected, ProtocolError):
             test_suite_data.current_test.testruns[-1].error = "%s; \n RemoteDisconnected" % \
                                                               test_suite_data.current_test.testruns[-1].error
 
@@ -302,10 +302,10 @@ def create_shared_drivers(quantity):
         print('SC Executor: %s' % executor_sauce_lab)
         try:
             drivers = loop.run_until_complete(start_threads(quantity,
-                                                        Driver,
-                                                        drivers,
-                                                        executor_sauce_lab,
-                                                        update_capabilities_sauce_lab(capabilities)))
+                                                            Driver,
+                                                            drivers,
+                                                            executor_sauce_lab,
+                                                            update_capabilities_sauce_lab(capabilities)))
             for i in range(quantity):
                 test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
                 drivers[i].implicitly_wait(implicit_wait)
