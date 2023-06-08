@@ -32,6 +32,21 @@
    :dispatch      [:hide-bottom-sheet]
    :open-modal-fx comp})
 
+(rf/defn dismiss-modal
+  {:events [:dismiss-modal]}
+  [_ comp-id]
+  {:dismiss-modal comp-id})
+
+(rf/defn navigate-to-in-stack
+  {:events [:navigate-to-in-stack]}
+  [_ comp-id]
+  {:navigate-to-in-stack comp-id})
+
+(rf/defn navigate-back-in-stack
+  {:events [:navigate-back-in-stack]}
+  [_ comp-id]
+  {:navigate-back-in-stack comp-id})
+
 (rf/defn navigate-back
   {:events [:navigate-back]}
   [_]

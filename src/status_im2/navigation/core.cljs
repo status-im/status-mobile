@@ -52,9 +52,10 @@
        (reset! state/pushed-screen-id view-id)))))
 
 (defn dissmissModal
-  []
-  (reset! state/dissmissing true)
-  (navigation/dismiss-modal (name (last @state/modals))))
+  ([] (dissmissModal nil))
+  ([comp-id]
+   (reset! state/dissmissing true)
+   (navigation/dismiss-modal (name (or comp-id (last @state/modals))))))
 
 (defn dismiss-all-modals
   []
@@ -92,7 +93,23 @@
                                     (options/merge-top-bar (options/topbar-options) options)
                                     {:topBar {:visible false}}))}})))
 
+(defn navigate-to-in-stack
+  [[comp comp-id]]
+  (println comp comp-id "fdfsdfdsfsdfs")
+  (let [{:keys [options]} (get views/screens comp)]
+    (navigation/push
+     (name comp-id)
+     {:component {:id      comp
+                  :name    comp
+                  :options (merge (options/statusbar-and-navbar)
+                                  options
+                                  (if (:topBar options)
+                                    (options/merge-top-bar (options/topbar-options) options)
+                                    {:topBar {:visible false}}))}})))
+
 (re-frame/reg-fx :navigate-to navigate)
+
+(re-frame/reg-fx :navigate-to-in-stack navigate-to-in-stack)
 
 (re-frame/reg-fx :navigate-replace-fx
                  (fn [view-id]
@@ -104,6 +121,11 @@
                    (if @state/curr-modal
                      (dissmissModal)
                      (navigation/pop (name @state/root-id)))))
+
+(re-frame/reg-fx :navigate-back-in-stack
+                 (fn [comp-id]
+                   (println comp-id "navigate back")
+                   (navigation/pop (name comp-id))))
 
 (re-frame/reg-fx :pop-to-root-fx navigation/pop-to-root)
 
@@ -118,14 +140,14 @@
         (reset! state/curr-modal true)
         (swap! state/modals conj comp)
         (navigation/show-modal
-         {:component
-          {:name    comp
-           :id      comp
-           :options (merge (options/default-root)
-                           (options/statusbar-and-navbar)
-                           options
-                           (when sheet?
-                             options/sheet-options))}})))))
+         {:stack {:children [{:component
+                              {:name    comp
+                               :id      comp
+                               :options (merge (options/default-root)
+                                               (options/statusbar-and-navbar)
+                                               options
+                                               (when sheet?
+                                                 options/sheet-options))}}]}})))))
 
 (re-frame/reg-fx :open-modal-fx open-modal)
 

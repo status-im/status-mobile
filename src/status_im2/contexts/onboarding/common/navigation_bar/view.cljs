@@ -4,7 +4,7 @@
             [utils.re-frame :as rf]))
 
 (defn navigation-bar
-  [{:keys [top right-section-buttons disable-back-button? left-on-press]}]
+  [{:keys [top right-section-buttons disable-back-button? left-on-press root-comp-id]}]
   [rn/view
    {:style {:height     56
             :margin-top top}}
@@ -16,7 +16,10 @@
                              :icon-override-theme :dark
                              :on-press            (when-not disable-back-button?
                                                     (fn []
-                                                      (rf/dispatch [:navigate-back])
+                                                      (println root-comp-id "fdsfds")
+                                                      (if root-comp-id
+                                                        (rf/dispatch [:navigate-back-in-stack root-comp-id])
+                                                        (rf/dispatch [:navigate-back]))
                                                       (when left-on-press
                                                         (left-on-press))))}
      :right-section-buttons right-section-buttons}]])

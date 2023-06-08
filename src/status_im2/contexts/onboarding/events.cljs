@@ -161,7 +161,7 @@
   [{:keys [db]}]
   ;; Restart the flow
   {:db       (dissoc db :onboarding-2/profile)
-   :dispatch [:navigate-to :create-profile]})
+   :dispatch [:navigate-to-in-stack [:create-profile :new-to-status]]})
 
 (rf/defn onboarding-new-account-finalize-setup
   {:events [:onboarding-2/finalize-setup]}
