@@ -20,7 +20,7 @@
 (defn f-view
   []
   (let [start-top-animation (atom nil)
-        blur-opacity (reanimated/use-shared-value 0)]    
+        blur-opacity (reanimated/use-shared-value -1)]    
     [:<>
      [rn/view {:style style/page-container}
       [background/view false]
@@ -41,9 +41,9 @@
                               :accessibility-label :already-use-status-button}
         :bottom-card         {:on-press            (fn []
                                                      ;(reset! show-blur-overlay? true)
-                                                     (reanimated/animate-shared-value-with-delay blur-opacity 1 300 :easing4 0)
+                                                     (reanimated/animate-shared-value-with-delay blur-opacity 3 300 :easing4 0)
                                                      (rf/dispatch [:open-modal :new-to-status])
-                                                     (reset! blur-anim-opacity-fn #(reanimated/animate-shared-value-with-timing blur-opacity 0 300 :easing4))
+                                                     (reset! blur-anim-opacity-fn #(reanimated/animate-shared-value-with-timing blur-opacity -1 300 :easing4))
                                                      (reset! overlay-blur-amount 0)
                                                      (reset! blur-timer
                                                              (js/setInterval (fn []
@@ -73,7 +73,7 @@
                                 :top      0
                                 :left     0
                                 :right    0
-                                :bottom   300})}
+                                :bottom   0})}
       [blur/view
        {:style {:flex 1
                 :background-color colors/neutral-80-opa-80-blur}
