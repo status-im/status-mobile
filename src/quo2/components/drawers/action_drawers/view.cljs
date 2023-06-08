@@ -11,7 +11,7 @@
     colors/danger-60
     (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)))
 
-(defn divider
+(defn- divider
   []
   [rn/view
    {:style               (style/divider)
@@ -72,16 +72,12 @@
                     (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)}}
            sub-label])]
        (when (or right-text right-icon)
-         [rn/view
-          {:style {:flex-direction :row
-                   :align-items    :center}}
+         [rn/view {:style style/right-side-container}
           (when right-text
             [text/text
-             {:size  :paragraph-1
-              :style {:color        (colors/theme-colors colors/neutral-50
-                                                         colors/neutral-40
-                                                         override-theme)
-                      :margin-right 12}}
+             {:accessibility-label :right-text-for-action
+              :size                :paragraph-1
+              :style               (style/right-text override-theme)}
              right-text])
           (when right-icon
             [rn/view
