@@ -4,8 +4,8 @@
             [re-frame.db]
             [react-native.blur :as blur]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
+            [react-native.platform :as platform]
             [status-im2.contexts.chat.messages.navigation.style :as style]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [status-im2.constants :as constants]
@@ -38,7 +38,7 @@
                                                           (+ style/navigation-bar-height 100)]
                                                          [0 1]
                                                          {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "clamp"})
+                                                          :extrapolateRight "extend"})
         translate-animation      (reanimated/interpolate scroll-y
                                                          [(+ style/navigation-bar-height 25)
                                                           (+ style/navigation-bar-height 100)]
@@ -108,9 +108,11 @@
                                                 {:content (fn [] [actions/chat-actions chat true])}]))}
           [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]])]
 
-      [reanimated/view
-       {:style (style/animated-pinned-banner all-loaded? banner-opacity-animation)}
-       [pin.banner/banner chat-id]]]]))
+      [pin.banner/banner
+       {:chat-id           chat-id
+        :opacity-animation banner-opacity-animation
+        :all-loaded?       all-loaded?
+        :top-offset        style/navigation-bar-height}]]]))
 
 (defn navigation-view
   [props]
