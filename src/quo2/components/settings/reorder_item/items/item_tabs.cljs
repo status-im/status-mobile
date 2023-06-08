@@ -15,7 +15,7 @@
                          [rn/image
                           {:source (:image %)
                            :style style/tab-item-image}]
-                         [rn/view {:style style/tab-item-image} (quo2-icons/icon (:icon %) (style/right-icon))])
+                         [rn/view {:style style/tab-item-image} (quo2-icons/icon (:icon %) (style/tab-icon))])
                        [text/text
                         {:style style/tab-item-label
                          :width :medium}

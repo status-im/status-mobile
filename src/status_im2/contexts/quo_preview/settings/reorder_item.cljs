@@ -8,32 +8,32 @@
   [{:id 1
     :type "item"
     :image (resources/get-mock-image :diamond)
-    :image-size 24
+    :image-size 21
     :right-icon :i/world
     :title "Trip to Bahamas"}
    {:id 2
     :type "item"
     :image (resources/get-mock-image :status-logo)
-    :image-size 24
+    :image-size 21
     :right-icon :i/world
     :title "Status"}
    {:id 3
     :type "item"
     :image (resources/tokens :eth)
-    :image-size 24
+    :image-size 21
     :right-icon :i/world
     :title "Ethereum"}
    {:id 4
     :type "item"
     :image (resources/get-mock-image :monkey)
-    :image-size 36
+    :image-size 30
     :right-icon :i/world
     :title "3045"
     :subtitle "Bored Ape Yatch Club"}
    {:id 5
     :type "item"
     :image (resources/get-mock-image :pinterest)
-    :image-size 24
+    :image-size 21
     :right-text "@sheralito"
     :title "Pinterest"}
    {:id 6

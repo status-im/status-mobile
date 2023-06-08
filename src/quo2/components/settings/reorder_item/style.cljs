@@ -2,7 +2,7 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn container []
-  {:padding-horizontal 20 
+  {:padding-horizontal 36
    :background-color (colors/theme-colors
                       colors/neutral-10 
                       colors/neutral-100)})
@@ -11,17 +11,17 @@
   {:flex 1
    :flex-direction :row
    :align-items :center
-   :padding 12 
+   :padding-horizontal 10
    :border-radius 16
-   :margin-bottom 24
+   :margin-bottom 21
+   :height 44
    :background-color (colors/theme-colors 
                       colors/white
                       colors/neutral-90)})
 
-(defn left-icon []
-  {:color (colors/theme-colors
-           colors/neutral-50
-           colors/neutral-40)})
+(def item-container-extended
+  {:height 50})
+
 
 (def body-container 
   {:flex 1
@@ -29,7 +29,7 @@
    :flex-direction :row
    :align-items :center})
 
-(def image-container {:margin-right 12})
+(def image-container {:margin-right 8})
 
 (defn image 
   [size]
@@ -37,7 +37,7 @@
    :height size})
 
 (def item-text 
-  {:font-size 15})
+  {:font-size 14})
 
 (defn chevron [] 
   {:color (colors/theme-colors
@@ -101,7 +101,7 @@
   {:background-color (colors/theme-colors
                       colors/neutral-5
                       colors/neutral-95)
-   :padding 10
+   :padding 6
    :margin-bottom 24})
 
 (defn segmented-tab-item-container []
@@ -124,9 +124,16 @@
    :align-items :center})
 
 (def tab-item-image 
-  {:height 20 
-   :width 20 
-   :margin-right 6})
+  {:height 19 
+   :width 19 
+   :margin-right 3})
 
 (def tab-item-label 
   {:font-size 14})
+
+(defn tab-icon []
+  {:height 16
+   :width 16
+   :color (colors/theme-colors
+           colors/neutral-40
+           colors/neutral-40)})

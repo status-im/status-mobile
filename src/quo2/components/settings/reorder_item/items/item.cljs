@@ -3,7 +3,8 @@
             [status-im.ui.components.icons.icons :as icons]
             [quo2.components.settings.reorder-item.style :as style]
             [quo2.components.markdown.text :as text]
-            [quo2.components.icon :as quo2-icons]))
+            [quo2.components.icon :as quo2-icons]
+            [quo2.foundations.colors :as colors]))
 
 (defn view
   [{:keys
@@ -17,8 +18,10 @@
    {:on-long-press       drag
     :delay-long-press    100
     :accessibility-label :chat-drag-handle
-    :style               (style/item-container)}
-   [icons/icon :main-icons/drag {:style (style/left-icon)}]
+    :style               (merge (style/item-container) (when subtitle style/item-container-extended))}
+   [icons/icon :main-icons/drag {:color (colors/theme-colors
+                                         colors/neutral-50
+                                         colors/neutral-40) :width 19 :height 19 }]
    [rn/view
     {:style style/body-container}
     [rn/view
