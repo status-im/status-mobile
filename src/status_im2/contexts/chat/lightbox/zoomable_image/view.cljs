@@ -217,6 +217,7 @@
         composed-gestures (gesture/exclusive
                            (gesture/simultaneous pinch pan-x pan-y)
                            (gesture/exclusive double-tap tap))]
+    (println "sss"  (:image content))
     [gesture/gesture-detector {:gesture composed-gestures}
      [reanimated/view
       {:style (style/container dimensions

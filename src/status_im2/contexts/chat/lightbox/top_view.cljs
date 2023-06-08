@@ -8,11 +8,14 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.style :as style]
+    [taoensso.timbre :as log]
     [utils.datetime :as datetime]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.lightbox.constants :as c]
     [react-native.share :as share]
-    [react-native.fs :as fs]))
+    ["react-native-blob-util" :default ReactNativeBlobUtil]
+    [react-native.fs :as fs]
+    [status-im.utils.http :as http]))
 
 (defn animate-rotation
   [result screen-width screen-height insets
@@ -40,6 +43,13 @@
         (anim/animate top-view-x 0)
         (anim/animate top-view-width screen-width)
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
+
+(defn download-image-http
+  [base64-uri on-success]
+  (-> (.config ReactNativeBlobUtil (clj->js {:trusty platform/ios?}))
+      (.fetch "GET" (str base64-uri))
+      (.then #(on-success (.base64 ^js %)))
+      (.catch #(log/error "could not fetch audio " base64-uri))))
 
 (defn top-view
   [messages insets index animations derived landscape? screen-width]
@@ -83,10 +93,9 @@
       [rn/touchable-opacity
        {:active-opacity 1
         :on-press  (fn []
-                     (fs/download-file {:fromUrl (str (:image content))
-                                        :toFile (str fs/cache-dir "/image.jpeg")} #(println "success") #(println "fail"))
-                     ;(share/open {:url (:image content)} #(println "success") #(println "faill"))
-                     )
+                     (download-image-http (:image content) (fn [param]
+                                                             (share/open {:url (str "data:image/jpeg;base64," param)}
+                                                                                   #(println "success")#(println"faill")))))
         :style          (merge style/close-container {:margin-right 12})}
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
