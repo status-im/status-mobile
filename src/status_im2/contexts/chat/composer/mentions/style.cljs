@@ -24,7 +24,7 @@
      :left             8
      :right            8
      :border-radius    16
-     :z-index          6
+     :z-index          4
      :max-height       constants/mentions-max-height
      :background-color (colors/theme-colors colors/white colors/neutral-95)}
     (shadow))))

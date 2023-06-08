@@ -27,7 +27,7 @@
      :left                    0
      :right                   0
      :background-color        (colors/theme-colors colors/white colors/neutral-95)
-     :z-index                 5
+     :z-index                 3
      :padding-bottom          (:bottom insets)}
     (shadow focused?))))
 
@@ -77,9 +77,6 @@
                                   (if link-previews? constants/links-container-height 0)
                                   (if (seq images) constants/images-container-height 0))
           :padding-bottom      (when @maximized? 0)}))
-
-(def container
-  {:z-index 5})
 
 (defn background
   [opacity background-y window-height]
