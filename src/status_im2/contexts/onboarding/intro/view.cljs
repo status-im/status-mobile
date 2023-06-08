@@ -41,7 +41,7 @@
                               :accessibility-label :already-use-status-button}
         :bottom-card         {:on-press            (fn []
                                                      ;(reset! show-blur-overlay? true)
-                                                     (reanimated/animate-shared-value-with-delay blur-opacity 1 300 :easing4 300)
+                                                     (reanimated/animate-shared-value-with-delay blur-opacity 1 300 :easing4 0)
                                                      (rf/dispatch [:open-modal :new-to-status])
                                                      (reset! blur-anim-opacity-fn #(reanimated/animate-shared-value-with-timing blur-opacity 0 300 :easing4))
                                                      (reset! overlay-blur-amount 0)
