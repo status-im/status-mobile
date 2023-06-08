@@ -95,6 +95,10 @@
   [ref]
   (oops/oget ref "current"))
 
+(def create-context react/createContext)
+
+(def use-context react/useContext)
+
 (defn use-effect
   ([effect-fn]
    (use-effect effect-fn []))

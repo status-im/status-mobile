@@ -3,6 +3,7 @@
             [oops.core :as oops]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
             [react-native.core :as rn]
             [status-im2.contexts.activity-center.notification-types :as types]
             [status-im2.contexts.activity-center.notification.admin.view :as admin]
@@ -83,7 +84,6 @@
      {:size                32
       :scrollable?         true
       :blur?               true
-      :override-theme      :dark
       :style               style/tabs
       :fade-end-percentage 0.79
       :scroll-on-press?    true
@@ -214,15 +214,16 @@
     (rf/dispatch [:activity-center.notifications/fetch-first-page])
     (fn []
       (let [notifications (rf/sub [:activity-center/notifications])]
-        [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
-         [blur/view style/blur]
-         [header]
-         [rn/flat-list
-          {:data                      notifications
-           :render-data               active-swipeable
-           :content-container-style   {:flex-grow 1}
-           :empty-component           [empty-tab]
-           :key-fn                    :id
-           :on-scroll-to-index-failed identity
-           :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
-           :render-fn                 notification-component}]]))))
+        [theme/provider {:theme :dark}
+         [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
+          [blur/view style/blur]
+          [header]
+          [rn/flat-list
+           {:data                      notifications
+            :render-data               active-swipeable
+            :content-container-style   {:flex-grow 1}
+            :empty-component           [empty-tab]
+            :key-fn                    :id
+            :on-scroll-to-index-failed identity
+            :on-end-reached            #(rf/dispatch [:activity-center.notifications/fetch-next-page])
+            :render-fn                 notification-component}]]]))))
