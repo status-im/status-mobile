@@ -11,7 +11,8 @@
     [utils.datetime :as datetime]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.lightbox.constants :as c]
-    [react-native.share :as share]))
+    [react-native.share :as share]
+    [react-native.fs :as fs]))
 
 (defn animate-rotation
   [result screen-width screen-height insets
@@ -81,10 +82,15 @@
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
        {:active-opacity 1
-        :on-press  (fn [] (share/open {:url (:image content)} #(println "success") #(println "faill")))
+        :on-press  (fn []
+                     (fs/download-file {:fromUrl (str (:image content))
+                                        :toFile (str fs/cache-dir "/image.jpeg")} #(println "success") #(println "fail"))
+                     ;(share/open {:url (:image content)} #(println "success") #(println "faill"))
+                     )
         :style          (merge style/close-container {:margin-right 12})}
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
        {:active-opacity 1
+        :on-press (fn [] (rf/dispatch [:show-bottom-sheet {:content [rn/view [rn/text "yoo"]]}]))
         :style          style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))

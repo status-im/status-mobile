@@ -1,4 +1,4 @@
-(ns status-im.utils.fs
+(ns react-native.fs
   (:require ["react-native-fs" :as react-native-fs]))
 
 (defn move-file
@@ -42,3 +42,9 @@
 (defn cache-dir
   []
   (.-CachesDirectoryPath ^js react-native-fs))
+
+(defn download-file
+  [options on-success on-error]
+  (-> (.downloadFile react-native-fs options)
+      (.then on-success)
+      (.catch on-error)))

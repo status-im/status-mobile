@@ -6,7 +6,7 @@
             [react-native.permissions :as permissions]
             [status-im.ui.components.react :as react]
             [status-im2.config :as config]
-            [status-im.utils.fs :as fs]
+            [react-native.fs :as fs]
             [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
