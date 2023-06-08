@@ -19,7 +19,8 @@
 (defn page-title
   [pairing-progress?]
   [quo/title
-   {:title                        (i18n/label (if pairing-progress?
+   {:container-style              {:margin-top 56}
+    :title                        (i18n/label (if pairing-progress?
                                                 :t/sync-devices-title
                                                 :t/sync-devices-error-title))
     :subtitle                     (i18n/label (if pairing-progress?

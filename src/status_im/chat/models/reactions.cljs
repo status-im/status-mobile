@@ -104,7 +104,6 @@
    :emoji-id       emoji-id
    :from           from})
 
-
 (defn- format-response
   [response]
   (->> (transforms/js->clj response)
@@ -113,24 +112,22 @@
 
 (rf/defn save-emoji-reaction-details
   {:events [:chat/save-emoji-reaction-details]}
-  [{:keys [db]} message-reactions long-pressed-emoji]
-  {:db (assoc db
-              :chat/reactions-authors
-              {:reaction-authors-list message-reactions
-               :selected-reaction     long-pressed-emoji})})
+  [{:keys [db]} reaction-authors]
+  {:db (assoc db :chat/reactions-authors reaction-authors)})
 
 (rf/defn clear-emoji-reaction-details
   {:events [:chat/clear-emoji-reaction-author-details]}
-  [{:keys [db]} message-reactions]
-  {:db (update db dissoc :chat/reactions-authors)})
+  [{:keys [db]}]
+  {:db (dissoc db :chat/reactions-authors)})
 
 (rf/defn emoji-reactions-by-message-id
   {:events [:chat.ui/emoji-reactions-by-message-id]}
-  [{:keys [db]} {:keys [message-id long-pressed-emoji]}]
-  {:json-rpc/call [{:method      "wakuext_emojiReactionsByChatIDMessageID"
+  [{:keys [db]} {:keys [message-id on-success]}]
+  {:db            (dissoc db :chat/reactions-authors)
+   :json-rpc/call [{:method      "wakuext_emojiReactionsByChatIDMessageID"
                     :params      [(:current-chat-id db) message-id]
                     :js-response true
                     :on-error    #(log/error "failed to fetch emoji reaction by message-id: "
                                              {:message-id message-id :error %})
-                    :on-success  #(rf/dispatch [:chat/save-emoji-reaction-details
-                                                (format-response %) long-pressed-emoji])}]})
+                    :on-success  #(when on-success
+                                    (on-success (format-response %)))}]})

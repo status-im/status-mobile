@@ -15,7 +15,8 @@
   []
   (let [new-account? (rf/sub [:onboarding-2/new-account?])]
     [quo/title
-     {:title                        (i18n/label (if new-account?
+     {:container-style              {:margin-top 12}
+      :title                        (i18n/label (if new-account?
                                                   :t/welcome-to-web3
                                                   :t/welcome-back))
       :title-accessibility-label    :welcome-title
