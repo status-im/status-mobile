@@ -84,9 +84,9 @@
                    (js/require "../resources/videos2/notifications_layer_02.mp4")
                    (js/require "../resources/videos2/notifications_layer_03.mp4")
                    (js/require "../resources/videos2/notifications_layer_04.mp4")]
-   :generate-keys [(js/require "../resources/videos2/generating_keys_01.mp4")
-                   (js/require "../resources/videos2/generating_keys_02.mp4")
-                   (js/require "../resources/videos2/generating_keys_03.mp4")]})
+   :generate-keys [(js/require "../resources/videos2/generating_keys_layer_01.mp4")
+                   (js/require "../resources/videos2/generating_keys_layer_02.mp4")
+                   (js/require "../resources/videos2/generating_keys_layer_03.mp4")]})
 (defn get-mock-image
   [k]
   (get mock-images k))
