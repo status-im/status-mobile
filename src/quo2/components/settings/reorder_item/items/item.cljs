@@ -1,6 +1,5 @@
 (ns quo2.components.settings.reorder-item.items.item
   (:require [quo.react-native :as rn] 
-            [status-im.ui.components.icons.icons :as icons]
             [quo2.components.settings.reorder-item.style :as style]
             [quo2.components.markdown.text :as text]
             [quo2.components.icon :as quo2-icons]
@@ -19,7 +18,7 @@
     :delay-long-press    100
     :accessibility-label :chat-drag-handle
     :style               (merge (style/item-container) (when subtitle style/item-container-extended))}
-   [icons/icon :main-icons/drag {:color (colors/theme-colors
+   [quo2-icons/icon :main-icons/drag {:color (colors/theme-colors
                                          colors/neutral-50
                                          colors/neutral-40) :width 19 :height 19 }]
    [rn/view
@@ -45,4 +44,4 @@
        [text/text {:style style/right-text} right-text])
      (when right-icon
        [rn/view {:style style/right-icon-container} [quo2-icons/icon right-icon (style/right-icon)]])]]
-   [icons/tiny-icon :tiny-icons/chevron-right (style/chevron)]])
+   [quo2-icons/icon :tiny-icons/chevron-right (style/chevron)]])
