@@ -16,7 +16,8 @@
 (defn page-title
   []
   [quo/title
-   {:title                        (i18n/label :t/intro-wizard-title6)
+   {:container-style              {:margin-top 12}
+    :title                        (i18n/label :t/intro-wizard-title6)
     :title-accessibility-label    :notifications-title
     :subtitle                     (i18n/label :t/enable-notifications-sub-title)
     :subtitle-accessibility-label :notifications-sub-title}])
