@@ -1,6 +1,7 @@
 (ns quo2.components.buttons.slide-button.view
   (:require
    [react-native.gesture :as gesture]
+   [quo2.foundations.colors :as colors]
    [react-native.core :refer [use-effect]]
    [quo.react :as react]
    [oops.core :as oops]
@@ -9,7 +10,8 @@
 (defn init-animations [] {:x-pos (reanimated/use-shared-value 0)})
 
 (def threshold-frac 0.7)
-(def thumb-width 40)
+(def thumb-size 40)
+(def track-padding 4)
 
 (defn drag-gesture [{:keys [x-pos]} track-width thumb-state]
   (let [offset (react/state 0)
@@ -22,7 +24,7 @@
                                     x (+ x-translation @offset)]
                                 (doall [(reanimated/set-shared-value x-pos x)
                                         (cond (not= @thumb-state :dragging) (reset! thumb-state :dragging))
-                                        (when (>= x (- track-width thumb-width))
+                                        (when (>= x (- track-width thumb-size))
                                           (reset! thumb-state :complete))]))))
 
         (gesture/on-end (fn [event]
@@ -34,20 +36,32 @@
 
         (gesture/on-start  (fn [_]
                              (reset! offset (reanimated/get-shared-value x-pos)))))))
+(def slide-colors
+  {:thumb (colors/custom-color-by-theme :blue 50 60)
+   :track (colors/custom-color :blue 50 10)})
 
 (defn thumb-style
-  [{:keys [x-pos]}]
-  (reanimated/apply-animations-to-style
-   {:transform [{:translate-x x-pos}]}
-   {:width  40
-    :height 40
-    :border-radius 14
-    :background-color :blue}))
+  [{:keys [x-pos]} track-width]
+  (let [track-dim [0 (- track-width (* track-padding 2) thumb-size)]]
+    (reanimated/apply-animations-to-style
+     {:transform [{:translate-x (reanimated/interpolate
+                                 x-pos
+                                 track-dim
+                                 track-dim
+                                 {:extrapolateLeft  "clamp"
+                                  :extrapolateRight "clamp"})}]}
+     {:width  thumb-size
+      :height thumb-size
+      :border-radius 14
+      :background-color (:thumb slide-colors)})))
 
-(def track-style {:width            "100%"
-                  :height           40
+(def track-style {:align-self       :stretch
+                  :align-items      :flex-start
+                  :justify-content  :center
+                  :padding          track-padding
+                  :height           48
                   :border-radius    12
-                  :background-color :red})
+                  :background-color (:track slide-colors)})
 
 (defn log-slider-state
   [state]
@@ -55,10 +69,12 @@
                  (println (str "thumb-state: " @state)))
               [@state]))
 
+(def timing-duration 200)
+
 (defn animate-slide
   [value to-position]
   (reanimated/animate-shared-value-with-timing
-   value to-position 300 :linear))
+   value to-position timing-duration :linear))
 
 (defn animate-complete
   [value end-position]
@@ -90,8 +106,7 @@
                       [(animate-complete x @track-width)
                        (on-complete)])
            :incomplete (doall
-                        [(reanimated/animate-shared-value-with-timing
-                          x 0 300 :linear)
+                        [(animate-slide x 0)
                          (reset-thumb-state)])
            nil)))
      [@thumb-state @track-width])
@@ -101,17 +116,19 @@
                        :on-layout (when-not
                                    (some? @track-width)
                                     on-track-layout)}
-      [reanimated/view {:style (thumb-style animations)}]]]))
+      [reanimated/view {:style (thumb-style animations @track-width)}]]]))
 
 ;; TODO 
 ;; - allow disabling the button through props
 ;; - figure out the themes and colors
+;; - add documentation
 ;; 
 ;; PROPS:
 ;; - disabled
-;; - on-complete
+;; - on-complete (DONE)
 ;; - track-icon
 ;; - track-text
+;; - size
 
 (defn slide-button [{:keys [on-complete on-state-change]} as props]
   [:f> slider {:on-complete on-complete

@@ -41,12 +41,14 @@
         [preview/customizer state descriptor]
         [rn/view
          {:padding-vertical 60
+          :padding-horizontal 40
           :align-items      :center}
          [slide-button {:on-complete (fn []
                                        (js/alert "I don't wanna slide anymore"))
                         :on-state-change (fn [s]
                                            (reset! slide-state s))}]
          [rn/text {:style {:margin-top 20
+                           :color (colors/theme-colors colors/neutral-90 colors/white)
                            :font-size 22}} (str @slide-state)]]]])))
 
 (defn preview-slide-button
