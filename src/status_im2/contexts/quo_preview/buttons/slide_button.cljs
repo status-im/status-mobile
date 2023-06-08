@@ -43,7 +43,8 @@
          {:padding-vertical 60
           :padding-horizontal 40
           :align-items      :center}
-         [slide-button {:on-complete (fn []
+         [slide-button {:track-text "We gotta slide"
+                        :on-complete (fn []
                                        (js/alert "I don't wanna slide anymore"))
                         :on-state-change (fn [s]
                                            (reset! slide-state s))}]
