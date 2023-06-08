@@ -1,139 +1,150 @@
-(ns  quo2.components.settings.reorder-item.style 
+(ns quo2.components.settings.reorder-item.style
   (:require [quo2.foundations.colors :as colors]))
 
-(defn container []
+(defn container
+  []
   {:padding-horizontal 36
-   :background-color (colors/theme-colors
-                      colors/neutral-10 
-                      colors/neutral-100)})
+   :background-color   (colors/theme-colors
+                        colors/neutral-10
+                        colors/neutral-100)})
 
-(defn item-container []
-  {:flex 1
-   :flex-direction :row
-   :align-items :center
+(defn item-container
+  []
+  {:flex               1
+   :flex-direction     :row
+   :align-items        :center
    :padding-horizontal 10
-   :border-radius 16
-   :margin-bottom 21
-   :height 44
-   :background-color (colors/theme-colors 
-                      colors/white
-                      colors/neutral-90)})
+   :border-radius      16
+   :margin-bottom      21
+   :height             44
+   :background-color   (colors/theme-colors
+                        colors/white
+                        colors/neutral-90)})
 
 (def item-container-extended
   {:height 50})
 
 
-(def body-container 
-  {:flex 1
-   :margin-left 12
+(def body-container
+  {:flex           1
+   :margin-left    12
    :flex-direction :row
-   :align-items :center})
+   :align-items    :center})
 
 (def image-container {:margin-right 8})
 
-(defn image 
+(defn image
   [size]
   {:width  size
    :height size})
 
-(def item-text 
+(def item-text
   {:font-size 14})
 
-(defn chevron [] 
-  {:color (colors/theme-colors
-           colors/neutral-50
-           colors/neutral-40)
+(defn chevron
+  []
+  {:color  (colors/theme-colors
+            colors/neutral-50
+            colors/neutral-40)
    :height 14
-   :width 14})
+   :width  14})
 
-(def item-subtitle 
-  {:color colors/neutral-50
+(def item-subtitle
+  {:color     colors/neutral-50
    :font-size 13})
 
-(def right-text 
+(def right-text
   {:font-size 15
-   :color colors/neutral-40})
+   :color     colors/neutral-40})
 
 (def text-container
-  {:flex 1
-   :flex-direction :row
+  {:flex            1
+   :flex-direction  :row
    :justify-content "space-between"
-   :margin-right 6})
+   :margin-right    6})
 
-(defn right-icon []
+(defn right-icon
+  []
   {:height 20
-   :width 20
-   :color (colors/theme-colors
-           colors/neutral-40 
-           colors/neutral-40)})
+   :width  20
+   :color  (colors/theme-colors
+            colors/neutral-40
+            colors/neutral-40)})
 
 (def right-icon-container
   {:justify-content :center})
 
-(defn placeholder-container []
+(defn placeholder-container
+  []
   {:background-color :transparent
-   :border-width 1
-   :border-color (colors/theme-colors
-                  colors/neutral-30
-                  colors/neutral-80)
-   :padding 12
-   :justify-content :center
-   :align-items :center
-   :border-radius 16
-   :margin-bottom 24
-   :border-style :dashed})
+   :border-width     1
+   :border-color     (colors/theme-colors
+                      colors/neutral-30
+                      colors/neutral-80)
+   :padding          12
+   :justify-content  :center
+   :align-items      :center
+   :border-radius    16
+   :margin-bottom    24
+   :border-style     :dashed})
 
-(defn placeholder-text [] 
-  {:color (colors/theme-colors
-           colors/neutral-40
-           colors/neutral-50)
+(defn placeholder-text
+  []
+  {:color     (colors/theme-colors
+               colors/neutral-40
+               colors/neutral-50)
    :font-size 13})
 
-(defn skeleton-container []
+(defn skeleton-container
+  []
   {:background-color (colors/theme-colors
                       colors/neutral-5
                       colors/neutral-95)
-   :border-radius 16
-   :margin-bottom 24
-   :height 48})
+   :border-radius    16
+   :margin-bottom    24
+   :height           48})
 
-(defn tab-container []
+(defn tab-container
+  []
   {:background-color (colors/theme-colors
                       colors/neutral-5
                       colors/neutral-95)
-   :padding 6
-   :margin-bottom 24})
+   :padding          6
+   :margin-bottom    24})
 
-(defn segmented-tab-item-container []
-  {:height 40 
-   :border-width 1 
-   :border-style :dashed 
+(defn segmented-tab-item-container
+  []
+  {:height       40
+   :border-width 1
+   :border-style :dashed
    :border-color (colors/theme-colors
                   colors/neutral-30
                   colors/neutral-60)})
 
-(defn active-segmented-tab-item-container []
-  {:height 40
+(defn active-segmented-tab-item-container
+  []
+  {:height           40
    :background-color (colors/theme-colors
-                  colors/neutral-30
-                  colors/neutral-90)})
+                      colors/neutral-30
+                      colors/neutral-90)})
 
-(def tab-item-container 
-  {:flex-direction :row
+(def tab-item-container
+  {:flex-direction  :row
    :justify-content :center
-   :align-items :center})
+   :align-items     :center})
 
-(def tab-item-image 
-  {:height 19 
-   :width 19 
+(def tab-item-image
+  {:height       19
+   :width        19
    :margin-right 3})
 
-(def tab-item-label 
+(def tab-item-label
   {:font-size 14})
 
-(defn tab-icon []
+(defn tab-icon
+  []
   {:height 16
-   :width 16
-   :color (colors/theme-colors
-           colors/neutral-40
-           colors/neutral-40)})
+   :width  16
+   :color  (colors/theme-colors
+            colors/neutral-40
+            colors/neutral-40)})

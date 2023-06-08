@@ -1,6 +1,6 @@
-(ns  quo2.components.settings.reorder-item.items.item-skeleton 
+(ns quo2.components.settings.reorder-item.items.item-skeleton
   (:require [quo.react-native :as rn]
-            [ quo2.components.settings.reorder-item.style :as style]))
+            [quo2.components.settings.reorder-item.style :as style]))
 
 (defn view
   []
