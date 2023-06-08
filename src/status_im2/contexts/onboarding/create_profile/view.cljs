@@ -48,103 +48,110 @@
 
 (defn button-container
   [keyboard-shown? children]
-  (if keyboard-shown?
-    [blur/ios-view
-     {:style style/blur-button-container}
-     children]
-    [rn/view {:style style/view-button-container}
-     children]))
+  [rn/view {:style {:margin-top :auto}}
+   (if keyboard-shown?
+     [blur/ios-view {:style style/blur-button-container}
+      children]
+     [rn/view {:style style/view-button-container}
+      children])])
 
 (defn- f-page
   [{:keys [onboarding-profile-data navigation-bar-top]}]
-  (let [{:keys [image-path display-name color]} onboarding-profile-data
-        full-name                               (reagent/atom display-name)
-        keyboard-shown?                         (reagent/atom false)
-        validation-msg                          (reagent/atom (validation-message @full-name))
-        on-change-text                          (fn [s]
-                                                  (reset! validation-msg (validation-message s))
-                                                  (reset! full-name (string/trim s)))
-        custom-color                            (reagent/atom (or color c/profile-default-color))
-        profile-pic                             (reagent/atom image-path)
-        on-change-profile-pic                   #(reset! profile-pic %)
-        on-change                               #(reset! custom-color %)]
-    (fn []
-      (rn/use-effect
-       (let [will-show-listener (oops/ocall rn/keyboard
-                                            "addListener"
-                                            "keyboardWillShow"
-                                            #(swap! keyboard-shown? (fn [] true)))
-             will-hide-listener (oops/ocall rn/keyboard
-                                            "addListener"
-                                            "keyboardWillHide"
-                                            #(swap! keyboard-shown? (fn [] false)))]
-         (fn []
-           (fn []
-             (oops/ocall will-show-listener "remove")
-             (oops/ocall will-hide-listener "remove"))))
-       [])
+  (reagent/with-let [keyboard-shown?                         (reagent/atom false)
+                     will-show-listener                      (oops/ocall rn/keyboard
+                                                                         "addListener"
+                                                                         "keyboardWillShow"
+                                                                         #(reset! keyboard-shown? true))
+                     will-hide-listener                      (oops/ocall rn/keyboard
+                                                                         "addListener"
+                                                                         "keyboardWillHide"
+                                                                         #(reset! keyboard-shown? false))
+                     {:keys [image-path display-name color]} onboarding-profile-data
+                     full-name                               (reagent/atom display-name)
+                     validation-msg                          (reagent/atom (validation-message
+                                                                            @full-name))
+                     on-change-text                          (fn [s]
+                                                               (reset! validation-msg (validation-message
+                                                                                       s))
+                                                               (reset! full-name (string/trim s)))
+                     custom-color                            (reagent/atom (or color
+                                                                               c/profile-default-color))
+                     profile-pic                             (reagent/atom image-path)
+                     on-change-profile-pic                   #(reset! profile-pic %)
+                     on-change                               #(reset! custom-color %)]
+    [rn/view {:style style/page-container}
+     [navigation-bar/navigation-bar {:top navigation-bar-top}]
+     [rn/scroll-view
+      {:keyboard-should-persist-taps :always
+       :content-container-style      {:flex-grow 1}}
       [rn/view {:style style/page-container}
-       [navigation-bar/navigation-bar {:top navigation-bar-top}]
-       [rn/scroll-view
-        {:keyboard-should-persist-taps :always
-         :content-container-style      {:flex-grow 1}}
-        [rn/view {:style style/page-container}
+       [rn/view
+        {:style style/content-container}
+        [quo/text
+         {:size   :heading-1
+          :weight :semi-bold
+          :style  style/title} (i18n/label :t/create-profile)]
+        [rn/view
+         {:style style/input-container}
          [rn/view
-          {:style style/content-container}
-          [quo/text
-           {:size   :heading-1
-            :weight :semi-bold
-            :style  style/title} (i18n/label :t/create-profile)]
-          [rn/view
-           {:style style/input-container}
-           [rn/view
-            {:style style/profile-input-container}
-            [quo/profile-input
-             {:customization-color @custom-color
-              :placeholder         (i18n/label :t/your-name)
-              :on-press            (fn []
-                                     (rf/dispatch [:dismiss-keyboard])
-                                     (rf/dispatch
-                                      [:show-bottom-sheet
-                                       {:override-theme :dark
-                                        :content
-                                        (fn []
-                                          [method-menu/view on-change-profile-pic])}]))
-              :image-picker-props  {:profile-picture @profile-pic
-                                    :full-name       @full-name}
-              :title-input-props   {:default-value  @full-name
-                                    :max-length     c/profile-name-max-length
-                                    :on-change-text on-change-text}}]]
-           (when @validation-msg
-             [quo/info-message
-              {:type  :error
-               :size  :default
-               :icon  :i/info
-               :style style/info-message}
-              @validation-msg])
-           [quo/text
-            {:size  :paragraph-2
-             :style style/color-title}
-            (i18n/label :t/accent-colour)]
-           [quo/color-picker
-            {:blur?             true
-             :default-selected? :blue
-             :selected          @custom-color
-             :on-change         on-change}]]]]]
-       [rn/keyboard-avoiding-view {}
-        [button-container @keyboard-shown?
-         [quo/button
-          {:accessibility-label       :submit-create-profile-button
-           :type                      :primary
-           :override-background-color (colors/custom-color @custom-color 60)
-           :on-press                  (fn []
-                                        (rf/dispatch [:onboarding-2/profile-data-set
-                                                      {:image-path   @profile-pic
-                                                       :display-name @full-name
-                                                       :color        @custom-color}]))
-           :style                     style/continue-button
-           :disabled                  (or (not (seq @full-name)) @validation-msg)}
-          (i18n/label :t/continue)]]]])))
+          {:style style/profile-input-container}
+          [quo/profile-input
+           {:customization-color @custom-color
+            :placeholder         (i18n/label :t/your-name)
+            :on-press            (fn []
+                                   (rf/dispatch [:dismiss-keyboard])
+                                   (rf/dispatch
+                                    [:show-bottom-sheet
+                                     {:override-theme :dark
+                                      :content
+                                      (fn []
+                                        [method-menu/view on-change-profile-pic])}]))
+            :image-picker-props  {:profile-picture @profile-pic
+                                  :full-name       @full-name}
+            :title-input-props   {:default-value  @full-name
+                                  :auto-focus     true
+                                  :max-length     c/profile-name-max-length
+                                  :on-change-text on-change-text}}]]
+         (when @validation-msg
+           [quo/info-message
+            {:type  :error
+             :size  :default
+             :icon  :i/info
+             :style style/info-message}
+            @validation-msg])
+         [quo/text
+          {:size   :paragraph-2
+           :weight :medium
+           :style  style/color-title}
+          (i18n/label :t/accent-colour)]
+         [quo/color-picker
+          {:blur?             true
+           :default-selected? :blue
+           :selected          @custom-color
+           :on-change         on-change}]]]]]
+     [rn/keyboard-avoiding-view
+      {:style          {:position :absolute
+                        :top      0
+                        :bottom   0
+                        :left     0
+                        :right    0}
+       :pointer-events :box-none}
+      [button-container @keyboard-shown?
+       [quo/button
+        {:accessibility-label       :submit-create-profile-button
+         :type                      :primary
+         :override-background-color (colors/custom-color @custom-color 60)
+         :on-press                  (fn []
+                                      (rf/dispatch [:onboarding-2/profile-data-set
+                                                    {:image-path   @profile-pic
+                                                     :display-name @full-name
+                                                     :color        @custom-color}]))
+         :style                     style/continue-button
+         :disabled                  (or (not (seq @full-name)) @validation-msg)}
+        (i18n/label :t/continue)]]]]
+    (finally
+     (oops/ocall will-show-listener "remove")
+     (oops/ocall will-hide-listener "remove"))))
 
 (defn create-profile
   []

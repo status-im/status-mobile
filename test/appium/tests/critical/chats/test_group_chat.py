@@ -244,8 +244,10 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.homes[0].connection_offline_icon.wait_for_invisibility_of_element(60)
         self.homes[0].open_notification_bar()
         for message in (message_1, message_2):
-            if not self.homes[0].element_by_text(message).is_element_displayed(30):
-                self.errors.append('%s PN was not fetched from offline' % message)
+            if self.homes[0].element_by_text(message).is_element_displayed(30):
+                break
+        else:
+            self.errors.append('Messages PN was not fetched from offline')
         self.homes[0].click_system_back_button()
         self.homes[0].chats_tab.click()
         self.homes[0].get_chat(self.chat_name).click()

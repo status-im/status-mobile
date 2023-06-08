@@ -1,8 +1,6 @@
 (ns status-im2.contexts.onboarding.new-to-status.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def full-screen {:flex 1})
-
 (def content-container
   {:position :absolute
    :top      0
@@ -18,16 +16,22 @@
   {:color         colors/white
    :margin-bottom 20})
 
+(def subtitle
+  {:margin-bottom 12
+   :color         colors/white-opa-70})
+
 (def subtitle-container
-  {:height        20
-   :margin-top    16
+  {:margin-top 16})
+
+(def doc-main-content
+  {:color         colors/white
    :margin-bottom 4})
 
-(def subtitle
-  {:color colors/white-opa-70})
+(def doc-subtitle
+  {:margin-top    20
+   :margin-bottom 4})
 
-(def suboptions
-  {:padding-top    4
-   :padding-bottom 8})
+(def doc-content
+  {:color colors/white-opa-70})
 
 (def space-between-suboptions {:height 12})
