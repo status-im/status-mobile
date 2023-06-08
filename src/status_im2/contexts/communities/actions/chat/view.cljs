@@ -83,7 +83,7 @@
 (defn actions
   [{:keys [locked?]} inside-chat?]
   (cond
-    (and (not inside-chat?) locked?)
+    locked?
     [quo/action-drawer
      [[(action-invite-people)
        (action-token-requirements)
@@ -101,7 +101,7 @@
        (action-qr-code)
        (action-share)]]]
 
-    inside-chat?
+    (and inside-chat? (not locked?))
     [quo/action-drawer
      [[(action-view-members-and-details)
        (action-token-requirements)
