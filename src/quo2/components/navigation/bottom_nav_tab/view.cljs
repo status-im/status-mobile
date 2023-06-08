@@ -27,6 +27,7 @@
     :on-press               bottom-tab on-press function
     :pass-through?          true/false
     :icon-color-anim        reanimated shared value
+    :customization-color    Customization color for the notification mark
   "
   [{:keys [icon new-notifications? notification-indicator counter-label
            on-press pass-through? icon-color-anim accessibility-label test-ID
