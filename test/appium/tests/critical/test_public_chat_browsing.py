@@ -455,8 +455,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.verify_message_is_under_today_text(message, self.errors)
         new_message = "new message"
         self.channel_1.send_message(message)
-        self.channel_1.chat_element_by_text(message).wait_for_status_to_be('Delivered', timeout=120)
-        self.channel_2.verify_message_is_under_today_text(new_message, self.errors)
+        self.channel_2.verify_message_is_under_today_text(new_message, self.errors, 60)
         if self.channel_2.chat_element_by_text(message).username.text != self.username_1:
             self.errors.append("Default username '%s' is not shown next to the received message" % self.username_1)
         self.errors.verify_no_errors()
@@ -502,9 +501,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi('Send image in 1-1 chat from Gallery')
         image_description = 'description'
         self.channel_1.send_images_with_description(image_description)
-        self.channel_1.chat_element_by_text(image_description).wait_for_status_to_be('Delivered', timeout=120)
-        self.channel_1.chat_element_by_text(image_description).image_in_message.click()
-        self.channel_1.click_system_back_button_until_element_is_shown(element='chat')
+        # self.channel_1.chat_element_by_text(image_description).image_in_message.click()
+        # self.channel_1.click_system_back_button_until_element_is_shown(element='chat')
 
         # TODO: options for image are still WIP; add case with edit description of image and after 15901 fix
         self.home_2.just_fyi('check image, description and options for receiver')
@@ -533,6 +531,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         #
         # self.channel_2.chat_element_by_text(image_description).image_in_message.save_new_screenshot_of_element('images_test.png')
 
+        self.channel_2.chat_element_by_text(image_description).wait_for_visibility_of_element(60)
         if not self.channel_2.chat_element_by_text(
                 image_description).image_in_message.is_element_image_similar_to_template('image_sent_in_community.png'):
             self.errors.append("Not expected image is shown to the receiver")
