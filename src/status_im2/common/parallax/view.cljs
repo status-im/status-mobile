@@ -10,8 +10,8 @@
 (def transparent-video (reagent/adapt-react-class TV))
 
 (defn f-sensor-animated-video
-  [{:keys [offset order source disable-parallax?]}]
-  (let [double-offset           (* 2 offset)
+  [{:keys [offset stretch order source disable-parallax?]}]
+  (let [double-stretch          (* 2 stretch)
         {window-width  :width
          window-height :height} (rn/get-window)
         image-style             (if (not disable-parallax?)
@@ -24,8 +24,8 @@
       [reanimated/view
        {:needsOffscreenAlphaCompositing true
         :style                          [{:position :absolute
-                                          :width    (+ window-width double-offset)
-                                          :height   (+ window-height double-offset)}
+                                          :width    (+ window-width double-stretch)
+                                          :height   (+ window-height double-stretch)}
                                          image-style]}
        [transparent-video
         {:source source
@@ -40,7 +40,9 @@
   [:f> f-sensor-animated-video props])
 
 (defn f-video
-  [{:keys [layers disable-parallax? offset] :or {offset 0}}]
+  [{:keys [layers disable-parallax? offset stretch]
+    :or   {offset  50
+           stretch 0}}]
   [rn/view
    {:style {:position :absolute
             :top      (if platform/android?
@@ -54,6 +56,7 @@
                    {:key               (str layer idx)
                     :source            layer
                     :offset            offset
+                    :stretch           stretch
                     :order             (inc idx)
                     :disable-parallax? disable-parallax?}])
                 layers)])

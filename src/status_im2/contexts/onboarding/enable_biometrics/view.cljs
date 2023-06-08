@@ -45,8 +45,9 @@
     [rn/view {:style (style/page-container insets)}
      [background/view true]
      [parallax/video
-      {:layers (resources/get-parallax-video :biometrics)
-       :offset 50}]
+      {:layers  (resources/get-parallax-video :biometrics)
+       :offset  50
+       :stretch 50}]
      [rn/view
       [navigation-bar/navigation-bar {:disable-back-button? true}]
       [page-title]]
