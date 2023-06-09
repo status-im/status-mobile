@@ -5,10 +5,11 @@
   ([]
    (message-container false nil nil false))
   ([in-pinned-view? pinned-by mentioned last-in-group?]
-   (merge (when (and (not in-pinned-view?) (or mentioned pinned-by))
-            {:background-color colors/primary-50-opa-5
-             :margin-bottom    4})
-          (when (or mentioned pinned-by last-in-group?)
-            {:margin-top 8})
-          {:border-radius     16
-           :margin-horizontal 8})))
+   (cond-> {:border-radius     16
+            :margin-horizontal 8}
+
+     (and (not in-pinned-view?) (or mentioned pinned-by))
+     (assoc :background-color colors/primary-50-opa-5 :margin-bottom 4)
+
+     (or mentioned pinned-by last-in-group?)
+     (assoc :margin-top 8))))

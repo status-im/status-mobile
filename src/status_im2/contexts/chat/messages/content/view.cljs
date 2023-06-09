@@ -99,7 +99,9 @@
                                                            outgoing)
             context                                      (assoc context
                                                                 :on-long-press
-                                                                #(on-long-press message-data context keyboard-shown?))
+                                                                #(on-long-press message-data
+                                                                                context
+                                                                                keyboard-shown?))
             response-to                                  (:response-to content)
             height                                       (rf/sub [:dimensions/window-height])]
         [rn/touchable-highlight
@@ -165,11 +167,12 @@
                [status/status outgoing-status])])]
           (when show-reactions?
             [reactions/message-reactions-row message-data
-             [user-message-content
-              {:message-data    message-data
-               :context         context
-               :keyboard-shown? keyboard-shown?
-               :show-reactions? false}]])]]))))
+             [rn/view {:pointer-events :none}
+              [user-message-content
+               {:message-data    message-data
+                :context         context
+                :keyboard-shown? keyboard-shown?
+                :show-reactions? false}]]])]]))))
 
 (defn on-long-press
   [message-data context keyboard-shown]
@@ -181,7 +184,8 @@
                                    [user-message-content message-data context keyboard-shown true]])}]))
 
 (defn message
-  [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? deleted? deleted-for-me?] :as message-data} context keyboard-shown?]
+  [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? deleted? deleted-for-me?]
+    :as   message-data} context keyboard-shown?]
   (if (or deleted? deleted-for-me?)
     [rn/view {:style (style/message-container)}
      [content.deleted/deleted-message message-data context]]
