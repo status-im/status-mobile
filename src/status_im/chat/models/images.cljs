@@ -2,6 +2,7 @@
   (:require ["@react-native-community/cameraroll" :as CameraRoll]
             ["react-native-blob-util" :default ReactNativeBlobUtil]
             [re-frame.core :as re-frame]
+            [react-native.share :as share]
             [utils.i18n :as i18n]
             [react-native.permissions :as permissions]
             [status-im.ui.components.react :as react]
@@ -21,7 +22,15 @@
                          :path   temp-image-url}))
       (.fetch "GET" base64-uri)
       (.then #(on-success (.path %)))
-      (.catch #(log/error "could not save image"))))
+      (.catch #(log/error (str "could not save image")))))
+
+(defn share-image
+  [uri]
+  (download-image-http uri
+                       (fn [downloaded-url]
+                         (share/open {:url (str (if platform/android? "file://" "") downloaded-url)}
+                                     #(fs/unlink downloaded-url)
+                                     #(fs/unlink downloaded-url)))))
 
 (defn save-to-gallery [path] (.save CameraRoll path))
 

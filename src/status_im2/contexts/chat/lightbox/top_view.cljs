@@ -14,6 +14,7 @@
     [status-im2.contexts.chat.lightbox.constants :as c]
     [react-native.share :as share]
     ["react-native-blob-util" :default ReactNativeBlobUtil]
+    [status-im.chat.models.images :as images]
     [react-native.fs :as fs]
     [status-im.utils.http :as http]))
 
@@ -44,16 +45,9 @@
         (anim/animate top-view-width screen-width)
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
-(defn download-image-http
-  [base64-uri on-success]
-  (-> (.config ReactNativeBlobUtil (clj->js {:trusty platform/ios?}))
-      (.fetch "GET" (str base64-uri))
-      (.then #(on-success (.base64 ^js %)))
-      (.catch #(log/error "could not fetch audio " base64-uri))))
-
 (defn top-view
   [messages insets index animations derived landscape? screen-width]
-  (let [{:keys [from timestamp content]} (nth @messages @index)
+  (let [{:keys [from timestamp content]}   (nth @messages @index)
         display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
                                                            from]))
         bg-color                           (if landscape?
@@ -92,14 +86,11 @@
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
        {:active-opacity 1
-        :on-press  (fn []
-                     (download-image-http (:image content) (fn [param]
-                                                             (share/open {:url (str "data:image/jpeg;base64," param)}
-                                                                                   #(println "success")#(println"faill")))))
+        :on-press       #(images/share-image (:image content))
         :style          (merge style/close-container {:margin-right 12})}
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
        {:active-opacity 1
-        :on-press (fn [] (rf/dispatch [:show-bottom-sheet {:content [rn/view [rn/text "yoo"]]}]))
+        :on-press       (fn [] (rf/dispatch [:show-bottom-sheet {:content [rn/view [rn/text "yoo"]]}]))
         :style          style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))
