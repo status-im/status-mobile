@@ -699,6 +699,7 @@ SPEC CHECKSUMS:
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
 <<<<<<< HEAD
+<<<<<<< HEAD
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: a8af91c2b5a0029d12ff6b32e428863d63c48991
   FBReactNativeSpec: 1b2309b096448a1dc9d0c43999216f8fda809ae8
@@ -711,6 +712,13 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 3ac2326f7fee4840a3066c90eb135ecd20496ded
 >>>>>>> 74228f515 (updates)
+=======
+  DoubleConversion: cde416483dac037923206447da6e1454df403714
+  FBLazyVector: d2db9d00883282819d03bbd401b2ad4360d47580
+  FBReactNativeSpec: 94da4d84ba3b1acf459103320882daa481a2b62d
+  fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
+  glog: 997518ea2aa2d8cd5df9797b641b758d52ecf2bc
+>>>>>>> 570806a46 (revert)
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
@@ -789,4 +797,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: a7c3cb360cf217ab90667d67deeab588677d540a
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.12.1

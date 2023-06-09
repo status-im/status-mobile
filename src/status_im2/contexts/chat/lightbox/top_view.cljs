@@ -8,15 +8,10 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.style :as style]
-    [taoensso.timbre :as log]
     [utils.datetime :as datetime]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.lightbox.constants :as c]
-    [react-native.share :as share]
-    ["react-native-blob-util" :default ReactNativeBlobUtil]
-    [status-im.chat.models.images :as images]
-    [react-native.fs :as fs]
-    [status-im.utils.http :as http]))
+    [status-im.chat.models.images :as images]))
 
 (defn animate-rotation
   [result screen-width screen-height insets

@@ -47,10 +47,14 @@
     "react-native-fast-image": "^8.5.11",
     "react-native-fetch-polyfill": "^1.1.2",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "react-native-fs": "^2.14.1",
     "react-native-gesture-handler": "2.6.1",
 =======
     "react-native-fs": "^2.20.0",
+=======
+    "react-native-fs": "^2.14.1",
+>>>>>>> 570806a46 (revert)
     "react-native-gesture-handler": "^2.5.0",
 >>>>>>> 74228f515 (updates)
     "react-native-haptic-feedback": "^1.9.0",

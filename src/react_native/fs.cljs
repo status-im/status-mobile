@@ -42,9 +42,3 @@
 (defn cache-dir
   []
   (.-CachesDirectoryPath ^js react-native-fs))
-
-(defn download-file
-  [options on-success on-error]
-  (-> (.downloadFile react-native-fs options)
-      (.then on-success)
-      (.catch on-error)))

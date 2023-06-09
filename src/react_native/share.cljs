@@ -7,4 +7,3 @@
       (.open (clj->js options))
       (.then on-success)
       (.catch on-error)))
-

@@ -96,17 +96,14 @@
                   :timeout (or timeout-ms http-request-default-timeout-ms)}))
        (.then (fn [^js response]
                 (->
-                  (println "aaaaa" (.text response))
                   (.text response)
                   (.then (fn [response-body]
                            (let [ok?  (.-ok response)
                                  ok?' (if valid-response?
                                         (and ok? (valid-response? response))
                                         ok?)]
-                             (println "h2" response-body)
                              [response-body ok?']))))))
        (.then (fn [[response ok?]]
-                (println "RRR" response)
                 (cond
                   (and on-success ok?)
                   (on-success response)
