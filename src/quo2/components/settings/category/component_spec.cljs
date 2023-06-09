@@ -1,4 +1,4 @@
-(ns quo2.components.settings.category-list.component-spec
+(ns quo2.components.settings.category.component-spec
   (:require [quo2.components.settings.category-list.view :as category-list]
             [test-helpers.component :as h]))
 
