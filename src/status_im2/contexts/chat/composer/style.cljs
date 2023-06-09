@@ -113,11 +113,11 @@
 (defn shell-container
   [bottom translate-y]
   (reanimated/apply-animations-to-style
-   {:bottom bottom} ; we use height of the input directly as bottom position
-   {:position  :absolute
-    :transform [{:translate-y translate-y}]
-    :left      0
-    :right     0}))
+   {:bottom    bottom ; we use height of the input directly as bottom position
+    :transform [{:translate-y translate-y}]}
+   {:position :absolute
+    :left     0
+    :right    0}))
 
 (defn shell-button
   [translate-y opacity]

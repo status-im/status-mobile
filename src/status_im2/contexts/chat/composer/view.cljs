@@ -65,7 +65,7 @@
     (effects/link-previews props state animations subs)
     (effects/images props state animations subs)
     [:<>
-     [sub-view/shell-button state animations]
+     [sub-view/shell-button state animations subs]
      [mentions/view props state animations max-height cursor-pos
       (:images subs)
       (:link-previews? subs)

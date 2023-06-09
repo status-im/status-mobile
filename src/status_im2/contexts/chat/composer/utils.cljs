@@ -124,13 +124,14 @@
     (* sub-text-lines-in-view constants/line-height)))
 
 (defn calc-shell-neg-y
-  [insets maximized?]
+  [insets maximized? extra-height]
   (let [padding 12
         neg-y   (if @maximized? -50 0)]
     (- (+ constants/bar-container-height
           constants/actions-container-height
           (:bottom insets)
           padding
+          extra-height
           neg-y))))
 
 (defn calc-suggestions-position
