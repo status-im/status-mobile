@@ -89,7 +89,7 @@
   [chat id communities primary-name]
   {:title               (:chat-name chat)
    :avatar-params       {}
-   :customization-color (or (:customization-color chat) :primary)
+   :customization-color (or (:color chat) :primary)
    :content             (get-card-content
                          {:chat         chat
                           :communities  communities
@@ -101,10 +101,11 @@
   [community id]
   (let [profile-picture (community-avatar community)]
     {:title               (:name community)
+     :banner              {:uri (get-in (:images community) [:banner :uri])}
      :avatar-params       (if profile-picture
                             {:source profile-picture}
                             {:name (:name community)})
-     :customization-color (or (:customization-color community) :primary)
+     :customization-color (or (:color community) :primary)
      :content             {:community-info {:type :permission}}
      :id                  id}))
 
@@ -112,9 +113,10 @@
   [community community-id channel channel-id]
   (merge
    (community-card community community-id)
-   {:content    {:community-channel {:emoji        (:emoji channel)
-                                     :channel-name (str "# " (:name channel))}}
-    :channel-id channel-id}))
+   {:content             {:community-channel {:emoji        (:emoji channel)
+                                              :channel-name (str "# " (:name channel))}}
+    :channel-id          channel-id
+    :customization-color (or (:color channel) :primary)}))
 
 ;;;; Subscriptions
 (def memo-shell-cards (atom nil))
