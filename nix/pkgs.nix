@@ -17,9 +17,20 @@ let
 
   # Override some packages and utilities
   pkgsOverlay = import ./overlay.nix;
+
+  # Fix for lack of Android SDK for M1 Macs.
+  systemOverride = let
+    inherit (builtins) currentSystem getEnv;
+    envSystemOverride = getEnv "NIXPKGS_SYSTEM_OVERRIDE";
+  in
+    if envSystemOverride != "" then
+      envSystemOverride
+    else
+      currentSystem;
 in
   # import nixpkgs with a config override
   (import nixpkgsSrc) {
     config = defaultConfig // config;
+    system = systemOverride;
     overlays = [ pkgsOverlay ];
   }
