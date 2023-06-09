@@ -23,7 +23,7 @@
 (defn nickname-container
   [insets]
   {:margin-horizontal 20
-   :margin-bottom     (when platform/ios? (max (:bottom insets) constants/sheet-min-padding))})
+   :margin-bottom     (when platform/ios? (max (:bottom insets) 20))})
 
 (defn nickname-description
   []
