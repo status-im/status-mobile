@@ -5,7 +5,7 @@
 
 (def content-container
   {:position :absolute
-   :top      160
+   :top      170
    :bottom   0
    :left     0
    :right    0})

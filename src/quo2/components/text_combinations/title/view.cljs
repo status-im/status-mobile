@@ -5,11 +5,12 @@
     [react-native.core :as rn]))
 
 (defn title
-  [{:keys [title
+  [{:keys [container-style
+           title
            title-accessibility-label
            subtitle
            subtitle-accessibility-label]}]
-  [rn/view {:style style/title-container}
+  [rn/view {:style (style/title-container container-style)}
    [text/text
     {:accessibility-label title-accessibility-label
      :weight              :semi-bold

@@ -17,25 +17,23 @@
                    :emoji-id   emoji-id}])))
 
 (defn- on-long-press
-  [message-id emoji-id]
+  [message-id emoji-id user-message-content reactions]
   (rf/dispatch [:chat.ui/emoji-reactions-by-message-id
-                {:message-id         message-id
-                 :long-pressed-emoji emoji-id}]))
-
-(defn show-authors-sheet
-  [user-message-content reactions]
-  (rf/dispatch [:dismiss-keyboard])
-  (rf/dispatch
-   [:show-bottom-sheet
-    {:on-close                (fn []
-                                (rf/dispatch
-                                 [:chat/clear-emoji-reaction-author-details]))
-     :content                 (fn []
-                                [drawers/reaction-authors
-                                 (map :emoji-id reactions)])
-     :selected-item           (fn []
-                                user-message-content)
-     :padding-bottom-override 0}]))
+                {:message-id message-id
+                 :on-success (fn [response]
+                               (rf/dispatch [:chat/save-emoji-reaction-details
+                                             {:reaction-authors-list response
+                                              :selected-reaction     emoji-id}])
+                               (rf/dispatch [:dismiss-keyboard])
+                               (rf/dispatch [:show-bottom-sheet
+                                             {:on-close (fn []
+                                                          (rf/dispatch
+                                                           [:chat/clear-emoji-reaction-author-details]))
+                                              :content (fn []
+                                                         [drawers/reaction-authors reactions])
+                                              :selected-item (fn []
+                                                               user-message-content)
+                                              :padding-bottom-override 0}]))}]))
 
 (defn message-reactions-row
   [{:keys [message-id chat-id]} user-message-content]
@@ -55,11 +53,10 @@
              :neutral?            own
              :clicks              quantity
              :on-press            #(on-press own message-id emoji-id emoji-reaction-id)
-             :on-long-press       (fn []
-                                    (on-long-press message-id
-                                                   emoji-id)
-                                    (show-authors-sheet user-message-content
-                                                        reactions))
+             :on-long-press       #(on-long-press message-id
+                                                  emoji-id
+                                                  user-message-content
+                                                  (map :emoji-id reactions))
              :accessibility-label (str "emoji-reaction-" emoji-id)}]])
         [quo/add-reaction
          {:on-press (fn []

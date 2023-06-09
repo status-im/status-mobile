@@ -23,10 +23,12 @@
     :type  :boolean}
    {:label "Button"
     :key   :button-props
-    :type  :boolean
-   }])
+    :type  :boolean}
+   {:label "Status Tag"
+    :key   :status-tag-props
+    :type  :boolean}])
 
-(defn get-mock-data
+(defn get-props
   [data]
   (when (:toggle-props data) (js/console.warn data))
   (merge
@@ -41,7 +43,13 @@
       {:data
        [{:source (resources/mock-images :rarible)}
         {:source (resources/mock-images :decentraland)}
-        {:source (resources/mock-images :coinbase)}]})}))
+        {:source (resources/mock-images :coinbase)}]})
+    :status-tag-props (when (:status-tag-props data)
+                        {:size           :small
+                         :status         {:type :positive}
+                         :no-icon?       true
+                         :label          "example"
+                         :override-theme :dark})}))
 
 (defn cool-preview
   []
@@ -56,9 +64,9 @@
        [preview/customizer state descriptor]
        [rn/view
         {:padding-vertical   100
-         :padding-horizontal 40
+         :padding-horizontal 20
          :align-items        :center}
-        [quo/settings-list (get-mock-data @state)]]])))
+        [quo/settings-list (get-props @state)]]])))
 
 (defn preview-settings-list
   []
