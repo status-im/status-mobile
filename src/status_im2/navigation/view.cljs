@@ -83,17 +83,8 @@
           :keyboard-vertical-offset (- (max 20 (:bottom insets)))}
          (when sheet
            [:f>
-<<<<<<< HEAD
             bottom-sheet/f-view
             {:insets insets :hide? hide?}
-=======
-            bottom-sheet/view
-<<<<<<< HEAD
-            {:hide? hide?}
->>>>>>> f45ff3ddd (update)
-=======
-            {:insets insets :hide? hide?}
->>>>>>> a9024d0b4 (update)
             sheet])]]))))
 
 (def toasts (reagent/reactify-component toasts/toasts))

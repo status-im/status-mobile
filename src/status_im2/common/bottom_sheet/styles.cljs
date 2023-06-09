@@ -1,7 +1,8 @@
 (ns status-im2.common.bottom-sheet.styles
   (:require [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im2.constants :as constants]))
 
 (defn handle
   [override-theme]
@@ -25,7 +26,7 @@
    :border-top-right-radius 20
    :overflow                (when shell? :hidden)
    :flex                    1
-   :padding-bottom          (or padding-bottom-override (max 20 (+ bottom 8)))
+   :padding-bottom          (or padding-bottom-override (max constants/sheet-min-padding (+ bottom 8)))
    :background-color        (if shell?
                               :transparent
                               (colors/theme-colors colors/white colors/neutral-90 override-theme))})

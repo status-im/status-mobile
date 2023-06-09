@@ -1,6 +1,7 @@
 (ns status-im2.contexts.contacts.drawers.nickname-drawer.style
   (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+            [react-native.platform :as platform]
+            [status-im2.constants :as constants]))
 
 (defn context-container
   []
@@ -22,7 +23,7 @@
 (defn nickname-container
   [insets]
   {:margin-horizontal 20
-   :margin-bottom     (when platform/ios? (max (:bottom insets) 20))})
+   :margin-bottom     (when platform/ios? (max (:bottom insets) constants/sheet-min-padding))})
 
 (defn nickname-description
   []
