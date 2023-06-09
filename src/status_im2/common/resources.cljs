@@ -91,21 +91,7 @@
                    (js/require "../resources/videos2/Biometrics_Layer_03_3_copy.mp4")
                    (js/require "../resources/videos2/Biometrics_Layer_04_3_copy.mp4")]
 
-
-   :notifications [(js/require "../resources/videos2/notifications_layer_01_copy.mp4")
-                   (js/require "../resources/videos2/Notifications_Layer_02_1_copy.mp4")
-                   (js/require "../resources/videos2/Notifications_Layer_03_1_copy.mp4")
-                   (js/require "../resources/videos2/Notifications_Layer_04_1_copy.mp4")]
-
-   :notifications1 [(js/require "../resources/videos2/notifications_layer_01_copy.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_02_2_copy.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_03_2_copy.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_04_2_copy.mp4")]
-
-   :notifications2 [(js/require "../resources/videos2/notifications_layer_01_copy.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_02_3_copy.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_03_3_copy.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_04_3_copy.mp4")]
+   :notifications [(js/require "../resources/videos2/notifications_single.mp4")] 
 
    :generate-keys [(js/require "../resources/videos2/generating_keys_layer_01_copy.mp4")
                    (js/require "../resources/videos2/generating_keys_layer_02_copy.mp4")

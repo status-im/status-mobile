@@ -14,9 +14,7 @@
    [status-im2.contexts.onboarding.enable-biometrics.view :as enable-biometrics]
    [status-im2.contexts.onboarding.enable-notifications.view :as enable-notifications]
    [status-im2.contexts.onboarding.enable-biometrics1.view :as enable-biometrics1]
-   [status-im2.contexts.onboarding.enable-notifications1.view :as enable-notifications1]
    [status-im2.contexts.onboarding.enable-biometrics2.view :as enable-biometrics2]
-   [status-im2.contexts.onboarding.enable-notifications2.view :as enable-notifications2]
    [status-im2.contexts.onboarding.identifiers.view :as identifiers]
    [status-im2.contexts.onboarding.welcome.view :as welcome]
    [status-im2.contexts.onboarding.new-to-status.view :as new-to-status]
@@ -171,20 +169,6 @@
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
      :component enable-notifications/enable-notifications}
-
-    {:name      :enable-notifications1
-     :options   {:layout             options/onboarding-layout
-                 :popGesture         false
-                 :hardwareBackButton {:dismissModalOnPress false
-                                      :popStackOnPress     false}}
-     :component enable-notifications1/enable-notifications}
-
-    {:name      :enable-notifications2
-     :options   {:layout             options/onboarding-layout
-                 :popGesture         false
-                 :hardwareBackButton {:dismissModalOnPress false
-                                      :popStackOnPress     false}}
-     :component enable-notifications2/enable-notifications}
 
     {:name      :identifiers
      :component identifiers/view
