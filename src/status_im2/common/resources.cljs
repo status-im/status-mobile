@@ -81,43 +81,44 @@
                    (js/require "../resources/videos2/Biometrics_Layer_03_1_copy.mp4")
                    (js/require "../resources/videos2/Biometrics_Layer_04_1_copy.mp4")]
 
-   :biometrics1    [(js/require "../resources/videos2/biometrics_layer_01.mp4")
-                    (js/require "../resources/videos2/Biometrics_Layer_02_2.mp4")
-                    (js/require "../resources/videos2/Biometrics_Layer_03_2.mp4")
-                    (js/require "../resources/videos2/Biometrics_Layer_04_2.mp4")]
+   :biometrics1    [(js/require "../resources/videos2/biometrics_layer_01_copy.mp4")
+                    (js/require "../resources/videos2/Biometrics_Layer_02_2_copy.mp4")
+                    (js/require "../resources/videos2/Biometrics_Layer_03_2_copy.mp4")
+                    (js/require "../resources/videos2/Biometrics_Layer_04_2_copy.mp4")]
 
-   :biometrics2   [(js/require "../resources/videos2/biometrics_layer_01.mp4")
-                   (js/require "../resources/videos2/Biometrics_Layer_02_3.mp4")
-                   (js/require "../resources/videos2/Biometrics_Layer_03_3.mp4")
-                   (js/require "../resources/videos2/Biometrics_Layer_04_3.mp4")]
+   :biometrics2   [(js/require "../resources/videos2/biometrics_layer_01_copy.mp4")
+                   (js/require "../resources/videos2/Biometrics_Layer_02_3_copy.mp4")
+                   (js/require "../resources/videos2/Biometrics_Layer_03_3_copy.mp4")
+                   (js/require "../resources/videos2/Biometrics_Layer_04_3_copy.mp4")]
 
 
-   :notifications [(js/require "../resources/videos2/notifications_layer_01.mp4")
-                   (js/require "../resources/videos2/Notifications_Layer_02_1.mp4")
-                   (js/require "../resources/videos2/Notifications_Layer_03_1.mp4")
-                   (js/require "../resources/videos2/Notifications_Layer_04_1.mp4")]
+   :notifications [(js/require "../resources/videos2/notifications_layer_01_copy.mp4")
+                   (js/require "../resources/videos2/Notifications_Layer_02_1_copy.mp4")
+                   (js/require "../resources/videos2/Notifications_Layer_03_1_copy.mp4")
+                   (js/require "../resources/videos2/Notifications_Layer_04_1_copy.mp4")]
 
-   :notifications1 [(js/require "../resources/videos2/notifications_layer_01.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_02_2.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_03_2.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_04_2.mp4")]
+   :notifications1 [(js/require "../resources/videos2/notifications_layer_01_copy.mp4")
+                    (js/require "../resources/videos2/Notifications_Layer_02_2_copy.mp4")
+                    (js/require "../resources/videos2/Notifications_Layer_03_2_copy.mp4")
+                    (js/require "../resources/videos2/Notifications_Layer_04_2_copy.mp4")]
 
-   :notifications2 [(js/require "../resources/videos2/notifications_layer_01.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_02_3.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_03_3.mp4")
-                    (js/require "../resources/videos2/Notifications_Layer_04_3.mp4")]
+   :notifications2 [(js/require "../resources/videos2/notifications_layer_01_copy.mp4")
+                    (js/require "../resources/videos2/Notifications_Layer_02_3_copy.mp4")
+                    (js/require "../resources/videos2/Notifications_Layer_03_3_copy.mp4")
+                    (js/require "../resources/videos2/Notifications_Layer_04_3_copy.mp4")]
 
-   :generate-keys [(js/require "../resources/videos2/generating_keys_layer_01.mp4")
-                   (js/require "../resources/videos2/generating_keys_layer_02.mp4")
-                   (js/require "../resources/videos2/Generating_Keys_Layer_03_1.mp4")]
+   :generate-keys [(js/require "../resources/videos2/generating_keys_layer_01_copy.mp4")
+                   (js/require "../resources/videos2/generating_keys_layer_02_copy.mp4")
+                   (js/require "../resources/videos2/Generating_Keys_Layer_03_1_copy.mp4")]
 
-   :generate-keys1 [(js/require "../resources/videos2/generating_keys_layer_01.mp4")
-                    (js/require "../resources/videos2/generating_keys_layer_02.mp4")
-                    (js/require "../resources/videos2/Generating_Keys_Layer_03_2.mp4")]
+   :generate-keys1 [(js/require "../resources/videos2/generating_keys_layer_01_copy.mp4")
+                    (js/require "../resources/videos2/generating_keys_layer_02_copy.mp4")
+                    (js/require "../resources/videos2/Generating_Keys_Layer_03_2_copy.mp4")]
 
-   :generate-keys2 [(js/require "../resources/videos2/generating_keys_layer_01.mp4")
-                    (js/require "../resources/videos2/generating_keys_layer_02.mp4")
-                    (js/require "../resources/videos2/Generating_Keys_Layer_03_3.mp4")]})
+   :generate-keys2 [(js/require "../resources/videos2/generating_keys_layer_01_copy.mp4")
+                    (js/require "../resources/videos2/generating_keys_layer_02_copy.mp4")
+                    (js/require "../resources/videos2/Generating_Keys_Layer_03_3_copy.mp4")]})
+
 (defn get-mock-image
   [k]
   (get mock-images k))
