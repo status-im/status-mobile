@@ -8,7 +8,7 @@
             [status-im2.contexts.shell.state :as state]
             [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.constants :as shell.constants]
-            [quo2.components.navigation.bottom-nav-tab :as bottom-nav-tab]
+            [quo2.components.navigation.bottom-nav-tab.view :as bottom-nav-tab]
             [status-im2.contexts.shell.components.bottom-tabs.style :as style]))
 
 (defn blur-overlay-params
@@ -22,7 +22,8 @@
 (defn bottom-tab
   [icon stack-id shared-values notifications-data]
   (let [{:keys [key-uid]}   (rf/sub [:multiaccount])
-        customization-color (rf/sub [:profile/customization-color key-uid])
+        customization-color (or (:color (rf/sub [:onboarding-2/profile]))
+                                (rf/sub [:profile/customization-color key-uid]))
         icon-color          (->> stack-id
                                  (get shell.constants/tabs-icon-color-keywords)
                                  (get shared-values))]
