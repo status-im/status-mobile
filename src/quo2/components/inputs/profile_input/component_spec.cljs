@@ -5,7 +5,8 @@
 (h/describe "Profile Input"
   (h/test "renders user avatar with placeholder name if no value is specified"
     (h/render [profile-input/profile-input
-               {:placeholder "Your Name"}])
+               {:placeholder        "Your Name"
+                :image-picker-props {:full-name "Your Name"}}])
     (-> (js/expect (h/get-by-text "YN"))
         (.toBeTruthy)))
 

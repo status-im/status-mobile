@@ -106,8 +106,11 @@
                                       :content
                                       (fn []
                                         [method-menu/view on-change-profile-pic])}]))
-            :image-picker-props  {:profile-picture @profile-pic
-                                  :full-name       @full-name}
+            :image-picker-props  {:profile-picture     (when @profile-pic {:uri @profile-pic})
+                                  :full-name           (if (seq @full-name)
+                                                         @full-name
+                                                         (i18n/label :t/your-name))
+                                  :customization-color @custom-color}
             :title-input-props   {:default-value  @full-name
                                   :auto-focus     true
                                   :max-length     c/profile-name-max-length
