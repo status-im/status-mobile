@@ -90,6 +90,7 @@
   {:title               (:chat-name chat)
    :avatar-params       {}
    :customization-color (or (:color chat) :primary)
+   :customization-color (or (:color chat) :primary)
    :content             (get-card-content
                          {:chat         chat
                           :communities  communities
@@ -115,8 +116,8 @@
    (community-card community community-id)
    {:content             {:community-channel {:emoji        (:emoji channel)
                                               :channel-name (str "# " (:name channel))}}
-    :channel-id          channel-id
-    :customization-color (or (:color channel) :primary)}))
+    :customization-color (or (:color channel) :primary)
+    :channel-id          channel-id}))
 
 ;;;; Subscriptions
 (def memo-shell-cards (atom nil))
