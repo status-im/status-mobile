@@ -31,7 +31,7 @@
     :source (resources/get-image :onboarding-illustration)}])
 
 (defonce progress (atom nil))
-(defonce paused (atom nil))
+(defonce paused? (atom nil))
 
 (defn store-screen-height
   [evt]
@@ -60,14 +60,14 @@
         animate?     (not dark-overlay?)
         window-width (rf/sub [:dimensions/window-width])]
     (when animate?
-      (carousel.animation/use-initialize-animation progress paused animate?))
+      (carousel.animation/use-initialize-animation progress paused? animate?))
 
     (rn/use-effect
      (fn []
-       (reanimated/set-shared-value @paused (not= view-id :intro))
+       (reanimated/set-shared-value @paused? (not= view-id :intro))
        (fn []
          (when (= view-id :generating-keys)
-           (carousel.animation/cleanup-animation progress paused))))
+           (carousel.animation/cleanup-animation progress paused?))))
      [view-id])
 
     [rn/view
@@ -76,8 +76,10 @@
      [carousel/view
       {:animate?          animate?
        :progress          progress
+       :paused?           paused?
        :header-text       header-text
        :header-background true
+       :swipeable?        true
        :background        [background-image (* 4 window-width)]}]
      (when dark-overlay?
        [blur/view
