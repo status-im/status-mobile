@@ -2,11 +2,16 @@
   (:require
    [quo2.components.buttons.slide-button.consts :as consts]
    [react-native.gesture :as gesture]
-   [quo.react :as react]
    [oops.core :as oops]
    [react-native.reanimated :as reanimated]))
 
 ;; Utils 
+(defn- clamp-value [value min-value max-value]
+  (cond
+    (< value min-value) min-value
+    (> value max-value) max-value
+    :else value))
+
 (defn calc-usable-track
   "Calculate the track section in which the
   thumb can move in. Mostly used for interpolations."
@@ -16,145 +21,91 @@
 (def ^:private extrapolation {:extrapolateLeft  "clamp"
                               :extrapolateRight "clamp"})
 
-(defn calc-final-padding
-  "Calculate the padding animation applied
-  to the track to surround the thumb."
-  [track-width thumb-size]
-  (-> track-width
-      (/ 2)
-      (- (/ thumb-size 2))
-      (- consts/track-padding)))
+(defn- track-interpolation-inputs
+  [in-vectors track-width]
+  (map #(* track-width %) in-vectors))
 
 ;; Interpolations
-(defn clamp-track
-  "Clamps the thumb position to the usable portion
-   of the track"
-  [x-pos track-width thumb-size]
-  (let [track-dim [0 (calc-usable-track track-width thumb-size)]]
-    (reanimated/interpolate
-     x-pos
-     track-dim
-     track-dim
-     extrapolation)))
+(defn- track-clamp-interpolation
+  [track-width]
+  {:in [-1 0 1]
+   :out [track-width 0 track-width]})
 
-(defn interpolate-track-cover
-  "Interpolates the start edge of the track text container
-  based on the thumb position, which should hide the text
-  behind the thumb."
-  [x-pos track-width thumb-size]
-  (let [usable-track (calc-usable-track track-width thumb-size)
-        output-start-pos (/ thumb-size 2)
-        clamped (clamp-track x-pos track-width thumb-size)]
-    (reanimated/interpolate
-     clamped
-     [0 usable-track]
-     [output-start-pos usable-track]
-     extrapolation)))
+(defn- track-cover-interpolation
+  [track-width thumb-size]
+  {:in [0 1]
+   :out [(/ thumb-size 2) track-width]})
 
-;; Gestures
-(defn- gesture-on-update
-  [event
-   offset
-   x-pos
-   slide-state
-   track-width
-   thumb-size]
-  (let [x-translation (oops/oget event "translationX")
-        x (+ x-translation @offset)
-        reached-end? (>= x (calc-usable-track track-width thumb-size))]
-    (doall [(when (not reached-end?)
-              (reanimated/set-shared-value x-pos x))
-            (doall [(when (= @slide-state :rest)
-                      (reset! slide-state :dragging))
-                    (when reached-end?
-                      (reset! slide-state :complete))])])))
+(defn- arrow-icon-position-interpolation
+  [thumb-size]
+  {:in [0.9 1]
+   :out [0 (- thumb-size)]})
 
-(defn- gesture-on-end
-  [event
-   offset
-   complete-threshold
-   thumb-state]
-  (let [x-translation (oops/oget event "translationX")
-        x (+ x-translation @offset)]
-    (if (<= x complete-threshold)
-      (reset! thumb-state :incomplete)
-      (reset! thumb-state :complete))))
+(defn- action-icon-position-interpolation
+  [thumb-size]
+  {:in [0.9 1]
+   :out [thumb-size 0]})
 
-(defn- gesture-on-start
-  [event
-   x-pos
-   offset
-   thumb-state]
-  (let [x-translation (oops/oget event "translationX")]
-    (reanimated/set-shared-value x-pos x-translation)
-    (reset! thumb-state :dragging)
-    (reset! offset (reanimated/get-shared-value x-pos))))
+(defn interpolate-track
+  "Interpolate the position in the track
+  `x-pos`            Track animated value
+  `track-width`      Usable width of the track
+  `thumb-size`       Size of the thumb
+  `interpolation` `  :thumb-border-radius`/`:thumb-drop-position`/`:thumb-drop-scale`/`:thumb-drop-z-index`/..."
+  ([x-pos track-width thumb-size interpolation]
+   (let [interpolations {:track-cover (track-cover-interpolation track-width thumb-size)
+                         :track-clamp (track-clamp-interpolation track-width)
+                         :action-icon-position (action-icon-position-interpolation thumb-size)
+                         :arrow-icon-position (arrow-icon-position-interpolation thumb-size)}
 
-(defn drag-gesture
-  [{:keys [x-pos]}
-   disabled?
-   track-width
-   thumb-state
-   thumb-size]
-  (let [offset (react/state 0)
-        complete-threshold (* @track-width consts/threshold-frac)]
-    (-> (gesture/gesture-pan)
-        (gesture/enabled (not disabled?))
-        (gesture/min-distance 0)
-        (gesture/on-update
-         (fn [event]
-           (gesture-on-update event offset x-pos thumb-state track-width thumb-size)))
-        (gesture/on-end
-         (fn [event]
-           (gesture-on-end event offset complete-threshold thumb-state)))
-        (gesture/on-start
-         (fn [event] (gesture-on-start event x-pos offset thumb-state))))))
-
-;; Animation helpers
-(defn- animate-spring
-  [value to-value]
-  (reanimated/animate-shared-value-with-spring
-   value
-   to-value
-   {:mass      1
-    :damping   6
-    :stiffness 300}))
-
-(defn- animate-timing
-  [value to-position duration]
-  (reanimated/animate-shared-value-with-timing
-   value to-position duration :linear))
-
-(defn- animate-sequence [anim & seq-animations]
-  (reanimated/set-shared-value
-   anim
-   (apply reanimated/with-sequence seq-animations)))
+         interpolation-values (interpolation interpolations)
+         output (:out interpolation-values)
+         input (-> (:in interpolation-values)
+                   (track-interpolation-inputs track-width))]
+     (if (nil? interpolation-values)
+       x-pos
+       (reanimated/interpolate x-pos
+                               input
+                               output
+                               extrapolation)))))
 
 ;; Animations
-(defn init-animations [] {:x-pos (reanimated/use-shared-value 0)
-                          :thumb-border-radius (reanimated/use-shared-value 12)
-                          :track-scale (reanimated/use-shared-value 1)
-                          :track-border-radius (reanimated/use-shared-value 14)
-                          :track-container-padding (reanimated/use-shared-value 0)})
+(defn- animate-spring
+  [value to-value]
+  (reanimated/animate-shared-value-with-spring value
+                                               to-value
+                                               {:mass      1
+                                                :damping   30
+                                                :stiffness 400}))
 
-(defn animate-reset-thumb [{:keys [x-pos]}]
-  (animate-timing x-pos 0 200))
+(defn complete-animation
+  [sliding-complete?]
+  (js/setTimeout (fn [] (reset! sliding-complete? true)) 100))
 
-(def ^:private shrink-duration 300)
-(defn animate-shrink-track [{:keys [track-container-padding]} final-padding]
-  (animate-timing
-   track-container-padding final-padding shrink-duration))
+(defn reset-track-position
+  [x-pos]
+  (animate-spring x-pos 0))
 
-(defn animate-center-thumb [{:keys [x-pos]}]
-  (animate-timing x-pos 0 shrink-duration))
-
-(defn animate-round-track-thumb [{:keys [track-border-radius thumb-border-radius]}]
-  ((animate-timing track-border-radius 100 shrink-duration)
-   (animate-timing thumb-border-radius 100 shrink-duration)))
-
-(defn animate-scale-track [{:keys [:track-scale]}]
-  (animate-sequence track-scale
-                    (animate-timing track-scale 1.2 200)
-                    (animate-timing track-scale 0.8 200)
-                    (animate-spring track-scale 1)))
+;; Gestures
+(defn drag-gesture
+  [x-pos
+   disabled?
+   track-width
+   sliding-complete?]
+  (-> (gesture/gesture-pan)
+      (gesture/enabled (not @disabled?))
+      (gesture/min-distance 0)
+      (gesture/on-update (fn [event]
+                           (let [x-translation (oops/oget event "translationX")
+                                 clamped-x (clamp-value x-translation 0 track-width)
+                                 reached-end? (>= clamped-x track-width)]
+                             (reanimated/set-shared-value x-pos clamped-x)
+                             (when (and reached-end? (not @sliding-complete?))
+                               (reset! disabled? true)
+                               (complete-animation sliding-complete?)))))
+      (gesture/on-end (fn [event]
+                        (let [x-translation (oops/oget event "translationX")
+                              reached-end? (>= x-translation track-width)]
+                          (when (not reached-end?)
+                            (reset-track-position x-pos)))))))
 

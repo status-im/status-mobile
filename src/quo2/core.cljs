@@ -11,6 +11,7 @@
     quo2.components.buttons.button
     quo2.components.buttons.dynamic-button
     quo2.components.buttons.predictive-keyboard.view
+    quo2.components.buttons.slide-button.view
     quo2.components.colors.color-picker.view
     quo2.components.community.community-card-view
     quo2.components.community.community-list-view
@@ -125,6 +126,7 @@
 (def button quo2.components.buttons.button/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
+(def slide-button quo2.components.buttons.slide-button.view/slide-button)
 
 ;;;; CARDS
 (def small-option-card quo2.components.onboarding.small-option-card.view/small-option-card)

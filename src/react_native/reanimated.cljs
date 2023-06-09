@@ -103,6 +103,25 @@
     (clj->js output-range)
     (clj->js extrapolation))))
 
+(defn interpolate-color
+  "- `shared-value`  Animated value
+   - `input-range`   Range of the `shared-value`
+   - `output-range`  Color output range, in the `color-space` format
+   - ?`color-space`  `:rgb`/`:hsv` _(default)_ :rgb
+   - ?`options`      {`:gamma` 2.2 `:useCorrectedHSVInterpolation` true}"
+  ([shared-value input-range output-range]
+   (interpolate-color shared-value input-range output-range :rgb nil))
+  ([shared-value input-range output-range color-space options]
+   (worklets.core/interpolate-color-value
+    shared-value
+    (clj->js input-range)
+    (clj->js output-range)
+    (case color-space
+      :rgb "RGB"
+      :hsv "HSV"
+      "RGB")
+    (clj->js options))))
+
 (defn apply-animations-to-style
   [animations style]
   (use-animated-style
@@ -113,16 +132,16 @@
   [anim val duration easing]
   (set-shared-value anim
                     (with-timing val
-                                 (js-obj "duration" duration
-                                         "easing"   (get easings easing)))))
+                      (js-obj "duration" duration
+                              "easing"   (get easings easing)))))
 
 (defn animate-shared-value-with-delay
   [anim val duration easing delay]
   (set-shared-value anim
                     (with-delay delay
-                                (with-timing val
-                                             (js-obj "duration" duration
-                                                     "easing"   (get easings easing))))))
+                      (with-timing val
+                        (js-obj "duration" duration
+                                "easing"   (get easings easing))))))
 
 (defn animate-delay
   ([animation val delay]
@@ -130,18 +149,18 @@
   ([animation val delay duration]
    (set-shared-value animation
                      (with-delay delay
-                                 (with-timing val
-                                              (clj->js {:duration duration
-                                                        :easing   (default-easing)}))))))
+                       (with-timing val
+                         (clj->js {:duration duration
+                                   :easing   (default-easing)}))))))
 
 (defn animate-shared-value-with-repeat
   [anim val duration easing number-of-repetitions reverse?]
   (set-shared-value anim
                     (with-repeat (with-timing val
-                                              (js-obj "duration" duration
-                                                      "easing"   (get easings easing)))
-                                 number-of-repetitions
-                                 reverse?)))
+                                   (js-obj "duration" duration
+                                           "easing"   (get easings easing)))
+                      number-of-repetitions
+                      reverse?)))
 
 (defn animate-shared-value-with-delay-repeat
   ([anim val duration easing delay number-of-repetitions]
@@ -149,21 +168,21 @@
   ([anim val duration easing delay number-of-repetitions reverse?]
    (set-shared-value anim
                      (with-delay delay
-                                 (with-repeat
-                                  (with-timing val
-                                               #js
-                                                {:duration duration
-                                                 :easing   (get easings easing)})
-                                  number-of-repetitions
-                                  reverse?)))))
+                       (with-repeat
+                         (with-timing val
+                           #js
+                            {:duration duration
+                             :easing   (get easings easing)})
+                         number-of-repetitions
+                         reverse?)))))
 
 (defn animate-shared-value-with-spring
   [anim val {:keys [mass stiffness damping]}]
   (set-shared-value anim
                     (with-spring val
-                                 (js-obj "mass"      mass
-                                         "damping"   damping
-                                         "stiffness" stiffness))))
+                      (js-obj "mass"      mass
+                              "damping"   damping
+                              "stiffness" stiffness))))
 
 (defn animate-shared-value-with-decay
   [anim velocity clamp]
@@ -177,11 +196,11 @@
   ([animation value duration]
    (set-shared-value animation
                      (with-timing value
-                                  (clj->js {:duration duration
-                                            :easing   (default-easing)})))))
+                       (clj->js {:duration duration
+                                 :easing   (default-easing)})))))
 
 (defn with-timing-duration
   [val duration]
   (with-timing val
-               (clj->js {:duration duration
-                         :easing   (in-out (.-quad ^js Easing))})))
+    (clj->js {:duration duration
+              :easing   (in-out (.-quad ^js Easing))})))

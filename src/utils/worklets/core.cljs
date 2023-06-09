@@ -13,6 +13,19 @@
                      (clj->js output-range)
                      (clj->js extrapolation)))
 
+(defn interpolate-color-value
+  [shared-value
+   input-range
+   output-range
+   color-space
+   options]
+  (.interpolateColorValue ^js core-js
+                          shared-value
+                          (clj->js input-range)
+                          (clj->js output-range)
+                          color-space
+                          (clj->js options)))
+
 (defn apply-animations-to-style
   [animations style]
   (.applyAnimationsToStyle ^js core-js (clj->js animations) (clj->js style)))

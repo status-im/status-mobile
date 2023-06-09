@@ -1,4 +1,4 @@
-import { useDerivedValue, interpolate } from 'react-native-reanimated';
+import { useDerivedValue, interpolate, interpolateColor } from 'react-native-reanimated';
 
 // Generic Worklets
 
@@ -71,6 +71,15 @@ export function interpolateValue(sharedValue, inputRange, outputRange, extrapola
     function () {
       'worklet'
       return interpolate(sharedValue.value, inputRange, outputRange, extrapolation);
+    }
+  );
+}
+
+export function interpolateColorValue(sharedValue, inputRange, outputRange, space, options) {
+  return useDerivedValue(
+    function () {
+      'worklet'
+      return interpolateColor(sharedValue.value, inputRange, outputRange, space, options);
     }
   );
 }
