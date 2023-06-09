@@ -86,6 +86,5 @@
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
        {:active-opacity 1
-        :on-press       (fn [] (rf/dispatch [:show-bottom-sheet {:content [rn/view [rn/text "yoo"]]}]))
         :style          style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))

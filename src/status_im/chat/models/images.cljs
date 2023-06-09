@@ -22,13 +22,13 @@
                          :path   temp-image-url}))
       (.fetch "GET" base64-uri)
       (.then #(on-success (.path %)))
-      (.catch #(log/error (str "could not save image")))))
+      (.catch #(log/error "could not save image"))))
 
 (defn share-image
   [uri]
   (download-image-http uri
                        (fn [downloaded-url]
-                         (share/open {:url (str (if platform/android? "file://" "") downloaded-url)}
+                         (share/open {:url (str (when platform/android? "file://") downloaded-url)}
                                      #(fs/unlink downloaded-url)
                                      #(fs/unlink downloaded-url)))))
 

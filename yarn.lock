@@ -11388,6 +11388,7 @@ yargs@^17.3.1:
     string-width "^4.2.3"
     y18n "^5.0.5"
     yargs-parser "^21.1.1"
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 yocto-queue@^0.1.0:
@@ -11396,3 +11397,5 @@ yocto-queue@^0.1.0:
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 =======
 >>>>>>> 570806a46 (revert)
+=======
+>>>>>>> 7905b10d9 (refactor)
