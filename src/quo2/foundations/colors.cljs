@@ -186,44 +186,111 @@
 
 ;; Colors for customizing profiles and communities themes
 (def customization
-  {:primary   {50 primary-50 ;; User can also use primary color as customisation color
-               60 primary-60}
-   :purple    {50 "#7140FD"
-               60 "#5A33CA"}
-   :indigo    {50 "#496289"
-               60 "#3D5273"}
-   :turquoise {50 "#2A799B"
-               60 "#22617C"}
-   :blue      {50 "#2A4AF5"
-               60 "#223BC4"}
-   :green     {50 "#5BCC95"
-               60 "#4CAB7D"}
-   :yellow    {50 "#F6B03C"
-               60 "#C58D30"}
-   :orange    {50 "#FF7D46"
-               60 "#CC6438"}
-   :red       {50 "#F46666"
-               60 "#CD5656"}
-   :pink      {50 "#F66F8F"
-               60 "#C55972"}
-   :brown     {50 "#99604D"
-               60 "#805141"}
-   :sky       {50 "#1992D7"
-               60 "#1475AC"}
-   :army      {50 "#216266"
-               60 "#1A4E52"}
-   :magenta   {50 "#EC266C"
-               60 "#BD1E56"}
-   :copper    {50 "#CB6256"
-               60 "#A24E45"}
-   :camel     {50 "#C78F67"
-               60 "#9F7252"}
-   :yin       {50 "#09101C"
-               60 "#1D232E"}
-   :yang      {50 "#FFFFFF"
-               60 "#EBEBEB"}
-   :beige     {50 "#CAAE93"
-               60 "#AA927C"}})
+  {:community-color {:main-color {50 "#7140FD"
+                                  60 "#5A33CA"}
+                     }
+
+   :primary         {50 primary-50 ;; User can also use primary color as customisation color
+                     60 primary-60}
+   :purple          {50 "#7140FD"
+                     60 "#5A33CA"}
+   :indigo          {50 "#496289"
+                     60 "#3D5273"}
+   :turquoise       {50 "#2A799B"
+                     60 "#22617C"}
+   :blue            {50 "#2A4AF5"
+                     60 "#223BC4"}
+   :green           {50 "#5BCC95"
+                     60 "#4CAB7D"}
+   :yellow          {50 "#F6B03C"
+                     60 "#C58D30"}
+   :orange          {50 "#FF7D46"
+                     60 "#CC6438"}
+   :red             {50 "#F46666"
+                     60 "#CD5656"}
+   :pink            {50 "#F66F8F"
+                     60 "#C55972"}
+   :brown           {50 "#99604D"
+                     60 "#805141"}
+   :sky             {50 "#1992D7"
+                     60 "#1475AC"}
+   :army            {50 "#216266"
+                     60 "#1A4E52"}
+   :magenta         {50 "#EC266C"
+                     60 "#BD1E56"}
+   :copper          {50 "#CB6256"
+                     60 "#A24E45"}
+   :camel           {50 "#C78F67"
+                     60 "#9F7252"}
+   :yin             {50 "#09101C"
+                     60 "#1D232E"}
+   :yang            {50 "#FFFFFF"
+                     60 "#EBEBEB"}
+   :beige           {50 "#CAAE93"
+                     60 "#AA927C"}})
+
+
+;; TODO: rename
+(def customization-colors-map
+  {:primary   {:primary-color   {:light primary-50 :dark primary-60}
+               :secondary-color nil}
+   :purple    {:primary-color   {:light "#7140FD" :dark "#5A33CA"}
+               :secondary-color nil}
+   :indigo    {:primary-color   {:light "#496289" :dark "#3D5273"}
+               :secondary-color nil}
+   :turquoise {:primary-color   {:light "#2A799B" :dark "#22617C"}
+               :secondary-color nil}
+   :blue      {:primary-color   {:light "#2A4AF5" :dark "#223BC4"}
+               :secondary-color nil}
+   :green     {:primary-color   {:light "#5BCC95" :dark "#4CAB7D"}
+               :secondary-color nil}
+   :yellow    {:primary-color   {:light "#F6B03C" :dark "#C58D30"}
+               :secondary-color nil}
+   :orange    {:primary-color   {:light "#FF7D46" :dark "#CC6438"}
+               :secondary-color nil}
+   :red       {:primary-color   {:light "#F46666" :dark "#CD5656"}
+               :secondary-color nil}
+   :pink      {:primary-color   {:light "#F66F8F" :dark "#C55972"}
+               :secondary-color nil}
+   :brown     {:primary-color   {:light "#99604D" :dark "#805141"}
+               :secondary-color nil}
+   :sky       {:primary-color   {:light "#1992D7" :dark "#1475AC"}
+               :secondary-color nil}
+   :army      {:primary-color   {:light "#216266" :dark "#1A4E52"}
+               :secondary-color nil}
+   :magenta   {:primary-color   {:light "#EC266C" :dark "#BD1E56"}
+               :secondary-color nil}
+   :copper    {:primary-color   {:light "#CB6256" :dark "#A24E45"}
+               :secondary-color nil}
+   :camel     {:primary-color   {:light "#C78F67" :dark "#9F7252"}
+               :secondary-color nil}
+   :beige     {:primary-color   {:light "#CAAE93" :dark "#AA927C"}
+               :secondary-color nil}
+   ;;
+   :yin-yang  {:primary-color   {:light "#09101C" :dark "#EBEBEB"}
+               :secondary-color {:light "#FFFFFF" :dark neutral-100}}
+   ;;
+   #_#_:purple    {:light {:main "#7140FD" :secondary nil}
+               :dark  {:main "#5A33CA" :secondary nil}}
+
+   #_#_:yin-yang  {:light {:main "#09101C"
+                       :dark "#1D232E"}
+               :dark  {:main "#FFFFFF"
+                       :dark "#EBEBEB"}}
+
+   })
+
+(defn get-color [color-kw theme]
+  (get-in customization-colors-map [color-kw :primary-color theme]))
+
+
+(defn get-secondary-color [color-kw theme default-value]
+  (if-let [secondary-color (get-in customization-colors-map
+                                   [color-kw
+                                    :secondary-color
+                                    theme])]
+    secondary-color
+    default-value))
 
 (def colors-map
   (merge {:danger  {50 danger-50

@@ -26,9 +26,8 @@
    value]
   (let [type       (or type :default)
         text-color (or override-text-color
-                       (if (or
-                            (= (theme/get-theme) :dark)
-                            (= type :default))
+                       (if (or (= (theme/get-theme) :dark)
+                               (= type :default))
                          colors/white
                          colors/neutral-100))
         value      (utils.number/parse-int value)
@@ -52,16 +51,20 @@
                                     style)
                              (= type :outline)
                              (merge {:border-width 1
-                                     :border-color (get-color type)})
+                                     :border-color (colors/get-color :yin-yang (theme/get-theme))})
 
                              (not= type :outline)
                              (assoc :background-color
                                     (or override-bg-color
-                                        (get-color type)))
+                                        (colors/get-color :yin-yang (theme/get-theme))))
 
                              (> value max-value)
                              (assoc :padding-left 0.5))}
      [text/text
       {:weight :medium
        :size   :label
-       :style  {:color text-color}} label]]))
+       :style  {:color (colors/get-secondary-color
+                        :yin-yang
+                        (theme/get-theme)
+                        colors/white)}}
+      label]]))
