@@ -103,7 +103,7 @@
              (and completed-pairing? receiver?)
              {:dispatch [:multiaccounts.login/local-paired-user]}
 
-             error-on-pairing?
+             (and error-on-pairing? (some? error))
              {:dispatch [:toasts/upsert
                          {:icon       :i/alert
                           :icon-color colors/danger-50
