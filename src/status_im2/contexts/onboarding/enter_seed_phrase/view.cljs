@@ -159,7 +159,6 @@
   []
   (let [{navigation-bar-top :top} (safe-area/get-insets)]
     [rn/view {:style style/full-layout}
-     [background/view true]
      [rn/keyboard-avoiding-view {:style style/page-container}
       [navigation-bar/navigation-bar {:top navigation-bar-top}]
       [screen]]]))

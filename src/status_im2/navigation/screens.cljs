@@ -60,6 +60,16 @@
                                  :to       (* (:width (rn/get-window)) -1)
                                  :duration constants/onboarding-modal-animation-duration}}})
 
+(def onboarding-push-pop-animations
+  {:push    {:content
+             {:translationX {:from     (* (:width (rn/get-window)) 1)
+                             :to       0
+                             :duration constants/onboarding-modal-animation-duration}}}
+   :pop {:content
+         {:translationX {:from     0
+                         :to       (* (:width (rn/get-window)) -1)
+                         :duration constants/onboarding-modal-animation-duration}}}})
+
 (defn screens
   []
   (concat
@@ -133,42 +143,50 @@
 
     {:name      :new-to-status
      :options   {:layout                 options/onboarding-layout
-                 :animations             new-to-status-modal-animations
+                 :animations             (merge
+                                          new-to-status-modal-animations
+                                          onboarding-push-pop-animations)
                  :modalPresentationStyle :overCurrentContext}
      :component new-to-status/new-to-status}
 
     {:name      :create-profile
      :options   {:layout     options/onboarding-layout
-                 :popGesture false}
+                 :popGesture false
+                 :animations onboarding-push-pop-animations}
      :component create-profile/create-profile}
 
     {:name      :create-profile-password
      :options   {:insets     {:top false}
                  :layout     options/onboarding-layout
-                 :popGesture false}
+                 :popGesture false
+                 :animations onboarding-push-pop-animations}
      :component create-password/create-password}
 
     {:name      :enable-biometrics
      :options   {:layout     options/onboarding-layout
-                 :popGesture false}
+                 :popGesture false
+                 :animations onboarding-push-pop-animations}
      :component enable-biometrics/enable-biometrics}
 
     {:name      :generating-keys
      :options   {:layout             options/onboarding-layout
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
-                                      :popStackOnPress     false}}
+                                      :popStackOnPress     false}
+                 :animations onboarding-push-pop-animations}
      :component generating-keys/generating-keys}
 
     {:name      :enter-seed-phrase
-     :options   {:layout options/onboarding-layout}
+     :options   {:layout options/onboarding-layout
+                 :animations onboarding-push-pop-animations}
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
      :options   {:layout             options/onboarding-layout
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
-                                      :popStackOnPress     false}}
+                                      :popStackOnPress     false}
+                 :animations onboarding-push-pop-animations}
      :component enable-notifications/enable-notifications}
 
     {:name      :identifiers

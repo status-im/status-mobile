@@ -159,7 +159,6 @@
   (let [{:keys [top]}           (safe-area/get-insets)
         onboarding-profile-data (rf/sub [:onboarding-2/profile])]
     [:<>
-     [background/view true]
      [:f> f-page
       {:navigation-bar-top      top
        :onboarding-profile-data onboarding-profile-data}]]))

@@ -23,5 +23,4 @@
   []
   (let [{:keys [top]} (safe-area/get-insets)]
     [rn/view {:style {:flex 1}}
-     [background/view true]
      [page {:navigation-bar-top top}]]))

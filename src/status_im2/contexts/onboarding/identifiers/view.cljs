@@ -35,7 +35,6 @@
        (carousel.animation/cleanup-animation progress paused))
      [])
     [:<>
-     [background/view true]
      [rn/view {:style style/page-container}
       [carousel/view
        {:animate?    true

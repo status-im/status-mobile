@@ -236,5 +236,4 @@
 (defn create-password
   []
   [:<>
-   [background/view true]
    [:f> f-create-password]])
