@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]
@@ -131,7 +132,7 @@
                        :background-y  background-y}
         props         (utils/init-props)
         state         (utils/init-state)]
-    [rn/view
+    [rn/view (when platform/ios? {:style {:z-index 1}})
      [reanimated/view {:style (style/background opacity background-y window-height)}]
      [sub-view/blur-view blur-height (:focused? state)]
      [:f> sheet-component extra-params props state]]))
