@@ -76,10 +76,10 @@
    :snt  (js/require "../resources/images/tokens/mainnet/SNT.png")})
 
 (def parallax-video
-  {:biometrics    [(js/require "../resources/videos2/biometrics_layer_01_copy.mp4")
-                   (js/require "../resources/videos2/Biometrics_Layer_02_1_copy.mp4")
-                   (js/require "../resources/videos2/Biometrics_Layer_03_1_copy.mp4")
-                   (js/require "../resources/videos2/Biometrics_Layer_04_1_copy.mp4")]
+  {:biometrics    [(js/require "../resources/videos2/Biometrics_Layer_01_FullRes_1")
+                   (js/require "../resources/videos2/Biometrics_Layer_02_FullRes_1")
+                   (js/require "../resources/videos2/Biometrics_Layer_03_FullRes_1")
+                   (js/require "../resources/videos2/Biometrics_Layer_04_FullRes_1")]
 
    :biometrics1    [(js/require "../resources/videos2/biometrics_layer_01_copy.mp4")
                     (js/require "../resources/videos2/Biometrics_Layer_02_2_copy.mp4")
