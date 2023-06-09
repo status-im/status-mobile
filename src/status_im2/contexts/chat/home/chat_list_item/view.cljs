@@ -177,31 +177,22 @@
          :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
 
 (defn name-view
-  [display-name {:keys [ens-verified added?] :as contact} timestamp show-unread-badge?]
-  (let [show-verified-or-contact-icon? (or ens-verified added?)
-        name-text-max-width            (cond-> (if show-unread-badge? 70 71.5)
-
-                                         ;; Adding the below percent for group and
-                                         ;; not-mutual contact chats to take the
-                                         ;; space of the icon
-                                         (nil? show-verified-or-contact-icon?)
-                                         (+ (if show-unread-badge? 4.5 5.3)))]
-    [rn/view
-     {:style {:flex           1
-              :flex-direction :row}}
-     [quo/text
-      {:weight              :semi-bold
-       :accessibility-label :chat-name-text
-       :style               {:max-width (str name-text-max-width "%")}
-       :number-of-lines     1
-       :ellipsize-mode      :tail}
-      display-name]
-     (when show-verified-or-contact-icon?
-       [verified-or-contact-icon contact])
-     [quo/text
-      {:size  :label
-       :style (style/timestamp)}
-      (datetime/to-short-str timestamp)]]))
+  [display-name contact timestamp]
+  [rn/view
+   {:style {:flex           1
+            :flex-direction :row}}
+   [quo/text
+    {:weight              :semi-bold
+     :accessibility-label :chat-name-text
+     :style               {:flex-shrink 1}
+     :number-of-lines     1
+     :ellipsize-mode      :tail}
+    display-name]
+   [verified-or-contact-icon contact]
+   [quo/text
+    {:size  :label
+     :style (style/timestamp)}
+    (datetime/to-short-str timestamp)]])
 
 (defn avatar-view
   [{:keys [contact chat-id full-name color]}]
@@ -242,7 +233,7 @@
       {:style {:flex         1
                :margin-left  8
                :margin-right (if show-unread-badge? 36 0)}}
-      [name-view display-name contact timestamp show-unread-badge?]
+      [name-view display-name contact timestamp]
       [last-message-preview group-chat last-message]]
      (when show-unread-badge?
        [quo/info-count
