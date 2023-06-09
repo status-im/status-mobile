@@ -81,10 +81,10 @@
            {:style     (reanimated/apply-animations-to-style
                         {:transform [{:translateY translate-y}]}
                         (style/sheet insets
-                                      window-height
-                                      override-theme
-                                      padding-bottom-override
-                                      shell?))
+                                     window-height
+                                     override-theme
+                                     padding-bottom-override
+                                     shell?))
             :on-layout #(reset! sheet-height (oops/oget % "nativeEvent" "layout" "height"))}
            (when shell? [blur/ios-view {:style style/shell-bg}])
 

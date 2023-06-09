@@ -1,7 +1,6 @@
 (ns status-im2.contexts.contacts.drawers.nickname-drawer.style
   (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [status-im2.constants :as constants]))
+            [react-native.platform :as platform]))
 
 (defn context-container
   []
