@@ -1,8 +1,8 @@
 (ns quo2.components.settings.reorder-item.items.item
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [quo2.components.settings.reorder-item.style :as style]
             [quo2.components.markdown.text :as text]
-            [quo2.components.icon :as quo2-icons]
+            [quo2.components.icon :as icon]
             [quo2.foundations.colors :as colors]))
 
 (defn view
@@ -12,13 +12,12 @@
      image
      image-size
      right-text
-     right-icon]} drag]
+     right-icon
+     on-press]}]
   [rn/touchable-opacity
-   {:on-long-press       drag
-    :delay-long-press    100
-    :accessibility-label :chat-drag-handle
-    :style               (merge (style/item-container) (when subtitle style/item-container-extended))}
-   [quo2-icons/icon :main-icons/drag
+   {:on-press on-press
+    :style    (merge (style/item-container) (when subtitle style/item-container-extended))}
+   [icon/icon :main-icons/drag
     {:color  (colors/theme-colors
               colors/neutral-50
               colors/neutral-40)
@@ -46,5 +45,5 @@
      (when right-text
        [text/text {:style style/right-text} right-text])
      (when right-icon
-       [rn/view {:style style/right-icon-container} [quo2-icons/icon right-icon (style/right-icon)]])]]
-   [quo2-icons/icon :tiny-icons/chevron-right (style/chevron)]])
+       [rn/view {:style style/right-icon-container} [icon/icon right-icon (style/right-icon)]])]]
+   [icon/icon :tiny-icons/chevron-right (style/chevron)]])

@@ -1,17 +1,9 @@
 (ns quo2.components.settings.reorder-item.style
   (:require [quo2.foundations.colors :as colors]))
 
-(defn container
-  []
-  {:padding-horizontal 36
-   :background-color   (colors/theme-colors
-                        colors/neutral-10
-                        colors/neutral-100)})
-
 (defn item-container
   []
-  {:flex               1
-   :flex-direction     :row
+  {:flex-direction     :row
    :align-items        :center
    :padding-horizontal 10
    :border-radius      16
@@ -24,14 +16,14 @@
 (def item-container-extended
   {:height 50})
 
-
 (def body-container
   {:flex           1
    :margin-left    12
    :flex-direction :row
    :align-items    :center})
 
-(def image-container {:margin-right 8})
+(def image-container
+  {:margin-right 8})
 
 (defn image
   [size]

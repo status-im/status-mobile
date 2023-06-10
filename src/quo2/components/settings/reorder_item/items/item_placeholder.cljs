@@ -4,14 +4,12 @@
             [quo2.components.settings.reorder-item.style :as style]))
 
 (defn view
-  [label drag]
-  [rn/view
-   {:on-long-press       drag
-    :delay-long-press    100
-    :accessibility-label :reorder-placerholder-drag-handle
-    :style               (style/placeholder-container)}
-   [text/text
-    {:style  (style/placeholder-text)
-     :weight :regular}
-    label]
-  ])
+  [item]
+  (let [label (:label item)]
+    [rn/view
+     {:accessibility-label :reorder-placerholder-drag-handle
+      :style               (style/placeholder-container)}
+     [text/text
+      {:style  (style/placeholder-text)
+       :weight :regular}
+      label]]))
