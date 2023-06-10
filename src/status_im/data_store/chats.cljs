@@ -65,7 +65,8 @@
                         :lastMessage            :last-message
                         :lastClockValue         :last-clock-value
                         :invitationAdmin        :invitation-admin
-                        :profile                :profile-public-key})
+                        :profile                :profile-public-key
+                        :muteTill               :muted-till})
       rpc->type
       unmarshal-members
       (update :last-message #(when % (messages/<-rpc %)))
@@ -73,7 +74,6 @@
 
 (defn <-rpc-js
   [^js chat]
-  (prn (.-muteTill chat) "MEGA")
   (-> {:name                    (.-name chat)
        :description             (.-description chat)
        :color                   (.-color chat)

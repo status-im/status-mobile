@@ -178,25 +178,21 @@
          :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
 
 (defn name-view
-  [display-name contact timestamp]
-  [rn/view
-   {:style {:flex           1
-            :flex-direction :row}}
+  [display-name contact timestamp muted?]
+  [rn/view {:style {:flex-direction :row}}
    [quo/text
     {:weight              :semi-bold
      :accessibility-label :chat-name-text
-     :style               {:flex-shrink 1}
-     :number-of-lines     1
-     :ellipsize-mode      :tail}
+     :style               {:color (when muted? colors/neutral-50)}}
     display-name]
    [verified-or-contact-icon contact]
    [quo/text
     {:size  :label
-     :style (style/timestamp)}
+     :style (style/timestamp muted?)}
     (datetime/to-short-str timestamp)]])
 
 (defn avatar-view
-  [{:keys [contact chat-id full-name color]}]
+  [{:keys [contact chat-id full-name color muted?]}]
   (if contact ; `contact` is passed when it's not a group chat
     (let [online?    (rf/sub [:visibility-status-updates/online? chat-id])
           photo-path (rf/sub [:chats/photo-path chat-id])
@@ -205,7 +201,8 @@
        {:full-name full-name
         :size      :small
         :online?   online?
-        image-key  photo-path}])
+        image-key  photo-path
+        :muted?    muted?}])
     [quo/group-avatar
      {:color color
       :size  :medium}]))
@@ -229,13 +226,11 @@
       {:contact   contact
        :chat-id   chat-id
        :full-name display-name
-       :color     color}]
-     [rn/view
-      {:style {:flex         1
-               :margin-left  8
-               :margin-right (if show-unread-badge? 36 0)}}
-      [name-view display-name contact timestamp]
-      [last-message-preview group-chat last-message]]
+       :color     color
+       :muted?    muted}]
+     [rn/view {:style {:margin-left 8}}
+      [name-view display-name contact timestamp muted]
+      [last-message-preview group-chat last-message muted]]
      (if-not muted
        (when show-unread-badge?
          [quo/info-count

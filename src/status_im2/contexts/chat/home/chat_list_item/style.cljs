@@ -23,11 +23,13 @@
 
 (def muted-icon
   {:position :absolute
-   :right    26
+   :right    19
    :top      16})
 
 (defn timestamp
-  []
-  {:color       (colors/theme-colors colors/neutral-50 colors/neutral-40)
+  [muted?]
+  {:color       (or (when muted?
+                      colors/neutral-50)
+                    (colors/theme-colors colors/neutral-50 colors/neutral-40))
    :margin-top  3
    :margin-left 8})
