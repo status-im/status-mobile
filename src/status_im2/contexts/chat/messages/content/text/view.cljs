@@ -75,15 +75,19 @@
 
 
 (defn render-block
-  [blocks {:keys [type literal children]} chat-id]
+  [blocks {:keys [type literal children]} chat-id style-override]
   (case (keyword type)
     :paragraph
     (conj blocks
-          (reduce
-           (fn [acc e]
-             (render-inline acc e chat-id))
-           [quo/text {:size :paragraph-1}]
-           children))
+          [rn/view {:style style/paragraph}
+           (reduce
+            (fn [acc e]
+              (render-inline acc e chat-id))
+            [quo/text
+             {:style {:size  :paragraph-1
+                      :color (when (seq style-override)
+                               colors/white)}}]
+            children)])
 
     :edited-block
     (conj blocks
@@ -120,11 +124,15 @@
       (conj parsed-text {:type :edited-block :children [edited-tag]}))))
 
 (defn render-parsed-text
-  [{:keys [content chat-id edited-at]}]
+  [{:keys [content chat-id edited-at style-override]}]
   ^{:key (:parsed-text content)}
+<<<<<<< HEAD
   [rn/view
+=======
+  [rn/view {:style (or style-override style/parsed-text-block)}
+>>>>>>> d0d579374 (Fix mention in chat)
    (reduce (fn [acc e]
-             (render-block acc e chat-id))
+             (render-block acc e chat-id style-override))
            [:<>]
            (cond-> (:parsed-text content)
              edited-at

@@ -7,7 +7,7 @@
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.constants :as c]
-    [status-im2.constants :as constants]))
+    [status-im2.contexts.chat.messages.content.text.view :as message-view]))
 
 (defn get-small-item-layout
   [_ index]
@@ -50,15 +50,17 @@
 
 (defn bottom-view
   [messages index scroll-index insets animations derived item-width props]
-  (let [text               (get-in (first messages) [:content :text])
-        padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
+  (let [{:keys [chat-id content]} (first messages)
+        padding-horizontal        (- (/ item-width 2) (/ c/focused-image-size 2))]
     [reanimated/linear-gradient
      {:colors [:black :transparent]
       :start  {:x 0 :y 1}
       :end    {:x 0 :y 0}
       :style  (style/gradient-container insets animations derived)}
-     (when constants/image-description-in-lightbox?
-       [rn/text {:style style/text-style} text])
+     [message-view/render-parsed-text
+      {:content        content
+       :chat-id        chat-id
+       :style-override style/text-style}]
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)
        :key-fn                            :message-id
