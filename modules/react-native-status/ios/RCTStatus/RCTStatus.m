@@ -304,6 +304,14 @@ RCT_EXPORT_METHOD(hashMessage:(NSString *)message
     callback(@[result]);
 }
 
+RCT_EXPORT_METHOD(localPairingPreflightOutboundCheck:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"LocalPairingPreflightOutboundCheck() method called");
+#endif
+    NSString *result = StatusgoLocalPairingPreflightOutboundCheck();
+    callback(@[result]);
+}
+
 RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)configJSON
                   callback:(RCTResponseSenderBlock)callback) {
 

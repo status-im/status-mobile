@@ -22,3 +22,16 @@
    :right       0
    :left        0
    :padding-top top})
+
+(def header-height 245)
+
+(defn header-space
+  [top]
+  {:height (+ header-height top)})
+
+(defn empty-content-container
+  [top]
+  {:flex            1
+   :margin-top      (+ header-height top)
+   :margin-bottom   44
+   :justify-content :center})

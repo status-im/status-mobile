@@ -15,13 +15,12 @@ from sauceclient import SauceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.wait import WebDriverWait
-from urllib3.exceptions import MaxRetryError
+from urllib3.exceptions import MaxRetryError, ProtocolError
 
 from support.api.network_api import NetworkApi
-from support.github_report import GithubHtmlReport
 from tests import test_suite_data, start_threads, appium_container, pytest_config_global
 from tests import transl
-from tests.conftest import sauce_username, sauce_access_key, apibase
+from tests.conftest import sauce_username, sauce_access_key, apibase, github_report
 
 executor_sauce_lab = 'https://%s:%s@ondemand.%s:443/wd/hub' % (sauce_username, sauce_access_key, apibase)
 
@@ -127,7 +126,6 @@ class AbstractTestCase:
         return pytest_config_global['env']
 
     network_api = NetworkApi()
-    github_report = GithubHtmlReport()
 
     @staticmethod
     def get_alert_text(driver):
@@ -143,7 +141,7 @@ class AbstractTestCase:
                 test_suite_data.current_test.testruns[-1].error = "%s; also Unexpected Alert is shown: '%s'" % (
                     test_suite_data.current_test.testruns[-1].error, alert_text
                 )
-        except RemoteDisconnected:
+        except (RemoteDisconnected, ProtocolError):
             test_suite_data.current_test.testruns[-1].error = "%s; \n RemoteDisconnected" % \
                                                               test_suite_data.current_test.testruns[-1].error
 
@@ -215,7 +213,7 @@ class SingleDeviceTestCase(AbstractTestCase):
         except (WebDriverException, AttributeError):
             pass
         finally:
-            self.github_report.save_test(test_suite_data.current_test,
+            github_report.save_test(test_suite_data.current_test,
                                          {'%s_geth.log' % test_suite_data.current_test.name: geth_content})
 
 
@@ -277,7 +275,7 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
             except (WebDriverException, AttributeError):
                 pass
         geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
-        self.github_report.save_test(test_suite_data.current_test, geth)
+        github_report.save_test(test_suite_data.current_test, geth)
 
     @classmethod
     def teardown_class(cls):
@@ -302,10 +300,10 @@ def create_shared_drivers(quantity):
         print('SC Executor: %s' % executor_sauce_lab)
         try:
             drivers = loop.run_until_complete(start_threads(quantity,
-                                                        Driver,
-                                                        drivers,
-                                                        executor_sauce_lab,
-                                                        update_capabilities_sauce_lab(capabilities)))
+                                                            Driver,
+                                                            drivers,
+                                                            executor_sauce_lab,
+                                                            update_capabilities_sauce_lab(capabilities)))
             for i in range(quantity):
                 test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
                 drivers[i].implicitly_wait(implicit_wait)
@@ -377,7 +375,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
             finally:
                 try:
                     geth = {geth_names[i]: geth_contents[i] for i in range(len(geth_names))}
-                    test_suite_data.current_test.geth_paths = self.github_report.save_geth(geth)
+                    test_suite_data.current_test.geth_paths = github_report.save_geth(geth)
                 except IndexError:
                     pass
 
@@ -419,7 +417,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
         if cls.loop:
             cls.loop.close()
         for test in test_suite_data.tests:
-            cls.github_report.save_test(test)
+            github_report.save_test(test)
 
 
 if pytest_config_global['env'] == 'local':
@@ -436,4 +434,4 @@ class NoDeviceTestCase(AbstractTestCase):
         pass
 
     def teardown_method(self, method):
-        self.github_report.save_test(test_suite_data.current_test)
+        github_report.save_test(test_suite_data.current_test)

@@ -55,10 +55,11 @@
       (update :link-previews #(map <-link-preview-rpc %))
       (update :quoted-message
               set/rename-keys
-              {:parsedText   :parsed-text
-               :deleted      :deleted?
-               :deletedForMe :deleted-for-me?
-               :communityId  :community-id})
+              {:parsedText       :parsed-text
+               :deleted          :deleted?
+               :deletedForMe     :deleted-for-me?
+               :communityId      :community-id
+               :albumImagesCount :album-images-count})
       (update :outgoing-status keyword)
       (update :command-parameters
               set/rename-keys

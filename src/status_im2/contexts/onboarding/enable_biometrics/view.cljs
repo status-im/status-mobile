@@ -12,7 +12,8 @@
 (defn page-title
   []
   [quo/title
-   {:title                        (i18n/label :t/enable-biometrics)
+   {:container-style              {:margin-top 12}
+    :title                        (i18n/label :t/enable-biometrics)
     :title-accessibility-label    :enable-biometrics-title
     :subtitle                     (i18n/label :t/use-biometrics)
     :subtitle-accessibility-label :enable-biometrics-sub-title}])

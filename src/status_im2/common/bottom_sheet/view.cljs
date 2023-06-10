@@ -3,11 +3,12 @@
             [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [react-native.reanimated :as reanimated]
-            [status-im2.common.bottom-sheet.styles :as styles]
+            [status-im2.common.bottom-sheet.style :as style]
             [react-native.gesture :as gesture]
             [oops.core :as oops]
             [react-native.hooks :as hooks]
-            [react-native.blur :as blur]))
+            [react-native.blur :as blur]
+            [reagent.core :as reagent]))
 
 (def duration 450)
 (def timing-options #js {:duration duration})
@@ -51,44 +52,48 @@
            (show translate-y bg-opacity)
            (hide translate-y bg-opacity window-height on-close))))))
 
-(defn view
-  [{:keys [hide? insets]}
-   {:keys [content override-theme selected-item padding-bottom-override on-close shell?]}]
-  (let [{window-height :height} (rn/get-window)
-        bg-opacity              (reanimated/use-shared-value 0)
-        translate-y             (reanimated/use-shared-value window-height)
-        sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height on-close)]
-    (rn/use-effect
-     #(if hide? (hide translate-y bg-opacity window-height on-close) (show translate-y bg-opacity))
-     [hide?])
-    (hooks/use-back-handler #(do (when (fn? on-close)
-                                   (on-close))
-                                 (rf/dispatch [:hide-bottom-sheet])
-                                 true))
-    [rn/view {:flex 1}
-     ;; backdrop
-     [rn/touchable-without-feedback {:on-press #(rf/dispatch [:hide-bottom-sheet])}
-      [reanimated/view
-       {:style (reanimated/apply-animations-to-style
-                {:opacity bg-opacity}
-                {:flex 1 :background-color colors/neutral-100-opa-70})}]]
-     ;; sheet
-     [gesture/gesture-detector {:gesture sheet-gesture}
-      [reanimated/view
-       {:style (reanimated/apply-animations-to-style
-                {:transform [{:translateY translate-y}]}
-                (styles/sheet insets window-height override-theme padding-bottom-override shell?))}
+(defn f-view
+  [_ _]
+  (let [sheet-height (reagent/atom 0)]
+    (fn [{:keys [hide? insets]}
+         {:keys [content override-theme selected-item padding-bottom-override on-close shell?]}]
+      (let [{window-height :height} (rn/get-window)
+            bg-opacity              (reanimated/use-shared-value 0)
+            translate-y             (reanimated/use-shared-value window-height)
+            sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height on-close)]
+        (rn/use-effect
+         #(if hide? (hide translate-y bg-opacity window-height on-close) (show translate-y bg-opacity))
+         [hide?])
+        (hooks/use-back-handler #(do (when (fn? on-close)
+                                       (on-close))
+                                     (rf/dispatch [:hide-bottom-sheet])
+                                     true))
+        [rn/view {:style {:flex 1}}
+         ;; backdrop
+         [rn/touchable-without-feedback {:on-press #(rf/dispatch [:hide-bottom-sheet])}
+          [reanimated/view
+           {:style (reanimated/apply-animations-to-style
+                    {:opacity bg-opacity}
+                    {:flex 1 :background-color colors/neutral-100-opa-70})}]]
+         ;; sheet
+         [gesture/gesture-detector {:gesture sheet-gesture}
+          [reanimated/view
+           {:style     (reanimated/apply-animations-to-style
+                        {:transform [{:translateY translate-y}]}
+                        (style/sheet insets
+                                     window-height
+                                     override-theme
+                                     padding-bottom-override
+                                     shell?))
+            :on-layout #(reset! sheet-height (oops/oget % "nativeEvent" "layout" "height"))}
+           (when shell? [blur/ios-view {:style style/shell-bg}])
 
-       (when shell?
-         [blur/ios-view
-          {:style styles/shell-bg}])
+           (when selected-item
+             [rn/view
+              [rn/view {:style (style/selected-item override-theme window-height @sheet-height insets)}
+               [selected-item]]])
 
-       (when selected-item
-         [rn/view
-          [rn/view {:style (styles/selected-item override-theme)}
-           [selected-item]]])
-
-       ;; handle
-       [rn/view {:style (styles/handle override-theme)}]
-       ;; content
-       [content]]]]))
+           ;; handle
+           [rn/view {:style (style/handle override-theme)}]
+           ;; content
+           [content]]]]))))

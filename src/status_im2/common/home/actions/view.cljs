@@ -133,7 +133,7 @@
             :chevron?            true})))
 
 (defn mark-as-read-entry
-  [chat-id]
+  [chat-id needs-divider?]
   (entry {:icon                :i/correct
           :label               (i18n/label :t/mark-as-read)
           :on-press            #(mark-all-read-action chat-id)
@@ -141,7 +141,7 @@
           :accessibility-label :mark-as-read
           :sub-label           nil
           :chevron?            false
-          :add-divider?        true}))
+          :add-divider?        needs-divider?}))
 
 (defn clear-history-entry
   [chat-id]
@@ -403,8 +403,8 @@
      (delete-chat-entry item inside-chat?))])
 
 (defn notification-actions
-  [{:keys [chat-id group-chat public?]} inside-chat?]
-  [(mark-as-read-entry chat-id)
+  [{:keys [chat-id group-chat public?]} inside-chat? needs-divider?]
+  [(mark-as-read-entry chat-id needs-divider?)
    (mute-chat-entry chat-id)
    (notifications-entry false)
    (when inside-chat?
@@ -433,15 +433,17 @@
   [quo/action-drawer
    [[(view-profile-entry chat-id)
      (edit-nickname-entry chat-id)]
-    (notification-actions item inside-chat?)
+    (notification-actions item inside-chat? false)
     (destructive-actions item inside-chat?)]])
 
 (defn private-group-chat-actions
   [item inside-chat?]
   [quo/action-drawer
-   [(group-actions item inside-chat?)
-    (notification-actions item inside-chat?)
-    (destructive-actions item inside-chat?)]])
+   (let [show-group-actions? (:group-chat-member? item)]
+     [(when show-group-actions?
+        (group-actions item inside-chat?))
+      (notification-actions item inside-chat? show-group-actions?)
+      (destructive-actions item inside-chat?)])])
 
 (defn contact-actions
   [{:keys [public-key] :as contact} {:keys [chat-id admin?] :as extra-data}]

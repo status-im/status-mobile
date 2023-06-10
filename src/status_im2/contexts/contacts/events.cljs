@@ -96,6 +96,7 @@
   [{:keys [db]} {:keys [public-key]}]
   {:db            (-> db
                       (assoc-in [:contacts/contacts public-key :added?] false)
+                      (assoc-in [:contacts/contacts public-key :active?] false)
                       (assoc-in [:contacts/contacts public-key :contact-request-state]
                                 constants/contact-request-state-none))
    :json-rpc/call [{:method     "wakuext_retractContactRequest"

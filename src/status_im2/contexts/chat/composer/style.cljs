@@ -109,3 +109,19 @@
    :blur-radius (if platform/ios? 20 10)
    :blur-type   (colors/theme-colors :light :dark)
    :blur-amount 20})
+
+(defn shell-container
+  [bottom translate-y]
+  (reanimated/apply-animations-to-style
+   {:bottom    bottom ; we use height of the input directly as bottom position
+    :transform [{:translate-y translate-y}]}
+   {:position :absolute
+    :left     0
+    :right    0}))
+
+(defn shell-button
+  [translate-y opacity]
+  (reanimated/apply-animations-to-style
+   {:transform [{:translate-y translate-y}]
+    :opacity   opacity}
+   {}))

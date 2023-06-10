@@ -1,17 +1,17 @@
 (ns status-im2.contexts.communities.actions.request-to-join.view
-  (:require [react-native.core :as rn]
-            [status-im2.contexts.communities.actions.community-rules-list.view :as community-rules]
+  (:require [quo2.core :as quo]
+            [react-native.core :as rn]
+            [react-native.gesture :as gesture]
             [reagent.core :as reagent]
+            [status-im2.contexts.communities.actions.community-rules-list.view :as community-rules]
             [status-im2.contexts.communities.actions.request-to-join.style :as style]
-            [quo2.core :as quo]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [utils.requests :as requests]
-            [react-native.gesture :as gesture]))
+            [utils.requests :as requests]))
 
 (defn request-to-join-text
-  [is-open?]
-  (if is-open?
+  [open?]
+  (if open?
     (i18n/label :t/join-open-community)
     (i18n/label :t/request-to-join)))
 
@@ -27,20 +27,16 @@
                     can-request-access?
                     requested-to-join-at]} (rf/sub [:get-screen-params])
             pending?                       (rf/sub [:communities/my-pending-request-to-join id])
-            is-open?                       (not= 3 (:access permissions))]
-        [rn/view {:flex 1 :margin-top 40}
+            open?                          (not= 3 (:access permissions))]
+        [rn/view {:flex 1}
          [gesture/scroll-view {:style {:flex 1}}
           [rn/view style/page-container
-           [rn/view
-            {:style style/title-container}
+           [rn/view {:style style/title-container}
             [quo/text
              {:accessibility-label :communities-join-community
               :weight              :semi-bold
               :size                :heading-1}
-             (request-to-join-text is-open?)]
-            [rn/view
-             {:style style/request-icon}
-             [quo/icon :i/info]]]
+             (request-to-join-text open?)]]
            [quo/context-tag
             {:style
              {:margin-right :auto
@@ -64,7 +60,8 @@
              {:accessibility-label :cancel
               :on-press            #(rf/dispatch [:navigate-back])
               :type                :grey
-              :style               style/cancel-button} (i18n/label :t/cancel)]
+              :style               style/cancel-button}
+             (i18n/label :t/cancel)]
             [quo/button
              {:accessibility-label :join-community-button
               :on-press            (fn []
@@ -79,4 +76,10 @@
                                            (rf/dispatch [:communities/request-to-join id])
                                            (rf/dispatch [:navigate-back]))))
               :disabled            (not @agreed-to-rules?)
-              :style               {:flex 1}} (request-to-join-text is-open?)]]]]]))))
+              :style               {:flex 1}}
+             (request-to-join-text open?)]]
+           [rn/view {:style style/final-disclaimer-container}
+            [quo/text
+             {:size  :paragraph-2
+              :style style/final-disclaimer-text}
+             (i18n/label :t/request-to-join-disclaimer)]]]]]))))

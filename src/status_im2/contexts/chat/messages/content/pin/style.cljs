@@ -2,7 +2,7 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def system-message-default-size 36)
-(def system-message-radius (/ system-message-default-size 2))
+(def system-message-margin-right 8)
 
 (def pin-indicator-container
   {:margin-top      4
@@ -26,7 +26,7 @@
 (def system-message-inner-container
   {:width            system-message-default-size
    :height           system-message-default-size
-   :margin-right     system-message-radius
+   :margin-right     system-message-margin-right
    :border-radius    system-message-default-size
    :justify-content  :center
    :align-items      :center

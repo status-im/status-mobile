@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.messages.navigation.style
   (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))
 
 (defonce ^:const navigation-bar-height 100)
@@ -17,33 +16,47 @@
     :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)}
    position))
 
-(defn blur-view
-  [status-bar-height]
+(def background-view
+  {:position         :absolute
+   :top              0
+   :left             0
+   :right            0
+   :height           navigation-bar-height
+   :background-color (colors/theme-colors colors/white-opa-70 :transparent)
+   :display          :flex
+   :flex-direction   :row
+   :overflow         :hidden})
+
+(defn animated-background-view
+  [enabled? animation]
+  (reanimated/apply-animations-to-style
+   (when enabled?
+     {:opacity animation})
+   background-view))
+
+(def blur-view
   {:position       :absolute
    :top            0
    :left           0
    :right          0
-   :height         (- navigation-bar-height
-                      (if platform/ios? 0 status-bar-height))
+   :height         navigation-bar-height
    :display        :flex
    :flex-direction :row
    :overflow       :hidden})
 
 (defn animated-blur-view
-  [enabled? animation status-bar-height]
+  [enabled? animation]
   (reanimated/apply-animations-to-style
    (when enabled?
      {:opacity animation})
-   (blur-view status-bar-height)))
+   blur-view))
 
 (def navigation-view
-  {:z-index 4})
+  {:z-index 1})
 
-(defn header-container
-  [status-bar-height]
+(def header-container
   {:position       :absolute
-   :top            (- header-offset
-                      (if platform/ios? 0 status-bar-height))
+   :top            header-offset
    :left           0
    :right          0
    :padding-bottom 8
@@ -62,21 +75,6 @@
      {:transform [{:translateY y-animation}]
       :opacity   opacity-animation})
    header))
-
-(defn pinned-banner
-  [status-bar-height]
-  {:position :absolute
-   :left     0
-   :right    0
-   :top      (- navigation-bar-height
-                (if platform/ios? 0 status-bar-height))})
-
-(defn animated-pinned-banner
-  [enabled? animation status-bar-height]
-  (reanimated/apply-animations-to-style
-   (when enabled?
-     {:opacity animation})
-   (pinned-banner status-bar-height)))
 
 (def header-content-container
   {:flex-direction :row
