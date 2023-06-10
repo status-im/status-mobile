@@ -86,7 +86,8 @@
      :component how-to-pair/instructions}
 
     {:name      :discover-communities
-     :component communities.discover/discover}
+     :component communities.discover/discover
+     :options   {:layout {:orientation ["portrait"]}}}
 
     {:name      :community-overview
      :component communities.overview/overview
