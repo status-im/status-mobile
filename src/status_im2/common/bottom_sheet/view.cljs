@@ -3,7 +3,7 @@
             [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [react-native.reanimated :as reanimated]
-            [status-im2.common.bottom-sheet.styles :as styles]
+            [status-im2.common.bottom-sheet.style :as style]
             [react-native.gesture :as gesture]
             [oops.core :as oops]
             [react-native.hooks :as hooks]
@@ -80,20 +80,20 @@
           [reanimated/view
            {:style     (reanimated/apply-animations-to-style
                         {:transform [{:translateY translate-y}]}
-                        (styles/sheet insets
-                                      window-height
-                                      override-theme
-                                      padding-bottom-override
-                                      shell?))
+                        (style/sheet insets
+                                     window-height
+                                     override-theme
+                                     padding-bottom-override
+                                     shell?))
             :on-layout #(reset! sheet-height (oops/oget % "nativeEvent" "layout" "height"))}
-           (when shell? [blur/ios-view {:style styles/shell-bg}])
+           (when shell? [blur/ios-view {:style style/shell-bg}])
 
            (when selected-item
              [rn/view
-              [rn/view {:style (styles/selected-item override-theme window-height @sheet-height insets)}
+              [rn/view {:style (style/selected-item override-theme window-height @sheet-height insets)}
                [selected-item]]])
 
            ;; handle
-           [rn/view {:style (styles/handle override-theme)}]
+           [rn/view {:style (style/handle override-theme)}]
            ;; content
            [content]]]]))))

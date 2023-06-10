@@ -1,4 +1,4 @@
-(ns status-im2.common.bottom-sheet.styles
+(ns status-im2.common.bottom-sheet.style
   (:require [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [status-im.utils.platform :as platform]))
@@ -25,7 +25,7 @@
    :border-top-right-radius 20
    :overflow                (when shell? :hidden)
    :flex                    1
-   :padding-bottom          (or padding-bottom-override (max 20 bottom))
+   :padding-bottom          (or padding-bottom-override (+ bottom 8))
    :background-color        (if shell?
                               :transparent
                               (colors/theme-colors colors/white colors/neutral-90 override-theme))})
