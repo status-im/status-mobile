@@ -41,7 +41,7 @@
     "react-native": "0.69.10",
     "react-native-background-timer": "^2.1.1",
     "react-native-blob-util": "^0.13.18",
-    "react-native-camera-kit": "^8.0.4",
+    "react-native-camera-kit": "12.0.0",
     "react-native-config": "^1.5.0",
     "react-native-dialogs": "^1.0.4",
     "react-native-draggable-flatlist": "^3.0.3",
