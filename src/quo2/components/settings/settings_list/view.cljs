@@ -118,12 +118,14 @@
            communities-props
            container-style
            override-theme
-           status-tag-props]}]
+           status-tag-props
+           border]}]
   [rn/touchable-without-feedback
    {:on-press            on-press
     :accessibility-label accessibility-label}
    [rn/view
-    {:style (merge style/item-container container-style)}
+    {:style (merge style/item-container container-style (when border
+                                                          style/border-style) )} 
     [rn/view {:style style/inner-container}
      (when left-icon
        [left-icon-comp left-icon])

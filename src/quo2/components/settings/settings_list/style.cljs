@@ -21,6 +21,12 @@
    :padding-horizontal 12
    :padding-vertical   13})
 
+(def border-style
+  {
+ :border-color       (colors/theme-colors colors/neutral-20 colors/neutral-80)
+ :border-width       0.5
+ :overflow :hidden
+ })
 (def inner-container
   {:flex-direction :row
    :align-items    :center})
