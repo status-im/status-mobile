@@ -73,7 +73,9 @@
     quo2.components.selectors.selectors.view
     quo2.components.separator
     quo2.components.settings.accounts.view
+    quo2.components.settings.category.view
     quo2.components.settings.privacy-option
+    quo2.components.settings.settings-list.view
     quo2.components.share.qr-code.view
     quo2.components.share.share-qr-code.view
     quo2.components.tabs.account-selector
@@ -85,8 +87,7 @@
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
-    quo2.components.text-combinations.title.view
-    quo2.components.settings.settings-list.view))
+    quo2.components.text-combinations.title.view))
 
 (def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
@@ -207,6 +208,7 @@
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)
 (def account quo2.components.settings.accounts.view/account)
+(def category quo2.components.settings.category.view/category)
 (def settings-list quo2.components.settings.settings-list.view/settings-list)
 
 ;;;; SHARE
