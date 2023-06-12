@@ -126,7 +126,7 @@
          (not (:mailserver/current-request db)))
     {:db            (assoc db :mailserver/current-request true)
      :json-rpc/call [{:method      "wakuext_requestAllHistoricMessagesWithRetries"
-                      :params      []
+                      :params      [false]
                       :js-response true
                       :on-success  #(do
                                       (log/info "fetched historical messages")
