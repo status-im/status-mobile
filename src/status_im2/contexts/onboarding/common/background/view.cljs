@@ -6,7 +6,7 @@
             [oops.core :refer [oget]]
             [status-im2.common.resources :as resources]
             [status-im.async-storage.core :as async-storage]
-            [status-im2.contexts.shell.animation :as shell.animation]
+            [status-im2.contexts.shell.state :as shell.state]
             [status-im2.contexts.onboarding.common.carousel.view :as carousel]
             [status-im2.contexts.onboarding.common.background.style :as style]
             [react-native.reanimated :as reanimated]
@@ -50,8 +50,8 @@
     ;; but actual values differ in some pixels, so arbitrary 5 pixels is allowed
     (when (and (> height width)
                (>= (+ height 5) (or window-height 0))
-               (not= height @shell.animation/screen-height))
-      (reset! shell.animation/screen-height height)
+               (not= height @shell.state/screen-height))
+      (reset! shell.state/screen-height height)
       (async-storage/set-item! :screen-height height))))
 
 (defn f-view

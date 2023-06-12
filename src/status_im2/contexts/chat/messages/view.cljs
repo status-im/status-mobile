@@ -1,29 +1,23 @@
 (ns status-im2.contexts.chat.messages.view
   (:require [quo2.foundations.colors :as colors]
             [re-frame.db]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
             [status-im2.contexts.chat.composer.view :as composer]
             [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as
              contact-requests.bottom-drawer]
             [status-im2.contexts.chat.messages.list.view :as messages.list]
             [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
-            [status-im2.navigation.state :as navigation.state]
             [utils.re-frame :as rf]))
 
-(defn navigate-back-handler
-  []
-  (when (and (not @navigation.state/curr-modal) (= (get @re-frame.db/app-db :view-id) :chat))
-    (rn/hw-back-remove-listener navigate-back-handler)
-    (rf/dispatch [:chat/close])
-    (rf/dispatch [:navigate-back])
-    ;; If true is not returned back button event will bubble up,
-    ;; and will call system back button action
-    true))
+(defn load-composer
+  [insets chat-type]
+  (let [shell-animation-complete? (rf/sub [:shell/animation-complete? chat-type])]
+    (when shell-animation-complete?
+      [:f> composer/composer insets])))
 
-(defn chat-render
+(defn chat
   []
   (let [{:keys [chat-id
+                chat-type
                 contact-request-state
                 group-chat
                 able-to-send-message?]
@@ -35,14 +29,6 @@
                         [messages.navigation/navigation-view {:scroll-y scroll-y}])
       :footer-comp    (fn [{:keys [insets]}]
                         (if-not able-to-send-message?
-                          [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]
-                          [:f> composer/composer insets]))}]))
-
-(defn chat
-  []
-  (reagent/create-class
-   {:component-did-mount    (fn []
-                              (rn/hw-back-remove-listener navigate-back-handler)
-                              (rn/hw-back-add-listener navigate-back-handler))
-    :component-will-unmount (fn [] (rn/hw-back-remove-listener navigate-back-handler))
-    :reagent-render         chat-render}))
+                          [contact-requests.bottom-drawer/view chat-id contact-request-state
+                           group-chat]
+                          [load-composer insets chat-type]))}]))

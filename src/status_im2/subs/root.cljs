@@ -75,6 +75,8 @@
 (reg-root-key-sub :visibility-status-updates :visibility-status-updates)
 (reg-root-key-sub :shell/switcher-cards :shell/switcher-cards)
 (reg-root-key-sub :password-authentication :password-authentication)
+(reg-root-key-sub :shell/floating-screens :shell/floating-screens)
+(reg-root-key-sub :shell/loaded-screens :shell/loaded-screens)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network

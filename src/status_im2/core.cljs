@@ -9,7 +9,8 @@
     [react-native.platform :as platform]
     [react-native.shake :as react-native-shake]
     [reagent.impl.batching :as batching]
-    [status-im2.contexts.shell.animation :as animation]
+    [status-im2.contexts.shell.utils :as shell.utils]
+    [status-im2.contexts.shell.state :as shell.state]
     [status-im2.config :as config]
     [status-im2.setup.dev :as dev]
     [status-im2.setup.global-error :as global-error]
@@ -44,10 +45,9 @@
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
   (utils.universal-links/initialize)
 
-  ;; TODO(parvesh) - Remove while moving functionality to status-go
-  (async-storage/get-item :selected-stack-id #(animation/change-selected-stack-id %))
-
-  (async-storage/get-item :screen-height #(reset! animation/screen-height %))
+  ;; Shell
+  (async-storage/get-item :selected-stack-id #(shell.utils/change-selected-stack-id % nil nil))
+  (async-storage/get-item :screen-height #(reset! shell.state/screen-height %))
 
   (dev/setup)
 

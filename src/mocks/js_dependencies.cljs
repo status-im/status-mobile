@@ -405,7 +405,9 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "react-native-svg"                              react-native-svg
     "react-native-orientation-locker"               react-native-orientation-locker
     "../src/js/worklets/core.js"                    worklet-factory
-    "../src/js/worklets/shell.js"                   #js {}
+    "../src/js/worklets/shell/bottom_tabs.js"       #js {}
+    "../src/js/worklets/shell/home_stack.js"        #js {}
+    "../src/js/worklets/shell/floating_screen.js"   #js {}
     "../src/js/worklets/bottom_sheet.js"            #js {}
     "../src/js/worklets/record_audio.js"            #js {}
     "../src/js/worklets/scroll_view.js"             #js {}

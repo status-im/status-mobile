@@ -296,7 +296,7 @@
                            (vals (get-in db [:communities community-id :chats])))]
     (when (and id
                (not= (:current-chat-id db) (str community-id id)))
-      (chat.events/navigate-to-chat cofx (str community-id id)))))
+      (chat.events/navigate-to-chat cofx (str community-id id) nil))))
 
 (rf/defn fetch
   [_]
