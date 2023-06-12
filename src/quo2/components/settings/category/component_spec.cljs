@@ -1,35 +1,23 @@
 (ns quo2.components.settings.category.component-spec
-  (:require [quo2.components.settings.category-list.view :as category-list]
+  (:require [quo2.components.settings.category.view :as category]
             [test-helpers.component :as h]))
 
+(h/describe "Category list tests"
+            (h/test "Default render a Label on list component"
+                    (h/render [category/category {:label "Gender"}])
+                    (h/is-truthy (h/get-by-label-text :Gender)))
 
-(h/describe "Category List component"
-            (h/test "renders category list component"
-                    (h/render [category-list/category-list
-                               {:title "Test Title"
-                                :on-press #(println "Pressed")
-                                :accessibility-label "Test Accessibility Label"
-                                :left-icon nil
-                                :chevron? true
-                                :badge? true
-                                :button-props {:title "Button" :on-press #(println "Button Pressed")}
-                                :communities-props {:data [{:source "Community1"} {:source "Community2"}]}
-                                :container-style {:margin 10}}])
-                    (-> (js/expect (h/get-byLabelText "Test Accessibility Label"))
-                        (.toBeTruthy)))
-
-            (h/test "on press event fires"
-                    (let [event (h/mock-fn)]
-                      (h/render [category-list/category-list
-                                 {:title "Test Title"
-                                  :on-press event
-                                  :accessibility-label "Test Accessibility Label"
-                                  :left-icon nil
-                                  :chevron? true
-                                  :badge? true
-                                  :button-props {:title "Button" :on-press #(println "Button Pressed")}
-                                  :communities-props {:data [{:source "Community1"} {:source "Community2"}]}
-                                  :container-style {:margin 10}}])
-                      (h/fire-event :press (h/get-byLabelText "Test Accessibility Label"))
-                      (-> (js/expect event)
-                          (.toHaveBeenCalledTimes 1)))))
+            (h/test "It renders a list with items"
+                    (h/render [category/category {:settings-list-data [{:title               "Male"
+                                                                        :accessibility-label :settings-list-item
+                                                                        :left-icon           :browser-context
+                                                                        :chevron?            true
+                                                                        :border              true
+                                                                        :on-press            (fn [] (js/alert "Male pressed"))}
+                                                                       {:title               "Female"
+                                                                        :accessibility-label :settings-list-item
+                                                                        :left-icon           :browser-context
+                                                                        :chevron?            false
+                                                                        :border              true
+                                                                        :on-press            (fn [] (js/alert "Female pressed"))}]}])
+                    (h/is-truthy (h/get-by-text :title))))
