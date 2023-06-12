@@ -20,6 +20,8 @@
 
 [Debugging](debugging.md)
 
+[Patching 3rd parties](patching-3rdparties.md)
+
 
 ## Testing
 
