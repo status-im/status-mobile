@@ -149,8 +149,8 @@
   (rf/merge
    cofx
    {:db            (-> (if (get-in db [:chats chat-id :muted])
-                           (assoc-in db [:chats chat-id :active] false)
-                           (update db :chats dissoc chat-id))
+                         (assoc-in db [:chats chat-id :active] false)
+                         (update db :chats dissoc chat-id))
                        (update :chats-home-list disj chat-id)
                        (assoc :current-chat-id nil))
     :json-rpc/call [{:method     "wakuext_deactivateChat"
