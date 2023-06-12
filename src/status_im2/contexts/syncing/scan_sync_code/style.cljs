@@ -142,13 +142,11 @@
    :padding-bottom 12})
 
 (def camera-style
-  {:height           "100%"
-   :borderRadius     16
-   :background-color :transparent})
+  {:flex 1})
 
 (def camera-container
   {:position      :absolute
-   :top           (if platform/android? 40 0)
+   :top           0
    :left          0
    :right         0
    :bottom        0

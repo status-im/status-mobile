@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.qr-scanner.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require ["react-native-camera-kit" :refer (CameraKitCamera)]
+  (:require ["react-native-camera-kit" :refer (Camera CameraType)]
             [clojure.string :as string]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
@@ -12,7 +12,8 @@
             [status-im.ui.screens.qr-scanner.styles :as styles]
             [status-im2.config :as config]))
 
-(def camera (reagent/adapt-react-class CameraKitCamera))
+(def camera (reagent/adapt-react-class Camera))
+(def camera-type-back (.-Back CameraType))
 
 (defn get-qr-code-data
   [^js event]
@@ -98,11 +99,12 @@
         [react/with-activity-indicator
          {}
          [camera
-          {:ref            #(reset! camera-ref %)
-           :style          {:flex 1}
-           :camera-options {:zoomMode :off}
-           :scan-barcode   true
-           :on-read-code   #(when-not @read-once?
-                              (reset! read-once? true)
-                              (on-barcode-read opts %))}]]
+          {:ref          #(reset! camera-ref %)
+           :style        {:flex 1}
+           :camera-type  camera-type-back
+           :zoom-mode    :off
+           :scan-barcode true
+           :on-read-code #(when-not @read-once?
+                            (reset! read-once? true)
+                            (on-barcode-read opts %))}]]
         [viewfinder (int (* 2 (/ (min height width) 3)))]])]))
