@@ -1,6 +1,5 @@
 (ns status-im2.contexts.syncing.scan-sync-code.style
-  (:require [quo2.foundations.colors :as colors]
-            [status-im.utils.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def screen-padding 20)
 
