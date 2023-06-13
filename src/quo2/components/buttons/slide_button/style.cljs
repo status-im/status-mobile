@@ -1,9 +1,9 @@
 (ns quo2.components.buttons.slide-button.style
   (:require
-   [quo2.components.buttons.slide-button.consts :as consts]
-   [quo2.components.buttons.slide-button.utils :as utils]
-   [react-native.reanimated :as reanimated]
-   [quo2.foundations.typography :as typography]))
+    [quo2.components.buttons.slide-button.consts :as consts]
+    [quo2.components.buttons.slide-button.utils :as utils]
+    [react-native.reanimated :as reanimated]
+    [quo2.foundations.typography :as typography]))
 
 (def absolute-fill
   {:position :absolute
@@ -17,40 +17,40 @@
   (reanimated/apply-animations-to-style
    {:transform [{:translate-x (interpolate-track :track-clamp)}]}
    {:background-color (utils/slider-color :main customization-color)
-    :border-radius 12
-    :height thumb-size
-    :width thumb-size
-    :align-items :center
-    :overflow :hidden
-    :justify-content :center}))
+    :border-radius    12
+    :height           thumb-size
+    :width            thumb-size
+    :align-items      :center
+    :overflow         :hidden
+    :justify-content  :center}))
 
 (defn arrow-icon-container
   [interpolate-track]
   (reanimated/apply-animations-to-style
    {:transform [{:translate-x (interpolate-track :arrow-icon-position)}]}
-   {:flex 1
-    :align-items :center
+   {:flex            1
+    :align-items     :center
     :justify-content :center}))
 
 (defn action-icon
   [interpolate-track size]
   (reanimated/apply-animations-to-style
    {:transform [{:translate-x (interpolate-track :action-icon-position)}]}
-   {:height size
-    :width size
-    :position :absolute
-    :align-items :center
-    :left 0
-    :top 0
-    :flex-direction :row
+   {:height          size
+    :width           size
+    :position        :absolute
+    :align-items     :center
+    :left            0
+    :top             0
+    :flex-direction  :row
     :justify-content :space-around}))
 
 (defn track-container
   [height]
-  {:align-self       :stretch
-   :align-items      :center
-   :justify-content  :center
-   :height height})
+  {:align-self      :stretch
+   :align-items     :center
+   :justify-content :center
+   :height          height})
 
 (defn track
   [disabled? customization-color]
@@ -60,7 +60,7 @@
    :align-self       :stretch
    :padding          consts/track-padding
    :opacity          (if disabled? 0.3 1)
-   :background-color (utils/slider-color :track  customization-color)})
+   :background-color (utils/slider-color :track customization-color)})
 
 (defn track-cover
   [interpolate-track]
@@ -70,14 +70,14 @@
 
 (defn track-cover-text-container
   [track-width]
-  {:position :absolute
-   :right 0
-   :top 0
-   :bottom 0
-   :align-items :center
+  {:position        :absolute
+   :right           0
+   :top             0
+   :bottom          0
+   :align-items     :center
    :justify-content :center
-   :flex-direction :row
-   :width track-width})
+   :flex-direction  :row
+   :width           track-width})
 
 (defn track-text
   [customization-color]

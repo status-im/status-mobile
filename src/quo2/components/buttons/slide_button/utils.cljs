@@ -1,25 +1,26 @@
 (ns quo2.components.buttons.slide-button.utils
   (:require
-   [quo2.components.buttons.slide-button.consts :as consts]
-   [react-native.gesture :as gesture]
-   [oops.core :as oops]
-   [quo2.foundations.colors :as colors]
-   [react-native.reanimated :as reanimated]))
+    [quo2.components.buttons.slide-button.consts :as consts]
+    [react-native.gesture :as gesture]
+    [oops.core :as oops]
+    [quo2.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]))
 
-;; Utils 
+;; Utils
 (defn slider-color
   "- `color-key`               `:main`/`:track`
    - `customization-color` Customization color"
   [color-key customization-color]
-  (let [colors-by-key {:main (colors/custom-color-by-theme customization-color 50 60)
+  (let [colors-by-key {:main  (colors/custom-color-by-theme customization-color 50 60)
                        :track (colors/custom-color-by-theme customization-color 50 60 10 10)}]
     (color-key colors-by-key)))
 
-(defn- clamp-value [value min-value max-value]
+(defn- clamp-value
+  [value min-value max-value]
   (cond
     (< value min-value) min-value
     (> value max-value) max-value
-    :else value))
+    :else               value))
 
 (defn calc-usable-track
   "Calculate the track section in which the
@@ -39,8 +40,9 @@
                                (:thumb default-dimensions))})
         (get dimension-key))))
 
-(def ^:private extrapolation {:extrapolateLeft  "clamp"
-                              :extrapolateRight "clamp"})
+(def ^:private extrapolation
+  {:extrapolateLeft  "clamp"
+   :extrapolateRight "clamp"})
 
 (defn- track-interpolation-inputs
   [in-vectors track-width]
@@ -49,22 +51,22 @@
 ;; Interpolations
 (defn- track-clamp-interpolation
   [track-width]
-  {:in [-1 0 1]
+  {:in  [-1 0 1]
    :out [track-width 0 track-width]})
 
 (defn- track-cover-interpolation
   [track-width thumb-size]
-  {:in [0 1]
+  {:in  [0 1]
    :out [(/ thumb-size 2) track-width]})
 
 (defn- arrow-icon-position-interpolation
   [thumb-size]
-  {:in [0.9 1]
+  {:in  [0.9 1]
    :out [0 (- thumb-size)]})
 
 (defn- action-icon-position-interpolation
   [thumb-size]
-  {:in [0.9 1]
+  {:in  [0.9 1]
    :out [thumb-size 0]})
 
 (defn interpolate-track
@@ -74,15 +76,15 @@
   `thumb-size`       Size of the thumb
   `interpolation` `  :thumb-border-radius`/`:thumb-drop-position`/`:thumb-drop-scale`/`:thumb-drop-z-index`/..."
   ([x-pos track-width thumb-size interpolation]
-   (let [interpolations {:track-cover (track-cover-interpolation track-width thumb-size)
-                         :track-clamp (track-clamp-interpolation track-width)
-                         :action-icon-position (action-icon-position-interpolation thumb-size)
-                         :arrow-icon-position (arrow-icon-position-interpolation thumb-size)}
+   (let [interpolations       {:track-cover          (track-cover-interpolation track-width thumb-size)
+                               :track-clamp          (track-clamp-interpolation track-width)
+                               :action-icon-position (action-icon-position-interpolation thumb-size)
+                               :arrow-icon-position  (arrow-icon-position-interpolation thumb-size)}
 
          interpolation-values (interpolation interpolations)
-         output (:out interpolation-values)
-         input (-> (:in interpolation-values)
-                   (track-interpolation-inputs track-width))]
+         output               (:out interpolation-values)
+         input                (-> (:in interpolation-values)
+                                  (track-interpolation-inputs track-width))]
      (if interpolation-values
        (reanimated/interpolate x-pos
                                input
@@ -120,15 +122,15 @@
         (gesture/min-distance 0)
         (gesture/on-update (fn [event]
                              (let [x-translation (oops/oget event "translationX")
-                                   clamped-x (clamp-value x-translation 0 track-width)
-                                   reached-end? (>= clamped-x track-width)]
+                                   clamped-x     (clamp-value x-translation 0 track-width)
+                                   reached-end?  (>= clamped-x track-width)]
                                (reanimated/set-shared-value x-pos clamped-x)
                                (when (and reached-end? (not @sliding-complete?))
                                  (reset! gestures-disabled? true)
                                  (complete-animation sliding-complete?)))))
         (gesture/on-end (fn [event]
                           (let [x-translation (oops/oget event "translationX")
-                                reached-end? (>= x-translation track-width)]
+                                reached-end?  (>= x-translation track-width)]
                             (when (not reached-end?)
                               (reset-track-position x-pos))))))))
 
