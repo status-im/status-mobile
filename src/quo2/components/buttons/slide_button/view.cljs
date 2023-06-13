@@ -4,6 +4,7 @@
     [quo2.foundations.colors :as colors]
     [quo2.components.buttons.slide-button.style :as style]
     [quo2.components.buttons.slide-button.utils :as utils]
+    [quo2.components.buttons.slide-button.animations :as animations]
     [react-native.gesture :as gesture]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -27,7 +28,7 @@
                  size]}]
       (let [x-pos             (reanimated/use-shared-value 0)
             dimensions        (partial utils/get-dimensions (or @track-width 0) size)
-            interpolate-track (partial utils/interpolate-track
+            interpolate-track (partial animations/interpolate-track
                                        x-pos
                                        (dimensions :usable-track)
                                        (dimensions :thumb))]
@@ -38,11 +39,11 @@
                        [@sliding-complete?])
 
         [gesture/gesture-detector
-         {:gesture (utils/drag-gesture x-pos
-                                       gestures-disabled?
-                                       disabled?
-                                       (dimensions :usable-track)
-                                       sliding-complete?)}
+         {:gesture (animations/drag-gesture x-pos
+                                            gestures-disabled?
+                                            disabled?
+                                            (dimensions :usable-track)
+                                            sliding-complete?)}
          [reanimated/view {:style (style/track-container (dimensions :height))}
           [reanimated/view
            {:style     (style/track disabled? customization-color)
@@ -83,5 +84,3 @@
   "
   [props]
   [:f> f-slider props])
-
-

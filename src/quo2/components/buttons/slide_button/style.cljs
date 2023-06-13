@@ -1,6 +1,6 @@
 (ns quo2.components.buttons.slide-button.style
   (:require
-    [quo2.components.buttons.slide-button.consts :as consts]
+    [quo2.components.buttons.slide-button.constants :as constants]
     [quo2.components.buttons.slide-button.utils :as utils]
     [react-native.reanimated :as reanimated]
     [quo2.foundations.typography :as typography]))
@@ -58,7 +58,7 @@
    :justify-content  :center
    :border-radius    14
    :align-self       :stretch
-   :padding          consts/track-padding
+   :padding          constants/track-padding
    :opacity          (if disabled? 0.3 1)
    :background-color (utils/slider-color :track customization-color)})
 
