@@ -5,7 +5,8 @@
     [react-native.safe-area :as safe-area]
     [status-im2.constants :as constants]
     [utils.re-frame :as rf]
-    [status-im2.contexts.chat.messages.content.text.view :as text]))
+    [status-im2.contexts.chat.messages.content.text.view :as text]
+    [status-im.utils.http :as http]))
 
 (defn calculate-dimensions
   [width height]
@@ -17,7 +18,8 @@
   [index {:keys [content image-width image-height message-id] :as message} on-long-press]
   (let [insets            (safe-area/get-insets)
         dimensions        (calculate-dimensions (or image-width 1000) (or image-height 1000))
-        shared-element-id (rf/sub [:shared-element-id])]
+        shared-element-id (rf/sub [:shared-element-id])
+        image-local-url   (http/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     [:<>
      (when (= index 0)
        [rn/view {:style {:margin-bottom 10}} [text/text-content message]])
@@ -31,7 +33,7 @@
                                        :index    0
                                        :insets   insets}])}
       [fast-image/fast-image
-       {:source              {:uri (:image content)}
+       {:source              {:uri image-local-url}
         :style               (merge dimensions {:border-radius 12})
         :native-ID           (when (= shared-element-id message-id) :shared-element)
         :accessibility-label :image-message}]]]))
