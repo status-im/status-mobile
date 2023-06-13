@@ -370,7 +370,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                     '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
                 geth_contents.append(self.pull_geth(self.drivers[driver]))
 
-            except (WebDriverException, AttributeError, RemoteDisconnected):
+            except (WebDriverException, AttributeError, RemoteDisconnected, ProtocolError):
                 pass
             finally:
                 try:
