@@ -190,5 +190,6 @@
   [url]
   (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash (url-host url)))))
 
-(defn replace-port [url new-port]
+(defn replace-port
+  [url new-port]
   (string/replace url #"(:\d+)" (str ":" new-port)))
