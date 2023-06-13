@@ -25,7 +25,19 @@
   "Calculate the track section in which the
   thumb can move in. Mostly used for interpolations."
   [track-width thumb-size]
-  (- (or @track-width 200) (* consts/track-padding 2) thumb-size))
+  (- track-width (* consts/track-padding 2) thumb-size))
+
+(defn get-dimensions
+  [track-width size dimension-key]
+  (let [default-dimensions (case size
+                             :small consts/small-dimensions
+                             :large consts/large-dimensions
+                             consts/large-dimensions)]
+    (-> default-dimensions
+        (merge {:usable-track (calc-usable-track
+                               track-width
+                               (:thumb default-dimensions))})
+        (get dimension-key))))
 
 (def ^:private extrapolation {:extrapolateLeft  "clamp"
                               :extrapolateRight "clamp"})
@@ -98,23 +110,25 @@
 ;; Gestures
 (defn drag-gesture
   [x-pos
+   gestures-disabled?
    disabled?
    track-width
    sliding-complete?]
-  (-> (gesture/gesture-pan)
-      (gesture/enabled (not @disabled?))
-      (gesture/min-distance 0)
-      (gesture/on-update (fn [event]
-                           (let [x-translation (oops/oget event "translationX")
-                                 clamped-x (clamp-value x-translation 0 track-width)
-                                 reached-end? (>= clamped-x track-width)]
-                             (reanimated/set-shared-value x-pos clamped-x)
-                             (when (and reached-end? (not @sliding-complete?))
-                               (reset! disabled? true)
-                               (complete-animation sliding-complete?)))))
-      (gesture/on-end (fn [event]
-                        (let [x-translation (oops/oget event "translationX")
-                              reached-end? (>= x-translation track-width)]
-                          (when (not reached-end?)
-                            (reset-track-position x-pos)))))))
+  (let [gestures-enabled? (not (or disabled? @gestures-disabled?))]
+    (-> (gesture/gesture-pan)
+        (gesture/enabled gestures-enabled?)
+        (gesture/min-distance 0)
+        (gesture/on-update (fn [event]
+                             (let [x-translation (oops/oget event "translationX")
+                                   clamped-x (clamp-value x-translation 0 track-width)
+                                   reached-end? (>= clamped-x track-width)]
+                               (reanimated/set-shared-value x-pos clamped-x)
+                               (when (and reached-end? (not @sliding-complete?))
+                                 (reset! gestures-disabled? true)
+                                 (complete-animation sliding-complete?)))))
+        (gesture/on-end (fn [event]
+                          (let [x-translation (oops/oget event "translationX")
+                                reached-end? (>= x-translation track-width)]
+                            (when (not reached-end?)
+                              (reset-track-position x-pos))))))))
 

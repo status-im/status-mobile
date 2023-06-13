@@ -13,37 +13,24 @@
    :right    0})
 
 (defn thumb-container
-  [interpolate-track]
+  [interpolate-track thumb-size customization-color]
   (reanimated/apply-animations-to-style
    {:transform [{:translate-x (interpolate-track :track-clamp)}]}
-   {}))
-
-(defn thumb-placeholder
-  [size]
-  {:width  size
-   :height size})
-
-(defn arrow-icon-container
-  [interpolate-track thumb-size]
-  (reanimated/apply-animations-to-style
-   {:transform [{:translate-x (interpolate-track :arrow-icon-position)}]}
-   {:width thumb-size
+   {:background-color (utils/slider-color :main customization-color)
+    :border-radius 12
     :height thumb-size
+    :width thumb-size
     :align-items :center
+    :overflow :hidden
     :justify-content :center}))
 
-(defn thumb
-  [thumb-size customization-color]
-  {:background-color (utils/slider-color :main customization-color)
-   :border-radius 12
-   :position :absolute
-   :right 0
-   :top 0
-   :height thumb-size
-   :width thumb-size
-   :align-items :center
-   :overflow :hidden
-   :justify-content :center})
+(defn arrow-icon-container
+  [interpolate-track]
+  (reanimated/apply-animations-to-style
+   {:transform [{:translate-x (interpolate-track :arrow-icon-position)}]}
+   {:flex 1
+    :align-items :center
+    :justify-content :center}))
 
 (defn action-icon
   [interpolate-track size]

@@ -2,7 +2,6 @@
   (:require
    [quo2.components.icon :as icon]
    [quo2.foundations.colors :as colors]
-   [quo2.components.buttons.slide-button.consts :as consts]
    [quo2.components.buttons.slide-button.style :as style]
    [quo2.components.buttons.slide-button.utils :as utils]
    [react-native.gesture :as gesture]
@@ -26,18 +25,11 @@
                  customization-color
                  size]}]
       (let [x-pos (reanimated/use-shared-value 0)
-            dimensions  (let [default-dimensions (case size
-                                                   :small consts/small-dimensions
-                                                   :large consts/large-dimensions
-                                                   consts/large-dimensions)]
-                          (merge default-dimensions
-                                 {:track-width (utils/calc-usable-track
-                                                track-width
-                                                (:thumb default-dimensions))}))
+            dimensions  (partial utils/get-dimensions (or @track-width 200) size)
             interpolate-track (partial utils/interpolate-track
                                        x-pos
-                                       (:track-width dimensions)
-                                       (:thumb dimensions))]
+                                       (dimensions :usable-track)
+                                       (dimensions :thumb))]
 
         (rn/use-effect (fn []
                          (when @sliding-complete?
@@ -46,9 +38,10 @@
 
         [gesture/gesture-detector {:gesture (utils/drag-gesture x-pos
                                                                 gestures-disabled?
-                                                                (:track-width dimensions)
+                                                                disabled?
+                                                                (dimensions :usable-track)
                                                                 sliding-complete?)}
-         [reanimated/view {:style (style/track-container (:height dimensions))}
+         [reanimated/view {:style (style/track-container (dimensions :height))}
           [reanimated/view {:style (style/track disabled? customization-color)
                             :on-layout (when-not (some? @track-width)
                                          on-track-layout)}
@@ -58,16 +51,16 @@
                                     :size  20}]
              [rn/view {:width 4}]
              [rn/text {:style (style/track-text customization-color)} track-text]]]
-           [reanimated/view {:style (style/thumb-container interpolate-track)}
-            [rn/view {:style (style/thumb-placeholder (:thumb dimensions))}]
-            [reanimated/view {:style (style/thumb (:thumb dimensions) customization-color)}
-             [reanimated/view {:style (style/arrow-icon-container interpolate-track (:thumb dimensions))}
-              [icon/icon :arrow-right {:color colors/white
-                                       :size  20}]]
-             [reanimated/view {:style (style/action-icon interpolate-track
-                                                         (:thumb dimensions))}
-              [icon/icon track-icon {:color colors/white
-                                     :size  20}]]]]]]]))))
+           [reanimated/view {:style (style/thumb-container interpolate-track
+                                                           (dimensions :thumb)
+                                                           customization-color)}
+            [reanimated/view {:style (style/arrow-icon-container interpolate-track)}
+             [icon/icon :arrow-right {:color colors/white
+                                      :size  20}]]
+            [reanimated/view {:style (style/action-icon interpolate-track
+                                                        (dimensions :thumb))}
+             [icon/icon track-icon {:color colors/white
+                                    :size  20}]]]]]]))))
 
 (defn slide-button
   "Options
