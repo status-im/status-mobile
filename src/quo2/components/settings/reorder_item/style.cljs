@@ -52,7 +52,7 @@
 (def text-container
   {:flex            1
    :flex-direction  :row
-   :justify-content "space-between"
+   :justify-content :space-between
    :margin-right    6})
 
 (defn right-icon

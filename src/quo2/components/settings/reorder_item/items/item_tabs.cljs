@@ -7,12 +7,12 @@
 
 (defn render-tab-item
   [item]
-  (let [tab-image (if (item :image)
-                    [rn/image
-                     {:source (:image item)
-                      :style  style/tab-item-image}]
-                    [rn/view {:style style/tab-item-image}
-                     (quo2-icons/icon (:icon item) (style/tab-icon))])]
+  (let [tab-image (cond
+                    (item :image) [rn/image
+                                   {:source (:image item)
+                                    :style  style/tab-item-image}]
+                    (item :icon) [rn/view {:style style/tab-item-image}
+                                  (quo2-icons/icon (:icon item) (style/tab-icon))])]
     [rn/view
      {:style style/tab-item-container}
      tab-image
@@ -26,10 +26,10 @@
   (map #(hash-map :id (:id %) :label (render-tab-item %)) data))
 
 (defn view
-  [item]
-  (let [data           (:data item)
-        default-active (:default-active item)
-        on-change      (:on-change item)]
+  [{:keys [data default-active on-change]
+    :or   {data nil
+           default-active 1
+           on-change (fn [] nil)}}] 
     [quo2/segmented-control
      {:default-active              default-active
       :size                        32
@@ -38,4 +38,4 @@
       :item-container-style        (style/segmented-tab-item-container)
       :active-item-container-style (style/active-segmented-tab-item-container)
       :data                        (transform-data data)
-      :on-change                   on-change}]))
+      :on-change                   on-change}])
