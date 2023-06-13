@@ -251,8 +251,12 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702957)
     def test_activity_center_mentions(self):
+        if not self.channel_2.chat_message_input.is_element_displayed():
+            self.home_2.click_system_back_button_until_element_is_shown()
+            self.home_2.communities_tab.click()
+            self.home_2.get_chat(self.community_name, community=True).click()
+            self.community_2.get_channel(self.channel_name).click()
         self.home_1.jump_to_communities_home()
-        self.home_2.jump_to_card_by_text('# %s' % self.channel_name)
 
         self.device_2.just_fyi("Invited member sends a message with a mention")
         self.channel_2.mention_user(self.username_1)
@@ -286,7 +290,8 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702958)
     def test_activity_center_admin_notification_accept_swipe(self):
         self.home_2.just_fyi("Clearing history")
-        self.home_2.jump_to_messages_home()
+        self.home_2.click_system_back_button_until_element_is_shown()
+        self.home_2.chats_tab.click()
         self.home_2.clear_chat_long_press(self.username_1)
 
         [home.jump_to_communities_home() for home in (self.home_1, self.home_2)]
