@@ -10,7 +10,8 @@
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.zoomable-image.constants :as c]
     [status-im2.contexts.chat.lightbox.zoomable-image.style :as style]
-    [status-im2.contexts.chat.lightbox.zoomable-image.utils :as utils]))
+    [status-im2.contexts.chat.lightbox.zoomable-image.utils :as utils]
+    [status-im.utils.http :as http]))
 
 (defn tap-gesture
   [on-tap]
@@ -223,7 +224,7 @@
                                @set-full-height?
                                (= curr-orientation orientation/portrait))}
       [reanimated/fast-image
-       {:source    {:uri (:image content)}
+       {:source    {:uri (http/replace-port (:image content) (rf/sub [:mediaserver/port]))}
         :native-ID (when focused? :shared-element)
         :style     (style/image dimensions animations (:border-value render-data))}]]]))
 
