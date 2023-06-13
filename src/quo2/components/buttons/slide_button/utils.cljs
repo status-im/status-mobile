@@ -99,11 +99,11 @@
                                                 :damping   30
                                                 :stiffness 400}))
 
-(defn complete-animation
+(defn- complete-animation
   [sliding-complete?]
   (js/setTimeout (fn [] (reset! sliding-complete? true)) 100))
 
-(defn reset-track-position
+(defn- reset-track-position
   [x-pos]
   (animate-spring x-pos 0))
 

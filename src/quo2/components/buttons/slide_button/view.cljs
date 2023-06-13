@@ -25,7 +25,7 @@
                  customization-color
                  size]}]
       (let [x-pos (reanimated/use-shared-value 0)
-            dimensions  (partial utils/get-dimensions (or @track-width 200) size)
+            dimensions  (partial utils/get-dimensions (or @track-width 0) size)
             interpolate-track (partial utils/interpolate-track
                                        x-pos
                                        (dimensions :usable-track)
