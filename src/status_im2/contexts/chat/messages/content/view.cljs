@@ -64,7 +64,7 @@
   [{:keys [content-type quoted-message] :as message-data}]
   (if quoted-message
     [pin/system-message message-data]
-    (case content-type
+    (condp = content-type
 
       constants/content-type-system-text
       [system.text/text-content message-data]
@@ -122,7 +122,7 @@
                                      (js/setTimeout #(reset! show-delivery-state? false)
                                                     delivery-state-showing-time-ms))))
           :on-long-press       #(on-long-press message-data context keyboard-shown?)}
-         [rn/view
+         [:<>
           (when pinned-by
             [pin/pinned-by-view pinned-by])
           (when (and (seq response-to) quoted-message)

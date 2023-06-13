@@ -14,7 +14,6 @@
 
 (defn message-render-fn
   [{:keys [deleted? deleted-for-me?] :as message} _ _ context]
-  ;; TODO (flexsurfer) probably we don't want reactions here
   (if (or deleted? deleted-for-me?)
     [content.deleted/deleted-message message context]
     [message/message message context (atom false)]))

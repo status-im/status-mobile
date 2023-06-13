@@ -22,7 +22,7 @@
         image-local-url   (http/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     [:<>
      (when (= index 0)
-       [rn/view [text/text-content message]])
+       [text/text-content message])
      [rn/touchable-opacity
       {:active-opacity 1
        :on-long-press  on-long-press

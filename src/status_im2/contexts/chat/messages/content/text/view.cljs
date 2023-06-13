@@ -63,7 +63,7 @@
     :status-tag
     (let [community-id (rf/sub [:community-id-by-chat-id chat-id])]
       (conj units
-            [rn/text
+            [quo/text
              (when community-id
                {:style    {:color                :blue
                            :text-decoration-line :underline}
@@ -79,21 +79,19 @@
   (case (keyword type)
     :paragraph
     (conj blocks
-          [rn/view {:size :paragraph-2}
-           (reduce
-            (fn [acc e]
-              (render-inline acc e chat-id))
-            [quo/text]
-            children)])
+          (reduce
+           (fn [acc e]
+             (render-inline acc e chat-id))
+           [quo/text {:size :paragraph-1}]
+           children))
 
     :edited-block
     (conj blocks
-          [rn/view {:size :paragraph-2}
-           (reduce
-            (fn [acc e]
-              (render-inline acc e chat-id))
-            [quo/text]
-            children)])
+          (reduce
+           (fn [acc e]
+             (render-inline acc e chat-id))
+           [quo/text {:size :paragraph-1}]
+           children))
 
     :blockquote
     (conj blocks
