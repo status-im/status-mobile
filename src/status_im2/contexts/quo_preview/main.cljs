@@ -13,6 +13,7 @@
     [status-im2.contexts.quo-preview.avatars.group-avatar :as group-avatar]
     [status-im2.contexts.quo-preview.avatars.icon-avatar :as icon-avatar]
     [status-im2.contexts.quo-preview.avatars.user-avatar :as user-avatar]
+    [status-im2.contexts.quo-preview.selectors.reactions :as selector-reactions]
     [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as wallet-user-avatar]
     [status-im2.contexts.quo-preview.banners.banner :as banner]
     [status-im2.contexts.quo-preview.buttons.button :as button]
@@ -83,6 +84,7 @@
     [status-im2.contexts.quo-preview.tabs.account-selector :as account-selector]
     [status-im2.contexts.quo-preview.tabs.segmented-tab :as segmented]
     [status-im2.contexts.quo-preview.tabs.tabs :as tabs]
+    [status-im2.contexts.quo-preview.empty-state.empty-state :as empty-state]
     [status-im2.contexts.quo-preview.tags.context-tags :as context-tags]
     [status-im2.contexts.quo-preview.tags.permission-tag :as permission-tag]
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
@@ -190,6 +192,9 @@
    :dropdowns             [{:name      :dropdown
                             :options   {:topBar {:visible true}}
                             :component dropdown/preview-dropdown}]
+   :empty-state           [{:name      :empty-state
+                            :options   {:topBar {:visible true}}
+                            :component empty-state/preview-empty-state}]
    :info                  [{:name      :info-message
                             :options   {:topBar {:visible true}}
                             :component info-message/preview-info-message}
@@ -300,7 +305,10 @@
                             :component filter/preview}
                            {:name      :selectors
                             :options   {:topBar {:visible true}}
-                            :component selectors/preview-selectors}]
+                            :component selectors/preview-selectors}
+                           {:name      :select-reactions
+                            :options   {:topBar {:visible true}}
+                            :component selector-reactions/preview}]
    :settings              [{:name      :privacy-option
                             :options   {:topBar {:visible true}}
                             :component privacy-option/preview-options}

@@ -11,19 +11,27 @@
     colors/danger-60
     (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)))
 
-(defn divider
+(defn- divider
   []
   [rn/view
    {:style               (style/divider)
     :accessible          true
     :accessibility-label :divider}])
 
-(defn action
+(defn- maybe-pressable
+  [disabled? props child]
+  (if disabled?
+    [rn/view (dissoc props :on-press) child]
+    [rn/touchable-highlight props child]))
+
+(defn- action
   [{:keys [icon
            label
            sub-label
            right-icon
+           right-text
            danger?
+           disabled?
            on-press
            add-divider?
            override-theme
@@ -33,9 +41,9 @@
     [:<> {:key label}
      (when add-divider?
        [divider])
-     [rn/touchable-highlight
+     [maybe-pressable disabled?
       {:accessibility-label accessibility-label
-       :style               (style/container sub-label)
+       :style               (style/container sub-label disabled?)
        :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90 override-theme)
        :on-press            on-press}
       [rn/view
@@ -63,14 +71,22 @@
             :style {:color
                     (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)}}
            sub-label])]
-       (when right-icon
-         [rn/view
-          {:style               style/right-icon
-           :accessible          true
-           :accessibility-label :right-icon-for-action}
-          [icon/icon right-icon
-           {:color (get-icon-color danger? override-theme)
-            :size  20}]])]]]))
+       (when (or right-text right-icon)
+         [rn/view {:style style/right-side-container}
+          (when right-text
+            [text/text
+             {:accessibility-label :right-text-for-action
+              :size                :paragraph-1
+              :style               (style/right-text override-theme)}
+             right-text])
+          (when right-icon
+            [rn/view
+             {:style               style/right-icon
+              :accessible          true
+              :accessibility-label :right-icon-for-action}
+             [icon/icon right-icon
+              {:color (get-icon-color danger? override-theme)
+               :size  20}]])])]]]))
 
 (defn action-drawer
   [sections]

@@ -1,19 +1,20 @@
 (ns status-im2.contexts.communities.overview.view
-  (:require [utils.i18n :as i18n]
-            [oops.core :as oops]
+  (:require [oops.core :as oops]
+            [quo2.components.navigation.floating-shell-button :as floating-shell-button]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
             [react-native.blur :as blur]
+            [react-native.core :as rn]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
-            [status-im2.constants :as constants]
-            [status-im2.common.scroll-page.view :as scroll-page]
-            [status-im2.contexts.communities.overview.style :as style]
-            [status-im2.contexts.communities.actions.community-options.view :as options]
-            [quo2.components.navigation.floating-shell-button :as floating-shell-button]
-            [status-im2.contexts.communities.overview.utils :as utils]
+            [status-im2.common.home.actions.view :as actions]
             [status-im2.common.password-authentication.view :as password-authentication]
+            [status-im2.common.scroll-page.view :as scroll-page]
+            [status-im2.constants :as constants]
+            [status-im2.contexts.communities.actions.community-options.view :as options]
+            [status-im2.contexts.communities.overview.style :as style]
+            [status-im2.contexts.communities.overview.utils :as utils]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn preview-user-list
@@ -54,37 +55,41 @@
                     (int (Math/ceil (layout-y %))))
                  (into #{} (map (comp :name second) channels-list)))
     :style     {:margin-top 20 :flex 1}}
-   (map
-    (fn [[category-id {:keys [chats name collapsed?]}]]
-      [rn/view
-       {:flex      1
-        :key       category-id
-        ;; on-layout fires only when the component re-renders, so
-        ;; in case the category hasn't changed, it will not be fired
-        :on-layout #(on-category-layout name (int (layout-y %)))}
-
-       (when-not (= constants/empty-category-id category-id)
-         [quo/divider-label
-          {:label            name
-           :on-press         #(collapse-category
-                               community-id
-                               category-id
-                               collapsed?)
-           :chevron-icon     (if collapsed? :main-icons/chevron-right :main-icons/chevron-down)
-           :padding-bottom   (if collapsed? 7 0)
-           :chevron-position :left}])
-       (when-not collapsed?
-         [rn/view
-          {:margin-left   8
-           :margin-top    10
-           :margin-bottom 8}
-          (map (fn [channel]
-                 [rn/view
-                  {:key        (:id channel)
-                   :margin-top 4}
-                  [quo/channel-list-item channel]])
-               chats)])])
-    channels-list)])
+   (for [[category-id {:keys [chats name collapsed?]}] channels-list]
+     [rn/view
+      {:flex      1
+       :key       category-id
+       ;; on-layout fires only when the component re-renders, so
+       ;; in case the category hasn't changed, it will not be fired
+       :on-layout #(on-category-layout name (int (layout-y %)))}
+      (when-not (= constants/empty-category-id category-id)
+        [quo/divider-label
+         {:label            name
+          :on-press         #(collapse-category
+                              community-id
+                              category-id
+                              collapsed?)
+          :chevron-icon     (if collapsed? :main-icons/chevron-right :main-icons/chevron-down)
+          :padding-bottom   (if collapsed? 7 0)
+          :chevron-position :left}])
+      (when-not collapsed?
+        [rn/view
+         {:style {:margin-left   8
+                  :margin-top    10
+                  :margin-bottom 8}}
+         (for [chat chats
+               :let [chat (assoc chat :chat-type constants/community-chat-type)]]
+           [rn/view
+            {:key   (:id chat)
+             :style {:margin-top 4}}
+            [quo/channel-list-item
+             (assoc chat
+                    :on-long-press
+                    (fn []
+                      (rf/dispatch [:show-bottom-sheet
+                                    {:content       (fn [] [actions/chat-actions chat false])
+                                     :selected-item (fn []
+                                                      [quo/channel-list-item chat])}])))]])])])])
 
 (defn request-to-join-text
   [is-open?]

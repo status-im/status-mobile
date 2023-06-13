@@ -12,7 +12,8 @@
             [utils.security.core :as security]
             [utils.transforms :as types]
             [quo2.foundations.colors :as colors]
-            [react-native.safe-area :as safe-area]))
+            [react-native.safe-area :as safe-area]
+            [clojure.string :as string]))
 
 (defn login-multiaccount
   []
@@ -178,7 +179,12 @@
   (let [{:keys [key-uid name customization-color error
                 processing password]} (rf/sub [:multiaccounts/login])
         sign-in-enabled?              (rf/sub [:sign-in-enabled?])
-        profile-picture               (rf/sub [:multiaccounts/login-profiles-picture key-uid])]
+        profile-picture               (rf/sub [:multiaccounts/login-profiles-picture key-uid])
+        error                         (if (and (some? error)
+                                               (or (= error "file is not a database")
+                                                   (string/starts-with? error "failed to set ")))
+                                        (i18n/label :t/wrong-password)
+                                        error)]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
       :keyboardVerticalOffset (- (safe-area/get-bottom))}

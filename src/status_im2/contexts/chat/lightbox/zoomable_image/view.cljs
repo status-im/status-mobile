@@ -4,7 +4,6 @@
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
     [utils.re-frame :as rf]
     [oops.core :refer [oget]]
     [react-native.orientation :as orientation]
@@ -80,7 +79,7 @@
   [{:keys [width height screen-height screen-width x-threshold-scale y-threshold-scale] :as dimensions}
    {:keys [saved-scale scale pinch-x pinch-y pinch-x-start pinch-y-start pinch-x-max pinch-y-max]
     :as   animations}
-   {:keys [focal-x focal-y] :as props}
+   {:keys [focal-x focal-y] :as state}
    rescale
    transparent?
    toggle-opacity]
@@ -135,7 +134,7 @@
              (utils/center-x animations false))
            (when (< (anim/get-val scale) y-threshold-scale)
              (utils/center-y animations false))))
-       (finalize-pinch dimensions animations props)))))
+       (finalize-pinch dimensions animations state)))))
 
 (defn pan-x-gesture
   [{:keys [width screen-width x-threshold-scale]}
@@ -204,76 +203,60 @@
              (anim/animate-decay pan-y velocity [lower-bound upper-bound])
              (anim/animate-decay pan-y-start velocity [lower-bound upper-bound]))))))))
 
+(defn- f-zoomable-image
+  [dimensions animations state rescale curr-orientation content focused? index render-data]
+  (let [{:keys [transparent? set-full-height?]} render-data
+        portrait? (= curr-orientation orientation/portrait)
+        on-tap #(utils/toggle-opacity index render-data portrait?)
+        tap (tap-gesture on-tap)
+        double-tap (double-tap-gesture dimensions animations rescale transparent? on-tap)
+        pinch (pinch-gesture dimensions animations state rescale transparent? on-tap)
+        pan-x (pan-x-gesture dimensions animations state rescale)
+        pan-y (pan-y-gesture dimensions animations state rescale)
+        composed-gestures (gesture/exclusive
+                           (gesture/simultaneous pinch pan-x pan-y)
+                           (gesture/exclusive double-tap tap))]
+    [gesture/gesture-detector {:gesture composed-gestures}
+     [reanimated/view
+      {:style (style/container dimensions
+                               animations
+                               @set-full-height?
+                               (= curr-orientation orientation/portrait))}
+      [reanimated/fast-image
+       {:source    {:uri (:image content)}
+        :native-ID (when focused? :shared-element)
+        :style     (style/image dimensions animations (:border-value render-data))}]]]))
+
 (defn zoomable-image
-  [{:keys [image-width image-height content message-id]} index args on-tap]
-  [:f>
-   (fn []
-     (let [{:keys [transparent? set-full-height?]} args
-           shared-element-id                       (rf/sub [:shared-element-id])
-           exit-lightbox-signal                    (rf/sub [:lightbox/exit-signal])
-           zoom-out-signal                         (rf/sub [:lightbox/zoom-out-signal])
-           focused?                                (= shared-element-id message-id)
-           curr-orientation                        (or (rf/sub [:lightbox/orientation])
-                                                       orientation/portrait)
-           portrait?                               (= curr-orientation orientation/portrait)
-           dimensions                              (utils/get-dimensions
-                                                    (or image-width c/default-dimension)
-                                                    (or image-height c/default-duration)
-                                                    curr-orientation
-                                                    args)
-           animations                              {:scale         (anim/use-val c/min-scale)
-                                                    :saved-scale   (anim/use-val c/min-scale)
-                                                    :pan-x-start   (anim/use-val c/init-offset)
-                                                    :pan-x         (anim/use-val c/init-offset)
-                                                    :pan-y-start   (anim/use-val c/init-offset)
-                                                    :pan-y         (anim/use-val c/init-offset)
-                                                    :pinch-x-start (anim/use-val c/init-offset)
-                                                    :pinch-x       (anim/use-val c/init-offset)
-                                                    :pinch-y-start (anim/use-val c/init-offset)
-                                                    :pinch-y       (anim/use-val c/init-offset)
-                                                    :pinch-x-max   (anim/use-val js/Infinity)
-                                                    :pinch-y-max   (anim/use-val js/Infinity)
-                                                    :rotate        (anim/use-val c/init-rotation)
-                                                    :rotate-scale  (anim/use-val c/min-scale)}
-           props                                   {:pan-x-enabled? (reagent/atom false)
-                                                    :pan-y-enabled? (reagent/atom false)
-                                                    :focal-x        (reagent/atom nil)
-                                                    :focal-y        (reagent/atom nil)}
-           rescale                                 (fn [value exit?]
-                                                     (utils/rescale-image value
-                                                                          exit?
-                                                                          dimensions
-                                                                          animations
-                                                                          props))]
-       (rn/use-effect (fn []
-                        (js/setTimeout #(reset! set-full-height? true) 500)))
-       (when platform/ios?
-         (utils/handle-orientation-change curr-orientation focused? dimensions animations props)
-         (utils/handle-exit-lightbox-signal exit-lightbox-signal
-                                            index
-                                            (anim/get-val (:scale animations))
-                                            rescale
-                                            set-full-height?))
-       (utils/handle-zoom-out-signal zoom-out-signal index (anim/get-val (:scale animations)) rescale)
-       [:f>
-        (fn []
-          (let [tap (tap-gesture #(on-tap portrait?))
-                double-tap
-                (double-tap-gesture dimensions animations rescale transparent? #(on-tap portrait?))
-                pinch
-                (pinch-gesture dimensions animations props rescale transparent? #(on-tap portrait?))
-                pan-x (pan-x-gesture dimensions animations props rescale)
-                pan-y (pan-y-gesture dimensions animations props rescale)
-                composed-gestures (gesture/exclusive
-                                   (gesture/simultaneous pinch pan-x pan-y)
-                                   (gesture/exclusive double-tap tap))]
-            [gesture/gesture-detector {:gesture composed-gestures}
-             [reanimated/view
-              {:style (style/container dimensions
-                                       animations
-                                       @set-full-height?
-                                       (= curr-orientation orientation/portrait))}
-              [reanimated/fast-image
-               {:source    {:uri (:image content)}
-                :native-ID (when focused? :shared-element)
-                :style     (style/image dimensions animations (:border-value args))}]]]))]))])
+  []
+  (let [state (utils/init-state)]
+    (fn [{:keys [image-width image-height content message-id]} index render-data]
+      (let [shared-element-id                           (rf/sub [:shared-element-id])
+            exit-lightbox-signal                        (rf/sub [:lightbox/exit-signal])
+            zoom-out-signal                             (rf/sub [:lightbox/zoom-out-signal])
+            {:keys [set-full-height? curr-orientation]} render-data
+            focused?                                    (= shared-element-id message-id)
+            dimensions                                  (utils/get-dimensions
+                                                         (or image-width c/default-dimension)
+                                                         (or image-height c/default-duration)
+                                                         curr-orientation
+                                                         render-data)
+            animations                                  (utils/init-animations)
+            rescale                                     (fn [value exit?]
+                                                          (utils/rescale-image value
+                                                                               exit?
+                                                                               dimensions
+                                                                               animations
+                                                                               state))]
+        (rn/use-effect (fn []
+                         (js/setTimeout (fn [] (reset! set-full-height? true)) 500)))
+        (when platform/ios?
+          (utils/handle-orientation-change curr-orientation focused? dimensions animations state)
+          (utils/handle-exit-lightbox-signal exit-lightbox-signal
+                                             index
+                                             (anim/get-val (:scale animations))
+                                             rescale
+                                             set-full-height?))
+        (utils/handle-zoom-out-signal zoom-out-signal index (anim/get-val (:scale animations)) rescale)
+        [:f> f-zoomable-image dimensions animations state rescale curr-orientation content focused?
+         index render-data]))))

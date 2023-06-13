@@ -6,7 +6,8 @@
             [react-native.masked-view :as masked-view]
             [reagent.core :as reagent]
             [utils.collection :as utils.collection]
-            [utils.number :as utils.number]))
+            [utils.number :as utils.number]
+            [react-native.gesture :as gesture]))
 
 (def default-tab-size 32)
 (def unread-count-offset 3)
@@ -131,7 +132,8 @@
                style
                size
                blur?
-               override-theme]
+               override-theme
+               in-scroll-view?]
         :or   {fade-end-percentage fade-end-percentage
                fade-end?           false
                scrollable?         false
@@ -142,7 +144,9 @@
         [rn/view {:style {:margin-top (- (dec unread-count-offset))}}
          [masked-view-wrapper
           {:fade-end-percentage (get @fading :fade-end-percentage) :fade-end? fade-end?}
-          [rn/flat-list
+          [(if in-scroll-view?
+             gesture/flat-list
+             rn/flat-list)
            (merge
             (dissoc props
              :default-active

@@ -1,10 +1,11 @@
 (ns quo2.components.drawers.drawer-buttons.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def outer-container
-  {:height        216
-   :border-radius 20})
+  {:height                  216
+   :border-top-left-radius  20
+   :border-top-right-radius 20
+   :overflow                :hidden})
 
 (def top-card
   {:flex                    1
@@ -12,9 +13,7 @@
    :padding-horizontal      20
    :border-top-left-radius  20
    :border-top-right-radius 20
-   :background-color        (if platform/ios?
-                              colors/neutral-80-opa-80-blur
-                              colors/neutral-80)})
+   :background-color        colors/neutral-80-opa-80-blur})
 
 (def bottom-card
   {:position                :absolute
@@ -33,11 +32,11 @@
    :justify-content :space-between})
 
 (def bottom-icon
-  {:border-radius   40
+  {:border-radius   32
    :border-width    1
    :margin-left     24
-   :height          28
-   :width           28
+   :height          32
+   :width           32
    :justify-content :center
    :align-items     :center
    :border-color    colors/white-opa-5})

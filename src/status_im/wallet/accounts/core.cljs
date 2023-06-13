@@ -71,7 +71,7 @@
 (defn derive-and-store-account
   [key-uid path hashed-password type accounts]
   (fn [value]
-    (let [{:keys [id error]} (types/json->clj value)]
+    (let [{:keys [id error keyUid]} (types/json->clj value)]
       (if error
         (re-frame/dispatch [::new-account-error :password-error error])
         (native-module/multiaccount-derive-addresses
@@ -96,6 +96,7 @@
                        [:wallet.accounts/account-stored
                         {:address    address
                          :public-key publicKey
+                         :key-uid    keyUid
                          :type       type
                          :path       (normalize-path path)}])))))))))))))
 
@@ -192,13 +193,33 @@
 (rf/defn save-new-account
   [{:keys [db] :as cofx}]
   (let [{:keys [latest-derived-path]} (:multiaccount db)
-        {:keys [account type]}        (:add-account db)
-        accounts                      (:multiaccount/accounts db)
-        new-accounts                  (conj accounts account)]
+        {:keys [account type]} (:add-account db)
+        {:keys [address name key-uid]} account
+        main-key-uid (or key-uid (get-in db [:multiaccount :key-uid]))
+        accounts (:multiaccount/accounts db)
+        new-accounts (conj accounts account)
+        ;; Note(rasom): in case if a new account is created using a mnemonic or
+        ;; a private key we add a new keypair to the database, otherwise we just
+        ;; keep using "profile" keypair
+        [method params]
+        (if key-uid
+          ["accounts_saveKeypair"
+           [{:key-uid                    main-key-uid
+             :name                       name
+             :type                       (if (= type :seed)
+                                           "seed"
+                                           "key")
+             :derived-from               address
+             :last-used-derivation-index 0
+             :synced-from                ""
+             :clock                      0
+             :accounts                   [account]}]]
+          ["accounts_saveAccount"
+           [(assoc account :key-uid key-uid)]])]
     (when account
       (rf/merge cofx
-                {:json-rpc/call [{:method     "accounts_saveAccounts"
-                                  :params     [[account]]
+                {:json-rpc/call [{:method     method
+                                  :params     params
                                   :on-success #(re-frame/dispatch [::wallet/restart])}]
                  :db            (-> db
                                     (assoc :multiaccount/accounts new-accounts)
@@ -293,8 +314,8 @@
                        color               (assoc :color color)
                        (not (nil? hidden)) (assoc :hidden hidden))
         new-accounts (replace {account new-account} accounts)]
-    {:json-rpc/call [{:method     "accounts_saveAccounts"
-                      :params     [[new-account]]
+    {:json-rpc/call [{:method     "accounts_saveAccount"
+                      :params     [new-account]
                       :on-success #()}]
      :db            (assoc db :multiaccount/accounts new-accounts)}))
 

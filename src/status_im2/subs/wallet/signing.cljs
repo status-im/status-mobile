@@ -57,7 +57,7 @@
  (fn [[prices {:keys [code]} {:keys [symbol]}]]
    [(name symbol)
     code
-    (get-in prices [symbol (keyword code) :price])]))
+    (get-in prices [symbol (keyword code)])]))
 
 (re-frame/reg-sub
  :signing/priority-fee-suggestions-range

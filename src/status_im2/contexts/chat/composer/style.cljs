@@ -63,7 +63,9 @@
 
 (defn input-text
   [{:keys [saved-emoji-kb-extra-height]}
-   {:keys [focused? maximized?]}]
+   {:keys [focused? maximized?]}
+   {:keys [link-previews? images]}
+   max-height]
   (merge typography/paragraph-1
          {:color               (colors/theme-colors :black :white)
           :text-align-vertical :top
@@ -71,6 +73,9 @@
           :top                 0
           :left                0
           :right               (when (or focused? platform/ios?) 0)
+          :max-height          (- max-height
+                                  (if link-previews? constants/links-container-height 0)
+                                  (if (seq images) constants/images-container-height 0))
           :padding-bottom      (when @maximized? 0)}))
 (defn background
   [opacity background-y window-height]
@@ -104,3 +109,19 @@
    :blur-radius (if platform/ios? 20 10)
    :blur-type   (colors/theme-colors :light :dark)
    :blur-amount 20})
+
+(defn shell-container
+  [bottom translate-y]
+  (reanimated/apply-animations-to-style
+   {:bottom    bottom ; we use height of the input directly as bottom position
+    :transform [{:translate-y translate-y}]}
+   {:position :absolute
+    :left     0
+    :right    0}))
+
+(defn shell-button
+  [translate-y opacity]
+  (reanimated/apply-animations-to-style
+   {:transform [{:translate-y translate-y}]
+    :opacity   opacity}
+   {}))

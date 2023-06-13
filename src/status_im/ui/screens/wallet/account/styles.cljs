@@ -1,12 +1,15 @@
 (ns status-im.ui.screens.wallet.account.styles
-  (:require [quo.design-system.colors :as colors]
+  (:require [clojure.string :as string]
+            [quo.design-system.colors :as colors]
             [status-im.ui.components.animation :as animation]))
 
 (defn card
   [window-width color]
   {:width            (- window-width 30)
    :height           161
-   :background-color color
+   :background-color (if (string/blank? color)
+                       colors/blue
+                       color)
    :shadow-offset    {:width 0 :height 2}
    :shadow-radius    8
    :shadow-opacity   1

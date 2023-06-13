@@ -103,7 +103,7 @@
 (rf/defn messages-loaded
   "Loads more messages for current chat"
   {:events [::messages-loaded]}
-  [{db :db} chat-id session-id {:keys [cursor messages]}]
+  [{db :db} chat-id session-id {:keys [cursor messages]} on-loaded]
   (when-not (and (get-in db [:pagination-info chat-id :messages-initialized?])
                  (not= session-id
                        (get-in db [:pagination-info chat-id :messages-initialized?])))
@@ -141,6 +141,8 @@
                                       [:pagination-info chat-id
                                        :cursor-clock-value])
           clock-value (when cursor (cursor->clock-value cursor))]
+      (when on-loaded
+        (on-loaded (count new-messages)))
       {:db (-> db
                (update-in [:pagination-info chat-id :cursor-clock-value]
                           #(if (and (seq cursor) (or (not %) (< clock-value %)))
@@ -161,7 +163,7 @@
 
 (rf/defn load-more-messages
   {:events [:chat.ui/load-more-messages]}
-  [{:keys [db]} chat-id first-request]
+  [{:keys [db]} chat-id first-request on-loaded]
   (when-let [session-id (get-in db [:pagination-info chat-id :messages-initialized?])]
     (when (and
            (not (get-in db [:pagination-info chat-id :all-loaded?]))
@@ -175,13 +177,13 @@
             chat-id
             cursor
             constants/default-number-of-messages
-            #(re-frame/dispatch [::messages-loaded chat-id session-id %])
+            #(re-frame/dispatch [::messages-loaded chat-id session-id % on-loaded])
             #(re-frame/dispatch [::failed-loading-messages chat-id session-id %]))))))))
 
 (rf/defn load-more-messages-for-current-chat
   {:events [:chat.ui/load-more-messages-for-current-chat]}
-  [{:keys [db] :as cofx}]
-  (load-more-messages cofx (:current-chat-id db) false))
+  [{:keys [db] :as cofx} on-loaded]
+  (load-more-messages cofx (:current-chat-id db) false on-loaded))
 
 (rf/defn load-messages
   [{:keys [db now] :as cofx} chat-id]
@@ -191,4 +193,4 @@
                :utils/dispatch-later [{:ms 50 :dispatch [:chat.ui/mark-all-read-pressed chat-id]}
                                       (when-not (get-in cofx [:db :chats chat-id :public?])
                                         {:ms 100 :dispatch [:pin-message/load-pin-messages chat-id]})]}
-              (load-more-messages chat-id true))))
+              (load-more-messages chat-id true nil))))

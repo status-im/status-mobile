@@ -120,6 +120,7 @@
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
 (reg-root-key-sub :chats-home-list :chats-home-list)
 (reg-root-key-sub :chats/recording? :chats/recording?)
+(reg-root-key-sub :chat/reactions-authors :chat/reactions-authors)
 
 ;;lightbox
 (reg-root-key-sub :lightbox/exit-signal :lightbox/exit-signal)

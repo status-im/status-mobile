@@ -28,7 +28,7 @@
  (fn [multiaccount] (:installation-name multiaccount)))
 
 (re-frame/reg-sub
- :pairing/pairing-in-progress
+ :pairing/pairing-status
  :<- [:syncing]
  (fn [syncing]
-   (:pairing-in-progress? syncing)))
+   (:pairing-status syncing)))

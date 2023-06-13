@@ -92,7 +92,7 @@
     [flat-list
      (merge props
             {:data      data
-             :render-fn (fn [item]
-                          (if (:header? item)
-                            (render-section-header-fn item)
-                            (render-fn item)))})]))
+             :render-fn (fn [p1 p2 p3 p4]
+                          (if (:header? p1)
+                            [render-section-header-fn p1 p2 p3 p4]
+                            [render-fn p1 p2 p3 p4]))})]))

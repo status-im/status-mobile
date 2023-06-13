@@ -1,9 +1,11 @@
 (ns status-im2.setup.i18n-resources
   (:require [clojure.string :as string]
-            [utils.i18n :as i18n]
-            [react-native.languages :as react-native-languages]))
+            [utils.i18n :as i18n]))
 
-(def default-device-language (react-native-languages/get-lang-keyword))
+;; FIXME: that should be replaced with `(react-native-languages/get-lang-keyword)`
+;; in order for languages/translations to work
+;; see https://github.com/status-im/status-mobile/issues/16058 for details
+(def default-device-language :en)
 
 (def languages
   #{:ar :bn :de :el :en :es :es_419 :es_AR :fil :fr :hi :id :in :it :ja :ko :ms :nl :pl :pt :pt_BR :ru

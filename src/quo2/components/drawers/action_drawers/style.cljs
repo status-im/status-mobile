@@ -11,9 +11,10 @@
    :flex-direction   :row})
 
 (defn container
-  [sub-label]
+  [sub-label disabled?]
   {:border-radius     12
    :height            (if sub-label 58 50)
+   :opacity           (when disabled? 0.3)
    :margin-horizontal 8})
 
 (defn row-container
@@ -33,8 +34,17 @@
   {:flex            1
    :justify-content :center})
 
+(def right-side-container
+  {:flex-direction :row
+   :align-items    :center})
+
 (def right-icon
   {:height        20
    :margin-top    :auto
    :margin-bottom :auto
    :width         20})
+
+(defn right-text
+  [override-theme]
+  {:color        (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)
+   :margin-right 12})

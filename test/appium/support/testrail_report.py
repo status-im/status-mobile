@@ -210,6 +210,7 @@ class TestrailReport(BaseTestReport):
                  'status_id': self.outcomes['undefined_fail'] if last_testrun.error else self.outcomes['passed'],
                  'comment': comment})
 
+        print("RESULTS:\n%s" % "\n".join(str(i) for i in data))
         results = self.post('add_results_for_cases/%s' % self.run_id, data={"results": data})
         try:
             results[0]

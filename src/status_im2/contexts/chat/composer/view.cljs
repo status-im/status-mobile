@@ -4,6 +4,7 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]
@@ -62,6 +63,8 @@
     (effects/reply props animations subs)
     (effects/update-input-mention props state subs)
     (effects/edit-mentions props state subs)
+    (effects/link-previews props state animations subs)
+    (effects/images props state animations subs)
     [:<>
      [sub-view/shell-button state animations subs]
      [mentions/view props state animations max-height cursor-pos
@@ -70,7 +73,7 @@
       (:reply subs)
       (:edit subs)]
      [gesture/gesture-detector
-      {:gesture (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
+      {:gesture (drag-gesture/drag-gesture props state animations subs dimensions keyboard-shown)}
       [reanimated/view
        {:style     (style/sheet-container insets state animations)
         :on-layout #(handler/layout % state blur-height)}
@@ -94,6 +97,7 @@
            :on-content-size-change   #(handler/content-size-change %
                                                                    state
                                                                    animations
+                                                                   subs
                                                                    dimensions
                                                                    (or keyboard-shown (:edit subs)))
            :on-scroll                #(handler/scroll % props state animations dimensions)
@@ -106,12 +110,12 @@
            :multiline                true
            :placeholder              (i18n/label :t/type-something)
            :placeholder-text-color   (colors/theme-colors colors/neutral-40 colors/neutral-50)
-           :style                    (style/input-text props state)
+           :style                    (style/input-text props state subs max-height)
            :max-length               constants/max-text-size
            :accessibility-label      :chat-message-input}]]
-        [gradients/view props state animations show-bottom-gradient?]]
-       [link-preview/view]
-       [images/images-list]
+        [gradients/view props state animations show-bottom-gradient?]
+        [link-preview/view]
+        [images/images-list]]
        [actions/view props state animations window-height insets subs]]]]))
 
 (defn composer
@@ -128,7 +132,7 @@
                        :background-y  background-y}
         props         (utils/init-props)
         state         (utils/init-state)]
-    [rn/view
+    [rn/view (when platform/ios? {:style {:z-index 1}})
      [reanimated/view {:style (style/background opacity background-y window-height)}]
      [sub-view/blur-view blur-height (:focused? state)]
      [:f> sheet-component extra-params props state]]))

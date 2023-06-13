@@ -5,7 +5,6 @@
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
     [status-im2.contexts.chat.lightbox.view :as lightbox]
     [status-im2.contexts.chat.messages.view :as chat]
-    [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
@@ -53,7 +52,8 @@
      :component shell/shell-stack}
 
     {:name      :chat
-     :options   {:insets {:top? true}}
+     :options   {:insets     {:top? true}
+                 :popGesture false}
      :component chat/chat}
 
     {:name      :start-a-new-chat
@@ -76,10 +76,6 @@
      :options   {:sheet? true}
      :component photo-selector/photo-selector}
 
-    {:name      :album-selector
-     :options   {:sheet? true}
-     :component album-selector/album-selector}
-
     {:name      :new-contact
      :options   {:sheet? true}
      :component add-new-contact/new-contact}
@@ -95,12 +91,11 @@
      :component communities.overview/overview}
 
     {:name      :settings-syncing
-     :options   (options/statusbar true)
+     :options   (merge options/dark-screen {:insets {:top? true}})
      :component settings-syncing/view}
 
     {:name      :settings-setup-syncing
-     :options   (options/statusbar true)
-
+     :options   (merge options/dark-screen {:insets {:top? true}})
      :component settings-setup-syncing/view}
 
     ;; Onboarding
@@ -160,7 +155,8 @@
      :component sign-in/view}
 
     {:name      :syncing-progress
-     :options   {:layout options/onboarding-layout}
+     :options   {:layout     options/onboarding-layout
+                 :popGesture false}
      :component syncing-devices/view}
 
     {:name      :syncing-results

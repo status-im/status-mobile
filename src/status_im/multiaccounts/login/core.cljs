@@ -165,6 +165,15 @@
      (wallet/request-current-block-update))
    (prices/update-prices)))
 
+(rf/defn login-local-paired-user
+  {:events [:multiaccounts.login/local-paired-user]}
+  [{:keys [db]}]
+  (let [{:keys [key-uid name password]} (get-in db [:syncing :multiaccount])]
+    {::login [key-uid
+              (types/clj->json {:name    name
+                                :key-uid key-uid})
+              password]}))
+
 (rf/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
   [{:keys [db]}]
@@ -294,7 +303,7 @@
 (re-frame/reg-fx
  ;;TODO: this could be replaced by a single API call on status-go side
  ::initialize-wallet
- (fn [[network-id callback]]
+ (fn [[network-id network callback]]
    (-> (js/Promise.all
         (clj->js
          [(js/Promise.
@@ -304,10 +313,29 @@
                              :on-error   reject})))
           (js/Promise.
            (fn [resolve _]
+             (json-rpc/call
+              {:method "wallet_addEthereumChain"
+               :params
+               [{:isTest                 false
+                 :tokenOverrides         []
+                 :rpcUrl                 (get-in network [:config :UpstreamConfig :URL])
+                 :chainColor             "green"
+                 :chainName              (:name network)
+                 :nativeCurrencyDecimals 10
+                 :shortName              "erc20"
+                 :layer                  1
+                 :chainId                (int network-id)
+                 :enabled                false
+                 :fallbackURL            (get-in network [:config :UpstreamConfig :URL])}]
+               :on-success resolve
+               :on-error (fn [_] (resolve nil))})))
+          (js/Promise.
+           (fn [resolve _]
              (json-rpc/call {:method     "wallet_getTokens"
                              :params     [(int network-id)]
                              :on-success resolve
-                             :on-error   #(resolve nil)})))
+                             :on-error   (fn [_]
+                                           (resolve nil))})))
           (js/Promise.
            (fn [resolve reject]
              (json-rpc/call {:method     "wallet_getCustomTokens"
@@ -318,7 +346,7 @@
              (json-rpc/call {:method     "wallet_getSavedAddresses"
                              :on-success resolve
                              :on-error   reject})))]))
-       (.then (fn [[accounts tokens custom-tokens favourites]]
+       (.then (fn [[accounts _ tokens custom-tokens favourites]]
                 (callback accounts
                           (normalize-tokens network-id tokens)
                           (mapv #(update % :symbol keyword) custom-tokens)
@@ -365,22 +393,27 @@
 (rf/defn redirect-to-root
   "Decides which root should be initialised depending on user and app state"
   [{:keys [db] :as cofx}]
-  (cond
-    (get db :onboarding-2/new-account?)
-    {:dispatch [:onboarding-2/finalize-setup]}
+  (let [pairing-completed? (= (get-in db [:syncing :pairing-status]) :completed)]
+    (cond
+      pairing-completed?
+      {:db       (dissoc db :syncing)
+       :dispatch [:init-root :syncing-results]}
 
-    (get db :tos/accepted?)
-    (rf/merge
-     cofx
-     (multiaccounts/switch-theme nil :shell-stack)
-     (navigation/init-root :shell-stack))
+      (get db :onboarding-2/new-account?)
+      {:dispatch [:onboarding-2/finalize-setup]}
 
-    :else
-    {:dispatch [:init-root :tos]}))
+      (get db :tos/accepted?)
+      (rf/merge
+       cofx
+       (multiaccounts/switch-theme nil :shell-stack)
+       (navigation/init-root :shell-stack))
+
+      :else
+      {:dispatch [:init-root :tos]})))
 
 (rf/defn get-settings-callback
   {:events [::get-settings-callback]}
-  [{:keys [db] :as cofx} settings pairing-in-progress?]
+  [{:keys [db] :as cofx} settings]
   (let [{:networks/keys [current-network networks]
          :as            settings}
         (data-store.settings/rpc->settings settings)
@@ -412,8 +445,7 @@
               (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/update-seen-state)
               (activity-center/notifications-fetch-unread-count)
-              (when-not pairing-in-progress?
-                (redirect-to-root)))))
+              (redirect-to-root))))
 
 (re-frame/reg-fx
  ::open-last-chat
@@ -449,6 +481,7 @@
   [{:keys [db] :as cofx}]
   (let [{:networks/keys [current-network networks]} db
         notifications-enabled? (get-in db [:multiaccount :notifications-enabled?])
+        current-network-config (get networks current-network)
         network-id (str (get-in networks
                                 [current-network :config :NetworkId]))
         remote-push-notifications-enabled?
@@ -460,6 +493,7 @@
                         :on-disabled #(log/info "eip1559 is not activated")}
                        ::initialize-wallet
                        [network-id
+                        current-network-config
                         (fn [accounts tokens custom-tokens favourites]
                           (re-frame/dispatch [::initialize-wallet
                                               accounts tokens custom-tokens favourites]))]
@@ -490,9 +524,8 @@
 
 (rf/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
-  (let [auth-method          (:auth-method db)
-        new-auth-method      (get-new-auth-method auth-method save-password?)
-        pairing-in-progress? (get-in db [:syncing :pairing-in-progress?])]
+  (let [auth-method     (:auth-method db)
+        new-auth-method (get-new-auth-method auth-method save-password?)]
     (log/debug "[login] login-only-events"
                "auth-method"     auth-method
                "new-auth-method" new-auth-method)
@@ -500,7 +533,7 @@
               {:db (assoc db :chats/loading? true)
                :json-rpc/call
                [{:method     "settings_getSettings"
-                 :on-success #(re-frame/dispatch [::get-settings-callback % pairing-in-progress?])}]}
+                 :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))

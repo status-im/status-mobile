@@ -72,9 +72,15 @@
  :chats/home-list-chats
  :<- [:chats/chats]
  :<- [:chats-home-list]
- (fn [[chats active-chats]]
+ :<- [:multiaccount/public-key]
+ (fn [[chats active-chats my-public-key]]
    (reduce #(if-let [item (get chats %2)]
-              (conj %1 item)
+              (let [group-chat-member? (and (chat.events/group-chat? item)
+                                            (group-chats.db/member? my-public-key item))]
+                (conj %1
+                      (assoc item
+                             :group-chat-member?
+                             group-chat-member?)))
               %1)
            []
            active-chats)))
@@ -282,7 +288,7 @@
  :profile/customization-color
  :<- [:multiaccounts/multiaccounts]
  (fn [multiaccounts [_ id]]
-   (:customization-color (get multiaccounts id))))
+   (or (:customization-color (get multiaccounts id)) constants/profile-default-color)))
 
 (re-frame/reg-sub
  :chats/unread-messages-number

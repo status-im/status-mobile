@@ -22,4 +22,4 @@
 (defn buttons
   [insets]
   {:margin        default-margin
-   :margin-bottom (+ default-margin (:bottom insets))})
+   :margin-bottom (+ 14 (:bottom insets))})

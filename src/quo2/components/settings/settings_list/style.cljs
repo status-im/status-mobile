@@ -5,42 +5,51 @@
   {:flex 1})
 
 (defn title
-  []
+  [override-theme]
   {:color (colors/theme-colors
            colors/neutral-100
-           colors/white)})
+           colors/white
+           override-theme)})
 
 (def icon
-  {:margin-right 12})
+  {:margin-right 12
+   :align-self   :flex-start})
 
 (def item-container
   {:justify-content    :space-between
-   :height             48
-   :flex-direction     :row
    :align-items        :center
    :padding-horizontal 12
    :padding-vertical   13})
 
+(def inner-container
+  {:flex-direction :row
+   :align-items    :center})
+
 (defn dot
-  []
+  [override-theme]
   {:width            15
    :height           15
    :border-radius    8
    :margin-right     14.5
    :background-color (colors/theme-colors (colors/custom-color :blue 50)
-                                          (colors/custom-color :blue 60))})
+                                          (colors/custom-color :blue 60)
+                                          override-theme)})
 
 (defn community-icon
-  [index]
+  [index override-theme]
   {:width         24
    :height        24
    :border-width  1
-   :border-color  (colors/theme-colors colors/white colors/black)
+   :border-color  (colors/theme-colors colors/white colors/black override-theme)
    :border-radius 12
    :position      :absolute
-   :top           "-50%"
    :right         (* 20 index)})
 
 (def communities-container
-  {:flex         1
-   :margin-right 12})
+  {:flex            1
+   :justify-content :center
+   :align-content   :center
+   :margin-right    12})
+
+(def tag-container
+  {:margin-top 8})

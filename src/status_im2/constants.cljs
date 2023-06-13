@@ -71,12 +71,12 @@
 (def request-to-join-pending-state 1)
 
 (def reactions
-  {emoji-reaction-love        :i/love
-   emoji-reaction-thumbs-up   :i/thumbs-up
-   emoji-reaction-thumbs-down :i/thumbs-down
-   emoji-reaction-laugh       :i/laugh
-   emoji-reaction-sad         :i/sad
-   emoji-reaction-angry       :i/angry})
+  {emoji-reaction-love        :reaction/love
+   emoji-reaction-thumbs-up   :reaction/thumbs-up
+   emoji-reaction-thumbs-down :reaction/thumbs-down
+   emoji-reaction-laugh       :reaction/laugh
+   emoji-reaction-sad         :reaction/sad
+   emoji-reaction-angry       :reaction/angry})
 
 (def ^:const invitation-state-unknown 0)
 (def ^:const invitation-state-requested 1)
@@ -277,9 +277,10 @@
 (def ^:const local-pairing-event-transfer-error "transfer-error")
 
 ;; receiver events
-(def ^:const local-pairing-event-received-amount "received-account")
+(def ^:const local-pairing-event-received-account "received-account")
 (def ^:const local-pairing-event-process-success "process-success")
 (def ^:const local-pairing-event-process-error "process-error")
+(def ^:const local-pairing-event-received-installation "received-installation")
 
 (def ^:const local-pairing-event-errors
   #{local-pairing-event-connection-error
@@ -330,3 +331,5 @@
 (def ^:const auth-method-biometric "biometric")
 (def ^:const auth-method-biometric-prepare "biometric-prepare")
 (def ^:const auth-method-none "none")
+
+(def ^:const image-description-in-lightbox? false)

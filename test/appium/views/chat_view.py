@@ -220,11 +220,12 @@ class ChatElementByText(Text):
     def wait_for_status_to_be(self, expected_status: str, timeout: int = 30):
         self.driver.info("Waiting for message to be sent for %s sec" % timeout)
         start_time = time.time()
+        current_status = self.status
         while time.time() - start_time <= timeout:
-            if self.status == expected_status:
+            if current_status == expected_status:
                 return
             time.sleep(1)
-        raise TimeoutException("Message status was not changed to %s" % expected_status)
+        raise TimeoutException("Message status was not changed to %s, it's %s" % (expected_status, current_status))
 
     @property
     def sent_status_checkmark(self) -> object:
@@ -278,14 +279,15 @@ class ChatElementByText(Text):
         try:
             self.driver.info("Trying to access image inside message with text '%s'" % self.message_text)
             ChatElementByText(self.driver, self.message_text).wait_for_sent_state(60)
-            return Button(self.driver, xpath='%s//android.view.ViewGroup/android.widget.ImageView' % self.locator)
+            return Button(self.driver, xpath="%s//*[@content-desc='image-message']" % self.locator)
         except NoSuchElementException:
             self.driver.fail("No image is found in message!")
 
     @property
     def image_container_in_message(self):
         try:
-            self.driver.info("Trying to access images (image container) inside message with text '%s'" % self.message_text)
+            self.driver.info(
+                "Trying to access images (image container) inside message with text '%s'" % self.message_text)
             ChatElementByText(self.driver, self.message_text).wait_for_sent_state(60)
             return Button(self.driver, xpath='%s//*[@content-desc="image-container"]' % self.locator)
         except NoSuchElementException:
@@ -363,8 +365,9 @@ class CommunityView(HomeView):
         self.invite_button = Button(self.driver, accessibility_id="community-invite-people")
 
         # Community info page
-        self.community_membership_request_value = Text(self.driver, translation_id="members-label",
-                                                       suffix='/following-sibling::android.view.ViewGroup/android.widget.TextView')
+        self.community_membership_request_value = Text(
+            self.driver, translation_id="members-label",
+            suffix='/following-sibling::android.view.ViewGroup/android.widget.TextView')
         self.members_button = Button(self.driver, translation_id="members-label")
         self.community_info_picture = Button(self.driver, accessibility_id="chat-icon")
         self.leave_community_button = Button(self.driver, translation_id="leave-community")
@@ -392,7 +395,6 @@ class CommunityView(HomeView):
         self.join_button.click()
         self.checkbox_button.scroll_and_click()
         self.join_community_button.scroll_and_click()
-
 
     def get_channel(self, channel_name: str):
         self.driver.info("Getting  %s channel element in community" % channel_name)
@@ -732,9 +734,11 @@ class ChatView(BaseView):
         self.chat_message_input = ChatMessageInput(self.driver)
         self.cancel_reply_button = Button(self.driver, accessibility_id="reply-cancel-button")
         self.url_preview_composer = Button(self.driver, accessibility_id="url-preview")
-        self.url_preview_composer_text = Text(self.driver, xpath='//*[@content-desc="url-preview"]//*[@content-desc="title"]')
-        self.quote_username_in_message_input = EditBox(self.driver,
-                                                       xpath="//*[@content-desc='reply-cancel-button']/preceding::android.widget.TextView[2]")
+        self.url_preview_composer_text = Text(self.driver,
+                                              xpath='//*[@content-desc="url-preview"]//*[@content-desc="title"]')
+        self.quote_username_in_message_input = EditBox(
+            self.driver,
+            xpath="//*[@content-desc='reply-cancel-button']/preceding::android.widget.TextView[3]")
         self.chat_item = Button(self.driver, xpath="(//*[@content-desc='chat-item'])[1]")
         self.chat_name_editbox = EditBox(self.driver, accessibility_id="chat-name-input")
         self.commands_button = CommandsButton(self.driver)
@@ -938,10 +942,10 @@ class ChatView(BaseView):
         self.driver.info("Looking for a message by text: %s" % chat_element.exclude_emoji(text))
         return chat_element
 
-    def verify_message_is_under_today_text(self, text, errors):
+    def verify_message_is_under_today_text(self, text, errors, timeout=10):
         self.driver.info("Verifying that '%s' is under today" % text)
         message_element = self.chat_element_by_text(text)
-        message_element.wait_for_visibility_of_element()
+        message_element.wait_for_visibility_of_element(timeout)
         message_location = message_element.find_element().location['y']
         today_text_element = self.element_by_text('Today').find_element()
         today_location = today_text_element.location['y']
@@ -996,10 +1000,9 @@ class ChatView(BaseView):
 
     def set_reaction(self, message: str, emoji: str = 'thumbs-up', emoji_message=False):
         self.driver.info("Setting '%s' reaction" % emoji)
-        key = emojis[emoji]
         # Audio message is obvious should be tapped not on audio-scroll-line
         # so we tap on its below element as exception here (not the case for link/tag message!)
-        element = Button(self.driver, accessibility_id='emoji-picker-%s' % key)
+        element = Button(self.driver, accessibility_id='reaction-%s' % emoji)
         if message == 'audio':
             self.audio_message_in_chat_timer.long_press_element()
         else:
@@ -1044,8 +1047,10 @@ class ChatView(BaseView):
         self.chat_message_input.click()
         self.show_stickers_button.click()
         self.get_stickers.click()
-        element = Button(self.driver,
-                         xpath="//*[@content-desc='sticker-pack-name'][@text='%s']/..//*[@content-desc='sticker-pack-price']" % pack_name)
+        element = Button(
+            self.driver,
+            xpath="//*[@content-desc='sticker-pack-name'][@text='%s']/..//*[@content-desc='sticker-pack-price']"
+                  % pack_name)
         element.scroll_to_element(depth=21)
         element.click()
         element.wait_for_invisibility_of_element()
@@ -1119,7 +1124,7 @@ class ChatView(BaseView):
             "%I:%M %p")
         timestamp_obj = datetime.strptime(timestamp, '%I:%M %p')
         possible_timestamps_obj = [timestamp_obj + timedelta(0, 0, 0, 0, 1), timestamp_obj,
-                                   timestamp_obj - timedelta(0, 0, 0, 0, 1),  timestamp_obj - timedelta(0, 0, 0, 0, 2)]
+                                   timestamp_obj - timedelta(0, 0, 0, 0, 1), timestamp_obj - timedelta(0, 0, 0, 0, 2)]
         timestamps = list(map(lambda x: x.strftime("%I:%M %p"), possible_timestamps_obj))
         final_timestamps = [t[1:] if t[0] == '0' else t for t in timestamps]
         return final_timestamps
@@ -1147,7 +1152,8 @@ class ChatView(BaseView):
         self.chat_message_input.send_keys("@")
         try:
             self.mentions_list.wait_for_element()
-            self.driver.find_element(MobileBy.XPATH, "//*[@content-desc='user-list']//*[@text='%s']" % user_name).click()
+            self.driver.find_element(MobileBy.XPATH,
+                                     "//*[@content-desc='user-list']//*[@text='%s']" % user_name).click()
         except TimeoutException:
             self.driver.fail("Mentions list is not shown")
 
@@ -1161,7 +1167,7 @@ class ChatView(BaseView):
         self.allow_button.click_if_shown()
         [self.get_image_by_index(i).click() for i in indexes]
         self.images_confirm_selection_button.click()
-        self.chat_message_input.set_value(description)
+        self.chat_message_input.send_keys(description)
         self.send_message_button.click()
 
     @staticmethod

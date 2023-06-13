@@ -15,18 +15,13 @@
    :flex-direction  :row
    :left            0
    :right           0
-   :top             0
+   :top             20
    :justify-content :center
    :z-index         1})
 
-(defn clear-container
-  []
-  {:background-color   (colors/theme-colors colors/neutral-10 colors/neutral-80)
-   :padding-horizontal 12
-   :padding-vertical   5
-   :border-radius      10
-   :position           :absolute
-   :right              20})
+(def clear-container
+  {:position :absolute
+   :right    20})
 
 (defn close-button-container
   []
