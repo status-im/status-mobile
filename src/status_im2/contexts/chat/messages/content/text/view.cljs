@@ -63,7 +63,7 @@
     :status-tag
     (let [community-id (rf/sub [:community-id-by-chat-id chat-id])]
       (conj units
-            [quo/text
+            [rn/text
              (when community-id
                {:style    {:color                :blue
                            :text-decoration-line :underline}
