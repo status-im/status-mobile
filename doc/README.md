@@ -20,6 +20,8 @@
 
 [Debugging](debugging.md)
 
+[Patching](patching.md)
+
 
 ## Testing
 

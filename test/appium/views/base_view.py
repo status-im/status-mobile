@@ -369,7 +369,7 @@ class BaseView(object):
 
     def hide_keyboard_if_shown(self):
         if self.driver.is_keyboard_shown():
-            self.driver.hide_keyboard()
+            self.click_system_back_button()
 
     def click_system_back_button(self, times=1):
         self.driver.info('Click system back button')
@@ -598,14 +598,17 @@ class BaseView(object):
         sign_in_view.sign_in(password)
 
     def jump_to_messages_home(self):
+        self.hide_keyboard_if_shown()
         self.jump_to_button.click()
         self.chats_tab.click_until_presence_of_element(self.jump_to_button)
 
     def jump_to_communities_home(self):
+        self.hide_keyboard_if_shown()
         self.jump_to_button.click()
         self.communities_tab.click_until_presence_of_element(self.jump_to_button)
 
     def jump_to_card_by_text(self, text: str):
+        self.hide_keyboard_if_shown()
         self.jump_to_button.click()
         self.element_by_text(text).click()
 

@@ -50,8 +50,23 @@
                   :label               "a sample label"
                   :right-icon          :i/friend
                   :accessibility-label :first-element}]]])
-    (h/is-truthy (h/get-by-label-text "right-icon-for-action"))
-    (h/is-truthy (h/query-by-label-text "left-icon-for-action")))
+    (h/is-truthy (h/query-by-label-text :right-icon-for-action))
+    (h/is-truthy (h/query-by-label-text :left-icon-for-action)))
+
+  (h/test "renders right text besides icon when non-nil"
+    (h/render [action-drawer/action-drawer
+               [[{:icon       :i/friend
+                  :label      "a sample label"
+                  :right-text "20+"
+                  :right-icon :i/friend}]]])
+    (h/is-truthy (h/query-by-label-text :right-text-for-action)))
+
+  (h/test "does not render right text when not present"
+    (h/render [action-drawer/action-drawer
+               [[{:icon       :i/friend
+                  :label      "a sample label"
+                  :right-icon :i/friend}]]])
+    (h/is-null (h/query-by-label-text :right-text-for-action)))
 
   (h/test "renders a divider when the add-divider? prop is true"
     (h/render [action-drawer/action-drawer

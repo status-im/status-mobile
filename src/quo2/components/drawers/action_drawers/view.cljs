@@ -11,7 +11,7 @@
     colors/danger-60
     (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)))
 
-(defn divider
+(defn- divider
   []
   [rn/view
    {:style               (style/divider)
@@ -29,6 +29,7 @@
            label
            sub-label
            right-icon
+           right-text
            danger?
            disabled?
            on-press
@@ -70,14 +71,22 @@
             :style {:color
                     (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)}}
            sub-label])]
-       (when right-icon
-         [rn/view
-          {:style               style/right-icon
-           :accessible          true
-           :accessibility-label :right-icon-for-action}
-          [icon/icon right-icon
-           {:color (get-icon-color danger? override-theme)
-            :size  20}]])]]]))
+       (when (or right-text right-icon)
+         [rn/view {:style style/right-side-container}
+          (when right-text
+            [text/text
+             {:accessibility-label :right-text-for-action
+              :size                :paragraph-1
+              :style               (style/right-text override-theme)}
+             right-text])
+          (when right-icon
+            [rn/view
+             {:style               style/right-icon
+              :accessible          true
+              :accessibility-label :right-icon-for-action}
+             [icon/icon right-icon
+              {:color (get-icon-color danger? override-theme)
+               :size  20}]])])]]]))
 
 (defn action-drawer
   [sections]

@@ -1,4 +1,3 @@
-
 (ns status-im2.contexts.communities.actions.community-options.component-spec
   (:require [re-frame.core :as re-frame]
             [test-helpers.component :as h]
@@ -24,7 +23,7 @@
         (.toBeTruthy))
     (-> (h/expect (h/get-by-translation-text :mute-community))
         (.toBeTruthy))
-    (-> (h/expect (h/get-by-translation-text :community-notification-settings))
+    (-> (h/expect (h/get-by-translation-text :notification-settings))
         (.toBeTruthy))
     (-> (h/expect (h/get-by-translation-text :invite-people-from-contacts))
         (.toBeTruthy))
@@ -50,7 +49,7 @@
         (.toBeTruthy))
     (-> (h/expect (h/get-by-translation-text :mute-community))
         (.toBeTruthy))
-    (-> (h/expect (h/get-by-translation-text :community-notification-settings))
+    (-> (h/expect (h/get-by-translation-text :notification-settings))
         (.toBeTruthy))
     (-> (h/expect (h/get-by-translation-text :invite-people-from-contacts))
         (.toBeTruthy))
@@ -73,7 +72,7 @@
         (.toBeTruthy))
     (-> (h/expect (h/get-by-translation-text :mute-community))
         (.toBeTruthy))
-    (-> (h/expect (h/get-by-translation-text :community-notification-settings))
+    (-> (h/expect (h/get-by-translation-text :notification-settings))
         (.toBeTruthy))
     (-> (h/expect (h/get-by-translation-text :invite-people-from-contacts))
         (.toBeTruthy))
@@ -95,7 +94,7 @@
         (.toBeTruthy))
     (-> (h/expect (h/get-by-translation-text :mute-community))
         (.toBeTruthy))
-    (-> (h/expect (h/get-by-translation-text :community-notification-settings))
+    (-> (h/expect (h/get-by-translation-text :notification-settings))
         (.toBeTruthy))
     (-> (h/expect (h/get-by-translation-text :invite-people-from-contacts))
         (.toBeTruthy))
