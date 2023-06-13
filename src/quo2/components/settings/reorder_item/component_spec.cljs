@@ -23,7 +23,7 @@
 
   (h/test "renders item tab"
     (h/render [quo/reorder-item
-               {:data           [{:id    1
-                             :label "Item 1"}
-                            ]} types/tab])
+               {:data [{:id    1
+                        :label "Item 1"}
+                      ]} types/tab])
     (h/is-truthy (h/get-by-text "Item 1"))))

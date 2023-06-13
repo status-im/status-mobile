@@ -11,8 +11,8 @@
                     (item :image) [rn/image
                                    {:source (:image item)
                                     :style  style/tab-item-image}]
-                    (item :icon) [rn/view {:style style/tab-item-image}
-                                  (quo2-icons/icon (:icon item) (style/tab-icon))])]
+                    (item :icon)  [rn/view {:style style/tab-item-image}
+                                   (quo2-icons/icon (:icon item) (style/tab-icon))])]
     [rn/view
      {:style style/tab-item-container}
      tab-image
@@ -27,15 +27,15 @@
 
 (defn view
   [{:keys [data default-active on-change]
-    :or   {data nil
+    :or   {data           nil
            default-active 1
-           on-change (fn [] nil)}}] 
-    [quo2/segmented-control
-     {:default-active              default-active
-      :size                        32
-      :blur?                       false
-      :container-style             (style/tab-container)
-      :item-container-style        (style/segmented-tab-item-container)
-      :active-item-container-style (style/active-segmented-tab-item-container)
-      :data                        (transform-data data)
-      :on-change                   on-change}])
+           on-change      (fn [] nil)}}]
+  [quo2/segmented-control
+   {:default-active              default-active
+    :size                        32
+    :blur?                       false
+    :container-style             (style/tab-container)
+    :item-container-style        (style/segmented-tab-item-container)
+    :active-item-container-style (style/active-segmented-tab-item-container)
+    :data                        (transform-data data)
+    :on-change                   on-change}])
