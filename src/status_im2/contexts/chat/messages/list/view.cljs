@@ -166,6 +166,13 @@
   [props]
   [:f> f-list-footer-avatar props])
 
+;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
+(defn- add-inverted-y-android
+  [style]
+  (cond-> style
+    platform/android?
+    (assoc :scale-y -1)))
+
 (defn f-list-footer
   [{:keys [chat scroll-y cover-bg-color on-layout]}]
   (let [{:keys [chat-id chat-name emoji chat-type
@@ -184,7 +191,7 @@
                                                      [30 125]
                                                      [14 0]
                                                      header-extrapolation-option)]
-    [rn/view {:flex 1}
+    [rn/view (add-inverted-y-android {:flex 1})
      [rn/view
       {:style     (style/header-container all-loaded?)
        :on-layout on-layout}
@@ -230,7 +237,8 @@
 (defn render-fn
   [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
-  [rn/view {:background-color (colors/theme-colors colors/white colors/neutral-95)}
+  [rn/view
+   (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
    (if (= type :datemark)
      [quo/divider-date value]
      (if (= content-type constants/content-type-gap)
@@ -285,11 +293,14 @@
                                        (scroll-handler event scroll-y)
                                        (when on-scroll
                                          (on-scroll event)))
-       :style                        {:background-color (if all-loaded?
-                                                          cover-bg-color
-                                                          (colors/theme-colors colors/white
-                                                                               colors/neutral-95))}
-       :inverted                     true
+       :style                        (add-inverted-y-android
+                                      {:background-color (if all-loaded?
+                                                           cover-bg-color
+                                                           (colors/theme-colors
+                                                            colors/white
+                                                            colors/neutral-95))})
+       ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
+       :inverted                     (when platform/ios? true)
        :on-layout                    (fn [e]
                                        ;; FIXME: this is due to Android not triggering the initial
                                        ;; scrollTo event
