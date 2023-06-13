@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.buttons.slide-button
-  (:require [quo2.core :as quo2]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -15,12 +15,21 @@
                :value "Small"}]}
    {:label "Disabled:"
     :key   :disabled?
-    :type  :boolean}])
+    :type  :boolean}
+   {:label   "Custom Color"
+    :key     :color
+    :type    :select
+    :options (map (fn [color]
+                    (let [key (get color :name)]
+                      {:key key :value key}))
+                  (quo/picker-colors))}])
 
 (defn cool-preview
   []
   (let [state (reagent/atom {:disabled? false
+                             :color :blue
                              :size :large})
+        color (reagent/cursor state [:color])
         disabled? (reagent/cursor state [:disabled?])
         size (reagent/cursor state [:size])]
     (fn []
@@ -31,12 +40,13 @@
          {:padding-vertical 60
           :padding-horizontal 40
           :align-items      :center}
-         [quo2/slide-button {:track-text "We gotta slide"
-                             :track-icon :face-id
-                             :size @size
-                             :disabled? @disabled?
-                             :on-complete (fn []
-                                            (js/alert "I don't wanna slide anymore"))}]]]])))
+         [quo/slide-button {:track-text "We gotta slide"
+                            :track-icon :face-id
+                            :customization-color @color
+                            :size @size
+                            :disabled? @disabled?
+                            :on-complete (fn []
+                                           (js/alert "I don't wanna slide anymore"))}]]]])))
 
 (defn preview-slide-button
   []

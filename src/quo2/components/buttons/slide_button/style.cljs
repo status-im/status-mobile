@@ -1,6 +1,7 @@
 (ns quo2.components.buttons.slide-button.style
   (:require
    [quo2.components.buttons.slide-button.consts :as consts]
+   [quo2.components.buttons.slide-button.utils :as utils]
    [react-native.reanimated :as reanimated]
    [quo2.foundations.typography :as typography]))
 
@@ -32,8 +33,8 @@
     :justify-content :center}))
 
 (defn thumb
-  [thumb-size]
-  {:background-color (consts/slide-colors :thumb)
+  [thumb-size customization-color]
+  {:background-color (utils/slider-color :main customization-color)
    :border-radius 12
    :position :absolute
    :right 0
@@ -66,14 +67,14 @@
    :height height})
 
 (defn track
-  [disabled?]
+  [disabled? customization-color]
   {:align-items      :flex-start
    :justify-content  :center
    :border-radius    14
    :align-self       :stretch
    :padding          consts/track-padding
    :opacity          (if disabled? 0.3 1)
-   :background-color (:track consts/slide-colors)})
+   :background-color (utils/slider-color :track  customization-color)})
 
 (defn track-cover
   [interpolate-track]
@@ -92,8 +93,9 @@
    :flex-direction :row
    :width track-width})
 
-(def track-text
-  (merge {:color (:text consts/slide-colors)
+(defn track-text
+  [customization-color]
+  (merge {:color (utils/slider-color :main customization-color)
           :z-index 0}
          typography/paragraph-1
          typography/font-medium))

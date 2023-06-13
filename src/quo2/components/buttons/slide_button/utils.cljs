@@ -1,11 +1,20 @@
-(ns quo2.components.buttons.slide-button.animations
+(ns quo2.components.buttons.slide-button.utils
   (:require
    [quo2.components.buttons.slide-button.consts :as consts]
    [react-native.gesture :as gesture]
    [oops.core :as oops]
+   [quo2.foundations.colors :as colors]
    [react-native.reanimated :as reanimated]))
 
 ;; Utils 
+(defn slider-color
+  "- `color-key`               `:main`/`:track`
+   - `customization-color` Customization color"
+  [color-key customization-color]
+  (let [colors-by-key {:main (colors/custom-color-by-theme customization-color 50 60)
+                       :track (colors/custom-color-by-theme customization-color 50 60 10 10)}]
+    (color-key colors-by-key)))
+
 (defn- clamp-value [value min-value max-value]
   (cond
     (< value min-value) min-value
