@@ -44,7 +44,7 @@
 
 (defn- track-interpolation-inputs
   [in-vectors track-width]
-  (map #(* track-width %) in-vectors))
+  (map (partial * track-width) in-vectors))
 
 ;; Interpolations
 (defn- track-clamp-interpolation
@@ -83,12 +83,12 @@
          output (:out interpolation-values)
          input (-> (:in interpolation-values)
                    (track-interpolation-inputs track-width))]
-     (if (nil? interpolation-values)
-       x-pos
+     (if interpolation-values
        (reanimated/interpolate x-pos
                                input
                                output
-                               extrapolation)))))
+                               extrapolation)
+       x-pos))))
 
 ;; Animations
 (defn- animate-spring
@@ -101,7 +101,7 @@
 
 (defn- complete-animation
   [sliding-complete?]
-  (js/setTimeout (fn [] (reset! sliding-complete? true)) 100))
+  (js/setTimeout #(reset! sliding-complete? true) 100))
 
 (defn- reset-track-position
   [x-pos]

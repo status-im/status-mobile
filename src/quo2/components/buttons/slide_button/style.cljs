@@ -42,7 +42,6 @@
     :align-items :center
     :left 0
     :top 0
-    :z-index 2
     :flex-direction :row
     :justify-content :space-around}))
 
@@ -67,7 +66,7 @@
   [interpolate-track]
   (reanimated/apply-animations-to-style
    {:left (interpolate-track :track-cover)}
-   (merge {:overflow :hidden} absolute-fill)))
+   (assoc absolute-fill :overflow :hidden)))
 
 (defn track-cover-text-container
   [track-width]
@@ -82,9 +81,6 @@
 
 (defn track-text
   [customization-color]
-  (merge {:color (utils/slider-color :main customization-color)
-          :z-index 0}
-         typography/paragraph-1
-         typography/font-medium))
-
-
+  (-> typography/paragraph-1
+      (merge typography/font-medium)
+      (assoc :color (utils/slider-color :main customization-color))))
