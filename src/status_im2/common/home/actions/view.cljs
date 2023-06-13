@@ -1,12 +1,13 @@
 (ns status-im2.common.home.actions.view
-  (:require [utils.i18n :as i18n]
+  (:require [clojure.string :as string]
             [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [status-im2.contexts.communities.actions.chat.view :as chat-actions]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
             [status-im2.constants :as constants]
-            [utils.re-frame :as rf]
             [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
-            [clojure.string :as string]
-            [quo2.foundations.colors :as colors]))
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -462,12 +463,15 @@
            (remove-from-group-entry contact chat-id))])]]))
 
 (defn chat-actions
-  [{:keys [chat-type] :as item} inside-chat?]
-  (case chat-type
+  [{:keys [chat-type] :as chat} inside-chat?]
+  (condp = chat-type
     constants/one-to-one-chat-type
-    [one-to-one-actions item inside-chat?]
+    [one-to-one-actions chat inside-chat?]
     constants/private-group-chat-type
-    [private-group-chat-actions item inside-chat?]))
+    [private-group-chat-actions chat inside-chat?]
+    constants/community-chat-type
+    [chat-actions/actions chat inside-chat?]
+    nil))
 
 (defn group-details-actions
   [{:keys [admins] :as group}]

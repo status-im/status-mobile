@@ -1148,8 +1148,10 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702733)
     def test_1_1_chat_text_message_delete_push_disappear(self):
-        self.chat_2.jump_to_card_by_text(self.username_1)
-        self.chat_1.jump_to_card_by_text(self.username_2)
+        if not self.chat_2.chat_message_input.is_element_displayed():
+            self.chat_2.jump_to_card_by_text(self.username_1)
+        if not self.chat_1.chat_message_input.is_element_displayed():
+            self.chat_1.jump_to_card_by_text(self.username_2)
 
         self.device_2.just_fyi("Verify Device1 can not edit and delete received message from Device2")
         message_after_edit_1_1 = 'smth I should edit'

@@ -454,9 +454,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                                    (", ".join(sent_time_variants), timestamp))
         self.channel_1.verify_message_is_under_today_text(message, self.errors)
         new_message = "new message"
-        self.channel_1.send_message(message)
+        self.channel_1.send_message(new_message)
         self.channel_2.verify_message_is_under_today_text(new_message, self.errors, 60)
-        if self.channel_2.chat_element_by_text(message).username.text != self.username_1:
+        if self.channel_2.chat_element_by_text(new_message).username.text != self.username_1:
             self.errors.append("Default username '%s' is not shown next to the received message" % self.username_1)
         self.errors.verify_no_errors()
 
@@ -542,7 +542,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.chat_message_input.send_keys(message_text)
         self.channel_2.send_message_button.click()
         chat_element_1 = self.channel_1.chat_element_by_text(message_text)
-        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != 'Image':
+        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != image_description:
             self.errors.append('Reply message was not received by the sender')
 
         self.errors.verify_no_errors()
@@ -566,7 +566,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.chat_message_input.send_keys(message_text)
         self.channel_2.send_message_button.click()
         chat_element_1 = self.channel_1.chat_element_by_text(message_text)
-        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != 'Image':
+        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != image_description:
             self.errors.append('Reply message was not received by the sender')
         self.errors.verify_no_errors()
 
@@ -760,8 +760,13 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703086)
     def test_community_mark_all_messages_as_read(self):
-        self.channel_1.jump_to_communities_home()
-        self.home_2.jump_to_card_by_text('# %s' % self.channel_name)
+        self.channel_1.click_system_back_button_until_element_is_shown()
+        self.home_1.communities_tab.click()
+        if not self.channel_2.chat_message_input.is_element_displayed():
+            self.channel_2.click_system_back_button_until_element_is_shown()
+            self.home_2.communities_tab.click()
+            self.home_2.get_chat(self.community_name, community=True).click()
+            self.community_2.get_channel(self.channel_name).click()
         self.channel_2.send_message(self.text_message)
         community_1_element = self.community_1.get_chat(self.community_name)
         if not community_1_element.new_messages_public_chat.is_element_displayed(90):

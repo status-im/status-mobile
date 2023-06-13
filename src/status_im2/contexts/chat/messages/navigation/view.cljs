@@ -97,16 +97,15 @@
               :size            :paragraph-2
               :style           (style/header-online)}
              (i18n/label :t/online)])]]]
-       (when (not= chat-type constants/community-chat-type)
-         [rn/touchable-opacity
-          {:active-opacity      1
-           :style               (style/button-container {:margin-right 20})
-           :accessibility-label :options-button
-           :on-press            (fn []
-                                  (rf/dispatch [:dismiss-keyboard])
-                                  (rf/dispatch [:show-bottom-sheet
-                                                {:content (fn [] [actions/chat-actions chat true])}]))}
-          [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]])]
+       [rn/touchable-opacity
+        {:active-opacity      1
+         :style               (style/button-container {:margin-right 20})
+         :accessibility-label :options-button
+         :on-press            (fn []
+                                (rf/dispatch [:dismiss-keyboard])
+                                (rf/dispatch [:show-bottom-sheet
+                                              {:content (fn [] [actions/chat-actions chat true])}]))}
+        [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
 
       [pin.banner/banner
        {:chat-id           chat-id
