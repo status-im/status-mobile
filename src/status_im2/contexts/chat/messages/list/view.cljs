@@ -195,8 +195,7 @@
      [rn/view
       {:style     (style/header-container all-loaded?)
        :on-layout on-layout}
-      (when cover-bg-color
-        [rn/view {:style (style/header-cover cover-bg-color)}])
+      [rn/view {:style (style/header-cover cover-bg-color)}]
       [reanimated/view {:style (style/header-bottom-part border-animation)}
        [rn/view {:style style/header-avatar}
         [rn/view {:style {:align-items :flex-start}}
@@ -295,7 +294,8 @@
                                          (on-scroll event)))
        :style                        (add-inverted-y-android
                                       {:background-color (if all-loaded?
-                                                           cover-bg-color
+                                                           (colors/theme-colors (:light cover-bg-color)
+                                                                               (:dark cover-bg-color))
                                                            (colors/theme-colors
                                                             colors/white
                                                             colors/neutral-95))})

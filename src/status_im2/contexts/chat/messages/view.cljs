@@ -29,7 +29,8 @@
                 able-to-send-message?]
          :as   chat} (rf/sub [:chats/current-chat-chat-view])]
     [messages.list/messages-list
-     {:cover-bg-color (colors/custom-color :turquoise 50 20)
+     {:cover-bg-color {:light (colors/custom-color :turquoise 50 20)
+                       :dark  (colors/custom-color :turquoise 50 40)}
       :chat           chat
       :header-comp    (fn [{:keys [scroll-y]}]
                         [messages.navigation/navigation-view {:scroll-y scroll-y}])
