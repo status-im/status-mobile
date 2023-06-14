@@ -1,9 +1,8 @@
 (ns quo2.components.buttons.slide-button.utils
   (:require
-    [quo2.components.buttons.slide-button.constants :as constants]
-    [quo2.foundations.colors :as colors]))
+   [quo2.components.buttons.slide-button.constants :as constants]
+   [quo2.foundations.colors :as colors]))
 
-;; Utils
 (defn slider-color
   "- `color-key`               `:main`/`:track`
    - `customization-color` Customization color"
@@ -23,7 +22,8 @@
   "Calculate the track section in which the
   thumb can move in. Mostly used for interpolations."
   [track-width thumb-size]
-  (- track-width (* constants/track-padding 2) thumb-size))
+  (let [double-padding (* constants/track-padding 2)]
+    (- track-width double-padding thumb-size)))
 
 (defn get-dimensions
   [track-width size dimension-key]

@@ -1,15 +1,15 @@
 (ns quo2.components.buttons.slide-button.view
   (:require
-    [quo2.components.icon :as icon]
-    [quo2.foundations.colors :as colors]
-    [quo2.components.buttons.slide-button.style :as style]
-    [quo2.components.buttons.slide-button.utils :as utils]
-    [quo2.components.buttons.slide-button.animations :as animations]
-    [react-native.gesture :as gesture]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [oops.core :as oops]
-    [react-native.reanimated :as reanimated]))
+   [quo2.components.icon :as icon]
+   [quo2.foundations.colors :as colors]
+   [quo2.components.buttons.slide-button.style :as style]
+   [quo2.components.buttons.slide-button.utils :as utils]
+   [quo2.components.buttons.slide-button.animations :as animations]
+   [react-native.gesture :as gesture]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [oops.core :as oops]
+   [react-native.reanimated :as reanimated]))
 
 (defn- f-slider
   [{:keys [disabled?]}]
@@ -17,7 +17,7 @@
         sliding-complete?  (reagent/atom false)
         gestures-disabled? (reagent/atom disabled?)
         on-track-layout    (fn [evt]
-                             (let [width (oops/oget evt "nativeEvent" "layout" "width")]
+                             (let [width (oops/oget evt "nativeEvent.layout.width")]
                                (reset! track-width width)))]
 
     (fn [{:keys [on-complete
