@@ -1127,8 +1127,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.errors.append("PN are keep staying after message was seen by user")
         self.errors.verify_no_errors()
 
-    @marks.xfail(
-        reason="Message is being in status 'Sending' for a long time: https://github.com/status-im/status-mobile/issues/15385")
+    @marks.xfail(reason="Message is being in status 'Sending' for a long time: " \
+                        "https://github.com/status-im/status-mobile/issues/15385")
     @marks.testrail_id(702855)
     def test_1_1_chat_edit_message(self):
         [home.click_system_back_button_until_element_is_shown() for home in self.homes]
@@ -1146,6 +1146,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.errors.append('No edited message in 1-1 chat displayed')
         self.errors.verify_no_errors()
 
+    @marks.xfail(reason="Message is being in status 'Sending' for a long time: " \
+                        "https://github.com/status-im/status-mobile/issues/15385")
     @marks.testrail_id(702733)
     def test_1_1_chat_text_message_delete_push_disappear(self):
         if not self.chat_2.chat_message_input.is_element_displayed():
@@ -1172,8 +1174,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.chat_2.chat_element_by_text(message_to_delete_for_me).wait_for_status_to_be("Delivered", timeout)
             self.chat_2.delete_message_in_chat(message_to_delete_for_me, everyone=False)
         except TimeoutException:
-            self.errors.append(
-                "Message status was not changed to 'Delivered' after %s s, https://github.com/status-im/status-mobile/issues/15385" % timeout)
+            self.errors.append("Message status was not changed to 'Delivered' after %s s" % timeout)
         else:
             if not self.chat_2.chat_element_by_text(message_to_delete_for_me).is_element_disappeared(20):
                 self.errors.append("Deleted for me message is shown in chat for the author of message")

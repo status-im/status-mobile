@@ -44,7 +44,7 @@
                 android:theme="@style/Theme.AppSplash"
                 android:screenOrientation="portrait"
                 android:windowSoftInputMode="adjustResize"
-                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+                android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
                 android:resizeableActivity="false"
                 android:launchMode="singleTask">
             <intent-filter>
