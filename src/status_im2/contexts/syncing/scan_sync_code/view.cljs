@@ -244,6 +244,9 @@
         :style        style/camera-style
         :camera-type  camera-kit/camera-type-back
         :zoom-mode    :off
+        ;; TODO: Add flash toggle
+        ;; https://github.com/status-im/status-mobile/issues/16243
+        :torch-mode   :off
         :scan-barcode true
         :on-read-code on-read-code}]]
      [hole-view/hole-view
