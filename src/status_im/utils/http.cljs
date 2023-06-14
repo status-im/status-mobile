@@ -188,15 +188,8 @@
 
 (defn topic-from-url
   [url]
-<<<<<<< HEAD
   (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash (url-host url)))))
-<<<<<<< HEAD
 
 (defn replace-port
   [url new-port]
   (string/replace url #"(:\d+)" (str ":" new-port)))
-=======
->>>>>>> 392397536 (updates)
-=======
-  (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash (url-host url)))))
->>>>>>> 7905b10d9 (refactor)

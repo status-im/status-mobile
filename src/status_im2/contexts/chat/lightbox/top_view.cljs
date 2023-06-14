@@ -6,6 +6,7 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
+    [status-im.utils.http :as http]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.datetime :as datetime]
@@ -48,7 +49,9 @@
         bg-color                           (if landscape?
                                              colors/neutral-100-opa-70
                                              colors/neutral-100-opa-0)
-        {:keys [background-color opacity]} animations]
+        {:keys [background-color opacity]} animations
+        uri                                (http/replace-port (:image content)
+                                                              (rf/sub [:mediaserver/port]))]
     [reanimated/view
      {:style
       (style/top-view-container (:top insets) screen-width bg-color landscape? animations derived)}
@@ -81,7 +84,7 @@
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
        {:active-opacity 1
-        :on-press       #(images/share-image (:image content))
+        :on-press       #(images/share-image uri)
         :style          (merge style/close-container {:margin-right 12})}
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity

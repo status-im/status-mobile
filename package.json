@@ -46,17 +46,8 @@
     "react-native-draggable-flatlist": "^3.0.3",
     "react-native-fast-image": "^8.5.11",
     "react-native-fetch-polyfill": "^1.1.2",
-<<<<<<< HEAD
-<<<<<<< HEAD
     "react-native-fs": "^2.14.1",
     "react-native-gesture-handler": "2.6.1",
-=======
-    "react-native-fs": "^2.20.0",
-=======
-    "react-native-fs": "^2.14.1",
->>>>>>> 570806a46 (revert)
-    "react-native-gesture-handler": "^2.5.0",
->>>>>>> 74228f515 (updates)
     "react-native-haptic-feedback": "^1.9.0",
     "react-native-hole-view": "git+https://github.com/status-im/react-native-hole-view.git#refs/tags/v2.1.3-status",
     "react-native-image-crop-picker": "git+https://github.com/status-im/react-native-image-crop-picker.git#refs/tags/v0.36.2-status.0",
@@ -74,7 +65,7 @@
     "react-native-reanimated": "2.11.0",
     "react-native-redash": "^16.0.11",
     "react-native-shake": "^3.3.1",
-    "react-native-share": "^7.0.1",
+    "react-native-share": "^8.2.2",
     "react-native-static-safe-area-insets": "^2.2.0",
     "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.5.39",
     "react-native-svg": "^9.8.4",

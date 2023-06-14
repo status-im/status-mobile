@@ -28,7 +28,8 @@
   [uri]
   (download-image-http uri
                        (fn [downloaded-url]
-                         (share/open {:url (str (when platform/android? "file://") downloaded-url)}
+                         (share/open {:url       (str (when platform/android? "file://") downloaded-url)
+                                      :isNewTask true}
                                      #(fs/unlink downloaded-url)
                                      #(fs/unlink downloaded-url)))))
 
