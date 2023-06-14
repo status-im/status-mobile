@@ -139,7 +139,7 @@
 
 (defn init-animations
   []
-  {:background-color (anim/use-val colors/black-opa-0)
+  {:background-color (anim/use-val colors/neutral-100-opa-0)
    :border           (anim/use-val (if platform/ios? 0 12))
    :opacity          (anim/use-val 0)
    :rotate           (anim/use-val "0deg")

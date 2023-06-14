@@ -1,4 +1,4 @@
-(ns status-im.utils.fs
+(ns react-native.fs
   (:require ["react-native-fs" :as react-native-fs]))
 
 (defn move-file
