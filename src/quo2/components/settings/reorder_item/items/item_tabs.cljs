@@ -27,9 +27,8 @@
 
 (defn view
   [{:keys [data default-active on-change]
-    :or   {data           nil
-           default-active 1
-           on-change      (fn [] nil)}}]
+    :or   {default-active 1
+           on-change      (constantly nil)}}]
   [quo2/segmented-control
    {:default-active              default-active
     :size                        32
