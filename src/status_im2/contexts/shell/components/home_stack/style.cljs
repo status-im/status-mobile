@@ -10,6 +10,7 @@
     :left           (:home-stack-left shared-values)
     :opacity        (:home-stack-opacity shared-values)
     :pointer-events (:home-stack-pointer shared-values)
+    :border-radius  (:home-stack-border-radius shared-values)
     :transform      [{:scale (:home-stack-scale shared-values)}]}
    {:border-bottom-left-radius  20
     :border-bottom-right-radius 20

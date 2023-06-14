@@ -59,6 +59,10 @@
   [home-stack-state-sv top-home-stack-position]
   (.homeStackTop ^js home-stack-worklets home-stack-state-sv top-home-stack-position))
 
+(defn home-stack-border-radius
+  [home-stack-state-sv]
+  (.homeStackBorderRadius ^js home-stack-worklets home-stack-state-sv))
+
 ;; Derived values for floating screen
 (defn floating-screen-left
   [screen-state screen-width switcher-card-left-position]
