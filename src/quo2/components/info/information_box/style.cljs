@@ -1,6 +1,5 @@
 (ns quo2.components.info.information-box.style
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def ^:private themes
   {:light {:default      {:bg     colors/white
@@ -31,17 +30,17 @@
            :close-button colors/white}})
 
 (defn get-color
-  [key]
-  (get-in themes [(theme/get-theme) key]))
+  [theme key]
+  (get-in themes [theme key]))
 
 (defn get-color-by-type
-  [type key]
-  (get-in themes [(theme/get-theme) type key]))
+  [theme type key]
+  (get-in themes [theme type key]))
 
 (defn container
-  [{:keys [type include-button?]}]
-  {:background-color   (get-color-by-type type :bg)
-   :border-color       (get-color-by-type type :border)
+  [{:keys [theme type include-button?]}]
+  {:background-color   (get-color-by-type theme type :bg)
+   :border-color       (get-color-by-type theme type :border)
    :border-width       1
    :border-radius      12
    :padding-top        (if include-button? 10 11)
@@ -57,8 +56,8 @@
    :margin-left 8})
 
 (defn content-text
-  [type]
-  {:color        (get-color-by-type type :text)
+  [theme type]
+  {:color        (get-color-by-type theme type :text)
    :margin-right 8})
 
 (def content-button
