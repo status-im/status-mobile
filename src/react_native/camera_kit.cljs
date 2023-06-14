@@ -6,4 +6,3 @@
 
 (def camera-type-front (.-Front CameraType))
 (def camera-type-back (.-Back CameraType))
-
