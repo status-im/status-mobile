@@ -421,7 +421,7 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNShare (7.0.1):
+  - RNShare (8.2.2):
     - React-Core
   - RNStaticSafeAreaInsets (2.2.0):
     - React-Core
@@ -773,7 +773,7 @@ SPEC CHECKSUMS:
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
   RNReanimated: 3e375fc41870cc66c5152a38514c450f7adbc3e1
-  RNShare: 2dc2fcac3f7321cfd6b60a23ed4bf4d549f86f5f
+  RNShare: d82e10f6b7677f4b0048c23709bd04098d5aee6c
   RNStaticSafeAreaInsets: 055ddbf5e476321720457cdaeec0ff2ba40ec1b8
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
