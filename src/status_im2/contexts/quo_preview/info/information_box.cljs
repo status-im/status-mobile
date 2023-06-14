@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.info.information-box
-  (:require [quo2.components.info.information-box :as quo2]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -15,7 +15,7 @@
                :value "Informative"}
               {:key   :error
                :value "Error"}]}
-   {:label "Closable?:"
+   {:label "Closable?"
     :key   :closable?
     :type  :boolean}
    {:label "Message"
@@ -27,23 +27,31 @@
 
 (defn cool-preview
   []
-  (let [state    (reagent/atom {:type         :default
-                                :closable?    true
-                                :icon         :i/placeholder
-                                :message      "This is an information box This is an information"
-                                :button-label "Press Me"
-                                :style        {:width 335}
-                                :id           (keyword (str "id-" (rand-int 10000)))})
-        closed?  (reagent/cursor state [:closed?])
-        on-close #(reset! closed? true)]
+  (let [state     (reagent/atom
+                   {:type         :default
+                    :closable?    true
+                    :message      (str "If you registered a stateofus.eth name "
+                                       "you might be eligible to connect $ENS")
+                    :button-label "Button"})
+        closable? (reagent/cursor state [:closable?])
+        closed?   (reagent/cursor state [:closed?])
+        on-close  (fn []
+                    (reset! closed? true)
+                    (js/setTimeout (fn [] (reset! closed? false))
+                                   2000))]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
+       [rn/view
         [preview/customizer state descriptor]
         [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
-         [quo2/information-box (merge @state {:on-close on-close}) (:message @state)]]]])))
+         {:style {:padding-vertical 20
+                  :align-items      :center}}
+         [quo/information-box
+          (merge {:icon     :i/info
+                  :style    {:width 335}
+                  :on-close (when @closable? on-close)}
+                 @state)
+          (:message @state)]]]])))
 
 (defn preview-information-box
   []
