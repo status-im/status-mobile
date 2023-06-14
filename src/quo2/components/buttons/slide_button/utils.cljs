@@ -1,7 +1,7 @@
 (ns quo2.components.buttons.slide-button.utils
   (:require
-   [quo2.components.buttons.slide-button.constants :as constants]
-   [quo2.foundations.colors :as colors]))
+    [quo2.components.buttons.slide-button.constants :as constants]
+    [quo2.foundations.colors :as colors]))
 
 (defn slider-color
   "- `color-key`               `:main`/`:track`

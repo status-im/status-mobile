@@ -45,18 +45,12 @@
     :flex-direction  :row
     :justify-content :space-around}))
 
-(defn track-container
-  [height]
-  {:align-self      :stretch
-   :align-items     :center
-   :justify-content :center
-   :height          height})
-
 (defn track
-  [disabled? customization-color]
+  [disabled? customization-color height]
   {:align-items      :flex-start
    :justify-content  :center
    :border-radius    14
+   :height           height
    :align-self       :stretch
    :padding          constants/track-padding
    :opacity          (if disabled? 0.3 1)

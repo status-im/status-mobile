@@ -131,7 +131,7 @@
 (def button quo2.components.buttons.button/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
-(def slide-button quo2.components.buttons.slide-button.view/slide-button)
+(def slide-button quo2.components.buttons.slide-button.view/view)
 
 ;;;; CARDS
 (def small-option-card quo2.components.onboarding.small-option-card.view/small-option-card)

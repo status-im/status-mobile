@@ -9,3 +9,5 @@
 (def large-dimensions
   {:track-height 48
    :thumb        40})
+
+(def disable-opacity 0.3)
