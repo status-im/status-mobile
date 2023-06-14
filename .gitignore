@@ -184,3 +184,6 @@ test/appium/tests/users.py
 
 ## component-tests
 *.log
+
+## local xcode env introduced in react-native 0.69
+.xcode.env.local

@@ -32,6 +32,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 import com.reactnativenavigation.NavigationActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import androidx.core.splashscreen.SplashScreen;
+import com.facebook.react.ReactActivity;
 
 import java.util.Properties;
 import im.status.ethereum.module.StatusThreadPoolExecutor;

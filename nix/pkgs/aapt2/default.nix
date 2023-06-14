@@ -5,12 +5,12 @@
 { lib, stdenv, pkgs, fetchurl }:
 
 let
-  inherit (lib) getAttr optionals;
+  inherit (lib) getAttr;
   inherit (stdenv) isLinux isDarwin;
 
   pname = "aapt2";
   # Warning: This must be the same as gradlePluginVersion android/gradle.properties
-  version = "4.1.0-6503028";
+  version = "7.2.2-7984345";
 
   pkgPath = "com/android/tools/build/aapt2";
   repoUrl = "https://dl.google.com/dl/android/maven2";
@@ -29,20 +29,20 @@ let
     jar = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.jar}";
       sha256 = getAttr platform {
-        linux = "sha256-oxlBy5aJcb+FgHvy6Qmbi33GsubEuXVbYSHuD4O1wIY=";
-        osx = "sha256-zRWrjfV6P6MQaLlwNi7CBhI35U+osNfVvyL0T89NbuI=";
+        linux = "sha256-BKtK5f7lxp0YdQU4AFGL933vjEAykQ1RiKpDwfc32oI=";
+        osx = "sha256-OORgWnGQS0GwqZrSg8sFQb4FM23hrYHwmarcYd8EO/0=";
       };
     };
     sha = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.jar}.sha1";
       sha256 = getAttr platform {
-        linux = "sha256-GlvbIDXnrjUga/NkmODJUZX+K5UtU/0fua5a8QY02+E=";
-        osx = "sha256-83WpYPsyVk/E9nddy2qUSAh+cBZ1PsS0N9516Tga35o=";
+        linux = "sha256-4F4REWQLj8hdnh1tIwRVgdWJjUBhvvINP56nIscwePA=";
+        osx = "sha256-n0jFUphzlFnNacolbXoNmNHs/hXfktVpYRlJ1JW9ukU=";
       };
     };
     pom = fetchurl {
       url = "${repoUrl}/${pkgPath}/${version}/${filenames.pom}";
-      sha256 = "sha256-p7JdQj7hl/cjiVzT2ZFts1lLI9xlOOnnadXr0vDVhTs=";
+      sha256 = "sha256-XWEn9Zvxv0hgYU2yUSlZ4OiguZy1bz+Gh0wRrm4d9GQ=";
     };
   };
 
@@ -50,8 +50,8 @@ in stdenv.mkDerivation {
   inherit pname version;
 
   srcs = with urls; [ jar sha pom ];
-  phases = [ "unpackPhase" ]
-    ++ optionals isLinux [ "patchPhase" ]; # OSX binaries don't need patchelf
+  # patchelf is Linux specific and won't work on Darwin Platform
+  phases = if isDarwin then ["unpackPhase"] else ["unpackPhase" "patchPhase" "installPhase"];
   buildInputs = with pkgs; [ zip unzip patchelf ];
 
   unpackPhase = ''
@@ -60,27 +60,23 @@ in stdenv.mkDerivation {
       filename=$(stripHash $src)
       cp $src $out/$filename
     done
+    tmpDir=$(mktemp -d)
+    unzip $out/${filenames.jar} -d $tmpDir
   '';
 
   # On Linux, we need to patch the interpreter in Java packages
   # that contain native executables to use Nix's interpreter instead.
   patchPhase = ''
-    # We need an stdenv with a compiler
-    [[ -n "$NIX_CC" ]] || exit 1
-
     # Patch executables from maven dependency to use Nix's interpreter
-    tmpDir=$(mktemp -d)
-    unzip $out/${filenames.jar} -d $tmpDir
-    for exe in `find $tmpDir/ -type f -executable`; do
-      patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $exe
-    done
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $tmpDir/aapt2
+  '';
 
-    # Rebuild the .jar file with patched binaries
+  # Rebuild the .jar file with patched binaries
+  installPhase = ''
     pushd $tmpDir > /dev/null
     chmod u+w $out/${filenames.jar}
     zip -fr $out/${filenames.jar}
     chmod $out/${filenames.jar} --reference=$out/${filenames.jar}.sha1
     popd > /dev/null
-    rm -rf $tmpDir
   '';
 }
