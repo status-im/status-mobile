@@ -1,20 +1,5 @@
 [
   {
-    "path": "androidx/activity/activity/1.0.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "activity-1.0.0-rc01.pom": {
-        "sha1": "05bfab882943363153ae9eefbaba3c6065f43922",
-        "sha256": "sha256-Y6zsFBqCEZWgNxWKXkkwAHi5n4e/ITk75eK0M7QdjrY="
-      },
-      "activity-1.0.0-rc01.aar": {
-        "sha1": "3339ce77cea7349781e82681a532b671ea7dde59",
-        "sha256": "sha256-zXg+CXrv3H/s7I1W21lT4FVfWagFKDw3MgQy4EpPiKA="
-      }
-    }
-  },
-
-  {
     "path": "androidx/activity/activity/1.0.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -180,21 +165,6 @@
   },
 
   {
-    "path": "androidx/appcompat/appcompat-resources/1.1.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "appcompat-resources-1.1.0-rc01.pom": {
-        "sha1": "ede5b258a8f866119f39a17a2daf749e76be42a6",
-        "sha256": "sha256-CdoKEmxurM6DWKaGEsKazxrhEJc1DTndk71AfBlaxJo="
-      },
-      "appcompat-resources-1.1.0-rc01.aar": {
-        "sha1": "1c8796ad736cbcb539e89630931ca886b2e75212",
-        "sha256": "sha256-Y3l3/Ymf9kF8a+b+uF0uzAuQgDCR0ej1pyStIU+2r7c="
-      }
-    }
-  },
-
-  {
     "path": "androidx/appcompat/appcompat-resources/1.1.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -265,21 +235,6 @@
       "appcompat-1.0.0.aar": {
         "sha1": "155b5a7193b5b87c3ece2ec444c85cd8de2347dd",
         "sha256": "sha256-mUJU4SA2y9MyaygZpNi8O+8Tn0UCLPsLEIbcWNNtVs4="
-      }
-    }
-  },
-
-  {
-    "path": "androidx/appcompat/appcompat/1.1.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "appcompat-1.1.0-rc01.pom": {
-        "sha1": "49c937cd4c8edaa42aefa8eb7b9adffc3c5362c3",
-        "sha256": "sha256-/ej7WpHHa1qzgcxvGh2qYjWfICXjQRNjljQiwjPxwT8="
-      },
-      "appcompat-1.1.0-rc01.aar": {
-        "sha1": "62955e0a3c6f4566648f30da6e40e44b01221422",
-        "sha256": "sha256-lRE7OiTbTy6Smr2xVaoqGv04N/lK94bg6qVmJNwrZ08="
       }
     }
   },
@@ -370,21 +325,6 @@
       "core-common-2.0.1.jar": {
         "sha1": "3e8d84e4fe526be0ca1832a518bf323e729a79fd",
         "sha256": "sha256-5zFqhLiZ6yr7FVF4TpgH+2S9/MEFY2/gVRzQNoAfl8g="
-      }
-    }
-  },
-
-  {
-    "path": "androidx/arch/core/core-common/2.1.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "core-common-2.1.0-rc01.pom": {
-        "sha1": "ee73e3edda236d1e1114b333d4e7dfac924c3f79",
-        "sha256": "sha256-BlJbd/hzjn59nTOErPA3+xSOnWLs87odlbq+Dn9R3Y8="
-      },
-      "core-common-2.1.0-rc01.jar": {
-        "sha1": "b3152fc64428c9354344bd89848ecddc09b6f07e",
-        "sha256": "sha256-/hI3vwKdBj5/Kf45rq9z73TIsKNlhIb8KdPFQyZlOIk="
       }
     }
   },
@@ -1260,21 +1200,6 @@
   },
 
   {
-    "path": "androidx/fragment/fragment/1.1.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "fragment-1.1.0-rc01.pom": {
-        "sha1": "6cab14f710c74d04aef6f4b34b734fdc5db014b5",
-        "sha256": "sha256-jL6M3jGmtjwDZBbxBZz5BkwLKZWHFvXR+NMwOFn/x9U="
-      },
-      "fragment-1.1.0-rc01.aar": {
-        "sha1": "5369151f89369269c30897029bed5cf258509f60",
-        "sha256": "sha256-avUj7uDxPIgChXMHfS30hpb3nfFzASdULo6CQzg8q74="
-      }
-    }
-  },
-
-  {
     "path": "androidx/fragment/fragment/1.1.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -1375,21 +1300,6 @@
       "lifecycle-common-2.0.0.jar": {
         "sha1": "e070ffae07452331bc5684734fce6831d531785c",
         "sha256": "sha256-e616GIgErepvofNdXvmbcF8gvZPsrd5IR2D/hrU1/vw="
-      }
-    }
-  },
-
-  {
-    "path": "androidx/lifecycle/lifecycle-common/2.1.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "lifecycle-common-2.1.0-rc01.pom": {
-        "sha1": "3787cc1eed8c7e6a822fa60215549387e4a0ccce",
-        "sha256": "sha256-6jngWmjqBhWDw/5kFjUhjK9hiKTByYfo1wlL7tJrjPk="
-      },
-      "lifecycle-common-2.1.0-rc01.jar": {
-        "sha1": "c67e7807d9cd6c329b9d0218b2ec4e505dd340b7",
-        "sha256": "sha256-dttr5TO9cw+zYcL+sSosJtmVKCR0aEfagmAe+B8IJkM="
       }
     }
   },
@@ -1545,21 +1455,6 @@
   },
 
   {
-    "path": "androidx/lifecycle/lifecycle-runtime/2.1.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "lifecycle-runtime-2.1.0-rc01.pom": {
-        "sha1": "37d279635d4095bc4a11c476399154343e8f76cb",
-        "sha256": "sha256-z2Ki8QyEf5DAgGbRKF3RBiJZj5MYxoIFh4lPzYzc4SI="
-      },
-      "lifecycle-runtime-2.1.0-rc01.aar": {
-        "sha1": "9adcac4dbf51391798e5dbeb1c414408d7ff6558",
-        "sha256": "sha256-+z3/ItgoT/B5tMyMkZsSaV2JZjCAg9XRW0zZYdQaEho="
-      }
-    }
-  },
-
-  {
     "path": "androidx/lifecycle/lifecycle-runtime/2.1.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -1630,21 +1525,6 @@
       "lifecycle-viewmodel-2.0.0.aar": {
         "sha1": "6417c576c458137456d996914c50591e7f4acc24",
         "sha256": "sha256-1kYK6htrrYCrFM+IKX6eQ7/ejYfD5cKPLFCCM/+8wGI="
-      }
-    }
-  },
-
-  {
-    "path": "androidx/lifecycle/lifecycle-viewmodel/2.1.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "lifecycle-viewmodel-2.1.0-rc01.pom": {
-        "sha1": "de93bcc0e90b4d795415dc2435de27e51d38f440",
-        "sha256": "sha256-ZfUDwMFgpELJ62Uk2084YlcWZEtn1Fx+RbpNiGv6NMQ="
-      },
-      "lifecycle-viewmodel-2.1.0-rc01.aar": {
-        "sha1": "b55fd435828b78efe4866ed28bb922161597c7ac",
-        "sha256": "sha256-YzOBdmtwECh2Z59VxyhOPTICQ8FJ0QqdFxDptcZJO0c="
       }
     }
   },
@@ -1795,21 +1675,6 @@
       "resourceinspection-annotation-1.0.0.jar": {
         "sha1": "8c21f8ff5d96d5d52c948707f7e4d6ca6773feef",
         "sha256": "sha256-jP+HDsb7MdtIpS9KeSM1tL+N4H4DvTeCMYFSZDPM1cs="
-      }
-    }
-  },
-
-  {
-    "path": "androidx/savedstate/savedstate/1.0.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "savedstate-1.0.0-rc01.pom": {
-        "sha1": "7cff5957aca1ee17fc49b1d6601b8e3dccf67dde",
-        "sha256": "sha256-T75dgztaxblFTG0Yf7xHq5vvG7IySJjJ9i+Yxf7CB/g="
-      },
-      "savedstate-1.0.0-rc01.aar": {
-        "sha1": "8b8f9e98e359be8d0466c15a682ba246100e3edc",
-        "sha256": "sha256-LNUDum8NdiP+L/1Df+wZbF3uyOLhVwDg3kEQLKxmfVs="
       }
     }
   },
@@ -1995,21 +1860,6 @@
   },
 
   {
-    "path": "androidx/vectordrawable/vectordrawable-animated/1.1.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "vectordrawable-animated-1.1.0-rc01.pom": {
-        "sha1": "0306fff46604ec21f43f2953c85351e82785cf77",
-        "sha256": "sha256-0tagLEu07RBQNJPqrYjdVk9bBZrpBoEvQCXHrfZTaZk="
-      },
-      "vectordrawable-animated-1.1.0-rc01.aar": {
-        "sha1": "d574d647c1305a96791edaf097f04fe4fc6db5f5",
-        "sha256": "sha256-AbIN8LjxCO0SGX3tDXqDscSUAREjv2SKlehumRne5vk="
-      }
-    }
-  },
-
-  {
     "path": "androidx/vectordrawable/vectordrawable-animated/1.1.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -2035,21 +1885,6 @@
       "vectordrawable-1.0.0.aar": {
         "sha1": "eabb75f549c6a6ee4011e15adf04bf8ca33d3762",
         "sha256": "sha256-UHWRkmWDh146DmxGJyI18yO0V0dZtcAvCrelHSrnMg0="
-      }
-    }
-  },
-
-  {
-    "path": "androidx/vectordrawable/vectordrawable/1.1.0-rc01",
-    "repo": "https://dl.google.com/dl/android/maven2",
-    "files": {
-      "vectordrawable-1.1.0-rc01.pom": {
-        "sha1": "c1ffad7b1e9fac67051c8d56c5e7db6a59fbfc50",
-        "sha256": "sha256-G3JkzQK7GUcoAF3gg3lLJjX1q+mIDeJCWREP0WL5q8I="
-      },
-      "vectordrawable-1.1.0-rc01.aar": {
-        "sha1": "b3612e242f283b5cc510b842997bf20daf7345ec",
-        "sha256": "sha256-0GIOI69Mm0G4nr9Jb4kuUFW0WmTqNVm7AnAdZohFQqk="
       }
     }
   },
