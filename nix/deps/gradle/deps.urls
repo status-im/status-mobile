@@ -52,6 +52,7 @@ https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-common/
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-common/3.5.4/databinding-common-3.5.4.pom
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-common/4.1.0/databinding-common-4.1.0.pom
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-common/7.0.4/databinding-common-7.0.4.pom
+https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-common/7.2.1/databinding-common-7.2.1.pom
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-common/7.2.2/databinding-common-7.2.2.pom
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-common/7.3.0/databinding-common-7.3.0.pom
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-compiler-common/3.2.1/databinding-compiler-common-3.2.1.pom
@@ -59,6 +60,7 @@ https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-compile
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-compiler-common/3.5.4/databinding-compiler-common-3.5.4.pom
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-compiler-common/4.1.0/databinding-compiler-common-4.1.0.pom
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-compiler-common/7.0.4/databinding-compiler-common-7.0.4.pom
+https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-compiler-common/7.2.1/databinding-compiler-common-7.2.1.pom
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-compiler-common/7.2.2/databinding-compiler-common-7.2.2.pom
 https://dl.google.com/dl/android/maven2/androidx/databinding/databinding-compiler-common/7.3.0/databinding-compiler-common-7.3.0.pom
 https://dl.google.com/dl/android/maven2/androidx/documentfile/documentfile/1.0.0/documentfile-1.0.0.pom
@@ -131,12 +133,14 @@ https://dl.google.com/dl/android/maven2/com/android/databinding/baseLibrary/3.3.
 https://dl.google.com/dl/android/maven2/com/android/databinding/baseLibrary/3.5.4/baseLibrary-3.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/databinding/baseLibrary/4.1.0/baseLibrary-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/databinding/baseLibrary/7.0.4/baseLibrary-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/databinding/baseLibrary/7.2.1/baseLibrary-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/databinding/baseLibrary/7.2.2/baseLibrary-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/databinding/baseLibrary/7.3.0/baseLibrary-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/databinding/compilerCommon/3.0.0/compilerCommon-3.0.0.pom
 https://dl.google.com/dl/android/maven2/com/android/databinding/compilerCommon/3.0.1/compilerCommon-3.0.1.pom
 https://dl.google.com/dl/android/maven2/com/android/signflinger/4.1.0/signflinger-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/signflinger/7.0.4/signflinger-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/signflinger/7.2.1/signflinger-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/signflinger/7.2.2/signflinger-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/signflinger/7.3.0/signflinger-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/support/animated-vector-drawable/26.0.2/animated-vector-drawable-26.0.2.pom
@@ -164,6 +168,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/cras
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/26.5.4/crash-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/27.1.0/crash-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/30.0.4/crash-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/30.2.1/crash-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/30.2.2/crash-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/crash/30.3.0/crash-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/protos/26.0.0/protos-26.0.0.pom
@@ -173,6 +178,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/prot
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/protos/26.5.4/protos-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/protos/27.1.0/protos-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/protos/30.0.4/protos-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/protos/30.2.1/protos-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/protos/30.2.2/protos-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/protos/30.3.0/protos-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/shared/26.0.0/shared-26.0.0.pom
@@ -182,6 +188,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/shar
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/shared/26.5.4/shared-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/shared/27.1.0/shared-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/shared/30.0.4/shared-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/shared/30.2.1/shared-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/shared/30.2.2/shared-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/shared/30.3.0/shared-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/tracker/26.0.0/tracker-26.0.0.pom
@@ -191,6 +198,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/trac
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/tracker/26.5.4/tracker-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/tracker/27.1.0/tracker-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/tracker/30.0.4/tracker-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/tracker/30.2.1/tracker-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/tracker/30.2.2/tracker-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/analytics-library/tracker/30.3.0/tracker-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/annotations/26.0.0/annotations-26.0.0.pom
@@ -200,6 +208,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/annotations/26.3.1/ann
 https://dl.google.com/dl/android/maven2/com/android/tools/annotations/26.5.4/annotations-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/annotations/27.1.0/annotations-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/annotations/30.0.4/annotations-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/annotations/30.2.1/annotations-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/annotations/30.2.2/annotations-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/annotations/30.3.0/annotations-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2-proto/0.3.1/aapt2-proto-0.3.1.pom
@@ -208,10 +217,12 @@ https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2-proto/4.1.
 https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2-proto/4.1.0-alpha01-6193524/aapt2-proto-4.1.0-alpha01-6193524.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2-proto/7.0.0-beta04-7396180/aapt2-proto-7.0.0-beta04-7396180.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2-proto/7.0.4-7396180/aapt2-proto-7.0.4-7396180.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2-proto/7.2.1-7984345/aapt2-proto-7.2.1-7984345.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2-proto/7.2.2-7984345/aapt2-proto-7.2.2-7984345.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2-proto/7.3.0-8691043/aapt2-proto-7.3.0-8691043.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/aaptcompiler/4.1.0/aaptcompiler-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/aaptcompiler/7.0.4/aaptcompiler-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/build/aaptcompiler/7.2.1/aaptcompiler-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/aaptcompiler/7.2.2/aaptcompiler-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/aaptcompiler/7.3.0/aaptcompiler-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apksig/3.0.0/apksig-3.0.0.pom
@@ -221,6 +232,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/build/apksig/3.3.1/apk
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apksig/3.5.4/apksig-3.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apksig/4.1.0/apksig-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apksig/7.0.4/apksig-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/build/apksig/7.2.1/apksig-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apksig/7.2.2/apksig-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apksig/7.3.0/apksig-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apkzlib/3.2.1/apkzlib-3.2.1.pom
@@ -228,6 +240,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/build/apkzlib/3.3.1/ap
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apkzlib/3.5.4/apkzlib-3.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apkzlib/4.1.0/apkzlib-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apkzlib/7.0.4/apkzlib-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/build/apkzlib/7.2.1/apkzlib-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apkzlib/7.2.2/apkzlib-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/apkzlib/7.3.0/apkzlib-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-model/3.0.0/builder-model-3.0.0.pom
@@ -237,6 +250,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-model/3.
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-model/3.5.4/builder-model-3.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-model/4.1.0/builder-model-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-model/7.0.4/builder-model-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-model/7.2.1/builder-model-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-model/7.2.2/builder-model-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-model/7.3.0/builder-model-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-test-api/3.0.0/builder-test-api-3.0.0.pom
@@ -246,6 +260,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-test-api
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-test-api/3.5.4/builder-test-api-3.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-test-api/4.1.0/builder-test-api-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-test-api/7.0.4/builder-test-api-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-test-api/7.2.1/builder-test-api-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-test-api/7.2.2/builder-test-api-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder-test-api/7.3.0/builder-test-api-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder/3.0.0/builder-3.0.0.pom
@@ -255,6 +270,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/build/builder/3.3.1/bu
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder/3.5.4/builder-3.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder/4.1.0/builder-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder/7.0.4/builder-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/build/builder/7.2.1/builder-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder/7.2.2/builder-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/builder/7.3.0/builder-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/bundletool/0.5.0/bundletool-0.5.0.pom
@@ -271,6 +287,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle-api/3.3.1
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle-api/3.5.4/gradle-api-3.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle-api/4.1.0/gradle-api-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle-api/7.0.4/gradle-api-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle-api/7.2.1/gradle-api-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle-api/7.2.2/gradle-api-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle-api/7.3.0/gradle-api-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle-core/3.0.0/gradle-core-3.0.0.pom
@@ -282,6 +299,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/3.3.1/gra
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/3.5.4/gradle-3.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/4.1.0/gradle-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/7.0.4/gradle-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/7.2.1/gradle-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/7.2.2/gradle-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/7.3.0/gradle-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/jetifier/jetifier-core/1.0.0-alpha10/jetifier-core-1.0.0-alpha10.pom
@@ -301,6 +319,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/
 https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/26.5.4/manifest-merger-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/27.1.0/manifest-merger-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/30.0.4/manifest-merger-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/30.2.1/manifest-merger-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/30.2.2/manifest-merger-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/30.3.0/manifest-merger-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/common/26.0.0/common-26.0.0.pom
@@ -310,6 +329,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/common/26.3.1/common-2
 https://dl.google.com/dl/android/maven2/com/android/tools/common/26.5.4/common-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/common/27.1.0/common-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/common/30.0.4/common-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/common/30.2.1/common-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/common/30.2.2/common-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/common/30.3.0/common-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/26.0.0/ddmlib-26.0.0.pom
@@ -319,6 +339,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/26.3.1/ddm
 https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/26.5.4/ddmlib-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/27.1.0/ddmlib-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/30.0.4/ddmlib-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/30.2.1/ddmlib-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/30.2.2/ddmlib-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/30.3.0/ddmlib-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/26.0.0/dvlib-26.0.0.pom
@@ -328,6 +349,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/26.3.1/dvlib-26.
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/26.5.4/dvlib-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/27.1.0/dvlib-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/30.0.4/dvlib-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/30.2.1/dvlib-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/30.2.2/dvlib-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/30.3.0/dvlib-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/external/com-intellij/intellij-core/26.0.0/intellij-core-26.0.0.pom
@@ -344,6 +366,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-ap
 https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/26.5.4/layoutlib-api-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/27.1.0/layoutlib-api-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/30.0.4/layoutlib-api-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/30.2.1/layoutlib-api-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/30.2.2/layoutlib-api-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/30.3.0/layoutlib-api-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-api/26.0.0/lint-api-26.0.0.pom
@@ -359,8 +382,10 @@ https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-gradle-api/2
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-gradle/30.2.2/lint-gradle-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-model/27.1.0/lint-model-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-model/30.0.4/lint-model-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-model/30.2.1/lint-model-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-model/30.2.2/lint-model-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-model/30.3.0/lint-model-30.3.0.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-typedef-remover/30.2.1/lint-typedef-remover-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-typedef-remover/30.2.2/lint-typedef-remover-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint-typedef-remover/30.3.0/lint-typedef-remover-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/lint/lint/26.0.0/lint-26.0.0.pom
@@ -373,6 +398,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/repository/26.3.1/repo
 https://dl.google.com/dl/android/maven2/com/android/tools/repository/26.5.4/repository-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/repository/27.1.0/repository-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/repository/30.0.4/repository-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/repository/30.2.1/repository-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/repository/30.2.2/repository-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/repository/30.3.0/repository-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/sdklib/26.0.0/sdklib-26.0.0.pom
@@ -382,6 +408,7 @@ https://dl.google.com/dl/android/maven2/com/android/tools/sdklib/26.3.1/sdklib-2
 https://dl.google.com/dl/android/maven2/com/android/tools/sdklib/26.5.4/sdklib-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/sdklib/27.1.0/sdklib-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/sdklib/30.0.4/sdklib-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/sdklib/30.2.1/sdklib-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/sdklib/30.2.2/sdklib-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/sdklib/30.3.0/sdklib-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/sdk-common/26.0.0/sdk-common-26.0.0.pom
@@ -391,25 +418,33 @@ https://dl.google.com/dl/android/maven2/com/android/tools/sdk-common/26.3.1/sdk-
 https://dl.google.com/dl/android/maven2/com/android/tools/sdk-common/26.5.4/sdk-common-26.5.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/sdk-common/27.1.0/sdk-common-27.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/sdk-common/30.0.4/sdk-common-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/sdk-common/30.2.1/sdk-common-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/sdk-common/30.2.2/sdk-common-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/sdk-common/30.3.0/sdk-common-30.3.0.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-device-provider-ddmlib-proto/30.2.1/android-device-provider-ddmlib-proto-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-device-provider-ddmlib-proto/30.2.2/android-device-provider-ddmlib-proto-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-device-provider-ddmlib-proto/30.3.0/android-device-provider-ddmlib-proto-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-device-provider-gradle-proto/30.0.4/android-device-provider-gradle-proto-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-device-provider-gradle-proto/30.2.1/android-device-provider-gradle-proto-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-device-provider-gradle-proto/30.2.2/android-device-provider-gradle-proto-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-device-provider-gradle-proto/30.3.0/android-device-provider-gradle-proto-30.3.0.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-host-additional-test-output-proto/30.2.1/android-test-plugin-host-additional-test-output-proto-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-host-additional-test-output-proto/30.2.2/android-test-plugin-host-additional-test-output-proto-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-host-additional-test-output-proto/30.3.0/android-test-plugin-host-additional-test-output-proto-30.3.0.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-host-coverage-proto/30.2.1/android-test-plugin-host-coverage-proto-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-host-coverage-proto/30.2.2/android-test-plugin-host-coverage-proto-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-host-coverage-proto/30.3.0/android-test-plugin-host-coverage-proto-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-host-retention-proto/30.0.4/android-test-plugin-host-retention-proto-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-host-retention-proto/30.2.1/android-test-plugin-host-retention-proto-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-host-retention-proto/30.2.2/android-test-plugin-host-retention-proto-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-host-retention-proto/30.3.0/android-test-plugin-host-retention-proto-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-result-listener-gradle-proto/30.0.4/android-test-plugin-result-listener-gradle-proto-30.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-result-listener-gradle-proto/30.2.1/android-test-plugin-result-listener-gradle-proto-30.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-result-listener-gradle-proto/30.2.2/android-test-plugin-result-listener-gradle-proto-30.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/utp/android-test-plugin-result-listener-gradle-proto/30.3.0/android-test-plugin-result-listener-gradle-proto-30.3.0.pom
 https://dl.google.com/dl/android/maven2/com/android/zipflinger/4.1.0/zipflinger-4.1.0.pom
 https://dl.google.com/dl/android/maven2/com/android/zipflinger/7.0.4/zipflinger-7.0.4.pom
+https://dl.google.com/dl/android/maven2/com/android/zipflinger/7.2.1/zipflinger-7.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/zipflinger/7.2.2/zipflinger-7.2.2.pom
 https://dl.google.com/dl/android/maven2/com/android/zipflinger/7.3.0/zipflinger-7.3.0.pom
 https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.0.0/material-1.0.0.pom

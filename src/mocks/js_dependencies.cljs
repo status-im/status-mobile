@@ -342,6 +342,8 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
   (clj->js {:default                    #js {}
             :useDeviceOrientationChange #js {}}))
 
+(def react-native-transparent-video #js {:default #js {}})
+
 (def wallet-connect-client
   #js
    {:default       #js {}
@@ -403,6 +405,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "react-native-share"                            react-native-share
     "@react-native-async-storage/async-storage"     async-storage
     "react-native-svg"                              react-native-svg
+    "react-native-transparent-video"                react-native-transparent-video
     "react-native-orientation-locker"               react-native-orientation-locker
     "../src/js/worklets/core.js"                    worklet-factory
     "../src/js/worklets/shell/bottom_tabs.js"       #js {}
@@ -413,6 +416,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "../src/js/worklets/scroll_view.js"             #js {}
     "../src/js/worklets/onboarding_carousel.js"     #js {}
     "../src/js/worklets/lightbox.js"                #js {}
+    "../src/js/worklets/parallax.js"                #js {}
     "./fleets.js"                                   default-fleets
     "@walletconnect/client"                         wallet-connect-client
     "../translations/ar.json"                       (js/JSON.parse (slurp "./translations/ar.json"))
