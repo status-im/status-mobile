@@ -346,7 +346,7 @@ PODS:
     - React-perflogger (= 0.69.10)
   - ReactNativeAudioToolkit (2.0.3):
     - React
-  - ReactNativeCameraKit (12.0.0):
+  - ReactNativeCameraKit (13.0.0):
     - React-Core
   - ReactNativeNavigation (7.27.1):
     - HMSegmentedControl
@@ -757,7 +757,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 5ebf1ddaa706bf2986123f22d2cad905443c2c5f
   ReactCommon: 65754b8932ea80272714988268bbfb9f303264a5
   ReactNativeAudioToolkit: de9610f323e855ac6574be8c99621f3d57c5df06
-  ReactNativeCameraKit: 9a5413e452499bd63e8c13c50de4b34d78a5f1f1
+  ReactNativeCameraKit: 9d46a5d7dd544ca64aa9c03c150d2348faf437eb
   ReactNativeNavigation: 94979dd1572a3f093fc85d4599360530a1bed8c8
   RNCAsyncStorage: b2489b49e38c85e10ed45a888d13a2a4c7b32ea1
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
@@ -772,7 +772,7 @@ SPEC CHECKSUMS:
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
-  RNReanimated: 06a228c5a245ef7b5b03f0efc29d76ce4db9031c
+  RNReanimated: 3e375fc41870cc66c5152a38514c450f7adbc3e1
   RNShare: 2dc2fcac3f7321cfd6b60a23ed4bf4d549f86f5f
   RNStaticSafeAreaInsets: 055ddbf5e476321720457cdaeec0ff2ba40ec1b8
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
