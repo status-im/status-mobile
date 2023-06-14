@@ -11,3 +11,5 @@
    :thumb        40})
 
 (def disable-opacity 0.3)
+
+(def default-width 300)

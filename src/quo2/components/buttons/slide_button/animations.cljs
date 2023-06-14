@@ -68,7 +68,7 @@
 
 (defn- complete-animation
   [sliding-complete?]
-  (js/setTimeout #(reset! sliding-complete? true) 100))
+  (reset! sliding-complete? true))
 
 (defn- reset-track-position
   [x-pos]
@@ -83,6 +83,7 @@
    sliding-complete?]
   (let [gestures-enabled? (not (or disabled? @gestures-disabled?))]
     (-> (gesture/gesture-pan)
+        (gesture/with-test-ID :slide-button-gestures)
         (gesture/enabled gestures-enabled?)
         (gesture/min-distance 0)
         (gesture/on-update (fn [event]

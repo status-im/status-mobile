@@ -41,6 +41,8 @@
 
 (defn average-touches [gesture average-touches?] (.averageTouches ^js gesture average-touches?))
 
+(defn with-test-ID [gesture test-ID] (.withTestId ^js gesture (str test-ID)))
+
 (defn simultaneous
   ([g1 g2] (.Simultaneous ^js Gesture g1 g2))
   ([g1 g2 g3] (.Simultaneous ^js Gesture g1 g2 g3)))

@@ -9,7 +9,8 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [oops.core :as oops]
-    [react-native.reanimated :as reanimated]))
+    [react-native.reanimated :as reanimated]
+    [quo2.components.buttons.slide-button.constants :as constants]))
 
 (defn- f-slider
   [{:keys [disabled?]}]
@@ -27,7 +28,9 @@
                  customization-color
                  size]}]
       (let [x-pos             (reanimated/use-shared-value 0)
-            dimensions        (partial utils/get-dimensions (or @track-width 0) size)
+            dimensions        (partial utils/get-dimensions
+                                       (or @track-width constants/default-width)
+                                       size)
             interpolate-track (partial animations/interpolate-track
                                        x-pos
                                        (dimensions :usable-track)
