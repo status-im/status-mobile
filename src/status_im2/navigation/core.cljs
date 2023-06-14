@@ -25,6 +25,7 @@
    (navigation/set-default-options options/default-options)
    (reset! state/curr-modal false)
    (reset! state/dissmissing false)
+   (re-frame/dispatch [:bottom-sheet-hidden])
    (if (= @state/root-id :multiaccounts-stack)
      (re-frame/dispatch-sync [:set-multiaccount-root])
      (when @state/root-id
