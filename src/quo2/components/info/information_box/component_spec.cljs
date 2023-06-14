@@ -12,9 +12,8 @@
   (h/test "with close button"
     (let [on-close (h/mock-fn)]
       (h/render [view/view
-                 {:icon      :i/placeholder
-                  :closable? true
-                  :on-close  on-close}
+                 {:icon     :i/placeholder
+                  :on-close on-close}
                  "Lorem ipsum"])
       (h/is-null (h/query-by-label-text :information-box-action-button))
       (h/fire-event :on-press (h/get-by-label-text :information-box-close-button))

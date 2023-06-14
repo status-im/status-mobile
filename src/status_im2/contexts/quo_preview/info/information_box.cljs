@@ -27,19 +27,18 @@
 
 (defn cool-preview
   []
-  (let [state    (reagent/atom
-                  {:type         :default
-                   :closable?    true
-                   :icon         :i/info
-                   :message      (str "If you registered a stateofus.eth name "
-                                      "you might be eligible to connect $ENS")
-                   :button-label "Button"
-                   :style        {:width 335}})
-        closed?  (reagent/cursor state [:closed?])
-        on-close (fn []
-                   (reset! closed? true)
-                   (js/setTimeout (fn [] (reset! closed? false))
-                                  2000))]
+  (let [state     (reagent/atom
+                   {:type         :default
+                    :closable?    true
+                    :message      (str "If you registered a stateofus.eth name "
+                                       "you might be eligible to connect $ENS")
+                    :button-label "Button"})
+        closable? (reagent/cursor state [:closable?])
+        closed?   (reagent/cursor state [:closed?])
+        on-close  (fn []
+                    (reset! closed? true)
+                    (js/setTimeout (fn [] (reset! closed? false))
+                                   2000))]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view
@@ -47,7 +46,12 @@
         [rn/view
          {:style {:padding-vertical 20
                   :align-items      :center}}
-         [quo/information-box (merge @state {:on-close on-close}) (:message @state)]]]])))
+         [quo/information-box
+          (merge {:icon     :i/info
+                  :style    {:width 335}
+                  :on-close (when @closable? on-close)}
+                 @state)
+          (:message @state)]]]])))
 
 (defn preview-information-box
   []

@@ -44,7 +44,6 @@
   "[view opts \"message\"]
    opts
    {:type            :default/:informative/:error
-    :closable?       bool (false)  ;; Allow information box to be closed?
     :closed?         bool (false)  ;; Information box's state
     :icon            keyword, required (:i/info)
     :icon-size       int (16)
@@ -53,7 +52,7 @@
     :button-label    string
     :on-button-press function
     :on-close        function"
-  [{:keys [type closable? closed? icon style button-label
+  [{:keys [type closed? icon style button-label
            on-button-press on-close no-icon-color? icon-size]}
    message]
   (when-not closed?
@@ -76,5 +75,5 @@
          :button-label    button-label
          :on-button-press on-button-press
          :message         message}]
-       (when closable?
+       (when on-close
          [close-button {:theme theme :on-close on-close}])])))
