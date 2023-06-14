@@ -220,6 +220,7 @@
   (reanimated/apply-animations-to-style
    {:opacity opacity}
    {:margin-bottom 32
+    :background-color :red
     :margin-right  32}))
 
 (def button-container
