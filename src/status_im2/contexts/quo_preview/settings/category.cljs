@@ -22,9 +22,11 @@
     :border              true
     :on-press            (fn [] (js/alert "Folk pressed"))}])
 
-(defn cool-preview [_]
-  [quo/category {:label "Music"
-                 :settings-list-data mockData}])
+(defn cool-preview
+  [_]
+  [quo/category
+   {:label              "Music"
+    :settings-list-data mockData}])
 
 (defn preview-category
   []

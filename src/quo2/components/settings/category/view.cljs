@@ -29,9 +29,9 @@
    {:style (merge style/category-list-container container-style)}
    [category-label label]
    [rn/flat-list
-    {:render-fn settings-list/settings-list
-     :style                   style/flat-list
-     :data settings-list-data
+    {:render-fn                    settings-list/settings-list
+     :style                        style/flat-list
+     :data                         settings-list-data
      :flex                         1
      :keyboard-should-persist-taps :always
      :key-fn                       str}]])
