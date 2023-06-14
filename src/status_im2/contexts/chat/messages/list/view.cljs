@@ -295,7 +295,7 @@
        :style                        (add-inverted-y-android
                                       {:background-color (if all-loaded?
                                                            (colors/theme-colors (:light cover-bg-color)
-                                                                               (:dark cover-bg-color))
+                                                                                (:dark cover-bg-color))
                                                            (colors/theme-colors
                                                             colors/white
                                                             colors/neutral-95))})
