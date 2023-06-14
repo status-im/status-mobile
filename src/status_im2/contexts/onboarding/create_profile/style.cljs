@@ -16,12 +16,8 @@
    :align-self    :flex-end
    :height        64})
 
-(def blur-button-container
-  (merge button-container
-         {:background-color colors/neutral-80-opa-1-blur}))
-
 (def view-button-container
-  (merge button-container {:margin-bottom 24}))
+  (merge button-container {:margin-bottom 34}))
 
 (def page-container
   {:position :absolute
@@ -37,7 +33,7 @@
 (def title
   {:color         colors/white
    :margin-top    12
-   :margin-bottom 20})
+   :margin-bottom 18})
 
 (def color-title
   {:color         colors/white-70-blur
@@ -46,6 +42,7 @@
 
 (def content-container
   {:flex               1
+   :justify-content :flex-start
    :padding-horizontal 20})
 
 (def input-container

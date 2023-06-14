@@ -11,14 +11,17 @@
   {:flex-basis "100%"
    :height     10})
 
+(def color-button-common
+  {:width         48
+   :height        48
+   :border-width  4
+   :border-radius 24
+   :transform     [{:rotate "45deg"}]
+   :border-color  :transparent})
+
 (defn color-button
   [color selected?]
-  (merge {:width         48
-          :height        48
-          :border-width  4
-          :border-radius 24
-          :transform     [{:rotate "45deg"}]
-          :border-color  :transparent}
+  (merge color-button-common
          (when selected?
            {:border-top-color    (colors/alpha color 0.4)
             :border-end-color    (colors/alpha color 0.4)

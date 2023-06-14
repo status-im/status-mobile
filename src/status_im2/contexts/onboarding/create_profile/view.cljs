@@ -26,9 +26,8 @@
 (def special-characters-regex (new js/RegExp #"[^a-zA-Z\d\s-._]" "i"))
 (defn has-special-characters [s] (re-find special-characters-regex s))
 (def min-length 5)
-(defn length-not-valid [s] (< (count (string/trim s)) min-length))
-(def valid-regex (new js/RegExp #"^[\w-\s]{5,24}$" "i"))
-(defn valid-name [s] (re-find valid-regex s))
+(defn length-not-valid [s] (< (count (string/trim (str s))) min-length))
+
 
 (defn validation-message
   [s]
@@ -41,16 +40,17 @@
     (string/ends-with? s ".eth") (i18n/label :t/ending-not-allowed {:ending ".eth"})
     (has-common-names s)         (i18n/label :t/are-not-allowed {:check (i18n/label :t/common-names)})
     (has-emojis s)               (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
-    (length-not-valid s)         (i18n/label :t/name-must-have-at-least-characters
-                                             {:min-chars min-length})
-    (not (valid-name s))         (i18n/label :t/name-is-not-valid)
     :else                        nil))
 
 (defn button-container
   [keyboard-shown? children]
   [rn/view {:style {:margin-top :auto}}
    (if keyboard-shown?
-     [blur/ios-view {:style style/blur-button-container}
+     [blur/ios-view {:blur-amount      34
+                     :blur-type        :transparent
+                     :overlay-color :transparent
+                     :background-color  colors/neutral-80-opa-1-blur
+                     :style style/button-container}
       children]
      [rn/view {:style style/view-button-container}
       children])])
@@ -78,7 +78,9 @@
                                                                                c/profile-default-color))
                      profile-pic                             (reagent/atom image-path)
                      on-change-profile-pic                   #(reset! profile-pic %)
-                     on-change                               #(reset! custom-color %)]
+                     on-change                               #(reset! custom-color %)
+                     name-too-short? (length-not-valid @full-name)
+                     valid-name?  (not (or @validation-msg name-too-short?))]
     [rn/view {:style style/page-container}
      [navigation-bar/navigation-bar {:top navigation-bar-top}]
      [rn/scroll-view
@@ -115,13 +117,20 @@
                                   :auto-focus     true
                                   :max-length     c/profile-name-max-length
                                   :on-change-text on-change-text}}]]
-         (when @validation-msg
-           [quo/info-message
-            {:type  :error
-             :size  :default
-             :icon  :i/info
-             :style style/info-message}
-            @validation-msg])
+
+         [quo/info-message
+          {:type  (cond @validation-msg :error
+                        name-too-short? :neutral
+                        :else :positive)
+           :size  :default
+           :icon  (if valid-name? :i/positive-state :i/info)
+           :text-color (when name-too-short? colors/white-70-blur)
+           :icon-color (when name-too-short? colors/white-70-blur)
+           :style style/info-message}
+          (if @validation-msg
+            @validation-msg
+            (i18n/label :t/minimum-characters
+                        {:min-chars min-length}))]
          [quo/text
           {:size   :paragraph-2
            :weight :medium
@@ -153,8 +162,8 @@
          :disabled                  (or (not (seq @full-name)) @validation-msg)}
         (i18n/label :t/continue)]]]]
     (finally
-     (oops/ocall will-show-listener "remove")
-     (oops/ocall will-hide-listener "remove"))))
+      (oops/ocall will-show-listener "remove")
+      (oops/ocall will-hide-listener "remove"))))
 
 (defn create-profile
   []

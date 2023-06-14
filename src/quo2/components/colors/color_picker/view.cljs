@@ -5,24 +5,25 @@
             [reagent.core :as reagent]
             [quo2.components.colors.color-picker.style :as style]))
 
-(def color-list [:blue :yellow :turquoise :copper :sky :camel :orange :army :pink :purple :magenta])
+;; TODO: using this to keep alignment of colors correct while b & w is being developed.
+;; https://github.com/status-im/status-mobile/issues/15442
+(def empty-color :no-color)
+
+(def color-list [:blue :yellow :turquoise :copper :sky :camel :orange :army :pink :purple :magenta empty-color])
 
 (defn picker-colors
-  [blur?]
-  (concat (map (fn [color]
+  [blur?] (map (fn [color]
                  {:name  color
                   :color (colors/custom-color-by-theme color (if blur? 60 50) 60)})
-               color-list)
-          [{:name            :yinyang
-            :color           (colors/theme-colors (colors/custom-color :yin 50)
-                                                  (colors/custom-color :yang 50))
-            :secondary-color (colors/theme-colors (colors/custom-color :yang 50)
-                                                  (colors/custom-color :yin 50))}]))
+               color-list))
 
 (defn- on-change-handler
   [selected color-name on-change]
   (reset! selected color-name)
   (when on-change (on-change color-name)))
+
+(defn empty-color-item []
+  [rn/view {:style style/color-button-common}])
 
 (defn- color-item
   [{:keys [name
@@ -32,20 +33,24 @@
            on-press
            blur?]}]
   (let [border? (and (not blur?) (and secondary-color (not selected?)))]
-    [rn/touchable-opacity
-     {:style               (style/color-button color selected?)
-      :accessibility-label :color-picker-item
-      :on-press            #(on-press name)}
-     [rn/view
-      {:style (style/color-circle color border?)}
-      (when (and secondary-color (not selected?))
-        [rn/view
-         {:style (style/secondary-overlay secondary-color border?)}])
-      (when selected?
-        [icon/icon :i/check
-         {:size  20
-          :color (or secondary-color
-                     colors/white)}])]]))
+    (if-not name
+      [empty-color-item]
+      [rn/touchable-opacity
+       {:style               (style/color-button color selected?)
+        :accessibility-label :color-picker-item
+        :on-press            #(on-press name)}
+       [rn/view
+        {:accessibile true
+         :accessibility-label name
+         :style (style/color-circle color border?)}
+        (when (and secondary-color (not selected?))
+          [rn/view
+           {:style (style/secondary-overlay secondary-color border?)}])
+        (when selected?
+          [icon/icon :i/check
+           {:size  20
+            :color (or secondary-color
+                       colors/white)}])]])))
 
 (defn view
   "Options
