@@ -1,6 +1,7 @@
 (ns status-im2.subs.shell
   (:require [re-frame.core :as re-frame]
             [utils.datetime :as datetime]
+            [status-im2.config :as config]
             [status-im2.constants :as constants]
             [react-native.platform :as platform]
             [status-im2.common.resources :as resources]
@@ -202,7 +203,8 @@
  :shell/animation-complete?
  :<- [:shell/loaded-screens]
  (fn [screens [_ chat-type]]
-   (or platform/ios?
+   (or config/shell-navigation-disabled?
+       platform/ios?
        (cond-> (get screens shell.constants/chat-screen)
          (= chat-type constants/community-chat-type)
          (and (get screens shell.constants/community-screen))))))

@@ -3,6 +3,7 @@
             [utils.i18n :as i18n]
             [quo2.core :as quo]
             [utils.re-frame :as rf]
+            [status-im2.config :as config]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
@@ -183,19 +184,27 @@
       "")))
 
 (defn open-screen
-  [card-type id]
+  [card-type id channel-id]
   (cond
     (#{shell.constants/one-to-one-chat-card
-       shell.constants/private-group-chat-card
-       shell.constants/community-channel-card}
+       shell.constants/private-group-chat-card}
      card-type)
     (rf/dispatch [:chat/navigate-to-chat id])
+
+    (= card-type shell.constants/community-channel-card)
+    (if config/shell-navigation-disabled?
+      (do
+        (rf/dispatch [:navigate-to :community-overview id])
+        (js/setTimeout
+         #(rf/dispatch [:chat/navigate-to-chat channel-id])
+         100))
+      (rf/dispatch [:chat/navigate-to-chat channel-id]))
 
     (= card-type shell.constants/community-card)
     (rf/dispatch [:navigate-to :community-overview id])))
 
 (defn calculate-card-position-and-open-screen
-  [card-ref card-type id]
+  [card-ref card-type id channel-id]
   (when @card-ref
     (.measure
      ^js
@@ -205,7 +214,7 @@
         page-x
         page-y
         card-type)
-       (open-screen card-type id)))))
+       (open-screen card-type id channel-id)))))
 
 ;; Screens Card
 (defn screens-card
@@ -219,7 +228,8 @@
          {:on-press       #(calculate-card-position-and-open-screen
                             card-ref
                             type
-                            (or channel-id id))
+                            id
+                            channel-id)
           :ref            #(reset! card-ref %)
           :active-opacity 1}
          [rn/view {:style (style/base-container color-50)}

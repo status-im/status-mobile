@@ -3,6 +3,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [taoensso.timbre :as log]
+            [status-im2.config :as config]
             [status-im2.contexts.chat.messages.list.state :as chat.state]
             [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
             [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
@@ -168,7 +169,16 @@
   (when-let [chat-id (:current-chat-id db)]
     (chat.state/reset-visible-item)
     (rf/merge cofx
-              {:db (dissoc db :current-chat-id)}
+              (merge
+               {:db (dissoc db :current-chat-id)}
+               (let [community-id (get-in db [:chats chat-id :community-id])]
+                 ;; When navigating back from community chat to community, update switcher card
+                 ;; A close chat event is also called while opening any chat.
+                 ;; That might lead to duplicate :dispatch keys in fx/merge, that's why dispatch-n is
+                 ;; used here.
+                 (when (and community-id config/shell-navigation-disabled? (not navigate-to-shell?))
+                   {:dispatch-n [[:shell/add-switcher-card
+                                  :community-overview community-id]]})))
               (link-preview/reset-all)
               (delete-for-me/sync-all)
               (delete-message/send-all)

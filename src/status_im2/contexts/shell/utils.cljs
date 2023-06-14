@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.utils
   (:require [utils.re-frame :as rf]
             [react-native.core :as rn]
+            [status-im2.config :as config]
             [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
@@ -95,7 +96,8 @@
 ;;; Navigation
 (defn shell-navigation?
   [view-id]
-  (#{:chat :community-overview} view-id))
+  (when-not config/shell-navigation-disabled?
+    (#{:chat :community-overview} view-id)))
 
 (defn calculate-view-id
   []

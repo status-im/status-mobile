@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.events
   (:require [utils.re-frame :as rf]
             [re-frame.core :as re-frame]
+            [status-im2.config :as config]
             [status-im.utils.core :as utils]
             [status-im2.constants :as constants]
             [status-im2.contexts.shell.state :as state]
@@ -23,8 +24,9 @@
  :shell/navigate-to-jump-to-fx
  (fn []
    (animation/close-home-stack false)
-   (some-> ^js @state/jump-to-list-ref
-           (.scrollToOffset #js {:y 0 :animated false}))))
+   (when-not config/shell-navigation-disabled?
+     (some-> ^js @state/jump-to-list-ref
+             (.scrollToOffset #js {:y 0 :animated false})))))
 
 (re-frame/reg-fx
  :shell/pop-to-root-fx
@@ -87,14 +89,24 @@
   {:events [:shell/add-switcher-card]}
   [{:keys [db now] :as cofx} view-id id]
   (let [card-data     (calculate-card-data db now view-id id)
-        switcher-card (:switcher-card card-data)]
+        switcher-card (:switcher-card card-data)
+        card-type     (:type switcher-card)]
     (when card-data
       (rf/merge
        cofx
-       {:db (assoc-in
-             db
-             [:shell/switcher-cards (:card-id card-data)]
-             switcher-card)}
+       (merge
+        {:db (assoc-in
+              db
+              [:shell/switcher-cards (:card-id card-data)]
+              switcher-card)}
+        (when config/shell-navigation-disabled?
+          {:shell/change-tab-fx (cond
+                                  (#{shell.constants/one-to-one-chat-card
+                                     shell.constants/private-group-chat-card}
+                                   card-type)
+                                  :chats-stack
+
+                                  :else :communities-stack)}))
        (switcher-cards-store/upsert-switcher-card-rpc switcher-card)))))
 
 (rf/defn close-switcher-card
@@ -111,23 +123,26 @@
   [{:keys [db]}]
   (let [chat-screen-open?      (shell.utils/floating-screen-open? shell.constants/chat-screen)
         community-screen-open? (shell.utils/floating-screen-open? shell.constants/community-screen)]
-    {:db
-     (cond-> db
+    (merge
+     (if config/shell-navigation-disabled?
+       {:pop-to-root-fx :shell-stack}
+       {:db
+        (cond-> db
 
-       chat-screen-open?
-       (assoc-in [:shell/floating-screens shell.constants/chat-screen :animation]
-        shell.constants/close-screen-with-shell-animation)
+          chat-screen-open?
+          (assoc-in [:shell/floating-screens shell.constants/chat-screen :animation]
+           shell.constants/close-screen-with-shell-animation)
 
-       (and chat-screen-open? community-screen-open?)
-       (assoc-in [:shell/floating-screens shell.constants/community-screen :animation]
-        shell.constants/close-screen-without-animation)
+          (and chat-screen-open? community-screen-open?)
+          (assoc-in [:shell/floating-screens shell.constants/community-screen :animation]
+           shell.constants/close-screen-without-animation)
 
-       (and (not chat-screen-open?) community-screen-open?)
-       (assoc-in [:shell/floating-screens shell.constants/community-screen :animation]
-        shell.constants/close-screen-with-shell-animation))
+          (and (not chat-screen-open?) community-screen-open?)
+          (assoc-in [:shell/floating-screens shell.constants/community-screen :animation]
+           shell.constants/close-screen-with-shell-animation))
 
-     :dispatch [:set-view-id :shell]
-     :shell/navigate-to-jump-to-fx nil}))
+        :dispatch [:set-view-id :shell]})
+     {:shell/navigate-to-jump-to-fx nil})))
 
 (rf/defn change-shell-status-bar-style
   {:events [:change-shell-status-bar-style]}
@@ -163,8 +178,15 @@
                           (not hidden-screen?)
                           (:current-chat-id db))
                      (conj [:chat/close]))})
-    {:db          (assoc db :view-id go-to-view-id)
-     :navigate-to go-to-view-id}))
+    (merge
+     {:db          (assoc db :view-id go-to-view-id)
+      :navigate-to go-to-view-id}
+     (when (and config/shell-navigation-disabled?
+                (#{:chat :community-overview} go-to-view-id))
+       {:dispatch-later
+        ;; 300 ms delay because, navigation is priority over shell card update
+        [{:dispatch [:shell/add-switcher-card go-to-view-id screen-params]
+          :ms       300}]}))))
 
 (rf/defn shell-navigate-back
   {:events [:shell/navigate-back]}
