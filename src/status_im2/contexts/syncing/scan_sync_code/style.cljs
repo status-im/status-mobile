@@ -65,15 +65,26 @@
    :left     (:x viewfinder)
    :top      (:y viewfinder)})
 
+(def view-finder-border-container
+  {:flex-direction  :row
+   :justify-content :space-between})
+
 (def camera-flash-button
   {:position :absolute
    :right    20
    :bottom   20})
 
-(def border
-  {:border-color colors/white
-   :width        78
-   :height       78})
+(defn border
+  [border1 border2 corner]
+  (assoc {:border-color colors/white
+          :width        78
+          :height       78}
+         border1
+         2
+         border2
+         2
+         corner
+         16))
 
 (defn border-tip
   [top bottom right left]

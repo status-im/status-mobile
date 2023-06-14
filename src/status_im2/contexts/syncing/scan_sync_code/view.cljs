@@ -142,8 +142,7 @@
 
 (defn- border
   [border1 border2 corner]
-  [rn/view
-   (assoc style/border border1 2 border2 2 corner 16)])
+  [rn/view {:style (style/border border1 border2 corner)}])
 
 (defn- border-tip
   [{:keys [top bottom left right]}]
@@ -158,7 +157,7 @@
       [rn/view
        {:style (style/qr-view-finder-container size)}
        [rn/view
-        {:flex-direction :row :justify-content :space-between}
+        {:style style/view-finder-border-container}
         [rn/view
          [border :border-top-width :border-left-width :border-top-left-radius]
          [border-tip {:right -1 :top 0}]
@@ -177,12 +176,12 @@
          [border-tip {:right 0 :top -1}]
          [border-tip {:left -1 :bottom 0}]]]
        [quo/button
-        {:icon                true
-         :type                :blur-bg
-         :size                32
-         :accessibility-label :camera-flash
-         :on-press            #()
-         :style               style/camera-flash-button}
+        {:icon                      true
+         :type                      :blur-bg
+         :size                      32
+         :accessibility-label       :camera-flash
+         :override-background-color colors/neutral-80-opa-40
+         :style                     style/camera-flash-button}
         :i/flashlight-off]]
       [quo/text
        {:size   :paragraph-2
