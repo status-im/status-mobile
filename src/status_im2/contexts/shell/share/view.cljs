@@ -10,7 +10,8 @@
             [status-im.ui.components.list-selection :as list-selection]
             [utils.image-server :as image-server]
             [react-native.navigation :as navigation]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [utils.address :as address]))
 
 (defn header
   []
@@ -30,19 +31,6 @@
      :style  style/header-heading}
     (i18n/label :t/share)]])
 
-(defn abbreviated-url
-  "The goal here is to generate a string that begins with
-   join.status.im/u/ joined with the 1st 5 characters
-   of the compressed public key followed by an ellipsis followed by
-   the last 12 characters of the compressed public key"
-  [base-url public-pk]
-  (let [first-part-of-public-pk (subs public-pk 0 5)
-        ellipsis                "..."
-        public-pk-size          (count public-pk)
-        last-part-of-public-pk  (subs public-pk (- public-pk-size 12) (- public-pk-size 1))
-        abbreviated-url         (str base-url first-part-of-public-pk ellipsis last-part-of-public-pk)]
-    abbreviated-url))
-
 (defn profile-tab
   [window-width]
   (let [{:keys [emoji-hash
@@ -51,7 +39,7 @@
         port              (rf/sub [:mediaserver/port])
         emoji-hash-string (string/join emoji-hash)
         qr-size           (int (- window-width 64))
-        abbreviated-url   (abbreviated-url
+        abbreviated-url   (address/get-abbreviated-profile-url
                            image-server/status-profile-base-url-without-https
                            compressed-key)
         profile-url       (str image-server/status-profile-base-url compressed-key)
