@@ -42,7 +42,7 @@ export NODE_OPTIONS += --openssl-legacy-provider
 export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 
 # Our custom config is located in nix/nix.conf
-export NIX_CONF_DIR = $(PWD)/nix
+export NIX_USER_CONF_FILES = $(PWD)/nix/nix.conf
 # Location of symlinks to derivations that should not be garbage collected
 export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-mobile
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
