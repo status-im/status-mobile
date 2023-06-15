@@ -62,6 +62,8 @@
    :background-color  colors/white-opa-5
    :border-color      colors/white-opa-10
    :border-radius     12
+   :border-style      :dashed
+   :border-width      1
    :align-items       :center
    :justify-content   :center})
 
