@@ -6,19 +6,19 @@
 
 ;; Derived values for Bottom tabs
 (defn bottom-tabs-height
-  [home-stack-state-sv container-height extended-container-height]
+  [home-stack-state container-height extended-container-height]
   (.bottomTabsHeight ^js bottom-tabs-worklets
-                     home-stack-state-sv
+                     home-stack-state
                      container-height
                      extended-container-height))
 
 (defn bottom-tab-icon-color
-  [id selected-stack-id-sv home-stack-state-sv pass-through-sv selected-tab-color default-color
+  [id selected-stack-id home-stack-state pass-through-sv selected-tab-color default-color
    pass-through-color]
   (.bottomTabIconColor ^js bottom-tabs-worklets
                        id
-                       selected-stack-id-sv
-                       home-stack-state-sv
+                       selected-stack-id
+                       home-stack-state
                        pass-through-sv
                        selected-tab-color
                        default-color
@@ -35,33 +35,33 @@
 
 ;; Derived values for Home stack (container)
 (defn home-stack-opacity
-  [home-stack-state-sv]
-  (.homeStackOpacity ^js home-stack-worklets home-stack-state-sv))
+  [home-stack-state]
+  (.homeStackOpacity ^js home-stack-worklets home-stack-state))
 
 (defn home-stack-pointer
-  [home-stack-state-sv]
-  (.homeStackPointer ^js home-stack-worklets home-stack-state-sv))
+  [home-stack-state]
+  (.homeStackPointer ^js home-stack-worklets home-stack-state))
 
 (defn home-stack-scale
-  [home-stack-state-sv scale]
-  (.homeStackScale ^js home-stack-worklets home-stack-state-sv scale))
+  [home-stack-state scale]
+  (.homeStackScale ^js home-stack-worklets home-stack-state scale))
 
 (defn home-stack-left
-  [selected-stack-id-sv animate-home-stack-left home-stack-state-sv left-home-stack-position]
+  [selected-stack-id animate-home-stack-left home-stack-state left-home-stack-position]
   (.homeStackLeft
    ^js home-stack-worklets
-   selected-stack-id-sv
+   selected-stack-id
    animate-home-stack-left
-   home-stack-state-sv
+   home-stack-state
    left-home-stack-position))
 
 (defn home-stack-top
-  [home-stack-state-sv top-home-stack-position]
-  (.homeStackTop ^js home-stack-worklets home-stack-state-sv top-home-stack-position))
+  [home-stack-state top-home-stack-position]
+  (.homeStackTop ^js home-stack-worklets home-stack-state top-home-stack-position))
 
 (defn home-stack-border-radius
-  [home-stack-state-sv]
-  (.homeStackBorderRadius ^js home-stack-worklets home-stack-state-sv))
+  [home-stack-state]
+  (.homeStackBorderRadius ^js home-stack-worklets home-stack-state))
 
 ;; Derived values for floating screen
 (defn floating-screen-left
