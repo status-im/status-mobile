@@ -256,8 +256,8 @@
         current-y      (oops/oget event "nativeEvent.contentOffset.y")]
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
-(defn messages-list-content
-  [{:keys [chat insets scroll-y cover-bg-color keyboard-shown?]}]
+(defn f-messages-list-content
+  [{:keys [chat insets scroll-y cover-bg-color keyboard-shown? shared-all-loaded?]}]
   (let [shell-animation-complete? (rf/sub [:shell/animation-complete? (:chat-type chat)])
         context                   (when shell-animation-complete?
                                     (rf/sub [:chats/current-chat-message-list-view-context]))
@@ -267,6 +267,11 @@
                                     (rf/sub [:chats/recording?]))
         all-loaded?               (when shell-animation-complete?
                                     (rf/sub [:chats/all-loaded? (:chat-id chat)]))]
+    ;; NOTE(rasom): Top bar needs to react on `all-loaded?` only after messages
+    ;; rendering, otherwise animation flickers
+    (rn/use-effect (fn []
+                     (reset! shared-all-loaded? all-loaded?))
+                   [all-loaded?])
     [rn/view {:style {:flex 1}}
      [rn/flat-list
       {:key-fn                       list-key-fn
@@ -319,6 +324,7 @@
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
   (let [insets                                   (safe-area/get-insets)
         scroll-y                                 (reanimated/use-shared-value 0)
+        all-loaded?                              (reagent/atom false)
         {:keys [keyboard-height keyboard-shown]} (hooks/use-keyboard)]
     (rn/use-effect
      (fn []
@@ -332,14 +338,18 @@
       :keyboard-vertical-offset (- (:bottom insets))}
 
      (when header-comp
-       [header-comp {:scroll-y scroll-y}])
+       [header-comp
+        {:scroll-y           scroll-y
+         :shared-all-loaded? all-loaded?}])
 
-     [messages-list-content
-      {:chat            chat
-       :insets          insets
-       :scroll-y        scroll-y
-       :cover-bg-color  cover-bg-color
-       :keyboard-shown? keyboard-shown}]
+     [:f>
+      f-messages-list-content
+      {:chat               chat
+       :insets             insets
+       :scroll-y           scroll-y
+       :cover-bg-color     cover-bg-color
+       :keyboard-shown?    keyboard-shown
+       :shared-all-loaded? all-loaded?}]
 
      (when footer-comp
        [footer-comp {:insets insets}])]))

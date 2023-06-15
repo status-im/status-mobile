@@ -25,8 +25,10 @@
     [messages.list/messages-list
      {:cover-bg-color (colors/custom-color :turquoise 50 20)
       :chat           chat
-      :header-comp    (fn [{:keys [scroll-y]}]
-                        [messages.navigation/navigation-view {:scroll-y scroll-y}])
+      :header-comp    (fn [{:keys [scroll-y shared-all-loaded?]}]
+                        [messages.navigation/navigation-view
+                         {:scroll-y           scroll-y
+                          :shared-all-loaded? shared-all-loaded?}])
       :footer-comp    (fn [{:keys [insets]}]
                         (if-not able-to-send-message?
                           [contact-requests.bottom-drawer/view chat-id contact-request-state
