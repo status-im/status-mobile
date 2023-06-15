@@ -268,7 +268,7 @@ run-android: export TARGET := android
 run-android: ##@run Build Android APK and start it on the device
 	npx react-native run-android --appIdSuffix debug
 
-SIMULATOR=iPhone 13
+SIMULATOR=iPhone 14
 run-ios: export TARGET := ios
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
