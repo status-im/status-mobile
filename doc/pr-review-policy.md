@@ -17,8 +17,8 @@ This document details the pull request policy of the Status Mobile repository / 
 
 | Term                 | Definition                                                                                                    |
 |----------------------|---------------------------------------------------------------------------------------------------------------|
-| **Code owner**       | The team member submitting a pull request.                                                                    |
-| **Reviewer**         | A team member asked by a code owner to review the code owner’s pull request.                                  |
+| **Requester**        | The team member submitting a pull request.                                                                    |
+| **Reviewer**         | A team member asked by a requester to review the requester’s pull request.                                    |
 | **Review bandwidth** | The number of reviews a team member has self-limited themselves to giving within their defined review period. |
 | **Review period**    | The period of time over which a reviewer’s bandwidth is consumed                                              |
 
@@ -32,12 +32,12 @@ This document details the pull request policy of the Status Mobile repository / 
 
 #### Fully policy
 
-1) The code owner has the responsibility for getting a PR reviewed and approved.
-   1) The code owner has the right and responsibility to pursue code reviews.
-   2) The code owner has the right and responsibility to make multiple requests of the same reviewer.
-   3) The code owner will select a limited number of reviewers to review any of the code owner’s PRs.
+1) The requester has the responsibility for getting a PR reviewed and approved.
+   1) The requester has the right and responsibility to pursue code reviews.
+   2) The requester has the right and responsibility to make multiple requests of the same reviewer.
+   3) The requester will select a limited number of reviewers to review any of the requester’s PRs.
 2) Reviewers are obligated to give a review for all PRs they are requested to review, except when their review bandwidth has been exhausted:
-   1) Reviewers have the right to refuse a code owner a review if the reviewer’s review bandwidth has been exhausted.
+   1) Reviewers have the right to refuse a requester a review if the reviewer’s review bandwidth has been exhausted.
    2) Reviewers are expected to manage and track their review bandwidth.
    3) Reviewers can manage their review bandwidth via any means they feel works best for them. Examples include:
       1) Using the GitHub busy feature
@@ -55,7 +55,7 @@ This document details the pull request policy of the Status Mobile repository / 
 
 #### Front pressure and Demand control
 
-Foremost in the rationale for the above policy is that giving a PR review is a requirement. If a code owner requests
+Foremost in the rationale for the above policy is that giving a PR review is a requirement. If a requester requests
  a PR review of a team member, the reviewer is now obligated to review the PR within a reasonable timeframe.
 
 This principle enforces that there is a pressure and demand that PR reviews must be given.
