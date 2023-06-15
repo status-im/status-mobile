@@ -12,7 +12,7 @@
             [status-im2.setup.hot-reload :as hot-reload]
             [status-im2.common.theme.core :as theme]
             [taoensso.timbre :as log]
-            [status-im2.contexts.shell.animation :as shell.animation]
+            [status-im2.contexts.shell.utils :as shell.utils]
             [status-im.contact.db :as contact.db]))
 
 ;; validate that the given mnemonic was generated from Status Dictionary
@@ -135,7 +135,7 @@
            [:light :dark colors/white])]
      (theme/set-theme theme)
      (re-frame/dispatch [:change-shell-status-bar-style
-                         (if (shell.animation/home-stack-open?) status-bar-theme :light)])
+                         (if (shell.utils/home-stack-open?) status-bar-theme :light)])
      (when reload-ui?
        (rf/dispatch [:dissmiss-all-overlays])
        (hot-reload/reload)
