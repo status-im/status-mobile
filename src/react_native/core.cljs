@@ -20,6 +20,7 @@
 (defn image-get-size [uri callback] (.getSize ^js (.-Image ^js react-native) uri callback))
 (def text (reagent/adapt-react-class (.-Text ^js react-native)))
 (def text-input (reagent/adapt-react-class (.-TextInput ^js react-native)))
+
 (def touchable-opacity (reagent/adapt-react-class (.-TouchableOpacity ^js react-native)))
 (def touchable-highlight (reagent/adapt-react-class (.-TouchableHighlight ^js react-native)))
 (def touchable-without-feedback
