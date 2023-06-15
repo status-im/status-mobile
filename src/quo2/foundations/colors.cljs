@@ -183,7 +183,7 @@
 (def danger-50-opa-40 (alpha danger-50 0.4))
 
 
-;; Colors for customizing users account  
+;; Colors for customizing users account
 (def customization
   {:blue      {50 "#2A4AF5"
                60 "#223BC4"}
@@ -209,14 +209,14 @@
                60 "#BD1E56"}})
 
 (def colors-map
-  (merge {:beige     {50 "#CAAE93"
-                      60 "#AA927C"}
-          :green     {50 "#5BCC95"
-                      60 "#4CAB7D"}
-          :brown     {50 "#99604D"
-                      60 "#805141"}
-          :red       {50 "#F46666"
-                      60 "#CD5656"}
+  (merge {:beige   {50 "#CAAE93"
+                    60 "#AA927C"}
+          :green   {50 "#5BCC95"
+                    60 "#4CAB7D"}
+          :brown   {50 "#99604D"
+                    60 "#805141"}
+          :red     {50 "#F46666"
+                    60 "#CD5656"}
           :danger  {50 danger-50
                     60 danger-60}
           :success {50 success-50

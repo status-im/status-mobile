@@ -46,11 +46,12 @@
   [keyboard-shown? children]
   [rn/view {:style {:margin-top :auto}}
    (if keyboard-shown?
-     [blur/ios-view {:blur-amount      34
-                     :blur-type        :transparent
-                     :overlay-color :transparent
-                     :background-color  colors/neutral-80-opa-1-blur
-                     :style style/button-container}
+     [blur/ios-view
+      {:blur-amount      34
+       :blur-type        :transparent
+       :overlay-color    :transparent
+       :background-color colors/neutral-80-opa-1-blur
+       :style            style/button-container}
       children]
      [rn/view {:style style/view-button-container}
       children])])
@@ -79,8 +80,8 @@
                      profile-pic                             (reagent/atom image-path)
                      on-change-profile-pic                   #(reset! profile-pic %)
                      on-change                               #(reset! custom-color %)
-                     name-too-short? (length-not-valid @full-name)
-                     valid-name?  (not (or @validation-msg name-too-short?))]
+                     name-too-short?                         (length-not-valid @full-name)
+                     valid-name?                             (not (or @validation-msg name-too-short?))]
     [rn/view {:style style/page-container}
      [navigation-bar/navigation-bar {:top navigation-bar-top}]
      [rn/scroll-view
@@ -119,14 +120,14 @@
                                   :on-change-text on-change-text}}]]
 
          [quo/info-message
-          {:type  (cond @validation-msg :error
-                        name-too-short? :neutral
-                        :else :positive)
-           :size  :default
-           :icon  (if valid-name? :i/positive-state :i/info)
+          {:type       (cond @validation-msg :error
+                             name-too-short? :neutral
+                             :else           :positive)
+           :size       :default
+           :icon       (if valid-name? :i/positive-state :i/info)
            :text-color (when name-too-short? colors/white-70-blur)
            :icon-color (when name-too-short? colors/white-70-blur)
-           :style style/info-message}
+           :style      style/info-message}
           (if @validation-msg
             @validation-msg
             (i18n/label :t/minimum-characters
@@ -162,8 +163,8 @@
          :disabled                  (or (not (seq @full-name)) @validation-msg)}
         (i18n/label :t/continue)]]]]
     (finally
-      (oops/ocall will-show-listener "remove")
-      (oops/ocall will-hide-listener "remove"))))
+     (oops/ocall will-show-listener "remove")
+     (oops/ocall will-hide-listener "remove"))))
 
 (defn create-profile
   []

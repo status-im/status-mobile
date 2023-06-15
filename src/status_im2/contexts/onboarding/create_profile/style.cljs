@@ -42,7 +42,6 @@
 
 (def content-container
   {:flex               1
-   :justify-content :flex-start
    :padding-horizontal 20})
 
 (def input-container

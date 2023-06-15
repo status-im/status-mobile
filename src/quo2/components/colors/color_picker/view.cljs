@@ -9,20 +9,23 @@
 ;; https://github.com/status-im/status-mobile/issues/15442
 (def empty-color :no-color)
 
-(def color-list [:blue :yellow :turquoise :copper :sky :camel :orange :army :pink :purple :magenta empty-color])
+(def color-list
+  [:blue :yellow :turquoise :copper :sky :camel :orange :army :pink :purple :magenta empty-color])
 
 (defn picker-colors
-  [blur?] (map (fn [color]
-                 {:name  color
-                  :color (colors/custom-color-by-theme color (if blur? 60 50) 60)})
-               color-list))
+  [blur?]
+  (map (fn [color]
+         {:name  color
+          :color (colors/custom-color-by-theme color (if blur? 60 50) 60)})
+       color-list))
 
 (defn- on-change-handler
   [selected color-name on-change]
   (reset! selected color-name)
   (when on-change (on-change color-name)))
 
-(defn empty-color-item []
+(defn empty-color-item
+  []
   [rn/view {:style style/color-button-common}])
 
 (defn- color-item
@@ -40,9 +43,9 @@
         :accessibility-label :color-picker-item
         :on-press            #(on-press name)}
        [rn/view
-        {:accessibile true
+        {:accessibile         true
          :accessibility-label name
-         :style (style/color-circle color border?)}
+         :style               (style/color-circle color border?)}
         (when (and secondary-color (not selected?))
           [rn/view
            {:style (style/secondary-overlay secondary-color border?)}])
