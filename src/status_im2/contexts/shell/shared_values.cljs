@@ -62,20 +62,21 @@
   [{:keys [selected-stack-id home-stack-state]} dimensions]
   (let [home-stack-position     (calculate-home-stack-position dimensions)
         animate-home-stack-left (reanimated/use-shared-value (not (utils/home-stack-open?)))]
-    {:animate-home-stack-left animate-home-stack-left
-     :home-stack-left         (worklets.shell/home-stack-left
-                               selected-stack-id
-                               animate-home-stack-left
-                               home-stack-state
-                               (clj->js (:left home-stack-position)))
-     :home-stack-top          (worklets.shell/home-stack-top
-                               home-stack-state
-                               (:top home-stack-position))
-     :home-stack-opacity      (worklets.shell/home-stack-opacity home-stack-state)
-     :home-stack-pointer      (worklets.shell/home-stack-pointer home-stack-state)
-     :home-stack-scale        (worklets.shell/home-stack-scale
-                               home-stack-state
-                               (:scale home-stack-position))}))
+    {:animate-home-stack-left  animate-home-stack-left
+     :home-stack-left          (worklets.shell/home-stack-left
+                                selected-stack-id
+                                animate-home-stack-left
+                                home-stack-state
+                                (clj->js (:left home-stack-position)))
+     :home-stack-top           (worklets.shell/home-stack-top
+                                home-stack-state
+                                (:top home-stack-position))
+     :home-stack-opacity       (worklets.shell/home-stack-opacity home-stack-state)
+     :home-stack-pointer       (worklets.shell/home-stack-pointer home-stack-state)
+     :home-stack-border-radius (worklets.shell/home-stack-border-radius home-stack-state)
+     :home-stack-scale         (worklets.shell/home-stack-scale
+                                home-stack-state
+                                (:scale home-stack-position))}))
 
 (defn floating-screen-derived-values
   [screen-id {:keys [width height]} switcher-card-left-position switcher-card-top-position]

@@ -192,4 +192,5 @@
 
 (defn replace-port
   [url new-port]
-  (string/replace url #"(:\d+)" (str ":" new-port)))
+  (when url
+    (string/replace url #"(:\d+)" (str ":" new-port))))

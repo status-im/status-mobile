@@ -1,8 +1,8 @@
-import { useDerivedValue, withTiming, withSequence } from 'react-native-reanimated';
+import { useDerivedValue, withTiming, withSequence, withDelay } from 'react-native-reanimated';
 import * as constants from './constants';
 
 // Derived values for each stack (communities, chat, wallet, browser)
-export function stackOpacity (stackId, selectedStackId) {
+export function stackOpacity(stackId, selectedStackId) {
   return useDerivedValue(
     function () {
       'worklet'
@@ -11,7 +11,7 @@ export function stackOpacity (stackId, selectedStackId) {
   );
 }
 
-export function stackZIndex (stackId, selectedStackId) {
+export function stackZIndex(stackId, selectedStackId) {
   return useDerivedValue(
     function () {
       'worklet'
@@ -21,51 +21,43 @@ export function stackZIndex (stackId, selectedStackId) {
 }
 
 // Derived values for home stack (container)
-export function homeStackOpacity (homeStackState) {
+export function homeStackOpacity(homeStackState) {
   return useDerivedValue(
     function () {
       'worklet'
       switch (homeStackState.value) {
       case constants.OPEN_WITH_ANIMATION:
 	return withTiming(1, constants.LINEAR_EASING);
-	break;
       case constants.CLOSE_WITH_ANIMATION:
 	return withTiming(0, constants.LINEAR_EASING);
-	break;
       case constants.OPEN_WITHOUT_ANIMATION:
 	return 1;
-	break;
       case constants.CLOSE_WITHOUT_ANIMATION:
 	return 0;
-	break;	
       }
     }
   );
 }
 
-export function homeStackTop (homeStackState, top) {
+export function homeStackTop(homeStackState, top) {
   return useDerivedValue(
     function () {
       'worklet'
       switch (homeStackState.value) {
       case constants.OPEN_WITH_ANIMATION:
 	return withTiming(0, constants.LINEAR_EASING);
-	break;
       case constants.CLOSE_WITH_ANIMATION:
 	return withTiming(top, constants.LINEAR_EASING);
-	break;
       case constants.OPEN_WITHOUT_ANIMATION:
 	return 0;
-	break;
       case constants.CLOSE_WITHOUT_ANIMATION:
 	return top;
-	break;	
       }
     }
   );
 }
 
-export function homeStackLeft (selectedStackId, animateHomeStackLeft, homeStackState, left) {
+export function homeStackLeft(selectedStackId, animateHomeStackLeft, homeStackState, left) {
   return useDerivedValue(
     function () {
       'worklet'
@@ -74,16 +66,12 @@ export function homeStackLeft (selectedStackId, animateHomeStackLeft, homeStackS
 	switch (homeStackState.value) {
 	case constants.OPEN_WITH_ANIMATION:
 	  return withSequence(withTiming(leftValue, {duration: 0}), withTiming(0, constants.LINEAR_EASING))
-	  break;
 	case constants.CLOSE_WITH_ANIMATION:
 	  return withTiming(leftValue, constants.LINEAR_EASING);
-	  break;
 	case constants.OPEN_WITHOUT_ANIMATION:
 	  return 0;
-	  break;
 	case constants.CLOSE_WITHOUT_ANIMATION:
 	  return leftValue;
-	  break;	
 	}
       } else {
 	return 0;
@@ -92,7 +80,7 @@ export function homeStackLeft (selectedStackId, animateHomeStackLeft, homeStackS
   );
 }
 
-export function homeStackPointer (homeStackState) {
+export function homeStackPointer(homeStackState) {
   return useDerivedValue(
     function () {
       'worklet'
@@ -103,23 +91,37 @@ export function homeStackPointer (homeStackState) {
   );
 }
 
-export function homeStackScale (homeStackState, minimizeScale) {
+export function homeStackScale(homeStackState, minimizeScale) {
   return useDerivedValue(
     function () {
       'worklet'
       switch (homeStackState.value) {
       case constants.OPEN_WITH_ANIMATION:
 	return withTiming(1, constants.LINEAR_EASING);
-	break;
       case constants.CLOSE_WITH_ANIMATION:
 	return withTiming(minimizeScale, constants.LINEAR_EASING);
-	break;
       case constants.OPEN_WITHOUT_ANIMATION:
 	return 1;
-	break;
       case constants.CLOSE_WITHOUT_ANIMATION:
 	return minimizeScale;
-	break;	
+      }
+    }
+  );
+}
+
+
+export function homeStackBorderRadius(homeStackState) {
+  return useDerivedValue(
+    function () {
+      'worklet'
+      switch (homeStackState.value) {
+      case constants.OPEN_WITH_ANIMATION:
+	return withDelay(constants.SHELL_ANIMATION_TIME, withTiming(0, {duration: 0}));
+      case constants.CLOSE_WITH_ANIMATION:
+      case constants.CLOSE_WITHOUT_ANIMATION:
+	return 20;
+      case constants.OPEN_WITHOUT_ANIMATION:
+	return 0;
       }
     }
   );

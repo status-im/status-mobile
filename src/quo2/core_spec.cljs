@@ -4,6 +4,7 @@
     [quo2.components.banners.banner.component-spec]
     [quo2.components.buttons.--tests--.buttons-component-spec]
     [quo2.components.buttons.predictive-keyboard.component-spec]
+    [quo2.components.buttons.slide-button.component-spec]
     [quo2.components.colors.color-picker.component-spec]
     [quo2.components.counter.--tests--.counter-component-spec]
     [quo2.components.counter.step.component-spec]

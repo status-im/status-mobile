@@ -17,6 +17,7 @@
     [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as wallet-user-avatar]
     [status-im2.contexts.quo-preview.banners.banner :as banner]
     [status-im2.contexts.quo-preview.buttons.button :as button]
+    [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
@@ -131,6 +132,9 @@
                            {:name      :dynamic-button
                             :options   {:topBar {:visible true}}
                             :component dynamic-button/preview-dynamic-button}
+                           {:name      :slide-button
+                            :options   {:topBar {:visible true}}
+                            :component slide-button/preview-slide-button}
                            {:name      :predictive-keyboard
                             :options   {:topBar {:visible true}}
                             :component predictive-keyboard/preview-predictive-keyboard}]

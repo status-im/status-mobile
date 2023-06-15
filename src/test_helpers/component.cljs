@@ -211,3 +211,7 @@
 (defn was-not-called
   [mock]
   (was-called-times mock 0))
+
+(defn has-style
+  [mock styles]
+  (.toHaveStyle (js/expect mock) (clj->js styles)))
