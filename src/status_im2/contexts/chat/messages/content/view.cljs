@@ -175,13 +175,17 @@
                 :show-reactions? false}]]])]]))))
 
 (defn on-long-press
-  [message-data context keyboard-shown]
+  [message-data context keyboard-shown?]
   (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch [:show-bottom-sheet
                 {:content       (drawers/reactions-and-actions message-data context)
                  :selected-item (fn []
                                   [rn/view {:pointer-events :none}
-                                   [user-message-content message-data context keyboard-shown true]])}]))
+                                   [user-message-content
+                                    {:message-data    message-data
+                                     :context         context
+                                     :keyboard-shown? keyboard-shown?
+                                     :show-reactions? true}]])}]))
 
 (defn message
   [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? deleted? deleted-for-me?]
