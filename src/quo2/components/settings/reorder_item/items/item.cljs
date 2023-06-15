@@ -20,9 +20,7 @@
    [icon/icon :main-icons/drag
     {:color  (colors/theme-colors
               colors/neutral-50
-              colors/neutral-40)
-     :width  19
-     :height 19}]
+              colors/neutral-40)}]
    [rn/view
     {:style style/body-container}
     [rn/view
