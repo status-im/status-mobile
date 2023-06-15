@@ -25,12 +25,14 @@
   []
   (let [progress             (atom nil)
         paused?              (atom nil)
+        is-dragging?         (atom nil)
+        drag-amount          (atom nil)
         {:keys [emoji-hash display-name compressed-key
                 public-key]} (rf/sub [:multiaccount])
         {:keys [color]}      (rf/sub [:onboarding-2/profile])
         photo-path           (rf/sub [:chats/photo-path public-key])
         emoji-string         (string/join emoji-hash)]
-    (carousel.animation/use-initialize-animation progress paused? true)
+    (carousel.animation/use-initialize-animation progress paused? true is-dragging? drag-amount)
     (rn/use-effect
      (fn []
        (carousel.animation/cleanup-animation progress paused?))
