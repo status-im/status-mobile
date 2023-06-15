@@ -18,9 +18,9 @@
    {:on-press on-press
     :style    (merge (style/item-container) (when subtitle style/item-container-extended))}
    [icon/icon :main-icons/drag
-    {:color  (colors/theme-colors
-              colors/neutral-50
-              colors/neutral-40)}]
+    {:color (colors/theme-colors
+             colors/neutral-50
+             colors/neutral-40)}]
    [rn/view
     {:style style/body-container}
     [rn/view

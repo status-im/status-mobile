@@ -79,7 +79,7 @@
 
 (defn container
   []
-  {:padding-horizontal 36
+  {:padding-horizontal 38
    :padding-vertical   20
    :background-color   (colors/theme-colors
                         colors/neutral-10

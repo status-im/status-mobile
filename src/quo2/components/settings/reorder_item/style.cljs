@@ -6,21 +6,22 @@
   {:flex-direction     :row
    :align-items        :center
    :padding-horizontal 10
-   :border-radius      16
-   :margin-bottom      21
-   :height             44
+   :border-radius      14
+   :margin-bottom      23
+   :height             45
    :background-color   (colors/theme-colors
                         colors/white
                         colors/neutral-90)})
 
 (def item-container-extended
-  {:height 50})
+  {:height 52})
 
 (def body-container
   {:flex           1
    :margin-left    12
    :flex-direction :row
-   :align-items    :center})
+   :align-items    :center
+   :margin-right   -6})
 
 (def image-container
   {:margin-right 8})
@@ -53,7 +54,7 @@
   {:flex            1
    :flex-direction  :row
    :justify-content :space-between
-   :margin-right    6})
+   :margin-right    8})
 
 (defn right-icon
   []
@@ -98,20 +99,22 @@
 
 (defn tab-container
   []
-  {:background-color (colors/theme-colors
-                      colors/neutral-5
-                      colors/neutral-95)
-   :padding          6
-   :margin-bottom    24})
+  {:background-color   (colors/theme-colors
+                        colors/neutral-5
+                        colors/neutral-95)
+   :padding-horizontal 4
+   :padding-vertical   6
+   :margin-bottom      24})
 
 (defn segmented-tab-item-container
   []
-  {:height       40
-   :border-width 1
-   :border-style :dashed
-   :border-color (colors/theme-colors
-                  colors/neutral-30
-                  colors/neutral-60)})
+  {:height            40
+   :border-width      1
+   :border-style      :dashed
+   :margin-horizontal 2
+   :border-color      (colors/theme-colors
+                       colors/neutral-30
+                       colors/neutral-60)})
 
 (defn active-segmented-tab-item-container
   []
