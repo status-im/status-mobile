@@ -236,17 +236,19 @@
 (defn render-fn
   [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
-  [rn/view
-   (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
-   (if (= type :datemark)
-     [quo/divider-date value]
-     (if (= content-type constants/content-type-gap)
-       [not-implemented/not-implemented
-        [message.gap/gap message-data]]
-       [rn/view {:padding-horizontal 8}
-        (if (or deleted? deleted-for-me?)
-          [content.deleted/deleted-message message-data context]
-          [message/message-with-reactions message-data context keyboard-shown?])]))])
+  ;;TODO temporary hide mutual-state-updates https://github.com/status-im/status-mobile/issues/16254
+  (when (not= content-type constants/content-type-system-mutual-state-update)
+    [rn/view
+     (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
+     (if (= type :datemark)
+       [quo/divider-date value]
+       (if (= content-type constants/content-type-gap)
+         [not-implemented/not-implemented
+          [message.gap/gap message-data]]
+         [rn/view {:padding-horizontal 8}
+          (if (or deleted? deleted-for-me?)
+            [content.deleted/deleted-message message-data context]
+            [message/message-with-reactions message-data context keyboard-shown?])]))]))
 
 (defn scroll-handler
   [event scroll-y]
