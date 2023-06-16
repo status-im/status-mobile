@@ -63,7 +63,7 @@
            background-color              (or (get-in options [:layout :backgroundColor])
                                              (when sheet? :transparent))]
        ^{:key (str "root" key @reloader/cnt)}
-       [quo2.theme/provider {:theme (or theme user-theme)}
+       [theme/provider {:theme (or theme user-theme)}
         [rn/view {:style (wrapped-screen-style insets background-color)}
          [inactive]
          (if sheet?
