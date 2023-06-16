@@ -1,59 +1,42 @@
-(ns status-im2.contexts.shell.constants
-  (:require [react-native.platform :as platform]
-            [utils.re-frame :as rf]
-            [react-native.safe-area :as safe-area]))
+(ns status-im2.contexts.shell.constants)
 
-(def shell-animation-time 200)
+(def ^:const shell-animation-time 200)
+(def ^:const switcher-card-size 160)
 
-(defn bottom-tabs-container-height
-  []
-  (if platform/android? 57 82))
+;; Bottom tabs
+(def ^:const bottom-tabs-container-height-android 57)
+(def ^:const bottom-tabs-container-height-ios 82)
+(def ^:const bottom-tabs-container-extended-height-android 90)
+(def ^:const bottom-tabs-container-extended-height-ios 120)
+(def ^:const bottom-tab-width 90)
 
-(defn bottom-tabs-extended-container-height
-  []
-  (if platform/android? 90 120))
+;; Stacks
+(def ^:const stacks-ids [:communities-stack :chats-stack :wallet-stack :browser-stack])
 
-(defn status-bar-offset
-  []
-  (if platform/android? (safe-area/get-top) 0))
-
-;; status bar height is not included in : the dimensions/window for devices with a notch
-;; https://github.com/facebook/react-native/issues/23693#issuecomment-662860819
-;; More info - https://github.com/status-im/status-mobile/issues/14633
-(defn dimensions
-  []
-  (let [{:keys [width height]} (rf/sub [:dimensions/window])]
-    {:width  width
-     :height (if (> (status-bar-offset) 28)
-               (+ height (status-bar-offset))
-               height)}))
-
-(def stacks-ids [:communities-stack :chats-stack :wallet-stack :browser-stack])
-
-(def stacks-opacity-keywords
+;; Keywords
+(def ^:const stacks-opacity-keywords
   {:communities-stack :communities-stack-opacity
    :chats-stack       :chats-stack-opacity
    :wallet-stack      :wallet-stack-opacity
    :browser-stack     :browser-stack-opacity})
 
-(def tabs-icon-color-keywords
+(def ^:const tabs-icon-color-keywords
   {:communities-stack :communities-tab-icon-color
    :chats-stack       :chats-tab-icon-opacity
    :wallet-stack      :wallet-tab-icon-opacity
    :browser-stack     :browser-tab-icon-opacity})
 
-(def stacks-z-index-keywords
+(def ^:const stacks-z-index-keywords
   {:communities-stack :communities-stack-z-index
    :chats-stack       :chats-stack-z-index
    :wallet-stack      :wallet-stack-z-index
    :browser-stack     :browser-stack-z-index})
 
 ;; Home stack states
-
 (def ^:const close-with-animation 0)
 (def ^:const open-with-animation 1)
-(def ^:const close-without-animation 3)
-(def ^:const open-without-animation 4)
+(def ^:const close-without-animation 2)
+(def ^:const open-without-animation 3)
 
 ;; Switcher Cards
 (def ^:const empty-card 0)
@@ -66,3 +49,15 @@
 (def ^:const wallet-collectible 7)
 (def ^:const wallet-graph 8)
 (def ^:const communities-discover 9)
+
+;; Floating Screens
+(def ^:const community-screen :community-overview)
+(def ^:const chat-screen :chat)
+
+;; Floating Screen states
+(def ^:const close-screen-with-slide-animation 0)
+(def ^:const open-screen-with-slide-animation 1)
+(def ^:const close-screen-with-shell-animation 2)
+(def ^:const open-screen-with-shell-animation 3)
+(def ^:const close-screen-without-animation 4)
+(def ^:const open-screen-without-animation 5)

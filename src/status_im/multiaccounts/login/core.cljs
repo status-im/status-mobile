@@ -42,9 +42,10 @@
     [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
     [status-im2.contexts.contacts.events :as contacts]
     [status-im2.navigation.events :as navigation]
+    [status-im2.contexts.shell.constants :as shell.constants]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
-    [status-im2.contexts.shell.animation :as shell.animation]
+    [status-im2.contexts.shell.utils :as shell.utils]
     [utils.security.core :as security]))
 
 (re-frame/reg-fx
@@ -458,7 +459,8 @@
          :key-uid
          (fn [stored-key-uid]
            (when (= stored-key-uid key-uid)
-             (re-frame/dispatch [:chat/navigate-to-chat chat-id])))))))))
+             (re-frame/dispatch [:chat/navigate-to-chat chat-id
+                                 shell.constants/open-screen-without-animation])))))))))
 
 (rf/defn check-last-chat
   {:events [::check-last-chat]}
@@ -552,7 +554,7 @@
         tos-accepted? (get db :tos/accepted?)
         {:networks/keys [current-network networks]} db
         network-id (str (get-in networks [current-network :config :NetworkId]))]
-    (shell.animation/change-selected-stack-id :communities-stack true)
+    (shell.utils/change-selected-stack-id :communities-stack true nil)
     (rf/merge cofx
               {:db          (-> db
                                 (dissoc :multiaccounts/login)

@@ -1,4 +1,4 @@
-(ns status-im.utils.share
+(ns react-native.share
   (:require ["react-native-share" :default react-native-share]))
 
 (defn open
