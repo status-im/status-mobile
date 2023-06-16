@@ -1,9 +1,12 @@
 (ns quo2.theme
   (:require [react-native.core :as rn]
             [reagent.core :as reagent]
+            ["react" :refer [createContext]]
             utils.transforms))
 
-(defonce ^:private theme-context (rn/create-context :light))
+(defonce theme-context (createContext :light)
+                       ;(createContext :light)
+                       )
 (defonce ^:private theme-state (reagent/atom :light))
 
 (defn dark?
@@ -34,13 +37,14 @@
   we may support other settings.
   "
   [options & children]
-  (into [:> (.-Provider theme-context) {:value options}]
-        children))
+  (let [provider (reagent/adapt-react-class (.-Provider theme-context))]
+    (into [provider {:value options}]
+          children)))
 
 (defn use-theme
   "A hook that returns the current theme context."
   []
-  (utils.transforms/js->clj (rn/use-context theme-context)))
+  (utils.transforms/js->clj (rn/use-context new-theme-context)))
 
 (defn ^:private f-with-theme
   [component props & args]

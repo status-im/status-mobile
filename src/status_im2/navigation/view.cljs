@@ -54,24 +54,21 @@
   [key]
   (reagent.core/reactify-component
    (fn []
-     (let [{:keys [component options]}   (get (if js/goog.DEBUG
-                                                (get-screens)
-                                                screens)
-                                              (keyword key))
+     (let [{:keys [component options]}   (-> (if js/goog.DEBUG (get-screens) screens)
+                                             (get (keyword key)))
            {:keys [insets sheet? theme]} options
            user-theme                    (theme/get-theme)
            background-color              (or (get-in options [:layout :backgroundColor])
                                              (when sheet? :transparent))]
        ^{:key (str "root" key @reloader/cnt)}
-       [:<>
-        [theme/provider {:theme (or theme user-theme)}
-         [rn/view {:style (wrapped-screen-style insets background-color)}
-          [inactive]
-          (if sheet?
-            [:f> bottom-sheet-screen/f-view component]
-            [component])]
-         (when js/goog.DEBUG
-           [reloader/reload-view])]]))))
+       [theme/provider {:theme (or theme user-theme)}
+        [rn/view {:style (wrapped-screen-style insets background-color)}
+         [inactive]
+         (if sheet?
+           [:f> bottom-sheet-screen/f-view component]
+           [component])]
+        (when js/goog.DEBUG
+          [reloader/reload-view])]))))
 
 (def bottom-sheet
   (reagent/reactify-component

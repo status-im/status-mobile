@@ -95,7 +95,7 @@
   [ref]
   (oops/oget ref "current"))
 
-(def create-context react/createContext)
+(def create-context (.-createContext react))
 
 (def use-context react/useContext)
 
