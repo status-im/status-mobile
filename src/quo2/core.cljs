@@ -87,7 +87,8 @@
     quo2.components.tags.tags
     quo2.components.tags.token-tag
     quo2.components.text-combinations.title.view
-    quo2.components.settings.settings-list.view))
+    quo2.components.settings.settings-list.view
+    quo2.components.settings.reorder-item.view))
 
 (def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
@@ -210,6 +211,7 @@
 (def privacy-option quo2.components.settings.privacy-option/card)
 (def account quo2.components.settings.accounts.view/account)
 (def settings-list quo2.components.settings.settings-list.view/settings-list)
+(def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
 
 ;;;; SHARE
 (def qr-code quo2.components.share.qr-code.view/qr-code)
