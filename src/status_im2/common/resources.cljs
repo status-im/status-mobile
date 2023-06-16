@@ -82,6 +82,12 @@
    :usdt (js/require "../resources/images/tokens/mainnet/USDT.png")
    :snt  (js/require "../resources/images/tokens/mainnet/SNT.png")})
 
+(def parallax-video
+  {:biometrics [(js/require "../resources/videos2/biometrics_01.mp4")
+                (js/require "../resources/videos2/biometrics_02.mp4")
+                (js/require "../resources/videos2/biometrics_03.mp4")
+                (js/require "../resources/videos2/biometrics_04.mp4")]})
+
 (defn get-mock-image
   [k]
   (get mock-images k))
@@ -97,3 +103,7 @@
 (defn get-token
   [k]
   (get tokens k))
+
+(defn get-parallax-video
+  [k]
+  (get parallax-video k))

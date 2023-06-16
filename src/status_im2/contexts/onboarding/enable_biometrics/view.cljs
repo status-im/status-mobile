@@ -7,7 +7,11 @@
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
             [status-im.multiaccounts.biometric.core :as biometric]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.resources :as resources]
+            [status-im2.common.parallax.view :as parallax]
+            [status-im2.contexts.onboarding.common.background.view :as background]
+            [status-im2.common.parallax.whitelist :as whitelist]))
 
 (defn page-title
   []
@@ -37,13 +41,35 @@
        :style                     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
+(defn enable-biometrics-parallax
+  []
+  [:<>
+   [parallax/video
+    {:layers  (resources/get-parallax-video :biometrics)
+     :stretch 50}]
+   [rn/view
+    [navigation-bar/navigation-bar {:disable-back-button? true}]
+    [page-title]]])
+
+(defn enable-biometrics-simple
+  []
+  [:<>
+   [rn/view
+    [navigation-bar/navigation-bar {:disable-back-button? true}]
+    [page-title]]
+   [rn/view {:style style/page-illustration}
+    [quo/text
+     "Illustration here"]]])
+
 (defn enable-biometrics
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
-     [navigation-bar/navigation-bar {:disable-back-button? true}]
-     [page-title]
-     [rn/view {:style style/page-illustration}
-      [quo/text
-       "Illustration here"]]
-     [enable-biometrics-buttons {:insets insets}]]))
+     [background/view true]
+     (if (whitelist/whitelisted?)
+       [enable-biometrics-parallax]
+       [enable-biometrics-simple])
+     [enable-biometrics-buttons {:style {:align-self :flex-end}}]]))
+
+
+
