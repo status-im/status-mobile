@@ -11,6 +11,7 @@
     quo2.components.buttons.button
     quo2.components.buttons.dynamic-button
     quo2.components.buttons.predictive-keyboard.view
+    quo2.components.buttons.slide-button.view
     quo2.components.colors.color-picker.view
     quo2.components.community.community-card-view
     quo2.components.community.community-list-view
@@ -33,7 +34,7 @@
     quo2.components.empty-state.empty-state.view
     quo2.components.icon
     quo2.components.info.info-message
-    quo2.components.info.information-box
+    quo2.components.info.information-box.view
     quo2.components.inputs.input.view
     quo2.components.inputs.profile-input.view
     quo2.components.inputs.recovery-phrase.view
@@ -94,7 +95,7 @@
 (def header quo2.components.header/header)
 (def dropdown quo2.components.dropdowns.dropdown/dropdown)
 (def info-message quo2.components.info.info-message/info-message)
-(def information-box quo2.components.info.information-box/information-box)
+(def information-box quo2.components.info.information-box.view/view)
 (def gap quo2.components.messages.gap/gap)
 (def system-message quo2.components.messages.system-message/system-message)
 (def reaction quo2.components.reactions.reaction/reaction)
@@ -130,6 +131,7 @@
 (def button quo2.components.buttons.button/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
+(def slide-button quo2.components.buttons.slide-button.view/view)
 
 ;;;; CARDS
 (def small-option-card quo2.components.onboarding.small-option-card.view/small-option-card)

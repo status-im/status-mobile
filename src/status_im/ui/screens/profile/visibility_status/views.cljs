@@ -30,6 +30,7 @@
 (defn calculate-button-height-and-dispatch-popover
   []
   (.measure
+   ^js
    @button-ref
    (fn [_ _ _ _ _ page-y]
      (dispatch-popover page-y))))

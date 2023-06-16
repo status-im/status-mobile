@@ -130,7 +130,7 @@
                                              :pressed  colors/neutral-80-opa-50
                                              :disabled colors/neutral-80-opa-40}}
     :blur-bg         {:icon-color           colors/white
-                      :icon-secondary-color colors/white-opa-40
+                      :icon-secondary-color colors/white-opa-70
                       :label-color          colors/white
                       :background-color     {:default  colors/white-opa-5
                                              :pressed  colors/white-opa-10

@@ -5,7 +5,7 @@
             [status-im2.constants :as constants]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.contexts.shell.cards.view :as switcher-cards]
+            [status-im2.contexts.shell.components.switcher-cards.view :as switcher-cards]
             [status-im2.contexts.shell.constants :as shell.constants]))
 
 (def descriptor

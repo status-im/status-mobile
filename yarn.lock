@@ -9164,10 +9164,10 @@ react-native-shake@^3.3.1:
   dependencies:
     invariant "^2.2.x"
 
-react-native-share@^7.0.1:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-7.0.1.tgz#1deef27afcd8275222ba0efeac337e7cea99bc4b"
-  integrity sha512-hq7nOirgih/zIF9UU9FuYKZ3NGvasu2c/eJesvyPKYiykTtgQZM+mvDwFk/ogEsGwRtTPJBtj8/6IyIFcGa7lw==
+react-native-share@^8.2.2:
+  version "8.2.2"
+  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-8.2.2.tgz#987d6f164afe57b089950dca42e0555f19045d27"
+  integrity sha512-kVCI/cT0GnuYUTXe6mAimrjrnt4VWoRfrWqJZjFeoYFqAyOEfos84RC4eZlZnOT5eVtmTXRIkor5vgSkKOlZhw==
 
 react-native-static-safe-area-insets@^2.2.0:
   version "2.2.0"

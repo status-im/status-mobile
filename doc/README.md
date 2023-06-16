@@ -16,6 +16,8 @@
 
 [Merging PR process](merging-pr-process.md)
 
+[PR Review Policy](pr-review-policy.md)
+
 [Working on PR together with QA team](pipeline_process.md)
 
 [Debugging](debugging.md)

@@ -3,6 +3,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [taoensso.timbre :as log]
+            [status-im2.config :as config]
             [status-im2.contexts.chat.messages.list.state :as chat.state]
             [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
             [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
@@ -175,7 +176,7 @@
                  ;; A close chat event is also called while opening any chat.
                  ;; That might lead to duplicate :dispatch keys in fx/merge, that's why dispatch-n is
                  ;; used here.
-                 (when (and community-id (not navigate-to-shell?))
+                 (when (and community-id config/shell-navigation-disabled? (not navigate-to-shell?))
                    {:dispatch-n [[:shell/add-switcher-card
                                   :community-overview community-id]]})))
               (link-preview/reset-all)
@@ -206,9 +207,9 @@
 (rf/defn navigate-to-chat
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
   {:events [:chat/navigate-to-chat]}
-  [{db :db :as cofx} chat-id]
+  [{db :db :as cofx} chat-id animation]
   (rf/merge cofx
-            {:dispatch [:navigate-to :chat chat-id]}
+            {:dispatch [(if animation :shell/navigate-to :navigate-to) :chat chat-id animation]}
             (when-not (or (= (:view-id db) :community) (= (:view-id db) :community-overview))
               (navigation/pop-to-root :shell-stack))
             (close-chat false)
