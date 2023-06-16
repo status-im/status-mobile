@@ -9,7 +9,7 @@ const originalLoader = Module._load;
 */
 
 Module._load = function hookedLoader(request, parent, isMain) {
-    if (request.match(/.jpeg|.jpg|.png$/)) {
+    if (request.match(/.jpeg|.jpg|.png|.mp4$/)) {
         return { uri: request };
     }
 

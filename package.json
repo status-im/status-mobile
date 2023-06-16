@@ -70,6 +70,7 @@
     "react-native-status-keycard": "git+https://github.com/status-im/react-native-status-keycard.git#refs/tags/v2.5.39",
     "react-native-svg": "^9.8.4",
     "react-native-touch-id": "^4.4.1",
+    "react-native-transparent-video": "git+https://github.com/status-im/react-native-transparent-video.git#refs/tags/0.0.9",
     "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#refs/tags/v11.16.0-status",
     "react-syntax-highlighter": "^15.5.0",
     "rn-emoji-keyboard": "0.7.0",

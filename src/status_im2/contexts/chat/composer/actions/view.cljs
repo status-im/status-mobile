@@ -66,6 +66,15 @@
         z-index     (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
     [:f> f-send-button props state animations window-height images? btn-opacity z-index]))
 
+(defn disabled-audio-button
+  []
+  [quo/button
+   {:on-press #(js/alert "to be implemented")
+    :icon     true
+    :type     :outline
+    :size     32}
+   :i/audio])
+
 (defn audio-button
   [{:keys [record-reset-fn input-ref]}
    {:keys [record-permission? recording? gesture-enabled? focused?]}
@@ -202,4 +211,6 @@
     [format-button]]
    [:f> send-button props state animations window-height images]
    (when (and (not edit) (not images))
-     [audio-button props state animations])])
+     ;; TODO(alwx): needs to be replaced with an `audio-button` later.
+     ;; See https://github.com/status-im/status-mobile/issues/16084 for more details.
+     [disabled-audio-button])])
