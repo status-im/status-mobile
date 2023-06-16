@@ -66,7 +66,8 @@
         z-index     (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
     [:f> f-send-button props state animations window-height images? btn-opacity z-index]))
 
-(defn disabled-audio-button []
+(defn disabled-audio-button
+  []
   [quo/button
    {:on-press #(js/alert "to be implemented")
     :icon     true
