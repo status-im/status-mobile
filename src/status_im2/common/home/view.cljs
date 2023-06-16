@@ -97,7 +97,10 @@
         (assoc button-common-props :accessibility-label :open-search-button)
         :i/search])
      [quo/button
-      (assoc button-common-props :accessibility-label :open-scanner-button)
+      (merge button-common-props
+             {:accessibility-label :open-scanner-button
+              :on-press            #(dispatch-and-chill [:open-modal :scan-shell] 1000)
+              })
       :i/scan]
      [quo/button
       (merge button-common-props
