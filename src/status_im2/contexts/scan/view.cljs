@@ -43,23 +43,22 @@
   []
   (rf/dispatch [:syncing/preflight-outbound-check #(reset! preflight-check-passed? %)]))
 
-(defn- header
+(defn header
   []
   [:<>
    [quo/button
     {:icon                true
-     :type                :blur-bg
-     :size                32
-     :accessibility-label :close-scan-scan-tab
-     :override-theme      :dark
-     :style               style/header-button
-     :on-press            #(rf/dispatch [:navigate-back])}
+      :type                :blur-bg
+      :size                32
+      :accessibility-label :close-sign-in-by-syncing
+      :override-theme      :dark
+      :style               style/header-button
+      :on-press            #(rf/dispatch [:navigate-back])}
     :i/close]
    [quo/text
     {:size   :heading-1
      :weight :semi-bold
-     :override-theme      :dark
-     :style  style/header-heading}
+     :style  style/header-text}
     (i18n/label :t/scan-qr)]])
 
 (defn get-labels-and-on-press-method
@@ -248,9 +247,7 @@
          background
          [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
          
-         [rn/view 
-       {:flex        1
-        :padding-top (navigation/status-bar-height)}
+         [rn/view {:style (style/root-container (:top insets))}
        [blur/view style/blur]
          [header]          
           [scan-qr-code-tab qr-view-finder]
