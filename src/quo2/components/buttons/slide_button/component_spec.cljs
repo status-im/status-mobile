@@ -4,9 +4,9 @@
 
 (h/describe "slide-button"
   (h/test "basic render"
-    (h/render [slide-button/view {:size :large :disabled false :label "slide it..."}])
+    (h/render [slide-button/view {:label "slide it..."}])
     (h/is-truthy (h/get-by-label-text :slider-button-label)))
   (h/test "rendered with correct text"
-    (h/render [slide-button/view {:size :large :disabled false :label "slide it..."}])
+    (h/render [slide-button/view {:label "slide it..."}])
     (h/is-truthy (h/get-by-text "slide it...")))
 )

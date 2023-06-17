@@ -3,13 +3,13 @@
             [react-native.reanimated :as reanimated]))
 
 (defn slide-container
-  [slider-height slider-padding slider-width disabled]
+  [{:keys [slider-height slider-padding slider-width disabled?]}]
   {:background-color "#101B3A"
    :height           slider-height
    :padding          slider-padding
    :width            slider-width
    :border-radius    14
-   :opacity          (when disabled 0.5)
+   :opacity          (when disabled? 0.5)
    :justify-content  :center
    :align-items      :center})
 

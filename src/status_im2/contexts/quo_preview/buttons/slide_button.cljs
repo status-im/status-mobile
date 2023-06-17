@@ -1,5 +1,4 @@
 (ns status-im2.contexts.quo-preview.buttons.slide-button
-
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
@@ -10,12 +9,12 @@
   [{:label   "Size:"
     :key     :size
     :type    :select
-    :options [{:key   "large"
-               :value "large"}
-              {:key   "small"
-               :value "small"}]}
+    :options [{:key   :large
+               :value :large}
+              {:key   :small
+               :value :small}]}
    {:label "Disabled:"
-    :key   :disabled
+    :key   :disabled?
     :type  :boolean}
    {:label "Label"
     :key   :label
@@ -23,9 +22,9 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:size     :large
-                             :disabled false
-                             :label    "Slide to sign"})]
+  (let [state (reagent/atom {:size      :large
+                             :disabled? false
+                             :label     "Slide to sign"})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
