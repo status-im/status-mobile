@@ -4,11 +4,11 @@ const path = require('path');
 const kebabCase = require('lodash/kebabCase');
 const expect = require('expect');
 
-
 const toMatchImage = configureToMatchImageSnapshot({
-  comparisonMethod: 'ssim', failureThreshold: 0.002, failureThresholdType: 'percent'
+  comparisonMethod: 'ssim',
+  failureThreshold: 0.002,
+  failureThresholdType: 'percent',
 });
-
 
 expect.extend({ toMatchImage });
 
@@ -23,18 +23,17 @@ expect.extend({
     const { testPath, currentTestName } = this;
 
     const customSnapshotsDir = path.join(path.dirname(testPath), SNAPSHOTS_DIR);
-    const customSnapshotIdentifier = kebabCase(`${path.basename(testPath)}-${currentTestName}-${screenName}`)
+    const customSnapshotIdentifier = kebabCase(`${path.basename(testPath)}-${currentTestName}-${screenName}`);
 
     const tempPath = await device.takeScreenshot(screenName);
     const image = fs.readFileSync(tempPath);
     expect(image).toMatchImage({ customSnapshotIdentifier, customSnapshotsDir });
 
-    return { pass: true }
+    return { pass: true };
   },
 });
 
-global.jestExpect = expect
-
+global.jestExpect = expect;
 
 beforeAll(async () => {
   await device.launchApp();

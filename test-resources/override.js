@@ -1,6 +1,6 @@
 var Mocks = require('../target/mocks/mocks.js');
 var Module = require('module');
-process.env.TZ = 'Etc/UTC'
+process.env.TZ = 'Etc/UTC';
 
 const originalLoader = Module._load;
 
@@ -9,22 +9,20 @@ const originalLoader = Module._load;
 */
 
 Module._load = function hookedLoader(request, parent, isMain) {
-    if (request.match(/.jpeg|.jpg|.png|.mp4$/)) {
-        return { uri: request };
-    }
+  if (request.match(/.jpeg|.jpg|.png|.mp4$/)) {
+    return { uri: request };
+  }
 
-    return originalLoader(request, parent, isMain);
+  return originalLoader(request, parent, isMain);
 };
 
 var originalRequire = Module.prototype.require;
 
-Module.prototype.require = function(req){
-    module = Mocks.mocks(req);
-    if (module == null) {
-        return originalRequire.apply(this, arguments);
-    }
-    else {
-        return module;
-    }
+Module.prototype.require = function (req) {
+  module = Mocks.mocks(req);
+  if (module == null) {
+    return originalRequire.apply(this, arguments);
+  } else {
+    return module;
+  }
 };
-

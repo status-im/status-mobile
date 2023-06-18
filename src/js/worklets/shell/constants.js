@@ -19,9 +19,9 @@ export const SHELL_ANIMATION_TIME = 200;
 export const LINEAR_EASING = {
   duration: SHELL_ANIMATION_TIME,
   easing: Easing.bezier(0, 0, 1, 1),
-}
+};
 
 export const EASE_OUT_EASING = {
   duration: SHELL_ANIMATION_TIME,
   easing: Easing.bezier(0, 0, 0.58, 1),
-}
+};
