@@ -63,6 +63,15 @@
    :track-icon  :face-id})
 
 (h/describe "slide-button"
+  (h/before-each
+   (fn []
+     (h/use-fake-timers)))
+
+  (h/after-each
+   (fn []
+     (h/clear-all-timers)
+     (h/use-real-timers)))
+
   (h/test "render the correct text"
     (h/render [slide-button/view default-props])
     (h/is-truthy (h/get-by-text :test-track-text)))
@@ -90,9 +99,12 @@
           slide-dest     constants/default-width
           gesture-events (slide-events slide-dest)]
       (h/render [slide-button/view props])
-      (-> (act #(gestures-jest/fireGestureHandler (get-by-gesture-test-id :slide-button-gestures)
-                                                  gesture-events))
-          (.then #(h/was-called (:on-complete props))))))
+      (let [promise
+            (-> (act #(gestures-jest/fireGestureHandler (get-by-gesture-test-id :slide-button-gestures)
+                                                        gesture-events)))]
+        (h/advance-timers-by-time 250)
+        (-> promise
+            (.then #(h/was-called (:on-complete props)))))))
 
   (h/test
     "doesn't call on-complete if the slide was incomplete"
@@ -100,6 +112,9 @@
           slide-dest     (- constants/default-width 100)
           gesture-events (slide-events slide-dest)]
       (h/render [slide-button/view props])
-      (-> (act #(gestures-jest/fireGestureHandler (get-by-gesture-test-id :slide-button-gestures)
-                                                  gesture-events))
-          (.then #(h/was-not-called (:on-complete props)))))))
+      (let [promise (-> (act #(gestures-jest/fireGestureHandler (get-by-gesture-test-id
+                                                                 :slide-button-gestures)
+                                                                gesture-events)))]
+        (h/advance-timers-by-time 250)
+        (-> promise (.then #(h/was-not-called (:on-complete props))))))))
+
