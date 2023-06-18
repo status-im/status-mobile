@@ -17,6 +17,7 @@
     [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as wallet-user-avatar]
     [status-im2.contexts.quo-preview.banners.banner :as banner]
     [status-im2.contexts.quo-preview.buttons.button :as button]
+    [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
@@ -77,6 +78,7 @@
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
     [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
+    [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
@@ -130,6 +132,9 @@
                            {:name      :dynamic-button
                             :options   {:topBar {:visible true}}
                             :component dynamic-button/preview-dynamic-button}
+                           {:name      :slide-button
+                            :options   {:topBar {:visible true}}
+                            :component slide-button/preview-slide-button}
                            {:name      :predictive-keyboard
                             :options   {:topBar {:visible true}}
                             :component predictive-keyboard/preview-predictive-keyboard}]
@@ -313,7 +318,10 @@
                             :component accounts/preview-accounts}
                            {:name      :settings-list
                             :options   {:topBar {:visible true}}
-                            :component settings-list/preview-settings-list}]
+                            :component settings-list/preview-settings-list}
+                           {:name      :reorder-item
+                            :options   {:topBar {:visible true}}
+                            :component reorder-item/preview-reorder-item}]
    :share                 [{:name      :qr-code
                             :options   {:topBar {:visible true}}
                             :component qr-code/preview-qr-code}

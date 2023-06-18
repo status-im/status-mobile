@@ -4,7 +4,6 @@
             [react-native.gesture :as gesture]
             [react-native.navigation :as navigation]
             [status-im.multiaccounts.login.core :as login-core]
-            [status-im2.contexts.shell.animation :as shell.animation]
             [status-im2.navigation.roots :as roots]
             [status-im2.navigation.state :as state]
             [status-im2.navigation.view :as views]
@@ -25,6 +24,7 @@
    (navigation/set-default-options options/default-options)
    (reset! state/curr-modal false)
    (reset! state/dissmissing false)
+   (re-frame/dispatch [:bottom-sheet-hidden])
    (if (= @state/root-id :multiaccounts-stack)
      (re-frame/dispatch-sync [:set-multiaccount-root])
      (when @state/root-id
@@ -35,14 +35,16 @@
 
 (defn set-view-id
   [view-id]
-  (when-let [{:keys [on-focus]} (get views/screens view-id)]
-    (re-frame/dispatch [:screens/on-will-focus view-id])
-    (re-frame/dispatch [:set-view-id
-                        (if (= view-id :shell-stack)
-                          (or @shell.animation/selected-stack-id :shell)
-                          view-id)])
-    (when on-focus
-      (re-frame/dispatch on-focus))))
+  (when (get views/screens view-id)
+    (re-frame/dispatch [:set-view-id view-id])))
+
+(re-frame/reg-fx
+ :set-view-id-fx
+ (fn [view-id]
+   (re-frame/dispatch [:screens/on-will-focus view-id])
+   (when-let [{:keys [on-focus]} (get views/screens view-id)]
+     (when on-focus
+       (re-frame/dispatch on-focus)))))
 
 (navigation/reg-component-did-appear-listener
  (fn [view-id]
@@ -105,7 +107,12 @@
                      (dissmissModal)
                      (navigation/pop (name @state/root-id)))))
 
-(re-frame/reg-fx :pop-to-root-fx navigation/pop-to-root)
+(defn pop-to-root
+  [root-id]
+  (navigation/pop-to-root root-id)
+  (dismiss-all-modals))
+
+(re-frame/reg-fx :pop-to-root-fx pop-to-root)
 
 ;; MODAL
 (defn open-modal

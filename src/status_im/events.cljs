@@ -232,11 +232,6 @@
   [{:keys [db]} k v]
   {:db (assoc db k v)})
 
-(rf/defn set-view-id
-  {:events [:set-view-id]}
-  [{:keys [db]} view-id]
-  {:db (assoc db :view-id view-id)})
-
 ;;TODO :replace by named events
 (rf/defn set-once-event
   {:events [:set-once]}

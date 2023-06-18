@@ -1,13 +1,16 @@
-(ns status-im2.contexts.shell.cards.view
+(ns status-im2.contexts.shell.components.switcher-cards.view
   (:require [clojure.string :as string]
             [utils.i18n :as i18n]
             [quo2.core :as quo]
+            [utils.re-frame :as rf]
+            [status-im2.config :as config]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [status-im2.constants :as constants]
-            [status-im2.contexts.shell.cards.style :as style]
+            [status-im2.contexts.shell.animation :as animation]
             [status-im2.contexts.shell.constants :as shell.constants]
+            [status-im2.contexts.shell.components.switcher-cards.style :as style]
             [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]))
 
 (defn content-container
@@ -180,43 +183,85 @@
 
       "")))
 
+(defn open-screen
+  [card-type id channel-id]
+  (cond
+    (#{shell.constants/one-to-one-chat-card
+       shell.constants/private-group-chat-card}
+     card-type)
+    (rf/dispatch [:chat/navigate-to-chat id])
+
+    (= card-type shell.constants/community-channel-card)
+    (if config/shell-navigation-disabled?
+      (do
+        (rf/dispatch [:navigate-to :community-overview id])
+        (js/setTimeout
+         #(rf/dispatch [:chat/navigate-to-chat channel-id])
+         100))
+      (rf/dispatch [:chat/navigate-to-chat channel-id]))
+
+    (= card-type shell.constants/community-card)
+    (rf/dispatch [:navigate-to :community-overview id])))
+
+(defn calculate-card-position-and-open-screen
+  [card-ref card-type id channel-id]
+  (when @card-ref
+    (.measure
+     ^js
+     @card-ref
+     (fn [_ _ _ _ page-x page-y]
+       (animation/set-floating-screen-position
+        page-x
+        page-y
+        card-type)
+       (open-screen card-type id channel-id)))))
+
 ;; Screens Card
 (defn screens-card
-  [{:keys [avatar-params title type customization-color
-           on-press on-close content banner]}]
-  (let [color-50 (colors/custom-color customization-color 50)
-        color-60 (colors/custom-color customization-color 60)]
-    [rn/touchable-without-feedback {:on-press on-press}
-     [rn/view {:style (style/base-container color-50)}
-      (when banner
-        [rn/image
-         {:source (:source banner)
-          :style  {:width 160}}])
-      [rn/view {:style style/secondary-container}
-       [quo/text
-        {:size            :paragraph-1
-         :weight          :semi-bold
-         :number-of-lines 1
-         :ellipsize-mode  :tail
-         :style           style/title}
-        title]
-       [quo/text
-        {:size   :paragraph-2
-         :weight :medium
-         :style  style/subtitle}
-        (subtitle type content)]
-       [bottom-container type (merge {:color-50 color-50 :color-60 color-60} content)]]
-      (when avatar-params
-        [rn/view {:style style/avatar-container}
-         [avatar avatar-params type customization-color]])
-      [quo/button
-       {:size           24
-        :type           :grey
-        :icon           true
-        :on-press       on-close
-        :override-theme :dark
-        :style          style/close-button}
-       :i/close]]]))
+  []
+  (let [card-ref (atom nil)]
+    (fn [{:keys [avatar-params title type customization-color
+                 content banner id channel-id]}]
+      (let [color-50 (colors/custom-color customization-color 50)
+            color-60 (colors/custom-color customization-color 60)]
+        [rn/touchable-opacity
+         {:on-press       #(calculate-card-position-and-open-screen
+                            card-ref
+                            type
+                            id
+                            channel-id)
+          :ref            #(reset! card-ref %)
+          :active-opacity 1}
+         [rn/view {:style (style/base-container color-50)}
+          (when banner
+            [rn/image
+             {:source (:source banner)
+              :style  {:width 160}}])
+          [rn/view {:style style/secondary-container}
+           [quo/text
+            {:size            :paragraph-1
+             :weight          :semi-bold
+             :number-of-lines 1
+             :ellipsize-mode  :tail
+             :style           style/title}
+            title]
+           [quo/text
+            {:size   :paragraph-2
+             :weight :medium
+             :style  style/subtitle}
+            (subtitle type content)]
+           [bottom-container type (merge {:color-50 color-50 :color-60 color-60} content)]]
+          (when avatar-params
+            [rn/view {:style style/avatar-container}
+             [avatar avatar-params type customization-color]])
+          [quo/button
+           {:size           24
+            :type           :grey
+            :icon           true
+            :on-press       #(rf/dispatch [:shell/close-switcher-card id])
+            :override-theme :dark
+            :style          style/close-button}
+           :i/close]]]))))
 
 ;; browser Card
 (defn browser-card

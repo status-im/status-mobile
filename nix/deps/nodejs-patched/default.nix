@@ -12,10 +12,8 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchHermesPhase"
     "patchJavaPhase"
-    "patchYogaNodePackagePhase"
     "patchReactNativePhase"
     "patchPodPhase"
-    "patchReactNativeXcodeScriptPhase"
     "installPhase"
   ];
 
@@ -70,14 +68,7 @@ stdenv.mkDerivation {
   patchJavaPhase = ''
     ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
   '';
-  # Patch React Native Yoga.cpp file
-  # FIXME: Remove this once release newer than 1.19.0 is used which includes:
-  # https://github.com/facebook/yoga/commit/f174de70
-  patchYogaNodePackagePhase = ''
-    substituteInPlace ./node_modules/react-native/ReactCommon/yoga/yoga/Yoga.cpp --replace \
-        'node->getLayout().hadOverflow() |' \
-        'node->getLayout().hadOverflow() ||'
-  '';
+
   installPhase = ''
     mkdir -p $out
     cp -R node_modules $out/
@@ -106,19 +97,6 @@ stdenv.mkDerivation {
           '[RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];' \
           '[RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];'
   '';
-
-# Patch React Native Xcode Script that searches for nvm
-# FIXME: Remove this once we upgrade react-native to 0.69.x
-    patchReactNativeXcodeScriptPhase = ''
-      substituteInPlace ./node_modules/react-native/scripts/find-node.sh --replace \
-              '# Define NVM_DIR and source the nvm.sh setup script' \
-              '<<MULTI_LINE_COMMENT${"\n"}# Define NVM_DIR and source the nvm.sh setup script'
-
-      substituteInPlace ./node_modules/react-native/scripts/find-node.sh --replace \
-              '# Set up the nodenv node version manager if present' \
-              'MULTI_LINE_COMMENT${"\n"}# Set up the nodenv node version manager if present'
-    '';
-
 
   # The ELF types are incompatible with the host platform, so let's not even try
   # TODO: Use Android NDK to strip binaries manually

@@ -1,9 +1,13 @@
 (ns status-im2.subs.shell
   (:require [re-frame.core :as re-frame]
             [utils.datetime :as datetime]
+            [status-im2.config :as config]
             [status-im2.constants :as constants]
-            [status-im2.common.resources :as resources]))
+            [react-native.platform :as platform]
+            [status-im2.common.resources :as resources]
+            [status-im2.contexts.shell.constants :as shell.constants]))
 
+;; Helper Functions
 (defn community-avatar
   [community]
   (let [images (:images community)]
@@ -66,18 +70,16 @@
                            :profile-picture (when profile-picture
                                               (str profile-picture "&addRing=0"))}
      :customization-color (or (:customization-color contact) :primary)
-     :on-close            #(re-frame/dispatch [:shell/close-switcher-card id])
-     :on-press            #(re-frame/dispatch [:chat/navigate-to-chat id])
-     :content             (get-card-content chat communities)}))
+     :content             (get-card-content chat communities)
+     :id                  id}))
 
 (defn private-group-chat-card
   [chat id communities]
   {:title               (:chat-name chat)
    :avatar-params       {}
    :customization-color (or (:customization-color chat) :primary)
-   :on-close            #(re-frame/dispatch [:shell/close-switcher-card id])
-   :on-press            #(re-frame/dispatch [:chat/navigate-to-chat id])
-   :content             (get-card-content chat communities)})
+   :content             (get-card-content chat communities)
+   :id                  id})
 
 (defn community-card
   [community id]
@@ -87,22 +89,18 @@
                             {:source profile-picture}
                             {:name (:name community)})
      :customization-color (or (:customization-color community) :primary)
-     :on-close            #(re-frame/dispatch [:shell/close-switcher-card id])
-     :on-press            #(re-frame/dispatch [:navigate-to :community-overview id])
-     :content             {:community-info {:type :permission}}}))
+     :content             {:community-info {:type :permission}}
+     :id                  id}))
 
 (defn community-channel-card
   [community community-id channel channel-id]
   (merge
    (community-card community community-id)
-   {:content  {:community-channel {:emoji        (:emoji channel)
-                                   :channel-name (str "# " (:name channel))}}
-    :on-press (fn []
-                (re-frame/dispatch [:navigate-to :community-overview community-id])
-                (js/setTimeout
-                 #(re-frame/dispatch [:chat/navigate-to-chat channel-id])
-                 100))}))
+   {:content    {:community-channel {:emoji        (:emoji channel)
+                                     :channel-name (str "# " (:name channel))}}
+    :channel-id channel-id}))
 
+;;;; Subscriptions
 (def memo-shell-cards (atom nil))
 
 (re-frame/reg-sub
@@ -122,6 +120,7 @@
  (fn [stacks]
    (> (count stacks) 6)))
 
+;; Switcher Cards
 (re-frame/reg-sub
  :shell/one-to-one-chat-card
  (fn [[_ id] _]
@@ -157,6 +156,7 @@
          community    (get communities (:community-id channel))]
      (community-channel-card community community-id channel channel-id))))
 
+;; Bottom tabs
 (re-frame/reg-sub
  :shell/bottom-tabs-notifications-data
  :<- [:chats/chats]
@@ -191,3 +191,20 @@
       {:new-notifications?     (pos? (:unviewed-messages-count chats-stack))
        :notification-indicator (if (pos? (:unviewed-mentions-count chats-stack)) :counter :unread-dot)
        :counter-label          (:unviewed-mentions-count chats-stack)}})))
+
+;; Floating screens
+(re-frame/reg-sub
+ :shell/floating-screen
+ :<- [:shell/floating-screens]
+ (fn [screens [_ screen-id]]
+   (get screens screen-id)))
+
+(re-frame/reg-sub
+ :shell/animation-complete?
+ :<- [:shell/loaded-screens]
+ (fn [screens [_ chat-type]]
+   (or config/shell-navigation-disabled?
+       platform/ios?
+       (cond-> (get screens shell.constants/chat-screen)
+         (= chat-type constants/community-chat-type)
+         (and (get screens shell.constants/community-screen))))))

@@ -57,7 +57,7 @@ let
 
     # for 'scripts/generate-keystore.sh'
     keytool = mkShell {
-      buildInputs = with pkgs; [ openjdk8 apksigner ];
+      buildInputs = with pkgs; [ openjdk11 apksigner ];
     };
 
     # for targets needing 'adb', 'apkanalyzer' and other SDK/NDK tools

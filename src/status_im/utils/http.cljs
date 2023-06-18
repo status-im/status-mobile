@@ -189,3 +189,8 @@
 (defn topic-from-url
   [url]
   (string/lower-case (apply str (map filter-letters-numbers-and-replace-dot-on-dash (url-host url)))))
+
+(defn replace-port
+  [url new-port]
+  (when url
+    (string/replace url #"(:\d+)" (str ":" new-port))))

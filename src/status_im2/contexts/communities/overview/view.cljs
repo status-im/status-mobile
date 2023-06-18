@@ -303,53 +303,54 @@
                 category)))))
 
 (defn community-card-page-view
-  [{:keys [name images id]}]
+  []
   (let [categories-heights   (reagent/atom {})
         first-channel-height (reagent/atom 0)
-        scroll-height        (reagent/atom 0)
-        cover                {:uri (get-in images [:banner :uri])}
-        logo                 {:uri (get-in images [:thumbnail :uri])}]
-    (fn [community pending?]
-      [scroll-page/scroll-page
-       {:cover-image                    cover
-        :logo                           logo
-        :page-nav-right-section-buttons (page-nav-right-section-buttons id)
-        :name                           name
-        :on-scroll                      #(reset! scroll-height %)
-        :navigate-back?                 true
-        :background-color               (colors/theme-colors
-                                         colors/white
-                                         colors/neutral-90)
-        :height                         (if platform/ios?
-                                          100
-                                          148)}
+        scroll-height        (reagent/atom 0)]
+    (fn [id]
+      (let [{:keys [name images id] :as community}
+            (rf/sub [:communities/community id])
+            pending? (rf/sub [:communities/my-pending-request-to-join id])
+            cover {:uri (get-in images [:banner :uri])}
+            logo {:uri (get-in images [:thumbnail :uri])}]
+        [scroll-page/scroll-page
+         {:cover-image                    cover
+          :logo                           logo
+          :page-nav-right-section-buttons (page-nav-right-section-buttons id)
+          :name                           name
+          :on-scroll                      #(reset! scroll-height %)
+          :navigate-back?                 true
+          :background-color               (colors/theme-colors
+                                           colors/white
+                                           colors/neutral-90)
+          :height                         (if platform/ios?
+                                            100
+                                            148)}
 
-       [sticky-category-header
-        {:enabled (> @scroll-height @first-channel-height)
-         :label   (pick-first-category-by-height
-                   @scroll-height
-                   @first-channel-height
-                   @categories-heights)}]
+         [sticky-category-header
+          {:enabled (> @scroll-height @first-channel-height)
+           :label   (pick-first-category-by-height
+                     @scroll-height
+                     @first-channel-height
+                     @categories-heights)}]
 
-       [community-content
-        community
-        pending?
-        {:on-category-layout              (partial add-category-height categories-heights)
-         :on-first-channel-height-changed
-         ;; Here we set the height of the component
-         ;; and we filter out the categories, as some might have been removed
-         (fn [height categories]
-           (swap! categories-heights select-keys categories)
-           (reset! first-channel-height height))}]])))
+         [community-content
+          community
+          pending?
+          {:on-category-layout              (partial add-category-height categories-heights)
+           :on-first-channel-height-changed
+           ;; Here we set the height of the component
+           ;; and we filter out the categories, as some might have been removed
+           (fn [height categories]
+             (swap! categories-heights select-keys categories)
+             (reset! first-channel-height height))}]]))))
 
 (defn overview
-  []
-  (let [id        (rf/sub [:get-screen-params :community-overview])
-        community (rf/sub [:communities/community id])
-        pending?  (rf/sub [:communities/my-pending-request-to-join id])]
+  [id]
+  (let [id (or id (rf/sub [:get-screen-params :community-overview]))]
     [rn/view
      {:style style/community-overview-container}
-     [community-card-page-view community pending?]
+     [community-card-page-view id]
      [floating-shell-button/floating-shell-button
       {:jump-to {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
                  :label    (i18n/label :t/jump-to)}}
