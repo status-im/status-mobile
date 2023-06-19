@@ -10,7 +10,8 @@
     "app:compile:android": "shadow-cljs compile android",
     "app:watch": "shadow-cljs watch android",
     "app:packager": "react-native start --host 0.0.0.0 --port 8081",
-    "app:android": "react-native run-android"
+    "app:android": "react-native run-android",
+    "prettier": "prettier --write ."
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.17.12",
@@ -95,6 +96,7 @@
     "jest-image-snapshot": "^5.1.0",
     "nodemon": "^2.0.16",
     "nyc": "^14.1.1",
+    "prettier": "^2.8.8",
     "process": "0.11.10",
     "react-test-renderer": "18.0.0",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#refs/tags/v2.0.2-status",
