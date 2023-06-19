@@ -16,7 +16,7 @@
             [status-im2.contexts.communities.overview.utils :as utils]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im2.contexts.communities.menus.channel-options.view :as channel-options]))
+            [status-im2.contexts.communities.actions.chat.view :as chat-actions]))
 
 (defn preview-user-list
   [user-list]
@@ -79,8 +79,12 @@
                   :margin-top    10
                   :margin-bottom 8}}
          (for [{:keys [muted? id] :as chat} chats
-               :let [chat (assoc chat :chat-type constants/community-chat-type)
-                     channel-muted? (or muted? (rf/sub [:chat/check-channel-muted? community-id id]))]]
+               :let                         [chat           (assoc chat
+                                                                   :chat-type
+                                                                   constants/community-chat-type)
+                                             channel-muted? (or muted?
+                                                                (rf/sub [:chat/check-channel-muted?
+                                                                         community-id id]))]]
            [rn/view
             {:key   (:id chat)
              :style {:margin-top 4}}
@@ -224,7 +228,7 @@
       :on-long-press #(rf/dispatch
                        [:show-bottom-sheet
                         {:content (fn []
-                                    [channel-options/channel-options-bottom-sheet community-id id])}])
+                                    [chat-actions/actions community-id id])}])
       :community-id  community-id})))
 
 (defn add-handlers-to-chats
