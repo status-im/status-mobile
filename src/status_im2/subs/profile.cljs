@@ -6,9 +6,9 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.fleet.core :as fleet]
             [status-im.multiaccounts.db :as multiaccounts.db]
+            [status-im2.constants :as constants]
             [utils.image-server :as image-server]
-            [utils.security.core :as security]
-            [status-im2.constants :as constants]))
+            [utils.security.core :as security]))
 
 (re-frame/reg-sub
  :profile/customization-color
@@ -20,17 +20,24 @@
  :profile/login-profiles-picture
  :<- [:profile/profiles-overview]
  :<- [:mediaserver/port]
- (fn [[multiaccounts port] [_ target-key-uid]]
-   (let [image-name (-> multiaccounts
-                        (get-in [target-key-uid :images])
-                        first
-                        :type)]
-     (when image-name
-       (image-server/get-account-image-uri {:port       port
-                                            :image-name image-name
-                                            :key-uid    target-key-uid
-                                            :theme      (theme/get-theme)
-                                            :ring?      true})))))
+ :<- [:initials-avatar-font-file]
+ (fn [[multiaccounts port font-file] [_ target-key-uid]]
+   (let [{:keys [images ens-name?] :as multiaccount} (get multiaccounts target-key-uid)
+         image-name                                  (-> images first :type)
+         override-ring?                              (not ens-name?)]
+     (when multiaccount
+       {:fn
+        (if image-name
+          (image-server/get-account-image-uri-fn {:port           port
+                                                  :image-name     image-name
+                                                  :key-uid        target-key-uid
+                                                  :theme          (theme/get-theme)
+                                                  :override-ring? override-ring?})
+          (image-server/get-initials-avatar-uri-fn {:port           port
+                                                    :key-uid        target-key-uid
+                                                    :theme          (theme/get-theme)
+                                                    :override-ring? override-ring?
+                                                    :font-file      font-file}))}))))
 
 (re-frame/reg-sub
  :multiaccount/public-key
