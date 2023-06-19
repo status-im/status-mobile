@@ -209,7 +209,9 @@
                60 "#BD1E56"}})
 
 (def colors-map
-  (merge {:beige   {50 "#CAAE93"
+  (merge {:primary {50 primary-50 ;; User can also use primary color as customisation color
+                    60 primary-60}
+          :beige   {50 "#CAAE93"
                     60 "#AA927C"}
           :green   {50 "#5BCC95"
                     60 "#4CAB7D"}
@@ -217,6 +219,10 @@
                     60 "#805141"}
           :red     {50 "#F46666"
                     60 "#CD5656"}
+          :magenta {50 "#EC266C"
+                    60 "#BD1E56"}
+          :indigo  {50 "#496289"
+                    60 "#3D5273"}
           :danger  {50 danger-50
                     60 danger-60}
           :success {50 success-50
