@@ -298,10 +298,9 @@
  :chats/photo-path
  :<- [:contacts/contacts]
  :<- [:profile/multiaccount]
- :<- [:mediaserver/port]
  (fn [[contacts {:keys [public-key] :as multiaccount}] [_ id]]
-   (multiaccounts/displayed-photo (or (when (= id public-key) multiaccount)
-                                      (get contacts id)))))
+   (let [contact (or (when (= id public-key) multiaccount) (get contacts id))]
+     (multiaccounts/displayed-photo contact))))
 
 (re-frame/reg-sub
  :chats/unread-messages-number
