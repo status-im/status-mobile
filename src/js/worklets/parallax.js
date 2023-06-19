@@ -1,10 +1,4 @@
-import {
-    useAnimatedStyle,
-    useAnimatedSensor,
-    withTiming,
-    interpolate,
-    SensorType
-} from 'react-native-reanimated';
+import { useAnimatedStyle, useAnimatedSensor, withTiming, interpolate, SensorType } from 'react-native-reanimated';
 import { Platform } from 'react-native';
 
 const PI = Math.PI;
@@ -21,34 +15,31 @@ there is a bug with the pitch and roll calculations provided directly from the s
 be done using the quaternions directly.
 */
 export function sensorAnimatedImage(zIndex, offset, stretch) {
-    'worklet'
-    const rotationSensor = useAnimatedSensor(SensorType.ROTATION, { interval: 30 })
-    return useAnimatedStyle(function () {
+  'worklet';
+  const rotationSensor = useAnimatedSensor(SensorType.ROTATION, { interval: 30 });
+  return useAnimatedStyle(function () {
+    const { qx, qz, qw, qy, pitch } = rotationSensor.sensor.value;
 
-        const { qx, qz, qw, qy, pitch } = rotationSensor.sensor.value;
+    const roll = Math.asin(-2.0 * (qx * qz - qw * qy));
 
-        const roll = Math.asin(-2.0 * (qx * qz - qw * qy))
+    const translateY = withTiming(
+      interpolate(pitch, Platform.OS === 'ios' ? [-PI, PI] : [PI, -PI], [
+        (-offset * 3) / zIndex - offset + (offset - stretch),
+        (offset * 3) / zIndex - offset + (offset - stretch),
+      ]),
+      { duration: 10 },
+    );
+    const translateX = withTiming(
+      interpolate(
+        roll,
+        [1, -1],
+        [(-offset * 2) / zIndex - offset + (offset - stretch), (offset * 2) / zIndex - offset + (offset - stretch)],
+      ),
+      { duration: 10 },
+    );
 
-        const translateY = withTiming(
-            interpolate(
-                pitch,
-                Platform.OS === 'ios' ? [-PI, PI] : [PI, -PI],
-                [(-offset * 3) / zIndex - offset + (offset - stretch), (offset * 3) / zIndex - offset + (offset - stretch)]),
-            { duration: 10 }
-        );
-        const translateX = withTiming(
-            interpolate(
-                roll,
-                [1, -1],
-                [(-offset * 2) / zIndex - offset + (offset - stretch), (offset * 2) / zIndex - offset + (offset - stretch)]),
-            { duration: 10 }
-        );
-
-        return {
-            transform: [
-                { translateX },
-                { translateY }
-            ]
-        }
-    })
+    return {
+      transform: [{ translateX }, { translateY }],
+    };
+  });
 }
