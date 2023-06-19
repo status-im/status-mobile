@@ -14,6 +14,7 @@
 (def ^:const content-type-gap 10)
 (def ^:const content-type-contact-request 11) ;; TODO: temp, will be removed
 (def ^:const content-type-system-pinned-message 14)
+(def ^:const content-type-system-mutual-state-update 15)
 
 ;; Not implemented in status-go, only used for testing/ui work
 (def ^:const content-type-gif 100)
