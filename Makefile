@@ -306,14 +306,16 @@ lint: ##@test Run code style checks
 	@sh scripts/lint-re-frame-in-quo-components.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
-	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES
+	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
+	yarn prettier
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
 lint-fix: export TARGET := default
 lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
-	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES
+	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
+	yarn prettier
 
 
 shadow-server: export TARGET := clojure
