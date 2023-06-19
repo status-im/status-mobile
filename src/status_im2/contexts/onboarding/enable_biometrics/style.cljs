@@ -12,7 +12,6 @@
 
 (def page-illustration
   {:flex              1
-   :background-color  colors/danger-50
    :align-items       :center
    :margin-horizontal default-margin
    :border-radius     20
@@ -22,4 +21,4 @@
 (defn buttons
   [insets]
   {:margin        default-margin
-   :margin-bottom (+ 46 (:bottom insets))})
+   :margin-bottom (+ 12 (:bottom insets))})

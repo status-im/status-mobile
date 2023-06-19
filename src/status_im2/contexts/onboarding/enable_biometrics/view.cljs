@@ -23,7 +23,7 @@
     :subtitle-accessibility-label :enable-biometrics-sub-title}])
 
 (defn enable-biometrics-buttons
-  [{:keys [insets]}]
+  [insets]
   (let [supported-biometric (rf/sub [:supported-biometric-auth])
         bio-type-label      (biometric/get-label supported-biometric)
         profile-color       (:color (rf/sub [:onboarding-2/profile]))]
@@ -45,7 +45,7 @@
   []
   [:<>
    [parallax/video
-    {:layers  (resources/get-parallax-video :biometrics)
+    {:layers  (:biometrics resources/parallax-video)
      :stretch 50}]
    [rn/view
     [navigation-bar/navigation-bar {:disable-back-button? true}]
@@ -58,18 +58,14 @@
     [navigation-bar/navigation-bar {:disable-back-button? true}]
     [page-title]]
    [rn/view {:style style/page-illustration}
-    [quo/text
-     "Illustration here"]]])
+    [rn/image {:source (resources/get-image :biometrics)}]]])
 
 (defn enable-biometrics
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      [background/view true]
-     (if (whitelist/whitelisted?)
+     (if whitelist/whitelisted?
        [enable-biometrics-parallax]
        [enable-biometrics-simple])
-     [enable-biometrics-buttons {:style {:align-self :flex-end}}]]))
-
-
-
+     [enable-biometrics-buttons insets]]))

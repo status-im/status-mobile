@@ -3,6 +3,7 @@
 
 (def ui
   {:add-new-contact               (js/require "../resources/images/ui2/add-contact.png")
+   :biometrics                    (js/require "../resources/images/ui2/biometrics.png")
    :desktop-how-to-pair-sign-in   (js/require "../resources/images/ui2/desktop-how-to-pair-sign-in.png")
    :desktop-how-to-pair-logged-in (js/require
                                    "../resources/images/ui2/desktop-how-to-pair-logged-in.png")
@@ -103,7 +104,3 @@
 (defn get-token
   [k]
   (get tokens k))
-
-(defn get-parallax-video
-  [k]
-  (get parallax-video k))

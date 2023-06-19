@@ -2,11 +2,10 @@
   (:require [native-module.core :as native-module]
             [clojure.string :as string]))
 
-(def device-id (:device-id (native-module/get-device-model-info)))
+(def ^:const device-id (:device-id (native-module/get-device-model-info)))
 
-(def whitelist ["iPhone11" "iPhone12" "iPhone13" "iPhone14"])
+(def ^:const whitelist #{"iPhone11" "iPhone12" "iPhone13" "iPhone14"})
 
-(defn whitelisted?
-  []
+(def whitelisted?
   (let [device-type (first (string/split (str device-id) ","))]
-    (some (fn [a] (= a device-type)) whitelist)))
+    (whitelist device-type)))
