@@ -3,9 +3,10 @@
             [quo.components.list.item :as list-item]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
+            [quo2.components.avatars.user-avatar.style :as user-avatar.style]
+            [quo2.theme :as theme]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
             [status-im.ui.components.profile-header.view :as profile-header]
@@ -13,8 +14,9 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.profile.components.sheets :as sheets]
-            [utils.re-frame :as rf]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn actions
   [{:keys [public-key added? blocked? ens-name mutual?] :as contact} muted?]
@@ -179,9 +181,11 @@
          :as   contact}
         @(re-frame/subscribe
           [:contacts/current-contact])
+
         muted? @(re-frame/subscribe [:chats/muted
                                      public-key])
-        {:keys [primary-name secondary-name]} contact
+        {:keys [primary-name secondary-name customization-color]} contact
+        customization-color (or customization-color :primary)
         on-share #(re-frame/dispatch
                    [:show-popover
                     (merge
@@ -201,14 +205,17 @@
                               :on-press            #(re-frame/dispatch [:navigate-back])}]}]
        [:<>
         [(profile-header/extended-header
-          {:on-press         on-share
+          {:on-press on-share
            :bottom-separator false
-           :title            primary-name
-           :photo            (multiaccounts/displayed-photo contact)
-           :monospace        (not ens-verified)
-           :subtitle         secondary-name
-           :compressed-key   compressed-key
-           :public-key       public-key})]
+           :title primary-name
+           :color
+           (user-avatar.style/customization-color customization-color
+                                                  (theme/get-theme))
+           :photo (multiaccounts/displayed-photo contact)
+           :monospace (not ens-verified)
+           :subtitle secondary-name
+           :compressed-key compressed-key
+           :public-key public-key})]
         [react/view
          {:height 1 :background-color colors/gray-lighter :margin-top 8}]
         [nickname-settings contact]
