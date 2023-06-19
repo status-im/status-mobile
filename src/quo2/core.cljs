@@ -11,6 +11,7 @@
     quo2.components.buttons.button
     quo2.components.buttons.dynamic-button
     quo2.components.buttons.predictive-keyboard.view
+    quo2.components.buttons.slide-button.view
     quo2.components.colors.color-picker.view
     quo2.components.community.community-card-view
     quo2.components.community.community-list-view
@@ -30,9 +31,10 @@
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
     quo2.components.header
+    quo2.components.empty-state.empty-state.view
     quo2.components.icon
     quo2.components.info.info-message
-    quo2.components.info.information-box
+    quo2.components.info.information-box.view
     quo2.components.inputs.input.view
     quo2.components.inputs.profile-input.view
     quo2.components.inputs.recovery-phrase.view
@@ -64,6 +66,7 @@
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
     quo2.components.reactions.reaction
+    quo2.components.selectors.reactions.view
     quo2.components.record-audio.record-audio.view
     quo2.components.record-audio.soundtrack.view
     quo2.components.selectors.disclaimer.view
@@ -86,6 +89,7 @@
     quo2.components.text-combinations.title.view
     quo2.components.settings.settings-list.view
     quo2.components.wallet.account-card.view
+    quo2.components.settings.reorder-item.view
   ))
 
 (def text quo2.components.markdown.text/text)
@@ -94,7 +98,7 @@
 (def header quo2.components.header/header)
 (def dropdown quo2.components.dropdowns.dropdown/dropdown)
 (def info-message quo2.components.info.info-message/info-message)
-(def information-box quo2.components.info.information-box/information-box)
+(def information-box quo2.components.info.information-box.view/view)
 (def gap quo2.components.messages.gap/gap)
 (def system-message quo2.components.messages.system-message/system-message)
 (def reaction quo2.components.reactions.reaction/reaction)
@@ -112,6 +116,9 @@
 (def skeleton quo2.components.loaders.skeleton/skeleton)
 (def author quo2.components.messages.author.view/author)
 
+;;;; SELECTORS
+(def reactions quo2.components.selectors.reactions.view/view)
+
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
 (def channel-avatar quo2.components.avatars.channel-avatar/channel-avatar)
@@ -127,6 +134,7 @@
 (def button quo2.components.buttons.button/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
+(def slide-button quo2.components.buttons.slide-button.view/view)
 
 ;;;; CARDS
 (def small-option-card quo2.components.onboarding.small-option-card.view/small-option-card)
@@ -166,6 +174,9 @@
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
+;;;; EMPTY STATE
+(def empty-state quo2.components.empty-state.empty-state.view/empty-state)
+
 ;;;; INPUTS
 (def input quo2.components.inputs.input.view/input)
 (def profile-input quo2.components.inputs.profile-input.view/profile-input)
@@ -202,6 +213,7 @@
 (def privacy-option quo2.components.settings.privacy-option/card)
 (def account quo2.components.settings.accounts.view/account)
 (def settings-list quo2.components.settings.settings-list.view/settings-list)
+(def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
 
 ;;;; SHARE
 (def qr-code quo2.components.share.qr-code.view/qr-code)

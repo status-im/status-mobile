@@ -19,7 +19,8 @@
 (defn page-title
   [pairing-progress?]
   [quo/title
-   {:title                        (i18n/label (if pairing-progress?
+   {:container-style              {:margin-top 56}
+    :title                        (i18n/label (if pairing-progress?
                                                 :t/sync-devices-title
                                                 :t/sync-devices-error-title))
     :subtitle                     (i18n/label (if pairing-progress?
@@ -31,7 +32,9 @@
 (defn try-again-button
   [profile-color]
   [quo/button
-   {:on-press                  #(rf/dispatch [:navigate-back])
+   {:on-press                  (fn []
+                                 (rf/dispatch [:syncing/clear-states])
+                                 (rf/dispatch [:navigate-back]))
     :accessibility-label       :try-again-later-button
     :override-background-color (colors/custom-color profile-color 60)
     :style                     style/try-again-button}
@@ -39,7 +42,7 @@
 
 (defn view
   []
-  (let [pairing-status (rf/sub [:pairing/pairing-in-progress])
+  (let [pairing-status (rf/sub [:pairing/pairing-status])
         profile-color  (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view {:style style/page-container}
      [background/view true]

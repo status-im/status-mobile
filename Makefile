@@ -81,6 +81,10 @@ nix-gc-protected:
 	@echo -e "$(YELLOW)The following paths are protected:$(RESET)" && \
 	ls -1 $(_NIX_GCROOTS) | sed 's/^/ - /'
 
+nix-upgrade: SHELL := /bin/sh
+nix-upgrade: ##@nix Upgrade Nix interpreter to current version.
+	nix/scripts/upgrade.sh
+
 nix-gc: export TARGET := nix
 nix-gc: nix-gc-protected ##@nix Garbage collect all packages older than 20 days from /nix/store
 	nix-store --gc
@@ -268,7 +272,7 @@ run-android: export TARGET := android
 run-android: ##@run Build Android APK and start it on the device
 	npx react-native run-android --appIdSuffix debug
 
-SIMULATOR=iPhone 13
+SIMULATOR=iPhone 11 Pro
 run-ios: export TARGET := ios
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")

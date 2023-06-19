@@ -28,11 +28,30 @@ You need to have an emulator like [AVD](https://developer.android.com/studio/run
 
 ### iOS
 
-You can specify the simulator type by adding the `SIMULATOR` flag:
+#### Running on a simulator
+
+We highly recommend using the `iPhone 11 Pro` simulator as its screen dimensions match with our design.
+
+If you have Xcode `v12.x` (and above) installed in your system, you need to follow the below steps to add `iPhone 11 Pro` simulator:
+
+1. Open Xcode
+2. Menu `>` Window `>` Devices and Simulators
+3. Tap `+` button on bottom left
+4. Select **Device Type** as `iPhone 11 Pro`
+5. Leave the **Simulator Name** empty and tap on **Create**
+
+##### NOTE ⚠️
+
+Running `make run-ios` will target `iPhone 11 Pro` by default.
+
+If you need to run on any other simulator, you can specify the simulator type by adding the `SIMULATOR` flag:
 ```sh
 make run-ios SIMULATOR="iPhone 11 Pro"
 ```
-Some manual steps are necesary for [developing on a physical iOS Device](#physical-ios-device).
+
+#### Running on a physical device
+
+Some manual steps are necessary for [developing on a physical iOS Device](#physical-ios-device).
 
 # Build release
 

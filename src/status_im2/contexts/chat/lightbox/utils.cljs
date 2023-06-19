@@ -4,10 +4,8 @@
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [react-native.navigation :as navigation]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.chat.lightbox.animations :as anim]
@@ -17,24 +15,37 @@
     [status-im2.contexts.chat.lightbox.constants :as constants]
     [utils.worklets.lightbox :as worklet]))
 
+(defn clear-timers
+  [timers]
+  (js/clearTimeout (:mount-animation @timers))
+  (js/clearTimeout (:mount-index-lock @timers))
+  (js/clearTimeout (:hide-0 @timers))
+  (js/clearTimeout (:hide-1 @timers))
+  (js/clearTimeout (:show-0 @timers))
+  (js/clearTimeout (:show-1 @timers))
+  (js/clearTimeout (:show-2 @timers)))
 
 (defn effect
-  [{:keys [flat-list-ref scroll-index-lock?]} {:keys [opacity layout border]} index]
-  (rn/use-effect (fn []
-                   (reagent/next-tick (fn []
-                                        (when @flat-list-ref
-                                          (.scrollToIndex ^js @flat-list-ref
-                                                          #js {:animated false :index index}))))
-                   (js/setTimeout (fn []
-                                    (anim/animate opacity 1)
-                                    (anim/animate layout 0)
-                                    (anim/animate border 12))
-                                  (if platform/ios? 250 100))
-                   (js/setTimeout #(reset! scroll-index-lock? false) 300)
-                   (fn []
-                     (rf/dispatch [:chat.ui/zoom-out-signal nil])
-                     (when platform/android?
-                       (rf/dispatch [:chat.ui/lightbox-scale 1]))))))
+  [{:keys [flat-list-ref scroll-index-lock? timers]} {:keys [opacity layout border]} index]
+  (rn/use-effect
+   (fn []
+     (reagent/next-tick (fn []
+                          (when @flat-list-ref
+                            (.scrollToIndex ^js @flat-list-ref
+                                            #js {:animated false :index index}))))
+     (swap! timers assoc
+       :mount-animation
+       (js/setTimeout (fn []
+                        (anim/animate opacity 1)
+                        (anim/animate layout 0)
+                        (anim/animate border 12))
+                      (if platform/ios? 250 100)))
+     (swap! timers assoc :mount-index-lock (js/setTimeout #(reset! scroll-index-lock? false) 300))
+     (fn []
+       (rf/dispatch [:chat.ui/zoom-out-signal nil])
+       (when platform/android?
+         (rf/dispatch [:chat.ui/lightbox-scale 1]))
+       (clear-timers timers)))))
 
 (defn handle-orientation
   [result {:keys [flat-list-ref]} {:keys [scroll-index]} animations]
@@ -83,27 +94,6 @@
           (when (and enabled? (not= result orientation/landscape-right))
             (handle-orientation result props state animations))))))))
 
-(defn toggle-opacity
-  [index {:keys [opacity-value border-value transparent? props]} portrait?]
-  (let [{:keys [small-list-ref]} props
-        opacity                  (reanimated/get-shared-value opacity-value)]
-    (if (= opacity 1)
-      (do
-        (when platform/ios?
-          ;; status-bar issue: https://github.com/status-im/status-mobile/issues/15343
-          (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible false}}) 75))
-        (anim/animate opacity-value 0)
-        (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
-      (do
-        (reset! transparent? (not @transparent?))
-        (js/setTimeout #(anim/animate opacity-value 1) 50)
-        (js/setTimeout #(when @small-list-ref
-                          (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
-                       100)
-        (when (and platform/ios? portrait?)
-          (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible true}}) 150))))
-    (anim/animate border-value (if (= opacity 1) 0 12))))
-
 (defn drag-gesture
   [{:keys [pan-x pan-y background-color opacity layout]} x? set-full-height?]
   (->
@@ -125,7 +115,7 @@
                           (anim/animate opacity 0)
                           (rf/dispatch [:navigate-back]))
                         (do
-                          #(reset! set-full-height? true)
+                          (reset! set-full-height? true)
                           (anim/animate (if x? pan-x pan-y) 0)
                           (anim/animate opacity 1)
                           (anim/animate layout 0)))))))
@@ -134,7 +124,8 @@
   []
   {:flat-list-ref      (atom nil)
    :small-list-ref     (atom nil)
-   :scroll-index-lock? (atom true)})
+   :scroll-index-lock? (atom true)
+   :timers             (atom {})})
 
 (defn init-state
   [messages index]
@@ -148,7 +139,7 @@
 
 (defn init-animations
   []
-  {:background-color (anim/use-val colors/black-opa-0)
+  {:background-color (anim/use-val colors/neutral-100-opa-0)
    :border           (anim/use-val (if platform/ios? 0 12))
    :opacity          (anim/use-val 0)
    :rotate           (anim/use-val "0deg")

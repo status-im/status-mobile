@@ -152,10 +152,9 @@
                              (preview-text-from-content group-chat primary-name message)))]
     [quo/text
      {:size                :paragraph-2
-      :style               {:color        (colors/theme-colors colors/neutral-50
-                                                               colors/neutral-40)
-                            :flex         1
-                            :margin-right 20}
+      :style               {:color (colors/theme-colors colors/neutral-50
+                                                        colors/neutral-40)
+                            :flex  1}
       :number-of-lines     1
       :ellipsize-mode      :tail
       :accessibility-label :chat-message-text}
@@ -179,10 +178,15 @@
 
 (defn name-view
   [display-name contact timestamp]
-  [rn/view {:style {:flex-direction :row}}
+  [rn/view
+   {:style {:flex           1
+            :flex-direction :row}}
    [quo/text
     {:weight              :semi-bold
-     :accessibility-label :chat-name-text}
+     :accessibility-label :chat-name-text
+     :style               {:flex-shrink 1}
+     :number-of-lines     1
+     :ellipsize-mode      :tail}
     display-name]
    [verified-or-contact-icon contact]
    [quo/text
@@ -209,11 +213,12 @@
   [{:keys [chat-id group-chat color name unviewed-messages-count
            timestamp last-message muted]
     :as   item}]
-  (let [display-name (if group-chat
-                       name
-                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
-        contact      (when-not group-chat
-                       (rf/sub [:contacts/contact-by-address chat-id]))]
+  (let [display-name       (if group-chat
+                             name
+                             (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
+        contact            (when-not group-chat
+                             (rf/sub [:contacts/contact-by-address chat-id]))
+        show-unread-badge? (and (not muted) (> unviewed-messages-count 0))]
     [rn/touchable-opacity
      {:style         (style/container)
       :on-press      (open-chat chat-id)
@@ -224,10 +229,14 @@
        :chat-id   chat-id
        :full-name display-name
        :color     color}]
-     [rn/view {:style {:margin-left 8}}
+     [rn/view
+      {:style {:flex         1
+               :margin-left  8
+               :margin-right (if show-unread-badge? 36 0)}}
       [name-view display-name contact timestamp]
       [last-message-preview group-chat last-message]]
-     (when-not muted
-       (when (> unviewed-messages-count 0)
-         [quo/info-count {:style {:top 16}}
-          unviewed-messages-count]))]))
+     (when show-unread-badge?
+       [quo/info-count
+        {:style {:top   16
+                 :right 16}}
+        unviewed-messages-count])]))

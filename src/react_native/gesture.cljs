@@ -33,11 +33,15 @@
 
 (defn max-pointers [gesture count] (.maxPointers ^js gesture count))
 
+(defn min-distance [gesture dist] (.minDistance ^js gesture dist))
+
 (defn number-of-taps [gesture count] (.numberOfTaps ^js gesture count))
 
 (defn enabled [gesture enabled?] (.enabled ^js gesture enabled?))
 
 (defn average-touches [gesture average-touches?] (.averageTouches ^js gesture average-touches?))
+
+(defn with-test-ID [gesture test-ID] (.withTestId ^js gesture (str test-ID)))
 
 (defn simultaneous
   ([g1 g2] (.Simultaneous ^js Gesture g1 g2))
@@ -77,7 +81,6 @@
 
 (def scroll-view (reagent/adapt-react-class ScrollView))
 
-
 ;;; Custom gesture section-list
 (defn- flatten-sections
   [sections]
@@ -91,7 +94,7 @@
     [flat-list
      (merge props
             {:data      data
-             :render-fn (fn [item]
-                          (if (:header? item)
-                            (render-section-header-fn item)
-                            (render-fn item)))})]))
+             :render-fn (fn [p1 p2 p3 p4]
+                          (if (:header? p1)
+                            [render-section-header-fn p1 p2 p3 p4]
+                            [render-fn p1 p2 p3 p4]))})]))

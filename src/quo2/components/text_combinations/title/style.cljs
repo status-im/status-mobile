@@ -2,14 +2,16 @@
   (:require
     [quo2.foundations.colors :as colors]))
 
-(def title-container
-  {:justify-content    :center
-   :margin-top         12
-   :padding-horizontal 20})
+(defn title-container
+  [container-style]
+  (merge
+   {:justify-content    :center
+    :padding-horizontal 20}
+   container-style))
 
 (def title-text
   {:color colors/white})
 
 (def subtitle-text
-  {:color         colors/white
-   :margin-bottom 8})
+  {:color      colors/white
+   :margin-top 8})

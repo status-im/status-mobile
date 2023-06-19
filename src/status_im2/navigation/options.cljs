@@ -87,8 +87,18 @@
                             :orientation              ["portrait"]
                             :backgroundColor          :transparent}
    :modalPresentationStyle :overCurrentContext
-   :animations             {:showModal    {:alpha {:from 1 :to 1 :duration 300}}
-                            :dismissModal {:alpha {:from 1 :to 1 :duration 300}}}})
+   ;; disabled on iOS in debug mode:
+   ;; https://github.com/status-im/status-mobile/pull/16053#issuecomment-1568349702
+   :animations             (if (or platform/android? (not js/goog.DEBUG))
+                             {:showModal    {:alpha {:from 1 :to 1 :duration 300}}
+                              :dismissModal {:alpha {:from 1 :to 1 :duration 300}}}
+                             {})})
+
+(def dark-screen
+  (merge (statusbar true)
+         {:layout {:componentBackgroundColor colors/neutral-95
+                   :orientation              ["portrait"]
+                   :backgroundColor          colors/neutral-95}}))
 
 (def lightbox
   {:topBar        {:visible false}
@@ -99,7 +109,9 @@
                    :translucent     true}
    :navigationBar {:backgroundColor colors/black}
    :layout        {:componentBackgroundColor :transparent
-                   :backgroundColor          :transparent}
+                   :backgroundColor          :transparent
+                   ;; issue: https://github.com/wix/react-native-navigation/issues/7726
+                   :orientation              (if platform/ios? ["portrait" "landscape"] ["portrait"])}
    :animations    {:push {:sharedElementTransitions [{:fromId        :shared-element
                                                       :toId          :shared-element
                                                       :interpolation {:type   :decelerate

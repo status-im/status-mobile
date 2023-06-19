@@ -14,6 +14,10 @@
       :style               style
       :customization-color customization-color}]))
 
+(defn- section
+  [children]
+  [rn/view {:style {:flex 1} :pointer-events :box-none} children])
+
 (defn- f-floating-shell-button
   [dynamic-buttons style opacity-anim]
   (let [original-style (merge {:flex-direction    :row
@@ -27,14 +31,14 @@
                         original-style)]
     [reanimated/view {:style animated-style}
      ;; Left Section
-     [rn/view {:style {:flex 1}}
+     [section
       [dynamic-button-view :search dynamic-buttons
        {:position :absolute
         :right    8}]]
      ;; Mid Section (jump-to)
      [dynamic-button-view :jump-to dynamic-buttons nil]
      ;; Right Section
-     [rn/view {:style {:flex 1}}
+     [section
       [rn/view
        {:style {:position       :absolute
                 :flex-direction :row

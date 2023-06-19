@@ -36,7 +36,7 @@
     status-im.signals.core
     status-im.stickers.core
     status-im.transport.core
-    [status-im.ui.components.permissions :as permissions]
+    [react-native.permissions :as permissions]
     [status-im.ui.components.react :as react]
     status-im.ui.screens.privacy-and-security-settings.events
     [status-im.utils.dimensions :as dimensions]
@@ -231,11 +231,6 @@
   {:events [:set]}
   [{:keys [db]} k v]
   {:db (assoc db k v)})
-
-(rf/defn set-view-id
-  {:events [:set-view-id]}
-  [{:keys [db]} view-id]
-  {:db (assoc db :view-id view-id)})
 
 ;;TODO :replace by named events
 (rf/defn set-once-event

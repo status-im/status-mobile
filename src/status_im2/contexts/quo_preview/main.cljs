@@ -13,9 +13,11 @@
     [status-im2.contexts.quo-preview.avatars.group-avatar :as group-avatar]
     [status-im2.contexts.quo-preview.avatars.icon-avatar :as icon-avatar]
     [status-im2.contexts.quo-preview.avatars.user-avatar :as user-avatar]
+    [status-im2.contexts.quo-preview.selectors.reactions :as selector-reactions]
     [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as wallet-user-avatar]
     [status-im2.contexts.quo-preview.banners.banner :as banner]
     [status-im2.contexts.quo-preview.buttons.button :as button]
+    [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
@@ -76,12 +78,14 @@
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
     [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
+    [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
     [status-im2.contexts.quo-preview.tabs.account-selector :as account-selector]
     [status-im2.contexts.quo-preview.tabs.segmented-tab :as segmented]
     [status-im2.contexts.quo-preview.tabs.tabs :as tabs]
+    [status-im2.contexts.quo-preview.empty-state.empty-state :as empty-state]
     [status-im2.contexts.quo-preview.tags.context-tags :as context-tags]
     [status-im2.contexts.quo-preview.tags.permission-tag :as permission-tag]
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
@@ -129,6 +133,9 @@
                            {:name      :dynamic-button
                             :options   {:topBar {:visible true}}
                             :component dynamic-button/preview-dynamic-button}
+                           {:name      :slide-button
+                            :options   {:topBar {:visible true}}
+                            :component slide-button/preview-slide-button}
                            {:name      :predictive-keyboard
                             :options   {:topBar {:visible true}}
                             :component predictive-keyboard/preview-predictive-keyboard}]
@@ -187,6 +194,9 @@
    :dropdowns             [{:name      :dropdown
                             :options   {:topBar {:visible true}}
                             :component dropdown/preview-dropdown}]
+   :empty-state           [{:name      :empty-state
+                            :options   {:topBar {:visible true}}
+                            :component empty-state/preview-empty-state}]
    :info                  [{:name      :info-message
                             :options   {:topBar {:visible true}}
                             :component info-message/preview-info-message}
@@ -297,7 +307,10 @@
                             :component filter/preview}
                            {:name      :selectors
                             :options   {:topBar {:visible true}}
-                            :component selectors/preview-selectors}]
+                            :component selectors/preview-selectors}
+                           {:name      :select-reactions
+                            :options   {:topBar {:visible true}}
+                            :component selector-reactions/preview}]
    :settings              [{:name      :privacy-option
                             :options   {:topBar {:visible true}}
                             :component privacy-option/preview-options}
@@ -306,7 +319,10 @@
                             :component accounts/preview-accounts}
                            {:name      :settings-list
                             :options   {:topBar {:visible true}}
-                            :component settings-list/preview-settings-list}]
+                            :component settings-list/preview-settings-list}
+                           {:name      :reorder-item
+                            :options   {:topBar {:visible true}}
+                            :component reorder-item/preview-reorder-item}]
    :share                 [{:name      :qr-code
                             :options   {:topBar {:visible true}}
                             :component qr-code/preview-qr-code}

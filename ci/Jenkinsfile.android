@@ -4,7 +4,7 @@ library 'status-jenkins-lib@v1.7.9'
 def isPRBuild = utils.isPRBuild()
 
 pipeline {
-  agent { label 'linux && x86_64 && nix-2.11' }
+  agent { label 'linux && x86_64 && nix-2.14' }
 
   options {
     timestamps()
@@ -40,9 +40,6 @@ pipeline {
     BUILD_ENV = 'prod'
     NIX_CONF_DIR = "${env.WORKSPACE}/nix"
     FASTLANE_DISABLE_COLORS = 1
-    /* coverage report identification */
-    COVERALLS_SERVICE_NAME = "jenkins"
-    COVERALLS_SERVICE_JOB_ID = "${JOB_NAME}#${BUILD_NUMBER}"
   }
 
   stages {

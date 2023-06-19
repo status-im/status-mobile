@@ -1,15 +1,16 @@
+import os
 import re
+import urllib.request
 from dataclasses import dataclass
 from datetime import datetime
 from http.client import RemoteDisconnected
 from os import environ
 from time import sleep
-import os
-import urllib.request
 
 import pytest
 from _pytest.runner import runtestprotocol
 from requests.exceptions import ConnectionError as c_er
+
 import tests
 from support.device_stats_db import DeviceStatsDB
 from support.test_rerun import should_rerun_test
@@ -18,7 +19,6 @@ from tests import test_suite_data, appium_container
 sauce_username = environ.get('SAUCE_USERNAME')
 sauce_access_key = environ.get('SAUCE_ACCESS_KEY')
 github_token = environ.get('GIT_HUB_TOKEN')
-
 
 
 def pytest_addoption(parser):
@@ -158,6 +158,7 @@ def is_uploaded():
         if stored_files[i].name == test_suite_data.apk_name:
             return True
 
+
 def pytest_configure(config):
     global option
     option = config.option
@@ -178,7 +179,7 @@ def pytest_configure(config):
     else:
         raise NotImplementedError("Unknown SauceLabs datacenter")
     global sauce
-    sauce = SauceLab('https://api.' + apibase +'/', sauce_username, sauce_access_key)
+    sauce = SauceLab('https://api.' + apibase + '/', sauce_username, sauce_access_key)
     if config.getoption('log_steps'):
         import logging
         logging.basicConfig(level=logging.INFO)
@@ -208,7 +209,8 @@ def pytest_configure(config):
                         file_path = os.path.join(os.path.dirname(__file__), apk_name)
                         for _ in range(3):
                             try:
-                                urllib.request.urlretrieve(config.getoption('apk'), filename=file_path)  # if url is not valid it raises an error
+                                urllib.request.urlretrieve(config.getoption('apk'),
+                                                           filename=file_path)  # if url is not valid it raises an error
                                 sauce.storage.upload(file_path)
                                 os.remove(file_path)
                                 break
@@ -263,7 +265,8 @@ def pytest_runtest_makereport(item, call):
         is_group = "xdist_group" in item.keywords._markers or "xdist_group" in item.parent.keywords._markers
         error_intro, error = 'Test setup failed:', ''
         final_error = '%s %s' % (error_intro, error)
-        if (hasattr(report, 'wasxfail') and not case_ids_set) or (hasattr(report, 'wasxfail') and (str([mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]) in str(case_ids_set))):
+        if (hasattr(report, 'wasxfail') and not case_ids_set) or (hasattr(report, 'wasxfail') and (
+                str([mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]) in str(case_ids_set))):
             if '[NOTRUN]' in report.wasxfail:
                 test_suite_data.set_current_test(item.name, testrail_case_id=get_testrail_case_id(item))
                 test_suite_data.current_test.create_new_testrun()
@@ -287,15 +290,15 @@ def pytest_runtest_makereport(item, call):
                                       report.passed)
         if error:
             test_suite_data.current_test.testruns[-1].error = final_error
-            from support.github_report import GithubHtmlReport
-            GithubHtmlReport().save_test(test_suite_data.current_test)
+            github_report.save_test(test_suite_data.current_test)
 
     if report.when == 'call':
         current_test = test_suite_data.current_test
         error = catch_error()
         if report.failed:
             current_test.testruns[-1].error = error
-        if (hasattr(report, 'wasxfail') and not case_ids_set) or (hasattr(report, 'wasxfail') and (str([mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]) in str(case_ids_set))):
+        if (hasattr(report, 'wasxfail') and not case_ids_set) or (hasattr(report, 'wasxfail') and (
+                str([mark.args[0] for mark in item.iter_markers(name='testrail_id')][0]) in str(case_ids_set))):
             current_test.testruns[-1].xfail = report.wasxfail
             if error:
                 current_test.testruns[-1].error = '%s [[%s]]' % (error, report.wasxfail)

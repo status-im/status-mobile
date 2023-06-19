@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.lightbox.view
   (:require
     [clojure.string :as string]
+    [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
@@ -38,8 +39,7 @@
   [message index _ {:keys [screen-width screen-height] :as args}]
   [rn/view
    {:style (style/image (+ screen-width constants/separator-width) screen-height)}
-   [zoomable-image/zoomable-image message index args
-    #(utils/toggle-opacity index args %)]
+   [:f> zoomable-image/zoomable-image message index args]
    [rn/view {:style {:width constants/separator-width}}]])
 
 (defn lightbox-content
@@ -66,7 +66,7 @@
      {:style (reanimated/apply-animations-to-style {:background-color (:background-color animations)}
                                                    {:height screen-height})}
      (when-not @transparent?
-       [:f> top-view/top-view (first messages) insets scroll-index animations derived landscape?
+       [:f> top-view/top-view data insets scroll-index animations derived landscape?
         screen-width])
      [gesture/gesture-detector
       {:gesture (utils/drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
@@ -89,7 +89,8 @@
                                              :screen-width     screen-width
                                              :window-height    window-height
                                              :window-width     window-width
-                                             :props            props}
+                                             :props            props
+                                             :curr-orientation curr-orientation}
          :horizontal                        horizontal?
          :inverted                          inverted?
          :paging-enabled                    true
@@ -112,9 +113,10 @@
             derived    (utils/init-derived-animations animations)
             callback   (fn [e]
                          (on-viewable-items-changed e props state))]
-        (anim/animate (:background-color animations) "rgba(0,0,0,1)")
+        (anim/animate (:background-color animations) colors/neutral-100)
         (reset! (:data state) messages)
-        (utils/orientation-change props state animations)
+        (when platform/ios? ; issue: https://github.com/wix/react-native-navigation/issues/7726
+          (utils/orientation-change props state animations))
         (utils/effect props animations index)
         [:f> lightbox-content props state animations derived messages index callback]))))
 

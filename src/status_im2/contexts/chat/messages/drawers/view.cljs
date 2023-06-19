@@ -3,10 +3,75 @@
             [react-native.core :as rn]
             [status-im.ui.components.react :as react]
             [status-im2.contexts.chat.composer.reply.view :as reply]
-            [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [reagent.core :as reagent]
+            [status-im2.common.contact-list-item.view :as contact-list-item]
+            [status-im2.contexts.chat.messages.drawers.style :as style]
+            [react-native.gesture :as gesture]
+            [quo2.components.reactions.resource :as reactions.resource]))
+
+(defn contact-list-item-fn
+  [{:keys [from compressed-key]}]
+  (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity
+                                               from])
+        {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
+    ^{:key compressed-key}
+    [contact-list-item/contact-list-item
+     {:on-press #(rf/dispatch [:chat.ui/show-profile from])}
+     {:primary-name   primary-name
+      :secondary-name secondary-name
+      :public-key     from
+      :compressed-key compressed-key
+      :ens-verified   ens-verified
+      :added?         added?}]))
+
+(defn get-tabs-data
+  [reaction-authors selected-tab reactions-order]
+  (map (fn [reaction-type-int]
+         (let [author-details (get reaction-authors reaction-type-int)]
+           {:id                  reaction-type-int
+            :accessibility-label (keyword (str "authors-for-reaction-" reaction-type-int))
+            :label               [rn/view {:style style/tab}
+                                  [rn/image
+                                   {:source (reactions.resource/get-reaction
+                                             (get constants/reactions reaction-type-int))
+                                    :style  style/tab-icon}]
+                                  [quo/text
+                                   {:weight :medium
+                                    :size   :paragraph-1
+                                    :style  (style/tab-count (= selected-tab
+                                                                reaction-type-int))}
+                                   (count author-details)]]}))
+       reactions-order))
+
+(defn reaction-authors-comp
+  [selected-tab reaction-authors reactions-order]
+  [:<>
+   [rn/view style/tabs-container
+    [quo/tabs
+     {:size            32
+      :scrollable?     true
+      :in-scroll-view? true
+      :on-change       #(reset! selected-tab %)
+      :default-active  @selected-tab
+      :data            (get-tabs-data reaction-authors @selected-tab reactions-order)}]]
+   [gesture/flat-list
+    {:data      (for [contact (get reaction-authors @selected-tab)]
+                  contact)
+     :render-fn contact-list-item-fn
+     :key-fn    :from
+     :style     style/authors-list}]])
+
+(defn reaction-authors
+  [reactions-order]
+  (let [{:keys [reaction-authors-list
+                selected-reaction]} (rf/sub [:chat/reactions-authors])
+        selected-tab                (reagent/atom (or selected-reaction
+                                                      (first (keys reaction-authors-list))))]
+    (fn []
+      [reaction-authors-comp selected-tab reaction-authors-list reactions-order])))
 
 (defn pin-message
   [{:keys [chat-id pinned pinned-by] :as message-data}]
@@ -110,29 +175,23 @@
               :padding-horizontal 30
               :padding-top        5
               :padding-bottom     15}}
-     (doall
-      (for [[id icon] constants/reactions]
-        (let [emoji-reaction-id (get own-reactions id)]
-          ^{:key id}
-          [not-implemented/not-implemented
-           [quo/button
-            (merge
-             {:size                40
-              :type                (if emoji-reaction-id :grey :ghost)
-              :icon                true
-              :icon-no-color       true
-              :accessibility-label (str "emoji-picker-" id)
-              :on-press            (fn []
-                                     (if emoji-reaction-id
-                                       (rf/dispatch [:models.reactions/send-emoji-reaction-retraction
-                                                     {:message-id        message-id
-                                                      :emoji-id          id
-                                                      :emoji-reaction-id emoji-reaction-id}])
-                                       (rf/dispatch [:models.reactions/send-emoji-reaction
-                                                     {:message-id message-id
-                                                      :emoji-id   id}]))
-                                     (rf/dispatch [:hide-bottom-sheet]))})
-            icon]])))]))
+     (for [[id reaction-name] constants/reactions
+           :let               [emoji-reaction-id (get own-reactions id)]]
+       ^{:key id}
+       [quo/reactions reaction-name
+        {:start-pressed? (boolean emoji-reaction-id)
+         :accessibility-label (str "reaction-" (name reaction-name))
+         :on-press
+         (fn []
+           (if emoji-reaction-id
+             (rf/dispatch [:models.reactions/send-emoji-reaction-retraction
+                           {:message-id        message-id
+                            :emoji-id          id
+                            :emoji-reaction-id emoji-reaction-id}])
+             (rf/dispatch [:models.reactions/send-emoji-reaction
+                           {:message-id message-id
+                            :emoji-id   id}]))
+           (rf/dispatch [:hide-bottom-sheet]))}])]))
 
 (defn reactions-and-actions
   [message-data

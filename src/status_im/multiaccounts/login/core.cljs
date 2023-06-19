@@ -42,9 +42,10 @@
     [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
     [status-im2.contexts.contacts.events :as contacts]
     [status-im2.navigation.events :as navigation]
+    [status-im2.contexts.shell.constants :as shell.constants]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
-    [status-im2.contexts.shell.animation :as shell.animation]
+    [status-im2.contexts.shell.utils :as shell.utils]
     [utils.security.core :as security]))
 
 (re-frame/reg-fx
@@ -164,6 +165,15 @@
    (when (ethereum/binance-chain? db)
      (wallet/request-current-block-update))
    (prices/update-prices)))
+
+(rf/defn login-local-paired-user
+  {:events [:multiaccounts.login/local-paired-user]}
+  [{:keys [db]}]
+  (let [{:keys [key-uid name password]} (get-in db [:syncing :multiaccount])]
+    {::login [key-uid
+              (types/clj->json {:name    name
+                                :key-uid key-uid})
+              password]}))
 
 (rf/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
@@ -384,22 +394,27 @@
 (rf/defn redirect-to-root
   "Decides which root should be initialised depending on user and app state"
   [{:keys [db] :as cofx}]
-  (cond
-    (get db :onboarding-2/new-account?)
-    {:dispatch [:onboarding-2/finalize-setup]}
+  (let [pairing-completed? (= (get-in db [:syncing :pairing-status]) :completed)]
+    (cond
+      pairing-completed?
+      {:db       (dissoc db :syncing)
+       :dispatch [:init-root :syncing-results]}
 
-    (get db :tos/accepted?)
-    (rf/merge
-     cofx
-     (multiaccounts/switch-theme nil :shell-stack)
-     (navigation/init-root :shell-stack))
+      (get db :onboarding-2/new-account?)
+      {:dispatch [:onboarding-2/finalize-setup]}
 
-    :else
-    {:dispatch [:init-root :tos]}))
+      (get db :tos/accepted?)
+      (rf/merge
+       cofx
+       (multiaccounts/switch-theme nil :shell-stack)
+       (navigation/init-root :shell-stack))
+
+      :else
+      {:dispatch [:init-root :tos]})))
 
 (rf/defn get-settings-callback
   {:events [::get-settings-callback]}
-  [{:keys [db] :as cofx} settings pairing-in-progress?]
+  [{:keys [db] :as cofx} settings]
   (let [{:networks/keys [current-network networks]
          :as            settings}
         (data-store.settings/rpc->settings settings)
@@ -431,8 +446,7 @@
               (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/update-seen-state)
               (activity-center/notifications-fetch-unread-count)
-              (when-not pairing-in-progress?
-                (redirect-to-root)))))
+              (redirect-to-root))))
 
 (re-frame/reg-fx
  ::open-last-chat
@@ -445,7 +459,8 @@
          :key-uid
          (fn [stored-key-uid]
            (when (= stored-key-uid key-uid)
-             (re-frame/dispatch [:chat/navigate-to-chat chat-id])))))))))
+             (re-frame/dispatch [:chat/navigate-to-chat chat-id
+                                 shell.constants/open-screen-without-animation])))))))))
 
 (rf/defn check-last-chat
   {:events [::check-last-chat]}
@@ -511,9 +526,8 @@
 
 (rf/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
-  (let [auth-method          (:auth-method db)
-        new-auth-method      (get-new-auth-method auth-method save-password?)
-        pairing-in-progress? (get-in db [:syncing :pairing-in-progress?])]
+  (let [auth-method     (:auth-method db)
+        new-auth-method (get-new-auth-method auth-method save-password?)]
     (log/debug "[login] login-only-events"
                "auth-method"     auth-method
                "new-auth-method" new-auth-method)
@@ -521,7 +535,7 @@
               {:db (assoc db :chats/loading? true)
                :json-rpc/call
                [{:method     "settings_getSettings"
-                 :on-success #(re-frame/dispatch [::get-settings-callback % pairing-in-progress?])}]}
+                 :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))
@@ -540,7 +554,7 @@
         tos-accepted? (get db :tos/accepted?)
         {:networks/keys [current-network networks]} db
         network-id (str (get-in networks [current-network :config :NetworkId]))]
-    (shell.animation/change-selected-stack-id :communities-stack true)
+    (shell.utils/change-selected-stack-id :communities-stack true nil)
     (rf/merge cofx
               {:db          (-> db
                                 (dissoc :multiaccounts/login)

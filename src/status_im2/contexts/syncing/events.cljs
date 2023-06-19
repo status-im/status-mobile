@@ -1,28 +1,25 @@
 (ns status-im2.contexts.syncing.events
   (:require [native-module.core :as native-module]
+            [re-frame.core :as re-frame]
+            [status-im.data-store.settings :as data-store.settings]
+            [status-im.node.core :as node]
+            [status-im.utils.platform :as utils.platform]
+            [status-im2.config :as config]
+            [status-im2.constants :as constants]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]
             [utils.security.core :as security]
-            [status-im2.config :as config]
-            [status-im.node.core :as node]
-            [re-frame.core :as re-frame]
-            [status-im.data-store.settings :as data-store.settings]
-            [status-im.utils.platform :as utils.platform]
-            [status-im2.constants :as constants]))
-
-(rf/defn local-pairing-completed
-  {:events [:syncing/pairing-completed]}
-  [{:keys [db]}]
-  (let [receiver? (= (get-in db [:syncing :role]) constants/local-pairing-role-receiver)]
-    (merge
-     {:db (dissoc db :syncing)}
-     (when receiver?
-       {:dispatch [:init-root :syncing-results]}))))
+            [utils.transforms :as transforms]))
 
 (rf/defn local-pairing-update-role
   {:events [:syncing/update-role]}
   [{:keys [db]} role]
   {:db (assoc-in db [:syncing :role] role)})
+
+(rf/defn local-pairing-clear-states
+  {:events [:syncing/clear-states]}
+  [{:keys [db]} role]
+  {:db (dissoc db :syncing)})
 
 (defn- get-default-node-config
   [installation-id]
@@ -34,6 +31,19 @@
                                        :custom-bootnodes          nil
                                        :custom-bootnodes-enabled? false}}]
     (node/get-multiaccount-node-config db)))
+
+(rf/defn preflight-outbound-check-for-local-pairing
+  {:events [:syncing/preflight-outbound-check]}
+  [_ set-checks-passed]
+  (let [callback
+        (fn [raw-response]
+          (log/info "Local pairing preflight check"
+                    {:response raw-response
+                     :event    :syncing/preflight-outbound-check})
+          (let [^js response-js (transforms/json->js raw-response)
+                error           (transforms/js->clj (.-error response-js))]
+            (set-checks-passed (empty? error))))]
+    (native-module/local-pairing-preflight-outbound-check callback)))
 
 (rf/defn initiate-local-pairing-with-connection-string
   {:events       [:syncing/input-connection-string-for-bootstrapping]

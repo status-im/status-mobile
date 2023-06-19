@@ -75,6 +75,8 @@
 (reg-root-key-sub :visibility-status-updates :visibility-status-updates)
 (reg-root-key-sub :shell/switcher-cards :shell/switcher-cards)
 (reg-root-key-sub :password-authentication :password-authentication)
+(reg-root-key-sub :shell/floating-screens :shell/floating-screens)
+(reg-root-key-sub :shell/loaded-screens :shell/loaded-screens)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -120,6 +122,7 @@
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)
 (reg-root-key-sub :chats-home-list :chats-home-list)
 (reg-root-key-sub :chats/recording? :chats/recording?)
+(reg-root-key-sub :chat/reactions-authors :chat/reactions-authors)
 
 ;;lightbox
 (reg-root-key-sub :lightbox/exit-signal :lightbox/exit-signal)

@@ -1,6 +1,19 @@
 (ns status-im2.contexts.communities.overview.style
   (:require [quo2.foundations.colors :as colors]))
 
+(def screen-horizontal-padding 20)
+
+(def last-community-tag
+  {:margin-right (* 2 screen-horizontal-padding)})
+
+(def community-tag-container
+  {:padding-horizontal screen-horizontal-padding
+   :margin-horizontal  (- screen-horizontal-padding)
+   :margin-bottom      20})
+
+(def community-content-container
+  {:padding-horizontal screen-horizontal-padding})
+
 (def preview-user
   {:flex-direction :row
    :align-items    :center
@@ -13,12 +26,6 @@
    :right    0
    :left     0
    :flex     1})
-
-(def join-button
-  {:width        "100%"
-   :margin-top   20
-   :margin-left  :auto
-   :margin-right :auto})
 
 (def review-notice
   {:color        colors/neutral-50

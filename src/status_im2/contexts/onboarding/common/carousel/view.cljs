@@ -5,7 +5,8 @@
             [react-native.navigation :as navigation]
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.onboarding.common.carousel.style :as style]
-            [status-im2.contexts.onboarding.common.carousel.animation :as animation]))
+            [status-im2.contexts.onboarding.common.carousel.animation :as animation]
+            [react-native.gesture :as gesture]))
 
 (defn header-text-view
   [index window-width header-text]
@@ -49,23 +50,25 @@
        :progress-bar-width progress-bar-width}]]))
 
 (defn f-view
-  [{:keys [animate? progress header-text background header-background]}]
+  [{:keys [animate? progress paused? header-text background header-background swipeable?]}]
   (let [window-width       (rf/sub [:dimensions/window-width])
         status-bar-height  (:status-bar-height @navigation/constants)
         progress-bar-width (- window-width 40)
         carousel-left      (animation/carousel-left-position window-width animate? progress)
         container-view     (if animate? reanimated/view rn/view)]
     [:<>
-     [container-view {:style (style/carousel-container carousel-left animate?)}
-      (for [index (range 2)]
-        ^{:key index}
-        [content-view
-         {:window-width      window-width
-          :status-bar-height status-bar-height
-          :index             index
-          :header-text       header-text
-          :header-background header-background}
-         (when background background)])]
+     [gesture/gesture-detector
+      {:gesture (when swipeable? (animation/drag-gesture progress paused?))}
+      [container-view {:style (style/carousel-container carousel-left animate?)}
+       (for [index (range 2)]
+         ^{:key index}
+         [content-view
+          {:window-width      window-width
+           :status-bar-height status-bar-height
+           :index             index
+           :header-text       header-text
+           :header-background header-background}
+          (when background background)])]]
      [rn/view
       {:style (style/progress-bar-container
                progress-bar-width
@@ -79,4 +82,3 @@
         :progress           progress}]]]))
 
 (defn view [props] [:f> f-view props])
-

@@ -21,17 +21,15 @@
                                           (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
                    :heading             (i18n/label :t/new-to-status)
                    :accessibility-label :new-to-status-button}}
-    (i18n/label :t/you-already-use-status)
+    [quo/text
+     {:style style/plain-text}
+     (i18n/label :t/you-already-use-status)]
     [quo/text
      {:style style/text-container}
      [quo/text
-      {:size   :paragraph-2
-       :style  style/plain-text
-       :weight :semi-bold}
+      {:style style/plain-text}
       (i18n/label :t/by-continuing-you-accept)]
      [quo/text
       {:on-press #(rf/dispatch [:open-modal :privacy-policy])
-       :size     :paragraph-2
-       :style    style/highlighted-text
-       :weight   :semi-bold}
+       :style    style/highlighted-text}
       (i18n/label :t/terms-of-service)]]]])

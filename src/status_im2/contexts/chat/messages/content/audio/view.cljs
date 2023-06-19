@@ -78,16 +78,15 @@
 
 (defn play-pause-player
   [{:keys [player-key player-state progress message-id audio-duration-ms seeking-audio?
-           user-interaction?]
+           user-interaction? mediaserver-port]
     :as   params}]
-  (let [mediaserver-port (rf/sub [:mediaserver/port])
-        audio-uri        (str media-server-uri-prefix
-                              mediaserver-port
-                              audio-path
-                              uri-param
-                              message-id)
-        player           (@active-players player-key)
-        playing?         (= @player-state :playing)]
+  (let [audio-uri (str media-server-uri-prefix
+                       mediaserver-port
+                       audio-path
+                       uri-param
+                       message-id)
+        player    (@active-players player-key)
+        playing?  (= @player-state :playing)]
     (when-not playing?
       (reset! current-player-key player-key))
     (if (and player
@@ -134,18 +133,19 @@
 (defn f-audio-message
   [player-state progress seeking-audio? {:keys [audio-duration-ms message-id]}
    {:keys [in-pinned-view?]}]
-  (let [player-key (get-player-key message-id in-pinned-view?)
-        player     (@active-players player-key)
-        duration   (if (and player (not (#{:preparing :not-loaded :error} @player-state)))
-                     (audio/get-player-duration player)
-                     audio-duration-ms)
-        time-secs  (quot
-                    (if (or @seeking-audio? (#{:playing :seeking} @player-state))
-                      (if (<= @progress 1) (* duration @progress) @progress)
-                      duration)
-                    1000)
-        paused?    (= (audio/get-state player) audio/PAUSED)
-        app-state  (rf/sub [:app-state])]
+  (let [player-key       (get-player-key message-id in-pinned-view?)
+        player           (@active-players player-key)
+        duration         (if (and player (not (#{:preparing :not-loaded :error} @player-state)))
+                           (audio/get-player-duration player)
+                           audio-duration-ms)
+        time-secs        (quot
+                          (if (or @seeking-audio? (#{:playing :seeking} @player-state))
+                            (if (<= @progress 1) (* duration @progress) @progress)
+                            duration)
+                          1000)
+        paused?          (= (audio/get-state player) audio/PAUSED)
+        app-state        (rf/sub [:app-state])
+        mediaserver-port (rf/sub [:mediaserver/port])]
     (rn/use-effect (fn [] #(destroy-player player-key)))
     (rn/use-effect
      (fn []
@@ -163,8 +163,9 @@
                              :message-id        message-id
                              :audio-duration-ms duration
                              :seeking-audio?    seeking-audio?
-                             :user-interaction? false})))
-     [@current-player-key app-state])
+                             :user-interaction? false
+                             :mediaserver-port  mediaserver-port})))
+     [@current-player-key app-state mediaserver-port])
     (if (= @player-state :error)
       [quo/text
        {:style               style/error-label
@@ -183,7 +184,8 @@
                                                    :message-id        message-id
                                                    :audio-duration-ms duration
                                                    :seeking-audio?    seeking-audio?
-                                                   :user-interaction? true})
+                                                   :user-interaction? true
+                                                   :mediaserver-port  mediaserver-port})
          :style               (style/play-pause-container)}
         [quo/icon
          (cond

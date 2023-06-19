@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.events-test
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im2.contexts.chat.events :as chat]
-            [status-im.chat.models.images :as images]
             [status-im.utils.clocks :as utils.clocks]))
 
 (deftest clear-history-test
@@ -88,10 +87,5 @@
   (let [chat-id "test_chat"
         db      {:pagination-info {chat-id {:all-loaded? true}}}]
     (testing "Pagination info should be reset on navigation"
-      (let [res (chat/navigate-to-chat {:db db} chat-id)]
+      (let [res (chat/navigate-to-chat {:db db} chat-id nil)]
         (is (nil? (get-in res [:db :pagination-info chat-id :all-loaded?])))))))
-
-(deftest camera-roll-loading-more-test
-  (let [cofx {:db {:camera-roll/loading-more false}}]
-    (is (= {:db {:camera-roll/loading-more true}}
-           (images/camera-roll-loading-more cofx true)))))

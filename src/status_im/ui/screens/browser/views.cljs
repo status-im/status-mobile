@@ -11,7 +11,7 @@
     [status-im.ui.components.chat-icon.screen :as chat-icon]
     [status-im.ui.components.connectivity.view :as connectivity]
     [status-im.ui.components.icons.icons :as icons]
-    [status-im.ui.components.permissions :as components.permissions]
+    [react-native.permissions :as components.permissions]
     [status-im.ui.components.react :as react]
     [status-im.ui.components.tooltip.views :as tooltip]
     [status-im.ui.components.webview :as components.webview]

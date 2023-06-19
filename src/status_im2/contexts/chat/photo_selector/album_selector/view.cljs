@@ -6,16 +6,16 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [quo2.foundations.colors :as colors]
-    [status-im2.contexts.chat.photo-selector.view :refer [album-title]]
     [status-im2.contexts.chat.photo-selector.album-selector.style :as style]))
 
-(defn album
-  [{:keys [title count uri]} index _ selected-album]
+(defn render-album
+  [{:keys [title count uri]} index _ {:keys [album? selected-album]}]
   (let [selected? (= selected-album title)]
     [rn/touchable-opacity
      {:on-press            (fn []
                              (rf/dispatch [:chat.ui/camera-roll-select-album title])
-                             (rf/dispatch [:navigate-back]))
+                             (rf/dispatch [:photo-selector/get-photos-for-selected-album])
+                             (reset! album? false))
       :style               (style/album-container selected?)
       :accessibility-label (str "album-" index)}
      [rn/image
@@ -31,7 +31,7 @@
       [quo/text
        {:size  :paragraph-2
         :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
-       (str count " " (i18n/label :t/images))]]
+       (when count (str count " " (i18n/label :t/images)))]]
      (when selected?
        [rn/view
         {:style {:position :absolute
@@ -39,9 +39,11 @@
         [quo/icon :i/check
          {:size 20 :color (colors/theme-colors colors/primary-50 colors/primary-60)}]])]))
 
+(def no-title "no-title")
+
 (defn section-header
   [{:keys [title]}]
-  (when (not= title "smart-albums")
+  (when-not (= title no-title)
     [quo/divider-label
      {:label           title
       :container-style style/divider}]))
@@ -51,22 +53,19 @@
   (str (:title item) index))
 
 (defn album-selector
-  [{:keys [on-scroll]}]
-  (rf/dispatch [:chat.ui/camera-roll-get-albums])
-  (fn [{:keys [scroll-enabled]}]
-    (let [albums         (rf/sub [:camera-roll/albums])
-          selected-album (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
-      [rn/view {:style {:padding-top 20}}
-       [album-title false]
-       [gesture/section-list
-        {:data                           albums
-         :render-fn                      album
-         :render-data                    selected-album
-         :sections                       albums
-         :sticky-section-headers-enabled false
-         :render-section-header-fn       section-header
-         :style                          {:margin-top 12}
-         :content-container-style        {:padding-bottom 40}
-         :key-fn                         key-fn
-         :scroll-enabled                 @scroll-enabled
-         :on-scroll                      on-scroll}]])))
+  [{:keys [scroll-enabled on-scroll]} album? selected-album]
+  (let [albums          (rf/sub [:camera-roll/albums])
+        albums-sections [{:title no-title :data (:smart-albums albums)}
+                         {:title (i18n/label :t/my-albums) :data (:my-albums albums)}]]
+    [gesture/section-list
+     {:data                           albums-sections
+      :sections                       albums-sections
+      :render-data                    {:album? album? :selected-album selected-album}
+      :render-fn                      render-album
+      :sticky-section-headers-enabled false
+      :render-section-header-fn       section-header
+      :content-container-style        {:padding-top    64
+                                       :padding-bottom 40}
+      :key-fn                         key-fn
+      :scroll-enabled                 @scroll-enabled
+      :on-scroll                      on-scroll}]))

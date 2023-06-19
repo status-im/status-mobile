@@ -27,4 +27,4 @@
      [rn/view
       {:accessibility-label :pins-count
        :style               style/counter}
-      (when (> pins-count 1) [counter/counter {:type :secondary} pins-count])]]))
+      [counter/counter {:type :secondary} pins-count]]]))
