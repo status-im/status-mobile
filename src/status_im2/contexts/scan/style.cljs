@@ -40,7 +40,8 @@
   [padding-top]
   {:z-index     5
    :flex        1
-   :padding-top padding-top})
+   :padding-top padding-top   
+   :background-color colors/neutral-95})
 
 (def header-container
   {:flex-direction     :row
@@ -163,7 +164,7 @@
 (def camera-style
   {:height           "100%"
    :borderRadius     16
-   :background-color :white-opa-5})
+   :background-color :transparent})
 
 (def camera-container
   {:position      :absolute

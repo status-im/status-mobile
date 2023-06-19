@@ -7,6 +7,8 @@
             [utils.i18n :as i18n]
             [status-im.keycard.backup-key :as keycard.backup]
             [status-im.keycard.common :as common]
+            [status-im.ui.components.react :as react]
+            [status-im2.constants :as constants]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
             [status-im.multiaccounts.model :as multiaccounts.model]
@@ -263,6 +265,16 @@ We don't need to take the exact steps, just set the required state and redirect 
   (rf/merge cofx
             {:db (assoc db :goto-key-storage? true)}
             (multiaccounts.logout/logout)))
+
+(rf/defn open-device-settings-dialog
+  {:events [::open-device-settings-dialog]}
+  [_]
+  {:ui/show-confirmation
+   {:title               (i18n/label :t/allow-access)
+    :content             (i18n/label :t/camera-access-description)
+    :confirm-button-text (i18n/label :t/settings)
+    :on-accept           #(.openSettings ^js react/linking)
+    :on-cancel           nil}})
 
 (rf/defn logout-and-goto-key-storage
   {:events [::logout-and-goto-key-storage]}
