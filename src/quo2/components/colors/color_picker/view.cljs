@@ -5,12 +5,10 @@
             [reagent.core :as reagent]
             [quo2.components.colors.color-picker.style :as style]))
 
-;; TODO: using this to keep alignment of colors correct while b & w is being developed.
+;; TODO: using :no-color this to keep alignment of colors correct while b & w is being developed.
 ;; https://github.com/status-im/status-mobile/issues/15442
-(def empty-color :no-color)
-
 (def color-list
-  [:blue :yellow :turquoise :copper :sky :camel :orange :army :pink :purple :magenta empty-color])
+  [:blue :yellow :turquoise :copper :sky :camel :orange :army :pink :purple :magenta :no-color])
 
 (defn picker-colors
   [blur?]
@@ -36,7 +34,7 @@
            on-press
            blur?]}]
   (let [border? (and (not blur?) (and secondary-color (not selected?)))]
-    (if-not name
+    (if (= :no-color name)
       [empty-color-item]
       [rn/touchable-opacity
        {:style               (style/color-button color selected?)

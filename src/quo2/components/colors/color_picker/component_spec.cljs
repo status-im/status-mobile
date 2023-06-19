@@ -22,7 +22,7 @@
       (h/fire-event :press (get (h/get-all-by-label-text :color-picker-item) 0))
       (-> (h/expect @selected)
           (.toStrictEqual :blue))))
-  (h/test "custom colors render in expected order and values"
+  (h/test "all of the values of colors-list are rendered"
     (h/render [color-picker/view])
     (js/Promise.all (map (fn [color]
                            (h/is-truthy (h/get-all-by-label-text color)))

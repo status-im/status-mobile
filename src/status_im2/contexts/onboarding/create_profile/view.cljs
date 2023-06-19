@@ -79,89 +79,92 @@
                                                                                c/profile-default-color))
                      profile-pic                             (reagent/atom image-path)
                      on-change-profile-pic                   #(reset! profile-pic %)
-                     on-change                               #(reset! custom-color %)
-                     name-too-short?                         (length-not-valid @full-name)
-                     valid-name?                             (not (or @validation-msg name-too-short?))]
-    [rn/view {:style style/page-container}
-     [navigation-bar/navigation-bar {:top navigation-bar-top}]
-     [rn/scroll-view
-      {:keyboard-should-persist-taps :always
-       :content-container-style      {:flex-grow 1}}
+                     on-change                               #(reset! custom-color %)]
+    (let [name-too-short? (length-not-valid @full-name)
+          valid-name?     (and (not @validation-msg) (not name-too-short?))
+          info-message    (if @validation-msg
+                            @validation-msg
+                            (i18n/label :t/minimum-characters
+                                        {:min-chars min-length}))
+          info-type       (cond @validation-msg :error
+                                name-too-short? :default
+                                :else           :success)
+         ]
       [rn/view {:style style/page-container}
-       [rn/view
-        {:style style/content-container}
-        [quo/text
-         {:size   :heading-1
-          :weight :semi-bold
-          :style  style/title} (i18n/label :t/create-profile)]
-        [rn/view
-         {:style style/input-container}
+       [navigation-bar/navigation-bar {:top navigation-bar-top}]
+       [rn/scroll-view
+        {:keyboard-should-persist-taps :always
+         :content-container-style      {:flex-grow 1}}
+        [rn/view {:style style/page-container}
          [rn/view
-          {:style style/profile-input-container}
-          [quo/profile-input
-           {:customization-color @custom-color
-            :placeholder         (i18n/label :t/your-name)
-            :on-press            (fn []
-                                   (rf/dispatch [:dismiss-keyboard])
-                                   (rf/dispatch
-                                    [:show-bottom-sheet
-                                     {:override-theme :dark
-                                      :content
-                                      (fn []
-                                        [method-menu/view on-change-profile-pic])}]))
-            :image-picker-props  {:profile-picture     (when @profile-pic {:uri @profile-pic})
-                                  :full-name           (if (seq @full-name)
-                                                         @full-name
-                                                         (i18n/label :t/your-name))
-                                  :customization-color @custom-color}
-            :title-input-props   {:default-value  @full-name
-                                  :auto-focus     true
-                                  :max-length     c/profile-name-max-length
-                                  :on-change-text on-change-text}}]]
+          {:style style/content-container}
+          [quo/text
+           {:size   :heading-1
+            :weight :semi-bold
+            :style  style/title} (i18n/label :t/create-profile)]
+          [rn/view
+           {:style style/input-container}
+           [rn/view
+            {:style style/profile-input-container}
+            [quo/profile-input
+             {:customization-color @custom-color
+              :placeholder         (i18n/label :t/your-name)
+              :on-press            (fn []
+                                     (rf/dispatch [:dismiss-keyboard])
+                                     (rf/dispatch
+                                      [:show-bottom-sheet
+                                       {:override-theme :dark
+                                        :content
+                                        (fn []
+                                          [method-menu/view on-change-profile-pic])}]))
+              :image-picker-props  {:profile-picture     (when @profile-pic {:uri @profile-pic})
+                                    :full-name           (if (seq @full-name)
+                                                           @full-name
+                                                           (i18n/label :t/your-name))
+                                    :customization-color @custom-color}
+              :title-input-props   {:default-value  @full-name
+                                    :auto-focus     true
+                                    :max-length     c/profile-name-max-length
+                                    :on-change-text on-change-text}}]]
 
-         [quo/info-message
-          {:type       (cond @validation-msg :error
-                             name-too-short? :neutral
-                             :else           :positive)
-           :size       :default
-           :icon       (if valid-name? :i/positive-state :i/info)
-           :text-color (when name-too-short? colors/white-70-blur)
-           :icon-color (when name-too-short? colors/white-70-blur)
-           :style      style/info-message}
-          (if @validation-msg
-            @validation-msg
-            (i18n/label :t/minimum-characters
-                        {:min-chars min-length}))]
-         [quo/text
-          {:size   :paragraph-2
-           :weight :medium
-           :style  style/color-title}
-          (i18n/label :t/accent-colour)]
-         [quo/color-picker
-          {:blur?             true
-           :default-selected? :blue
-           :selected          @custom-color
-           :on-change         on-change}]]]]]
-     [rn/keyboard-avoiding-view
-      {:style          {:position :absolute
-                        :top      0
-                        :bottom   0
-                        :left     0
-                        :right    0}
-       :pointer-events :box-none}
-      [button-container @keyboard-shown?
-       [quo/button
-        {:accessibility-label       :submit-create-profile-button
-         :type                      :primary
-         :override-background-color (colors/custom-color @custom-color 60)
-         :on-press                  (fn []
-                                      (rf/dispatch [:onboarding-2/profile-data-set
-                                                    {:image-path   @profile-pic
-                                                     :display-name @full-name
-                                                     :color        @custom-color}]))
-         :style                     style/continue-button
-         :disabled                  (or (not (seq @full-name)) @validation-msg)}
-        (i18n/label :t/continue)]]]]
+           [quo/info-message
+            {:type       info-type
+             :size       :default
+             :icon       (if valid-name? :i/positive-state :i/info)
+             :text-color (when (= :default info-type) colors/white-70-blur)
+             :icon-color (when (= :default info-type) colors/white-70-blur)
+             :style      style/info-message}
+            info-message]
+           [quo/text
+            {:size   :paragraph-2
+             :weight :medium
+             :style  style/color-title}
+            (i18n/label :t/accent-colour)]
+           [quo/color-picker
+            {:blur?             true
+             :default-selected? :blue
+             :selected          @custom-color
+             :on-change         on-change}]]]]]
+       [rn/keyboard-avoiding-view
+        {:style          {:position :absolute
+                          :top      0
+                          :bottom   0
+                          :left     0
+                          :right    0}
+         :pointer-events :box-none}
+        [button-container @keyboard-shown?
+         [quo/button
+          {:accessibility-label       :submit-create-profile-button
+           :type                      :primary
+           :override-background-color (colors/custom-color @custom-color 60)
+           :on-press                  (fn []
+                                        (rf/dispatch [:onboarding-2/profile-data-set
+                                                      {:image-path   @profile-pic
+                                                       :display-name @full-name
+                                                       :color        @custom-color}]))
+           :style                     style/continue-button
+           :disabled                  (or (not (seq @full-name)) @validation-msg)}
+          (i18n/label :t/continue)]]]])
     (finally
      (oops/ocall will-show-listener "remove")
      (oops/ocall will-hide-listener "remove"))))
