@@ -21,10 +21,9 @@
 (defn- action-mark-as-read
   []
   {:icon                :i/mark-as-read
-   :right-icon          :i/chevron-right
    :accessibility-label :chat-mark-as-read
    :on-press            not-implemented/alert
-   :label               (i18n/label :t/mute-channel)})
+   :label               (i18n/label :t/mark-as-read)})
 
 (defn- action-toggle-muted
   []
