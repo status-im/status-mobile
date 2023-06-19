@@ -13,7 +13,8 @@
             [utils.re-frame :as rf]
             [oops.core :as oops]
             [react-native.blur :as blur]
-            [status-im2.constants :as c]))
+            [status-im2.constants :as c]
+            [react-native.platform :as platform]))
 
 (def emoji-regex
   (new
@@ -51,7 +52,7 @@
        :blur-type        :transparent
        :overlay-color    :transparent
        :background-color colors/neutral-80-opa-1-blur
-       :style            style/button-container}
+       :style            style/blur-button-container}
       children]
      [rn/view {:style style/view-button-container}
       children])])
@@ -59,13 +60,17 @@
 (defn- f-page
   [{:keys [onboarding-profile-data navigation-bar-top]}]
   (reagent/with-let [keyboard-shown?                         (reagent/atom false)
-                     will-show-listener                      (oops/ocall rn/keyboard
+                     show-listener                           (oops/ocall rn/keyboard
                                                                          "addListener"
-                                                                         "keyboardWillShow"
+                                                                         (if platform/android?
+                                                                           "keyboardDidShow"
+                                                                           "keyboardWillShow")
                                                                          #(reset! keyboard-shown? true))
-                     will-hide-listener                      (oops/ocall rn/keyboard
+                     hide-listener                           (oops/ocall rn/keyboard
                                                                          "addListener"
-                                                                         "keyboardWillHide"
+                                                                         (if platform/android?
+                                                                           "keyboardDidHide"
+                                                                           "keyboardWillHide")
                                                                          #(reset! keyboard-shown? false))
                      {:keys [image-path display-name color]} onboarding-profile-data
                      full-name                               (reagent/atom display-name)
@@ -83,13 +88,12 @@
     (let [name-too-short? (length-not-valid @full-name)
           valid-name?     (and (not @validation-msg) (not name-too-short?))
           info-message    (if @validation-msg
-                            @validation-msg
+                           " @validation-msg"
                             (i18n/label :t/minimum-characters
                                         {:min-chars min-length}))
           info-type       (cond @validation-msg :error
                                 name-too-short? :default
-                                :else           :success)
-         ]
+                                :else           :success)]
       [rn/view {:style style/page-container}
        [navigation-bar/navigation-bar {:top navigation-bar-top}]
        [rn/scroll-view
@@ -166,8 +170,8 @@
            :disabled                  (or (not (seq @full-name)) @validation-msg)}
           (i18n/label :t/continue)]]]])
     (finally
-     (oops/ocall will-show-listener "remove")
-     (oops/ocall will-hide-listener "remove"))))
+     (oops/ocall show-listener "remove")
+     (oops/ocall hide-listener "remove"))))
 
 (defn create-profile
   []

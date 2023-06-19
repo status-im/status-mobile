@@ -12,12 +12,15 @@
   {:width         "100%"
    :padding-left  20
    :padding-right 20
-   :padding-top   (if platform/android? 0 12)
+   :padding-top   12
    :align-self    :flex-end
    :height        64})
 
 (def view-button-container
   (merge button-container {:margin-bottom 34}))
+
+(def blur-button-container
+  (merge button-container (when platform/android? {:margin-bottom 12})))
 
 (def page-container
   {:position :absolute
