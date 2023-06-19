@@ -345,3 +345,11 @@
 
 (def ^:const onboarding-modal-animation-duration 300)
 (def ^:const onboarding-modal-animation-delay 400)
+
+(def ^:const initials-avatar-font-conf
+  "we pass absolute font file path and uppercase ratio to status-go for media
+  server to serve initials avatar image
+  `:uppercase-ratio` is uppercase-height/line-height for Inter-Medium"
+  {:ios             "Inter-Medium.otf"
+   :android         "Inter-Medium.ttf"
+   :uppercase-ratio 0.603861228044709})

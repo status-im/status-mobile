@@ -1,5 +1,9 @@
 (ns utils.image-server
-  (:require [utils.datetime :as datetime]))
+  (:require
+    [react-native.fs :as utils.fs]
+    [react-native.platform :as platform]
+    [status-im2.constants :as constants]
+    [utils.datetime :as datetime]))
 
 (def ^:const image-server-uri-prefix "https://localhost:")
 (def ^:const account-images-action "/accountImages")
@@ -7,6 +11,30 @@
 (def ^:const generate-qr-action "/GenerateQRCode")
 (def ^:const status-profile-base-url "https://join.status.im/u/")
 (def ^:const status-profile-base-url-without-https "join.status.im/u/")
+
+(defn get-font-file-ready
+  "setup font file and get the absolute path to it
+  this font file is passed to status-go later to render the initials avatar
+
+  for ios, it's located at main-bundle-path
+  for android, it's located in the assets dir which can not be accessed by status-go
+               so we copy one to the cache directory"
+  [callback]
+  (if platform/android?
+    (let [cache-dir      (utils.fs/cache-dir)
+          font-file-name (:android constants/initials-avatar-font-conf)
+          src            (str "fonts/" font-file-name)
+          dest           (str cache-dir "/" font-file-name)
+          copy           #(utils.fs/copy-assets src dest)
+          cb             #(callback dest)]
+      (.then (utils.fs/file-exists? dest)
+             (fn [exists?]
+               (if exists?
+                 (cb)
+                 (.then (copy) cb)))))
+    (callback (str (utils.fs/main-bundle-path)
+                   "/"
+                   (:ios constants/initials-avatar-font-conf)))))
 
 (defn timestamp [] (datetime/timestamp))
 

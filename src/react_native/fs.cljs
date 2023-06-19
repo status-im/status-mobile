@@ -42,3 +42,11 @@
 (defn cache-dir
   []
   (.-CachesDirectoryPath ^js react-native-fs))
+
+(defn copy-assets
+  [src dest]
+  (.copyFileAssets ^js react-native-fs src dest))
+
+(defn main-bundle-path
+  []
+  (.-MainBundlePath ^js react-native-fs))

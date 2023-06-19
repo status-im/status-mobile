@@ -1,13 +1,13 @@
 (ns status-im.multiaccounts.logout.core
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
+  (:require [native-module.core :as native-module]
+            [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
-            [native-module.core :as native-module]
             [status-im.notifications.core :as notifications]
-            [utils.re-frame :as rf]
             [status-im.wallet.core :as wallet]
             [status-im2.common.keychain.events :as keychain]
-            [status-im2.db :as db]))
+            [status-im2.db :as db]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  ::logout
@@ -15,14 +15,15 @@
    (native-module/logout)))
 
 (rf/defn initialize-app-db
-  [{{:keys           [keycard]
+  [{{:keys           [keycard initials-avatar-font-file]
      :biometric/keys [supported-type]
      :network/keys   [type]}
     :db}]
   {:db (assoc db/app-db
-              :network/type             type
-              :keycard                  (dissoc keycard :secrets :pin :application-info)
-              :biometric/supported-type supported-type)})
+              :network/type              type
+              :initials-avatar-font-file initials-avatar-font-file
+              :keycard                   (dissoc keycard :secrets :pin :application-info)
+              :biometric/supported-type  supported-type)})
 
 (rf/defn logout-method
   {:events [::logout-method]}
