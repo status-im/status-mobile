@@ -3,15 +3,11 @@
 set -eo pipefail
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
-source "${GIT_ROOT}/nix/scripts/lib.sh"
 source "${GIT_ROOT}/scripts/colors.sh"
+source "${GIT_ROOT}/nix/scripts/lib.sh"
+source "${GIT_ROOT}/nix/scripts/version.sh"
 
-NIX_VERSION="2.14.1"
-NIX_INSTALL_URL="https://nixos.org/releases/nix/nix-${NIX_VERSION}/install"
-NIX_INSTALL_SHA256="565974057264f0536f600c68d59395927cd73e9fc5a60f33c1906e8f7bc33fcf"
-NIX_INSTALL_PATH="/tmp/nix-install-${NIX_VERSION}"
-
-install_nix() {
+nix_install() {
     # Download installer and verify SHA256>
     curl -sSf "${NIX_INSTALL_URL}" -o "${NIX_INSTALL_PATH}"
     echo "${NIX_INSTALL_SHA256}  ${NIX_INSTALL_PATH}" | sha256sum -c
@@ -72,5 +68,5 @@ fi
 
 # If none of the checks before succeeded we need to install Nix
 echo -e "${GRN}Setting up Nix package manager...${RST}"
-install_nix
+nix_install
 echo -e "${YLW}See STARTING_GUIDE.md if you're new here.${RST}"

@@ -81,6 +81,10 @@ nix-gc-protected:
 	@echo -e "$(YELLOW)The following paths are protected:$(RESET)" && \
 	ls -1 $(_NIX_GCROOTS) | sed 's/^/ - /'
 
+nix-upgrade: SHELL := /bin/sh
+nix-upgrade: ##@nix Upgrade Nix interpreter to current version.
+	nix/scripts/upgrade.sh
+
 nix-gc: export TARGET := nix
 nix-gc: nix-gc-protected ##@nix Garbage collect all packages older than 20 days from /nix/store
 	nix-store --gc
