@@ -39,4 +39,4 @@
         [community-view/community-stats-column
          {:type :card-view}]]
        [rn/view {:style (style/community-tags-position)}
-        [community-view/community-tags tags]]]]]]])
+        [community-view/community-tags {:tags tags}]]]]]]])

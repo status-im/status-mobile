@@ -1203,7 +1203,7 @@
     "repeat-pin": "Repeat new 6-digit passcode",
     "repeat-puk": "Repeat new 12-digit PUK",
     "report-bug-email-template": "1. Issue Description\n{{description}}\n\n\n2. Steps to reproduce\n{{steps}}\n\n\n3. Attach screenshots that can demo the problem, please\n",
-    "request-processed-after-node-online": "Your request will be processed once the community owner node is back online.",
+    "request-processed-after-node-online": "Community control node is offline. Request will be processed once it's back online.",
     "request-to-join-disclaimer": "Joining the community will reveal your public addresses to the owner",
     "request-to-join": "Request to join",
     "request-to-join-community": "Request to join Community",

@@ -255,14 +255,14 @@
    {:keys [on-category-layout on-first-channel-height-changed]}]
   (let [chats-by-category (rf/sub [:communities/categorized-channels id])]
     [:<>
-     [rn/view {:padding-horizontal 20}
+     [rn/view {:style style/community-content-container}
       [status-tag pending? joined]
       [community-header name]
       [community-description description]
-      ;; [quo/community-stats-column :card-view] not implemented
-      [rn/view {:margin-top 12}]
-      [quo/community-tags tags]
-      ;;[preview-user-list users] not implemented
+      [quo/community-tags
+       {:tags            tags
+        :last-item-style style/last-community-tag
+        :container-style style/community-tag-container}]
       [join-community community pending?]]
      [channel-list-component
       {:on-category-layout              on-category-layout
@@ -320,13 +320,8 @@
           :name                           name
           :on-scroll                      #(reset! scroll-height %)
           :navigate-back?                 true
-          :background-color               (colors/theme-colors
-                                           colors/white
-                                           colors/neutral-90)
-          :height                         (if platform/ios?
-                                            100
-                                            148)}
-
+          :background-color               (colors/theme-colors colors/white colors/neutral-90)
+          :height                         (if platform/ios? 100 148)}
          [sticky-category-header
           {:enabled (> @scroll-height @first-channel-height)
            :label   (pick-first-category-by-height

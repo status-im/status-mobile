@@ -41,19 +41,27 @@
        :icon-color    icon-color}]]))
 
 (defn community-tags
-  [tags]
+  [{:keys [tags container-style last-item-style]}]
   [gesture-handler/scroll-view
    {:shows-horizontal-scroll-indicator false
-    :horizontal                        true}
-   (for [{:keys [name emoji]} tags]
-     ^{:key name}
-     [rn/view {:margin-right 8}
-      [tag/tag
-       {:size      24
-        :label     name
-        :type      :emoji
-        :labelled? true
-        :resource  emoji}]])])
+    :horizontal                        true
+    :style                             container-style}
+   (let [last-index (max 0 (dec (count tags)))]
+     (map-indexed
+      (fn [index {tag-name :name emoji :emoji}]
+        (let [last? (= index last-index)]
+          [rn/view
+           {:key   tag-name
+            :style (if last?
+                     last-item-style
+                     {:margin-right 8})}
+           [tag/tag
+            {:size      24
+             :label     tag-name
+             :type      :emoji
+             :labelled? true
+             :resource  emoji}]]))
+      tags))])
 
 (defn community-title
   [{:keys [title description size] :or {size :small}}]
