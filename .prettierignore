@@ -1,0 +1,7 @@
+*
+!*.js
+!*/
+*.clj-kondo
+*.shadow-cljs
+modules
+result
