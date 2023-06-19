@@ -17,6 +17,22 @@
    (or customization-color constants/profile-default-color)))
 
 (re-frame/reg-sub
+ :profile/onboarding-placeholder-avatar
+ :<- [:mediaserver/port]
+ :<- [:initials-avatar-font-file]
+ (fn [[port font-file] [_ profile-pic]]
+   {:fn
+    (if profile-pic
+      (image-server/get-account-image-uri-fn {:port           port
+                                              :image-name     profile-pic
+                                              :override-ring? false
+                                              :theme          (theme/get-theme)})
+      (image-server/get-initials-avatar-uri-fn {:port           port
+                                                :theme          (theme/get-theme)
+                                                :override-ring? false
+                                                :font-file      font-file}))}))
+
+(re-frame/reg-sub
  :profile/login-profiles-picture
  :<- [:profile/profiles-overview]
  :<- [:mediaserver/port]
