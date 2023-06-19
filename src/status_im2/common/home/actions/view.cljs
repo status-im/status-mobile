@@ -8,8 +8,6 @@
             [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [clojure.string :as string]
-            [quo2.foundations.colors :as colors]
             [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]
             [utils.datetime :as datetime]))
 
