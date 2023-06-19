@@ -1,11 +1,11 @@
 (ns quo2.components.list-items.user-list
-  (:require [react-native.core :as rn]
-            [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.components.markdown.text :as text]
+  (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.icon :as icons]
-            [quo2.foundations.colors :as colors]
+            [quo2.components.markdown.text :as text]
             [quo2.components.messages.author.view :as author]
-            [quo2.components.selectors.selectors.view :as selectors]))
+            [quo2.components.selectors.selectors.view :as selectors]
+            [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]))
 
 (def container-style
   {:margin-horizontal  8
@@ -45,11 +45,10 @@
     :on-press            (when on-press on-press)
     :on-long-press       (when on-long-press on-long-press)}
    [user-avatar/user-avatar
-    {:full-name         primary-name
-     :profile-picture   photo-path
-     :status-indicator? true
-     :online?           online?
-     :size              :small}]
+    {:full-name       primary-name
+     :profile-picture photo-path
+     :online?         online?
+     :size            :small}]
    [rn/view {:style {:margin-left 8}}
     [author/author
      {:primary-name   primary-name

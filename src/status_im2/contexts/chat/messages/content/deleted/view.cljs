@@ -28,9 +28,7 @@
    on-long-press-fn]
   (let [;; deleted message with nil deleted-by is deleted by (:from message)
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity (or deleted-by from)]))
-        contact      (rf/sub [:contacts/contact-by-address (or deleted-by from)])
-        photo-path   (when-not (empty? (:images contact))
-                       (rf/sub [:chats/photo-path (or deleted-by from)]))]
+        photo-path   (rf/sub [:chats/photo-path (or deleted-by from)])]
     [quo/system-message
      {:type             :deleted
       :timestamp        timestamp-str
