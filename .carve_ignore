@@ -95,11 +95,11 @@ status-im.hardwallet.simulated-keycard/sign-typed-data
 status-im.utils.core/safe-read-message-content
 status-im.ui.components.react/native-modules
 status-im.ui.components.react/progress-bar
-status-im.utils.fs/move-file
-status-im.utils.fs/read-dir
-status-im.utils.fs/mkdir
-status-im.utils.fs/unlink
-status-im.utils.fs/file-exists?
+react-native.fs/move-file
+react-native.fs/read-dir
+react-native.fs/mkdir
+react-native.fs/unlink
+react-native.fs/file-exists?
 quo.animated/code
 quo.animated/eq
 quo.animated/neq
