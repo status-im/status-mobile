@@ -1,20 +1,20 @@
 (ns status-im2.contexts.onboarding.create-profile.view
-  (:require [quo2.core :as quo]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
+            [oops.core :as oops]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [status-im2.contexts.onboarding.create-profile.style :as style]
-            [utils.i18n :as i18n]
+            [react-native.blur :as blur]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
             [react-native.hooks :as hooks]
             [reagent.core :as reagent]
-            [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-            [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
-            [utils.re-frame :as rf]
-            [oops.core :as oops]
-            [react-native.blur :as blur]
             [status-im2.constants :as c]
-            [react-native.platform :as platform]))
+            [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
+            [status-im2.contexts.onboarding.create-profile.style :as style]
+            [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 ;; NOTE - validation should match with Desktop
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
@@ -155,6 +155,7 @@
             {:style style/profile-input-container}
             [quo/profile-input
              {:customization-color @custom-color
+              :profile-picture     (rf/sub [:profile/onboarding-placeholder-avatar @profile-pic])
               :placeholder         (i18n/label :t/your-name)
               :on-press            (fn []
                                      (rf/dispatch [:dismiss-keyboard])
