@@ -80,7 +80,9 @@
                             new-notifications
                             (get-in db [:activity-center :filter]))
      :dispatch-n [[:activity-center.notifications/fetch-unread-count]
-                  [:activity-center.notifications/fetch-pending-contact-requests]]}))
+                  [:activity-center.notifications/fetch-pending-contact-requests]
+                  (when (= (:view-id db) :activity-center)
+                    [:activity-center/mark-as-seen])]}))
 
 (rf/defn notifications-reconcile-from-response
   {:events [:activity-center/reconcile-notifications-from-response]}
