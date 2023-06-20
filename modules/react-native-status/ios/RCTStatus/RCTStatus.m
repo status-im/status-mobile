@@ -623,6 +623,14 @@ RCT_EXPORT_METHOD(loginWithConfig:(NSString *)accountData
     NSLog(@"%@", result);
 }
 
+RCT_EXPORT_METHOD(loginAccount:(NSString *)request) {
+#if DEBUG
+    NSLog(@"LoginAccount() method called");
+#endif
+    NSString *result = StatusgoLoginAccount(request);
+    NSLog(@"%@", result);
+}
+
 RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
                   password:(NSString *)password
                   chatKey:(NSString *)chatKey) {
