@@ -305,7 +305,9 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
   #js {:getInstallReferrer identity})
 
 (def react-native-camera-kit
-  #js {:CameraKitCamera #js {}})
+  #js
+   {:Camera     #js {}
+    :CameraType #js {}})
 
 (def react-native-push-notification
   #js
