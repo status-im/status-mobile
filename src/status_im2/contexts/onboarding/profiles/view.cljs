@@ -33,7 +33,9 @@
 
 (defn show-new-account-options
   []
-  (rf/dispatch [:show-bottom-sheet {:content new-account-options}]))
+  (rf/dispatch [:show-bottom-sheet
+                {:content new-account-options
+                 :shell?  true}]))
 
 (defn delete-profile-confirmation
   [key-uid context]
