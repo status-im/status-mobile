@@ -40,10 +40,12 @@
   (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
     [:<>
      (when (seq reactions)
-       [rn/view
-        {:style {:margin-left    52
-                 :margin-bottom  12
-                 :flex-direction :row}}
+       [rn/scroll-view
+        {:shows-horizontal-scroll-indicator false
+         :horizontal                        true
+         :style                             {:margin-left    52
+                                             :margin-bottom  12
+                                             :flex-direction :row}}
         (for [{:keys [own emoji-id quantity emoji-reaction-id]
                :as   emoji-reaction} reactions]
           ^{:key emoji-reaction}
