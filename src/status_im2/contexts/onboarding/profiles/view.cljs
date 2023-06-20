@@ -232,7 +232,6 @@
           error]
          [rn/touchable-opacity
           {:hit-slop       {:top 6 :bottom 20 :left 0 :right 0}
-           :style          {:margin-left -4}
            :disabled       processing
            :active-opacity 1
            :on-press       (fn []
