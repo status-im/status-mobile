@@ -11,7 +11,7 @@
     "app:watch": "shadow-cljs watch android",
     "app:packager": "react-native start --host 0.0.0.0 --port 8081",
     "app:android": "react-native run-android",
-    "prettier": "prettier --write ."
+    "prettier": "node_modules/.bin/prettier --write ."
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.17.12",
