@@ -1,5 +1,6 @@
 (ns status-im.bottom-sheet.sheets
   (:require [utils.re-frame :as rf]
+            [quo2.theme :as theme]
             [status-im.ui.screens.about-app.views :as about-app]
             [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
@@ -28,7 +29,8 @@
           (merge keycard/more-sheet)
 
           (= view :learn-more)
-          (merge about-app/learn-more))]
+          (merge about-app/learn-more))
+        page-theme (:theme options)]
 
     [:f>
      (fn []
@@ -36,6 +38,7 @@
                         (rn/hw-back-add-listener dismiss-bottom-sheet-callback)
                         (fn []
                           (rn/hw-back-remove-listener dismiss-bottom-sheet-callback))))
-       [bottom-sheet/bottom-sheet opts
-        (when content
-          [content (when options options)])])]))
+       [theme/provider {:theme (or page-theme (theme/get-theme))}
+        [bottom-sheet/bottom-sheet opts
+         (when content
+           [content (when options options)])]])]))

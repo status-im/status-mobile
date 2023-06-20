@@ -75,11 +75,13 @@
 (def bottom-sheet
   (reagent/reactify-component
    (fn []
-     (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
-           sheet                  (last sheets)
-           insets                 (safe-area/get-insets)]
+     (let [{:keys [sheets hide? theme]} (rf/sub [:bottom-sheet])
+           sheet                        (last sheets)
+           insets                       (safe-area/get-insets)
+           user-theme                   (theme/get-theme)]
        ^{:key (str "sheet" @reloader/cnt)}
-       [:<>
+       (js/console.log "HEHREHRE")
+       [theme/provider {:theme (or theme user-theme)}
         [inactive]
         [rn/keyboard-avoiding-view
          {:style                    {:position :relative :flex 1}

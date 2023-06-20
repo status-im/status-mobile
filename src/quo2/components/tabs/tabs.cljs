@@ -65,7 +65,6 @@
            flat-list-ref
            number-of-items
            on-change
-           override-theme
            scroll-on-press?
            size
            style]}
@@ -80,7 +79,6 @@
      :notification-dot?   notification-dot?
      :accessibility-label accessibility-label
      :size                size
-     :override-theme      override-theme
      :blur?               blur?
      :active              (= id @active-tab-id)
      :on-press            (fn [id]

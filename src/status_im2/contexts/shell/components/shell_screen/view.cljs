@@ -2,6 +2,7 @@
   (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
             [utils.re-frame :as rf]
             [react-native.core :as rn]
             [react-native.blur :as blur]
@@ -98,17 +99,18 @@
         width          (rf/sub [:dimensions/window-width])
         top            (safe-area/get-top)
         shell-margin   (/ (- width (* 2 shell.constants/switcher-card-size)) 3)]
-    [rn/view
-     {:style {:top              0
-              :left             0
-              :right            0
-              :bottom           -1
-              :position         :absolute
-              :background-color colors/neutral-100}}
-     [jump-to-list switcher-cards shell-margin]
-     [top-nav-blur-overlay top]
-     [common.home/top-nav
-      {:type   :shell
-       :avatar {:customization-color customization-color}
-       :style  {:margin-top top
-                :z-index    2}}]]))
+    [theme/provider {:theme :dark}
+     [rn/view
+      {:style {:top              0
+               :left             0
+               :right            0
+               :bottom           -1
+               :position         :absolute
+               :background-color colors/neutral-100}}
+      [jump-to-list switcher-cards shell-margin]
+      [top-nav-blur-overlay top]
+      [common.home/top-nav
+       {:type   :shell
+        :avatar {:customization-color customization-color}
+        :style  {:margin-top top
+                 :z-index    2}}]]]))
