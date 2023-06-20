@@ -51,7 +51,7 @@
       {:blur-amount      34
        :blur-type        :transparent
        :overlay-color    :transparent
-       :background-color colors/neutral-80-opa-1-blur
+       :background-color (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)
        :style            style/blur-button-container}
       children]
      [rn/view {:style style/view-button-container}
@@ -88,7 +88,7 @@
     (let [name-too-short? (length-not-valid @full-name)
           valid-name?     (and (not @validation-msg) (not name-too-short?))
           info-message    (if @validation-msg
-                           " @validation-msg"
+                            @validation-msg
                             (i18n/label :t/minimum-characters
                                         {:min-chars min-length}))
           info-type       (cond @validation-msg :error
@@ -97,8 +97,7 @@
       [rn/view {:style style/page-container}
        [navigation-bar/navigation-bar {:top navigation-bar-top}]
        [rn/scroll-view
-        {:keyboard-should-persist-taps :always
-         :content-container-style      {:flex-grow 1}}
+        {:content-container-style {:flexGrow 1}}
         [rn/view {:style style/page-container}
          [rn/view
           {:style style/content-container}

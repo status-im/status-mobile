@@ -20,7 +20,7 @@
   (merge button-container {:margin-bottom 34}))
 
 (def blur-button-container
-  (merge button-container (when platform/android? {:margin-bottom 12})))
+  (merge button-container (when platform/android? {:padding-bottom 12})))
 
 (def page-container
   {:position :absolute
