@@ -79,7 +79,7 @@
        :paused?           paused?
        :header-text       header-text
        :header-background true
-       :swipeable?        true
+       :gesture           :swipeable
        :background        [background-image (* 4 window-width)]}]
      (when dark-overlay?
        [blur/view
