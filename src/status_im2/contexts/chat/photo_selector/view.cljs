@@ -16,6 +16,8 @@
     [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
     utils.collection))
 
+(def min-scroll-to-blur 5)
+
 (defn show-toast
   []
   (rf/dispatch [:toasts/upsert
@@ -49,14 +51,15 @@
       (i18n/label :t/confirm-selection)]]))
 
 (defn clear-button
-  [album? selected]
+  [album? selected blur-active?]
   (when (and (not album?) (seq @selected))
     [rn/view {:style style/clear-container}
      [quo/button
-      {:type                :grey
+      {:type                :blurred
        :size                32
        :accessibility-label :clear
-       :on-press            #(reset! selected [])}
+       :on-press            #(reset! selected [])
+       :blur-active?        blur-active?}
       (i18n/label :t/clear)]]))
 
 (defn remove-selected
@@ -86,7 +89,7 @@
          (inc (utils.collection/first-index #(= (:uri item) (:uri %)) @selected))]])]))
 
 (defn photo-selector
-  [{:keys [scroll-enabled on-scroll close] :as sheet}]
+  [{:keys [scroll-enabled on-scroll current-scroll close] :as sheet}]
   (rf/dispatch [:photo-selector/get-photos-for-selected-album])
   (rf/dispatch [:photo-selector/camera-roll-get-albums])
   (let [album?          (reagent/atom false)
@@ -98,12 +101,9 @@
             end-cursor         (rf/sub [:camera-roll/end-cursor])
             loading?           (rf/sub [:camera-roll/loading-more])
             has-next-page?     (rf/sub [:camera-roll/has-next-page])
-            selected-album     (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))]
+            selected-album     (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))
+            blur-active?       (> @current-scroll min-scroll-to-blur)]
         [rn/view {:style {:flex 1 :margin-top -20}}
-         [rn/view {:style style/buttons-container}
-          [quo/dropdown {:type :grey :size 32 :on-change #(swap! album? not) :selected @album?}
-           selected-album]
-          [clear-button @album? selected-images]]
          (if @album?
            [album-selector/album-selector sheet album? selected-album]
            [:<>
@@ -123,4 +123,16 @@
                                            (rf/dispatch [:photo-selector/camera-roll-loading-more true])
                                            (rf/dispatch [:photo-selector/get-photos-for-selected-album
                                                          end-cursor])))}]
-            [confirm-button @selected-images sending-image close]])]))))
+            [confirm-button @selected-images sending-image close]])
+         [rn/view {:style style/buttons-container}
+          [quo/dropdown
+           {:type                      :blurred
+            :size                      32
+            :on-change                 (fn []
+                                         (swap! album? not)
+                                         (reset! current-scroll 0))
+            :selected                  @album?
+            :blur-active?              (and (not @album?) blur-active?)
+            :override-background-color (when-not @album? :transparent)}
+           selected-album]
+          [clear-button @album? selected-images blur-active?]]]))))

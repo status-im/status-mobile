@@ -4,7 +4,9 @@
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
-            [reagent.core :as reagent]))
+            [react-native.blur :as blur]
+            [reagent.core :as reagent]
+            [quo2.components.buttons.style :as style]))
 
 (defn themes
   [customization-color]
@@ -66,6 +68,16 @@
                       :background-color     {:default  colors/neutral-80-opa-5
                                              :pressed  colors/neutral-80-opa-10
                                              :disabled colors/neutral-80-opa-5}}
+    :blurred         {:icon-color            colors/neutral-100
+                      :icon-secondary-color  colors/neutral-100
+                      :icon-background-color {:default colors/neutral-20
+                                              :blurred colors/neutral-80-opa-10}
+                      :label-color           colors/neutral-100
+                      :background-color      {:default  colors/neutral-10
+                                              :pressed  colors/neutral-10
+                                              :disabled colors/neutral-10-opa-10-blur}
+                      :blur-overlay-color    colors/neutral-10-opa-40-blur
+                      :blur-type             :light}
     :blur-bg-outline {:icon-color           colors/neutral-100
                       :icon-secondary-color colors/neutral-80-opa-40
                       :label-color          colors/neutral-100
@@ -135,6 +147,16 @@
                       :background-color     {:default  colors/white-opa-5
                                              :pressed  colors/white-opa-10
                                              :disabled colors/white-opa-5}}
+    :blurred         {:icon-color            colors/white
+                      :icon-secondary-color  colors/white
+                      :icon-background-color {:default colors/neutral-80
+                                              :blurred colors/white-opa-10}
+                      :label-color           colors/white
+                      :background-color      {:default  colors/neutral-90
+                                              :pressed  colors/neutral-90
+                                              :disabled colors/neutral-90-opa-10-blur}
+                      :blur-overlay-color    colors/neutral-80-opa-40
+                      :blur-type             :dark}
     :blur-bg-outline {:icon-color           colors/white
                       :icon-secondary-color colors/white-opa-40
                       :label-color          colors/white
@@ -157,12 +179,11 @@
                       24 8))})
 
 (defn style-container
-  [type size disabled background-color border-color icon above width before after]
+  [type size disabled background-color border-color icon above width before after blur-active?]
   (merge {:height             size
           :align-items        :center
           :justify-content    :center
           :flex-direction     (if above :column :row)
-          :background-color   background-color
           :padding-horizontal (when-not (or icon before after)
                                 (case size
                                   56 16
@@ -192,7 +213,11 @@
                                   56 0
                                   40 9
                                   32 5
-                                  24 4))}
+                                  24 4))
+          :overflow           :hidden}
+         (when (or (and (= type :blurred) (not blur-active?))
+                   (not= type :blurred))
+           {:background-color background-color})
          (shape-style-container type icon size)
          (when width
            {:width width})
@@ -224,18 +249,23 @@
     (fn
       [{:keys [on-press disabled type size before after above icon-secondary-no-color
                width customization-color theme override-background-color pressed
-               on-long-press accessibility-label icon icon-no-color style inner-style test-ID]
+               on-long-press accessibility-label icon icon-no-color style inner-style test-ID
+               blur-active? override-before-margins override-after-margins icon-size icon-container-size
+               icon-container-rounded?]
         :or   {type                :primary
                size                40
-               customization-color :primary}}
+               customization-color :primary
+               blur-active?        true}}
        children]
-      (let [{:keys [icon-color icon-secondary-color background-color label-color border-color]}
+      (let [{:keys [icon-color icon-secondary-color background-color label-color border-color blur-type
+                    blur-overlay-color icon-background-color]}
             (get-in (themes customization-color)
                     [theme type])
             state (cond disabled                 :disabled
                         (or @pressed-in pressed) :pressed
                         :else                    :default)
-            icon-size (when (= 24 size) 12)
+            blur-state (if blur-active? :blurred :default)
+            icon-size (or icon-size (when (= 24 size) 12))
             icon-secondary-color (or icon-secondary-color icon-color)]
         [rn/touchable-without-feedback
          (merge {:test-ID             test-ID
@@ -264,9 +294,17 @@
                      above
                      width
                      before
-                     after)
+                     after
+                     blur-active?)
                     (when (= state :pressed) {:opacity 0.9})
                     inner-style)}
+           (when (and (= type :blurred)
+                      blur-active?)
+             [blur/view
+              {:blur-radius   20
+               :blur-type     blur-type
+               :overlay-color blur-overlay-color
+               :style         style/blur-view}])
            (when above
              [rn/view
               [quo2.icons/icon above
@@ -275,11 +313,16 @@
                 :size            icon-size}]])
            (when before
              [rn/view
+              {:style (style/before-icon-style
+                       {:override-margins        override-before-margins
+                        :size                    size
+                        :icon-container-size     icon-container-size
+                        :icon-background-color   (get icon-background-color blur-state)
+                        :icon-container-rounded? icon-container-rounded?
+                        :icon-size               icon-size})}
               [quo2.icons/icon before
-               {:container-style {:margin-left  (if (= size 40) 12 8)
-                                  :margin-right 4}
-                :color           icon-secondary-color
-                :size            icon-size}]])
+               {:color icon-secondary-color
+                :size  icon-size}]])
            [rn/view
             (cond
               (or icon icon-no-color)
@@ -301,11 +344,16 @@
               children)]
            (when after
              [rn/view
+              {:style (style/after-icon-style
+                       {:override-margins        override-after-margins
+                        :size                    size
+                        :icon-container-size     icon-container-size
+                        :icon-background-color   (get icon-background-color blur-state)
+                        :icon-container-rounded? icon-container-rounded?
+                        :icon-size               icon-size})}
               [quo2.icons/icon after
-               {:container-style {:margin-left  4
-                                  :margin-right (if (= size 40) 12 8)}
-                :no-color        icon-secondary-no-color
-                :color           icon-secondary-color
-                :size            icon-size}]])]]]))))
+               {:no-color icon-secondary-no-color
+                :color    icon-secondary-color
+                :size     icon-size}]])]]]))))
 
 (def button (theme/with-theme button-internal))
