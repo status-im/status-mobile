@@ -161,8 +161,8 @@
         ;; challengee, not the challenger.
         ;; https://github.com/status-im/status-mobile/issues/14354
         (when-not
-         (and challenger?
-              (= contact-verification-status constants/contact-verification-status-declined))
+          (and challenger?
+               (= contact-verification-status constants/contact-verification-status-declined))
           [swipeable props
            [quo/activity-log
             (merge
