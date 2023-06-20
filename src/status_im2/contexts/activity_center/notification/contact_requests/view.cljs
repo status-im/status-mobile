@@ -1,13 +1,13 @@
 (ns status-im2.contexts.activity-center.notification.contact-requests.view
   (:require
-    [quo2.core :as quo]
-    [react-native.gesture :as gesture]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.activity-center.notification.common.style :as common-style]
-    [status-im2.contexts.activity-center.notification.common.view :as common]
-    [utils.datetime :as datetime]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [quo2.core :as quo]
+   [react-native.gesture :as gesture]
+   [status-im2.constants :as constants]
+   [status-im2.contexts.activity-center.notification.common.style :as common-style]
+   [status-im2.contexts.activity-center.notification.common.view :as common]
+   [utils.datetime :as datetime]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defn- swipe-button-accept
   [{:keys [style]} _]
