@@ -301,7 +301,7 @@ define find_all_clojure_files
 $$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort <(git ls-files --deleted)) | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn)
 endef
 
-lint: export TARGET := default
+lint: export TARGET := clojure
 lint: ##@test Run code style checks
 	@sh scripts/lint-re-frame-in-quo-components.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
@@ -310,7 +310,7 @@ lint: ##@test Run code style checks
 	yarn prettier
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
-lint-fix: export TARGET := default
+lint-fix: export TARGET := clojure
 lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
