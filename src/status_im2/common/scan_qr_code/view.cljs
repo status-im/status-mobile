@@ -4,6 +4,8 @@
             [oops.core :as oops]            
             [status-im2.common.scan-qr-code.style :as style]
             [react-native.camera-kit :as camera-kit]
+            [re-frame.core :as re-frame]
+            [status-im.multiaccounts.key-storage.core :as key-storage]
             [react-native.core :as rn]
             [quo2.core :as quo]
             [utils.i18n :as i18n]
@@ -35,12 +37,8 @@
    [:request-permissions
     {:permissions [:camera]
      :on-allowed  #(reset! camera-permission-granted? true)
-     :on-denied   #(rf/dispatch
-                    [:toasts/upsert
-                     {:icon           :i/info
-                      :icon-color     colors/danger-50
-                      :override-theme :light
-                      :text           (i18n/label :t/camera-permission-denied)}])}]))
+     :on-denied   #(re-frame/dispatch [::key-storage/open-device-settings-dialog])
+     }]))
 
 (defn get-labels-and-on-press-method
   []
@@ -65,8 +63,7 @@
                 button-icon
                 button-label
                 accessibility-label
-                on-press]} (get-labels-and-on-press-method)]
-  (fn []               
+                on-press]} (get-labels-and-on-press-method)]             
     [rn/view {:style style/camera-permission-container}
      [quo/text
       {:size   :paragraph-1
@@ -87,7 +84,7 @@
        :customization-color :blue
        :on-press            on-press}
       (i18n/label button-label)]]
-  )
+  
       ))
 
 
@@ -171,7 +168,8 @@
         :blur-amount      10
         :blur-type        :transparent
         :overlay-color    colors/neutral-80-opa-80
-        :background-color colors/neutral-80-opa-80}]]]))
+        :background-color colors/neutral-80-opa-80}]
+        ]]))
 
 (defn- check-qr-code-data
   [event]
@@ -222,7 +220,6 @@
                    
     (rn/use-effect
          (fn []
-         (println @camera-permission-granted?)
            (when-not @camera-permission-granted?
              (permissions/permission-granted? :camera
                                               #(reset! camera-permission-granted? %)
