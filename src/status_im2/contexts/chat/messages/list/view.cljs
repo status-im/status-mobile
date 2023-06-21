@@ -291,7 +291,8 @@
        :content-container-style      {:padding-bottom style/messages-list-bottom-offset}
        :scroll-indicator-insets      {:top (- composer.constants/composer-default-height 16)}
        :keyboard-dismiss-mode        :interactive
-       :keyboard-should-persist-taps :handled
+       :keyboard-should-persist-taps :always
+       :on-scroll-begin-drag         rn/dismiss-keyboard!
        :on-momentum-scroll-begin     state/start-scrolling
        :on-momentum-scroll-end       state/stop-scrolling
        :scroll-event-throttle        16
