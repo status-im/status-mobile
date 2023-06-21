@@ -52,3 +52,18 @@ nix_root() {
 nix_current_version() {
     nix-env --version | awk '{print $3}'
 }
+
+nix_daemon_restart() {
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        echo "Restarting Nix daemon Launchd service" >&2
+        sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+        sudo launchctl load   /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+    elif [[ "$(uname -s)" == "Linux" ]] && [[ "$(nix_install_type)" == "multi" ]]; then
+        echo "Restarting Nix daemon Systemd service" >&2
+        sudo systemctl daemon-reload
+        sudo systemctl restart nix-daemon
+    else
+        echo "Unknown platform! Unable to restart daemon!" >&2
+        exit 1
+    fi
+}

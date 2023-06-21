@@ -38,6 +38,22 @@ nix_install() {
         echo "Please see: https://nixos.org/nix/manual/#chap-installation" >&2
         exit 1
     fi
+
+    # Additional fixes
+    nix_make_user_trusted
+    nix_daemon_restart
+}
+
+# Fix for warnings about ignoring binary cache.
+nix_make_user_trusted() {
+    # Single-user installations do not have this issue.
+    [[ ! -f /etc/nix/nix.conf ]] && return
+    echo -e "Adding ${USER} to trusted-users..." >&2
+    if grep trusted-users /etc/nix/nix.conf 2>/dev/null; then
+        sed -i "s/trusted-users = \(.*\)$/trusted-users = \1 $USER/" /etc/nix/nix.conf
+    else
+        echo "trusted-users = $USER" | sudo tee -a /etc/nix/nix.conf >/dev/null
+    fi
 }
 
 if [[ ! -x "$(command -v sha256sum)" ]]; then
