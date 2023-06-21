@@ -4,7 +4,8 @@
 
 (def ^:const device-id (:device-id (native-module/get-device-model-info)))
 
-(def ^:const whitelist #{"iPhone11" "iPhone12" "iPhone13" "iPhone14"})
+;; iPhone 14 is 15 for some reason
+(def ^:const whitelist #{"iPhone11" "iPhone12" "iPhone13" "iPhone14" "iPhone15"})
 
 (def whitelisted?
   (let [device-type (first (string/split (str device-id) ","))]

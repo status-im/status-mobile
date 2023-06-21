@@ -42,23 +42,28 @@
       (i18n/label :t/maybe-later)]]))
 
 (defn enable-biometrics-parallax
-  [insets]
-  [:<>
-   [parallax/video
-    {:layers  (:biometrics resources/parallax-video)
-     :stretch (:top insets)}]
-   [rn/view
-    [navigation-bar/navigation-bar {:disable-back-button? true}]
-    [page-title]]])
+  []
+  (let [stretch (if rn/small-screen? 25 40)]
+    [:<>
+     [parallax/video
+      {:layers  (:biometrics resources/parallax-video)
+       :stretch stretch}]
+     [rn/view
+      [navigation-bar/navigation-bar {:disable-back-button? true}]
+      [page-title]]]))
 
 (defn enable-biometrics-simple
   []
-  [:<>
-   [rn/view
-    [navigation-bar/navigation-bar {:disable-back-button? true}]
-    [page-title]]
-   [rn/view {:style style/page-illustration}
-    [rn/image {:source (resources/get-image :biometrics)}]]])
+  (let [width (:width (rn/get-window))]
+    [:<>
+     [rn/view {:flex 1}
+      [navigation-bar/navigation-bar {:disable-back-button? true}]
+      [page-title]
+      [rn/view {:style {:flex 1}}
+       [rn/image
+        {:resize-mode :contain
+         :style       (style/page-illustration width)
+         :source      (resources/get-image :biometrics)}]]]]))
 
 (defn enable-biometrics
   []
@@ -66,6 +71,6 @@
     [rn/view {:style (style/page-container insets)}
      [background/view true]
      (if whitelist/whitelisted?
-       [enable-biometrics-parallax insets]
+       [enable-biometrics-parallax]
        [enable-biometrics-simple])
      [enable-biometrics-buttons insets]]))
