@@ -6,8 +6,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [utils.string :as utils]))
+            [react-native.reanimated :as reanimated]))
 
 (def themes-landed
   {:pinned  colors/primary-50-opa-5
