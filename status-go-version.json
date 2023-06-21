@@ -4,6 +4,6 @@
     "owner": "status-im",
     "repo": "status-go",
     "version": "send-notification-to-unmuted-chat-even-if-its-muted-somewhere-else",
-    "commit-sha1": "3741fe889ecbb79852349ccce64d04c1c4676b03",
-    "src-sha256": "0c0rmdhpgxz32fh11sjxzni5xfqykpwhzgj45dq2pd4sx3rlhrhb"
+    "commit-sha1": "fcbdde0cfc7a0cfa4e61c5ad5323863551a80744",
+    "src-sha256": "16mh3vix5y02lh1m9vp6l50maw44a83bd5a47z0vhpbnmxpppl5r"
 }
