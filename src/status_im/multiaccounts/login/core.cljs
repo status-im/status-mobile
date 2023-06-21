@@ -42,6 +42,7 @@
     [status-im2.contexts.contacts.events :as contacts]
     [status-im2.navigation.events :as navigation]
     [status-im2.contexts.shell.constants :as shell.constants]
+    [status-im2.contexts.communities.discover.events :as contract-communities]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
     [status-im2.contexts.shell.utils :as shell.utils]
@@ -449,6 +450,7 @@
               (initialize-wallet-connect)
               (get-node-config)
               (communities/fetch)
+              (contract-communities/fetch-contract-communities)
               (communities/fetch-collapsed-community-categories)
               (communities/check-and-delete-pending-request-to-join)
               (logging/set-log-level (:log-level multiaccount))
