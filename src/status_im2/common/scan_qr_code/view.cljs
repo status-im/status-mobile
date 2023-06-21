@@ -1,25 +1,33 @@
-(ns status-im2.contexts.syncing.scan-sync-code.view
+(ns status-im2.common.scan-qr-code.view
   (:require [clojure.string :as string]
-            [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
+            [reagent.core :as reagent]
+            [oops.core :as oops]            
+            [status-im2.common.scan-qr-code.style :as style]
             [react-native.camera-kit :as camera-kit]
             [react-native.core :as rn]
-            [react-native.blur :as blur]
-            [react-native.hole-view :as hole-view]
-            [react-native.permissions :as permissions]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.contexts.syncing.scan-sync-code.style :as style]
+            [quo2.core :as quo]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
+            [react-native.blur :as blur]
+            [react-native.hole-view :as hole-view]
+            [quo2.foundations.colors :as colors]
+            [status-im.utils.platform :as platform]
+            [react-native.permissions :as permissions]
             [status-im2.contexts.syncing.utils :as sync-utils]
-            [status-im.utils.platform :as platform]))
+            ))
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
-(defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
+(defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))            
 
 (defonce camera-permission-granted? (reagent/atom false))
+
+(defn perform-preflight-check
+  "Performing the check for the first time
+   will trigger local network access permission in iOS.
+   This permission is required for local pairing
+   https://github.com/status-im/status-mobile/issues/16135"
+  []
+  (rf/dispatch [:syncing/preflight-outbound-check #(reset! preflight-check-passed? %)]))
 
 (defn request-camera-permission
   []
@@ -33,56 +41,6 @@
                       :icon-color     colors/danger-50
                       :override-theme :light
                       :text           (i18n/label :t/camera-permission-denied)}])}]))
-
-(defn perform-preflight-check
-  "Performing the check for the first time
-   will trigger local network access permission in iOS.
-   This permission is required for local pairing
-   https://github.com/status-im/status-mobile/issues/16135"
-  []
-  (rf/dispatch [:syncing/preflight-outbound-check #(reset! preflight-check-passed? %)]))
-
-(defn- header
-  [active-tab read-qr-once? title]
-  [:<>
-   [rn/view {:style style/header-container}
-    [quo/button
-     {:icon                true
-      :type                :blur-bg
-      :size                32
-      :accessibility-label :close-sign-in-by-syncing
-      :override-theme      :dark
-      :on-press            #(rf/dispatch [:navigate-back])}
-     :i/arrow-left]
-    [quo/button
-     {:before              :i/info
-      :type                :blur-bg
-      :size                32
-      :accessibility-label :find-sync-code
-      :override-theme      :dark
-      :on-press            #(js/alert "Yet to be implemented")}
-     (i18n/label :t/find-sync-code)]]
-   [quo/text
-    {:size   :heading-1
-     :weight :semi-bold
-     :style  style/header-text}
-    title]
-   [quo/text
-    {:size   :paragraph-1
-     :weight :regular
-     :style  style/header-sub-text}
-    (i18n/label :t/synchronise-your-data-across-your-devices)]
-   [rn/view {:style style/tabs-container}
-    [quo/segmented-control
-     {:size           32
-      :override-theme :dark
-      :blur?          true
-      :default-active @active-tab
-      :data           [{:id 1 :label (i18n/label :t/scan-sync-qr-code)}
-                       {:id 2 :label (i18n/label :t/enter-sync-code)}]
-      :on-change      (fn [id]
-                        (reset! active-tab id)
-                        (reset! read-qr-once? false))}]]])
 
 (defn get-labels-and-on-press-method
   []
@@ -108,6 +66,7 @@
                 button-label
                 accessibility-label
                 on-press]} (get-labels-and-on-press-method)]
+  (fn []               
     [rn/view {:style style/camera-permission-container}
      [quo/text
       {:size   :paragraph-1
@@ -127,7 +86,10 @@
        :override-theme      :dark
        :customization-color :blue
        :on-press            on-press}
-      (i18n/label button-label)]]))
+      (i18n/label button-label)]]
+  )
+      ))
+
 
 (defn- qr-scan-hole-area
   [qr-view-finder]
@@ -139,7 +101,6 @@
                                             true)
                        view-finder (assoc layout :height (:width layout))]
                    (reset! qr-view-finder view-finder)))}])
-
 (defn- border
   [border1 border2 corner]
   [rn/view {:style (style/border border1 border2 corner)}])
@@ -188,52 +149,6 @@
         :weight :regular
         :style  style/viewfinder-text}
        (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)]]]))
-
-(defn- scan-qr-code-tab
-  [qr-view-finder]
-  [:<>
-   [rn/view {:style style/scan-qr-code-container}]
-   (when (empty? @qr-view-finder)
-     [qr-scan-hole-area qr-view-finder])
-   (if (and @preflight-check-passed?
-            @camera-permission-granted?
-            (boolean (not-empty @qr-view-finder)))
-     [viewfinder @qr-view-finder]
-     [camera-and-local-network-access-permission-view])])
-
-(defn- enter-sync-code-tab
-  []
-  [rn/view {:style style/enter-sync-code-container}
-   [quo/text
-    {:size   :paragraph-1
-     :weight :medium
-     :style  {:color colors/white}}
-    "Yet to be implemented"]])
-
-(defn- bottom-view
-  [insets]
-  [rn/touchable-without-feedback
-   {:on-press #(js/alert "Yet to be implemented")}
-   [rn/view
-    {:style (style/bottom-container (:bottom insets))}
-    [quo/text
-     {:size   :paragraph-2
-      :weight :medium
-      :style  style/bottom-text}
-     (i18n/label :t/i-dont-have-status-on-another-device)]]])
-
-(defn- check-qr-code-data
-  [event]
-  (let [connection-string        (string/trim (oops/oget event "nativeEvent.codeStringValue"))
-        valid-connection-string? (sync-utils/valid-connection-string? connection-string)]
-    (if valid-connection-string?
-      (rf/dispatch [:syncing/input-connection-string-for-bootstrapping connection-string])
-      (rf/dispatch [:toasts/upsert
-                    {:icon           :i/info
-                     :icon-color     colors/danger-50
-                     :override-theme :light
-                     :text           (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
-
 (defn render-camera
   [show-camera? qr-view-finder camera-ref on-read-code show-holes?]
   (when (and show-camera? (:x qr-view-finder))
@@ -258,11 +173,34 @@
         :overlay-color    colors/neutral-80-opa-80
         :background-color colors/neutral-80-opa-80}]]]))
 
-(defn f-view
-  [{:keys [title show-bottom-view? background]}]
-  (let [insets         (safe-area/get-insets)
-        active-tab     (reagent/atom 1)
-        qr-view-finder (reagent/atom {})]
+(defn- check-qr-code-data
+  [event]
+  (let [connection-string        (string/trim (oops/oget event "nativeEvent.codeStringValue"))
+        valid-connection-string? (sync-utils/valid-connection-string? connection-string)]
+    (if valid-connection-string?
+      (rf/dispatch [:syncing/input-connection-string-for-bootstrapping connection-string])
+      (rf/dispatch [:toasts/upsert
+                    {:icon           :i/info
+                     :icon-color     colors/danger-50
+                     :override-theme :light
+                     :text           (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
+
+
+(defn- scan-qr-code-view
+  [qr-view-finder]
+  [:<>
+   [rn/view {:style style/scan-qr-code-container}]
+   (when (empty? @qr-view-finder)
+     [qr-scan-hole-area qr-view-finder])
+   (if (and @preflight-check-passed?
+            @camera-permission-granted?
+            (boolean (not-empty @qr-view-finder)))
+     [viewfinder @qr-view-finder]
+     [camera-and-local-network-access-permission-view])])                   
+
+(defn view
+  []
+  (let [qr-view-finder (reagent/atom {})]
     (fn []
       (let [camera-ref                       (atom nil)
             read-qr-once?                    (atom false)
@@ -277,31 +215,22 @@
                                                                   (reset! read-qr-once? false))
                                                                 3000)
                                                  (check-qr-code-data data)))
-            scan-qr-code-tab?                (= @active-tab 1)
-            show-camera?                     (and scan-qr-code-tab?
-                                                  @camera-permission-granted?
+            show-camera?                     (and @camera-permission-granted?
                                                   @preflight-check-passed?)
             show-holes?                      (and show-camera?
-                                                  (boolean (not-empty @qr-view-finder)))]
-        (rn/use-effect
+                                                  (boolean (not-empty @qr-view-finder)))]                                             
+                   
+    (rn/use-effect
          (fn []
          (println @camera-permission-granted?)
            (when-not @camera-permission-granted?
              (permissions/permission-granted? :camera
                                               #(reset! camera-permission-granted? %)
-                                              #(reset! camera-permission-granted? false)))))
+                                              #(reset! camera-permission-granted? false)))))  
         [:<>
-         background
          [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
-         [rn/view {:style (style/root-container (:top insets))}
-          [header active-tab read-qr-once? title]
-          (case @active-tab
-            1 [scan-qr-code-tab qr-view-finder]
-            2 [enter-sync-code-tab]
-            nil)
-          [rn/view {:style style/flex-spacer}]
-          (when show-bottom-view? [bottom-view insets])]]))))
-
-(defn view
-  [props]
-  [:f> f-view props])
+         [rn/view 
+          [scan-qr-code-view qr-view-finder]
+           
+           ]]))
+          ))
