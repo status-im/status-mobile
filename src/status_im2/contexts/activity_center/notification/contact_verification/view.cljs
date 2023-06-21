@@ -12,28 +12,28 @@
   [{:keys [style]} _]
   [common/swipe-button-container
    {:style (common-style/swipe-danger-container style)
-    :icon  :i/placeholder
+    :icon  :i/decline
     :text  (i18n/label :t/decline)}])
 
 (defn- swipe-button-reply
   [{:keys [style]} _]
   [common/swipe-button-container
    {:style (common-style/swipe-primary-container style)
-    :icon  :i/placeholder
+    :icon  :i/reply
     :text  (i18n/label :t/message-reply)}])
 
 (defn- swipe-button-untrustworthy
   [{:keys [style]} _]
   [common/swipe-button-container
    {:style (common-style/swipe-danger-container style)
-    :icon  :i/placeholder
+    :icon  :i/alert
     :text  (i18n/label :t/untrustworthy)}])
 
 (defn- swipe-button-trust
   [{:keys [style]} _]
   [common/swipe-button-container
    {:style (common-style/swipe-success-container style)
-    :icon  :i/placeholder
+    :icon  :i/done
     :text  (i18n/label :t/accept)}])
 
 (defn- context-tags
