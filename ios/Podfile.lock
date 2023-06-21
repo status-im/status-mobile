@@ -276,6 +276,8 @@ PODS:
   - react-native-status-keycard (2.5.39):
     - Keycard
     - React
+  - react-native-transparent-video (0.1.0):
+    - React-Core
   - react-native-webview (11.16.0):
     - React-Core
   - React-perflogger (0.69.10)
@@ -484,6 +486,7 @@ DEPENDENCIES:
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-status (from `../modules/react-native-status`)
   - react-native-status-keycard (from `../node_modules/react-native-status-keycard`)
+  - react-native-transparent-video (from `../node_modules/react-native-transparent-video`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -613,6 +616,8 @@ EXTERNAL SOURCES:
     :path: "../modules/react-native-status"
   react-native-status-keycard:
     :path: "../node_modules/react-native-status-keycard"
+  react-native-transparent-video:
+    :path: "../node_modules/react-native-transparent-video"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-perflogger:
@@ -738,6 +743,7 @@ SPEC CHECKSUMS:
   react-native-slider: 12bd76d3d568c9c5500825db54123d44b48e4ad4
   react-native-status: 21f75d492fd311dc111303da38a7a2b23a8a8466
   react-native-status-keycard: f1c1227b2d5984c10fb44db68e4bfd2937f31e98
+  react-native-transparent-video: e484ad11ace8e5f62516e2c5e15efd3cb4df24b0
   react-native-webview: 28a8636d97ee641f2ee8f20492d7a6c269c1d703
   React-perflogger: bc57c4a953c1ec913b0d984cf4f2b9842a12bde0
   React-RCTActionSheet: 3efa3546119a1050f6c34a461b386dd9e36eaf0b
