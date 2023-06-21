@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.159.2",
-    "commit-sha1": "fee033fadbaf7654ffde52c224e21603afbd122e",
-    "src-sha256": "0m9r3wknmc96r90pgv918im09fnia21hsdcxcd2gcn18jrjsy13b"
+    "version": "send-notification-to-unmuted-chat-even-if-its-muted-somewhere-else",
+    "commit-sha1": "3741fe889ecbb79852349ccce64d04c1c4676b03",
+    "src-sha256": "0c0rmdhpgxz32fh11sjxzni5xfqykpwhzgj45dq2pd4sx3rlhrhb"
 }
