@@ -42,11 +42,11 @@
       (i18n/label :t/maybe-later)]]))
 
 (defn enable-biometrics-parallax
-  []
+  [insets]
   [:<>
    [parallax/video
     {:layers  (:biometrics resources/parallax-video)
-     :stretch 50}]
+     :stretch (:top insets)}]
    [rn/view
     [navigation-bar/navigation-bar {:disable-back-button? true}]
     [page-title]]])
@@ -66,6 +66,6 @@
     [rn/view {:style (style/page-container insets)}
      [background/view true]
      (if whitelist/whitelisted?
-       [enable-biometrics-parallax]
+       [enable-biometrics-parallax insets]
        [enable-biometrics-simple])
      [enable-biometrics-buttons insets]]))
