@@ -25,6 +25,7 @@
        [text/text-content message])
      [rn/touchable-opacity
       {:active-opacity 1
+       :style          {:margin-top 4}
        :on-long-press  on-long-press
        :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
                                       message-id

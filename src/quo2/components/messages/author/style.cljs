@@ -2,8 +2,7 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def container
-  {:flex           1
-   :flex-wrap      :wrap
+  {:flex-wrap      :wrap
    :flex-direction :row
    :align-items    :baseline})
 

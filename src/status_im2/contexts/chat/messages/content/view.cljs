@@ -51,14 +51,13 @@
   (when (or (and (seq response-to) quoted-message) last-in-group? pinned-by (not show-reactions?))
     (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
-      [rn/view {:margin-bottom 8}
-       [quo/author
-        {:primary-name   primary-name
-         :secondary-name secondary-name
-         :short-chat-key (address/get-shortened-key (or compressed-key from))
-         :time-str       (datetime/timestamp->time timestamp)
-         :contact?       added?
-         :verified?      ens-verified}]])))
+      [quo/author
+       {:primary-name   primary-name
+        :secondary-name secondary-name
+        :short-chat-key (address/get-shortened-key (or compressed-key from))
+        :time-str       (datetime/timestamp->time timestamp)
+        :contact?       added?
+        :verified?      ens-verified}])))
 
 (defn system-message-content
   [{:keys [content-type quoted-message] :as message-data}]

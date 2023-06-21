@@ -75,10 +75,10 @@
      :color   :danger
      :opacity 5}]
    [rn/view
-    {:align-items      :baseline
-     :flex-direction   :row
-     :flex             1
-     :flex-wrap        :wrap}
+    {:align-items    :baseline
+     :flex-direction :row
+     :flex           1
+     :flex-wrap      :wrap}
     (if child
       child
       [text/text
@@ -134,10 +134,10 @@
       :flex-direction :row
       :flex           1
       :flex-wrap      :wrap}
-     [author/author {:primary-name pinned-by}]
+     [author/author
+      {:primary-name pinned-by
+       :style        {:margin-right 4}}]
      [rn/view
-      {:margin-left  4
-       :margin-right 2}
       [text/text
        {:size  :paragraph-2
         :style {:color (get-color :text)}}

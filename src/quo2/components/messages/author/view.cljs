@@ -9,8 +9,8 @@
 (def middle-dot "·")
 
 (defn author
-  [{:keys [primary-name secondary-name short-chat-key time-str contact? verified? untrustworthy?]}]
-  [rn/view {:style style/container}
+  [{:keys [primary-name secondary-name style short-chat-key time-str contact? verified? untrustworthy?]}]
+  [rn/view {:style (merge style/container style)}
    [text/text
     {:weight          :semi-bold
      :size            :paragraph-2
