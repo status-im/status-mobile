@@ -2,6 +2,7 @@
   (:require [quo2.components.avatars.icon-avatar :as icon-avatar]
             [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.markdown.text :as text]
+            [quo2.components.messages.author.view :as author]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
@@ -66,27 +67,27 @@
 (defmethod system-message-content :deleted
   [{:keys [label timestamp-str labels child]}]
   [rn/view
-   {:align-items     :center
-    :justify-content :space-between
-    :flex            1
-    :flex-direction  :row}
+   {:flex-direction :row
+    :flex           1
+    :align-items    :center}
+   [sm-icon
+    {:icon    :main-icons/delete
+     :color   :danger
+     :opacity 5}]
    [rn/view
-    {:align-items    :center
-     :flex-direction :row}
-    [sm-icon
-     {:icon    :main-icons/delete
-      :color   :danger
-      :opacity 5}]
-    [rn/view
-     {:align-items    :baseline
-      :flex-direction :row}
-     (if child
-       child
-       [text/text
-        {:size  :paragraph-2
-         :style {:color (get-color :text)}}
-        (or (get labels label) label (:message-deleted labels))])
-     [sm-timestamp timestamp-str]]]])
+    {:align-items      :baseline
+     :flex-direction   :row
+     :flex             1
+     :flex-wrap        :wrap}
+    (if child
+      child
+      [text/text
+       {:size  :paragraph-2
+        :style {:color (get-color :text)}}
+       (or (get labels label)
+           label
+           (:message-deleted labels))])
+    [sm-timestamp timestamp-str]]])
 
 (defmethod system-message-content :added
   [{:keys [state mentions timestamp-str labels]}]
@@ -116,7 +117,7 @@
    [sm-timestamp timestamp-str]])
 
 (defmethod system-message-content :pinned
-  [{:keys [state pinned-by content timestamp-str labels]}]
+  [{:keys [state pinned-by child timestamp-str labels]}]
   [rn/view
    {:flex-direction :row
     :flex           1
@@ -130,12 +131,10 @@
      :flex           1}
     [rn/view
      {:align-items    :baseline
-      :flex-direction :row}
-     [text/text
-      {:size   :paragraph-2
-       :weight :semi-bold
-       :style  {:color (get-color :text)}}
-      (utils/truncate-str pinned-by 18)]
+      :flex-direction :row
+      :flex           1
+      :flex-wrap      :wrap}
+     [author/author {:primary-name pinned-by}]
      [rn/view
       {:margin-left  4
        :margin-right 2}
@@ -144,35 +143,8 @@
         :style {:color (get-color :text)}}
        (:pinned-a-message labels)]]
      [sm-timestamp timestamp-str]]
-    [rn/view {:flex-direction :row}
-     [rn/view
-      {:flex-direction :row
-       :margin-right   4}
-      [sm-user-avatar (:image (:mentions content))]
-      [text/text
-       {:weight :semi-bold
-        :size   :label}
-       (:name (:mentions content))]]
-     (when (seq (:text content))
-       [rn/view
-        {:margin-right   20
-         :flex-direction :row
-         :flex           1}
-        [text/text
-         {:size            :label
-          :style           {:color (get-color :text)}
-          :number-of-lines 1
-          :ellipsize-mode  :tail}
-         (:text content)]])
-     [rn/view
-      {:justify-content :flex-end
-       :flex-direction  :row
-       :min-width       10}
-      (when (seq (:info content))
-        [text/text
-         {:size  :label
-          :style {:color (get-color :time)}}
-         (utils/truncate-str (:info content) 24)])]]]])
+    (when child
+      child)]])
 
 (defn- f-system-message
   [{:keys [type style non-pressable? animate-landing? labels on-long-press] :as message}]

@@ -9,10 +9,11 @@
   [{:keys [display-name profile-picture]}]
   [rn/view
    {:style {:flex-direction :row
-            :align-items    :center
+            :align-items    :baseline
             :flex           1
             :flex-wrap      :wrap}}
-   [rn/view {:style {:margin-right 4}}
+   [rn/view {:style {:margin-right 4
+                     :align-self :center}}
     [quo/user-avatar
      {:full-name         display-name
       :profile-picture   profile-picture

@@ -63,7 +63,7 @@
 (defn system-message-content
   [{:keys [content-type quoted-message] :as message-data}]
   (if quoted-message
-    [pin/system-message message-data]
+    [pin/pinned-message message-data]
     (condp = content-type
 
       constants/content-type-system-text
