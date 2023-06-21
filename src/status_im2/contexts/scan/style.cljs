@@ -4,25 +4,6 @@
 
 (def screen-padding 20)
 
-(def blur
-  {:style         {:position :absolute
-                   :top      0
-                   :left     0
-                   :right    0
-                   :bottom   0}
-   :overlay-color colors/neutral-80-opa-80
-   :blur-amount   20})
-
-(def header-button
-  {:margin-bottom 12
-   :margin-left   screen-padding})
-
-
-(def header-heading
-  {:padding-horizontal screen-padding
-   :padding-vertical   12
-   :color              colors/white})
-
 (def flex-spacer {:flex 1})
 
 (def absolute-fill
@@ -40,8 +21,7 @@
   [padding-top]
   {:z-index     5
    :flex        1
-   :padding-top padding-top   
-   :background-color colors/neutral-95})
+   :padding-top padding-top})
 
 (def header-container
   {:flex-direction     :row
@@ -173,3 +153,22 @@
    :right         0
    :bottom        0
    :border-radius 16})
+
+(def header-button
+  {:margin-bottom 12
+   :margin-left   screen-padding})
+
+
+(def header-heading
+  {:padding-horizontal screen-padding
+   :padding-vertical   12
+   :color              colors/white})
+   
+(def blur
+  {:style         {:position :absolute
+                   :top      0
+                   :left     0
+                   :right    0
+                   :bottom   0}
+   :overlay-color colors/neutral-80-opa-80
+   :blur-amount   20})   

@@ -17,7 +17,9 @@
             [utils.re-frame :as rf]
             [status-im2.contexts.syncing.utils :as sync-utils]
             [status-im.utils.platform :as platform]
-            [react-native.navigation :as navigation]))
+            [react-native.navigation :as navigation]
+            [status-im2.common.scan-qr-code.view :as scan-qr-code]))
+
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
 (defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
@@ -248,8 +250,9 @@
          [rn/view {:style (style/root-container (:top insets))}
        [blur/view style/blur]
          [header]          
-          [scan-qr-code-tab qr-view-finder]
-          [rn/view {:style style/flex-spacer}]]]))))
+          [:f> scan-qr-code/view]
+          ;; [rn/view {:style style/flex-spacer}]
+          ]]))))
 
 (defn view
   [props]
