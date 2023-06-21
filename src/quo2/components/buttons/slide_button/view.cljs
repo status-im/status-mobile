@@ -37,7 +37,7 @@
 
 (defn f-view
   "Options
-   - `disabled` Boolean to disable the component.
+   - `disabled?` Boolean to disable the component.
    - `label`  label text.
    - `size` Size of the Slide Button.
    - `on-end` Callback called when the slide position reached the end."

@@ -3,6 +3,9 @@
             [test-helpers.component :as h]))
 
 (h/describe "slide-button"
+  (h/before-each
+   (fn []
+     (h/use-fake-timers)))
   (h/test "basic render"
     (h/render [slide-button/view {:label "slide it..."}])
     (h/is-truthy (h/get-by-label-text :slider-button-label)))
