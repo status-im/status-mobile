@@ -1225,6 +1225,7 @@
     "save-password-unavailable-android": "Save password is unavailable: your device may be rooted or lacks necessary security features.",
     "scan-or-enter-sync-code": "Scan or enter sync code",
     "scan-qr": "Scan QR code",
+    "scan-qr-text": "Scan QR",
     "scan-qr-code": "Scan a QR code with a wallet address",
     "search": "Search",
     "search-discover-communities": "Search communities or categories",

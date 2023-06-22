@@ -16,6 +16,8 @@
             [status-im.utils.platform :as platform]
             [react-native.permissions :as permissions]
             [status-im2.contexts.syncing.utils :as sync-utils]
+            [status-im2.contexts.onboarding.common.background.view :as background]
+            [react-native.safe-area :as safe-area]
             ))
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
@@ -156,7 +158,8 @@
         :style          style/camera-style
         :camera-options {:zoomMode :off}
         :scan-barcode   true
-        :on-read-code   on-read-code}]]
+        :on-read-code   on-read-code}]
+        ]
      [hole-view/hole-view
       {:style style/hole
        :holes (if show-holes?
@@ -168,8 +171,7 @@
         :blur-amount      10
         :blur-type        :transparent
         :overlay-color    colors/neutral-80-opa-80
-        :background-color colors/neutral-80-opa-80}]
-        ]]))
+        :background-color colors/neutral-80-opa-80}]]]))
 
 (defn- check-qr-code-data
   [event]
@@ -197,8 +199,9 @@
      [camera-and-local-network-access-permission-view])])                   
 
 (defn view
-  []
-  (let [qr-view-finder (reagent/atom {})]
+  [header]
+  (let [insets         (safe-area/get-insets)
+    qr-view-finder (reagent/atom {})]
     (fn []
       (let [camera-ref                       (atom nil)
             read-qr-once?                    (atom false)
@@ -225,9 +228,12 @@
                                               #(reset! camera-permission-granted? %)
                                               #(reset! camera-permission-granted? false)))))  
         [:<>
+        [background/view true]
          [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
-         [rn/view 
+         [rn/view   {:style (style/root-container (:top insets))}
+            [header]
           [scan-qr-code-view qr-view-finder]
            
-           ]]))
+           ]
+           ]))
           ))
