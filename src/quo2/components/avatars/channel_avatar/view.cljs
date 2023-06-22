@@ -1,9 +1,27 @@
 (ns quo2.components.avatars.channel-avatar.view
-  (:require [quo2.components.avatars.channel-avatar.style :as style]
+  (:require [clojure.string :as string]
+            [quo2.components.avatars.channel-avatar.style :as style]
             [quo2.components.icon :as icons]
-            [quo2.foundations.colors :as colors]
             [quo2.components.markdown.text :as text]
+            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]))
+
+(defn- extract-initials
+  [s amount-initials]
+  (let [words (-> s string/trim (string/split #"\s+"))]
+    (->> words
+         (take amount-initials)
+         (map (comp string/upper-case str first))
+         (string/join))))
+
+(defn- initials
+  [full-name amount-initials]
+  [text/text
+   {:size            :paragraph-2
+    :number-of-lines 1
+    :ellipsize-mode  :clip
+    :weight          :semi-bold}
+   (extract-initials full-name amount-initials)])
 
 (defn- lock
   [{:keys [locked? big?]}]
@@ -17,9 +35,29 @@
        :size            12}]]))
 
 (defn view
-  [{:keys [big? locked? emoji-background-color emoji]}]
+  "Options:
+
+  :big? - bool (default nil) - Container size
+
+  :emoji - string (default nil)
+
+  :emoji-background-color - color (default nil)
+
+  :locked? - nil/bool (default nil) - When true/false display a locked/unlocked
+  icon respectively. When nil does not show icon.
+
+  :full-name - string (default nil) - When :emoji is blank, this value will be
+  used to extract the initials.
+
+  :amount-initials - int (default 1) - Number of initials to be extracted
+  from :full-name when :emoji is blank.
+  "
+  [{:keys [big? locked? emoji-background-color emoji full-name amount-initials]
+    :or   {amount-initials 1}}]
   [rn/view {:style (style/outer-container {:big? big? :background-color emoji-background-color})}
    [rn/view {:style style/inner-container}
-    [text/text {:size (if big? :paragraph-1 :label)}
-     emoji]
+    (if (string/blank? emoji)
+      [initials full-name amount-initials]
+      [text/text {:size (if big? :paragraph-1 :label)}
+       emoji])
     [lock {:locked? locked? :big? big?}]]])
