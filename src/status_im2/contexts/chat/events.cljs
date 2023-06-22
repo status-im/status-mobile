@@ -18,8 +18,7 @@
             [status-im.utils.types :as types]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
-            [utils.datetime :as datetime]
-            [utils.chats :as chat-utils]))
+            [utils.datetime :as datetime]))
 
 (defn- get-chat
   [cofx chat-id]
