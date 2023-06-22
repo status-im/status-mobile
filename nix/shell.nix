@@ -10,21 +10,26 @@ let
 in mkShell {
   name = "status-mobile-shell"; # for identifying all shells
 
-  buildInputs = with pkgs; lib.unique ([
-    # core utilities that should always be present in a shell
-    bash curl wget file unzip flock procps
-    git gnumake jq ncurses gnugrep parallel
-    lsof # used in start-react-native.sh
-    # build specific utilities
-    clojure maven watchman
-    # lint specific utilities
-    clj-kondo zprint
-    # other nice to have stuff
-    yarn nodejs python310
-  ] # and some special cases
-    ++ lib.optionals stdenv.isDarwin [ cocoapods clang tcl ]
-    ++ lib.optionals (!stdenv.isDarwin) [ gcc8 ]
-  );
+  buildInputs = let
+    appleSDKFrameworks = (with pkgs.darwin.apple_sdk.frameworks; [
+      IOKit CoreServices
+    ]);
+  in
+    with pkgs; lib.unique ([
+      # core utilities that should always be present in a shell
+      bash curl wget file unzip flock procps
+      git gnumake jq ncurses gnugrep parallel
+      lsof # used in start-react-native.sh
+      # build specific utilities
+      clojure maven watchman
+      # lint specific utilities
+      clj-kondo zprint
+      # other nice to have stuff
+      yarn nodejs python310
+    ] # and some special cases
+      ++ lib.optionals   stdenv.isDarwin ([ cocoapods clang tcl ] ++ appleSDKFrameworks)
+      ++ lib.optionals (!stdenv.isDarwin) [ gcc8 ]
+    );
 
   # avoid terminal issues
   TERM="xterm";
