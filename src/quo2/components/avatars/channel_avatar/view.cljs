@@ -4,29 +4,25 @@
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
-
-(defn- extract-initials
-  [s amount-initials]
-  (let [words (-> s string/trim (string/split #"\s+"))]
-    (->> words
-         (take amount-initials)
-         (map (comp string/upper-case str first))
-         (string/join))))
+            [react-native.core :as rn]
+            utils.string))
 
 (defn- initials
   [full-name amount-initials]
   [text/text
-   {:size            :paragraph-2
-    :number-of-lines 1
-    :ellipsize-mode  :clip
-    :weight          :semi-bold}
-   (extract-initials full-name amount-initials)])
+   {:accessibility-label :initials
+    :size                :paragraph-2
+    :number-of-lines     1
+    :ellipsize-mode      :clip
+    :weight              :semi-bold}
+   (utils.string/get-initials full-name amount-initials)])
 
 (defn- lock
-  [{:keys [locked? big?]}]
+  [locked? big?]
   (when (boolean? locked?)
-    [rn/view {:style (style/lock-container {:big? big?})}
+    [rn/view
+     {:accessibility-label :lock
+      :style               (style/lock-container {:big? big?})}
      [icons/icon
       (cond (true? locked?)  :i/locked
             (false? locked?) :i/unlocked)
@@ -52,12 +48,16 @@
   :amount-initials - int (default 1) - Number of initials to be extracted
   from :full-name when :emoji is blank.
   "
-  [{:keys [big? locked? emoji-background-color emoji full-name amount-initials]
+  [{:keys [big? emoji emoji-background-color locked? full-name amount-initials]
     :or   {amount-initials 1}}]
-  [rn/view {:style (style/outer-container {:big? big? :background-color emoji-background-color})}
+  [rn/view
+   {:accessibility-label :channel-avatar
+    :style               (style/outer-container {:big? big? :background-color emoji-background-color})}
    [rn/view {:style style/inner-container}
     (if (string/blank? emoji)
       [initials full-name amount-initials]
-      [text/text {:size (if big? :paragraph-1 :label)}
+      [text/text
+       {:accessibility-label :emoji
+        :size                (if big? :paragraph-1 :label)}
        emoji])
-    [lock {:locked? locked? :big? big?}]]])
+    [lock locked? big?]]])
