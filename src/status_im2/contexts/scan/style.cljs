@@ -4,9 +4,11 @@
 
 (def screen-padding 20)
 
-(def header-button
-  {:margin-bottom 12
-   :margin-left   screen-padding})
+(def header-container
+  {:flex-direction     :row
+   :justify-content    :space-between
+   :padding-horizontal screen-padding
+   :margin-vertical    12})
 
 
 (def header-text
