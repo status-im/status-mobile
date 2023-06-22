@@ -254,7 +254,7 @@
    {:keys [context keyboard-shown? insets composer-height]}]
   ;;TODO temporary hide mutual-state-updates https://github.com/status-im/status-mobile/issues/16254
   (when (not= content-type constants/content-type-system-mutual-state-update)
-    (if (= type :footer)
+    (if (= type :header)
       [list-header insets composer-height]
       [rn/view
        (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
@@ -302,7 +302,7 @@
                                        :cover-bg-color            cover-bg-color
                                        :on-layout                 footer-on-layout
                                        :shell-animation-complete? shell-animation-complete?}]
-       :data                         (into [{:type :footer}] messages)
+       :data                         (into [{:type :header}] messages)
        :render-data                  {:context         context
                                       :keyboard-shown? keyboard-shown?
                                       :insets          insets
