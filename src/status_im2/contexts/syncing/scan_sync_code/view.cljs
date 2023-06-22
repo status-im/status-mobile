@@ -14,7 +14,6 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [status-im2.contexts.syncing.utils :as sync-utils]
-            [status-im2.common.scan-qr-code.view :as scan-qr-code]
             [status-im.utils.platform :as platform]))
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
@@ -193,7 +192,6 @@
 (defn- scan-qr-code-tab
   [qr-view-finder]
   [:<>
-  ;; [:f> scan-qr-code/view]
    [rn/view {:style style/scan-qr-code-container}]
    (when (empty? @qr-view-finder)
      [qr-scan-hole-area qr-view-finder])
@@ -201,9 +199,7 @@
             @camera-permission-granted?
             (boolean (not-empty @qr-view-finder)))
      [viewfinder @qr-view-finder]
-     [camera-and-local-network-access-permission-view])
-     ]
-     )
+     [camera-and-local-network-access-permission-view])])
 
 (defn- enter-sync-code-tab
   []
@@ -295,17 +291,15 @@
                                               #(reset! camera-permission-granted? false)))))
         [:<>
          background
-         [scan-qr-code/render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
+         [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
          [rn/view {:style (style/root-container (:top insets))}
           [header active-tab read-qr-once? title]
           (case @active-tab
             1 [scan-qr-code-tab qr-view-finder]
             2 [enter-sync-code-tab]
             nil)
-          ;; [rn/view {:style style/flex-spacer}]
-          ;; (when show-bottom-view? [bottom-view insets])
-          ]
-          ]))))
+          [rn/view {:style style/flex-spacer}]
+          (when show-bottom-view? [bottom-view insets])]]))))
 
 (defn view
   [props]
