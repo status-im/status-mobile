@@ -118,8 +118,7 @@
        [:f> f-scroll-page-header @scroll-height height name page-nav-right-section-buttons
         logo sticky-header top-nav title-colum navigate-back?]
        [rn/scroll-view
-        {:content-container-style         (style/scroll-view-container
-                                           (diff-with-max-min @scroll-height 16 0))
+        {:content-container-style         {:flex-grow 1}
          :shows-vertical-scroll-indicator false
          :scroll-event-throttle           16
          :on-scroll                       (fn [^js event]
@@ -140,9 +139,8 @@
                       :flex          1}}]])
         (when children
           [rn/view
-           {:flex             1
-            :border-radius    (diff-with-max-min @scroll-height 16 0)
-            :background-color background-color}
+           {:style (style/children-container {:border-radius    (diff-with-max-min @scroll-height 16 0)
+                                              :background-color background-color})}
            (when cover-image
              [:f> f-display-picture @scroll-height logo])
            children])]])))

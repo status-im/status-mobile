@@ -7,7 +7,7 @@
 (defn date
   [value]
   [rn/view
-   {:margin-vertical 8
+   {:margin-vertical 12
     :padding-right   20
     :padding-left    60}
    [text/text

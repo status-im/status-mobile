@@ -31,7 +31,7 @@
         portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))]
     (if (and albumize? (> images-count 1))
       [:<>
-       [rn/view {:style {:margin-bottom 10}} [text/text-content first-image]]
+       [rn/view {:style {:margin-bottom 4}} [text/text-content first-image]]
        [rn/view
         {:style               (style/album-container portrait?)
          :accessible          true
