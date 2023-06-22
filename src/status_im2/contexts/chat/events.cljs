@@ -302,38 +302,41 @@
   (log/debug "muted chat successfully" chat-id " for" muted-till)
   (let [time-string (fn [duration-kw unmute-time]
                       (i18n/label duration-kw {:duration unmute-time}))
-        not-community-chat? (chat-utils/not-community-chat? chat-type)
+        not-community-chat? #(contains? #{constants/public-chat-type
+                                          constants/private-group-chat-type
+                                          constants/one-to-one-chat-type}
+                                        %)
         mute-duration-text
         (fn [unmute-time]
           (if unmute-time
             (str
              (condp = mute-type
                constants/mute-for-15-mins-type (time-string
-                                                (if (chat-utils/not-community-chat? chat-type)
+                                                (if (not-community-chat? chat-type)
                                                   :t/chat-muted-for-15-minutes
                                                   :t/channel-muted-for-15-minutes)
                                                 unmute-time)
                constants/mute-for-1-hour-type  (time-string
-                                                (if (chat-utils/not-community-chat? chat-type)
+                                                (if (not-community-chat? chat-type)
                                                   :t/chat-muted-for-1-hour
                                                   :t/channel-muted-for-1-hour)
                                                 unmute-time)
                constants/mute-for-8-hours-type (time-string
-                                                (if (chat-utils/not-community-chat? chat-type)
+                                                (if (not-community-chat? chat-type)
                                                   :t/chat-muted-for-8-hours
                                                   :t/channel-muted-for-8-hours)
                                                 unmute-time)
                constants/mute-for-1-week       (time-string
-                                                (if (chat-utils/not-community-chat? chat-type)
+                                                (if (not-community-chat? chat-type)
                                                   :t/chat-muted-for-1-week
                                                   :t/channel-muted-for-1-week)
                                                 unmute-time)
                constants/mute-till-unmuted     (time-string
-                                                (if (chat-utils/not-community-chat? chat-type)
+                                                (if (not-community-chat? chat-type)
                                                   :t/chat-muted-till-unmuted
                                                   :t/channel-muted-till-unmuted)
                                                 unmute-time)))
-            (i18n/label (if (chat-utils/not-community-chat? chat-type)
+            (i18n/label (if (not-community-chat? chat-type)
                           :t/chat-unmuted-successfully
                           :t/channel-unmuted-successfully))))]
     {:db       (assoc-in db [:chats chat-id :muted-till] muted-till)
