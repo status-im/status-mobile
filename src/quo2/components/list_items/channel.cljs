@@ -1,6 +1,6 @@
 (ns quo2.components.list-items.channel
-  (:require [quo2.components.avatars.channel-avatar :as channel-avatar]
-            [quo2.components.common.unread-grey-dot.view :refer [unread-grey-dot]]
+  (:require [quo2.components.avatars.channel-avatar.view :as channel-avatar]
+            [quo2.components.common.unread-grey-dot.view :as unread-grey-dot]
             [quo2.components.counter.counter :as quo2.counter]
             [quo2.components.icon :as quo2.icons]
             [quo2.components.markdown.text :as quo2.text]
@@ -36,7 +36,7 @@
                               :align-items     :center}
         :accessible          true
         :accessibility-label :chat-name-text}
-       [channel-avatar/channel-avatar
+       [channel-avatar/view
         {:big?                   true
          :locked?                locked?
          :emoji-background-color (colors/theme-alpha channel-color 0.1 0.1)
@@ -63,4 +63,4 @@
              mentions-count]]
 
            unread-messages?
-           [unread-grey-dot :unviewed-messages-public])])]]))
+           [unread-grey-dot/unread-grey-dot :unviewed-messages-public])])]]))

@@ -1,11 +1,11 @@
-(ns quo2.components.avatars.channel-avatar
+(ns quo2.components.avatars.channel-avatar.view
   (:require [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]))
 
-(defn channel-avatar
+(defn view
   [{:keys [big? locked? emoji-background-color emoji]}]
   (let [lock-exists? locked?
         dark?        (theme/dark?)]

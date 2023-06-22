@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.avatars.channel-avatar
-  (:require [quo2.components.avatars.channel-avatar :as quo2]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -40,13 +40,12 @@
          {:padding-vertical 60
           :flex-direction   :row
           :justify-content  :center}
-         [quo2/channel-avatar @state]]]])))
+         [quo/channel-avatar @state]]]])))
 
 (defn preview-channel-avatar
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-90)
+   {:background-color (colors/theme-colors colors/white colors/neutral-90)
     :flex             1}
    [rn/flat-list
     {:flex                         1
