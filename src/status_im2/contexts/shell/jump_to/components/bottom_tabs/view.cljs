@@ -1,15 +1,15 @@
-(ns status-im2.contexts.shell.components.bottom-tabs.view
+(ns status-im2.contexts.shell.jump-to.components.bottom-tabs.view
   (:require [utils.re-frame :as rf]
             [react-native.core :as rn]
             [react-native.blur :as blur]
             [react-native.gesture :as gesture]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.shell.utils :as utils]
-            [status-im2.contexts.shell.state :as state]
-            [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as shell.constants]
+            [status-im2.contexts.shell.jump-to.utils :as utils]
+            [status-im2.contexts.shell.jump-to.state :as state]
+            [status-im2.contexts.shell.jump-to.animation :as animation]
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [quo2.components.navigation.bottom-nav-tab.view :as bottom-nav-tab]
-            [status-im2.contexts.shell.components.bottom-tabs.style :as style]))
+            [status-im2.contexts.shell.jump-to.components.bottom-tabs.style :as style]))
 
 (defn blur-overlay-params
   [style]

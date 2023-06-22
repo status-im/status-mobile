@@ -1,4 +1,4 @@
-(ns status-im2.contexts.shell.components.shell-screen.view
+(ns status-im2.contexts.shell.jump-to.components.jump-to-screen.view
   (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
@@ -8,13 +8,13 @@
             [react-native.blur :as blur]
             [react-native.linear-gradient :as linear-gradient]
             [react-native.safe-area :as safe-area]
-            [status-im2.contexts.shell.state :as state]
-            [status-im2.contexts.shell.utils :as utils]
+            [status-im2.contexts.shell.jump-to.state :as state]
+            [status-im2.contexts.shell.jump-to.utils :as utils]
             [status-im2.common.home.view :as common.home]
-            [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.contexts.shell.components.shell-screen.style :as style]
-            [status-im2.contexts.shell.components.bottom-tabs.view :as bottom-tabs]
-            [status-im2.contexts.shell.components.switcher-cards.view :as switcher-cards]))
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+            [status-im2.contexts.shell.jump-to.components.jump-to-screen.style :as style]
+            [status-im2.contexts.shell.jump-to.components.bottom-tabs.view :as bottom-tabs]
+            [status-im2.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]))
 
 (defn placeholder
   []

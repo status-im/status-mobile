@@ -1,13 +1,13 @@
-(ns status-im2.contexts.shell.utils
+(ns status-im2.contexts.shell.jump-to.utils
   (:require [utils.re-frame :as rf]
             [react-native.core :as rn]
             [status-im2.config :as config]
             [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
-            [status-im2.contexts.shell.state :as state]
+            [status-im2.contexts.shell.jump-to.state :as state]
             [status-im.async-storage.core :as async-storage]
-            [status-im2.contexts.shell.constants :as shell.constants]))
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 ;;;;  Helper Functions
 

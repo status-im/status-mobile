@@ -1,6 +1,6 @@
-(ns status-im2.contexts.shell.state
+(ns status-im2.contexts.shell.jump-to.state
   (:require [reagent.core :as reagent]
-            [status-im2.contexts.shell.constants :as shell.constants]))
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 ;; Atoms
 (def selected-stack-id (atom nil))
