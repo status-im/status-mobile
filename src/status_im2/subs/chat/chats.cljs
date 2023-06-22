@@ -419,3 +419,10 @@
  :<- [:chats/link-previews-unfurled]
  (fn [previews]
    (boolean (seq previews))))
+
+(re-frame/reg-sub
+ :chat/check-channel-muted?
+ (fn [[_ community-id channel-id]]
+   [(re-frame/subscribe [:chats/chat (str community-id channel-id)])])
+ (fn [[chat]]
+   (:muted? chat)))

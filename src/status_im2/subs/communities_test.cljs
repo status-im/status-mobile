@@ -84,9 +84,27 @@
     (swap! rf-db/app-db assoc
       :communities
       {"0x1" {:id         "0x1"
-              :chats      {"0x1" {:id "0x1" :position 1 :name "chat1" :categoryID "1" :can-post? true}
-                           "0x2" {:id "0x2" :position 2 :name "chat2" :categoryID "1" :can-post? false}
-                           "0x3" {:id "0x3" :position 3 :name "chat3" :categoryID "2" :can-post? true}}
+              :chats      {"0x1"
+                           {:id         "0x1"
+                            :position   1
+                            :name       "chat1"
+                            :muted?     nil
+                            :categoryID "1"
+                            :can-post?  true}
+                           "0x2"
+                           {:id         "0x2"
+                            :position   2
+                            :name       "chat2"
+                            :muted?     nil
+                            :categoryID "1"
+                            :can-post?  false}
+                           "0x3"
+                           {:id         "0x3"
+                            :position   3
+                            :name       "chat3"
+                            :muted?     nil
+                            :categoryID "2"
+                            :can-post?  true}}
               :categories {"1" {:id       "1"
                                 :position 2
                                 :name     "category1"}
@@ -103,6 +121,7 @@
            :chats      [{:name             "chat3"
                          :position         3
                          :emoji            nil
+                         :muted?           nil
                          :locked?          false
                          :id               "0x3"
                          :unread-messages? false
@@ -115,6 +134,7 @@
            :chats      [{:name             "chat1"
                          :emoji            nil
                          :position         1
+                         :muted?           nil
                          :locked?          false
                          :id               "0x1"
                          :unread-messages? false
@@ -122,6 +142,7 @@
                         {:name             "chat2"
                          :emoji            nil
                          :position         2
+                         :muted?           nil
                          :locked?          true
                          :id               "0x2"
                          :unread-messages? false
@@ -131,9 +152,21 @@
     (swap! rf-db/app-db assoc
       :communities
       {"0x1" {:id         "0x1"
-              :chats      {"0x1" {:id "0x1" :position 1 :name "chat1" :categoryID "1" :can-post? true}
-                           "0x2" {:id "0x2" :position 2 :name "chat2" :categoryID "1" :can-post? false}
-                           "0x3" {:id "0x3" :position 3 :name "chat3" :can-post? true}}
+              :chats      {"0x1"
+                           {:id         "0x1"
+                            :position   1
+                            :name       "chat1"
+                            :categoryID "1"
+                            :can-post?  true
+                            :muted?     nil}
+                           "0x2"
+                           {:id         "0x2"
+                            :position   2
+                            :name       "chat2"
+                            :categoryID "1"
+                            :can-post?  false
+                            :muted?     nil}
+                           "0x3" {:id "0x3" :position 3 :name "chat3" :can-post? true :muted? nil}}
               :categories {"1" {:id       "1"
                                 :position 1
                                 :name     "category1"}
@@ -150,6 +183,7 @@
                        :emoji            nil
                        :position         3
                        :locked?          false
+                       :muted?           nil
                        :id               "0x3"
                        :unread-messages? false
                        :mentions-count   0}]}]
@@ -162,6 +196,7 @@
                        :emoji            nil
                        :position         1
                        :locked?          false
+                       :muted?           nil
                        :id               "0x1"
                        :unread-messages? false
                        :mentions-count   0}
@@ -170,6 +205,7 @@
                        :position         2
                        :locked?          true
                        :id               "0x2"
+                       :muted?           nil
                        :unread-messages? false
                        :mentions-count   0}]}]]
       (rf/sub [sub-name "0x1"]))))
@@ -194,12 +230,14 @@
                          :position         1
                          :locked?          false
                          :id               "0x1"
+                         :muted?           nil
                          :unread-messages? true
                          :mentions-count   2}
                         {:name             "chat2"
                          :emoji            nil
                          :position         2
                          :locked?          true
+                         :muted?           nil
                          :id               "0x2"
                          :unread-messages? false
                          :mentions-count   0}]}]]

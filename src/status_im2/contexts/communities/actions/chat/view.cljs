@@ -1,7 +1,26 @@
 (ns status-im2.contexts.communities.actions.chat.view
   (:require [quo2.core :as quo]
             [status-im2.common.not-implemented :as not-implemented]
-            [utils.i18n :as i18n]))
+            [utils.datetime :as datetime]
+            [utils.i18n :as i18n]
+            [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]
+            [utils.re-frame :as rf]))
+
+(defn hide-sheet-and-dispatch
+  [event]
+  (rf/dispatch [:hide-bottom-sheet])
+  (rf/dispatch event))
+
+(defn- mute-channel-action
+  [chat-id chat-type]
+  (hide-sheet-and-dispatch [:show-bottom-sheet
+                            {:content (fn []
+                                        [mute-chat-drawer/mute-chat-drawer chat-id
+                                         :mute-chat-for-duration chat-type])}]))
+
+(defn- unmute-channel-action
+  [chat-id]
+  (hide-sheet-and-dispatch [:chat.ui/mute chat-id false 0]))
 
 (defn- action-view-members-and-details
   []
@@ -26,12 +45,19 @@
    :label               (i18n/label :t/mark-as-read)})
 
 (defn- action-toggle-muted
-  []
-  {:icon                :i/muted
-   :right-icon          :i/chevron-right
-   :accessibility-label :chat-toggle-muted
-   :on-press            not-implemented/alert
-   :label               (i18n/label :t/mute-channel)})
+  [id muted? muted-till chat-type]
+  (let [muted (and muted? (some? muted-till))]
+    {:icon                :i/muted
+     :right-icon          :i/chevron-right
+     :accessibility-label :chat-toggle-muted
+     :sub-label           (when muted
+                            (str (i18n/label :t/muted-until) " " (datetime/format-mute-till muted-till)))
+     :on-press            (if muted?
+                            #(unmute-channel-action id)
+                            #(mute-channel-action id chat-type))
+     :label               (i18n/label (if muted
+                                        :t/unmute-channel
+                                        :t/mute-channel))}))
 
 (defn- action-notification-settings
   []
@@ -80,36 +106,37 @@
    :label               (i18n/label :t/share-channel)})
 
 (defn actions
-  [{:keys [locked?]} inside-chat?]
-  (cond
-    locked?
-    [quo/action-drawer
-     [[(action-invite-people)
-       (action-token-requirements)
-       (action-qr-code)
-       (action-share)]]]
+  [{:keys [locked? id community-id]} inside-chat?]
+  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id (str community-id id)])]
+    (cond
+      locked?
+      [quo/action-drawer
+       [[(action-invite-people)
+         (action-token-requirements)
+         (action-qr-code)
+         (action-share)]]]
 
-    (and (not inside-chat?) (not locked?))
-    [quo/action-drawer
-     [[(action-view-members-and-details)
-       (action-mark-as-read)
-       (action-toggle-muted)
-       (action-notification-settings)
-       (action-pinned-messages)
-       (action-invite-people)
-       (action-qr-code)
-       (action-share)]]]
+      (and (not inside-chat?) (not locked?))
+      [quo/action-drawer
+       [[(action-view-members-and-details)
+         (action-mark-as-read)
+         (action-toggle-muted (str community-id id) muted muted-till chat-type)
+         (action-notification-settings)
+         (action-pinned-messages)
+         (action-invite-people)
+         (action-qr-code)
+         (action-share)]]]
 
-    (and inside-chat? (not locked?))
-    [quo/action-drawer
-     [[(action-view-members-and-details)
-       (action-token-requirements)
-       (action-mark-as-read)
-       (action-toggle-muted)
-       (action-notification-settings)
-       (action-fetch-messages)
-       (action-invite-people)
-       (action-qr-code)
-       (action-share)]]]
+      (and inside-chat? (not locked?))
+      [quo/action-drawer
+       [[(action-view-members-and-details)
+         (action-token-requirements)
+         (action-mark-as-read)
+         (action-toggle-muted (str community-id id) muted muted-till chat-type)
+         (action-notification-settings)
+         (action-fetch-messages)
+         (action-invite-people)
+         (action-qr-code)
+         (action-share)]]]
 
-    :else nil))
+      :else nil)))
