@@ -172,8 +172,8 @@
            :disabled                  (or (not valid-name?) (not (seq @full-name)))}
           (i18n/label :t/continue)]]]])
     (finally
-     (oops/ocall show-listener "remove")
-     (oops/ocall hide-listener "remove"))))
+      (oops/ocall show-listener "remove")
+      (oops/ocall hide-listener "remove"))))
 
 (defn create-profile
   []
