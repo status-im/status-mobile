@@ -11,21 +11,18 @@
     :percentage-value    "16.9%"
     :amount              "€570.24"
     :customization-color :army
-    :watch-only          false
-    :type                :default
-   }
+    :type                :default}
    {:id               2
     :name             "Ben’s fortune"
     :balance          "€2,269.12"
     :percentage-value "16.9%"
     :amount           "€570.24"
-    :watch-only       true
-    :type             :watch-only
-   }
-   {:id      3
-    :type    :add-account
-    :handler #(js/alert "Add account pressed")
-   }])
+    :watch-only?      true
+    :type             :watch-only}
+   {:id                  3
+    :type                :add-account
+    :customization-color :blue
+    :handler             #(js/alert "Add account pressed")}])
 
 (defn- separator
   []
@@ -40,12 +37,11 @@
    [text/text {:size :heading-1 :weight :semi-bold :style {:margin-bottom 40}} "Account card"]
    [rn/flat-list
     {:data                           mock-data
-     :keyExtractor                   #(str (:id %))
+     :key-extractor                  #(str (:id %))
      :horizontal                     true
      :separator                      [separator]
      :render-fn                      quo/account-card
-     :showsHorizontalScrollIndicator false
-    }]])
+     :showsHorizontalScrollIndicator false}]])
 
 (defn preview-account-card
   []

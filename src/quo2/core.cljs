@@ -89,8 +89,7 @@
     quo2.components.text-combinations.title.view
     quo2.components.settings.settings-list.view
     quo2.components.wallet.account-card.view
-    quo2.components.settings.reorder-item.view
-  ))
+    quo2.components.settings.reorder-item.view))
 
 (def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)

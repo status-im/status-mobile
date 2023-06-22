@@ -8,55 +8,43 @@
             [quo2.components.markdown.text :as text]))
 
 (defn user-account-view
-  [{:keys [name balance percentage-value amount customization-color watch-only type]}]
-  [rn/view
-   [rn/view (style/card customization-color watch-only)
-    [rn/view style/profile-container
-     [icon/icon :contact {:size 20}]
-     [rn/view style/watch-only-container
-      [text/text (style/account-name watch-only)
-       name]
-      (if watch-only [icon/icon :reveal {:color colors/neutral-50 :size 12}])]
-    ]
-    [text/text (style/account-value watch-only) balance]
-    [rn/view style/metrics-container
-     [rn/view {:margin-right 5.5}
-      [icon/icon :positive
-       {:color (if (and watch-only (not (colors/dark?)))
-                 colors/neutral-100
-                 colors/white)
-        :size  16}]]
-     [text/text (style/metrics watch-only) percentage-value]
-     [rn/view (style/separator watch-only)]
-     [text/text (style/metrics watch-only) amount]]]]
-)
+  [{:keys [name balance percentage-value amount customization-color type]}]
+  (let [watch-only? (= :watch-only type)]
+    [:<>
+     [rn/view (style/card customization-color watch-only?)
+      [rn/view style/profile-container
+       [icon/icon :contact]
+       [rn/view style/watch-only-container
+        [text/text (style/account-name watch-only?)
+         name]
+        (when watch-only? [icon/icon :reveal {:color colors/neutral-50 :size 12}])]]
+
+      [text/text (style/account-value watch-only?) balance]
+      [rn/view style/metrics-container
+       [rn/view {:margin-right 5.5}
+        [icon/icon :positive
+         {:color (if (and watch-only? (not (colors/dark?)))
+                   colors/neutral-100
+                   colors/white)
+          :size  16}]]
+       [text/text (style/metrics watch-only?) percentage-value]
+       [rn/view (style/separator watch-only?)]
+       [text/text (style/metrics watch-only?) amount]]]]))
 
 (defn add-account-view
-  [{:keys [handler type add-account]}]
+  [{:keys [handler type add-account customization-color]}]
   [rn/view style/add-account-container
    [plus-button/plus-button
     {:on-press            handler
-     :customization-color :blue
+     :customization-color customization-color
     }]
    [text/text style/add-account-title (i18n/label :t/add-account)]])
 
 (defn view
-  [{:keys [name balance percentage-value amount customization-color handler watch-only add-account
-           type]}]
+  [{:keys [type] :as props}]
   (case type
-    :watch-only  [user-account-view
-                  {:name                name
-                   :balance             balance
-                   :percentage-value    percentage-value
-                   :amount              amount
-                   :customization-color customization-color
-                   :watch-only          watch-only}]
-    :add-account [add-account-view {:handler handler}]
+    :watch-only  [user-account-view props]
+    :add-account [add-account-view props]
     :default     [user-account-view
-                  {:name                name
-                   :balance             balance
-                   :percentage-value    percentage-value
-                   :amount              amount
-                   :customization-color customization-color
-                   :watch-only          watch-only}]
+                  props]
     nil))

@@ -14,12 +14,12 @@
    :height             88
    :background-color   (if watch-only?
                          (colors/theme-colors colors/neutral-80-opa-5 colors/neutral-95)
-                         (colors/custom-color customization-color 50))
+                         (colors/custom-color-by-theme customization-color 50 60))
    :border-radius      16
    :border-width       1
    :border-color       (if watch-only?
                          (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5)
-                         (colors/custom-color :army 50))
+                         (colors/custom-color-by-theme customization-color 50 60))
    :padding-horizontal 12
    :padding-top        8
    :padding-bottom     10})
@@ -40,8 +40,7 @@
   {:style  {:color       (text-color watch-only?)
             :margin-left 5}
    :size   :paragraph-2
-   :weight :medium
-  })
+   :weight :medium})
 
 (def watch-only-container
   {:flex-direction  :row
@@ -61,8 +60,7 @@
    :size   :paragraph-2
    :style  {:color (if (and watch-only? (not (colors/dark?)))
                      colors/neutral-80-opa-60
-                     colors/white-opa-70)
-           }})
+                     colors/white-opa-70)}})
 
 (defn separator
   [watch-only?]
@@ -84,11 +82,9 @@
    :justify-content    :center
    :border-radius      16
    :padding-vertical   12
-   :padding-horizontal 10
-  })
+   :padding-horizontal 10})
 
 (def add-account-title
   {:size       :paragraph-2
    :weight     :medium
-   :margin-top 4
-  })
+   :margin-top 4})

@@ -37,4 +37,4 @@
     [quo2.components.settings.settings-list.component-spec]
     [quo2.components.share.share-qr-code.component-spec]
     [quo2.components.tags.--tests--.status-tags-component-spec]
-    [quo2.components.wallet.account-card.account-card-spec]))
+    [quo2.components.wallet.account-card.component-spec]))
