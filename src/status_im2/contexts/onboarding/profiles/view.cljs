@@ -184,8 +184,9 @@
         profile-picture               (rf/sub [:multiaccounts/login-profiles-picture key-uid])
         error                         (if (and (some? error)
                                                (or (= error "file is not a database")
-                                                   (string/starts-with? error "failed to set ")))
-                                        (i18n/label :t/wrong-password)
+                                                   (string/starts-with? error "failed to set ")
+                                                   (string/starts-with? error "Failed")))
+                                        (i18n/label :t/oops-wrong-password)
                                         error)]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
@@ -232,7 +233,6 @@
           error]
          [rn/touchable-opacity
           {:hit-slop       {:top 6 :bottom 20 :left 0 :right 0}
-           :style          {:margin-left -4}
            :disabled       processing
            :active-opacity 1
            :on-press       (fn []
