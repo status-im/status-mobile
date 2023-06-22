@@ -17,7 +17,8 @@
             [status-im2.contexts.chat.messages.list.style :as style]
             [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
             [status-im2.contexts.chat.composer.constants :as composer.constants]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.i18n :as i18n]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -171,6 +172,23 @@
     platform/android?
     (assoc :scale-y -1)))
 
+(defn actions
+  [chat-id cover-bg-color]
+  (let [latest-pin-text (rf/sub [:chats/last-pinned-message-text chat-id])
+        pins-count      (rf/sub [:chats/pin-messages-count chat-id])]
+    [quo/channel-actions
+     {:style   {:margin-top 16}
+      :actions [{:accessibility-label :action-button-pinned
+                 :big?                true
+                 :label               (or latest-pin-text (i18n/label :t/no-pinned-messages))
+                 :color               cover-bg-color
+                 :icon                :i/pin
+                 :counter-value       pins-count
+                 :on-press            (fn []
+                                        (rf/dispatch [:dismiss-keyboard])
+                                        (rf/dispatch [:pin-message/show-pins-bottom-sheet
+                                                      chat-id]))}]}]))
+
 (defn f-list-footer
   [{:keys [chat scroll-y cover-bg-color on-layout shell-animation-complete?]}]
   (let [{:keys [chat-id chat-name emoji chat-type
@@ -213,7 +231,8 @@
           [contact-icon contact]]]
         (when bio
           [quo/text {:style style/bio}
-           bio])]]]
+           bio])
+        [actions chat-id cover-bg-color]]]]
      [loading-view chat-id shell-animation-complete?]]))
 
 (defn list-footer
@@ -224,7 +243,6 @@
   [{:keys [chat-id invitation-admin]}]
   [rn/view
    [chat.group/group-chat-footer chat-id invitation-admin]])
-
 (defn footer-on-layout
   [e]
   (let [height (oops/oget e "nativeEvent.layout.height")
@@ -302,8 +320,9 @@
                                          (on-scroll event)))
        :style                        (add-inverted-y-android
                                       {:background-color (if all-loaded?
-                                                           (colors/theme-colors (:light cover-bg-color)
-                                                                                (:dark cover-bg-color))
+                                                           (colors/theme-colors
+                                                            (colors/custom-color cover-bg-color 50 20)
+                                                            (colors/custom-color cover-bg-color 50 40))
                                                            (colors/theme-colors
                                                             colors/white
                                                             colors/neutral-95))})

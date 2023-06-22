@@ -34,8 +34,8 @@
                                                          {:extrapolateLeft  "clamp"
                                                           :extrapolateRight "extend"})
         banner-opacity-animation (reanimated/interpolate scroll-y
-                                                         [(+ style/navigation-bar-height 50)
-                                                          (+ style/navigation-bar-height 100)]
+                                                         [(+ style/navigation-bar-height 150)
+                                                          (+ style/navigation-bar-height 200)]
                                                          [0 1]
                                                          {:extrapolateLeft  "clamp"
                                                           :extrapolateRight "extend"})
@@ -106,13 +106,9 @@
                                 (rf/dispatch [:show-bottom-sheet
                                               {:content (fn [] [actions/chat-actions chat true])}]))}
         [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
-
-      [pin.banner/banner
+      [:f>
+       pin.banner/f-banner
        {:chat-id           chat-id
         :opacity-animation banner-opacity-animation
         :all-loaded?       all-loaded?
         :top-offset        style/navigation-bar-height}]]]))
-
-(defn navigation-view
-  [props]
-  [:f> f-navigation-view props])
