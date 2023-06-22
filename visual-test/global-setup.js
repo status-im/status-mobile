@@ -28,13 +28,13 @@ function downloadTestButlerAPK() {
 
 function resolveSelectedConfiguration() {
   const { configurations } = require('../.detoxrc');
-  const configName = process.env.DETOX_CONFIGURATION; 
+  const configName = process.env.DETOX_CONFIGURATION;
   return configurations[configName];
 }
 
 // TODO eventually, this should be made available by Detox more explicitly
 function isAndroidConfig(config) {
-  return [config.type, process.env.DETOX_CONFIGURATION, config.device].some(s => `${s}`.includes('android'));
+  return [config.type, process.env.DETOX_CONFIGURATION, config.device].some((s) => `${s}`.includes('android'));
 }
 
 module.exports = globalSetup;

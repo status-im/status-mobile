@@ -2,12 +2,11 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def container
-  {:flex-direction     :row
-   :flex-grow          1
-   :align-items        :flex-start
-   :padding-top        8
-   :padding-horizontal 12
-   :padding-bottom     12})
+  {:flex-direction :row
+   :flex-grow      1
+   :align-items    :flex-start
+   :padding-top    8
+   :padding-bottom 12})
 
 (def icon
   {:height          32

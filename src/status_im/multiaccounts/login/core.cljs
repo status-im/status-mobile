@@ -21,7 +21,6 @@
     [status-im.multiaccounts.biometric.core :as biometric]
     [status-im.multiaccounts.core :as multiaccounts]
     [native-module.core :as native-module]
-    [status-im.node.core :as node]
     [status-im.notifications.core :as notifications]
     [status-im.popover.core :as popover]
     [status-im.signing.eip1559 :as eip1559]
@@ -43,6 +42,7 @@
     [status-im2.contexts.contacts.events :as contacts]
     [status-im2.navigation.events :as navigation]
     [status-im2.contexts.shell.constants :as shell.constants]
+    [status-im2.contexts.communities.discover.events :as contract-communities]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
     [status-im2.contexts.shell.utils :as shell.utils]
@@ -58,8 +58,18 @@
 
 (re-frame/reg-fx
  ::login
- (fn [[key-uid account-data hashed-password]]
-   (native-module/login-with-config key-uid account-data hashed-password node/login-node-config)))
+ (fn [[key-uid _ hashed-password]]
+   (native-module/login-account {:keyUid                      key-uid
+                                 :password                    hashed-password
+                                 :openseaAPIKey               config/opensea-api-key
+
+                                 :poktToken                   config/POKT_TOKEN
+                                 :infuraToken                 config/INFURA_TOKEN
+
+                                 :alchemyOptimismMainnetToken config/ALCHEMY_OPTIMISM_MAINNET_TOKEN
+                                 :alchemyOptimismGoerliToken  config/ALCHEMY_OPTIMISM_GOERLI_TOKEN
+                                 :alchemyArbitrumMainnetToken config/ALCHEMY_ARBITRUM_MAINNET_TOKEN
+                                 :alchemyArbitrumGoerliToken  config/ALCHEMY_ARBITRUM_GOERLI_TOKEN})))
 
 (re-frame/reg-fx
  ::export-db
@@ -440,6 +450,7 @@
               (initialize-wallet-connect)
               (get-node-config)
               (communities/fetch)
+              (contract-communities/fetch-contract-communities)
               (communities/fetch-collapsed-community-categories)
               (communities/check-and-delete-pending-request-to-join)
               (logging/set-log-level (:log-level multiaccount))

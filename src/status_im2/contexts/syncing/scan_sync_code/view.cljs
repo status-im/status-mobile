@@ -240,11 +240,14 @@
     [:<>
      [rn/view {:style style/camera-container}
       [camera-kit/camera
-       {:ref            #(reset! camera-ref %)
-        :style          style/camera-style
-        :camera-options {:zoomMode :off}
-        :scan-barcode   true
-        :on-read-code   on-read-code}]]
+       {:ref          #(reset! camera-ref %)
+        :style        style/camera-style
+        :camera-type  camera-kit/camera-type-back
+        :zoom-mode    :off
+        ;; https://github.com/status-im/status-mobile/issues/16243
+        :torch-mode   :off
+        :scan-barcode true
+        :on-read-code on-read-code}]]
      [hole-view/hole-view
       {:style style/hole
        :holes (if show-holes?

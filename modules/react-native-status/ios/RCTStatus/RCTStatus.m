@@ -623,6 +623,14 @@ RCT_EXPORT_METHOD(loginWithConfig:(NSString *)accountData
     NSLog(@"%@", result);
 }
 
+RCT_EXPORT_METHOD(loginAccount:(NSString *)request) {
+#if DEBUG
+    NSLog(@"LoginAccount() method called");
+#endif
+    NSString *result = StatusgoLoginAccount(request);
+    NSLog(@"%@", result);
+}
+
 RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
                   password:(NSString *)password
                   chatKey:(NSString *)chatKey) {
@@ -896,6 +904,37 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFileDirectory) {
                       URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask]
                      lastObject];
     return rootUrl.path;
+}
+
+RCT_EXPORT_METHOD(initLogging:(BOOL)enabled
+                  mobileSystem:(BOOL)mobileSystem
+                  logLevel:(NSString *)logLevel
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    NSString *logDirectory = [self logFileDirectory];
+    NSString *logFilePath = [logDirectory stringByAppendingPathComponent:@"geth.log"];
+
+    NSMutableDictionary *jsonConfig = [NSMutableDictionary dictionary];
+    jsonConfig[@"Enabled"] = @(enabled);
+    jsonConfig[@"MobileSystem"] = @(mobileSystem);
+    jsonConfig[@"Level"] = logLevel;
+    jsonConfig[@"File"] = logFilePath;
+
+    NSError *error = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonConfig options:0 error:&error];
+
+    if (error) {
+        // Handle JSON serialization error
+        callback(@[error.localizedDescription]);
+        return;
+    }
+
+    NSString *config = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+
+    // Call your native logging initialization method here
+    NSString *initResult = StatusgoInitLogging(config);
+
+    callback(@[initResult]);
 }
 
 RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey

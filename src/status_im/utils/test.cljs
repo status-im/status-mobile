@@ -1,5 +1,6 @@
 (ns status-im.utils.test
-  (:require [re-frame.core :as re-frame]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.utils.types :as types]))
 
 (def native-status (js/require "../../modules/react-native-status/nodejs/bindings"))
 
@@ -125,4 +126,12 @@
     :validateMnemonic
     (fn [json callback] (callback (.validateMnemonic native-status json)))
 
-    :startLocalNotifications identity}))
+    :startLocalNotifications identity
+
+    :initLogging
+    (fn [enabled mobile-system log-level callback]
+      (callback (.initLogging native-status
+                              (types/clj->json {:Enabled      enabled
+                                                :MobileSystem mobile-system
+                                                :Level        log-level
+                                                :File         (str test-dir "/geth.log")}))))}))

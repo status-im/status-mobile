@@ -70,17 +70,18 @@
   (let [data (if (seq switcher-cards) switcher-cards empty-cards)]
     [:<>
      [rn/flat-list
-      {:data                    data
-       :render-fn               render-card
-       :key-fn                  :id
-       :header                  (jump-to-text)
-       :ref                     #(reset! state/jump-to-list-ref %)
-       :num-columns             2
-       :column-wrapper-style    {:margin-horizontal shell-margin
-                                 :justify-content   :space-between
-                                 :margin-bottom     16}
-       :style                   style/jump-to-list
-       :content-container-style {:padding-bottom (utils/bottom-tabs-container-height)}}]
+      {:data                              data
+       :render-fn                         render-card
+       :key-fn                            :id
+       :header                            (jump-to-text)
+       :ref                               #(reset! state/jump-to-list-ref %)
+       :num-columns                       2
+       :column-wrapper-style              {:margin-horizontal shell-margin
+                                           :justify-content   :space-between
+                                           :margin-bottom     16}
+       :style                             style/jump-to-list
+       :content-inset-adjustment-behavior :never
+       :content-container-style           {:padding-bottom (utils/bottom-tabs-container-height)}}]
      (when-not (seq switcher-cards)
        [placeholder])]))
 

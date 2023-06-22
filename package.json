@@ -10,7 +10,8 @@
     "app:compile:android": "shadow-cljs compile android",
     "app:watch": "shadow-cljs watch android",
     "app:packager": "react-native start --host 0.0.0.0 --port 8081",
-    "app:android": "react-native run-android"
+    "app:android": "react-native run-android",
+    "prettier": "node_modules/.bin/prettier --write ."
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.17.12",
@@ -40,7 +41,7 @@
     "react-native": "0.69.10",
     "react-native-background-timer": "^2.1.1",
     "react-native-blob-util": "^0.13.18",
-    "react-native-camera-kit": "^8.0.4",
+    "react-native-camera-kit": "^13.0.0",
     "react-native-config": "^1.5.0",
     "react-native-dialogs": "^1.0.4",
     "react-native-draggable-flatlist": "^3.0.3",
@@ -95,6 +96,7 @@
     "jest-image-snapshot": "^5.1.0",
     "nodemon": "^2.0.16",
     "nyc": "^14.1.1",
+    "prettier": "^2.8.8",
     "process": "0.11.10",
     "react-test-renderer": "18.0.0",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#refs/tags/v2.0.2-status",

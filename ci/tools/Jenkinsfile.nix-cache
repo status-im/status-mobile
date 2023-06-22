@@ -28,7 +28,7 @@ pipeline {
     timestamps()
     disableConcurrentBuilds()
     /* Prevent Jenkins jobs from running forever */
-    timeout(time: 300, unit: 'MINUTES')
+    timeout(time: 120, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '20',
@@ -41,18 +41,19 @@ pipeline {
       steps { script {
         nix.shell('nix-env -i openssh', sandbox: false, pure: false)
         /* some build targets don't build on MacOS */
-        uname = sh(script: 'uname', returnStdout: true)
+        os = sh(script: 'uname', returnStdout: true)
+        arch = sh(script: 'arch', returnStdout: true)
       } }
     }
     stage('Build status-go') {
       steps { script {
-        def platforms = ['mobile.android', 'mobile.ios']
-        if (uname != "Darwin") {
-          platforms.removeAll { it == "ios" }
-        }
+        def platforms = ['mobile.android', 'mobile.ios', 'library']
+        if (os != 'Darwin')  { platforms.removeAll { it == 'mobile.ios' } }
+        /* FIXME: Remove this when #16237 is merged. */
+        if (arch == 'arm64') { platforms.removeAll { it == 'mobile.android' } }
         platforms.each { os ->
           nix.build(
-            attr: "targets.status-go.${os}.buildInputs",
+            attr: "targets.status-go.${os}",
             sandbox: false,
             link: false
           )
@@ -83,12 +84,16 @@ pipeline {
     }
     stage('Build nix shell deps') {
       steps { script {
+        def shells = ['android', 'ios', 'fastlane', 'keytool', 'clojure', 'gradle']
+        if (os != "Darwin") { shells.removeAll { it == 'ios' } }
         /* Build/fetch deps required to start default Nix shell. */
-        nix.build(
-          attr: 'shells.default.buildInputs',
-          sandbox: false,
-          link: false
-        )
+        shells.each { shell ->
+          nix.build(
+            attr: "shells.${shell}.buildInputs",
+            sandbox: false,
+            link: false
+          )
+        }
       } }
     }
     stage('Upload') {

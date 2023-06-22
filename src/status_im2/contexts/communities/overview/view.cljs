@@ -15,7 +15,8 @@
             [status-im2.contexts.communities.overview.style :as style]
             [status-im2.contexts.communities.overview.utils :as utils]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.communities.actions.chat.view :as chat-actions]))
 
 (defn preview-user-list
   [user-list]
@@ -77,13 +78,20 @@
          {:style {:margin-left   8
                   :margin-top    10
                   :margin-bottom 8}}
-         (for [chat chats
-               :let [chat (assoc chat :chat-type constants/community-chat-type)]]
+         (for [{:keys [muted? id] :as chat} chats
+               :let                         [chat           (assoc chat
+                                                                   :chat-type
+                                                                   constants/community-chat-type)
+                                             channel-muted? (or muted?
+                                                                (rf/sub [:chat/check-channel-muted?
+                                                                         community-id id]))]]
            [rn/view
             {:key   (:id chat)
              :style {:margin-top 4}}
             [quo/channel-list-item
              (assoc chat
+                    :muted?
+                    channel-muted?
                     :on-long-press
                     (fn []
                       (rf/dispatch [:show-bottom-sheet
@@ -206,22 +214,30 @@
                  (i18n/label :t/joined)
                  (i18n/label :t/pending))}]]))
 
-(defn add-on-press-handler
-  [community-id {:keys [id locked?] :or {locked? false} :as chat}]
+(defn add-handlers
+  [community-id
+   {:keys [id locked?]
+    :or   {locked? false}
+    :as   chat}]
   (merge
    chat
    (when (and (not locked?) id)
-     {:on-press (fn []
-                  (rf/dispatch [:dismiss-keyboard])
-                  (rf/dispatch [:chat/navigate-to-chat (str community-id id)]))})))
+     {:on-press      (fn []
+                       (rf/dispatch [:dismiss-keyboard])
+                       (rf/dispatch [:chat/navigate-to-chat (str community-id id)]))
+      :on-long-press #(rf/dispatch
+                       [:show-bottom-sheet
+                        {:content (fn []
+                                    [chat-actions/actions community-id id])}])
+      :community-id  community-id})))
 
-(defn add-on-press-handler-to-chats
+(defn add-handlers-to-chats
   [community-id chats]
-  (mapv (partial add-on-press-handler community-id) chats))
+  (mapv (partial add-handlers community-id) chats))
 
-(defn add-on-press-handler-to-categorized-chats
+(defn add-handlers-to-categorized-chats
   [community-id categorized-chats]
-  (let [add-on-press (partial add-on-press-handler-to-chats community-id)]
+  (let [add-on-press (partial add-handlers-to-chats community-id)]
     (map (fn [[category v]]
            [category (update v :chats add-on-press)])
          categorized-chats)))
@@ -255,20 +271,20 @@
    {:keys [on-category-layout on-first-channel-height-changed]}]
   (let [chats-by-category (rf/sub [:communities/categorized-channels id])]
     [:<>
-     [rn/view {:padding-horizontal 20}
+     [rn/view {:style style/community-content-container}
       [status-tag pending? joined]
       [community-header name]
       [community-description description]
-      ;; [quo/community-stats-column :card-view] not implemented
-      [rn/view {:margin-top 12}]
-      [quo/community-tags tags]
-      ;;[preview-user-list users] not implemented
+      [quo/community-tags
+       {:tags            tags
+        :last-item-style style/last-community-tag
+        :container-style style/community-tag-container}]
       [join-community community pending?]]
      [channel-list-component
       {:on-category-layout              on-category-layout
        :community-id                    id
        :on-first-channel-height-changed on-first-channel-height-changed}
-      (add-on-press-handler-to-categorized-chats id chats-by-category)]]))
+      (add-handlers-to-categorized-chats id chats-by-category)]]))
 
 (defn sticky-category-header
   [_]
@@ -320,13 +336,8 @@
           :name                           name
           :on-scroll                      #(reset! scroll-height %)
           :navigate-back?                 true
-          :background-color               (colors/theme-colors
-                                           colors/white
-                                           colors/neutral-90)
-          :height                         (if platform/ios?
-                                            100
-                                            148)}
-
+          :background-color               (colors/theme-colors colors/white colors/neutral-90)
+          :height                         (if platform/ios? 100 148)}
          [sticky-category-header
           {:enabled (> @scroll-height @first-channel-height)
            :label   (pick-first-category-by-height
