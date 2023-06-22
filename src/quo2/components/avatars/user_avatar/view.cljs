@@ -38,13 +38,13 @@
   uses `ring-background` to display the ring behind the initials when given. Otherwise,
   shows the `profile-picture` which already comes with the ring drawn."
   [{:keys [full-name status-indicator? online? size profile-picture ring-background
-           customization-color static?]
+           customization-color static? muted?]
     :or   {status-indicator?   true
            online?             true
            size                :big
            customization-color :turquoise}}]
   (let [full-name    (or full-name "empty name")
-        draw-ring?   (and ring-background (valid-ring-sizes size))
+        draw-ring?   (when-not muted? (and ring-background (valid-ring-sizes size)))
         outer-styles (style/outer size)
         ;; Once image is loaded, fast image rerenders view with the help of reagent atom,
         ;; But dynamic updates don't work when user-avatar is used inside hole-view

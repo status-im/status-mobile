@@ -48,3 +48,7 @@ nix_root() {
     fi
     echo "${NIX_ROOT}"
 }
+
+nix_current_version() {
+    nix-env --version | awk '{print $3}'
+}

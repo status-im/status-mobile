@@ -486,10 +486,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi(
             'Deleting message for me. Checking that message is deleted only for the author of the message')
         self.channel_2.send_message(message_to_delete_for_me)
+        self.channel_1.chat_element_by_text(message_to_delete_for_me).wait_for_element(120)
         self.channel_2.delete_message_in_chat(message_to_delete_for_me, everyone=False)
         if not self.channel_2.chat_element_by_text(message_to_delete_for_me).is_element_disappeared(30):
             self.errors.append("Deleted for me message is shown in channel for the author of message")
-        if not channel.element_by_translation_id('message-deleted-for-you').is_element_displayed(30):
+        if not self.channel_2.element_by_translation_id('message-deleted-for-you').is_element_displayed(30):
             self.errors.append("System message about deletion for you is not displayed")
         if not self.channel_1.chat_element_by_text(message_to_delete_for_me).is_element_displayed(30):
             self.errors.append("Deleted for me message is deleted all channel members")
@@ -556,18 +557,26 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.just_fyi("Check gallery on second device")
         self.channel_2.jump_to_communities_home()
         self.home_2.get_to_community_channel_from_home(self.community_name)
-        if self.channel_2.chat_element_by_text(
-                image_description).image_container_in_message.is_element_differs_from_template(file_name, 5):
-            self.errors.append("Gallery message do not match the template!")
+        chat_element = self.channel_2.chat_element_by_text(image_description)
+        try:
+            chat_element.wait_for_visibility_of_element(120)
+            received = True
+            if chat_element.image_container_in_message.is_element_differs_from_template(file_name, 5):
+                self.errors.append("Gallery message do not match the template!")
+        except TimeoutException:
+            self.errors.append("Gallery message was not received")
+            received = False
 
-        self.channel_2.just_fyi("Can reply to gallery")
-        self.channel_2.quote_message(image_description)
-        message_text = 'reply to gallery'
-        self.channel_2.chat_message_input.send_keys(message_text)
-        self.channel_2.send_message_button.click()
-        chat_element_1 = self.channel_1.chat_element_by_text(message_text)
-        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != image_description:
-            self.errors.append('Reply message was not received by the sender')
+        if received:
+            self.channel_2.just_fyi("Can reply to gallery")
+            self.channel_2.quote_message(image_description)
+            message_text = 'reply to gallery'
+            self.channel_2.chat_message_input.send_keys(message_text)
+            self.channel_2.send_message_button.click()
+            chat_element_1 = self.channel_1.chat_element_by_text(message_text)
+            if not chat_element_1.is_element_displayed(
+                    sec=60) or chat_element_1.replied_message_text != image_description:
+                self.errors.append('Reply message was not received by the sender')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702840)
@@ -645,8 +654,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             if shown_title != data['title']:
                 self.errors.append("Preview text is not expected, it is '%s'" % shown_title)
             self.channel_2.send_message_button.click()
-            self.channel_1.get_preview_message_by_text(url).wait_for_element(60)
             message = self.channel_1.get_preview_message_by_text(url)
+            message.wait_for_element(60)
             # if not message.preview_image:
             #     self.errors.append("No preview is shown for %s" % link_data['url'])
             shown_title = message.preview_title.text
@@ -669,7 +678,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.send_message(message)
         self.home_1.just_fyi('Check new messages badge is shown for community')
         community_element_1 = self.home_1.get_chat(self.community_name, community=True)
-        if not community_element_1.new_messages_community.is_element_displayed():
+        if not community_element_1.new_messages_community.is_element_displayed(sec=30):
             self.errors.append('New message community badge is not shown')
 
         community_1 = community_element_1.click()
@@ -732,7 +741,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat_1.click_system_back_button_until_element_is_shown()
 
         self.home_2.just_fyi("Check that can send message in community after unblock")
-        [home.jump_to_card_by_text('# %s' % self.channel_name) for home in [self.home_1, self.home_2]]
+        self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
         self.chat_2.send_message(message_unblocked)
         if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(120):
             self.errors.append("Message was not received in public chat after user unblock!")

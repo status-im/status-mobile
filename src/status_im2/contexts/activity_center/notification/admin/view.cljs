@@ -11,14 +11,14 @@
   [{:keys [style]} _]
   [common/swipe-button-container
    {:style (common-style/swipe-success-container style)
-    :icon  :i/placeholder
+    :icon  :i/done
     :text  (i18n/label :t/accept)}])
 
 (defn- swipe-button-decline
   [{:keys [style]} _]
   [common/swipe-button-container
    {:style (common-style/swipe-danger-container style)
-    :icon  :i/placeholder
+    :icon  :i/decline
     :text  (i18n/label :t/decline)}])
 
 (defn- swipeable

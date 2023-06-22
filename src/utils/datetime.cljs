@@ -9,6 +9,33 @@
 
 (defn now [] (t/now))
 
+(def ^:const int->weekday
+  "Maps the corresponding string representation of a weekday
+   By it's numeric index as in cljs-time"
+  {1 "mon"
+   2 "tue"
+   3 "wed"
+   4 "thu"
+   5 "fri"
+   6 "sat"
+   7 "sun"})
+
+(def ^:const months
+  "Maps the corresponding string representation of a weekday
+   By it's numeric index as in cljs-time"
+  {1  "jan"
+   2  "feb"
+   3  "mar"
+   4  "apr"
+   5  "may"
+   6  "jun"
+   7  "jul"
+   8  "aug"
+   9  "sep"
+   10 "oct"
+   11 "nov"
+   12 "dec"})
+
 (def one-second 1000)
 (def minute (* 60 one-second))
 (defn minutes [m] (* m minute))
@@ -101,6 +128,13 @@
     (and (= (t/year now) (t/year datetime))
          (= (t/month now) (t/month datetime))
          (= (t/day now) (t/day datetime)))))
+
+(defn tomorrow?
+  [datetime]
+  (= (-> (t/now)
+         (t/plus (t/days 1))
+         t/day)
+     (t/day datetime)))
 
 (defn within-last-n-days?
   "Returns true if `datetime` is within last `n` days (inclusive on both ends)."
@@ -259,3 +293,39 @@
   [ms]
   (let [sec (quot ms 1000)]
     (gstring/format "%02d:%02d" (quot sec 60) (mod sec 60))))
+
+(def ^:const go-default-time
+  "Zero value for golang's time var"
+  "0001-01-01T00:00:00Z")
+
+(defn- add-leading-zero
+  [input-string]
+  (if (> 10 input-string)
+    (str "0" input-string)
+    input-string))
+
+(defn format-mute-till
+  [muted-till-string]
+  (let [parsed-time       (t.format/parse (t.format/formatters :date-time-no-ms) muted-till-string)
+        hours-and-minutes (str (add-leading-zero (t/hour (t/plus parsed-time time-zone-offset)))
+                               ":"
+                               (add-leading-zero (t/minute parsed-time)))
+        when-to-unmute    (cond (= go-default-time
+                                   muted-till-string)   (i18n/label :t/until-you-turn-it-back-on)
+                                (today? parsed-time)    (str hours-and-minutes " today")
+                                (tomorrow? parsed-time) (str hours-and-minutes " tomorrow")
+                                :else                   (str hours-and-minutes
+                                                             " "
+                                                             (i18n/label
+                                                              (keyword "t"
+                                                                       (get int->weekday
+                                                                            (t/day-of-week
+                                                                             parsed-time))))
+                                                             " "
+                                                             (t/day parsed-time)
+                                                             " "
+                                                             (i18n/label
+                                                              (keyword "t"
+                                                                       (get months
+                                                                            (t/month parsed-time))))))]
+    when-to-unmute))

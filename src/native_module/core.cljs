@@ -82,6 +82,15 @@
      key-uid
      #(.loginWithConfig ^js (status) account-data hashed-password config))))
 
+(defn login-account
+  "NOTE: beware, the password has to be sha3 hashed"
+  [{:keys [keyUid] :as request}]
+  (log/debug "[native-module] loginWithConfig")
+  (clear-web-data)
+  (init-keystore
+   keyUid
+   #(.loginAccount ^js (status) (types/clj->json request))))
+
 (defn create-account-and-login
   [request]
   (.createAccountAndLogin ^js (status) (types/clj->json request)))
@@ -536,3 +545,7 @@
 (defn log-file-directory
   []
   (.logFileDirectory ^js (status)))
+
+(defn init-status-go-logging
+  [{:keys [enable? mobile-system? log-level callback]}]
+  (.initLogging ^js (status) enable? mobile-system? log-level callback))

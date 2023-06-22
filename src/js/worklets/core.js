@@ -7,70 +7,64 @@ import { useDerivedValue, interpolate } from 'react-native-reanimated';
 // 2. remove keys with nil value, else useAnimatedStyle will throw an error
 //    https://github.com/status-im/status-mobile/issues/14756
 export function applyAnimationsToStyle(animations, style) {
-  return function() {
-    'worklet'
+  return function () {
+    'worklet';
 
-    var animatedStyle = {}
+    var animatedStyle = {};
 
     // Normal Style
     for (var key in style) {
-      if (key == "transform") {
-	var transforms = style[key];
-	var filteredTransforms = []
+      if (key == 'transform') {
+        var transforms = style[key];
+        var filteredTransforms = [];
 
-	for (var transform of transforms) {
-	  var transformKey = Object.keys(transform)[0];
-	  var transformValue = transform[transformKey];
-	  if(transformValue !== null) {
-	    filteredTransforms.push(
-	      {[transformKey.replace(/-./g, x=>x[1].toUpperCase())]: transformValue}
-	    );
-	  }
-	}
+        for (var transform of transforms) {
+          var transformKey = Object.keys(transform)[0];
+          var transformValue = transform[transformKey];
+          if (transformValue !== null) {
+            filteredTransforms.push({ [transformKey.replace(/-./g, (x) => x[1].toUpperCase())]: transformValue });
+          }
+        }
 
-	animatedStyle[key] = filteredTransforms;
+        animatedStyle[key] = filteredTransforms;
       } else {
-	var value = style[key];
-	if (value !== null) {
-	  animatedStyle[key.replace(/-./g, x=>x[1].toUpperCase())] = value;
-	}
+        var value = style[key];
+        if (value !== null) {
+          animatedStyle[key.replace(/-./g, (x) => x[1].toUpperCase())] = value;
+        }
       }
     }
 
     // Animations
     for (var key in animations) {
-      if (key == "transform") {
+      if (key == 'transform') {
         var transforms = animations[key];
-        var animatedTransforms = []
+        var animatedTransforms = [];
 
         for (var transform of transforms) {
           var transformKey = Object.keys(transform)[0];
-	  var transformValue = transform[transformKey].value;
-	  if (transformValue !== null) {
-            animatedTransforms.push(
-	      {[transformKey.replace(/-./g, x=>x[1].toUpperCase())]: transformValue}
-	    );
-	  }
+          var transformValue = transform[transformKey].value;
+          if (transformValue !== null) {
+            animatedTransforms.push({ [transformKey.replace(/-./g, (x) => x[1].toUpperCase())]: transformValue });
+          }
         }
 
         animatedStyle[key] = animatedTransforms;
       } else {
-	var animatedValue = animations[key].value;
-	if (animatedValue !== null) {
-          animatedStyle[key.replace(/-./g, x=>x[1].toUpperCase())] = animatedValue;
-	}
+        var animatedValue = animations[key].value;
+        if (animatedValue !== null) {
+          animatedStyle[key.replace(/-./g, (x) => x[1].toUpperCase())] = animatedValue;
+        }
       }
     }
 
     return animatedStyle;
   };
-};
+}
 
 export function interpolateValue(sharedValue, inputRange, outputRange, extrapolation) {
-  return useDerivedValue(
-    function () {
-      'worklet'
-      return interpolate(sharedValue.value, inputRange, outputRange, extrapolation);
-    }
-  );
+  return useDerivedValue(function () {
+    'worklet';
+    return interpolate(sharedValue.value, inputRange, outputRange, extrapolation);
+  });
 }
