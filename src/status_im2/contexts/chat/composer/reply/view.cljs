@@ -73,7 +73,7 @@
        :size              :xxxs}]
      [quo/text
       {:weight          :semi-bold
-       :size            :paragraph-2
+       :size            :label
        :number-of-lines 1
        :style           style/message-author-text}
       (format-reply-author from contact-name current-public-key)]]))
