@@ -39,6 +39,7 @@
        [channel-avatar/view
         {:big?                   true
          :locked?                locked?
+         :full-name              (:name props)
          :emoji-background-color (colors/theme-alpha channel-color 0.1 0.1)
          :emoji                  emoji}]
        [quo2.text/text
