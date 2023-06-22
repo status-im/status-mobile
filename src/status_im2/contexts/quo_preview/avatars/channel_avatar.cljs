@@ -15,7 +15,7 @@
    {:label "Avatar color"
     :key   :emoji
     :type  :text}
-   {:label   "is Locked?"
+   {:label   "Is Locked?"
     :key     :locked?
     :type    :select
     :options [{:key   nil
