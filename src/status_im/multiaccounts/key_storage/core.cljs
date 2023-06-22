@@ -8,7 +8,6 @@
             [status-im.keycard.backup-key :as keycard.backup]
             [status-im.keycard.common :as common]
             [status-im.ui.components.react :as react]
-            [status-im2.constants :as constants]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
             [status-im.multiaccounts.model :as multiaccounts.model]

@@ -1,7 +1,7 @@
 (ns status-im2.common.scan-qr-code.view
   (:require [clojure.string :as string]
             [reagent.core :as reagent]
-            [oops.core :as oops]            
+            [oops.core :as oops]
             [status-im2.common.scan-qr-code.style :as style]
             [react-native.camera-kit :as camera-kit]
             [re-frame.core :as re-frame]
@@ -18,10 +18,10 @@
             [status-im2.contexts.syncing.utils :as sync-utils]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [react-native.safe-area :as safe-area]
-            ))
+  ))
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
-(defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))            
+(defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
 
 (defonce camera-permission-granted? (reagent/atom false))
 
@@ -40,7 +40,7 @@
     {:permissions [:camera]
      :on-allowed  #(reset! camera-permission-granted? true)
      :on-denied   #(re-frame/dispatch [::key-storage/open-device-settings-dialog])
-     }]))
+    }]))
 
 (defn get-labels-and-on-press-method
   []
@@ -65,7 +65,7 @@
                 button-icon
                 button-label
                 accessibility-label
-                on-press]} (get-labels-and-on-press-method)]             
+                on-press]} (get-labels-and-on-press-method)]
     [rn/view {:style style/camera-permission-container}
      [quo/text
       {:size   :paragraph-1
@@ -86,8 +86,8 @@
        :customization-color :blue
        :on-press            on-press}
       (i18n/label button-label)]]
-  
-      ))
+
+  ))
 
 
 (defn- qr-scan-hole-area
@@ -159,7 +159,7 @@
         :camera-options {:zoomMode :off}
         :scan-barcode   true
         :on-read-code   on-read-code}]
-        ]
+     ]
      [hole-view/hole-view
       {:style style/hole
        :holes (if show-holes?
@@ -196,12 +196,12 @@
             @camera-permission-granted?
             (boolean (not-empty @qr-view-finder)))
      [viewfinder @qr-view-finder]
-     [camera-and-local-network-access-permission-view])])                   
+     [camera-and-local-network-access-permission-view])])
 
 (defn view
   [header]
   (let [insets         (safe-area/get-insets)
-    qr-view-finder (reagent/atom {})]
+        qr-view-finder (reagent/atom {})]
     (fn []
       (let [camera-ref                       (atom nil)
             read-qr-once?                    (atom false)
@@ -219,21 +219,21 @@
             show-camera?                     (and @camera-permission-granted?
                                                   @preflight-check-passed?)
             show-holes?                      (and show-camera?
-                                                  (boolean (not-empty @qr-view-finder)))]                                             
-                   
-    (rn/use-effect
+                                                  (boolean (not-empty @qr-view-finder)))]
+
+        (rn/use-effect
          (fn []
            (when-not @camera-permission-granted?
              (permissions/permission-granted? :camera
                                               #(reset! camera-permission-granted? %)
-                                              #(reset! camera-permission-granted? false)))))  
+                                              #(reset! camera-permission-granted? false)))))
         [:<>
-        [background/view true]
+         [background/view true]
          [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
-         [rn/view   {:style (style/root-container (:top insets))}
-            [header]
+         [rn/view {:style (style/root-container (:top insets))}
+          [header]
           [scan-qr-code-view qr-view-finder]
-           
-           ]
-           ]))
-          ))
+
+         ]
+        ]))
+  ))

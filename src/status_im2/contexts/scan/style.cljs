@@ -1,6 +1,5 @@
 (ns status-im2.contexts.scan.style
-  (:require [quo2.foundations.colors :as colors]
-            [status-im.utils.platform :as platform]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def screen-padding 20)
 
@@ -16,7 +15,7 @@
    :padding-top        12
    :padding-bottom     8
    :color              colors/white})
-   
+
 (def blur
   {:style         {:position :absolute
                    :top      0
@@ -24,4 +23,4 @@
                    :right    0
                    :bottom   0}
    :overlay-color colors/neutral-80-opa-80
-   :blur-amount   20})   
+   :blur-amount   20})
