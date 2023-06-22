@@ -71,16 +71,16 @@
           (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))))))
 
 (re-frame/reg-sub
- :communities/featured-communities
- :<- [:communities]
- (fn [communities]
-   (vals communities)))
+ :communities/featured-contract-communities
+ :<- [:contract-communities]
+ (fn [contract-communities]
+   (sort-by :name (vals (:featured contract-communities)))))
 
 (re-frame/reg-sub
- :communities/sorted-communities
- :<- [:communities]
- (fn [communities]
-   (sort-by :name (vals communities))))
+ :communities/other-contract-communities
+ :<- [:contract-communities]
+ (fn [contract-communities]
+   (sort-by :name (vals (:other contract-communities)))))
 
 (re-frame/reg-sub
  :communities/community-ids
