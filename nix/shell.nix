@@ -7,6 +7,7 @@
 
 let
   inherit (pkgs) mkShell;
+  inherit (pkgs.stdenv) isDarwin;
 in mkShell {
   name = "status-mobile-shell"; # for identifying all shells
 
@@ -38,4 +39,9 @@ in mkShell {
     export STATUS_MOBILE_HOME=$(git rev-parse --show-toplevel)
     export PATH="$STATUS_MOBILE_HOME/node_modules/.bin:$PATH"
   '';
+
+  # Sandbox causes Xcode issues on MacOS. Requires sandbox=relaxed.
+  # Fixes: 'sandbox-exec: pattern serialization length 123479 exceeds maximum (65535)'
+  # https://github.com/NixOS/nix/issues/4119
+  __noChroot = isDarwin;
 }
