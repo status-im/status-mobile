@@ -203,7 +203,7 @@
         get-day                   #(t.format/unparse custom-DD-formatter %)
         get-week-day              #(->> %
                                         t/day-of-week
-                                        (get constants/int->weekday))
+                                        (get datetime/int->weekday))
         mock-today                (t.format/unparse (t.format/formatters :date-time-no-ms) curr-time)
         in-n-days                 #(-> (time-str-to-obj mock-today)
                                        (t/plus (t/days %)))
@@ -234,7 +234,7 @@
         form-full-date            #(str (get-hh-mm %)
                                         " " (string/capitalize (get-week-day %))
                                         " " (get-month-day-int %)
-                                        " " (string/capitalize (get constants/months (t/month %))))
+                                        " " (string/capitalize (get datetime/months (t/month %))))
         today-date                #(str (get-hh-mm %) " today")
         tomorrow-date             #(str (get-hh-mm %) " tomorrow")
         write-date                #(cond (today? % curr-time)    (today-date %)
