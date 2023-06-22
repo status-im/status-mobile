@@ -9,7 +9,7 @@
             [status-im2.constants :as constants]
             [clojure.string :as string]
             [utils.i18n :as i18n]
-            [quo2.components.icon :as quo2.icons]))
+            [quo2.components.icon :as icons]))
 
 (def max-subheader-length 50)
 
@@ -237,7 +237,6 @@
           {:style {:top   16
                    :right 16}}
           unviewed-messages-count])
-       [quo2.icons/icon :i/muted
-        {:size            20
-         :color           colors/neutral-40
+       [icons/icon :i/muted
+        {:color           colors/neutral-40
          :container-style style/muted-icon}])]))

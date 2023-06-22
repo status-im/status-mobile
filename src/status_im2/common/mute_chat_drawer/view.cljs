@@ -4,8 +4,14 @@
             [react-native.core :as rn]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
-            [status-im2.common.mute-chat-drawer.style :as style]
-            [utils.chats :as chat-utils]))
+            [status-im2.common.mute-chat-drawer.style :as style]))
+
+(defn not-community-chat?
+  [chat-type]
+  (contains? #{constants/public-chat-type
+               constants/private-group-chat-type
+               constants/one-to-one-chat-type}
+             chat-type))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -20,7 +26,7 @@
      :size   :paragraph-2
      :style  (style/header-text)}
     (i18n/label
-     (if (chat-utils/not-community-chat? chat-type)
+     (if (not-community-chat? chat-type)
        :t/mute-chat-capitialized
        :t/mute-channel))]
    [quo/menu-item

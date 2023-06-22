@@ -5,10 +5,36 @@
             [cljs-time.format :as t.format]
             [clojure.string :as string]
             [utils.i18n :as i18n]
-            [utils.i18n-goog :as i18n-goog]
-            [status-im2.constants :as constants]))
+            [utils.i18n-goog :as i18n-goog]))
 
 (defn now [] (t/now))
+
+(def ^:const int->weekday
+  "Maps the corresponding string representation of a weekday
+   By it's numeric index as in cljs-time"
+  {1 "mon"
+   2 "tue"
+   3 "wed"
+   4 "thu"
+   5 "fri"
+   6 "sat"
+   7 "sun"})
+
+(def ^:const months
+  "Maps the corresponding string representation of a weekday
+   By it's numeric index as in cljs-time"
+  {1  "jan"
+   2  "feb"
+   3  "mar"
+   4  "apr"
+   5  "may"
+   6  "jun"
+   7  "jul"
+   8  "aug"
+   9  "sep"
+   10 "oct"
+   11 "nov"
+   12 "dec"})
 
 (def one-second 1000)
 (def minute (* 60 one-second))
@@ -292,7 +318,7 @@
                                                              " "
                                                              (i18n/label
                                                               (keyword "t"
-                                                                       (get constants/int->weekday
+                                                                       (get int->weekday
                                                                             (t/day-of-week
                                                                              parsed-time))))
                                                              " "
@@ -300,6 +326,6 @@
                                                              " "
                                                              (i18n/label
                                                               (keyword "t"
-                                                                       (get constants/months
+                                                                       (get months
                                                                             (t/month parsed-time))))))]
     when-to-unmute))
