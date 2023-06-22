@@ -12,15 +12,11 @@
    :align-items      :center
    :background-color background-color})
 
-(def inner-container
-  {:justify-content :center
-   :align-items     :center})
-
 (defn lock-container
   [{:keys [big?]}]
   {:position         :absolute
-   :left             (if big? 14 8)
-   :top              (if big? 15 8)
+   :left             (if big? 20 12)
+   :top              (if big? 20 12)
    :background-color (colors/theme-colors colors/white colors/neutral-90)
    :border-radius    (* 2 lock-icon-size)
    :padding          2})

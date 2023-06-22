@@ -53,11 +53,10 @@
   [rn/view
    {:accessibility-label :channel-avatar
     :style               (style/outer-container {:big? big? :background-color emoji-background-color})}
-   [rn/view {:style style/inner-container}
-    (if (string/blank? emoji)
-      [initials full-name amount-initials]
-      [text/text
-       {:accessibility-label :emoji
-        :size                (if big? :paragraph-1 :label)}
-       emoji])
-    [lock locked? big?]]])
+   (if (string/blank? emoji)
+     [initials full-name amount-initials]
+     [text/text
+      {:accessibility-label :emoji
+       :size                (if big? :paragraph-1 :label)}
+      emoji])
+   [lock locked? big?]])
