@@ -4,13 +4,13 @@
 (def lock-icon-size 12)
 
 (defn outer-container
-  [{:keys [big? background-color]}]
+  [{:keys [big? color]}]
   {:width            (if big? 32 24)
    :height           (if big? 32 24)
    :border-radius    (if big? 32 24)
    :justify-content  :center
    :align-items      :center
-   :background-color background-color})
+   :background-color (colors/theme-alpha color 0.1 0.1)})
 
 (defn lock-container
   [{:keys [big?]}]

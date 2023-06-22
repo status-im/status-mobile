@@ -1,5 +1,6 @@
 (ns status-im2.contexts.quo-preview.avatars.channel-avatar
-  (:require [quo2.core :as quo]
+  (:require [clojure.string :as string]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -10,9 +11,14 @@
   [{:label "Big?"
     :key   :big?
     :type  :boolean}
-   {:label "Avatar color"
-    :key   :emoji-background-color
-    :type  :text}
+   {:label   "Custom color"
+    :key     :color
+    :type    :select
+    :options (->> colors/customization
+                  keys
+                  sort
+                  (map (fn [k]
+                         {:key k :value (string/capitalize (name k))})))}
    {:label "Emoji"
     :key   :emoji
     :type  :text}
@@ -34,14 +40,15 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:big?                   true
-                             :locked?                nil
-                             :emoji                  "🍑"
-                             :full-name              "Some channel"
-                             :amount-initials        "1"
-                             :emoji-background-color :gray})]
+  (let [state (reagent/atom {:big?            true
+                             :locked?         nil
+                             :emoji           "🍑"
+                             :full-name       "Some channel"
+                             :amount-initials "1"
+                             :color           :blue})]
     (fn []
-      (let [amount-initials (utils.number/parse-int (:amount-initials @state) 1)]
+      (let [amount-initials (utils.number/parse-int (:amount-initials @state) 1)
+            color           (colors/custom-color-by-theme (:color @state) 50 60)]
         [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
          [rn/view {:padding-bottom 150}
           [rn/view {:flex 1}
@@ -50,7 +57,10 @@
            {:padding-vertical 60
             :flex-direction   :row
             :justify-content  :center}
-           [quo/channel-avatar (assoc @state :amount-initials amount-initials)]]]]))))
+           [quo/channel-avatar
+            (assoc @state
+                   :amount-initials amount-initials
+                   :color           color)]]]]))))
 
 (defn preview-channel-avatar
   []

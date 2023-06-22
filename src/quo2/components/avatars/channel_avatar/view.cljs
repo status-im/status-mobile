@@ -8,13 +8,14 @@
             utils.string))
 
 (defn- initials
-  [full-name amount-initials]
+  [full-name amount-initials color]
   [text/text
    {:accessibility-label :initials
     :size                :paragraph-2
     :number-of-lines     1
     :ellipsize-mode      :clip
-    :weight              :semi-bold}
+    :weight              :semi-bold
+    :style               {:color color}}
    (utils.string/get-initials full-name amount-initials)])
 
 (defn- lock
@@ -37,7 +38,8 @@
 
   :emoji - string (default nil)
 
-  :emoji-background-color - color (default nil)
+  :color - color (default nil) If the component is used for a community channel,
+  then the default color should be the community custom color.
 
   :locked? - nil/bool (default nil) - When true/false display a locked/unlocked
   icon respectively. When nil does not show icon.
@@ -48,15 +50,16 @@
   :amount-initials - int (default 1) - Number of initials to be extracted
   from :full-name when :emoji is blank.
   "
-  [{:keys [big? emoji emoji-background-color locked? full-name amount-initials]
-    :or   {amount-initials 1}}]
-  [rn/view
-   {:accessibility-label :channel-avatar
-    :style               (style/outer-container {:big? big? :background-color emoji-background-color})}
-   (if (string/blank? emoji)
-     [initials full-name amount-initials]
-     [text/text
-      {:accessibility-label :emoji
-       :size                (if big? :paragraph-1 :label)}
-      emoji])
-   [lock locked? big?]])
+  [{:keys [big? emoji color locked? full-name amount-initials]}]
+  (let [amount-initials (or amount-initials 1)
+        color           (or color (colors/custom-color-by-theme :blue 50 50))]
+    [rn/view
+     {:accessibility-label :channel-avatar
+      :style               (style/outer-container {:big? big? :color color})}
+     (if (string/blank? emoji)
+       [initials full-name amount-initials color]
+       [text/text
+        {:accessibility-label :emoji
+         :size                (if big? :paragraph-1 :label)}
+        emoji])
+     [lock locked? big?]]))
