@@ -10,6 +10,7 @@
             [status-im2.common.home.actions.view :as actions]
             [status-im2.common.password-authentication.view :as password-authentication]
             [status-im2.common.scroll-page.view :as scroll-page]
+            [status-im2.common.scroll-page.style :as scroll-page.style]
             [status-im2.constants :as constants]
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im2.contexts.communities.overview.style :as style]
@@ -250,7 +251,9 @@
     :ellipsize-mode      :tail
     :weight              :semi-bold
     :size                :heading-1
-    :style               {:margin-top 56}}
+    :style               {:margin-top (+ scroll-page.style/picture-radius
+                                         scroll-page.style/picture-border-width
+                                         12)}}
    name])
 
 (defn community-description
@@ -301,13 +304,13 @@
 
 (defn page-nav-right-section-buttons
   [id]
-  [{:icon                :i/options
-    :background-color    (scroll-page/icon-color)
-    :accessibility-label :community-options-for-community
-    :on-press            #(rf/dispatch
-                           [:show-bottom-sheet
-                            {:content (fn []
-                                        [options/community-options-bottom-sheet id])}])}])
+  [{:icon                  :i/options
+    :icon-background-color (scroll-page/icon-color)
+    :accessibility-label   :community-options-for-community
+    :on-press              #(rf/dispatch
+                             [:show-bottom-sheet
+                              {:content (fn []
+                                          [options/community-options-bottom-sheet id])}])}])
 
 (defn pick-first-category-by-height
   [scroll-height first-channel-height categories-heights]
@@ -336,7 +339,7 @@
           :name                           name
           :on-scroll                      #(reset! scroll-height %)
           :navigate-back?                 true
-          :background-color               (colors/theme-colors colors/white colors/neutral-90)
+          :background-color               (colors/theme-colors colors/white colors/neutral-95)
           :height                         (if platform/ios? 100 148)}
          [sticky-category-header
           {:enabled (> @scroll-height @first-channel-height)
@@ -350,8 +353,8 @@
           pending?
           {:on-category-layout              (partial add-category-height categories-heights)
            :on-first-channel-height-changed
-           ;; Here we set the height of the component
-           ;; and we filter out the categories, as some might have been removed
+           ;; Here we set the height of the component and we filter out the
+           ;; categories, as some might have been removed
            (fn [height categories]
              (swap! categories-heights select-keys categories)
              (reset! first-channel-height height))}]]))))
