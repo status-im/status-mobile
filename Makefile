@@ -343,14 +343,6 @@ test: ##@test Run tests once in NodeJS
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js target/test/test.js
 
-
-run-visual-test-ios: export TARGET := clojure
-run-visual-test-ios: XCODE_DERIVED_DATA := $(HOME)/Library/Developer/Xcode/DerivedData
-run-visual-test-ios: APPLICATION_NAME := StatusIm-brfnruzfrkkycpbndmdoeyrigthc
-run-visual-test-ios: export TEST_BINARY_PATH := $(XCODE_DERIVED_DATA)/$(APPLICATION_NAME)/Build/Products/Debug-iphonesimulator/StatusIm.app
-run-visual-test-ios: ##@test Run tests once in NodeJS
-	detox test --configuration ios.sim.debug
-
 component-test-watch: export TARGET := clojure
 component-test-watch: export COMPONENT_TEST := true
 component-test-watch: export BABEL_ENV := test
