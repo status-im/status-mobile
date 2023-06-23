@@ -447,14 +447,11 @@ com.diffplug.spotless:spotless-plugin-gradle:6.11.0
 com.drewnoakes:metadata-extractor:2.12.0
 com.facebook.conceal:conceal:1.1.3
 com.facebook.fbjni:fbjni-java-only:0.2.2
-com.facebook.flipper:flipper-fresco-plugin:0.54.0
-com.facebook.flipper:flipper:0.54.0
-com.facebook.fresco:animated-base:2.2.0
-com.facebook.fresco:animated-drawable:2.2.0
-com.facebook.fresco:animated-gif:2.2.0
+com.facebook.fresco:animated-base:2.5.0
+com.facebook.fresco:animated-drawable:2.5.0
+com.facebook.fresco:animated-gif:2.5.0
 com.facebook.fresco:drawee:2.5.0
 com.facebook.fresco:fbcore:2.5.0
-com.facebook.fresco:flipper:2.2.0
 com.facebook.fresco:fresco:2.5.0
 com.facebook.fresco:imagepipeline-base:2.5.0
 com.facebook.fresco:imagepipeline-native:2.5.0
@@ -467,7 +464,6 @@ com.facebook.fresco:middleware:2.5.0
 com.facebook.fresco:nativeimagefilters:2.5.0
 com.facebook.fresco:nativeimagetranscoder:2.5.0
 com.facebook.fresco:soloader:2.5.0
-com.facebook.fresco:stetho:2.2.0
 com.facebook.fresco:ui-common:2.5.0
 com.facebook.infer.annotation:infer-annotation:0.18.0
 com.facebook.soloader:annotation:0.10.3
@@ -567,7 +563,6 @@ com.google.protobuf:protobuf-java:3.17.2
 com.google.testing.platform:core-proto:0.0.8-alpha07
 com.google.test.platform:core-proto:0.0.2-dev
 com.intellij:annotations:12.0
-com.parse.bolts:bolts-applinks:1.4.0
 com.parse.bolts:bolts-tasks:1.4.0
 com.squareup.okhttp3:okhttp-tls:4.9.2
 com.squareup.okhttp3:okhttp-urlconnection:4.9.2
