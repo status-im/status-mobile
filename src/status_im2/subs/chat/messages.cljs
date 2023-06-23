@@ -4,7 +4,8 @@
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.list.events :as models.message-list]
             [utils.datetime :as datetime]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]))
 
 (defn intersperse-datemark
   "Reduce step which expects the input list of messages to be sorted by clock value.
@@ -181,6 +182,30 @@
    (re-frame/subscribe [:chats/pinned-sorted-list chat-id]))
  (fn [pin-messages _]
    (last pin-messages)))
+
+(defn message-text
+  [{:keys [content-type] :as message}]
+  (cond (= content-type constants/content-type-audio)
+        (i18n/label :audio-message)
+        :else
+        (get-in message [:content :parsed-text])))
+
+(re-frame/reg-sub
+ :chats/last-pinned-message-text
+ (fn [[_ chat-id]]
+   (re-frame/subscribe [:chats/last-pinned-message chat-id]))
+ (fn [pinned-message _]
+   (let [latest-pin-text                    (message-text pinned-message)
+         {:keys [deleted? deleted-for-me?]} pinned-message]
+     (cond deleted? (i18n/label :t/message-deleted-for-everyone)
+           deleted-for-me? (i18n/label :t/message-deleted-for-you)
+           (#{constants/content-type-text
+              constants/content-type-image
+              constants/content-type-sticker
+              constants/content-type-emoji}
+            (:content-type pinned-message))
+           (resolver/resolve-message latest-pin-text)
+           :else latest-pin-text))))
 
 (re-frame/reg-sub
  :chats/pin-messages-count

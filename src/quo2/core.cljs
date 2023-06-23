@@ -88,7 +88,8 @@
     quo2.components.tags.token-tag
     quo2.components.text-combinations.title.view
     quo2.components.settings.settings-list.view
-    quo2.components.settings.reorder-item.view))
+    quo2.components.settings.reorder-item.view
+    quo2.components.community.channel-actions))
 
 (def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
@@ -155,6 +156,7 @@
 (def discover-card quo2.components.community.banner.view/view)
 (def community-icon quo2.components.community.icon/community-icon)
 (def token-requirement-list quo2.components.community.token-gating/token-requirement-list)
+(def channel-actions quo2.components.community.channel-actions/channel-actions)
 
 ;;;; COUNTER
 (def counter quo2.components.counter.counter/counter)
