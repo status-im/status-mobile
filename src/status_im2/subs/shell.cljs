@@ -5,7 +5,7 @@
             [status-im2.constants :as constants]
             [react-native.platform :as platform]
             [status-im2.common.resources :as resources]
-            [status-im2.contexts.shell.constants :as shell.constants]))
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 ;; Helper Functions
 (defn community-avatar

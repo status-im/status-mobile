@@ -1,8 +1,8 @@
-(ns status-im2.contexts.shell.components.bottom-tabs.style
+(ns status-im2.contexts.shell.jump-to.components.bottom-tabs.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.shell.utils :as utils]))
+            [status-im2.contexts.shell.jump-to.utils :as utils]))
 
 (defn bottom-tabs-container
   [pass-through? height]

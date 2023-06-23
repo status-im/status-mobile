@@ -41,11 +41,11 @@
     [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
     [status-im2.contexts.contacts.events :as contacts]
     [status-im2.navigation.events :as navigation]
-    [status-im2.contexts.shell.constants :as shell.constants]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
     [status-im2.contexts.communities.discover.events :as contract-communities]
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
-    [status-im2.contexts.shell.utils :as shell.utils]
+    [status-im2.contexts.shell.jump-to.utils :as shell.utils]
     [utils.security.core :as security]))
 
 (re-frame/reg-fx

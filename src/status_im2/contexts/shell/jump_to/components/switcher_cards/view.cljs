@@ -1,4 +1,4 @@
-(ns status-im2.contexts.shell.components.switcher-cards.view
+(ns status-im2.contexts.shell.jump-to.components.switcher-cards.view
   (:require [clojure.string :as string]
             [utils.i18n :as i18n]
             [quo2.core :as quo]
@@ -8,9 +8,9 @@
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [status-im2.constants :as constants]
-            [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.contexts.shell.components.switcher-cards.style :as style]
+            [status-im2.contexts.shell.jump-to.animation :as animation]
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+            [status-im2.contexts.shell.jump-to.components.switcher-cards.style :as style]
             [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]))
 
 (defn content-container

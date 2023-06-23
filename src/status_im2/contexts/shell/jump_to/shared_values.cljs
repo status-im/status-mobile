@@ -1,11 +1,11 @@
-(ns status-im2.contexts.shell.shared-values
+(ns status-im2.contexts.shell.jump-to.shared-values
   (:require [quo2.foundations.colors :as colors]
             [react-native.safe-area :as safe-area]
             [react-native.reanimated :as reanimated]
             [utils.worklets.shell :as worklets.shell]
-            [status-im2.contexts.shell.utils :as utils]
-            [status-im2.contexts.shell.state :as state]
-            [status-im2.contexts.shell.constants :as shell.constants]))
+            [status-im2.contexts.shell.jump-to.utils :as utils]
+            [status-im2.contexts.shell.jump-to.state :as state]
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 (defn calculate-home-stack-position
   [{:keys [width height]}]

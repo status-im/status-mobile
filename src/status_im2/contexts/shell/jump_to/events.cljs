@@ -1,14 +1,14 @@
-(ns status-im2.contexts.shell.events
+(ns status-im2.contexts.shell.jump-to.events
   (:require [utils.re-frame :as rf]
             [re-frame.core :as re-frame]
             [status-im2.config :as config]
             [status-im.utils.core :as utils]
             [status-im2.constants :as constants]
-            [status-im2.contexts.shell.state :as state]
-            [status-im2.contexts.shell.utils :as shell.utils]
+            [status-im2.contexts.shell.jump-to.state :as state]
+            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
             [status-im2.navigation.state :as navigation.state]
-            [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as shell.constants]
+            [status-im2.contexts.shell.jump-to.animation :as animation]
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [status-im.data-store.switcher-cards :as switcher-cards-store]))
 
 ;;;; Effects

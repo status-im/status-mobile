@@ -1,4 +1,4 @@
-(ns status-im2.contexts.shell.constants)
+(ns status-im2.contexts.shell.jump-to.constants)
 
 (def ^:const shell-animation-time 200)
 (def ^:const switcher-card-size 160)

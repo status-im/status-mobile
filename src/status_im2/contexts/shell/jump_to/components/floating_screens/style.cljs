@@ -1,4 +1,4 @@
-(ns status-im2.contexts.shell.components.floating-screens.style
+(ns status-im2.contexts.shell.jump-to.components.floating-screens.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.reanimated :as reanimated]))
 

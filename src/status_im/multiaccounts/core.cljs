@@ -12,7 +12,7 @@
             [status-im2.setup.hot-reload :as hot-reload]
             [status-im2.common.theme.core :as theme]
             [taoensso.timbre :as log]
-            [status-im2.contexts.shell.utils :as shell.utils]
+            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
             [status-im.contact.db :as contact.db]))
 
 ;; validate that the given mnemonic was generated from Status Dictionary

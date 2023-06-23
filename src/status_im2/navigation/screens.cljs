@@ -21,7 +21,7 @@
     [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im2.contexts.onboarding.profiles.view :as profiles]
     [status-im2.contexts.quo-preview.main :as quo.preview]
-    [status-im2.contexts.shell.view :as shell]
+    [status-im2.contexts.shell.jump-to.view :as shell]
     [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
     [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
