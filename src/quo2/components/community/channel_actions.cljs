@@ -16,7 +16,7 @@
      [icons/icon icon]
      (when counter-value
        [counter/counter {:type :secondary} counter-value])]
-    [text/text {:size :paragraph-1 :weight :medium} label]]])
+    [text/text {:size :paragraph-1 :weight :medium :number-of-lines 2} label]]])
 
 (defn channel-actions
   [{:keys [style actions]}]
