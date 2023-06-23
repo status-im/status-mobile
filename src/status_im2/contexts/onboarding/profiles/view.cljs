@@ -120,8 +120,7 @@
         :size                32
         :icon                true
         :on-press            show-new-account-options
-        :accessibility-label :show-new-account-options
-        :override-theme      :dark}
+        :accessibility-label :show-new-account-options}
        :main-icons/add]]
      [rn/flat-list
       {:data                    (sort-by :timestamp > profiles-data)
