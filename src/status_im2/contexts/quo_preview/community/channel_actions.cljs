@@ -16,13 +16,10 @@
     [channel-actions/channel-actions
      {:actions [{:label "Pinned Messages" :color :blue :icon :i/pin :counter-value 5}
                 {:label "Mute chat" :color :blue :icon :i/muted}]}]
-
     [rn/view {:height 50}]
     [channel-actions/channel-actions
      {:actions [{:big? true :label "Pinned Messages" :color :blue :icon :i/pin :counter-value 5}
                 {:label "Mute chat" :color :blue :icon :i/muted}]}]
-
-
     [rn/view {:height 50}]
     [channel-actions/channel-actions
      {:actions [{:label "Pinned Messages" :color :blue :icon :i/pin :counter-value 5}

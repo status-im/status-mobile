@@ -21,8 +21,11 @@
 (defn channel-actions
   [{:keys [style actions]}]
   [rn/view {:style (merge {:flex-direction :row :flex 1} style)}
-   (for [action actions]
-     [:<>
-      [channel-action action]
-      (when (not= action (last actions))
-        [rn/view {:width 16}])])])
+   (map-indexed
+    (fn [index action]
+      ^{:key index}
+      [:<>
+       [channel-action action]
+       (when (not= action (last actions))
+         [rn/view {:width 16}])])
+    actions)])
