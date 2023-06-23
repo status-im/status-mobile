@@ -13,20 +13,12 @@
                constants/one-to-one-chat-type}
              chat-type))
 
-(defn mute-chat
-  [id]
-  (rf/dispatch [:chat.ui/mute id]))
-
-(defn mute-community
-  [id muted? muted-type]
-  (rf/dispatch [:community/set-muted id muted? muted-type]))
-
 (defn hide-sheet-and-dispatch
   [{:keys [id community? muted? muted-type]}]
   (rf/dispatch [:hide-bottom-sheet])
   (if community?
-    (mute-community id muted? muted-type)
-    (mute-chat id)))
+    (rf/dispatch [:community/set-muted id muted? muted-type])
+    (rf/dispatch [:chat.ui/mute id muted? muted-type])))
 
 (defn mute-drawer
   [{:keys [id accessibility-label muted? chat-type community?]}]

@@ -12,11 +12,15 @@
   (rf/dispatch event))
 
 (defn- mute-channel-action
-  [chat-id chat-type]
+  [chat-id chat-type muted?]
   (hide-sheet-and-dispatch [:show-bottom-sheet
                             {:content (fn []
-                                        [mute-chat-drawer/mute-chat-drawer chat-id
-                                         :mute-chat-for-duration chat-type])}]))
+                                        [mute-chat-drawer/mute-drawer 
+                                         {:id                  chat-id
+                                          :community?          false
+                                          :chat-type           chat-type
+                                          :muted?              muted?
+                                          :accessibility-label :mute-channel-title}])}]))
 
 (defn- unmute-channel-action
   [chat-id]
@@ -55,7 +59,7 @@
                                          (format-mute-till muted-till)))
              :on-press            (if muted?
                                     #(unmute-channel-action id)
-                                    #(mute-channel-action id chat-type))
+                                    #(mute-channel-action id chat-type muted?))
              :label               (i18n/label (if muted
                                                 :t/unmute-channel
                                                 :t/mute-channel))}

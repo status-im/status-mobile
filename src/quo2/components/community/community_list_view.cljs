@@ -21,8 +21,8 @@
       :resize-mode     :center
       :size            20
       :color           (colors/theme-colors
-                        colors/neutral-40
-                        colors/neutral-50)}]
+                        colors/neutral-50
+                        colors/neutral-40)}]
     (pos? unread-mentions-count)
     [counter/counter {:type :default} unread-mentions-count]
 
