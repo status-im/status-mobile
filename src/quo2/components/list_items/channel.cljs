@@ -13,10 +13,11 @@
 
 (defn list-item
   [{:keys [locked? mentions-count unread-messages?
-           muted? is-active-channel? emoji channel-color]
-    :or   {channel-color colors/primary-50}
+           muted? is-active-channel? emoji channel-color
+           default-color]
     :as   props}]
-  (let [standard-props (apply dissoc props custom-props)
+  (let [channel-color  (or channel-color default-color)
+        standard-props (apply dissoc props custom-props)
         name-text      (:name props)]
     [rn/touchable-opacity standard-props
      [rn/view
