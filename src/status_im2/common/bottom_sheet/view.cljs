@@ -1,14 +1,14 @@
 (ns status-im2.common.bottom-sheet.view
-  (:require [utils.re-frame :as rf]
-            [react-native.core :as rn]
+  (:require [oops.core :as oops]
             [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
-            [status-im2.common.bottom-sheet.styles :as styles]
-            [react-native.gesture :as gesture]
-            [oops.core :as oops]
-            [react-native.hooks :as hooks]
             [react-native.blur :as blur]
-            [reagent.core :as reagent]))
+            [react-native.core :as rn]
+            [react-native.gesture :as gesture]
+            [react-native.hooks :as hooks]
+            [react-native.reanimated :as reanimated]
+            [reagent.core :as reagent]
+            [status-im2.common.bottom-sheet.style :as style]
+            [utils.re-frame :as rf]))
 
 (def duration 450)
 (def timing-options #js {:duration duration})
@@ -62,12 +62,15 @@
             translate-y             (reanimated/use-shared-value window-height)
             sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height on-close)]
         (rn/use-effect
-         #(if hide? (hide translate-y bg-opacity window-height on-close) (show translate-y bg-opacity))
+         #(if hide?
+            (hide translate-y bg-opacity window-height on-close)
+            (show translate-y bg-opacity))
          [hide?])
-        (hooks/use-back-handler #(do (when (fn? on-close)
-                                       (on-close))
-                                     (rf/dispatch [:hide-bottom-sheet])
-                                     true))
+        (hooks/use-back-handler (fn []
+                                  (when (fn? on-close)
+                                    (on-close))
+                                  (rf/dispatch [:hide-bottom-sheet])
+                                  true))
         [rn/view {:style {:flex 1}}
          ;; backdrop
          [rn/touchable-without-feedback {:on-press #(rf/dispatch [:hide-bottom-sheet])}
@@ -80,20 +83,20 @@
           [reanimated/view
            {:style     (reanimated/apply-animations-to-style
                         {:transform [{:translateY translate-y}]}
-                        (styles/sheet insets
-                                      window-height
-                                      override-theme
-                                      padding-bottom-override
-                                      shell?))
+                        (style/sheet insets
+                                     window-height
+                                     override-theme
+                                     padding-bottom-override
+                                     shell?))
             :on-layout #(reset! sheet-height (oops/oget % "nativeEvent" "layout" "height"))}
-           (when shell? [blur/ios-view {:style styles/shell-bg}])
-
+           (when shell?
+             [blur/ios-view {:style style/shell-bg}])
            (when selected-item
              [rn/view
-              [rn/view {:style (styles/selected-item override-theme window-height @sheet-height insets)}
+              [rn/view {:style (style/selected-item override-theme window-height @sheet-height insets)}
                [selected-item]]])
 
            ;; handle
-           [rn/view {:style (styles/handle override-theme)}]
+           [rn/view {:style (style/handle override-theme)}]
            ;; content
            [content]]]]))))

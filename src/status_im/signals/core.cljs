@@ -10,7 +10,8 @@
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
             [taoensso.timbre :as log]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [quo2.foundations.colors :as colors]))
 
 (rf/defn status-node-started
   [{db :db :as cofx} {:keys [error]}]
@@ -55,7 +56,7 @@
                 :peers-count (count (:peers peer-stats)))}))
 
 (rf/defn handle-local-pairing-signals
-  [{:keys [db] :as cofx} {:keys [type action data] :as event}]
+  [{:keys [db] :as cofx} {:keys [type action data error] :as event}]
   (log/info "local pairing signal received"
             {:event event})
   (let [{:keys [account password]}      data
@@ -78,7 +79,7 @@
                                              (and (some? account) (some? password)))
         multiaccount-data               (when received-account?
                                           (merge account {:password password}))
-        navigate-to-syncing-devices?    (and connection-success? receiver?)
+        navigate-to-syncing-devices?    (and (or connection-success? error-on-pairing?) receiver?)
         user-in-syncing-devices-screen? (= (:view-id db) :syncing-progress)]
     (merge {:db (cond-> db
                   connection-success?
@@ -92,12 +93,21 @@
 
                   completed-pairing?
                   (assoc-in [:syncing :pairing-status] :completed))}
-           (when (and navigate-to-syncing-devices? (not user-in-syncing-devices-screen?))
-             {:dispatch [:navigate-to :syncing-progress]})
-           (when (and completed-pairing? sender?)
-             {:dispatch [:syncing/clear-states]})
-           (when (and completed-pairing? receiver?)
-             {:dispatch [:multiaccounts.login/local-paired-user]}))))
+           (cond
+             (and navigate-to-syncing-devices? (not user-in-syncing-devices-screen?))
+             {:dispatch [:navigate-to :syncing-progress]}
+
+             (and completed-pairing? sender?)
+             {:dispatch [:syncing/clear-states]}
+
+             (and completed-pairing? receiver?)
+             {:dispatch [:multiaccounts.login/local-paired-user]}
+
+             (and error-on-pairing? (some? error))
+             {:dispatch [:toasts/upsert
+                         {:icon       :i/alert
+                          :icon-color colors/danger-50
+                          :text       error}]}))))
 
 (rf/defn process
   {:events [:signals/signal-received]}

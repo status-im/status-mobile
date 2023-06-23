@@ -134,8 +134,11 @@ in stdenv.mkDerivation rec {
     ${adhocEnvVars} ${pkgs.gradle}/bin/gradle \
       ${toString gradleOpts} \
       --console=plain \
-      --offline --stacktrace \
-      -Dorg.gradle.daemon=false \
+      --offline \
+      --no-daemon \
+      --no-scan \
+      --no-watch-fs \
+      --no-build-cache \
       -Dmaven.repo.local='${deps.gradle}' \
       -PversionCode=${toString buildNumber} \
       -PcommitHash=${commitHash} \
@@ -147,7 +150,7 @@ in stdenv.mkDerivation rec {
   checkPhase = ''
     ls ${apksPath}/*.apk \
       | xargs -n1 ${pkgs.unzip}/bin/unzip -qql \
-      | grep 'assets/index.android.bundle'
+      | grep 'index.android.bundle'
   '';
   installPhase = ''
     mkdir -p $out

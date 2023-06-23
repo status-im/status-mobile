@@ -12,16 +12,15 @@
   {:width         "100%"
    :padding-left  20
    :padding-right 20
-   :padding-top   (if platform/android? 0 12)
+   :padding-top   12
    :align-self    :flex-end
    :height        64})
 
-(def blur-button-container
-  (merge button-container
-         {:background-color colors/neutral-80-opa-1-blur}))
-
 (def view-button-container
-  (merge button-container {:margin-bottom 24}))
+  (merge button-container {:margin-bottom 34}))
+
+(def blur-button-container
+  (merge button-container (when platform/android? {:padding-bottom 12})))
 
 (def page-container
   {:position :absolute
@@ -37,7 +36,7 @@
 (def title
   {:color         colors/white
    :margin-top    12
-   :margin-bottom 20})
+   :margin-bottom 18})
 
 (def color-title
   {:color         colors/white-70-blur

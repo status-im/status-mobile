@@ -1,6 +1,5 @@
 (ns quo2.components.tabs.tab.style
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def tab-background-opacity 0.3)
 
@@ -99,10 +98,10 @@
                       :label            {:style {:color colors/white}}}}})
 
 (defn by-theme
-  [{:keys [override-theme disabled active blur?]}]
+  [{:keys [disabled active blur? theme]}]
   (let [state (cond disabled :disabled
                     active   :active
-                    :else    :default)
-        theme (or override-theme (theme/get-theme))]
+                    :else    :default)]
+
     (get-in (if blur? themes-for-blur-background themes)
             [theme state])))

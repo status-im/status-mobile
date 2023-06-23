@@ -83,7 +83,6 @@
      {:size                32
       :scrollable?         true
       :blur?               true
-      :override-theme      :dark
       :style               style/tabs
       :fade-end-percentage 0.79
       :scroll-on-press?    true

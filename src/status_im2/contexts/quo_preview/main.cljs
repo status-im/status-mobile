@@ -17,6 +17,7 @@
     [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as wallet-user-avatar]
     [status-im2.contexts.quo-preview.banners.banner :as banner]
     [status-im2.contexts.quo-preview.buttons.button :as button]
+    [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
@@ -78,6 +79,7 @@
     [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
     [status-im2.contexts.quo-preview.settings.category :as category]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
+    [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
@@ -95,7 +97,8 @@
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
     [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
-    [status-im2.contexts.quo-preview.keycard.keycard :as keycard]))
+    [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
+    [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]))
 
 (def screens-categories
   {:foundations           [{:name      :shadows
@@ -131,6 +134,9 @@
                            {:name      :dynamic-button
                             :options   {:topBar {:visible true}}
                             :component dynamic-button/preview-dynamic-button}
+                           {:name      :slide-button
+                            :options   {:topBar {:visible true}}
+                            :component slide-button/preview-slide-button}
                            {:name      :predictive-keyboard
                             :options   {:topBar {:visible true}}
                             :component predictive-keyboard/preview-predictive-keyboard}]
@@ -155,7 +161,11 @@
                            {:name      :token-gating
                             :options   {:insets {:bottom? true}
                                         :topBar {:visible true}}
-                            :component token-gating/preview-token-gating}]
+                            :component token-gating/preview-token-gating}
+                           {:name      :channel-actions
+                            :options   {:insets {:bottom? true}
+                                        :topBar {:visible true}}
+                            :component channel-actions/preview-channel-actions}]
    :counter               [{:name      :counter
                             :options   {:topBar {:visible true}}
                             :component counter/preview-counter}
@@ -317,7 +327,10 @@
                             :component settings-list/preview-settings-list}
                            {:name      :category
                             :options   {:topBar {:visible true}}
-                            :component category/preview-category}]
+                            :component category/preview-category}
+                           {:name      :reorder-item
+                            :options   {:topBar {:visible true}}
+                            :component reorder-item/preview-reorder-item}]
    :share                 [{:name      :qr-code
                             :options   {:topBar {:visible true}}
                             :component qr-code/preview-qr-code}

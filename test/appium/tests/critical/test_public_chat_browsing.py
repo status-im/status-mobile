@@ -6,7 +6,7 @@ import pytest
 from dateutil import parser
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
-from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel
+from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel, pytest_config_global
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from views.chat_view import CommunityView
 from views.dbs.waku_backup import user as waku_user
@@ -371,6 +371,13 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             if not self.home.element_by_text(contact).is_element_displayed(30):
                 self.errors.append("Contact %s was not restored from backup!" % contact)
 
+        if not pytest_config_global['pr_number']:
+            self.home.just_fyi("Perform back up")
+            self.home.profile_button.click()
+            profile.sync_settings_button.click()
+            profile.backup_settings_button.click()
+            profile.perform_backup_button.click()
+
         self.home.just_fyi("Check that can login with different user")
         self.home.reopen_app(sign_in=False)
         self.sign_in.show_profiles_button.click()
@@ -454,9 +461,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                                    (", ".join(sent_time_variants), timestamp))
         self.channel_1.verify_message_is_under_today_text(message, self.errors)
         new_message = "new message"
-        self.channel_1.send_message(message)
+        self.channel_1.send_message(new_message)
         self.channel_2.verify_message_is_under_today_text(new_message, self.errors, 60)
-        if self.channel_2.chat_element_by_text(message).username.text != self.username_1:
+        if self.channel_2.chat_element_by_text(new_message).username.text != self.username_1:
             self.errors.append("Default username '%s' is not shown next to the received message" % self.username_1)
         self.errors.verify_no_errors()
 
@@ -486,10 +493,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi(
             'Deleting message for me. Checking that message is deleted only for the author of the message')
         self.channel_2.send_message(message_to_delete_for_me)
+        self.channel_1.chat_element_by_text(message_to_delete_for_me).wait_for_element(120)
         self.channel_2.delete_message_in_chat(message_to_delete_for_me, everyone=False)
         if not self.channel_2.chat_element_by_text(message_to_delete_for_me).is_element_disappeared(30):
             self.errors.append("Deleted for me message is shown in channel for the author of message")
-        if not channel.element_by_translation_id('message-deleted-for-you').is_element_displayed(30):
+        if not self.channel_2.element_by_translation_id('message-deleted-for-you').is_element_displayed(30):
             self.errors.append("System message about deletion for you is not displayed")
         if not self.channel_1.chat_element_by_text(message_to_delete_for_me).is_element_displayed(30):
             self.errors.append("Deleted for me message is deleted all channel members")
@@ -542,7 +550,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.chat_message_input.send_keys(message_text)
         self.channel_2.send_message_button.click()
         chat_element_1 = self.channel_1.chat_element_by_text(message_text)
-        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != 'Image':
+        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != image_description:
             self.errors.append('Reply message was not received by the sender')
 
         self.errors.verify_no_errors()
@@ -556,18 +564,26 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.just_fyi("Check gallery on second device")
         self.channel_2.jump_to_communities_home()
         self.home_2.get_to_community_channel_from_home(self.community_name)
-        if self.channel_2.chat_element_by_text(
-                image_description).image_container_in_message.is_element_differs_from_template(file_name, 5):
-            self.errors.append("Gallery message do not match the template!")
+        chat_element = self.channel_2.chat_element_by_text(image_description)
+        try:
+            chat_element.wait_for_visibility_of_element(120)
+            received = True
+            if chat_element.image_container_in_message.is_element_differs_from_template(file_name, 5):
+                self.errors.append("Gallery message do not match the template!")
+        except TimeoutException:
+            self.errors.append("Gallery message was not received")
+            received = False
 
-        self.channel_2.just_fyi("Can reply to gallery")
-        self.channel_2.quote_message(image_description)
-        message_text = 'reply to gallery'
-        self.channel_2.chat_message_input.send_keys(message_text)
-        self.channel_2.send_message_button.click()
-        chat_element_1 = self.channel_1.chat_element_by_text(message_text)
-        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != 'Image':
-            self.errors.append('Reply message was not received by the sender')
+        if received:
+            self.channel_2.just_fyi("Can reply to gallery")
+            self.channel_2.quote_message(image_description)
+            message_text = 'reply to gallery'
+            self.channel_2.chat_message_input.send_keys(message_text)
+            self.channel_2.send_message_button.click()
+            chat_element_1 = self.channel_1.chat_element_by_text(message_text)
+            if not chat_element_1.is_element_displayed(
+                    sec=60) or chat_element_1.replied_message_text != image_description:
+                self.errors.append('Reply message was not received by the sender')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702840)
@@ -645,8 +661,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             if shown_title != data['title']:
                 self.errors.append("Preview text is not expected, it is '%s'" % shown_title)
             self.channel_2.send_message_button.click()
-            self.channel_1.get_preview_message_by_text(url).wait_for_element(60)
             message = self.channel_1.get_preview_message_by_text(url)
+            message.wait_for_element(60)
             # if not message.preview_image:
             #     self.errors.append("No preview is shown for %s" % link_data['url'])
             shown_title = message.preview_title.text
@@ -669,7 +685,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.send_message(message)
         self.home_1.just_fyi('Check new messages badge is shown for community')
         community_element_1 = self.home_1.get_chat(self.community_name, community=True)
-        if not community_element_1.new_messages_community.is_element_displayed():
+        if not community_element_1.new_messages_community.is_element_displayed(sec=30):
             self.errors.append('New message community badge is not shown')
 
         community_1 = community_element_1.click()
@@ -683,7 +699,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702894)
     def test_community_contact_block_unblock_offline(self):
-        [home.jump_to_card_by_text('# %s' % self.channel_name) for home in self.homes]
+        for channel in self.channel_1, self.channel_2:
+            if not channel.chat_message_input.is_element_displayed():
+                channel.jump_to_card_by_text('# %s' % self.channel_name)
         self.channel_1.send_message('message to get avatar of user 2 visible in next message')
 
         self.channel_2.just_fyi("Sending message before block")
@@ -697,7 +715,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         chat_element.member_photo.click()
         self.channel_1.block_contact()
 
-        self.chat_1.just_fyi('messages from blocked user are hidden in public chat and close app')
+        self.chat_1.just_fyi('Check that messages from blocked user are hidden in public chat and close app')
         if self.chat_1.chat_element_by_text(message_to_disappear).is_element_displayed():
             self.errors.append("Messages from blocked user is not cleared in public chat ")
         self.chat_1.jump_to_messages_home()
@@ -705,11 +723,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("1-1 chat from blocked user is not removed!")
         self.chat_1.toggle_airplane_mode()
 
-        self.home_2.just_fyi('send message to public chat while device 1 is offline')
+        self.home_2.just_fyi('Send message to public chat while device 1 is offline')
         message_blocked, message_unblocked = "Message from blocked user", "Hurray! unblocked"
         self.channel_2.send_message(message_blocked)
 
-        self.chat_1.just_fyi('check that new messages from blocked user are not delivered')
+        self.chat_1.just_fyi('Check that new messages from blocked user are not delivered')
         self.chat_1.toggle_airplane_mode()
         self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
         for message in message_to_disappear, message_blocked:
@@ -717,7 +735,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                 self.errors.append(
                     "'%s' from blocked user is fetched from offline in community channel" % message)
 
-        self.chat_2.just_fyi('Unblock user and check that can see further messages')
+        self.chat_1.just_fyi('Unblock user and check that can see further messages')
         # TODO: still no blocked users in new UI
         profile_1 = self.home_1.get_profile_view()
         self.home_1.jump_to_messages_home()
@@ -730,38 +748,51 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat_1.click_system_back_button_until_element_is_shown()
 
         self.home_2.just_fyi("Check that can send message in community after unblock")
-        [home.jump_to_card_by_text('# %s' % self.channel_name) for home in [self.home_1, self.home_2]]
+        self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
         self.chat_2.send_message(message_unblocked)
         if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(120):
             self.errors.append("Message was not received in public chat after user unblock!")
 
-        self.home_2.just_fyi("Add blocked user to contacts again after removing(removed automatically when blocked)")
+        self.home_1.just_fyi("Add blocked user to contacts again after removing(removed automatically when blocked)")
         chat_element = self.channel_1.chat_element_by_text(message_unblocked)
         chat_element.find_element()
         chat_element.member_photo.click()
         self.channel_1.profile_add_to_contacts_button.click()
+        self.home_2.just_fyi("Accept contact request after being unblocked")
         self.home_2.jump_to_messages_home()
         self.home_2.handle_contact_request(self.username_1)
-        self.channel_1.profile_send_message_button.wait_and_click()
-        self.chat_1.send_message("piy")
-
-        self.home_2.just_fyi("Check message in 1-1 chat after unblock")
-        self.home_2.get_chat(self.username_1).click()
-        self.chat_2.send_message(message_unblocked)
+        self.channel_1.profile_send_message_button.click_until_absense_of_element(
+            desired_element=self.channel_1.profile_send_message_button, attempts=20, timeout=3)
         try:
-            self.chat_2.chat_element_by_text(message_unblocked).wait_for_status_to_be(expected_status='Delivered',
-                                                                                      timeout=120)
-            if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
-                self.errors.append("Message was not received in 1-1 chat after user unblock!")
+            self.chat_1.send_message("piy")
+            unblocked = True
         except TimeoutException:
-            self.errors.append('Message was not delivered after back up online.')
+            unblocked = False
+            self.errors.append("Chat with unblocked user was not enabled after 1 minute")
+
+        if unblocked:
+            self.home_2.just_fyi("Check message in 1-1 chat after unblock")
+            self.home_2.get_chat(self.username_1).click()
+            self.chat_2.send_message(message_unblocked)
+            try:
+                self.chat_2.chat_element_by_text(message_unblocked).wait_for_status_to_be(expected_status='Delivered',
+                                                                                          timeout=120)
+                if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
+                    self.errors.append("Message was not received in 1-1 chat after user unblock!")
+            except TimeoutException:
+                self.errors.append('Message was not delivered after back up online.')
 
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703086)
     def test_community_mark_all_messages_as_read(self):
-        self.channel_1.jump_to_communities_home()
-        self.home_2.jump_to_card_by_text('# %s' % self.channel_name)
+        self.channel_1.click_system_back_button_until_element_is_shown()
+        self.home_1.communities_tab.click()
+        if not self.channel_2.chat_message_input.is_element_displayed():
+            self.channel_2.click_system_back_button_until_element_is_shown()
+            self.home_2.communities_tab.click()
+            self.home_2.get_chat(self.community_name, community=True).click()
+            self.community_2.get_channel(self.channel_name).click()
         self.channel_2.send_message(self.text_message)
         community_1_element = self.community_1.get_chat(self.community_name)
         if not community_1_element.new_messages_public_chat.is_element_displayed(90):

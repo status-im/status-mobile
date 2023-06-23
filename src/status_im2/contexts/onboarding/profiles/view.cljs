@@ -12,7 +12,8 @@
             [utils.security.core :as security]
             [utils.transforms :as types]
             [quo2.foundations.colors :as colors]
-            [react-native.safe-area :as safe-area]))
+            [react-native.safe-area :as safe-area]
+            [clojure.string :as string]))
 
 (defn login-multiaccount
   []
@@ -32,7 +33,9 @@
 
 (defn show-new-account-options
   []
-  (rf/dispatch [:show-bottom-sheet {:content new-account-options}]))
+  (rf/dispatch [:show-bottom-sheet
+                {:content new-account-options
+                 :shell?  true}]))
 
 (defn delete-profile-confirmation
   [key-uid context]
@@ -117,8 +120,7 @@
         :size                32
         :icon                true
         :on-press            show-new-account-options
-        :accessibility-label :show-new-account-options
-        :override-theme      :dark}
+        :accessibility-label :show-new-account-options}
        :main-icons/add]]
      [rn/flat-list
       {:data                    (sort-by :timestamp > profiles-data)
@@ -178,7 +180,13 @@
   (let [{:keys [key-uid name customization-color error
                 processing password]} (rf/sub [:multiaccounts/login])
         sign-in-enabled?              (rf/sub [:sign-in-enabled?])
-        profile-picture               (rf/sub [:multiaccounts/login-profiles-picture key-uid])]
+        profile-picture               (rf/sub [:multiaccounts/login-profiles-picture key-uid])
+        error                         (if (and (some? error)
+                                               (or (= error "file is not a database")
+                                                   (string/starts-with? error "failed to set ")
+                                                   (string/starts-with? error "Failed")))
+                                        (i18n/label :t/oops-wrong-password)
+                                        error)]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
       :keyboardVerticalOffset (- (safe-area/get-bottom))}
@@ -224,7 +232,6 @@
           error]
          [rn/touchable-opacity
           {:hit-slop       {:top 6 :bottom 20 :left 0 :right 0}
-           :style          {:margin-left -4}
            :disabled       processing
            :active-opacity 1
            :on-press       (fn []

@@ -88,7 +88,6 @@
                        :label               (i18n/label :t/gated)
                        :accessibility-label :gated-communities-tab}]}]])
 
-
 (defn featured-list
   [communities view-type]
   (let [view-size (reagent/atom 0)]
@@ -96,7 +95,7 @@
       [rn/view
        {:style     style/featured-list-container
         :on-layout #(swap! view-size
-                      (fn []
+                      (fn [_]
                         (- (oops/oget % "nativeEvent.layout.width") 40)))}
        (when-not (= @view-size 0)
          [rn/flat-list
@@ -158,7 +157,7 @@
   [rn/view {:style {:flex 1}}
    (case @selected-tab
      :all
-     (other-communities-list {:communities (rf/sub [:communities/sorted-communities])
+     (other-communities-list {:communities (rf/sub [:communities/other-contract-communities])
                               :view-type   view-type})
 
      :open
@@ -227,7 +226,7 @@
 
 (defn discover
   []
-  (let [featured-communities (rf/sub [:communities/featured-communities])]
+  (let [featured-communities (rf/sub [:communities/featured-contract-communities])]
     [rn/view
      {:style (style/discover-screen-container (colors/theme-colors
                                                colors/white

@@ -1,12 +1,15 @@
 (ns status-im2.common.home.actions.view
-  (:require [utils.i18n :as i18n]
+  (:require [clojure.string :as string]
             [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [status-im2.contexts.communities.actions.chat.view :as chat-actions]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
             [status-im2.constants :as constants]
-            [utils.re-frame :as rf]
             [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
-            [clojure.string :as string]
-            [quo2.foundations.colors :as colors]))
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]
+            [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]
+            [utils.datetime :as datetime]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -50,8 +53,11 @@
                   :accessibility-label :edit-nickname}])}]))
 
 (defn mute-chat-action
-  [chat-id]
-  (hide-sheet-and-dispatch [:chat.ui/mute chat-id true constants/mute-till-unmuted]))
+  [chat-id chat-type]
+  (hide-sheet-and-dispatch [:show-bottom-sheet
+                            {:content (fn []
+                                        [mute-chat-drawer/mute-chat-drawer chat-id
+                                         :mute-chat-for-duration chat-type])}]))
 
 (defn unmute-chat-action
   [chat-id]
@@ -117,19 +123,22 @@
                                                                   public-key])}])}]))
 
 (defn mute-chat-entry
-  [chat-id]
+  [chat-id chat-type muted-till]
   (let [muted? (rf/sub [:chats/muted chat-id])]
     (entry {:icon                (if muted? :i/muted :i/activity-center)
             :label               (i18n/label
                                   (if muted?
                                     :unmute-chat
                                     :mute-chat))
+            :sub-label           (when (and muted? (some? muted-till))
+                                   (str (i18n/label :t/muted-until)
+                                        " "
+                                        (datetime/format-mute-till muted-till)))
             :on-press            (if muted?
                                    #(unmute-chat-action chat-id)
-                                   #(mute-chat-action chat-id))
+                                   #(mute-chat-action chat-id chat-type))
             :danger?             false
             :accessibility-label :mute-chat
-            :sub-label           nil
             :chevron?            true})))
 
 (defn mark-as-read-entry
@@ -236,7 +245,7 @@
           :label               (i18n/label :t/notifications)
           :on-press            #(js/alert "TODO: to be implemented, requires design input")
           :danger?             false
-          :sub-label           "All messages" ; TODO: placeholder
+          :sub-label           (i18n/label :t/all-messages)
           :accessibility-label :manage-notifications
           :chevron?            true
           :add-divider?        add-divider?}))
@@ -295,7 +304,7 @@
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): to be implemented.
+;; TODO(OmarBasem): to be implemented.chat/check-channel-muted?
 (defn share-group-entry
   []
   (entry {:icon                :i/share
@@ -403,9 +412,9 @@
      (delete-chat-entry item inside-chat?))])
 
 (defn notification-actions
-  [{:keys [chat-id group-chat public?]} inside-chat? needs-divider?]
+  [{:keys [chat-id group-chat public? chat-type muted-till]} inside-chat? needs-divider?]
   [(mark-as-read-entry chat-id needs-divider?)
-   (mute-chat-entry chat-id)
+   (mute-chat-entry chat-id chat-type muted-till)
    (notifications-entry false)
    (when inside-chat?
      (fetch-messages-entry))
@@ -462,12 +471,15 @@
            (remove-from-group-entry contact chat-id))])]]))
 
 (defn chat-actions
-  [{:keys [chat-type] :as item} inside-chat?]
-  (case chat-type
+  [{:keys [chat-type] :as chat} inside-chat?]
+  (condp = chat-type
     constants/one-to-one-chat-type
-    [one-to-one-actions item inside-chat?]
+    [one-to-one-actions chat inside-chat?]
     constants/private-group-chat-type
-    [private-group-chat-actions item inside-chat?]))
+    [private-group-chat-actions chat inside-chat?]
+    constants/community-chat-type
+    [chat-actions/actions chat inside-chat?]
+    nil))
 
 (defn group-details-actions
   [{:keys [admins] :as group}]

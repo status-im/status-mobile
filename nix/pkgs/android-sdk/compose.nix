@@ -8,9 +8,10 @@
 # The "android-sdk-license" license is accepted
 # by setting android_sdk.accept_license = true.
 androidenv.composeAndroidPackages {
+  cmdLineToolsVersion = "9.0";
   toolsVersion = "26.1.1";
-  platformToolsVersion = "33.0.2";
-  buildToolsVersions = [ "30.0.0" ];
+  platformToolsVersion = "33.0.3";
+  buildToolsVersions = [ "31.0.0" ];
   platformVersions = [ "31" ];
   cmakeVersions = [ "3.18.1" ];
   ndkVersion = "22.1.7171670";

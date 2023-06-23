@@ -56,7 +56,7 @@
   [id]
   {:icon                :i/notifications
    :accessibility-label :community-notification-settings
-   :label               (i18n/label :t/community-notification-settings)
+   :label               (i18n/label :t/notification-settings)
    :on-press            #(js/alert (str "implement action" id))
    :right-icon          :i/chevron-right})
 

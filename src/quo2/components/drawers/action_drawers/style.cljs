@@ -34,8 +34,17 @@
   {:flex            1
    :justify-content :center})
 
+(def right-side-container
+  {:flex-direction :row
+   :align-items    :center})
+
 (def right-icon
   {:height        20
    :margin-top    :auto
    :margin-bottom :auto
    :width         20})
+
+(defn right-text
+  [override-theme]
+  {:color        (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)
+   :margin-right 12})

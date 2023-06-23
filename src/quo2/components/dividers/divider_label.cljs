@@ -1,5 +1,6 @@
 (ns quo2.components.dividers.divider-label
-  (:require [quo2.components.icon :as icons]
+  (:require [quo2.theme :as theme]
+            [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as markdown.text]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]))
@@ -8,7 +9,7 @@
 
 (def chevron-icon-container-height 20)
 
-(defn divider-label
+(defn themed-view
   "label -> string
    chevron-position -> :left, :right
    chevron-icon -> keyword
@@ -16,7 +17,8 @@
    padding-bottom -> number
    counter-value -> number
    increase-padding-top? -> boolean
-   blur? -> boolean"
+   blur? -> boolean
+   theme -> theme value passed from with-theme HOC"
   [{:keys [label
            chevron-position
            chevron-icon
@@ -25,8 +27,9 @@
            padding-bottom
            blur?
            container-style
-           on-press]}]
-  (let [dark?                       (colors/dark?)
+           on-press
+           theme]}]
+  (let [dark?                       (= :dark theme)
         border-and-counter-bg-color (if dark?
                                       (if blur? colors/white-opa-5 colors/neutral-70)
                                       colors/neutral-10)
@@ -83,3 +86,5 @@
            :weight :medium
            :style  {:color counter-text-color}}
           counter-value]])]]))
+
+(def divider-label (theme/with-theme themed-view))

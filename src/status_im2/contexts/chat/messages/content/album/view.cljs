@@ -7,7 +7,8 @@
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.content.image.view :as image]
             [status-im2.contexts.chat.messages.content.text.view :as text]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im.utils.http :as http]))
 
 (def rectangular-style-count 3)
 
@@ -30,7 +31,7 @@
         portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))]
     (if (and albumize? (> images-count 1))
       [:<>
-       [rn/view {:style {:margin-bottom 10}} [text/text-content first-image]]
+       [rn/view {:style {:margin-bottom 4}} [text/text-content first-image]]
        [rn/view
         {:style               (style/album-container portrait?)
          :accessible          true
@@ -54,7 +55,8 @@
                                                :index    index}])}
               [fast-image/fast-image
                {:style     (style/image dimensions index portrait? images-count)
-                :source    {:uri (:image (:content item))}
+                :source    {:uri (http/replace-port (:image (:content item))
+                                                    (rf/sub [:mediaserver/port]))}
                 :native-ID (when (and (= shared-element-id (:message-id item))
                                       (< index constants/max-album-photos))
                              :shared-element)}]

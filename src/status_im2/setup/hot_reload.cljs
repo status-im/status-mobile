@@ -3,23 +3,41 @@
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 
-(def cnt (reagent/atom 0))
+(defonce cnt (reagent/atom 0))
+(defonce reload-locked? (atom false))
+(defonce reload-interval (atom nil))
 (defonce warning? (reagent/atom false))
 (defonce visible (reagent/atom false))
-(defonce timeout (reagent/atom false))
 (defonce label (reagent/atom ""))
 
 (defn reload
   []
-  (when @timeout (js/clearTimeout @timeout))
-  (reset! timeout (js/setTimeout #(reset! visible false) 500))
+  (js/setTimeout #(reset! visible false) 500)
+  (js/setTimeout #(reset! reload-locked? false) 3000)
   (reset! warning? false)
   (reset! visible true)
   (reset! label "reloading UI")
   (re-frame/clear-subscription-cache!)
   (swap! cnt inc))
 
-(defn build-competed
+(defn before-reload
+  [done]
+  (when @reload-interval (js/clearInterval @reload-interval))
+  (if @reload-locked?
+    (reset!
+      reload-interval
+      (js/setInterval
+       (fn []
+         (when-not @reload-locked?
+           (js/clearInterval @reload-interval)
+           (reset! reload-locked? true)
+           (done)))
+       500))
+    (do
+      (reset! reload-locked? true)
+      (done))))
+
+(defn build-completed
   []
   (reset! label "reloading code")
   (reset! warning? false)
@@ -47,7 +65,7 @@
             (and (= :build-complete type) (seq (:warnings info))))
         (build-failed (:warnings info))
         (= :build-complete type)
-        (build-competed)))
+        (build-completed)))
 
 (defn reload-view
   [_]

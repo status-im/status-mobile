@@ -20,7 +20,7 @@
 (defn header-container
   [show?]
   {:display          (if show? :flex :none)
-   :background-color (colors/theme-colors colors/white colors/neutral-95)
+   :background-color (colors/theme-colors colors/white colors/neutral-100)
    :top              (- overscroll-cover-height)
    :margin-bottom    (- overscroll-cover-height)})
 
@@ -28,7 +28,9 @@
   [cover-bg-color]
   {:flex             1
    :height           (+ overscroll-cover-height cover-height)
-   :background-color cover-bg-color})
+   :background-color (colors/theme-colors
+                      (colors/custom-color cover-bg-color 50 20)
+                      (colors/custom-color cover-bg-color 50 40))})
 
 (defn header-bottom-part
   [animation]
@@ -38,7 +40,7 @@
    {:top              -16
     :margin-bottom    -16
     :padding-bottom   24
-    :background-color (colors/theme-colors colors/white colors/neutral-100)}))
+    :background-color (colors/theme-colors colors/white colors/neutral-95)}))
 
 (def header-avatar
   {:top               header-avatar-top-offset

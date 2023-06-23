@@ -6,7 +6,7 @@
             [oops.core :refer [oget]]
             [status-im2.common.resources :as resources]
             [status-im.async-storage.core :as async-storage]
-            [status-im2.contexts.shell.animation :as shell.animation]
+            [status-im2.contexts.shell.state :as shell.state]
             [status-im2.contexts.onboarding.common.carousel.view :as carousel]
             [status-im2.contexts.onboarding.common.background.style :as style]
             [react-native.reanimated :as reanimated]
@@ -31,7 +31,7 @@
     :source (resources/get-image :onboarding-illustration)}])
 
 (defonce progress (atom nil))
-(defonce paused (atom nil))
+(defonce paused? (atom nil))
 
 (defn store-screen-height
   [evt]
@@ -50,8 +50,8 @@
     ;; but actual values differ in some pixels, so arbitrary 5 pixels is allowed
     (when (and (> height width)
                (>= (+ height 5) (or window-height 0))
-               (not= height @shell.animation/screen-height))
-      (reset! shell.animation/screen-height height)
+               (not= height @shell.state/screen-height))
+      (reset! shell.state/screen-height height)
       (async-storage/set-item! :screen-height height))))
 
 (defn f-view
@@ -60,14 +60,14 @@
         animate?     (not dark-overlay?)
         window-width (rf/sub [:dimensions/window-width])]
     (when animate?
-      (carousel.animation/use-initialize-animation progress paused animate?))
+      (carousel.animation/use-initialize-animation progress paused? animate?))
 
     (rn/use-effect
      (fn []
-       (reanimated/set-shared-value @paused (not= view-id :intro))
+       (reanimated/set-shared-value @paused? (not= view-id :intro))
        (fn []
          (when (= view-id :generating-keys)
-           (carousel.animation/cleanup-animation progress paused))))
+           (carousel.animation/cleanup-animation progress paused?))))
      [view-id])
 
     [rn/view
@@ -76,8 +76,10 @@
      [carousel/view
       {:animate?          animate?
        :progress          progress
+       :paused?           paused?
        :header-text       header-text
        :header-background true
+       :swipeable?        true
        :background        [background-image (* 4 window-width)]}]
      (when dark-overlay?
        [blur/view

@@ -2,11 +2,11 @@
   (:require [quo2.components.avatars.icon-avatar :as icon-avatar]
             [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.markdown.text :as text]
+            [quo2.components.messages.author.view :as author]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [utils.string :as utils]))
+            [react-native.reanimated :as reanimated]))
 
 (def themes-landed
   {:pinned  colors/primary-50-opa-5
@@ -33,7 +33,7 @@
 
 (defn sm-timestamp
   [timestamp-str]
-  [rn/view {:margin-left 6}
+  [rn/view {:margin-left 8}
    [text/text
     {:size  :label
      :style {:color          (get-color :time)
@@ -61,32 +61,34 @@
      :profile-picture   image
      :ring?             false}]])
 
-(defmulti sm-render :type)
+(defmulti system-message-content :type)
 
-(defmethod sm-render :deleted
+(defmethod system-message-content :deleted
   [{:keys [label timestamp-str labels child]}]
   [rn/view
-   {:align-items     :center
-    :justify-content :space-between
-    :flex            1
-    :flex-direction  :row}
+   {:flex-direction :row
+    :flex           1
+    :align-items    :center}
+   [sm-icon
+    {:icon    :main-icons/delete
+     :color   :danger
+     :opacity 5}]
    [rn/view
-    {:align-items    :center
-     :flex-direction :row}
-    [sm-icon
-     {:icon    :main-icons/delete
-      :color   :danger
-      :opacity 5}]
+    {:align-items    :baseline
+     :flex-direction :row
+     :flex           1
+     :flex-wrap      :wrap}
     (if child
       child
       [text/text
        {:size  :paragraph-2
-        :style {:color        (get-color :text)
-                :margin-right 5}}
-       (or (get labels label) label (:message-deleted labels))])
+        :style {:color (get-color :text)}}
+       (or (get labels label)
+           label
+           (:message-deleted labels))])
     [sm-timestamp timestamp-str]]])
 
-(defmethod sm-render :added
+(defmethod system-message-content :added
   [{:keys [state mentions timestamp-str labels]}]
   [rn/view
    {:align-items    :center
@@ -113,8 +115,8 @@
     (:name (second mentions))]
    [sm-timestamp timestamp-str]])
 
-(defmethod sm-render :pinned
-  [{:keys [state pinned-by content timestamp-str labels]}]
+(defmethod system-message-content :pinned
+  [{:keys [state pinned-by child timestamp-str labels]}]
   [rn/view
    {:flex-direction :row
     :flex           1
@@ -128,49 +130,20 @@
      :flex           1}
     [rn/view
      {:align-items    :baseline
-      :flex-direction :row}
-     [text/text
-      {:size   :paragraph-2
-       :weight :semi-bold
-       :style  {:color (get-color :text)}}
-      (utils/truncate-str pinned-by 18)]
+      :flex-direction :row
+      :flex           1
+      :flex-wrap      :wrap}
+     [author/author
+      {:primary-name pinned-by
+       :style        {:margin-right 4}}]
      [rn/view
-      {:margin-left  4
-       :margin-right 2}
       [text/text
        {:size  :paragraph-2
         :style {:color (get-color :text)}}
        (:pinned-a-message labels)]]
      [sm-timestamp timestamp-str]]
-    [rn/view {:flex-direction :row}
-     [rn/view
-      {:flex-direction :row
-       :margin-right   4}
-      [sm-user-avatar (:image (:mentions content))]
-      [text/text
-       {:weight :semi-bold
-        :size   :label}
-       (:name (:mentions content))]]
-     (when (seq (:text content))
-       [rn/view
-        {:margin-right   20
-         :flex-direction :row
-         :flex           1}
-        [text/text
-         {:size            :label
-          :style           {:color (get-color :text)}
-          :number-of-lines 1
-          :ellipsize-mode  :tail}
-         (:text content)]])
-     [rn/view
-      {:justify-content :flex-end
-       :flex-direction  :row
-       :min-width       10}
-      (when (seq (:info content))
-        [text/text
-         {:size  :label
-          :style {:color (get-color :time)}}
-         (utils/truncate-str (:info content) 24)])]]]])
+    (when child
+      child)]])
 
 (defn- f-system-message
   [{:keys [type style non-pressable? animate-landing? labels on-long-press] :as message}]
@@ -189,15 +162,13 @@
       :on-long-press on-long-press
       :style         (reanimated/apply-animations-to-style
                       {:background-color sv-color}
-                      (merge
-                       {:flex-direction     :row
-                        :flex               1
-                        :border-radius      16
-                        :padding-vertical   9
-                        :padding-horizontal 11
-                        :background-color   sv-color}
-                       style))}
-     [sm-render message labels]]))
+                      (merge {:flex-direction     :row
+                              :flex               1
+                              :padding-vertical   8
+                              :padding-horizontal 12
+                              :background-color   sv-color}
+                             style))}
+     [system-message-content message labels]]))
 
 (defn system-message
   [message]

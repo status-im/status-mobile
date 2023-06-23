@@ -13,9 +13,34 @@
             [status-im2.contexts.syncing.scan-sync-code.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im2.contexts.syncing.utils :as sync-utils]))
+            [status-im2.contexts.syncing.utils :as sync-utils]
+            [status-im.utils.platform :as platform]))
+
+;; Android allow local network access by default. So, we need this check on iOS only.
+(defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
 
 (defonce camera-permission-granted? (reagent/atom false))
+
+(defn request-camera-permission
+  []
+  (rf/dispatch
+   [:request-permissions
+    {:permissions [:camera]
+     :on-allowed  #(reset! camera-permission-granted? true)
+     :on-denied   #(rf/dispatch
+                    [:toasts/upsert
+                     {:icon           :i/info
+                      :icon-color     colors/danger-50
+                      :override-theme :light
+                      :text           (i18n/label :t/camera-permission-denied)}])}]))
+
+(defn perform-preflight-check
+  "Performing the check for the first time
+   will trigger local network access permission in iOS.
+   This permission is required for local pairing
+   https://github.com/status-im/status-mobile/issues/16135"
+  []
+  (rf/dispatch [:syncing/preflight-outbound-check #(reset! preflight-check-passed? %)]))
 
 (defn- header
   [active-tab read-qr-once? title]
@@ -28,7 +53,7 @@
       :accessibility-label :close-sign-in-by-syncing
       :override-theme      :dark
       :on-press            #(rf/dispatch [:navigate-back])}
-     :i/close]
+     :i/arrow-left]
     [quo/button
      {:before              :i/info
       :type                :blur-bg
@@ -59,27 +84,50 @@
                         (reset! active-tab id)
                         (reset! read-qr-once? false))}]]])
 
-(defn- camera-permission-view
-  [request-camera-permission]
-  [rn/view {:style style/camera-permission-container}
-   [quo/text
-    {:size   :paragraph-1
-     :weight :medium
-     :style  style/enable-camera-access-header}
-    (i18n/label :t/enable-access-to-camera)]
-   [quo/text
-    {:size   :paragraph-2
-     :weight :regular
-     :style  style/enable-camera-access-sub-text}
-    (i18n/label :t/to-scan-a-qr-enable-your-camera)]
-   [quo/button
-    {:before              :i/camera
-     :type                :primary
-     :size                32
-     :accessibility-label :request-camera-permission
-     :override-theme      :dark
-     :on-press            request-camera-permission}
-    (i18n/label :t/enable-camera)]])
+(defn get-labels-and-on-press-method
+  []
+  (if @camera-permission-granted?
+    {:title-label-key       :t/enable-access-to-local-network
+     :description-label-key :t/to-pair-with-your-other-device-in-the-network
+     :button-icon           :i/world
+     :button-label          :t/enable-network-access
+     :accessibility-label   :perform-preflight-check
+     :on-press              perform-preflight-check}
+    {:title-label-key       :t/enable-access-to-camera
+     :description-label-key :t/to-scan-a-qr-enable-your-camera
+     :button-icon           :i/camera
+     :button-label          :t/enable-camera
+     :accessibility-label   :request-camera-permission
+     :on-press              request-camera-permission}))
+
+(defn- camera-and-local-network-access-permission-view
+  []
+  (let [{:keys [title-label-key
+                description-label-key
+                button-icon
+                button-label
+                accessibility-label
+                on-press]} (get-labels-and-on-press-method)]
+    [rn/view {:style style/camera-permission-container}
+     [quo/text
+      {:size   :paragraph-1
+       :weight :medium
+       :style  style/enable-camera-access-header}
+      (i18n/label title-label-key)]
+     [quo/text
+      {:size   :paragraph-2
+       :weight :regular
+       :style  style/enable-camera-access-sub-text}
+      (i18n/label description-label-key)]
+     [quo/button
+      {:before              button-icon
+       :type                :primary
+       :size                32
+       :accessibility-label accessibility-label
+       :override-theme      :dark
+       :customization-color :blue
+       :on-press            on-press}
+      (i18n/label button-label)]]))
 
 (defn- qr-scan-hole-area
   [qr-view-finder]
@@ -94,22 +142,47 @@
 
 (defn- border
   [border1 border2 corner]
+  [rn/view {:style (style/border border1 border2 corner)}])
+
+(defn- border-tip
+  [{:keys [top bottom left right]}]
   [rn/view
-   (assoc {:border-color colors/white :width 80 :height 80} border1 2 border2 2 corner 16)])
+   {:style (style/border-tip top bottom right left)}])
 
 (defn- viewfinder
   [qr-view-finder]
-  (let [size (:width qr-view-finder)]
+  (let [size (+ (:width qr-view-finder) 2)]
     [:<>
      [rn/view {:style (style/viewfinder-container qr-view-finder)}
-
-      [rn/view {:width size :height size :justify-content :space-between}
+      [rn/view
+       {:style (style/qr-view-finder-container size)}
+       [rn/view
+        {:style style/view-finder-border-container}
+        [rn/view
+         [border :border-top-width :border-left-width :border-top-left-radius]
+         [border-tip {:right -1 :top 0}]
+         [border-tip {:left 0 :bottom -1}]]
+        [rn/view
+         [border :border-top-width :border-right-width :border-top-right-radius]
+         [border-tip {:right 0 :bottom -1}]
+         [border-tip {:left -1 :top 0}]]]
        [rn/view {:flex-direction :row :justify-content :space-between}
-        [border :border-top-width :border-left-width :border-top-left-radius]
-        [border :border-top-width :border-right-width :border-top-right-radius]]
-       [rn/view {:flex-direction :row :justify-content :space-between}
-        [border :border-bottom-width :border-left-width :border-bottom-left-radius]
-        [border :border-bottom-width :border-right-width :border-bottom-right-radius]]]
+        [rn/view
+         [border :border-bottom-width :border-left-width :border-bottom-left-radius]
+         [border-tip {:right -1 :bottom 0}]
+         [border-tip {:left 0 :top -1}]]
+        [rn/view
+         [border :border-bottom-width :border-right-width :border-bottom-right-radius]
+         [border-tip {:right 0 :top -1}]
+         [border-tip {:left -1 :bottom 0}]]]
+       [quo/button
+        {:icon                      true
+         :type                      :blur-bg
+         :size                      32
+         :accessibility-label       :camera-flash
+         :override-background-color colors/neutral-80-opa-40
+         :style                     style/camera-flash-button}
+        :i/flashlight-off]]
       [quo/text
        {:size   :paragraph-2
         :weight :regular
@@ -117,14 +190,16 @@
        (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)]]]))
 
 (defn- scan-qr-code-tab
-  [qr-view-finder request-camera-permission]
+  [qr-view-finder]
   [:<>
    [rn/view {:style style/scan-qr-code-container}]
    (when (empty? @qr-view-finder)
      [qr-scan-hole-area qr-view-finder])
-   (if (and @camera-permission-granted? (boolean (not-empty @qr-view-finder)))
+   (if (and @preflight-check-passed?
+            @camera-permission-granted?
+            (boolean (not-empty @qr-view-finder)))
      [viewfinder @qr-view-finder]
-     [camera-permission-view request-camera-permission])])
+     [camera-and-local-network-access-permission-view])])
 
 (defn- enter-sync-code-tab
   []
@@ -143,7 +218,7 @@
     {:style (style/bottom-container (:bottom insets))}
     [quo/text
      {:size   :paragraph-2
-      :weight :regular
+      :weight :medium
       :style  style/bottom-text}
      (i18n/label :t/i-dont-have-status-on-another-device)]]])
 
@@ -165,11 +240,14 @@
     [:<>
      [rn/view {:style style/camera-container}
       [camera-kit/camera
-       {:ref            #(reset! camera-ref %)
-        :style          style/camera-style
-        :camera-options {:zoomMode :off}
-        :scan-barcode   true
-        :on-read-code   on-read-code}]]
+       {:ref          #(reset! camera-ref %)
+        :style        style/camera-style
+        :camera-type  camera-kit/camera-type-back
+        :zoom-mode    :off
+        ;; https://github.com/status-im/status-mobile/issues/16243
+        :torch-mode   :off
+        :scan-barcode true
+        :on-read-code on-read-code}]]
      [hole-view/hole-view
       {:style style/hole
        :holes (if show-holes?
@@ -185,21 +263,9 @@
 
 (defn f-view
   [{:keys [title show-bottom-view? background]}]
-  (let [insets                    (safe-area/get-insets)
-        active-tab                (reagent/atom 1)
-        qr-view-finder            (reagent/atom {})
-        request-camera-permission (fn []
-                                    (rf/dispatch
-                                     [:request-permissions
-                                      {:permissions [:camera]
-                                       :on-allowed  #(reset! camera-permission-granted? true)
-                                       :on-denied   #(rf/dispatch
-                                                      [:toasts/upsert
-                                                       {:icon :i/info
-                                                        :icon-color colors/danger-50
-                                                        :override-theme :light
-                                                        :text (i18n/label
-                                                               :t/camera-permission-denied)}])}]))]
+  (let [insets         (safe-area/get-insets)
+        active-tab     (reagent/atom 1)
+        qr-view-finder (reagent/atom {})]
     (fn []
       (let [camera-ref                       (atom nil)
             read-qr-once?                    (atom false)
@@ -215,7 +281,9 @@
                                                                 3000)
                                                  (check-qr-code-data data)))
             scan-qr-code-tab?                (= @active-tab 1)
-            show-camera?                     (and scan-qr-code-tab? @camera-permission-granted?)
+            show-camera?                     (and scan-qr-code-tab?
+                                                  @camera-permission-granted?
+                                                  @preflight-check-passed?)
             show-holes?                      (and show-camera?
                                                   (boolean (not-empty @qr-view-finder)))]
         (rn/use-effect
@@ -230,7 +298,7 @@
          [rn/view {:style (style/root-container (:top insets))}
           [header active-tab read-qr-once? title]
           (case @active-tab
-            1 [scan-qr-code-tab qr-view-finder request-camera-permission]
+            1 [scan-qr-code-tab qr-view-finder]
             2 [enter-sync-code-tab]
             nil)
           [rn/view {:style style/flex-spacer}]

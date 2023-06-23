@@ -8,7 +8,8 @@
             [utils.re-frame :as rf]
             [status-im2.constants :as constants]
             [clojure.string :as string]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [quo2.components.icon :as icons]))
 
 (def max-subheader-length 50)
 
@@ -152,10 +153,9 @@
                              (preview-text-from-content group-chat primary-name message)))]
     [quo/text
      {:size                :paragraph-2
-      :style               {:color        (colors/theme-colors colors/neutral-50
-                                                               colors/neutral-40)
-                            :flex         1
-                            :margin-right 20}
+      :style               {:color (colors/theme-colors colors/neutral-50
+                                                        colors/neutral-40)
+                            :flex  1}
       :number-of-lines     1
       :ellipsize-mode      :tail
       :accessibility-label :chat-message-text}
@@ -178,20 +178,21 @@
          :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
 
 (defn name-view
-  [display-name contact timestamp]
+  [display-name contact timestamp muted?]
   [rn/view {:style {:flex-direction :row}}
    [quo/text
     {:weight              :semi-bold
-     :accessibility-label :chat-name-text}
+     :accessibility-label :chat-name-text
+     :style               {:color (when muted? colors/neutral-50)}}
     display-name]
    [verified-or-contact-icon contact]
    [quo/text
     {:size  :label
-     :style (style/timestamp)}
+     :style (style/timestamp muted?)}
     (datetime/to-short-str timestamp)]])
 
 (defn avatar-view
-  [{:keys [contact chat-id full-name color]}]
+  [{:keys [contact chat-id full-name color muted?]}]
   (if contact ; `contact` is passed when it's not a group chat
     (let [online?    (rf/sub [:visibility-status-updates/online? chat-id])
           photo-path (rf/sub [:chats/photo-path chat-id])
@@ -200,7 +201,8 @@
        {:full-name full-name
         :size      :small
         :online?   online?
-        image-key  photo-path}])
+        image-key  photo-path
+        :muted?    muted?}])
     [quo/group-avatar
      {:color color
       :size  :medium}]))
@@ -209,11 +211,12 @@
   [{:keys [chat-id group-chat color name unviewed-messages-count
            timestamp last-message muted]
     :as   item}]
-  (let [display-name (if group-chat
-                       name
-                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
-        contact      (when-not group-chat
-                       (rf/sub [:contacts/contact-by-address chat-id]))]
+  (let [display-name       (if group-chat
+                             name
+                             (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
+        contact            (when-not group-chat
+                             (rf/sub [:contacts/contact-by-address chat-id]))
+        show-unread-badge? (and (not muted) (> unviewed-messages-count 0))]
     [rn/touchable-opacity
      {:style         (style/container)
       :on-press      (open-chat chat-id)
@@ -223,11 +226,17 @@
       {:contact   contact
        :chat-id   chat-id
        :full-name display-name
-       :color     color}]
+       :color     color
+       :muted?    muted}]
      [rn/view {:style {:margin-left 8}}
-      [name-view display-name contact timestamp]
-      [last-message-preview group-chat last-message]]
-     (when-not muted
-       (when (> unviewed-messages-count 0)
-         [quo/info-count {:style {:top 16}}
-          unviewed-messages-count]))]))
+      [name-view display-name contact timestamp muted]
+      [last-message-preview group-chat last-message muted]]
+     (if-not muted
+       (when show-unread-badge?
+         [quo/info-count
+          {:style {:top   16
+                   :right 16}}
+          unviewed-messages-count])
+       [icons/icon :i/muted
+        {:color           colors/neutral-40
+         :container-style style/muted-icon}])]))

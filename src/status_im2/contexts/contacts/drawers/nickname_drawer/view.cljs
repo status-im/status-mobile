@@ -4,6 +4,7 @@
             [quo2.components.icon :as icons]
             [quo2.core :as quo]
             [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.contexts.contacts.drawers.nickname-drawer.style :as style]
             [utils.i18n :as i18n]
@@ -28,11 +29,12 @@
   (let [{:keys [primary-name nickname public-key]} contact
         entered-nickname                           (reagent/atom (or nickname ""))
         photo-path                                 (when-not (empty? (:images contact))
-                                                     (rf/sub [:chats/photo-path public-key]))]
+                                                     (rf/sub [:chats/photo-path public-key]))
+        insets                                     (safe-area/get-insets)]
     (fn [{:keys [title description accessibility-label
                  close-button-text]}]
       [rn/view
-       {:style               style/nickname-container
+       {:style               (style/nickname-container insets)
         :accessibility-label accessibility-label}
        [quo/text
         {:weight :semi-bold

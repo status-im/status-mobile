@@ -12,7 +12,7 @@ source_nix_profile() {
         source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
     elif [[ "${NIX_INSTALL_TYPE}" == "single" ]]; then
         source "${HOME}/.nix-profile/etc/profile.d/nix.sh"
-    elif [[ "${NIX_INSTALL_TYPE}" == "nixops" ]]; then
+    elif [[ "${NIX_INSTALL_TYPE}" == "nixos" ]]; then
         echo "Sourcing profile not necessary on NixOS!" >&2
     fi
 }

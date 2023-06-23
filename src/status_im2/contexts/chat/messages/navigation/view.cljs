@@ -14,11 +14,11 @@
             [status-im2.common.home.actions.view :as actions]))
 
 (defn f-navigation-view
-  [{:keys [scroll-y]}]
+  [{:keys [scroll-y shared-all-loaded?]}]
   (let [{:keys [group-chat chat-id chat-name emoji
                 chat-type]
          :as   chat}             (rf/sub [:chats/current-chat-chat-view])
-        all-loaded?              (rf/sub [:chats/all-loaded? chat-id])
+        all-loaded?              @shared-all-loaded?
         display-name             (if (= chat-type constants/one-to-one-chat-type)
                                    (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                    (str emoji " " chat-name))
@@ -34,8 +34,8 @@
                                                          {:extrapolateLeft  "clamp"
                                                           :extrapolateRight "extend"})
         banner-opacity-animation (reanimated/interpolate scroll-y
-                                                         [(+ style/navigation-bar-height 50)
-                                                          (+ style/navigation-bar-height 100)]
+                                                         [(+ style/navigation-bar-height 150)
+                                                          (+ style/navigation-bar-height 200)]
                                                          [0 1]
                                                          {:extrapolateLeft  "clamp"
                                                           :extrapolateRight "extend"})
@@ -97,23 +97,18 @@
               :size            :paragraph-2
               :style           (style/header-online)}
              (i18n/label :t/online)])]]]
-       (when (not= chat-type constants/community-chat-type)
-         [rn/touchable-opacity
-          {:active-opacity      1
-           :style               (style/button-container {:margin-right 20})
-           :accessibility-label :options-button
-           :on-press            (fn []
-                                  (rf/dispatch [:dismiss-keyboard])
-                                  (rf/dispatch [:show-bottom-sheet
-                                                {:content (fn [] [actions/chat-actions chat true])}]))}
-          [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]])]
-
-      [pin.banner/banner
+       [rn/touchable-opacity
+        {:active-opacity      1
+         :style               (style/button-container {:margin-right 20})
+         :accessibility-label :options-button
+         :on-press            (fn []
+                                (rf/dispatch [:dismiss-keyboard])
+                                (rf/dispatch [:show-bottom-sheet
+                                              {:content (fn [] [actions/chat-actions chat true])}]))}
+        [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
+      [:f>
+       pin.banner/f-banner
        {:chat-id           chat-id
         :opacity-animation banner-opacity-animation
         :all-loaded?       all-loaded?
         :top-offset        style/navigation-bar-height}]]]))
-
-(defn navigation-view
-  [props]
-  [:f> f-navigation-view props])

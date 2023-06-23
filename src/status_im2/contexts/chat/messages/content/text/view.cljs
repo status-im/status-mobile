@@ -79,21 +79,19 @@
   (case (keyword type)
     :paragraph
     (conj blocks
-          [rn/view {:style style/paragraph}
-           (reduce
-            (fn [acc e]
-              (render-inline acc e chat-id))
-            [quo/text]
-            children)])
+          (reduce
+           (fn [acc e]
+             (render-inline acc e chat-id))
+           [quo/text {:size :paragraph-1}]
+           children))
 
     :edited-block
     (conj blocks
-          [rn/view {:style style/paragraph}
-           (reduce
-            (fn [acc e]
-              (render-inline acc e chat-id))
-            [quo/text]
-            children)])
+          (reduce
+           (fn [acc e]
+             (render-inline acc e chat-id))
+           [quo/text {:size :paragraph-1}]
+           children))
 
     :blockquote
     (conj blocks
@@ -124,7 +122,7 @@
 (defn render-parsed-text
   [{:keys [content chat-id edited-at]}]
   ^{:key (:parsed-text content)}
-  [rn/view {:style style/parsed-text-block}
+  [rn/view
    (reduce (fn [acc e]
              (render-block acc e chat-id))
            [:<>]
@@ -134,6 +132,6 @@
 
 (defn text-content
   [message-data]
-  [rn/view
+  [:<>
    [render-parsed-text message-data]
    [link-preview/view message-data]])

@@ -42,7 +42,7 @@ export NODE_OPTIONS += --openssl-legacy-provider
 export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 
 # Our custom config is located in nix/nix.conf
-export NIX_CONF_DIR = $(PWD)/nix
+export NIX_USER_CONF_FILES = $(PWD)/nix/nix.conf
 # Location of symlinks to derivations that should not be garbage collected
 export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-mobile
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
@@ -80,6 +80,10 @@ nix-gc-protected: SHELL := /bin/sh
 nix-gc-protected:
 	@echo -e "$(YELLOW)The following paths are protected:$(RESET)" && \
 	ls -1 $(_NIX_GCROOTS) | sed 's/^/ - /'
+
+nix-upgrade: SHELL := /bin/sh
+nix-upgrade: ##@nix Upgrade Nix interpreter to current version.
+	nix/scripts/upgrade.sh
 
 nix-gc: export TARGET := nix
 nix-gc: nix-gc-protected ##@nix Garbage collect all packages older than 20 days from /nix/store
@@ -268,7 +272,7 @@ run-android: export TARGET := android
 run-android: ##@run Build Android APK and start it on the device
 	npx react-native run-android --appIdSuffix debug
 
-SIMULATOR=iPhone 13
+SIMULATOR=iPhone 11 Pro
 run-ios: export TARGET := ios
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
@@ -297,19 +301,21 @@ define find_all_clojure_files
 $$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort <(git ls-files --deleted)) | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn)
 endef
 
-lint: export TARGET := default
+lint: export TARGET := clojure
 lint: ##@test Run code style checks
 	@sh scripts/lint-re-frame-in-quo-components.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
-	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES
+	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
+	yarn prettier
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
-lint-fix: export TARGET := default
+lint-fix: export TARGET := clojure
 lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
-	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES
+	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
+	yarn prettier
 
 
 shadow-server: export TARGET := clojure

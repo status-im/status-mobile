@@ -1167,7 +1167,7 @@ class ChatView(BaseView):
         self.allow_button.click_if_shown()
         [self.get_image_by_index(i).click() for i in indexes]
         self.images_confirm_selection_button.click()
-        self.chat_message_input.set_value(description)
+        self.chat_message_input.send_keys(description)
         self.send_message_button.click()
 
     @staticmethod

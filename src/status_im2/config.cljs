@@ -74,8 +74,8 @@
    :wallet/visible-tokens              {:mainnet #{:SNT}}
    :currency                           :usd
    :appearance                         0
-   :profile-pictures-show-to           1
-   :profile-pictures-visibility        1
+   :profile-pictures-show-to           2
+   :profile-pictures-visibility        2
    :log-level                          log-level
    :webview-allow-permission-requests? false
    :opensea-enabled?                   false
@@ -163,3 +163,5 @@
    ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@test.waku.nodes.status.im"]})
 
 (def default-kdf-iterations 3200)
+
+(def shell-navigation-disabled? true)

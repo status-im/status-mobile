@@ -75,6 +75,8 @@
 (reg-root-key-sub :visibility-status-updates :visibility-status-updates)
 (reg-root-key-sub :shell/switcher-cards :shell/switcher-cards)
 (reg-root-key-sub :password-authentication :password-authentication)
+(reg-root-key-sub :shell/floating-screens :shell/floating-screens)
+(reg-root-key-sub :shell/loaded-screens :shell/loaded-screens)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network
@@ -258,6 +260,8 @@
 (reg-root-key-sub :communities/my-pending-requests-to-join :communities/my-pending-requests-to-join)
 (reg-root-key-sub :communities/collapsed-categories :communities/collapsed-categories)
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
+
+(reg-root-key-sub :contract-communities :contract-communities)
 
 (reg-root-key-sub :activity-center :activity-center)
 
