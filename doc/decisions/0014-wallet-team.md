@@ -24,6 +24,7 @@ Some team members have already expressed interest and some have been asked and a
 - @J-Son89
 - @briansztamfater
 - @smohamedjavid
+- @ulisesmac
 
 # Follow-up Actions
 
