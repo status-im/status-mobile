@@ -1,69 +1,69 @@
 (ns status-im.events
   (:require
-    clojure.set
-    [re-frame.core :as re-frame]
-    [status-im.async-storage.core :as async-storage]
-    status-im.backup.core
-    status-im.bootnodes.core
-    status-im.browser.core
-    status-im.browser.permissions
-    status-im.chat.models.images
-    status-im.chat.models.input
-    status-im.chat.models.loading
-    [status-im2.constants :as constants]
-    status-im.contact.block
-    status-im.contact.chat
-    status-im.contact.core
-    status-im.currency.core
-    status-im.ethereum.subscriptions
-    status-im.fleet.core
-    status-im.http.core
-    [utils.i18n :as i18n]
-    [status-im.keycard.core :as keycard]
-    status-im.log-level.core
-    status-im.mailserver.constants
-    [status-im.mailserver.core :as mailserver]
-    status-im.multiaccounts.login.core
-    status-im.multiaccounts.logout.core
-    [status-im.multiaccounts.model :as multiaccounts.model]
-    status-im.multiaccounts.update.core
-    [native-module.core :as native-module]
-    status-im.network.net-info
-    status-im.pairing.core
-    status-im.profile.core
-    status-im.search.core
-    status-im.signals.core
-    status-im.stickers.core
-    status-im.transport.core
-    [react-native.permissions :as permissions]
-    [status-im.ui.components.react :as react]
-    status-im.ui.screens.privacy-and-security-settings.events
-    [status-im.utils.dimensions :as dimensions]
-    [utils.re-frame :as rf]
-    status-im.utils.logging.core
-    [status-im.utils.universal-links.core :as universal-links]
-    [status-im.utils.utils :as utils]
-    status-im.visibility-status-popover.core
-    status-im.visibility-status-updates.core
-    status-im.waku.core
-    status-im.wallet-connect.core
-    status-im.wallet.accounts.core
-    status-im.wallet.choose-recipient.core
-    [status-im.wallet.core :as wallet]
-    status-im.wallet.custom-tokens.core
-    status-im2.contexts.shell.activity-center.events
-    status-im2.contexts.shell.activity-center.notification.contact-requests.events
-    status-im2.contexts.shell.jump-to.events
-    status-im2.contexts.onboarding.events
-    status-im.chat.models.gaps
-    [status-im2.navigation.events :as navigation]
-    [status-im2.common.theme.core :as theme]
-    [react-native.core :as rn]
-    [react-native.platform :as platform]
-    status-im2.contexts.chat.home.events
-    status-im2.contexts.communities.home.events
-    status-im.ui.components.invite.events
-    [status-im2.common.biometric.events :as biometric]))
+   clojure.set
+   [re-frame.core :as re-frame]
+   [status-im.async-storage.core :as async-storage]
+   status-im.backup.core
+   status-im.bootnodes.core
+   status-im.browser.core
+   status-im.browser.permissions
+   status-im.chat.models.images
+   status-im.chat.models.input
+   status-im.chat.models.loading
+   [status-im2.constants :as constants]
+   status-im.contact.block
+   status-im.contact.chat
+   status-im.contact.core
+   status-im.currency.core
+   status-im.ethereum.subscriptions
+   status-im.fleet.core
+   status-im.http.core
+   [utils.i18n :as i18n]
+   [status-im.keycard.core :as keycard]
+   status-im.log-level.core
+   status-im.mailserver.constants
+   [status-im.mailserver.core :as mailserver]
+   status-im.multiaccounts.login.core
+   status-im.multiaccounts.logout.core
+   [status-im.multiaccounts.model :as multiaccounts.model]
+   status-im.multiaccounts.update.core
+   [native-module.core :as native-module]
+   status-im.network.net-info
+   status-im.pairing.core
+   status-im.profile.core
+   status-im.search.core
+   status-im.signals.core
+   status-im.stickers.core
+   status-im.transport.core
+   [react-native.permissions :as permissions]
+   [status-im.ui.components.react :as react]
+   status-im.ui.screens.privacy-and-security-settings.events
+   [status-im.utils.dimensions :as dimensions]
+   [utils.re-frame :as rf]
+   status-im.utils.logging.core
+   [status-im.utils.universal-links.core :as universal-links]
+   [status-im.utils.utils :as utils]
+   status-im.visibility-status-popover.core
+   status-im.visibility-status-updates.core
+   status-im.waku.core
+   status-im.wallet-connect.core
+   status-im.wallet.accounts.core
+   status-im.wallet.choose-recipient.core
+   [status-im.wallet.core :as wallet]
+   status-im.wallet.custom-tokens.core
+   status-im2.contexts.shell.activity-center.events
+   status-im2.contexts.shell.activity-center.notification.contact-requests.events
+   status-im2.contexts.shell.jump-to.events
+   status-im2.contexts.onboarding.events
+   status-im.chat.models.gaps
+   [status-im2.navigation.events :as navigation]
+   [status-im2.common.theme.core :as theme]
+   [react-native.core :as rn]
+   [react-native.platform :as platform]
+   status-im2.contexts.chat.home.events
+   status-im2.contexts.communities.home.events
+   status-im.ui.components.invite.events
+   [status-im2.common.biometric.events :as biometric]))
 
 (re-frame/reg-fx
  :dismiss-keyboard
