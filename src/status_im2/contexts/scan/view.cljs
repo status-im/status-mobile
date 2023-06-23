@@ -4,13 +4,12 @@
             [status-im2.common.scan-qr-code.view :as scan-qr-code]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
-            [utils.debounce :refer [dispatch-and-chill]]
+            [utils.debounce :as debounce]
             [utils.i18n :as i18n]))
 
 (defn header
   []
   [:<>
-
    [rn/view {:style style/header-container}
     [quo/button
      {:icon                true
@@ -26,17 +25,15 @@
       :size                32
       :accessibility-label :show-qr-button
       :override-theme      :dark
-      :on-press            #(dispatch-and-chill [:open-modal :share-shell] 1000)}
-     :i/qr-code]
-   ]
-   [quo/text
-    {:size   :heading-1
-     :weight :semi-bold
-     :style  style/header-text}
-    (i18n/label :t/scan-qr-text)]])
+      :on-press            #(debounce/dispatch-and-chill [:open-modal :share-shell] 1000)}
+     :i/qr-code]]
+    [quo/text
+      {:size   :heading-1
+      :weight :semi-bold
+      :style  style/header-text}
+      (i18n/label :t/scan-qr)]])
 
 (defn view
   []
   [:<>
-   [:f> scan-qr-code/view header]]
-)
+   [:f> scan-qr-code/view header]])

@@ -59,7 +59,7 @@
                 :theme               :accent
                 :accessibility-label :chose-recipient-accounts-button
                 :on-press            show-accounts-list}
-               {:title               (i18n/label :t/scan-qr)
+               {:title               (i18n/label :t/scan-qr-code)
                 :icon                :main-icons/qr
                 :theme               :accent
                 :accessibility-label :chose-recipient-scan-qr

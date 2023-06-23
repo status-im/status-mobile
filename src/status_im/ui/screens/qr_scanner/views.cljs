@@ -34,7 +34,7 @@
                        :number-of-lines 1
                        :align           :center
                        :size            :large}
-                      (or title (i18n/label :t/scan-qr))]}])
+                      (or title (i18n/label :t/scan-qr-code))]}])
 
 (defn qr-test-view
   [opts]

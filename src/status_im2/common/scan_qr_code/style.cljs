@@ -1,6 +1,6 @@
 (ns status-im2.common.scan-qr-code.style
   (:require [quo2.foundations.colors :as colors]
-            [status-im.utils.platform :as platform]))
+            [react-native.platform :as platform]))
 
 (def screen-padding 20)
 
@@ -14,8 +14,8 @@
    :right    0})
 
 (def hole
-  (merge absolute-fill
-         {:z-index 2 :opacity 0.95}))
+  (assoc absolute-fill
+         :z-index 2 :opacity 0.95))
 
 (defn root-container
   [padding-top]
@@ -76,15 +76,12 @@
 
 (defn border
   [border1 border2 corner]
-  (assoc {:border-color colors/white
-          :width        78
-          :height       78}
-         border1
-         2
-         border2
-         2
-         corner
-         16))
+  {:border-color colors/white
+        :width        78
+        :height       78
+        border1       2
+        border2       2
+        corner        16})
 
 (defn border-tip
   [top bottom right left]

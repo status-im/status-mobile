@@ -17,8 +17,7 @@
             [react-native.permissions :as permissions]
             [status-im2.contexts.syncing.utils :as sync-utils]
             [status-im2.contexts.onboarding.common.background.view :as background]
-            [react-native.safe-area :as safe-area]
-  ))
+            [react-native.safe-area :as safe-area]))
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
 (defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
@@ -39,8 +38,7 @@
    [:request-permissions
     {:permissions [:camera]
      :on-allowed  #(reset! camera-permission-granted? true)
-     :on-denied   #(re-frame/dispatch [::key-storage/open-device-settings-dialog])
-    }]))
+     :on-denied   #(re-frame/dispatch [::key-storage/open-device-settings-dialog])}]))
 
 (defn get-labels-and-on-press-method
   []
@@ -85,10 +83,7 @@
        :override-theme      :dark
        :customization-color :blue
        :on-press            on-press}
-      (i18n/label button-label)]]
-
-  ))
-
+      (i18n/label button-label)]]))
 
 (defn- qr-scan-hole-area
   [qr-view-finder]
@@ -158,14 +153,12 @@
         :style          style/camera-style
         :camera-options {:zoomMode :off}
         :scan-barcode   true
-        :on-read-code   on-read-code}]
-     ]
+        :on-read-code   on-read-code}]]
      [hole-view/hole-view
       {:style style/hole
        :holes (if show-holes?
-                [(merge qr-view-finder
-                        {:borderRadius 16})]
-                [])}
+                [(assoc qr-view-finder
+                        :borderRadius 16)][])}
       [blur/view
        {:style            style/absolute-fill
         :blur-amount      10
@@ -232,8 +225,4 @@
          [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
          [rn/view {:style (style/root-container (:top insets))}
           [header]
-          [scan-qr-code-view qr-view-finder]
-
-         ]
-        ]))
-  ))
+          [scan-qr-code-view qr-view-finder]]]))))

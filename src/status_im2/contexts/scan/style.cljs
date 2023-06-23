@@ -9,7 +9,6 @@
    :padding-horizontal screen-padding
    :margin-vertical    12})
 
-
 (def header-text
   {:padding-horizontal screen-padding
    :padding-top        12
