@@ -202,6 +202,20 @@
          :select  [customizer-select descriptor]
          nil)]))])
 
+(defn customization-color-option
+  ([]
+   (customization-color-option {}))
+  ([opts]
+   (merge {:label   "Custom color"
+           :key     :color
+           :type    :select
+           :options (->> colors/customization
+                         keys
+                         sort
+                         (map (fn [k]
+                                {:key k :value (string/capitalize (name k))})))}
+          opts)))
+
 (comment
   [{:label "Show error:"
     :key   :error

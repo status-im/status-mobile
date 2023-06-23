@@ -11,14 +11,6 @@
   [{:label "Big?"
     :key   :big?
     :type  :boolean}
-   {:label   "Custom color"
-    :key     :color
-    :type    :select
-    :options (->> colors/customization
-                  keys
-                  sort
-                  (map (fn [k]
-                         {:key k :value (string/capitalize (name k))})))}
    {:label "Emoji"
     :key   :emoji
     :type  :text}
@@ -28,6 +20,7 @@
    {:label "Number of initials"
     :key   :amount-initials
     :type  :text}
+   (preview/customization-color-option)
    {:label   "Is Locked?"
     :key     :locked?
     :type    :select
