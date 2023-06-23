@@ -79,7 +79,7 @@
   (case (keyword type)
     :paragraph
     (conj blocks
-          [rn/view {:style style/paragraph}
+          [rn/view
            (reduce
             (fn [acc e]
               (render-inline acc e chat-id))
@@ -126,11 +126,7 @@
 (defn render-parsed-text
   [{:keys [content chat-id edited-at style-override]}]
   ^{:key (:parsed-text content)}
-<<<<<<< HEAD
-  [rn/view
-=======
-  [rn/view {:style (or style-override style/parsed-text-block)}
->>>>>>> d0d579374 (Fix mention in chat)
+  [rn/view {:style style-override}
    (reduce (fn [acc e]
              (render-block acc e chat-id style-override))
            [:<>]
