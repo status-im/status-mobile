@@ -8,6 +8,8 @@
                                    "../resources/images/ui2/desktop-how-to-pair-logged-in.png")
    :mobile-how-to-pair-sign-in    (js/require "../resources/images/ui2/mobile-how-to-pair-sign-in.png")
    :mobile-how-to-pair-logged-in  (js/require "../resources/images/ui2/mobile-how-to-pair-logged-in.png")
+   :find-sync-code-desktop        (js/require "../resources/images/ui2/find-sync-code-desktop.png")
+   :find-sync-code-mobile         (js/require "../resources/images/ui2/find-sync-code-mobile.png")
    :lifestyle                     (js/require "../resources/images/ui2/lifestyle.png")
    :music                         (js/require "../resources/images/ui2/music.png")
    :podcasts                      (js/require "../resources/images/ui2/podcasts.png")

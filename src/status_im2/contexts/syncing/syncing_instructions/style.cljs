@@ -1,4 +1,4 @@
-(ns status-im2.contexts.syncing.how-to-pair.style
+(ns status-im2.contexts.syncing.syncing-instructions.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]))
 
@@ -50,7 +50,8 @@
    :border-width    1
    :border-color    colors/white-opa-10
    :align-items     :center
-   :justify-content :center})
+   :justify-content :center
+   :margin-right    6})
 
 (def list-icon-text
   {:color colors/white})
@@ -68,5 +69,6 @@
   {:margin-top 12})
 
 (def numbered-list-item
-  {:flex-direction :row
-   :align-items    :center})
+  {:flex-direction  :row
+   :align-items     :center
+   :margin-vertical 6})
