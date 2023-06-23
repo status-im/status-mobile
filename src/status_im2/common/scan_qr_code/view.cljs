@@ -13,7 +13,7 @@
             [react-native.blur :as blur]
             [react-native.hole-view :as hole-view]
             [quo2.foundations.colors :as colors]
-            [status-im.utils.platform :as platform]
+            [react-native.platform :as platform]
             [react-native.permissions :as permissions]
             [status-im2.contexts.syncing.utils :as sync-utils]
             [status-im2.contexts.onboarding.common.background.view :as background]
