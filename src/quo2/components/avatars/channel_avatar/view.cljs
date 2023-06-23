@@ -20,13 +20,12 @@
 
 (defn- lock
   [locked? big?]
+  ;; When `locked?` is nil, we must not display the unlocked icon.
   (when (boolean? locked?)
     [rn/view
      {:accessibility-label :lock
       :style               (style/lock-container {:big? big?})}
-     [icons/icon
-      (cond (true? locked?)  :i/locked
-            (false? locked?) :i/unlocked)
+     [icons/icon (if locked? :i/locked :i/unlocked)
       {:color           (colors/theme-colors colors/neutral-50 colors/neutral-40)
        :container-style style/lock-icon
        :size            12}]]))
@@ -51,8 +50,7 @@
   from :full-name when :emoji is blank.
   "
   [{:keys [big? emoji color locked? full-name amount-initials]}]
-  (let [amount-initials (or amount-initials 1)
-        color           (or color (colors/custom-color-by-theme :blue 50 50))]
+  (let [amount-initials (or amount-initials 1)]
     [rn/view
      {:accessibility-label :channel-avatar
       :style               (style/outer-container {:big? big? :color color})}
