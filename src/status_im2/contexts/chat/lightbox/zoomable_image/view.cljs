@@ -204,7 +204,7 @@
   [dimensions animations state rescale curr-orientation content focused? index render-data]
   (let [{:keys [transparent? set-full-height?]} render-data
         portrait? (= curr-orientation orientation/portrait)
-        on-tap #(utils/toggle-opacity index render-data portrait?)
+        on-tap #(utils/toggle-opacity index render-data portrait? dimensions)
         tap (tap-gesture on-tap)
         double-tap (double-tap-gesture dimensions animations rescale transparent? on-tap)
         pinch (pinch-gesture dimensions animations state rescale transparent? on-tap)
@@ -218,11 +218,15 @@
       {:style (style/container dimensions
                                animations
                                @set-full-height?
-                               (= curr-orientation orientation/portrait))}
+                               (= curr-orientation orientation/portrait)
+                               (:margin-horizontal render-data))}
       [reanimated/fast-image
-       {:source    {:uri (http/replace-port (:image content) (rf/sub [:mediaserver/port]))}
-        :native-ID (when focused? :shared-element)
-        :style     (style/image dimensions animations (:border-value render-data))}]]]))
+       {:source      {:uri (http/replace-port (:image content) (rf/sub [:mediaserver/port]))}
+        :native-ID   (when focused? :shared-element)
+        :resize-mode :contain
+        :style       (style/image dimensions
+                                  animations
+                                  (:border-value render-data))}]]]))
 
 (defn zoomable-image
   []

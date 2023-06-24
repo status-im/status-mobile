@@ -139,17 +139,19 @@
 
 (defn init-animations
   []
-  {:background-color (anim/use-val colors/neutral-100-opa-0)
-   :border           (anim/use-val (if platform/ios? 0 12))
-   :opacity          (anim/use-val 0)
-   :rotate           (anim/use-val "0deg")
-   :layout           (anim/use-val -10)
-   :top-view-y       (anim/use-val 0)
-   :top-view-x       (anim/use-val 0)
-   :top-view-width   (anim/use-val (:width (rn/get-window)))
-   :top-view-bg      (anim/use-val colors/neutral-100-opa-0)
-   :pan-y            (anim/use-val 0)
-   :pan-x            (anim/use-val 0)})
+  {:background-color  (anim/use-val colors/neutral-100-opa-0)
+   :border            (anim/use-val (if platform/ios? 0 12))
+   :margin-horizontal (anim/use-val 8)
+   :img-width         0
+   :opacity           (anim/use-val 0)
+   :rotate            (anim/use-val "0deg")
+   :layout            (anim/use-val -10)
+   :top-view-y        (anim/use-val 0)
+   :top-view-x        (anim/use-val 0)
+   :top-view-width    (anim/use-val (:width (rn/get-window)))
+   :top-view-bg       (anim/use-val colors/neutral-100-opa-0)
+   :pan-y             (anim/use-val 0)
+   :pan-x             (anim/use-val 0)})
 
 (defn init-derived-animations
   [{:keys [layout]}]

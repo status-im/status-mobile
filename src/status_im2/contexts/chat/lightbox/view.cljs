@@ -36,10 +36,9 @@
       (rf/dispatch [:chat.ui/update-shared-element-id (:message-id (oget changed :item))]))))
 
 (defn image
-  [message index _ {:keys [screen-width screen-height] :as args}]
-  [rn/view
-   {:style (style/image (+ screen-width constants/separator-width) screen-height)}
-   [:f> zoomable-image/zoomable-image message index args]
+  [message index _ {:keys [screen-width screen-height] :as render-data}]
+  [rn/view {:style (style/image (+ screen-width constants/separator-width) screen-height)}
+   [:f> zoomable-image/zoomable-image message index render-data]
    [rn/view {:style {:width constants/separator-width}}]])
 
 (defn lightbox-content
@@ -81,16 +80,17 @@
          :style                             {:width (+ screen-width constants/separator-width)}
          :data                              @data
          :render-fn                         image
-         :render-data                       {:opacity-value    (:opacity animations)
-                                             :border-value     (:border animations)
-                                             :transparent?     transparent?
-                                             :set-full-height? set-full-height?
-                                             :screen-height    screen-height
-                                             :screen-width     screen-width
-                                             :window-height    window-height
-                                             :window-width     window-width
-                                             :props            props
-                                             :curr-orientation curr-orientation}
+         :render-data                       {:opacity-value     (:opacity animations)
+                                             :border-value      (:border animations)
+                                             :margin-horizontal (:margin-horizontal animations)
+                                             :transparent?      transparent?
+                                             :set-full-height?  set-full-height?
+                                             :screen-height     screen-height
+                                             :screen-width      screen-width
+                                             :window-height     window-height
+                                             :window-width      window-width
+                                             :props             props
+                                             :curr-orientation  curr-orientation}
          :horizontal                        horizontal?
          :inverted                          inverted?
          :paging-enabled                    true

@@ -106,7 +106,10 @@
     (rescale c/min-scale true)))
 
 (defn toggle-opacity
-  [index {:keys [opacity-value border-value transparent? props]} portrait?]
+  [index
+   {:keys [opacity-value border-value margin-horizontal transparent? props]}
+   portrait?
+   {:keys [width]}]
   (let [{:keys [small-list-ref timers]} props
         opacity                         (reanimated/get-shared-value opacity-value)]
     (if (= opacity 1)
@@ -135,7 +138,10 @@
             :show-2
             (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible true}})
                            (if platform/ios? 150 50))))))
-    (anim/animate border-value (if (= opacity 1) 0 12))))
+    (anim/animate border-value (if (= opacity 1) 0 12))
+    (anim/animate margin-horizontal (if (= opacity 1) 0 16 ;106 ;width (- width 16)
+                                                      ))
+    ))
 
 ;;; Dimensions
 (defn get-dimensions

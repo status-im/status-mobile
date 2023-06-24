@@ -7,17 +7,26 @@
   [{:keys [width height]}
    {:keys [pan-x pan-y pinch-x pinch-y scale]}
    set-full-height?
-   portrait?]
+   portrait?
+   margin-horizontal]
+  (prn margin-horizontal "!!!!!!!!!!!!!!!!!" width
+       (or platform/ios? portrait?))
   (reanimated/apply-animations-to-style
    {:transform [{:translateX pan-x}
                 {:translateY pan-y}
                 {:translateX pinch-x}
                 {:translateY pinch-y}
-                {:scale scale}]}
-   {:justify-content :center
-    :align-items     :center
-    :width           (if (or platform/ios? portrait?) width "100%")
-    :height          (if set-full-height? "100%" height)}))
+                {:scale scale}]
+    :margin-horizontal margin-horizontal
+    }
+   {:justify-content   :center
+    :align-items       :center
+    :flex 1
+    #_#_:width             (when-not (or portrait? platform/ios?)
+                         "100%")
+    #_#_:width             (if (or platform/ios? portrait?) width "100%")
+    :height            (if set-full-height? "100%" height)
+    :overflow          :hidden}))
 
 (defn image
   [{:keys [image-width image-height]}
@@ -27,5 +36,6 @@
    {:transform     [{:rotate rotate}
                     {:scale rotate-scale}]
     :border-radius border-radius}
-   {:width  image-width
-    :height image-height}))
+   {:height image-height
+    :width  image-width
+    }))
