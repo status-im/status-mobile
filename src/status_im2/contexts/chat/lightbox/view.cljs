@@ -1,22 +1,22 @@
 (ns status-im2.contexts.chat.lightbox.view
   (:require
     [clojure.string :as string]
+    [oops.core :refer [oget]]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.gesture :as gesture]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [status-im2.contexts.chat.lightbox.animations :as anim]
-    [status-im2.contexts.chat.lightbox.style :as style]
-    [utils.re-frame :as rf]
-    [react-native.gesture :as gesture]
-    [status-im2.contexts.chat.lightbox.zoomable-image.view :as zoomable-image]
-    [status-im2.contexts.chat.lightbox.top-view :as top-view]
     [status-im2.contexts.chat.lightbox.bottom-view :as bottom-view]
-    [oops.core :refer [oget]]
+    [status-im2.contexts.chat.lightbox.constants :as constants]
+    [status-im2.contexts.chat.lightbox.style :as style]
+    [status-im2.contexts.chat.lightbox.top-view :as top-view]
     [status-im2.contexts.chat.lightbox.utils :as utils]
-    [status-im2.contexts.chat.lightbox.constants :as constants]))
+    [status-im2.contexts.chat.lightbox.zoomable-image.view :as zoomable-image]
+    [utils.re-frame :as rf]))
 
 (defn get-item-layout
   [_ index item-width]
