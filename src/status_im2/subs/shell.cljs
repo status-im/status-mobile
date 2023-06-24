@@ -196,7 +196,7 @@
               (-> acc
                   (update-in [:community-stack :unviewed-messages-count] + unviewed-messages-count)
                   (update-in [:community-stack :unviewed-mentions-count] + unviewed-mentions-count))
-
+              
               (and (not muted)
                    (#{constants/private-group-chat-type constants/one-to-one-chat-type} chat-type))
               (-> acc
