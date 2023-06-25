@@ -8,13 +8,8 @@
             [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-<<<<<<< HEAD
             [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]
             [status-im2.common.muting.helpers :refer [format-mute-till]]))
-=======
-            [status-im2.common.mute-drawer.view :as mute-drawer]
-            [utils.datetime :as datetime]))
->>>>>>> fixed mute community channels
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]

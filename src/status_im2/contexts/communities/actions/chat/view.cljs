@@ -15,7 +15,7 @@
   [chat-id chat-type muted?]
   (hide-sheet-and-dispatch [:show-bottom-sheet
                             {:content (fn []
-                                        [mute-drawer/mute-drawer 
+                                        [mute-drawer/mute-drawer
                                          {:id                  chat-id
                                           :community?          false
                                           :muted?              (not muted?)

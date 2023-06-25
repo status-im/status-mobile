@@ -109,8 +109,7 @@
       name]]
 
     [rn/view
-     {:justify-content :center
-      :margin-right    16}
+     {:justify-content :center}
      (if (= status :gated)
        [community-view/permission-tag-container
         {:locked? locked?

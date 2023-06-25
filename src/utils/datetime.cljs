@@ -5,8 +5,7 @@
             [cljs-time.format :as t.format]
             [clojure.string :as string]
             [utils.i18n :as i18n]
-            [utils.i18n-goog :as i18n-goog]
-            [status-im2.constants :as constants]))
+            [utils.i18n-goog :as i18n-goog]))
 
 (defn now [] (t/now))
 

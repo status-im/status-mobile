@@ -41,11 +41,11 @@
      :title-column-style         {:margin-left 2}
      :on-press                   (fn []
                                    (hide-sheet-and-dispatch
-                                    {:id           id
-                                     :chat-type    chat-type
-                                     :muted?       muted?
-                                     :community?   community?
-                                     :muted-type   constants/mute-for-15-mins-type}))}]
+                                    {:id         id
+                                     :chat-type  chat-type
+                                     :muted?     muted?
+                                     :community? community?
+                                     :muted-type constants/mute-for-15-mins-type}))}]
    [quo/menu-item
     {:type                       :transparent
      :title                      (i18n/label :t/mute-for-1-hour)
@@ -54,11 +54,11 @@
      :title-column-style         {:margin-left 2}
      :on-press                   (fn []
                                    (hide-sheet-and-dispatch
-                                    {:id           id
-                                     :chat-type    chat-type
-                                     :muted?       muted?
-                                     :community?   community?
-                                     :muted-type   constants/mute-for-1-hour-type}))}]
+                                    {:id         id
+                                     :chat-type  chat-type
+                                     :muted?     muted?
+                                     :community? community?
+                                     :muted-type constants/mute-for-1-hour-type}))}]
    [quo/menu-item
     {:type                       :transparent
      :title                      (i18n/label :t/mute-for-8-hours)
@@ -67,11 +67,11 @@
      :title-column-style         {:margin-left 2}
      :on-press                   (fn []
                                    (hide-sheet-and-dispatch
-                                    {:id           id
-                                     :chat-type    chat-type
-                                     :muted?       muted?
-                                     :community?   community?
-                                     :muted-type   constants/mute-for-8-hours-type}))}]
+                                    {:id         id
+                                     :chat-type  chat-type
+                                     :muted?     muted?
+                                     :community? community?
+                                     :muted-type constants/mute-for-8-hours-type}))}]
    [quo/menu-item
     {:type                       :transparent
      :title                      (i18n/label :t/mute-for-1-week)
@@ -80,11 +80,11 @@
      :title-column-style         {:margin-left 2}
      :on-press                   (fn []
                                    (hide-sheet-and-dispatch
-                                    {:id           id
-                                     :chat-type    chat-type
-                                     :muted?       muted?
-                                     :community?   community?
-                                     :muted-type   constants/mute-for-1-week}))}]
+                                    {:id         id
+                                     :chat-type  chat-type
+                                     :muted?     muted?
+                                     :community? community?
+                                     :muted-type constants/mute-for-1-week}))}]
    [quo/menu-item
     {:type                       :transparent
      :title                      (i18n/label :t/mute-till-unmute)
@@ -93,8 +93,8 @@
      :title-column-style         {:margin-left 2}
      :on-press                   (fn []
                                    (hide-sheet-and-dispatch
-                                    {:id           id
-                                     :chat-type    chat-type
-                                     :muted?       muted?
-                                     :community?   community?
-                                     :muted-type   constants/mute-till-unmuted}))}]])
+                                    {:id         id
+                                     :chat-type  chat-type
+                                     :muted?     muted?
+                                     :community? community?
+                                     :muted-type constants/mute-till-unmuted}))}]])
