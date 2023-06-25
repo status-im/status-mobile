@@ -8,8 +8,13 @@
             [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
+<<<<<<< HEAD
             [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]
             [status-im2.common.muting.helpers :refer [format-mute-till]]))
+=======
+            [status-im2.common.mute-drawer.view :as mute-drawer]
+            [utils.datetime :as datetime]))
+>>>>>>> fixed mute community channels
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -53,11 +58,15 @@
                   :accessibility-label :edit-nickname}])}]))
 
 (defn mute-chat-action
-  [chat-id chat-type]
+  [chat-id chat-type muted?]
   (hide-sheet-and-dispatch [:show-bottom-sheet
                             {:content (fn []
-                                        [mute-chat-drawer/mute-chat-drawer chat-id
-                                         :mute-chat-for-duration chat-type])}]))
+                                        [mute-drawer/mute-drawer
+                                         {:id                  chat-id
+                                          :community?          false
+                                          :muted?              (not muted?)
+                                          :chat-type           chat-type
+                                          :accessibility-label :mute-community-title}])}]))
 
 (defn unmute-chat-action
   [chat-id]
@@ -136,7 +145,7 @@
                                         (format-mute-till muted-till)))
             :on-press            (if muted?
                                    #(unmute-chat-action chat-id)
-                                   #(mute-chat-action chat-id chat-type))
+                                   #(mute-chat-action chat-id chat-type muted?))
             :danger?             false
             :accessibility-label :mute-chat
             :chevron?            (not muted?)})))
