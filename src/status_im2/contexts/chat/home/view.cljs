@@ -130,9 +130,10 @@
        [chats selected-tab top])
      [rn/view {:style (style/blur-container top)}
       [blur/view
-       {:blur-amount (if platform/ios? 20 10)
-        :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-        :style       style/blur}]
+       {:blur-amount   (if platform/ios? 20 10)
+        :blur-type     (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+        :overlay-color (if (colors/dark?) colors/neutral-95-opa-70 colors/white-opa-70)
+        :style         style/blur}]
       [common.home/top-nav
        {:type   :grey
         :avatar {:customization-color customization-color
