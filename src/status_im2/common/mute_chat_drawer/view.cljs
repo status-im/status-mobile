@@ -4,7 +4,7 @@
             [react-native.core :as rn]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
-            [status-im2.common.mute-chat-drawer.style :as style]))
+            [status-im2.common.mute-drawer.style :as style]))
 
 (defn not-community-chat?
   [chat-type]

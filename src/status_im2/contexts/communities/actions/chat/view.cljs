@@ -12,15 +12,11 @@
   (rf/dispatch event))
 
 (defn- mute-channel-action
-  [chat-id chat-type muted?]
+  [chat-id chat-type]
   (hide-sheet-and-dispatch [:show-bottom-sheet
                             {:content (fn []
-                                        [mute-chat-drawer/mute-drawer 
-                                         {:id                  chat-id
-                                          :community?          false
-                                          :chat-type           chat-type
-                                          :muted?              muted?
-                                          :accessibility-label :mute-channel-title}])}]))
+                                        [mute-chat-drawer/mute-drawer chat-id
+                                         :mute-chat-for-duration chat-type])}]))
 
 (defn- unmute-channel-action
   [chat-id]
