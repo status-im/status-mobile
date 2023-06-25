@@ -80,6 +80,10 @@
   [screen-state screen-height switcher-card-size]
   (.screenHeight ^js floating-screen-worklets screen-state screen-height switcher-card-size))
 
+(defn floating-screen-border-radius
+  [screen-state]
+  (.screenBorderRadius ^js floating-screen-worklets screen-state))
+
 (defn floating-screen-z-index
   [screen-state]
   (.screenZIndex ^js floating-screen-worklets screen-state))

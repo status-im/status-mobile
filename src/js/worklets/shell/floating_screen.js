@@ -88,3 +88,21 @@ export function screenZIndex(screenState) {
     }
   });
 }
+
+export function screenBorderRadius(screenState) {
+  return useDerivedValue(function () {
+    'worklet';
+    switch (screenState.value) {
+      case constants.OPEN_SCREEN_WITH_SHELL_ANIMATION:
+        return withDelay(constants.SHELL_ANIMATION_TIME, withTiming(0, { duration: 0 }));
+      case constants.OPEN_SCREEN_WITH_SLIDE_ANIMATION:
+      case constants.OPEN_SCREEN_WITHOUT_ANIMATION:
+        return 0;
+      case constants.CLOSE_SCREEN_WITH_SLIDE_ANIMATION:
+        return withDelay(constants.SHELL_ANIMATION_TIME, withTiming(20, { duration: 0 }));
+      case constants.CLOSE_SCREEN_WITHOUT_ANIMATION:
+      case constants.CLOSE_SCREEN_WITH_SHELL_ANIMATION:
+        return 20;
+    }
+  });
+}
