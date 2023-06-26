@@ -1,6 +1,6 @@
 (ns react-native.cameraroll
   (:require ["@react-native-community/cameraroll" :as CameraRoll]
-            [react-native.fs :as fs]
+            ;[react-native.fs :as fs]
             [utils.transforms :as transforms]
             [taoensso.timbre :as log]))
 
