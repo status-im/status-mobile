@@ -138,7 +138,7 @@
     [quo/text {:size :paragraph-2} (i18n/label :t/forgot-your-password-info-description)]
 
     [rn/view {:style style/forget-password-step-container}
-     [quo/step {:in-blur-view? true :override-theme :dark} 1]
+     [quo/step {:in-blur-view? true} 1]
      [rn/view
       {:style style/forget-password-step-content}
       [quo/text {:size :paragraph-2 :weight :semi-bold}
@@ -146,7 +146,7 @@
       [quo/text {:size :paragraph-2} (i18n/label :t/forgot-your-password-info-remove-app-description)]]]
 
     [rn/view {:style style/forget-password-step-container}
-     [quo/step {:in-blur-view? true :override-theme :dark} 2]
+     [quo/step {:in-blur-view? true} 2]
      [rn/view
       {:style style/forget-password-step-content}
       [quo/text {:size :paragraph-2 :weight :semi-bold}
@@ -155,7 +155,7 @@
        (i18n/label :t/forgot-your-password-info-reinstall-app-description)]]]
 
     [rn/view {:style style/forget-password-step-container}
-     [quo/step {:in-blur-view? true :override-theme :dark} 3]
+     [quo/step {:in-blur-view? true} 3]
      [rn/view
       {:style style/forget-password-step-content}
       [rn/view
@@ -167,7 +167,7 @@
        (i18n/label :t/forgot-your-password-info-signup-with-key-description)]]]
 
     [rn/view {:style style/forget-password-step-container}
-     [quo/step {:in-blur-view? true :override-theme :dark} 4]
+     [quo/step {:in-blur-view? true} 4]
      [rn/view
       {:style style/forget-password-step-content}
       [quo/text {:size :paragraph-2 :weight :semi-bold}
