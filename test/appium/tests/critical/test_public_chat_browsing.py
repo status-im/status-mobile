@@ -367,9 +367,34 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.just_fyi("Check contacts/blocked users")
         self.home.chats_tab.click()
         self.home.contacts_tab.click()
-        for contact in waku_user.contacts:
-            if not self.home.element_by_text(contact).is_element_displayed(30):
-                self.errors.append("Contact %s was not restored from backup!" % contact)
+        contacts_number = self.home.get_contact_rows_count()
+        if contacts_number != len(waku_user.contacts):
+            self.errors.append(
+                "Incorrect contacts number restored: %s instead of %s" % (contacts_number, len(waku_user.contacts)))
+        else:
+            for i in range(contacts_number):
+                self.home.click_system_back_button_until_element_is_shown()
+                contact_row = self.home.contact_details_row(index=i + 1)
+                shown_name_text = contact_row.username_text.text
+                if shown_name_text in waku_user.contacts:
+                    waku_user.contacts.remove(shown_name_text)
+                    continue
+                else:
+                    contact_row.click()
+                    shown_name_text = profile.default_username_text.text
+                    if shown_name_text in waku_user.contacts:
+                        waku_user.contacts.remove(shown_name_text)
+                        continue
+                    else:
+                        chat = self.home.get_chat_view()
+                        chat.profile_send_message_button.click()
+                        shown_name_text = chat.user_name_text_new_UI.text
+                        if shown_name_text in waku_user.contacts:
+                            waku_user.contacts.remove(shown_name_text)
+                            continue
+        if waku_user.contacts:
+            self.errors.append(
+                "Contact(s) was (were) not restored from backup: %s!" % ", ".join(waku_user.contacts))
 
         if not pytest_config_global['pr_number']:
             self.home.just_fyi("Perform back up")
