@@ -16,8 +16,8 @@
       (.then #(callback (transforms/js->clj %)))
       (.catch #(log/warn "could not get camera roll albums" %))))
 
-(defn save-image
-  [path]
-  (-> (.save CameraRoll path)
-      (.then #(fs/unlink path))
-      (.catch #(fs/unlink path))))
+;(defn save-image
+;  [path]
+;  (-> (.save CameraRoll (clj->js path))
+;      (.then #(fs/unlink path))
+;      (.catch #(fs/unlink path))))

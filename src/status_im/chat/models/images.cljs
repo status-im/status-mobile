@@ -12,29 +12,29 @@
 
 (def temp-image-url (str (fs/cache-dir) "/StatusIm_Image.jpeg"))
 
-(defn download-image-http
-  [base64-uri on-success]
-  (-> (.config ReactNativeBlobUtil
-               (clj->js {:trusty platform/ios?
-                         :path   temp-image-url}))
-      (.fetch "GET" base64-uri)
-      (.then #(on-success (.path %)))
-      (.catch #(log/error "could not download image" {:error %}))))
+;(defn download-image-http
+;  [base64-uri on-success]
+;  (-> (.config ReactNativeBlobUtil
+;               (clj->js {:trusty platform/ios?
+;                         :path   temp-image-url}))
+;      (.fetch "GET" base64-uri)
+;      (.then #(on-success (.path %)))
+;      (.catch #(log/error "could not download image" {:error %}))))
 
-(defn share-image
-  [uri]
-  (download-image-http uri
-                       (fn [downloaded-url]
-                         (share/open {:url       (str (when platform/android? "file://") downloaded-url)
-                                      :isNewTask true}
-                                     #(fs/unlink downloaded-url)
-                                     #(fs/unlink downloaded-url)))))
+;(defn share-image
+;  [uri]
+;  (download-image-http uri
+;                       (fn [downloaded-url]
+;                         (share/open {:url       (str (when platform/android? "file://") downloaded-url)
+;                                      :isNewTask true}
+;                                     #(fs/unlink downloaded-url)
+;                                     #(fs/unlink downloaded-url)))))
 
-(defn save-image-to-gallery
-  [base64-uri on-success]
-  (-> (download-image-http base64-uri cameraroll/save-image)
-      (.then on-success)
-      (.catch #(log/error (str "could not save image to gallery" %)))))
+;(defn save-image-to-gallery
+;  [base64-uri on-success]
+;  (-> (download-image-http base64-uri cameraroll/save-image)
+;      (.then on-success)
+;      (.catch #(log/error (str "could not save image to gallery" %)))))
 
 (re-frame/reg-fx
  ::chat-open-image-picker-camera
