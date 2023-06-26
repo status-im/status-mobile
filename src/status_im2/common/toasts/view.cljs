@@ -4,27 +4,9 @@
             [react-native.gesture :as gesture]
             [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
-            [status-im.utils.utils :as utils.utils]
+            [react-native.background-timer :as background-timer]
             [status-im2.common.toasts.style :as style]
             [utils.re-frame :as rf]))
-
-;; (def ^:private slide-out-up-animation
-;;   (-> ^js reanimated/slide-out-up-animation
-;;       .springify
-;;       (.damping 20)
-;;       (.stiffness 300)))
-
-;; (def ^:private slide-in-up-animation
-;;   (-> ^js reanimated/slide-in-up-animation
-;;       .springify
-;;       (.damping 20)
-;;       (.stiffness 300)))
-
-;; (def ^:private linear-transition
-;;   (-> ^js reanimated/linear-transition
-;;       .springify
-;;       (.damping 20)
-;;       (.stiffness 300)))
 
 (defn toast
   [id]
@@ -33,42 +15,47 @@
       [quo/notification toast-opts]
       [quo/toast toast-opts])))
 
+(defn reset-translate-y
+  [translate-y]
+  (reanimated/animate-shared-value-with-spring translate-y
+                                               0
+                                               {:mass      1
+                                                :damping   20
+                                                :stiffness 300}))
+
+(defn dismiss
+  [translate-y dismissed-locally? close!]
+  (reanimated/animate-shared-value-with-spring
+   translate-y
+   -500
+   {:mass 1 :damping 20 :stiffness 300})
+  (reset! dismissed-locally? true)
+  (close!))
+
 (defn f-container
   [id]
   (let [dismissed-locally? (reagent/atom false)
         close!             #(rf/dispatch [:toasts/close id])
         timer              (reagent/atom nil)
-        clear-timer        #(utils.utils/clear-timeout @timer)]
+        clear-timer        #(background-timer/clear-timeout @timer)]
     (fn []
       (let [duration (or (rf/sub [:toasts/toast-cursor id :duration]) 3000)
             on-dismissed (or (rf/sub [:toasts/toast-cursor id :on-dismissed]) identity)
             create-timer (fn []
-                           (reset! timer (utils.utils/set-timeout close! duration)))
+                           (reset! timer (background-timer/set-timeout close! duration)))
             translate-y (reanimated/use-shared-value 0)
             pan
             (->
               (gesture/gesture-pan)
-              ;; remove timer on pan start
               (gesture/on-start clear-timer)
               (gesture/on-update
                (fn [^js evt]
-                 (let [evt-translation-y (.-translationY evt)]
+                 (let [evt-translation-y (.-translationY evt)
+                       pan-down?         (> evt-translation-y 100)
+                       pan-up?           (< evt-translation-y -30)]
                    (cond
-                     ;; reset translate y on pan down
-                     (> evt-translation-y 100)
-                     (reanimated/animate-shared-value-with-spring translate-y
-                                                                  0
-                                                                  {:mass      1
-                                                                   :damping   20
-                                                                   :stiffness 300})
-                     ;; dismiss on pan up
-                     (< evt-translation-y -30)
-                     (do (reanimated/animate-shared-value-with-spring
-                          translate-y
-                          -500
-                          {:mass 1 :damping 20 :stiffness 300})
-                         (reset! dismissed-locally? true)
-                         (close!))
+                     pan-down? (reset-translate-y translate-y)
+                     pan-up? (dismiss translate-y dismissed-locally? close!)
                      :else
                      (reanimated/set-shared-value translate-y
                                                   evt-translation-y)))))

@@ -1,4 +1,5 @@
-(ns utils.string)
+(ns utils.string
+  (:require [clojure.string :as string]))
 
 (defn truncate-str-memo
   "Given string and max threshold, trims the string to threshold length with `...`
@@ -38,3 +39,13 @@
 (defn at-least-n-chars?
   [s n]
   (>= (count s) n))
+
+(defn safe-trim
+  [s]
+  (when (string? s)
+    (string/trim s)))
+
+(defn safe-replace
+  [s m r]
+  (when (string? s)
+    (string/replace s m r)))
