@@ -73,6 +73,7 @@
 (def transparent-screen-options
   (merge
    {:modalPresentationStyle :overCurrentContext
+    :theme                  :dark
     :layout                 {:componentBackgroundColor :transparent
                              :orientation              ["portrait"]
                              :backgroundColor          :transparent}}
@@ -96,7 +97,8 @@
 
 (def dark-screen
   (merge (statusbar true)
-         {:layout {:componentBackgroundColor colors/neutral-95
+         {:theme  :dark
+          :layout {:componentBackgroundColor colors/neutral-95
                    :orientation              ["portrait"]
                    :backgroundColor          colors/neutral-95}}))
 

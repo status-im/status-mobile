@@ -96,7 +96,8 @@
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
     [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
-    [status-im2.contexts.quo-preview.keycard.keycard :as keycard]))
+    [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
+    [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]))
 
 (def screens-categories
   {:foundations           [{:name      :shadows
@@ -159,7 +160,11 @@
                            {:name      :token-gating
                             :options   {:insets {:bottom? true}
                                         :topBar {:visible true}}
-                            :component token-gating/preview-token-gating}]
+                            :component token-gating/preview-token-gating}
+                           {:name      :channel-actions
+                            :options   {:insets {:bottom? true}
+                                        :topBar {:visible true}}
+                            :component channel-actions/preview-channel-actions}]
    :counter               [{:name      :counter
                             :options   {:topBar {:visible true}}
                             :component counter/preview-counter}

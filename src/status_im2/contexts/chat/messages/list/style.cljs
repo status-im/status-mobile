@@ -28,8 +28,9 @@
   [cover-bg-color]
   {:flex             1
    :height           (+ overscroll-cover-height cover-height)
-   :background-color (colors/theme-colors (:light cover-bg-color)
-                                          (:dark cover-bg-color))})
+   :background-color (colors/theme-colors
+                      (colors/custom-color cover-bg-color 50 20)
+                      (colors/custom-color cover-bg-color 50 40))})
 
 (defn header-bottom-part
   [animation]

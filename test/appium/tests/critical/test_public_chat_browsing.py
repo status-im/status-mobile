@@ -6,7 +6,7 @@ import pytest
 from dateutil import parser
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
-from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel
+from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel, pytest_config_global
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from views.chat_view import CommunityView
 from views.dbs.waku_backup import user as waku_user
@@ -370,6 +370,13 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         for contact in waku_user.contacts:
             if not self.home.element_by_text(contact).is_element_displayed(30):
                 self.errors.append("Contact %s was not restored from backup!" % contact)
+
+        if not pytest_config_global['pr_number']:
+            self.home.just_fyi("Perform back up")
+            self.home.profile_button.click()
+            profile.sync_settings_button.click()
+            profile.backup_settings_button.click()
+            profile.perform_backup_button.click()
 
         self.home.just_fyi("Check that can login with different user")
         self.home.reopen_app(sign_in=False)
@@ -755,19 +762,25 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.jump_to_messages_home()
         self.home_2.handle_contact_request(self.username_1)
         self.channel_1.profile_send_message_button.click_until_absense_of_element(
-            desired_element=self.channel_1.profile_send_message_button)
-        self.chat_1.send_message("piy")
-
-        self.home_2.just_fyi("Check message in 1-1 chat after unblock")
-        self.home_2.get_chat(self.username_1).click()
-        self.chat_2.send_message(message_unblocked)
+            desired_element=self.channel_1.profile_send_message_button, attempts=20, timeout=3)
         try:
-            self.chat_2.chat_element_by_text(message_unblocked).wait_for_status_to_be(expected_status='Delivered',
-                                                                                      timeout=120)
-            if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
-                self.errors.append("Message was not received in 1-1 chat after user unblock!")
+            self.chat_1.send_message("piy")
+            unblocked = True
         except TimeoutException:
-            self.errors.append('Message was not delivered after back up online.')
+            unblocked = False
+            self.errors.append("Chat with unblocked user was not enabled after 1 minute")
+
+        if unblocked:
+            self.home_2.just_fyi("Check message in 1-1 chat after unblock")
+            self.home_2.get_chat(self.username_1).click()
+            self.chat_2.send_message(message_unblocked)
+            try:
+                self.chat_2.chat_element_by_text(message_unblocked).wait_for_status_to_be(expected_status='Delivered',
+                                                                                          timeout=120)
+                if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(30):
+                    self.errors.append("Message was not received in 1-1 chat after user unblock!")
+            except TimeoutException:
+                self.errors.append('Message was not delivered after back up online.')
 
         self.errors.verify_no_errors()
 

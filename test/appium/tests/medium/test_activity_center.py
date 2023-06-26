@@ -1,4 +1,5 @@
 import pytest
+from selenium.common.exceptions import TimeoutException
 
 from tests import marks, run_in_parallel
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
@@ -321,7 +322,10 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         [home.jump_to_communities_home() for home in (self.home_1, self.home_2)]
 
         self.home_1.just_fyi("Checking unread indicators")
-        self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
+        try:
+            self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
+        except TimeoutException:
+            self.errors.append("Unread indicator is not shown in notifications")
         self.home_1.open_activity_center_button.click()
         reply_element = self.home_1.get_element_from_activity_center_view(self.username_2)
         if reply_element.title.text != 'Join request':
@@ -332,7 +336,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.activity_notification_swipe_button.click()
         self.home_1.close_activity_centre.click()
 
-        self.home_2.just_fyi("Checking that community appeared on thr list")
+        self.home_2.just_fyi("Checking that community appeared on the list")
         if not self.home_2.element_by_text_part(community_name).is_element_displayed(30):
             self.errors.append(
                 "Community is not appeared in the list after accepting admin request from activity centre")

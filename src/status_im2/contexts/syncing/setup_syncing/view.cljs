@@ -118,17 +118,16 @@
                :default-shown? true
                :editable       false}]
              [quo/button
-              {:on-press       (fn []
-                                 (clipboard/set-string @code)
-                                 (rf/dispatch [:toasts/upsert
-                                               {:icon       :correct
-                                                :icon-color colors/success-50
-                                                :text       (i18n/label
-                                                             :t/sharing-copied-to-clipboard)}]))
-               :override-theme :dark
-               :type           :grey
-               :style          {:margin-top 12}
-               :before         :i/copy}
+              {:on-press (fn []
+                           (clipboard/set-string @code)
+                           (rf/dispatch [:toasts/upsert
+                                         {:icon       :correct
+                                          :icon-color colors/success-50
+                                          :text       (i18n/label
+                                                       :t/sharing-copied-to-clipboard)}]))
+               :type     :grey
+               :style    {:margin-top 12}
+               :before   :i/copy}
               (i18n/label :t/copy-qr)]])]]
         [rn/view {:style style/sync-code}
          [quo/divider-label

@@ -1,8 +1,9 @@
 (ns quo2.components.tabs.tab.view
   (:require [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
-            [quo2.components.tabs.tab.style :as style]
             [quo2.components.notifications.notification-dot :as notification-dot]
+            [quo2.components.tabs.tab.style :as style]
+            [quo2.theme :as theme]
             [react-native.core :as rn]
             [react-native.svg :as svg]))
 
@@ -46,7 +47,7 @@
      (vector? children)
      children)])
 
-(defn view
+(defn- themed-view
   [{:keys [accessibility-label
            active
            before
@@ -56,7 +57,7 @@
            disabled
            id
            on-press
-           override-theme
+           theme
            segmented?
            size
            notification-dot?]
@@ -65,11 +66,10 @@
   (let [show-notification-dot? (and notification-dot? (= size 32))
         {:keys [icon-color
                 background-color
-                label]}
-        (style/by-theme {:override-theme override-theme
-                         :blur?          blur?
-                         :disabled       disabled
-                         :active         active})]
+                label]}        (style/by-theme {:theme    theme
+                                                :blur?    blur?
+                                                :disabled disabled
+                                                :active   active})]
     [rn/touchable-without-feedback
      (merge {:disabled            disabled
              :accessibility-label accessibility-label}
@@ -101,3 +101,5 @@
           :height           size
           :disabled         disabled
           :background-color background-color}])]]))
+
+(def view (theme/with-theme themed-view))

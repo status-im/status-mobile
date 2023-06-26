@@ -1,7 +1,7 @@
-(ns status-im2.contexts.shell.components.home-stack.style
+(ns status-im2.contexts.shell.jump-to.components.home-stack.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.shell.utils :as utils]))
+            [status-im2.contexts.shell.jump-to.utils :as utils]))
 
 (defn home-stack
   [shared-values {:keys [width height]}]

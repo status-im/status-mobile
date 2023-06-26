@@ -88,7 +88,8 @@
      (name @state/root-id)
      {:component {:id      comp
                   :name    comp
-                  :options (merge (options/statusbar-and-navbar)
+                  :options (merge (options/default-root)
+                                  (options/statusbar-and-navbar)
                                   options
                                   (if (:topBar options)
                                     (options/merge-top-bar (options/topbar-options) options)

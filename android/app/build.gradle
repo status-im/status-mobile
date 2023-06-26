@@ -389,17 +389,6 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     implementation "androidx.core:core-splashscreen:1.0.0"
 
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.fbjni'
-    }
-    // TODO Uncomment once Flipper does not cause webview crashes in Debug mode
-    // debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-    //      exclude group:'com.facebook.flipper'
-    // }
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-    }
-
     if (enableHermes) {
       //noinspection GradleDynamicVersion
       implementation("com.facebook.react:hermes-engine:+") { // From node_modules
@@ -422,8 +411,8 @@ dependencies {
     implementation project(':react-native-status')
     implementation project(':react-native-status-keycard')
     implementation 'com.github.status-im:function:0.0.1'
-    implementation 'com.facebook.fresco:fresco:2.2.0'
-    implementation 'com.facebook.fresco:animated-gif:2.2.0'
+    implementation 'com.facebook.fresco:fresco:2.5.0'
+    implementation 'com.facebook.fresco:animated-gif:2.5.0'
     implementation "com.squareup.okhttp3:okhttp-tls:4.9.2"
 }
 

@@ -121,7 +121,11 @@
 (rf/defn on-delete-profile-success
   {:events [:onboarding-2/on-delete-profile-success]}
   [{:keys [db]} key-uid]
-  {:db (update-in db [:multiaccounts/multiaccounts] dissoc key-uid)})
+  (let [multiaccounts (dissoc (:multiaccounts/multiaccounts db) key-uid)]
+    (merge
+     {:db (assoc db :multiaccounts/multiaccounts multiaccounts)}
+     (when-not (seq multiaccounts)
+       {:set-root :intro}))))
 
 (rf/defn password-set
   {:events [:onboarding-2/password-set]}

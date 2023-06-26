@@ -21,7 +21,7 @@
     [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
     [status-im2.contexts.onboarding.profiles.view :as profiles]
     [status-im2.contexts.quo-preview.main :as quo.preview]
-    [status-im2.contexts.shell.view :as shell]
+    [status-im2.contexts.shell.jump-to.view :as shell]
     [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
     [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
@@ -86,7 +86,8 @@
      :component add-new-contact/new-contact}
 
     {:name      :how-to-pair
-     :options   {:sheet? true}
+     :options   {:theme  :dark
+                 :sheet? true}
      :component how-to-pair/instructions}
 
     {:name      :discover-communities
@@ -105,31 +106,38 @@
 
     ;; Onboarding
     {:name      :intro
+     :options   {:theme :dark}
      :component intro/view}
 
     {:name      :profiles
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme  :dark
+                 :layout options/onboarding-layout}
      :component profiles/views}
 
     {:name      :new-to-status
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme  :dark
+                 :layout options/onboarding-layout}
      :component new-to-status/new-to-status}
 
     {:name      :create-profile
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme  :dark
+                 :layout options/onboarding-layout}
      :component create-profile/create-profile}
 
     {:name      :create-profile-password
-     :options   {:insets {:top false}
+     :options   {:theme  :dark
+                 :insets {:top false}
                  :layout options/onboarding-layout}
      :component create-password/create-password}
 
     {:name      :enable-biometrics
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme  :dark
+                 :layout options/onboarding-layout}
      :component enable-biometrics/enable-biometrics}
 
     {:name      :generating-keys
-     :options   {:layout             options/onboarding-layout
+     :options   {:theme              :dark
+                 :layout             options/onboarding-layout
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
@@ -140,7 +148,8 @@
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
-     :options   {:layout             options/onboarding-layout
+     :options   {:theme              :dark
+                 :layout             options/onboarding-layout
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
@@ -148,11 +157,13 @@
 
     {:name      :identifiers
      :component identifiers/view
-     :options   {:layout             options/onboarding-layout
+     :options   {:theme              :dark
+                 :layout             options/onboarding-layout
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
     {:name      :scan-sync-code-page
+     :options   {:theme :dark}
      :component scan-sync-code-page/view}
 
     {:name      :sign-in
@@ -160,15 +171,18 @@
      :component sign-in/view}
 
     {:name      :syncing-progress
-     :options   {:layout     options/onboarding-layout
+     :options   {:theme      :dark
+                 :layout     options/onboarding-layout
                  :popGesture false}
      :component syncing-devices/view}
 
     {:name      :syncing-results
+     :options   {:theme :dark}
      :component syncing-results/view}
 
     {:name      :welcome
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme  :dark
+                 :layout options/onboarding-layout}
      :component welcome/view}]
 
    (when config/quo-preview-enabled?

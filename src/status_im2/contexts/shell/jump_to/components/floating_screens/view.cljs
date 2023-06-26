@@ -1,13 +1,13 @@
-(ns status-im2.contexts.shell.components.floating-screens.view
+(ns status-im2.contexts.shell.jump-to.components.floating-screens.view
   (:require [utils.re-frame :as rf]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.shell.state :as state]
-            [status-im2.contexts.shell.utils :as utils]
+            [status-im2.contexts.shell.jump-to.state :as state]
+            [status-im2.contexts.shell.jump-to.utils :as utils]
             [status-im2.contexts.chat.messages.view :as chat]
-            [status-im2.contexts.shell.animation :as animation]
-            [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.contexts.shell.components.floating-screens.style :as style]
+            [status-im2.contexts.shell.jump-to.animation :as animation]
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+            [status-im2.contexts.shell.jump-to.components.floating-screens.style :as style]
             [status-im2.contexts.communities.overview.view :as communities.overview]))
 
 (def screens-map

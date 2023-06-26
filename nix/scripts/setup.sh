@@ -38,6 +38,22 @@ nix_install() {
         echo "Please see: https://nixos.org/nix/manual/#chap-installation" >&2
         exit 1
     fi
+
+    # Additional fixes
+    nix_add_extra_cache
+    nix_daemon_restart
+}
+
+# Adding directly to global config to avoid warnings like this:
+# "ignoring untrusted substituter 'https://nix-cache.status.im/', you are not a trusted user."
+nix_add_extra_cache() {
+    # Single-user installations do not have this issue.
+    [[ ! -f /etc/nix/nix.conf ]] && return
+    echo -e 'Adding our cache to Nix daemon config...' >&2
+    local NIX_SETTINGS=('substituters' 'trusted-substituters' 'trusted-public-keys')
+    for NIX_SETTING in "${NIX_SETTINGS[@]}"; do
+        nix_set_global_setting "${NIX_SETTING}" "$(nix_get_local_setting "${NIX_SETTING}")"
+    done
 }
 
 if [[ ! -x "$(command -v sha256sum)" ]]; then

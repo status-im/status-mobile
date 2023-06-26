@@ -1,19 +1,20 @@
-(ns status-im2.contexts.shell.components.shell-screen.view
+(ns status-im2.contexts.shell.jump-to.components.jump-to-screen.view
   (:require [utils.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
             [utils.re-frame :as rf]
             [react-native.core :as rn]
             [react-native.blur :as blur]
             [react-native.linear-gradient :as linear-gradient]
             [react-native.safe-area :as safe-area]
-            [status-im2.contexts.shell.state :as state]
-            [status-im2.contexts.shell.utils :as utils]
+            [status-im2.contexts.shell.jump-to.state :as state]
+            [status-im2.contexts.shell.jump-to.utils :as utils]
             [status-im2.common.home.view :as common.home]
-            [status-im2.contexts.shell.constants :as shell.constants]
-            [status-im2.contexts.shell.components.shell-screen.style :as style]
-            [status-im2.contexts.shell.components.bottom-tabs.view :as bottom-tabs]
-            [status-im2.contexts.shell.components.switcher-cards.view :as switcher-cards]))
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+            [status-im2.contexts.shell.jump-to.components.jump-to-screen.style :as style]
+            [status-im2.contexts.shell.jump-to.components.bottom-tabs.view :as bottom-tabs]
+            [status-im2.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]))
 
 (defn placeholder
   []
@@ -98,17 +99,18 @@
         width          (rf/sub [:dimensions/window-width])
         top            (safe-area/get-top)
         shell-margin   (/ (- width (* 2 shell.constants/switcher-card-size)) 3)]
-    [rn/view
-     {:style {:top              0
-              :left             0
-              :right            0
-              :bottom           -1
-              :position         :absolute
-              :background-color colors/neutral-100}}
-     [jump-to-list switcher-cards shell-margin]
-     [top-nav-blur-overlay top]
-     [common.home/top-nav
-      {:type   :shell
-       :avatar {:customization-color customization-color}
-       :style  {:margin-top top
-                :z-index    2}}]]))
+    [theme/provider {:theme :dark}
+     [rn/view
+      {:style {:top              0
+               :left             0
+               :right            0
+               :bottom           -1
+               :position         :absolute
+               :background-color colors/neutral-100}}
+      [jump-to-list switcher-cards shell-margin]
+      [top-nav-blur-overlay top]
+      [common.home/top-nav
+       {:type   :shell
+        :avatar {:customization-color customization-color}
+        :style  {:margin-top top
+                 :z-index    2}}]]]))
