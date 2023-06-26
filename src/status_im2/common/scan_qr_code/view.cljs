@@ -5,7 +5,6 @@
             [status-im2.common.scan-qr-code.style :as style]
             [react-native.camera-kit :as camera-kit]
             [re-frame.core :as re-frame]
-            [status-im.multiaccounts.key-storage.core :as key-storage]
             [react-native.core :as rn]
             [quo2.core :as quo]
             [utils.i18n :as i18n]
@@ -17,6 +16,8 @@
             [react-native.permissions :as permissions]
             [status-im2.contexts.syncing.utils :as sync-utils]
             [status-im2.contexts.onboarding.common.background.view :as background]
+            [status-im2.common.alert.events :as alert]
+            [status-im.ui.components.react :as react]
             [react-native.safe-area :as safe-area]))
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
@@ -32,13 +33,21 @@
   []
   (rf/dispatch [:syncing/preflight-outbound-check #(reset! preflight-check-passed? %)]))
 
+(defn open-device-settings-dialog
+  []
+  (alert/show-confirmation
+            {:title               (i18n/label :t/allow-access)
+             :content             (i18n/label :t/camera-access-description)
+             :confirm-button-text (i18n/label :t/settings)
+             :on-accept           #(.openSettings ^js react/linking)}))
+
 (defn request-camera-permission
   []
   (rf/dispatch
    [:request-permissions
     {:permissions [:camera]
      :on-allowed  #(reset! camera-permission-granted? true)
-     :on-denied   #(re-frame/dispatch [::key-storage/open-device-settings-dialog])}]))
+     :on-denied   #(open-device-settings-dialog)}]))
 
 (defn get-labels-and-on-press-method
   []
