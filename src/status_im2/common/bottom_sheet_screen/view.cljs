@@ -46,7 +46,7 @@
 (defn f-view
   [content skip-background?]
   (let [scroll-enabled           (reagent/atom true)
-        curr-scroll              (atom 0)
+        curr-scroll              (reagent/atom 0)
         {:keys [override-theme]} (rf/sub [:get-screen-params])]
     (fn []
       (let [insets           (safe-area/get-insets)
@@ -78,4 +78,5 @@
             {:insets         insets
              :close          close
              :scroll-enabled scroll-enabled
+             :current-scroll curr-scroll
              :on-scroll      #(on-scroll % curr-scroll)}]]]]))))
