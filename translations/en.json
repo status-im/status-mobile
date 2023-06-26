@@ -2207,7 +2207,6 @@
     "read-more": "Read more",
     "token-gated-communities-info": "Here will be something relevant about this topic. This will help the user get more context and therefore have a better understanding of it.",
     "dont-yell-at-me": "Don’t yell at me",
-<<<<<<< HEAD
     "view-channel-members-and-details": "View channel members and details",
     "unmute-channel": "Unmute channel",
     "share-channel": "Share channel",
@@ -2245,8 +2244,6 @@
     "chat-muted-till-unmuted": "Chat muted till unmuted\n (until {{duration}}) ",
     "until": "until",
     "chat-unmuted-successfully": "Chat unmuted successfully! ",
-    "channel-unmuted-successfully": "Channel unmuted successfully! "
-=======
+    "channel-unmuted-successfully": "Channel unmuted successfully! ",
     "photo-saved": "Photo saved to your device",
->>>>>>> c93801a6f (feat: save image)
 }

@@ -1,16 +1,13 @@
 (ns status-im.chat.models.images
-  (:require ["@react-native-community/cameraroll" :as CameraRoll]
-            ["react-native-blob-util" :default ReactNativeBlobUtil]
+  (:require ["react-native-blob-util" :default ReactNativeBlobUtil]
             [re-frame.core :as re-frame]
             [react-native.share :as share]
-            [utils.i18n :as i18n]
-            [react-native.permissions :as permissions]
+            [react-native.cameraroll :as cameraroll]
             [status-im.ui.components.react :as react]
             [status-im2.config :as config]
             [react-native.fs :as fs]
             [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
 (def temp-image-url (str (fs/cache-dir) "/StatusIm_Image.jpeg"))
@@ -22,10 +19,8 @@
                          :path   temp-image-url}))
       (.fetch "GET" base64-uri)
       (.then #(on-success (.path %)))
-      (.catch #(log/error (str "could not download image" %)))))
+      (.catch #(log/error "could not download image" {:error %}))))
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 (defn share-image
   [uri]
   (download-image-http uri
@@ -35,23 +30,10 @@
                                      #(fs/unlink downloaded-url)
                                      #(fs/unlink downloaded-url)))))
 
-(defn save-to-gallery [path] (.save CameraRoll path))
-=======
-(defn save-to-gallery
-=======
-(defn save-image
->>>>>>> 5d7bcc0f5 (rename method)
-  [path]
-  (-> (.save CameraRoll path)
-      (.then #(fs/unlink path))
-      (.catch #(fs/unlink path))))
->>>>>>> c93801a6f (feat: save image)
-
-
 (defn save-image-to-gallery
-  [base64-uri success-cb]
-  (-> (download-image-http base64-uri save-image)
-      (.then success-cb)
+  [base64-uri on-success]
+  (-> (download-image-http base64-uri cameraroll/save-image)
+      (.then on-success)
       (.catch #(log/error (str "could not save image to gallery" %)))))
 
 (re-frame/reg-fx

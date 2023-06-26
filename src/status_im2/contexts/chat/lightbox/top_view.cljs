@@ -12,13 +12,8 @@
     [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-<<<<<<< HEAD
-    [status-im2.contexts.chat.lightbox.constants :as c]
-    [status-im.chat.models.images :as images]))
-=======
     [status-im.chat.models.images :as images]
     [status-im2.contexts.chat.lightbox.constants :as c]))
->>>>>>> c93801a6f (feat: save image)
 
 (defn animate-rotation
   [result screen-width screen-height insets
@@ -48,31 +43,28 @@
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
 (defn drawer
-  [uri]
-  [quo/action-drawer
-   [[{:icon                :i/save
-      :accessibility-label :save-image
-      :label               (i18n/label :t/save-image-library)
-      :on-press            (fn []
-                             (rf/dispatch [:hide-bottom-sheet])
-                             (images/save-image-to-gallery
-                              uri
-                              #(rf/dispatch [:toasts/upsert
-                                             {:id              :random-id
-                                              :icon            :correct
-                                              :icon-color      colors/success-50
-                                              :container-style {:bottom (when platform/android? 20)}
-                                              :text            (i18n/label :t/photo-saved)}])))}]]])
+  [content]
+  (let [uri (http/replace-port (:image content)
+                               (rf/sub [:mediaserver/port]))]
+    [quo/action-drawer
+     [[{:icon                :i/save
+        :accessibility-label :save-image
+        :label               (i18n/label :t/save-image-library)
+        :on-press            (fn []
+                               (rf/dispatch [:hide-bottom-sheet])
+                               (images/save-image-to-gallery
+                                uri
+                                #(rf/dispatch [:toasts/upsert
+                                               {:id              :random-id
+                                                :icon            :correct
+                                                :icon-color      colors/success-50
+                                                :container-style {:bottom (when platform/android? 20)}
+                                                :text            (i18n/label :t/photo-saved)}])))}]]]))
 
 (defn top-view
-<<<<<<< HEAD
   [messages insets index animations derived landscape? screen-width]
   (let [{:keys [from timestamp content]}   (nth @messages @index)
         display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
-=======
-  [{:keys [from timestamp content]} insets index animations derived landscape? screen-width]
-  (let [display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
->>>>>>> c93801a6f (feat: save image)
                                                            from]))
         bg-color                           (if landscape?
                                              colors/neutral-100-opa-70
@@ -117,6 +109,6 @@
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
        {:active-opacity 1
-        :on-press       #(rf/dispatch [:show-bottom-sheet {:content (fn [] [drawer uri])}])
+        :on-press       #(rf/dispatch [:show-bottom-sheet {:content (fn [] [drawer content])}])
         :style          style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))
