@@ -10,9 +10,9 @@
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.datetime :as datetime]
-    ;[utils.i18n :as i18n]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    ;[status-im.chat.models.images :as images]
+    [status-im.chat.models.images :as images]
     [status-im2.contexts.chat.lightbox.constants :as c]))
 
 (defn animate-rotation
@@ -42,24 +42,24 @@
         (anim/animate top-view-width screen-width)
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
-;(defn drawer
-;  [content]
-;  (let [uri (http/replace-port (:image content)
-;                               (rf/sub [:mediaserver/port]))]
-;    [quo/action-drawer
-;     [[{:icon                :i/save
-;        :accessibility-label :save-image
-;        :label               (i18n/label :t/save-image-library)
-;        :on-press            (fn []
-;                               (rf/dispatch [:hide-bottom-sheet])
-;                               (images/save-image-to-gallery
-;                                uri
-;                                #(rf/dispatch [:toasts/upsert
-;                                               {:id              :random-id
-;                                                :icon            :correct
-;                                                :icon-color      colors/success-50
-;                                                :container-style {:bottom (when platform/android? 20)}
-;                                                :text            (i18n/label :t/photo-saved)}])))}]]]))
+(defn drawer
+  [content]
+  (let [uri (http/replace-port (:image content)
+                               (rf/sub [:mediaserver/port]))]
+    [quo/action-drawer
+     [[{:icon                :i/save
+        :accessibility-label :save-image
+        :label               (i18n/label :t/save-image-library)
+        :on-press            (fn []
+                               (rf/dispatch [:hide-bottom-sheet])
+                               (images/save-image-to-gallery
+                                uri
+                                #(rf/dispatch [:toasts/upsert
+                                               {:id              :random-id
+                                                :icon            :correct
+                                                :icon-color      colors/success-50
+                                                :container-style {:bottom (when platform/android? 20)}
+                                                :text            (i18n/label :t/photo-saved)}])))}]]]))
 
 (defn top-view
   [messages insets index animations derived landscape? screen-width]
@@ -104,11 +104,11 @@
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
        {:active-opacity 1
-        ;:on-press       #(images/share-image uri)
+        :on-press       #(images/share-image uri)
         :style          (merge style/close-container {:margin-right 12})}
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
        {:active-opacity 1
-        ;:on-press       #(rf/dispatch [:show-bottom-sheet {:content (fn [] [drawer content])}])
+        :on-press       #(rf/dispatch [:show-bottom-sheet {:content (fn [] [drawer content])}])
         :style          style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))
