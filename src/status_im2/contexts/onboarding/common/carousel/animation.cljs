@@ -95,18 +95,21 @@
 
 (defn drag-gesture
   [progress paused]
-  (->
-    (gesture/gesture-pan)
-    (gesture/enabled true)
-    (gesture/max-pointers 1)
-    (gesture/on-finalize
-     (fn [event]
-       (let [next?     (< (oops/oget event "translationX") (- drag-limit))
-             previous? (> (oops/oget event "translationX") drag-limit)]
-         (when next?
-           (update-progress progress paused (get-next-progress progress)))
-         (when previous?
-           (update-progress progress paused (get-previous-progress progress))))))))
+  (-> (gesture/gesture-pan)
+      (gesture/max-pointers 1)
+      (gesture/on-finalize
+       (fn [event]
+         (let [next?     (< (oops/oget event "translationX") (- drag-limit))
+               previous? (> (oops/oget event "translationX") drag-limit)]
+           (when next?
+             (update-progress progress paused (get-next-progress progress)))
+           (when previous?
+             (update-progress progress paused (get-previous-progress progress))))))))
+
+(defn tap-gesture
+  [progress paused]
+  (-> (gesture/gesture-tap)
+      (gesture/on-end #(update-progress progress paused (get-next-progress progress)))))
 
 (defn carousel-left-position
   [window-width animate? progress]

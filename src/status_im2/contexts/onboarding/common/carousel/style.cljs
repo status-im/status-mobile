@@ -63,14 +63,9 @@
 
 (defn carousel-container
   [left animate?]
-  (let [normal-style {:position       :absolute
-                      :right          0
-                      :top            0
-                      :bottom         0
-                      :flex-direction :row
-                      :left           left}]
-    (if animate?
-      (reanimated/apply-animations-to-style
-       {:left left}
-       normal-style)
-      normal-style)))
+  (cond->> {:position       :absolute
+            :right          0
+            :top            0
+            :flex-direction :row
+            :left           left}
+    animate? (reanimated/apply-animations-to-style {:left left})))
