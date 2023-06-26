@@ -27,11 +27,11 @@
       :override-theme      :dark
       :on-press            #(debounce/dispatch-and-chill [:open-modal :share-shell] 1000)}
      :i/qr-code]]
-    [quo/text
-      {:size   :heading-1
-      :weight :semi-bold
-      :style  style/header-text}
-      (i18n/label :t/scan-qr)]])
+   [quo/text
+    {:size   :heading-1
+     :weight :semi-bold
+     :style  style/header-text}
+    (i18n/label :t/scan-qr)]])
 
 (defn view
   []

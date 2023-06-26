@@ -4,7 +4,6 @@
             [oops.core :as oops]
             [status-im2.common.scan-qr-code.style :as style]
             [react-native.camera-kit :as camera-kit]
-            [re-frame.core :as re-frame]
             [react-native.core :as rn]
             [quo2.core :as quo]
             [utils.i18n :as i18n]
@@ -36,10 +35,10 @@
 (defn open-device-settings-dialog
   []
   (alert/show-confirmation
-            {:title               (i18n/label :t/allow-access)
-             :content             (i18n/label :t/camera-access-description)
-             :confirm-button-text (i18n/label :t/settings)
-             :on-accept           #(.openSettings ^js react/linking)}))
+   {:title               (i18n/label :t/allow-access)
+    :content             (i18n/label :t/camera-access-description)
+    :confirm-button-text (i18n/label :t/settings)
+    :on-accept           #(.openSettings ^js react/linking)}))
 
 (defn request-camera-permission
   []
@@ -152,6 +151,7 @@
         :weight :regular
         :style  style/viewfinder-text}
        (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)]]]))
+
 (defn render-camera
   [show-camera? qr-view-finder camera-ref on-read-code show-holes?]
   (when (and show-camera? (:x qr-view-finder))
@@ -167,7 +167,9 @@
       {:style style/hole
        :holes (if show-holes?
                 [(assoc qr-view-finder
-                        :borderRadius 16)][])}
+                        :borderRadius
+                        16)]
+                [])}
       [blur/view
        {:style            style/absolute-fill
         :blur-amount      10
