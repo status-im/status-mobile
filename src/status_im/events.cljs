@@ -52,8 +52,8 @@
     status-im.wallet.choose-recipient.core
     [status-im.wallet.core :as wallet]
     status-im.wallet.custom-tokens.core
-    status-im2.contexts.activity-center.events
-    status-im2.contexts.activity-center.notification.contact-requests.events
+    status-im2.contexts.shell.activity-center.events
+    status-im2.contexts.shell.activity-center.notification.contact-requests.events
     status-im2.contexts.shell.jump-to.events
     status-im2.contexts.onboarding.events
     status-im.chat.models.gaps

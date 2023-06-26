@@ -20,7 +20,7 @@
     [utils.re-frame :as rf]
     [status-im.utils.types :as types]
     [status-im.visibility-status-updates.core :as models.visibility-status-updates]
-    [status-im2.contexts.activity-center.events :as activity-center]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]
     [status-im2.contexts.chat.messages.pin.events :as messages.pin]))
 
 (rf/defn process-next

@@ -1,7 +1,7 @@
 (ns status-im2.navigation.screens
   (:require
     [status-im2.config :as config]
-    [status-im2.contexts.activity-center.view :as activity-center]
+    [status-im2.contexts.shell.activity-center.view :as activity-center]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
     [status-im2.contexts.chat.lightbox.view :as lightbox]
     [status-im2.contexts.chat.messages.view :as chat]
@@ -31,7 +31,7 @@
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
-    [status-im2.contexts.share.view :as share]
+    [status-im2.contexts.shell.share.view :as share]
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im2.contexts.chat.new-chat.view :as new-chat]))
