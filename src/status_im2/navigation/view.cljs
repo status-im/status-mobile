@@ -80,7 +80,6 @@
            insets                       (safe-area/get-insets)
            user-theme                   (theme/get-theme)]
        ^{:key (str "sheet" @reloader/cnt)}
-       (js/console.log "HEHREHRE")
        [theme/provider {:theme (or theme user-theme)}
         [inactive]
         [rn/keyboard-avoiding-view

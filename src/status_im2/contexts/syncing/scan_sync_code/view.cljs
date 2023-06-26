@@ -60,7 +60,8 @@
       :size                32
       :accessibility-label :find-sync-code
       :override-theme      :dark
-      :on-press            #(js/alert "Yet to be implemented")}
+      :on-press            #(rf/dispatch [:open-modal :find-sync-code
+                                          {:override-theme :dark}])}
      (i18n/label :t/find-sync-code)]]
    [quo/text
     {:size   :heading-1

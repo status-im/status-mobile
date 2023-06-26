@@ -25,6 +25,7 @@
     [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
     [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
+    [status-im2.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im2.navigation.options :as options]
     [status-im2.contexts.chat.group-details.view :as group-details]
     [status-im.ui.screens.screens :as old-screens]
@@ -83,7 +84,12 @@
     {:name      :how-to-pair
      :options   {:theme  :dark
                  :sheet? true}
-     :component how-to-pair/instructions}
+     :component how-to-pair/view}
+
+    {:name      :find-sync-code
+     :options   {:theme  :dark
+                 :sheet? true}
+     :component find-sync-code/view}
 
     {:name      :discover-communities
      :component communities.discover/discover}
