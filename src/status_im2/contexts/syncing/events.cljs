@@ -25,7 +25,7 @@
   [installation-id]
   (let [db {:networks/current-network config/default-network
             :networks/networks        (data-store.settings/rpc->networks config/default-networks)
-            :multiaccount             {:installation-id           installation-id
+            :profile/profile          {:installation-id           installation-id
                                        :log-level                 config/log-level
                                        :waku-bloom-filter-mode    false
                                        :custom-bootnodes          nil
@@ -79,7 +79,7 @@
                           (rf/dispatch [:bottom-sheet/hide]))]
     (if valid-password?
       (let [sha3-pwd   (native-module/sha3 (str (security/safe-unmask-data entered-password)))
-            key-uid    (get-in db [:multiaccount :key-uid])
+            key-uid    (get-in db [:profile/profile :key-uid])
             config-map (.stringify js/JSON
                                    (clj->js {:senderConfig {:keyUID       key-uid
                                                             :keystorePath ""

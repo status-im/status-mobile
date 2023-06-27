@@ -28,7 +28,7 @@
         is-dragging?         (atom nil)
         drag-amount          (atom nil)
         {:keys [emoji-hash display-name compressed-key
-                public-key]} (rf/sub [:multiaccount])
+                public-key]} (rf/sub [:profile/profile])
         {:keys [color]}      (rf/sub [:onboarding-2/profile])
         photo-path           (rf/sub [:chats/photo-path public-key])
         emoji-string         (string/join emoji-hash)]

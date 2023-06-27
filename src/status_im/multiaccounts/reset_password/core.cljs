@@ -35,7 +35,7 @@
 (rf/defn password-reset-success
   {:events [::password-reset-success]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [key-uid]} (:multiaccount db)
+  (let [{:keys [key-uid]} (:profile/profile db)
         auth-method       (get db :auth-method keychain/auth-method-none)
         new-password      (get-in db [:multiaccount/reset-password-form-vals :new-password])]
     (rf/merge cofx
@@ -68,7 +68,7 @@
 (rf/defn handle-verification-success
   {:events [::handle-verification-success]}
   [{:keys [db] :as cofx} form-vals]
-  (let [{:keys [key-uid name]} (:multiaccount db)]
+  (let [{:keys [key-uid name]} (:profile/profile db)]
     (rf/merge cofx
               {::change-db-password [key-uid form-vals]
                :db                  (assoc db
@@ -98,4 +98,4 @@
   {::validate-current-password-and-reset
    (assoc form-vals
           :address
-          (get-in db [:multiaccount :wallet-root-address]))})
+          (get-in db [:profile/profile :wallet-root-address]))})

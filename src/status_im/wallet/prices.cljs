@@ -51,7 +51,7 @@
   [{{:keys [network-status :wallet/all-tokens]
      {:keys [currency :wallet/visible-tokens]
       :or   {currency :usd}}
-     :multiaccount
+     :profile/profile
      :as db}
     :db}]
   (let [chain    (ethereum/chain-keyword db)

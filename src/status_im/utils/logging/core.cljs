@@ -97,9 +97,9 @@
         (re-frame/dispatch [:show-client-error]))))))
 
 (defn logs-enabled?
-  [{:keys [multiaccount]}]
-  (let [log-level (if multiaccount ;; already login
-                    (get multiaccount :log-level)
+  [{:profile/keys [profile]}]
+  (let [log-level (if profile ;; already login
+                    (get profile :log-level)
                     config/log-level)]
     (not (string/blank? log-level))))
 

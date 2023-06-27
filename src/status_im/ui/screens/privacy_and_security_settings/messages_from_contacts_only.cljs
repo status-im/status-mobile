@@ -17,7 +17,7 @@
 
 (views/defview messages-from-contacts-only
   []
-  (views/letsubs [{:keys [messages-from-contacts-only]} [:multiaccount]]
+  (views/letsubs [{:keys [messages-from-contacts-only]} [:profile/profile]]
     [react/view {:margin-top 8}
      [quo/list-item
       {:active    (not messages-from-contacts-only)

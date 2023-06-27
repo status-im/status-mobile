@@ -114,16 +114,16 @@
     {effect    request
      :dispatch [:navigate-to :generating-keys]
      :db       (-> db
-                   (dissoc :multiaccounts/login)
+                   (dissoc :profile/login)
                    (dissoc :auth-method)
                    (assoc :onboarding-2/new-account? true))}))
 
 (rf/defn on-delete-profile-success
   {:events [:onboarding-2/on-delete-profile-success]}
   [{:keys [db]} key-uid]
-  (let [multiaccounts (dissoc (:multiaccounts/multiaccounts db) key-uid)]
+  (let [multiaccounts (dissoc (:profile/profiles-overview db) key-uid)]
     (merge
-     {:db (assoc db :multiaccounts/multiaccounts multiaccounts)}
+     {:db (assoc db :profile/profiles-overview multiaccounts)}
      (when-not (seq multiaccounts)
        {:set-root :intro}))))
 
@@ -147,7 +147,7 @@
 (rf/defn seed-phrase-validated
   {:events [:onboarding-2/seed-phrase-validated]}
   [{:keys [db]} seed-phrase key-uid]
-  (if (contains? (:multiaccounts/multiaccounts db) key-uid)
+  (if (contains? (:profile/profiles-overview db) key-uid)
     {:utils/show-confirmation
      {:title               (i18n/label :t/multiaccount-exists-title)
       :content             (i18n/label :t/multiaccount-exists-content)
@@ -155,7 +155,7 @@
       :on-accept           (fn []
                              (re-frame/dispatch [:pop-to-root :profiles])
                              (re-frame/dispatch
-                              [:multiaccounts.login.ui/multiaccount-selected key-uid]))
+                              [:profile/profile-selected key-uid]))
       :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
     {:db       (assoc-in db [:onboarding-2/profile :seed-phrase] seed-phrase)
      :dispatch [:navigate-to :create-profile]}))
@@ -171,7 +171,7 @@
   {:events [:onboarding-2/finalize-setup]}
   [{:keys [db]}]
   (let [masked-password    (get-in db [:onboarding-2/profile :password])
-        key-uid            (get-in db [:multiaccount :key-uid])
+        key-uid            (get-in db [:profile/profile :key-uid])
         biometric-enabled? (=
                             constants/auth-method-biometric
                             (get-in db [:onboarding-2/profile :auth-method]))]

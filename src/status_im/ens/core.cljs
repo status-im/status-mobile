@@ -83,7 +83,7 @@
   {:events [::save-username]}
   [{:keys [db] :as cofx} custom-domain? username redirectToSummary]
   (let [name      (fullname custom-domain? username)
-        names     (get-in db [:multiaccount :usernames] [])
+        names     (get-in db [:profile/profile :usernames] [])
         new-names (conj names name)]
     (rf/merge cofx
               (multiaccounts.update/multiaccount-update
@@ -102,7 +102,7 @@
   [{:keys [db]}]
   (let [{:keys [username address custom-domain?]} (:ens/registration db)
         address                                   (or address (ethereum/default-address db))
-        {:keys [public-key]}                      (:multiaccount db)
+        {:keys [public-key]}                      (:profile/profile db)
         chain-id                                  (ethereum/chain-id db)
         username                                  (fullname custom-domain? username)]
     (ens/set-pub-key-prepare-tx
@@ -169,7 +169,7 @@
   [{:keys [db]} address]
   (let [{:keys [username]}
         (:ens/registration db)
-        {:keys [public-key]} (:multiaccount db)
+        {:keys [public-key]} (:profile/profile db)
         chain-id (ethereum/chain-id db)]
     (ens/register-prepare-tx
      chain-id
@@ -211,7 +211,7 @@
   {:events [::set-username-candidate]}
   [{:keys [db]} username]
   (let [{:keys [custom-domain?]} (:ens/registration db)
-        usernames                (into #{} (get-in db [:multiaccount :usernames]))
+        usernames                (into #{} (get-in db [:profile/profile :usernames]))
         state                    (state custom-domain? username usernames)]
     (reset! resolve-last-id (random/id))
     (merge
@@ -220,10 +220,10 @@
                   :username         username
                   :state            state)}
      (when (= state :searching)
-       (let [{:keys [multiaccount]} db
-             {:keys [public-key]}   multiaccount
-             addresses              (ethereum/addresses-without-watch db)
-             chain-id               (ethereum/chain-id db)]
+       (let [{:profile/keys [profile]} db
+             {:keys [public-key]}      profile
+             addresses                 (ethereum/addresses-without-watch db)
+             chain-id                  (ethereum/chain-id db)]
          {::resolve-owner [chain-id
                            (fullname custom-domain? username)
                            #(on-resolve-owner
@@ -323,8 +323,8 @@
 (rf/defn remove-username
   {:events [::remove-username]}
   [{:keys [db] :as cofx} name]
-  (let [names          (get-in db [:multiaccount :usernames] [])
-        preferred-name (get-in db [:multiaccount :preferred-name])
+  (let [names          (get-in db [:profile/profile :usernames] [])
+        preferred-name (get-in db [:profile/profile :preferred-name])
         new-names      (remove #(= name %) names)]
     (rf/merge cofx
               (multiaccounts.update/multiaccount-update

@@ -13,7 +13,6 @@
             [status-im.chat.models.loading :as loading]
             [status-im.data-store.chats :as chats-store]
             [status-im2.contexts.contacts.events :as contacts-store]
-            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.clocks :as utils.clocks]
             [status-im.utils.types :as types]
             [reagent.core :as reagent]
@@ -112,7 +111,7 @@
             (when (not-empty removed-chats)
               {:clear-message-notifications
                [removed-chats
-                (get-in db [:multiaccount :remote-push-notifications-enabled?])]}))
+                (get-in db [:profile/profile :remote-push-notifications-enabled?])]}))
      leave-removed-chat)))
 
 (rf/defn clear-history
@@ -259,7 +258,7 @@
   "Start a chat, making sure it exists"
   {:events [:chat.ui/start-chat]}
   [cofx chat-id ens-name]
-  (when (not= (multiaccounts.model/current-public-key cofx) chat-id)
+  (when (not= (get-in cofx [:db :profile/profile :public-key]) chat-id)
     {:json-rpc/call [{:method      "wakuext_createOneToOneChat"
                       :params      [{:id chat-id :ensName ens-name}]
                       :js-response true
@@ -284,7 +283,7 @@
   [{:keys [db now] :as cofx} chat-id]
   (rf/merge cofx
             {:clear-message-notifications
-             [[chat-id] (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+             [[chat-id] (get-in db [:profile/profile :remote-push-notifications-enabled?])]
              :dispatch [:shell/close-switcher-card chat-id]}
             (deactivate-chat chat-id)
             (offload-messages chat-id)))

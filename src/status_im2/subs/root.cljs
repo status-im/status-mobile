@@ -13,7 +13,7 @@
     status-im2.subs.home
     status-im2.subs.keycard
     status-im2.subs.mailservers
-    status-im2.subs.multiaccount
+    status-im2.subs.profile
     status-im2.subs.networks
     status-im2.subs.onboarding
     status-im2.subs.pairing
@@ -82,17 +82,16 @@
 ;; it is about cellular network/ wifi network
 (reg-root-key-sub :network/type :network/type)
 
-;;profile
+;;my profile
 (reg-root-key-sub :my-profile/seed :my-profile/seed)
-(reg-root-key-sub :my-profile/advanced? :my-profile/advanced?)
-(reg-root-key-sub :my-profile/profile :my-profile/profile)
 
-;;multiaccount
-(reg-root-key-sub :multiaccounts/multiaccounts :multiaccounts/multiaccounts)
-(reg-root-key-sub :multiaccounts/login :multiaccounts/login)
-(reg-root-key-sub :multiaccount :multiaccount)
-(reg-root-key-sub :multiaccount/accounts :multiaccount/accounts)
-(reg-root-key-sub :get-recover-multiaccount :multiaccounts/recover)
+;;profiles
+(reg-root-key-sub :profile/profiles-overview :profile/profiles-overview)
+(reg-root-key-sub :profile/login :profile/login)
+;; we have some fields only in overview, would be cool to merge them in status-go
+(reg-root-key-sub :profile/profile-settings :profile/profile)
+(reg-root-key-sub :profile/wallet-accounts :profile/wallet-accounts)
+
 (reg-root-key-sub :multiaccounts/key-storage :multiaccounts/key-storage)
 (reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)
 (reg-root-key-sub :multiaccount/reset-password-errors :multiaccount/reset-password-errors)
@@ -231,8 +230,6 @@
 (reg-root-key-sub :keycard :keycard)
 
 (reg-root-key-sub :auth-method :auth-method)
-
-(reg-root-key-sub :multiaccounts/loading :multiaccounts/loading)
 
 (reg-root-key-sub :tos-accept-next-root :tos-accept-next-root)
 

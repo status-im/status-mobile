@@ -73,10 +73,8 @@
   []
   (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
         {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
-        {:keys [key-uid]}               (rf/sub [:multiaccount])
         account                         (rf/sub [:profile/multiaccount])
-        customization-color             (or (:color (rf/sub [:onboarding-2/profile]))
-                                            (rf/sub [:profile/customization-color key-uid]))
+        customization-color             (rf/sub [:profile/customization-color])
         selected-items                  (case selected-tab
                                           :joined  joined
                                           :pending pending

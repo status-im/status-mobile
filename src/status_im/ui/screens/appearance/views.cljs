@@ -21,7 +21,7 @@
 
 (views/defview appearance
   []
-  (views/letsubs [{:keys [appearance]} [:multiaccount]]
+  (views/letsubs [{:keys [appearance]} [:profile/profile]]
     [:<>
      [quo/list-header (i18n/label :t/preference)]
      [react/view

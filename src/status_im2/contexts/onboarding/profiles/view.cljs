@@ -79,7 +79,7 @@
   [{:keys [name key-uid customization-color keycard-pairing last-index set-hide-profiles]}
    index]
   (let [last-item?      (= last-index index)
-        profile-picture (rf/sub [:multiaccounts/login-profiles-picture key-uid])]
+        profile-picture (rf/sub [:profile/login-profiles-picture key-uid])]
     [quo/profile-card
      {:name                 name
       :login-card?          true
@@ -96,12 +96,12 @@
                                :profile-picture profile-picture})
       :on-card-press        (fn []
                               (rf/dispatch
-                               [:multiaccounts.login.ui/multiaccount-selected key-uid])
+                               [:profile/profile-selected key-uid])
                               (when-not keycard-pairing (set-hide-profiles)))}]))
 
 (defn profiles-section
   [{:keys [set-hide-profiles]}]
-  (let [multiaccounts (vals (rf/sub [:multiaccounts/multiaccounts]))
+  (let [multiaccounts (vals (rf/sub [:profile/profiles-overview]))
         profiles-data (map #(assoc %
                                    :last-index        (- (count multiaccounts) 1)
                                    :set-hide-profiles set-hide-profiles)
@@ -177,16 +177,17 @@
 
 (defn login-section
   [{:keys [set-show-profiles]}]
-  (let [{:keys [key-uid name customization-color error
-                processing password]} (rf/sub [:multiaccounts/login])
-        sign-in-enabled?              (rf/sub [:sign-in-enabled?])
-        profile-picture               (rf/sub [:multiaccounts/login-profiles-picture key-uid])
-        error                         (if (and (some? error)
-                                               (or (= error "file is not a database")
-                                                   (string/starts-with? error "failed to set ")
-                                                   (string/starts-with? error "Failed")))
-                                        (i18n/label :t/oops-wrong-password)
-                                        error)]
+  (let [{:keys [error processing password]}        (rf/sub [:profile/login])
+        {:keys [key-uid name customization-color]} (rf/sub [:profile/login-profile])
+        sign-in-enabled?                           (rf/sub [:sign-in-enabled?])
+        profile-picture                            (rf/sub [:profile/login-profiles-picture key-uid])
+        error                                      (if (and (some? error)
+                                                            (or (= error "file is not a database")
+                                                                (string/starts-with? error
+                                                                                     "failed to set ")
+                                                                (string/starts-with? error "Failed")))
+                                                     (i18n/label :t/oops-wrong-password)
+                                                     error)]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
       :keyboardVerticalOffset (- (safe-area/get-bottom))}
@@ -218,9 +219,9 @@
         :error?            (seq error)
         :label             (i18n/label :t/profile-password)
         :on-change-text    (fn [password]
-                             (rf/dispatch [:set-in [:multiaccounts/login :password]
+                             (rf/dispatch [:set-in [:profile/login :password]
                                            (security/mask-data password)])
-                             (rf/dispatch [:set-in [:multiaccounts/login :error] ""]))
+                             (rf/dispatch [:set-in [:profile/login :error] ""]))
         :default-value     (security/safe-unmask-data password)
         :on-submit-editing (when sign-in-enabled? login-multiaccount)}]
       (when (seq error)

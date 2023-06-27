@@ -69,9 +69,9 @@
                                    :error      nil
                                    :status     nil))
       :hide-popover nil})
-   (when (:multiaccount db)
+   (when (:profile/profile db)
      (navigation/navigate-to :my-profile nil))
-   (when-not (:multiaccounts/login db)
+   (when-not (:profile/login db)
      (if (:popover/popover db)
        (navigation/navigate-replace :keycard-pin nil)
        (navigation/navigate-to :keycard-pin nil)))))
@@ -94,7 +94,7 @@
         key-uid (get-in db [:keycard :application-info :key-uid])
         paired? (get-in db [:keycard :application-info :paired?])
         multiaccount (get-in db
-                             [:multiaccounts/multiaccounts (get-in db [:multiaccounts/login :key-uid])])
+                             [:profile/profiles-overview (get-in db [:profile/login :key-uid])])
         multiaccount-key-uid (get multiaccount :key-uid)
         multiaccount-mismatch? (or (nil? multiaccount)
                                    (not= multiaccount-key-uid key-uid))]
@@ -151,7 +151,7 @@
                                :multiaccounts-stack
                                [:multiaccounts
                                 :keycard-login-pin])
-    (let [{:keys [name]}    (get-in db [:multiaccounts/multiaccounts key-uid])
+    (let [{:keys [name]}    (get-in db [:profile/profiles-overview key-uid])
           multiaccount-data (types/clj->json {:name    name
                                               :key-uid key-uid})
           account-data      {:key-uid               key-uid
@@ -161,14 +161,14 @@
        (-> db
            (assoc-in [:keycard :pin :status] nil)
            (assoc-in [:keycard :pin :login] [])
-           (assoc-in [:keycard :multiaccount]
+           (assoc-in [:keycard :profile/profile]
                      (update account-data :whisper-public-key ethereum/normalized-hex))
            (assoc-in [:keycard :flow] nil)
-           (update :multiaccounts/login assoc
-                   :password            encryption-public-key
-                   :key-uid             key-uid
-                   :name                name
-                   :save-password?      true))
+           (update :profile/login  assoc
+                   :password       encryption-public-key
+                   :key-uid        key-uid
+                   :name           name
+                   :save-password? true))
        :keycard/login-with-keycard
        {:multiaccount-data multiaccount-data
         :key-uid           key-uid

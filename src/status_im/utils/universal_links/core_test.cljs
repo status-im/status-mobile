@@ -12,7 +12,7 @@
         (is (= {:db {:universal-links/url "some-url"}}
                (links/handle-url {:db {}} "some-url")))))
     (testing "the user is logged in"
-      (let [db {:multiaccount        {:public-key "pk"}
+      (let [db {:profile/profile     {:public-key "pk"}
                 :app-state           "active"
                 :universal-links/url "some-url"}]
         (testing "it clears the url"

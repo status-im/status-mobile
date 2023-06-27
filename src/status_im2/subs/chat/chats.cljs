@@ -285,12 +285,6 @@
                                       (get contacts id)))))
 
 (re-frame/reg-sub
- :profile/customization-color
- :<- [:multiaccounts/multiaccounts]
- (fn [multiaccounts [_ id]]
-   (or (:customization-color (get multiaccounts id)) constants/profile-default-color)))
-
-(re-frame/reg-sub
  :chats/unread-messages-number
  :<- [:chats/home-list-chats]
  (fn [chats _]

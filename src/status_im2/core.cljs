@@ -51,4 +51,4 @@
 
   (dev/setup)
 
-  (re-frame/dispatch-sync [:setup/app-started]))
+  (re-frame/dispatch-sync [:app-started]))

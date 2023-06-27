@@ -3,14 +3,14 @@
 
 (re-frame/reg-sub
  :custom-bootnodes/enabled?
- :<- [:multiaccount]
+ :<- [:profile/profile]
  :<- [:networks/current-network]
  (fn [[{:keys [custom-bootnodes-enabled?]} current-network]]
    (get custom-bootnodes-enabled? current-network)))
 
 (re-frame/reg-sub
  :custom-bootnodes/network-bootnodes
- :<- [:multiaccount]
+ :<- [:profile/profile]
  :<- [:networks/current-network]
  (fn [[multiaccount current-network]]
    (get-in multiaccount [:custom-bootnodes current-network])))

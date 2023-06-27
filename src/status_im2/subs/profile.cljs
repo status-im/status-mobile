@@ -1,4 +1,4 @@
-(ns status-im2.subs.multiaccount
+(ns status-im2.subs.profile
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
             [quo2.theme :as theme]
@@ -7,66 +7,80 @@
             [status-im.fleet.core :as fleet]
             [status-im.multiaccounts.db :as multiaccounts.db]
             [utils.image-server :as image-server]
-            [utils.security.core :as security]))
+            [utils.security.core :as security]
+            [status-im2.constants :as constants]))
+
+(re-frame/reg-sub
+ :profile/profile
+ :<- [:profile/profile-settings]
+ :<- [:profile/profiles-overview]
+ (fn [[{:keys [key-uid] :as profile} profiles-overview]]
+   (merge (get profiles-overview key-uid) profile)))
+
+(re-frame/reg-sub
+ :profile/customization-color
+ :<- [:profile/profile]
+ (fn [{:keys [customization-color]}]
+   (or customization-color constants/profile-default-color)))
 
 (re-frame/reg-sub
  :multiaccount/public-key
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [{:keys [public-key]}]
    public-key))
 
 (re-frame/reg-sub
  :multiaccount/contact
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [current-account]
    (select-keys current-account [:name :preferred-name :public-key :image :images])))
 
 (re-frame/reg-sub
  :multiaccount/preferred-name
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [{:keys [preferred-name]}]
    preferred-name))
 
 (re-frame/reg-sub
  :multiaccount/default-account
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  (fn [accounts]
    (ethereum/get-default-account accounts)))
 
 (re-frame/reg-sub
  :multiaccount/visible-accounts
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  (fn [accounts]
    (remove :hidden accounts)))
 
 (re-frame/reg-sub
  :sign-in-enabled?
- :<- [:multiaccounts/login]
+ :<- [:profile/login]
  (fn [{:keys [password]}]
    (spec/valid? ::multiaccounts.db/password
                 (security/safe-unmask-data password))))
 
 (re-frame/reg-sub
  :fleets/current-fleet
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (fleet/current-fleet-sub multiaccount)))
 
 (re-frame/reg-sub
  :opensea-enabled?
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [{:keys [opensea-enabled?]}]
    (boolean opensea-enabled?)))
 
 (re-frame/reg-sub
  :log-level/current-log-level
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (get multiaccount :log-level)))
 
 (re-frame/reg-sub
  :waku/bloom-filter-mode
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (boolean (get multiaccount :waku-bloom-filter-mode))))
 
@@ -78,20 +92,20 @@
 
 (re-frame/reg-sub
  :dapps-address
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [acc]
    (get acc :dapps-address)))
 
 (re-frame/reg-sub
  :dapps-account
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  :<- [:dapps-address]
  (fn [[accounts address]]
    (some #(when (= (:address %) address) %) accounts)))
 
 (re-frame/reg-sub
  :multiaccount/current-account
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  :<- [:get-screen-params :wallet-account]
  (fn [[accounts acc]]
    (some #(when (= (string/lower-case (:address %))
@@ -101,7 +115,7 @@
 
 (re-frame/reg-sub
  :account-by-address
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  (fn [accounts [_ address]]
    (when (string? address)
      (some #(when (= (string/lower-case (:address %))
@@ -109,35 +123,29 @@
               %)
            accounts))))
 
-(re-frame/reg-sub
- :multiple-multiaccounts?
- :<- [:multiaccounts/multiaccounts]
- (fn [multiaccounts]
-   (> (count multiaccounts) 1)))
-
 ;; NOTE: this subscription only works on login
 (re-frame/reg-sub
  :multiaccounts.login/keycard-account?
- :<- [:multiaccounts/multiaccounts]
- :<- [:multiaccounts/login]
+ :<- [:profile/profiles-overview]
+ :<- [:profile/login]
  (fn [[multiaccounts {:keys [key-uid]}]]
    (get-in multiaccounts [key-uid :keycard-pairing])))
 
 (re-frame/reg-sub
  :multiaccounts/keycard-account?
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (:keycard-pairing multiaccount)))
 
 (re-frame/reg-sub
  :accounts-without-watch-only
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  (fn [accounts]
    (filter #(not= (:type %) :watch) accounts)))
 
 (re-frame/reg-sub
  :visible-accounts-without-watch-only
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  (fn [accounts]
    (remove :hidden (filter #(not= (:type %) :watch) accounts))))
 
@@ -160,7 +168,7 @@
 
 (re-frame/reg-sub
  :add-account-disabled?
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  :<- [:add-account]
  (fn [[accounts {:keys [address type account seed private-key]}]]
    (or (string/blank? (:name account))
@@ -178,7 +186,7 @@
 
 (re-frame/reg-sub
  :multiaccount/current-user-visibility-status
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [{:keys [current-user-visibility-status]}]
    current-user-visibility-status))
 
@@ -202,7 +210,7 @@
 
 (re-frame/reg-sub
  :profile/has-picture
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (pos? (count (get multiaccount :images)))))
 
@@ -227,28 +235,35 @@
 
 (re-frame/reg-sub
  :profile/multiaccount
- :<- [:multiaccount]
+ :<- [:profile/profile]
  :<- [:mediaserver/port]
  (fn [[multiaccount port]]
    (replace-multiaccount-image-uri multiaccount port)))
+
+(re-frame/reg-sub
+ :profile/login-profile
+ :<- [:profile/login]
+ :<- [:profile/profiles-overview]
+ (fn [[{:keys [key-uid]} profiles]]
+   (get profiles key-uid)))
 
 ;; LINK PREVIEW
 ;; ========================================================================================================
 
 (re-frame/reg-sub
  :link-preview/cache
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount [_ link]]
    (get-in multiaccount [:link-previews-cache link])))
 
 (re-frame/reg-sub
  :link-preview/enabled-sites
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (get multiaccount :link-previews-enabled-sites)))
 
 (re-frame/reg-sub
  :link-preview/link-preview-request-enabled
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (get multiaccount :link-preview-request-enabled)))

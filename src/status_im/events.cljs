@@ -117,11 +117,11 @@
 (rf/defn system-theme-mode-changed
   {:events [:system-theme-mode-changed]}
   [{:keys [db] :as cofx} _]
-  (let [current-theme-type (get-in cofx [:db :multiaccount :appearance])]
+  (let [current-theme-type (get-in cofx [:db :profile/profile :appearance])]
     (when (and (multiaccounts.model/logged-in? db)
                (= current-theme-type status-im2.constants/theme-type-system))
       {:multiaccounts.ui/switch-theme-fx
-       [(get-in db [:multiaccount :appearance])
+       [(get-in db [:profile/profile :appearance])
         (:view-id db) true]})))
 
 (def authentication-options
@@ -146,7 +146,7 @@
   [{:keys [db now] :as cofx}]
   (let [new-account?            (get db :onboarding-2/new-account?)
         app-in-background-since (get db :app-in-background-since)
-        signed-up?              (get-in db [:multiaccount :signed-up?])
+        signed-up?              (get-in db [:profile/profile :signed-up?])
         biometric-auth?         (= (:auth-method db) "biometric")
         requires-bio-auth       (and
                                  signed-up?
@@ -202,7 +202,7 @@
             (cond
               (= :chat view-id)
               {::async-storage/set! {:chat-id (get-in cofx [:db :current-chat-id])
-                                     :key-uid (get-in cofx [:db :multiaccount :key-uid])}
+                                     :key-uid (get-in cofx [:db :profile/profile :key-uid])}
                :db                  (assoc db :screens/was-focused-once? true)}
 
               (= :login view-id)
@@ -291,7 +291,7 @@
 (rf/defn close-information-box
   {:events [:close-information-box]}
   [{:keys [db]} id global?]
-  (let [public-key (get-in db [:multiaccount :public-key])
+  (let [public-key (get-in db [:profile/profile :public-key])
         hash       (information-box-id-hash id public-key global?)]
     {::async-storage/set! {hash true}
      :db                  (assoc-in db [:information-box-states id] true)}))
@@ -310,7 +310,7 @@
 (rf/defn load-information-box-states
   {:events [:load-information-box-states]}
   [{:keys [db]}]
-  (let [public-key            (get-in db [:multiaccount :public-key])
+  (let [public-key            (get-in db [:profile/profile :public-key])
         {:keys [keys hashes]} (reduce (fn [acc {:keys [id global?]}]
                                         (let [hash (information-box-id-hash
                                                     id

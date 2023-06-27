@@ -14,7 +14,6 @@
     [status-im.data-store.reactions :as data-store.reactions]
     [status-im.group-chats.core :as models.group]
     [status-im.multiaccounts.login.core :as multiaccounts.login]
-    [status-im.multiaccounts.model :as multiaccounts.model]
     [status-im.multiaccounts.update.core :as update.core]
     [status-im.pairing.core :as models.pairing]
     [utils.re-frame :as rf]
@@ -209,7 +208,7 @@
                                      new
                                      (not (= message-type
                                              constants/message-type-private-group-system-message))
-                                     (not (= from (multiaccounts.model/current-public-key {:db db}))))
+                                     (not (= from (get-in db [:profile/profile :public-key]))))
         tx-hash                 (and (.-commandParameters message-js)
                                      (.-commandParameters.transactionHash message-js))]
     (cond-> acc

@@ -8,7 +8,7 @@
 (rf/defn save-log-level
   {:events [:log-level.ui/change-log-level-confirmed]}
   [{:keys [db now] :as cofx} log-level]
-  (let [old-log-level (get-in db [:multiaccount :log-level])]
+  (let [old-log-level (get-in db [:profile/profile :log-level])]
     (when (not= old-log-level log-level)
       (rf/merge cofx
                 (multiaccounts.update/multiaccount-update

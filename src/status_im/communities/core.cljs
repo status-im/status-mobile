@@ -102,7 +102,7 @@
 
 (rf/defn handle-requests-to-join
   [{:keys [db]} requests]
-  (let [my-public-key (get-in db [:multiaccount :public-key])]
+  (let [my-public-key (get-in db [:profile/profile :public-key])]
     {:db (reduce (fn [db {:keys [public-key] :as request}]
                    (let [my-request? (= my-public-key public-key)]
                      (if my-request?
@@ -278,7 +278,7 @@
   (let [community-chat-ids (map #(str community-id %)
                                 (keys (get-in db [:communities community-id :chats])))]
     {:clear-message-notifications [community-chat-ids
-                                   (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+                                   (get-in db [:profile/profile :remote-push-notifications-enabled?])]
      :dispatch                    [:shell/close-switcher-card community-id]
      :json-rpc/call               [{:method      "wakuext_leaveCommunity"
                                     :params      [community-id]
@@ -795,14 +795,14 @@
 (rf/defn store-category-state
   {:events [::store-category-state]}
   [{:keys [db]} community-id category-id state-open?]
-  (let [public-key (get-in db [:multiaccount :public-key])
+  (let [public-key (get-in db [:profile/profile :public-key])
         hash       (category-hash public-key community-id category-id)]
     {::async-storage/set! {hash state-open?}}))
 
 (rf/defn update-category-states-in-db
   {:events [::category-states-loaded]}
   [{:keys [db]} community-id hashes states]
-  (let [public-key     (get-in db [:multiaccount :public-key])
+  (let [public-key     (get-in db [:profile/profile :public-key])
         categories-old (get-in db [:communities community-id :categories])
         categories     (reduce (fn [acc [category-id category]]
                                  (let [hash             (get hashes category-id)
@@ -816,7 +816,7 @@
 (rf/defn load-category-states
   {:events [:communities/load-category-states]}
   [{:keys [db]} community-id]
-  (let [public-key            (get-in db [:multiaccount :public-key])
+  (let [public-key            (get-in db [:profile/profile :public-key])
         categories            (get-in db [:communities community-id :categories])
         {:keys [keys hashes]} (reduce (fn [acc category]
                                         (let [category-id (get category 0)

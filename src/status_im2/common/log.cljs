@@ -49,5 +49,5 @@
 (rf/defn set-log-level
   [{:keys [db]} log-level]
   (let [log-level (or log-level config/log-level)]
-    {:db             (assoc-in db [:multiaccount :log-level] log-level)
+    {:db             (assoc-in db [:profile/profile :log-level] log-level)
      :logs/set-level log-level}))
