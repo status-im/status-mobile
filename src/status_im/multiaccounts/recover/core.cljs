@@ -29,7 +29,6 @@
   {:events [:multiaccounts.recover/passphrase-input-changed]}
   [{:keys [db]} masked-recovery-phrase]
   (let [recovery-phrase (security/safe-unmask-data masked-recovery-phrase)]
-    (println "recovery-phrase" recovery-phrase)
     {:db (update db
                  :intro-wizard          assoc
                  :passphrase            (string/lower-case recovery-phrase)
