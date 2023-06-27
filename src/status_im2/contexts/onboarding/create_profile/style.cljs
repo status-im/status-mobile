@@ -44,13 +44,11 @@
    :margin-bottom 16})
 
 (def content-container
-  {:flex               1
+  {:background-color  "green"
    :padding-horizontal 20})
 
 (def input-container
-  {:flex          1
-   :align-items   :flex-start
-   :margin-bottom 24})
+  {:align-items :flex-start})
 
 (def profile-input-container
   {:flex-direction  :row

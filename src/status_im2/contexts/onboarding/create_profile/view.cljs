@@ -6,6 +6,7 @@
             [utils.i18n :as i18n]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
+            [react-native.hooks :as hooks]
             [reagent.core :as reagent]
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
             [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
@@ -47,18 +48,37 @@
     :else                        nil))
 
 (defn button-container
-  [keyboard-shown? children]
+  [keyboard-shown? background? children]
   [rn/view {:style {:margin-top :auto}}
    (if keyboard-shown?
-     [blur/ios-view
-      {:blur-amount      34
-       :blur-type        :transparent
-       :overlay-color    :transparent
-       :background-color (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)
-       :style            style/blur-button-container}
-      children]
+     (if background?
+       [blur/ios-view
+        (merge
+         {:blur-amount      34
+          :blur-type        :transparent
+          :overlay-color    :transparent
+          :background-color (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)
+          :style            style/blur-button-container})
+        children]
+       [rn/view
+        (merge
+         {:style style/blur-button-container})
+        children])
      [rn/view {:style style/view-button-container}
       children])])
+
+(defn show-button-background
+  [keyboard-shown? scroll-view-height visible-container-height]
+  (let [{:keys [keyboard-height]} (hooks/use-keyboard)
+        keyboard-button-height    (+ keyboard-height 64)
+        remaining-screen-height   (- scroll-view-height keyboard-button-height)]
+    (when keyboard-shown?
+      (cond
+        (< remaining-screen-height visible-container-height)
+        true
+
+        :else
+        false))))
 
 (defn- f-page
   [{:keys [onboarding-profile-data navigation-bar-top]}]
@@ -88,22 +108,31 @@
                      profile-pic                             (reagent/atom image-path)
                      on-change-profile-pic                   #(reset! profile-pic %)
                      on-change                               #(reset! custom-color %)]
-    (let [name-too-short? (length-not-valid @full-name)
-          valid-name?     (and (not @validation-msg) (not name-too-short?))
-          info-message    (if @validation-msg
-                            @validation-msg
-                            (i18n/label :t/minimum-characters
-                                        {:min-chars min-length}))
-          info-type       (cond @validation-msg :error
-                                name-too-short? :default
-                                :else           :success)]
+    (let [name-too-short?          (length-not-valid @full-name)
+          valid-name?              (and (not @validation-msg) (not name-too-short?))
+          info-message             (if @validation-msg
+                                     @validation-msg
+                                     (i18n/label :t/minimum-characters
+                                                 {:min-chars min-length}))
+          info-type                (cond @validation-msg :error
+                                         name-too-short? :default
+                                         :else           :success)
+          scroll-view-height       (reagent/atom 0)
+          visible-scroll-view-height (reagent/atom 0)
+          background?              (show-button-background @keyboard-shown? @scroll-view-height @visible-scroll-view-height)]
       [rn/view {:style style/page-container}
        [navigation-bar/navigation-bar
         {:stack-id :new-to-status
          :top      navigation-bar-top}]
        [rn/scroll-view
-        {:content-container-style {:flexGrow 1}}
-        [rn/view {:style style/page-container}
+        {:content-container-style {:flexGrow  1
+                                   :on-layout #(reset! scroll-view-height
+                                                 (-> ^js % .-nativeEvent .-layout .-height))}}
+        [rn/view
+         {:on-layout (fn [event]
+                       (let [height      (oops/oget event "nativeEvent.layout")]
+                         (js/console.log (str "view height " height ))
+                         (reset! visible-scroll-view-height height)))}
          [rn/view
           {:style style/content-container}
           [quo/text
@@ -160,7 +189,7 @@
                           :left     0
                           :right    0}
          :pointer-events :box-none}
-        [button-container @keyboard-shown?
+        [button-container @keyboard-shown? background?
          [quo/button
           {:accessibility-label :submit-create-profile-button
            :type                :primary
