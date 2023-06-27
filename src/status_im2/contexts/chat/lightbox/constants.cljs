@@ -15,3 +15,5 @@
 (def ^:const separator-width 16)
 
 (def ^:const drag-threshold 100)
+
+(def ^:const image-description-in-lightbox? false)

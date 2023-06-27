@@ -57,10 +57,11 @@
       :start  {:x 0 :y 1}
       :end    {:x 0 :y 0}
       :style  (style/gradient-container insets animations derived)}
-     [message-view/render-parsed-text
-      {:content        content
-       :chat-id        chat-id
-       :style-override style/text-style}]
+     (when c/image-description-in-lightbox?
+       [message-view/render-parsed-text
+        {:content        content
+         :chat-id        chat-id
+         :style-override style/text-style}])
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)
        :key-fn                            :message-id
