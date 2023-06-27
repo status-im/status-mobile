@@ -41,7 +41,7 @@
        {:animate?    true
         :progress    progress
         :paused?     paused?
-        :swipeable?  false
+        :gesture     :tappable
         :header-text header-text}]
       [rn/view {:style style/content-container}
        [quo/profile-card

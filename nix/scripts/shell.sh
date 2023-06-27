@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-#
 # This script is used by the Makefile to have an implicit nix-shell.
 # The following environment variables modify the script behavior:
 # - TARGET: This attribute is passed via --attr to Nix, defining the scope.
@@ -62,6 +61,12 @@ fi
 if [[ -n "${_NIX_PURE}" ]]; then
     nixArgs+=("--pure")
     pureDesc='pure '
+fi
+
+# Hack fix for missing Android SDK for aarch64 on Darwin. See systemOverride in `nix/pkgs.nix`.
+if [[ "${TARGET}" =~ ^(android-sdk|android|gradle|keytool|status-go)$ ]]; then
+    os=$(uname -s | tr '[:upper:]' '[:lower:]')
+    export NIXPKGS_SYSTEM_OVERRIDE="x86_64-${os}"
 fi
 
 echo -e "${GRN}Configuring ${pureDesc}Nix shell for target '${TARGET}'...${RST}" 1>&2
