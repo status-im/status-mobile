@@ -25,12 +25,14 @@
   []
   (let [progress             (atom nil)
         paused?              (atom nil)
+        is-dragging?         (atom nil)
+        drag-amount          (atom nil)
         {:keys [emoji-hash display-name compressed-key
                 public-key]} (rf/sub [:multiaccount])
         {:keys [color]}      (rf/sub [:onboarding-2/profile])
         photo-path           (rf/sub [:chats/photo-path public-key])
         emoji-string         (string/join emoji-hash)]
-    (carousel.animation/use-initialize-animation progress paused? true)
+    (carousel.animation/use-initialize-animation progress paused? true is-dragging? drag-amount)
     (rn/use-effect
      (fn []
        (carousel.animation/cleanup-animation progress paused?))
@@ -39,11 +41,13 @@
      [background/view true]
      [rn/view {:style style/page-container}
       [carousel/view
-       {:animate?    true
-        :progress    progress
-        :paused?     paused?
-        :gesture     :tappable
-        :header-text header-text}]
+       {:animate?     true
+        :progress     progress
+        :paused?      paused?
+        :gesture      :tappable
+        :is-dragging? is-dragging?
+        :drag-amount  drag-amount
+        :header-text  header-text}]
       [rn/view {:style style/content-container}
        [profile-card/profile-card
         {:profile-picture     photo-path

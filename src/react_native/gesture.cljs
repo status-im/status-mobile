@@ -19,6 +19,8 @@
 
 (defn gesture-pan [] (.Pan ^js Gesture))
 
+(defn gesture-long-press [] (.LongPress ^js Gesture))
+
 (defn gesture-pinch [] (.Pinch ^js Gesture))
 
 (defn on-begin [gesture handler] (.onBegin ^js gesture handler))
