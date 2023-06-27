@@ -2,7 +2,7 @@
   (:require [cljs.test :refer [deftest is testing]]
             [status-im2.constants :as constants]
             [status-im.data-store.activities :as store]
-            [status-im2.contexts.activity-center.notification-types :as notification-types]))
+            [status-im2.contexts.shell.activity-center.notification-types :as notification-types]))
 
 (def chat-id
   "0x04c66155")

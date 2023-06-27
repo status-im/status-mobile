@@ -37,7 +37,7 @@
     [status-im.wallet.core :as wallet]
     [status-im.wallet.prices :as prices]
     [status-im2.common.json-rpc.events :as json-rpc]
-    [status-im2.contexts.activity-center.events :as activity-center]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]
     [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
     [status-im2.contexts.contacts.events :as contacts]
     [status-im2.navigation.events :as navigation]

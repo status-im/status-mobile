@@ -7,7 +7,7 @@
             [re-frame.core :as re-frame]
             [status-im2.contexts.chat.events :as chat.events]
             [status-im2.constants :as constants]
-            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.contexts.shell.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]
             [utils.re-frame :as rf]))
 

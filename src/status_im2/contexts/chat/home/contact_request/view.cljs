@@ -4,7 +4,7 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im2.contexts.activity-center.notification-types :as notification-types]
+            [status-im2.contexts.shell.activity-center.notification-types :as notification-types]
             [status-im2.contexts.chat.home.contact-request.style :as style]
             [utils.re-frame :as rf]))
 

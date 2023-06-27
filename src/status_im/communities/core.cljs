@@ -11,7 +11,7 @@
             [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im2.common.toasts.events :as toasts]
             [status-im2.constants :as constants]
-            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.contexts.shell.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
