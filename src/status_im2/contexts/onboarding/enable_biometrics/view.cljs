@@ -7,7 +7,11 @@
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
             [status-im.multiaccounts.biometric.core :as biometric]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.resources :as resources]
+            [status-im2.common.parallax.view :as parallax]
+            [status-im2.contexts.onboarding.common.background.view :as background]
+            [status-im2.common.parallax.whitelist :as whitelist]))
 
 (defn page-title
   []
@@ -19,7 +23,7 @@
     :subtitle-accessibility-label :enable-biometrics-sub-title}])
 
 (defn enable-biometrics-buttons
-  [{:keys [insets]}]
+  [insets]
   (let [supported-biometric (rf/sub [:supported-biometric-auth])
         bio-type-label      (biometric/get-label supported-biometric)
         profile-color       (:color (rf/sub [:onboarding-2/profile]))]
@@ -37,13 +41,36 @@
        :style                     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
+(defn enable-biometrics-parallax
+  []
+  (let [stretch (if rn/small-screen? 25 40)]
+    [:<>
+     [parallax/video
+      {:layers  (:biometrics resources/parallax-video)
+       :stretch stretch}]
+     [rn/view
+      [navigation-bar/navigation-bar {:disable-back-button? true}]
+      [page-title]]]))
+
+(defn enable-biometrics-simple
+  []
+  (let [width (:width (rn/get-window))]
+    [:<>
+     [rn/view {:flex 1}
+      [navigation-bar/navigation-bar {:disable-back-button? true}]
+      [page-title]
+      [rn/view {:style {:flex 1}}
+       [rn/image
+        {:resize-mode :contain
+         :style       (style/page-illustration width)
+         :source      (resources/get-image :biometrics)}]]]]))
+
 (defn enable-biometrics
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
-     [navigation-bar/navigation-bar {:disable-back-button? true}]
-     [page-title]
-     [rn/view {:style style/page-illustration}
-      [quo/text
-       "Illustration here"]]
-     [enable-biometrics-buttons {:insets insets}]]))
+     [background/view true]
+     (if whitelist/whitelisted?
+       [enable-biometrics-parallax]
+       [enable-biometrics-simple])
+     [enable-biometrics-buttons insets]]))

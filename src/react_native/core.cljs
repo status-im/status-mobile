@@ -68,6 +68,10 @@
    (fn []
      (js->clj (.get (.-Dimensions ^js react-native) "screen") :keywordize-keys true))))
 
+(def small-screen?
+  (let [height (:height (get-screen))]
+    (< height 700)))
+
 (defn hw-back-add-listener
   [callback]
   (.addEventListener (.-BackHandler ^js react-native) "hardwareBackPress" callback))
