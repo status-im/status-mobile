@@ -32,11 +32,11 @@
   [:f> f-sensor-animated-video props])
 
 (defn f-video
-  [{:keys [layers disable-parallax? offset stretch]
+  [{:keys [layers disable-parallax? offset stretch container-style]
     :or   {offset  50
            stretch 0}}]
   [rn/view
-   {:style style/outer-container}
+   {:style (style/outer-container container-style)}
    (map-indexed (fn [idx layer]
                   [sensor-animated-video
                    {:key               (str layer idx)
