@@ -34,9 +34,9 @@
                     profile-picture name]} context
             id                             (or chat-id public-key)
             display-name                   (or
-                                            name
                                             (when-not group-chat
-                                              (rf/sub [:contacts/contact-name-by-identity id])))
+                                              (rf/sub [:contacts/contact-name-by-identity id]))
+                                            name)
             contact                        (when-not group-chat
                                              (rf/sub [:contacts/contact-by-address
                                                       id]))
