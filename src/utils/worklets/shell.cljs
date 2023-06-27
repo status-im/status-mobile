@@ -1,4 +1,6 @@
-(ns utils.worklets.shell)
+(ns utils.worklets.shell
+  (:require [utils.collection]
+            [camel-snake-kebab.core :as csk]))
 
 (def bottom-tabs-worklets (js/require "../src/js/worklets/shell/bottom_tabs.js"))
 (def home-stack-worklets (js/require "../src/js/worklets/shell/home_stack.js"))
@@ -87,3 +89,13 @@
 (defn floating-screen-z-index
   [screen-state]
   (.screenZIndex ^js floating-screen-worklets screen-state))
+
+(defn floating-screen-gesture-on-update
+  [screen-left]
+  (.screenGestureOnUpdate ^js floating-screen-worklets screen-left))
+
+(defn floating-screen-gesture-on-end
+  [data]
+  (.screenGestureOnEnd
+   ^js floating-screen-worklets
+   (clj->js (utils.collection/map-keys csk/->camelCaseString data))))

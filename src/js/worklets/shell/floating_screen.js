@@ -1,4 +1,4 @@
-import { useDerivedValue, withTiming, withSequence, withDelay, Easing } from 'react-native-reanimated';
+import { useDerivedValue, withTiming, withSequence, withDelay, Easing, runOnJS } from 'react-native-reanimated';
 import * as constants from './constants';
 
 // Derived Values
@@ -105,4 +105,44 @@ export function screenBorderRadius(screenState) {
         return 20;
     }
   });
+}
+
+export function screenGestureOnUpdate(screenLeft) {
+  return function (event) {
+    'worklet';
+    const absoluteX = event.absoluteX;
+    if (absoluteX !== null) {
+      screenLeft.value = event.absoluteX;
+    }
+  };
+}
+
+export function screenGestureOnEnd(data) {
+  return function (event) {
+    'worklet';
+
+    const { screenLeft, screenState, screenWidth, leftVelocity, rightVelocity, screenClosedCallback } = data;
+    const absoluteX = event.absoluteX ?? 0;
+    const velocityX = event.velocityX ?? 0;
+    const closeScreen = velocityX > rightVelocity || (velocityX > leftVelocity && absoluteX >= screenWidth / 2);
+
+    // Velocity (points/sec) = Distance/time
+    var animationVelocity = (screenWidth * 1000) / constants.SHELL_ANIMATION_TIME;
+
+    if (Math.abs(velocityX) > animationVelocity) {
+      animationVelocity = velocityX; // Faster fling
+    }
+
+    const newDistance = closeScreen ? screenWidth - absoluteX : absoluteX;
+    const animationTime = (newDistance * 1000) / animationVelocity;
+
+    screenLeft.value = withTiming(closeScreen ? screenWidth : 0, {
+      duration: animationTime,
+      easing: Easing.bezier(0, 0, 0.58, 1),
+    });
+
+    if (closeScreen) {
+      runOnJS(screenClosedCallback)(animationTime);
+    }
+  };
 }
