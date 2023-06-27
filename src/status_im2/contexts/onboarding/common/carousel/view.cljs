@@ -60,7 +60,7 @@
         container-view (if animate? reanimated/view rn/view)
         identified-gesture
         (case gesture
-          :swipeable (animation/drag-gesture progress paused? is-dragging? drag-amount)
+          :swipeable (animation/composed-gestures progress paused? is-dragging? drag-amount)
           :tappable  (animation/tap-gesture progress paused?)
           nil)]
     [:<>
