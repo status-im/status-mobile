@@ -230,16 +230,17 @@
 
 (rf/defn update-balances
   {:events [:wallet/update-balances]}
-  [{{:keys [network-status]
-     :wallet/keys [all-tokens]
+  [{{:keys         [network-status]
+     :wallet/keys  [all-tokens]
      :profile/keys [profile wallet-accounts]
-     :as   db}
+     :as           db}
     :db
     :as cofx} addresses scan-all-tokens?]
   (log/debug "update-balances"
              "accounts"         addresses
              "scan-all-tokens?" scan-all-tokens?)
-  (let [addresses                        (or addresses (map (comp string/lower-case :address) wallet-accounts))
+  (let [addresses                        (or addresses
+                                             (map (comp string/lower-case :address) wallet-accounts))
         {:keys [:wallet/visible-tokens]} profile
         chain                            (ethereum/chain-keyword db)
         assets                           (get visible-tokens chain)
