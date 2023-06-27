@@ -41,11 +41,13 @@
      [background/view true]
      [rn/view {:style style/page-container}
       [carousel/view
-       {:animate?    true
-        :progress    progress
-        :paused?     paused?
-        :gesture     :tappable
-        :header-text header-text}]
+       {:animate?     true
+        :progress     progress
+        :paused?      paused?
+        :gesture      :tappable
+        :is-dragging? is-dragging?
+        :drag-amount  drag-amount
+        :header-text  header-text}]
       [rn/view {:style style/content-container}
        [profile-card/profile-card
         {:profile-picture     photo-path
