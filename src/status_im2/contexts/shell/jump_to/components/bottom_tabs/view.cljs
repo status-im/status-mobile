@@ -39,14 +39,19 @@
 
 (defn f-bottom-tabs
   []
-  (let [notifications-data (rf/sub [:shell/bottom-tabs-notifications-data])
-        pass-through?      (rf/sub [:shell/shell-pass-through?])
-        shared-values      @state/shared-values-atom
-        select-tab-gesture #(-> (gesture/gesture-tap)
-                                (gesture/number-of-taps 2)
-                                (gesture/on-start
-                                 (fn [_event]
-                                   (rf/dispatch [:communities/select-tab %]))))]
+  (let [notifications-data             (rf/sub [:shell/bottom-tabs-notifications-data])
+        pass-through?                  (rf/sub [:shell/shell-pass-through?])
+        shared-values                  @state/shared-values-atom
+        communities-double-tab-gesture (-> (gesture/gesture-tap)
+                                           (gesture/number-of-taps 2)
+                                           (gesture/on-start
+                                            (fn [_event]
+                                              (rf/dispatch [:communities/select-tab :joined]))))
+        messages-double-tap-gesture    (-> (gesture/gesture-tap)
+                                           (gesture/number-of-taps 2)
+                                           (gesture/on-start
+                                            (fn [_event]
+                                              (rf/dispatch [:messages-home/select-tab :tab/recent]))))]
     (utils/load-stack @state/selected-stack-id)
     (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
     [reanimated/view
@@ -54,9 +59,9 @@
      (when pass-through?
        [blur/view (blur-overlay-params style/bottom-tabs-blur-overlay)])
      [rn/view {:style (style/bottom-tabs)}
-      [gesture/gesture-detector {:gesture (select-tab-gesture :joined)}
+      [gesture/gesture-detector {:gesture communities-double-tab-gesture}
        [bottom-tab :i/communities :communities-stack shared-values notifications-data]]
-      [gesture/gesture-detector {:gesture (select-tab-gesture :tab/recent)}
+      [gesture/gesture-detector {:gesture messages-double-tap-gesture}
        [bottom-tab :i/messages :chats-stack shared-values notifications-data]]
       [bottom-tab :i/wallet :wallet-stack shared-values notifications-data]
       [bottom-tab :i/browser :browser-stack shared-values notifications-data]]]))
