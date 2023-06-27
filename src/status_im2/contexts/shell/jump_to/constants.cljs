@@ -61,3 +61,8 @@
 (def ^:const open-screen-with-shell-animation 3)
 (def ^:const close-screen-without-animation 4)
 (def ^:const open-screen-without-animation 5)
+
+;; Floating Screen gesture
+(def ^:const gesture-width 20)
+(def ^:const gesture-fling-right-velocity 2000)
+(def ^:const gesture-fling-left-velocity -1000)

@@ -37,6 +37,10 @@
 
 (defn min-distance [gesture dist] (.minDistance ^js gesture dist))
 
+(defn fail-offset-x [gesture offset] (.failOffsetX ^js gesture offset))
+
+(defn hit-slop [gesture settings] (.hitSlop ^js gesture settings))
+
 (defn number-of-taps [gesture count] (.numberOfTaps ^js gesture count))
 
 (defn enabled [gesture enabled?] (.enabled ^js gesture enabled?))
