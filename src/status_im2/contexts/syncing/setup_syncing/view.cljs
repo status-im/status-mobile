@@ -23,15 +23,13 @@
    [quo/page-nav
     {:align-mid?            true
      :mid-section           {:type :text-only :main-text ""}
-     :left-section          {:type                :grey
-                             :icon                :i/close
-                             :icon-override-theme :dark
-                             :on-press            #(rf/dispatch [:navigate-back])}
-     :right-section-buttons [{:type                :grey
-                              :label               (i18n/label :t/how-to-pair)
-                              :icon                :i/info
-                              :icon-override-theme :dark
-                              :on-press            #(rf/dispatch [:open-modal :how-to-pair])}]}]])
+     :left-section          {:type     :grey
+                             :icon     :i/close
+                             :on-press #(rf/dispatch [:navigate-back])}
+     :right-section-buttons [{:type     :grey
+                              :label    (i18n/label :t/how-to-pair)
+                              :icon     :i/info
+                              :on-press #(rf/dispatch [:open-modal :how-to-pair])}]}]])
 
 (defn f-use-interval
   [clock cleanup-clock delay]

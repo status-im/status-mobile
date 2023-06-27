@@ -5,7 +5,8 @@
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+            [react-native.core :as rn]
+            [quo2.theme :as theme]))
 
 (def ^:private centrify-style
   {:display         :flex
@@ -30,7 +31,7 @@
            {:no-color true})))
 
 (defn left-section-view
-  [{:keys [on-press icon accessibility-label type icon-background-color icon-override-theme]
+  [{:keys [on-press icon accessibility-label type icon-background-color]
     :or   {type :grey}}
    put-middle-section-on-left?]
   [rn/view {:style (when put-middle-section-on-left? {:margin-right 5})}
@@ -40,7 +41,6 @@
      :type                      type
      :size                      32
      :accessibility-label       accessibility-label
-     :override-theme            icon-override-theme
      :override-background-color icon-background-color}
     icon]])
 
@@ -87,10 +87,10 @@
 
 (defn- mid-section-view
   [{:keys [horizontal-description? one-icon-align-left? type left-align?
-           main-text right-icon main-text-icon-color left-icon on-press avatar]
+           main-text right-icon main-text-icon-color left-icon on-press avatar theme]
     :as   props}]
-  (let [text-color           (if (colors/dark?) colors/neutral-5 colors/neutral-95)
-        text-secondary-color (if (colors/dark?) colors/neutral-40 colors/neutral-50)
+  (let [text-color           (colors/theme-colors colors/neutral-95 colors/neutral-5 theme)
+        text-secondary-color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
         component-instance   [mid-section-comp (assoc props :text-secondary-color text-secondary-color)]]
     [rn/touchable-opacity {:on-press on-press}
      [rn/view
@@ -152,7 +152,7 @@
                   :justify-content :flex-end)}
    (let [last-icon-index (-> right-section-buttons count dec)]
      (map-indexed (fn [index
-                       {:keys [icon on-press type style icon-override-theme icon-background-color
+                       {:keys [icon on-press type style icon-background-color
                                accessibility-label label]
                         :or   {type :grey}}]
                     ^{:key index}
@@ -168,12 +168,11 @@
                        :type                      type
                        :before                    (when label icon)
                        :size                      32
-                       :override-theme            icon-override-theme
                        :override-background-color icon-background-color}
                       (if label label icon)]])
                   right-section-buttons))])
 
-(defn page-nav
+(defn- page-nav-internal
   "[page-nav opts]
    opts
    { :one-icon-align-left?    true/false
@@ -198,25 +197,26 @@
      {:type                  button-type
       :on-press              event
       :icon                  icon
-      :icon-override-theme   :light/:dark
      }
      :right-section-buttons vector of
       {:type                  button-type
        :on-press              event
        :icon                  icon
-       :icon-override-theme   :light/:dark
       }
+      :theme :light or :dark
    }
   "
   [{:keys [container-style one-icon-align-left? horizontal-description?
            align-mid? page-nav-color page-nav-background-uri
            mid-section
            left-section
-           right-section-buttons]}]
+           right-section-buttons
+           theme]}]
   (let [put-middle-section-on-left? (or align-mid?
                                         (> (count right-section-buttons) 1))
         mid-section-props
         {:type                    (:type mid-section)
+         :theme                   theme
          :horizontal-description? horizontal-description?
          :description-img         (:description-img mid-section)
          :main-text               (:main-text mid-section)
@@ -258,3 +258,5 @@
           (not put-middle-section-on-left?)
           [mid-section-view mid-section-props]))]
      [right-section-view right-section-buttons]]))
+
+(def page-nav (theme/with-theme page-nav-internal))
