@@ -41,16 +41,6 @@ nixArgs=(
     "--attr shells.${TARGET}"
 )
 
-config=''
-if [[ -n "${STATUS_GO_SRC_OVERRIDE}" ]]; then
-    config+="status-im.status-go.src-override=\"${STATUS_GO_SRC_OVERRIDE}\";"
-fi
-config+="status-im.build-type=\"${BUILD_TYPE}\";"
-
-if [[ -n "$config" ]]; then
-    nixArgs+=("--arg config {$config}")
-fi
-
 # This variable allows specifying which env vars to keep for Nix pure shell
 # The separator is a colon
 if [[ -n "${_NIX_KEEP}" ]]; then
