@@ -1,4 +1,9 @@
-(ns quo2.components.drawers.documentation-drawers.style)
+(ns quo2.components.drawers.documentation-drawers.style
+  (:require [react-native.safe-area :as safe-area]))
+
+(def outer-container
+  ;; Margin negative to fill the bottom-sheet container where this component is used
+  {:margin-bottom (- (+ (safe-area/get-bottom) 8))})
 
 (def container
   {:align-items        :flex-start
@@ -6,4 +11,4 @@
 
 (def content
   {:margin-top    8
-   :margin-bottom 16})
+   :margin-bottom (+ (safe-area/get-bottom) 8)})
