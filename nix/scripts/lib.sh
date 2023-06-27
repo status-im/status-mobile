@@ -8,7 +8,8 @@ file_group() {
     if [[ "${UNAME}" == "Linux" ]]; then
         stat -Lc "%G" "${1}" 2>/dev/null
     elif [[ "${UNAME}" == "Darwin" ]]; then
-        stat -Lf "%Sg" "${1}" 2>/dev/null
+        # Avoid using Nix GNU stat when in Nix shell.
+        /usr/bin/stat -Lf "%Sg" "${1}" 2>/dev/null
     fi
 }
 
