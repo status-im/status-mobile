@@ -2,7 +2,6 @@
   (:require [quo2.components.buttons.button :as button]
             [quo2.components.drawers.documentation-drawers.style :as style]
             [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]))
 
@@ -25,9 +24,7 @@
     [text/text
      {:size                :heading-2
       :accessibility-label :documentation-drawer-title
-      :style               {:color (colors/theme-colors colors/neutral-100
-                                                        colors/white
-                                                        (when shell? :dark))}
+      :style               (style/title shell?)
       :weight              :semi-bold}
      title]
     [rn/view {:style style/content :accessibility-label :documentation-drawer-content}
