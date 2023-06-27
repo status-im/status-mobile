@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.bottom-sheet.bottom-sheet
-  (:require [quo2.components.buttons.button :as button]
+  (:require [quo2.components.buttons.button.view :as button]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]

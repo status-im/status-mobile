@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.main
   (:refer-clojure :exclude [filter])
   (:require
-    [quo2.components.buttons.button :as quo2-button]
+    [quo2.components.buttons.button.view :as quo2-button]
     [quo2.components.markdown.text :as quo2-text]
     [quo2.foundations.colors :as colors]
     [re-frame.core :as re-frame]

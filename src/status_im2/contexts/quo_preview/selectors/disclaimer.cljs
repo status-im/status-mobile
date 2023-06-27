@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.selectors.disclaimer
-  (:require [quo2.components.buttons.button :as button]
+  (:require [quo2.components.buttons.button.view :as button]
             [quo2.components.selectors.disclaimer.view :as disclaimer]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]

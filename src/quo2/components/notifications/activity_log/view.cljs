@@ -1,7 +1,7 @@
 (ns quo2.components.notifications.activity-log.view
   (:require [clojure.string :as string]
             [quo.core :as quo]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.components.notifications.activity-log.style :as style]

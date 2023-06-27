@@ -8,7 +8,7 @@
     quo2.components.avatars.user-avatar.view
     quo2.components.avatars.wallet-user-avatar
     quo2.components.banners.banner.view
-    quo2.components.buttons.button
+    quo2.components.buttons.button.view
     quo2.components.buttons.dynamic-button
     quo2.components.buttons.predictive-keyboard.view
     quo2.components.buttons.slide-button.view
@@ -130,7 +130,7 @@
 (def banner quo2.components.banners.banner.view/banner)
 
 ;;;; BUTTONS
-(def button quo2.components.buttons.button/button)
+(def button quo2.components.buttons.button.view/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo2.components.buttons.slide-button.view/view)

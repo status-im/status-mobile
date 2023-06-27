@@ -1,5 +1,5 @@
 (ns status-im2.common.plus-button.view
-  (:require [quo2.components.buttons.button :as quo2.button]))
+  (:require [quo2.components.buttons.button.view :as quo2.button]))
 
 (defn plus-button
   [{:keys [on-press accessibility-label customization-color]}]

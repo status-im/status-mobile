@@ -5,7 +5,7 @@
             [quo2.theme :as theme]
             [react-native.linear-gradient :as linear-gradient]
             [quo2.foundations.colors :as colors]
-            [quo2.components.buttons.button :as button]))
+            [quo2.components.buttons.button.view :as button]))
 
 (def ^:private gradients
   {:light [(colors/alpha colors/neutral-40 0.05) (colors/alpha colors/neutral-40 0)]

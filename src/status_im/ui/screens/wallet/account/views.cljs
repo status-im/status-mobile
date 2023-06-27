@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [quo.design-system.colors :as colors]
     [quo.design-system.spacing :as spacing]
-    [quo2.components.buttons.button :as quo2.button]
+    [quo2.components.buttons.button.view :as quo2.button]
     [quo2.components.markdown.text :as quo2.text]
     [quo2.components.tabs.tabs :as quo2.tabs]
     [quo2.foundations.colors :as quo2.colors]

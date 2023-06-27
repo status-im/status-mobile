@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.notifications.notification
   (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [quo2.components.code.snippet :as snippet]
             [quo2.components.info.info-message :as info-message]
             [react-native.core :as rn]

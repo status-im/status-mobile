@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.buttons.button
-  (:require [quo2.components.buttons.button :as quo2]
+  (:require [quo2.components.buttons.button.view :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
