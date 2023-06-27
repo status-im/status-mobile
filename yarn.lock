@@ -2152,9 +2152,9 @@
   version "4.3.3"
   resolved "git+https://github.com/status-im/react-native-blur#c140cc8e7d54e3318af0a7c149b5d64b54de3419"
 
-"@react-native-community/cameraroll@git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.0":
+"@react-native-community/cameraroll@git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.1_1":
   version "4.0.4"
-  resolved "git+https://github.com/status-im/react-native-cameraroll.git#337c5a515e9b0f0728882f73568075553415f523"
+  resolved "git+https://github.com/status-im/react-native-cameraroll.git#64f99f8ede9463754e4c58f418e46a67217dd8c7"
 
 "@react-native-community/cli-clean@^8.0.4":
   version "8.0.4"
@@ -8770,10 +8770,9 @@ react-native-blob-util@^0.13.18:
     base-64 "0.1.0"
     glob "^7.1.6"
 
-react-native-camera-kit@^13.0.0:
+"react-native-camera-kit@git+https://github.com/rasom/react-native-camera-kit.git#refs/tags/status-test":
   version "13.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-camera-kit/-/react-native-camera-kit-13.0.0.tgz#983d9146cdeb0ec0cb0c0a86b7fa5f7690df08f6"
-  integrity sha512-fnkyivCG2xzS+14/doP8pCAYNafYaTyg5J0t+JJltJdgKSHf328OG44Rd+fnbbEOydZxgy/bcuLB24R0kCbynw==
+  resolved "git+https://github.com/rasom/react-native-camera-kit.git#fc03a17e8a0725e2f5fb1515359324df048b9cfa"
   dependencies:
     lodash "^4.14.2"
 
@@ -8857,9 +8856,9 @@ react-native-haptic-feedback@^1.9.0:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.9.0.tgz#7d62c54536f04dd5d8f1c2bb8ee444009f2294b9"
   integrity sha512-tIRbq8k7HK9AoyvXrOHUEFmJd65ZAh1HP9mDyD/gDisG1ApY4Im9UKn0q0of9z7s8AJY3sZA9GMuSKdSBGdKKQ==
 
-"react-native-hole-view@git+https://github.com/status-im/react-native-hole-view.git#refs/tags/v2.1.3-status":
-  version "2.1.1"
-  resolved "git+https://github.com/status-im/react-native-hole-view.git#f056393e06f18b3af54c736d470f9e29d23120a4"
+"react-native-hole-view@git+https://github.com/status-im/react-native-hole-view.git#refs/tags/v2.2.1-status":
+  version "2.2.1"
+  resolved "git+https://github.com/status-im/react-native-hole-view.git#3226a27edb7d6b04d11cc97c809f34e1cec83608"
 
 "react-native-image-crop-picker@git+https://github.com/status-im/react-native-image-crop-picker.git#refs/tags/v0.36.2-status.0":
   version "0.36.2"
@@ -8896,14 +8895,14 @@ react-native-lottie-splash-screen@^1.0.1:
     lottie-ios "3.2.3"
     lottie-react-native "^5.1.3"
 
-"react-native-mail@git+https://github.com/status-im/react-native-mail.git#refs/tags/v6.1.2-status":
-  version "6.1.1"
-  resolved "git+https://github.com/status-im/react-native-mail.git#6d28780dfe156dfed87d8a4ceba520cc7db019c5"
+"react-native-mail@git+https://github.com/status-im/react-native-mail.git#refs/tags/v6.1.3_4-status":
+  version "6.1.3"
+  resolved "git+https://github.com/status-im/react-native-mail.git#f46fbd07aa325aade7f4f6eb6593479d476d92a4"
 
-react-native-navigation@^7.27.1:
-  version "7.27.1"
-  resolved "https://registry.yarnpkg.com/react-native-navigation/-/react-native-navigation-7.27.1.tgz#90bfac2a400109cc036394b4ee807a997da6a7b4"
-  integrity sha512-rKgIiekZfAMZTF+OhLINJeB81tpqWH+wJDUbJmcF5A/aZj5cmetglWrDiYnX+2eUHOhGBpYk4elCX4zAC84drg==
+react-native-navigation@^7.30.1:
+  version "7.34.0"
+  resolved "https://registry.yarnpkg.com/react-native-navigation/-/react-native-navigation-7.34.0.tgz#c0ec49b1e3562ba3dec5e8edd63fc9381df350f2"
+  integrity sha512-WoKdYI+E593CLMf/c9C6+s2EhGcJVGp/wySaevTCkVri+W8yYFjuvHtrrSbDIVYSBxyCZWTkWl42TggMCt6cHA==
   dependencies:
     hoist-non-react-statics "3.x.x"
     lodash "4.17.x"
@@ -8996,9 +8995,9 @@ react-native-touch-id@^4.4.1:
   version "0.1.0"
   resolved "git+https://github.com/status-im/react-native-transparent-video.git#97d8c773eae82851b170b53c9fc13020f74eefe7"
 
-"react-native-webview@git+https://github.com/status-im/react-native-webview.git#refs/tags/v11.16.0-status":
+"react-native-webview@git+https://github.com/status-im/react-native-webview.git#refs/tags/android-13-fix_4":
   version "11.16.0"
-  resolved "git+https://github.com/status-im/react-native-webview.git#9d554dd25b33d799c37eb356c0dfa42ca8bd4ff7"
+  resolved "git+https://github.com/status-im/react-native-webview.git#115b82b714d510529a091ad0a215adb27156b6b1"
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"

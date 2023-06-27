@@ -717,7 +717,6 @@ org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.4.1
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.2
 org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1
-org.jetbrains.kotlin:kotlin-android-extensions-runtime:1.6.20
 org.jetbrains.kotlin:kotlin-android-extensions:1.6.20
 org.jetbrains.kotlin:kotlin-annotations-jvm:1.3.72
 org.jetbrains.kotlin:kotlin-annotation-processing-gradle:1.6.20
