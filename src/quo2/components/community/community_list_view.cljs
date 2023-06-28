@@ -3,6 +3,7 @@
             [quo2.components.community.style :as style]
             [quo2.components.counter.counter :as counter]
             [quo2.components.icon :as icons]
+            [quo2.theme :as theme]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo2.components.community.icon :as community-icon]
@@ -77,6 +78,7 @@
 
 (defn communities-membership-list-item
   [props
+   bottom-sheet?
    {:keys [name
            muted
            unviewed-messages-count
@@ -105,11 +107,17 @@
        :number-of-lines     1
        :ellipsize-mode      :tail
        :weight              :semi-bold
-       :size                :paragraph-1}
+       :size                :paragraph-1
+       :style               (when muted
+                              {:color (if (theme/dark?)
+                                        colors/neutral-60
+                                        colors/neutral-40)})}
       name]]
 
     [rn/view
-     {:justify-content :center}
+     {:justify-content :center
+      :margin-right    (when bottom-sheet?
+                         16)}
      (if (= status :gated)
        [community-view/permission-tag-container
         {:locked? locked?

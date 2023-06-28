@@ -645,8 +645,8 @@
   {:events [::requests-to-join-fetched]}
   [{:keys [db]} community-id requests]
   {:db (assoc-in db
-                 [:communities/requests-to-join community-id]
-                 (<-requests-to-join-community-rpc requests :id))})
+        [:communities/requests-to-join community-id]
+        (<-requests-to-join-community-rpc requests :id))})
 
 (rf/defn fetch-requests-to-join
   {:events [::fetch-requests-to-join]}
@@ -955,6 +955,7 @@
         chats    (mapv vector (keys channels) (vals channels))]
     (doseq [x chats]
       (doseq [{:keys [id]} x]
+        (js/console.log (str "chat muted " x muted?))
         (let [chat-id (str community-id id)]
           (rf/dispatch [:community/mute-community-chats chat-id muted? mute-till]))))))
 
@@ -962,28 +963,26 @@
   {:events [:community/mute-community-failed]}
   [{:keys [db]} community-id muted? error]
   (log/error "mute community failed" community-id error)
-  {:db (update-in db [:communities community-id :muted] (not muted?))
-   :dispatch [:toasts/upsert
-              {:icon       :correct
-               :icon-color (quo2.colors/theme-colors quo2.colors/success-60
-                                                     quo2.colors/success-50)
-               :text       "Unmuted successfully"}]}
+  {:db (update-in db [:communities community-id :muted] (not muted?))}
   (rf/dispatch [:community/update-community-chats-mute-status community-id muted? error]))
 
 (rf/defn mute-community-successfully
   {:events [:community/mute-community-successful]}
   [{:keys [db]} community-id muted? muted-till]
   (log/debug "muted community successfully" community-id muted-till)
-  (let [time-string (fn [duration-kw unmute-time]
-                      (i18n/label duration-kw {:duration unmute-time}))]
-    #(rf/dispatch [:community/update-community-chats-mute-status community-id muted? muted-till])
-    {:db (assoc-in db [:communities community-id :muted-till] muted-till)
+  (rf/dispatch [:community/update-community-chats-mute-status community-id muted? muted-till])
+  (let [time-string (fn [mute-title mute-duration]
+                      (i18n/label mute-title {:duration mute-duration}))]
+    {:db       (assoc-in db [:communities community-id :muted-till] muted-till)
      :dispatch [:toasts/upsert
                 {:icon       :correct
-                 :icon-color (quo2.colors/theme-colors quo2.colors/success-60
-                                                       quo2.colors/success-50)
-                 :text       (when (some? muted-till)
-                               (time-string :t/muted-until (datetime/format-mute-till muted-till)))}]}))
+                 :icon-color (quo2.colors/theme-colors
+                              quo2.colors/success-60
+                              quo2.colors/success-50)
+                 :text       (if muted?
+                               (when (some? muted-till)
+                                 (time-string :t/muted-until (datetime/format-mute-till muted-till)))
+                               (i18n/label :t/community-unmuted))}]}))
 
 
 (rf/defn set-community-muted

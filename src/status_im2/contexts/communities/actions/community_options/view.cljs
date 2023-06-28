@@ -49,8 +49,8 @@
 
 (defn mute-community
   [id muted? muted-till]
-  (let [time-string (fn [duration-kw unmute-time]
-                      (i18n/label duration-kw {:duration unmute-time}))]
+  (let [time-string (fn [mute-title mute-duration]
+                      (i18n/label mute-title {:duration mute-duration}))]
     {:icon                (if muted? :i/muted :i/activity-center)
      :accessibility-label (if muted? :unmute-community :mute-community)
      :label               (i18n/label (if muted? :t/unmute-community :t/mute-community))
