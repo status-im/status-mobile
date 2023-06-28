@@ -133,9 +133,9 @@
 (rf/defn set-multiaccount-root
   {:events [:set-multiaccount-root]}
   [{:keys [db]}]
-  (let [key-uid          (get-in db [:multiaccounts/login :key-uid])
+  (let [key-uid          (get-in db [:profile/login :key-uid])
         keycard-account? (boolean (get-in db
-                                          [:multiaccounts/multiaccounts
+                                          [:profile/profiles-overview
                                            key-uid
                                            :keycard-pairing]))]
     {:set-root (if keycard-account? :multiaccounts-keycard :multiaccounts)}))

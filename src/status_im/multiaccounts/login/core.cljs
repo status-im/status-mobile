@@ -16,7 +16,6 @@
     [status-im.ethereum.transactions.core :as transactions]
     [status-im.fleet.core :as fleet]
     [utils.i18n :as i18n]
-    [status-im.keycard.common :as keycard.common]
     [status-im.mobile-sync-settings.core :as mobile-network]
     [status-im.multiaccounts.biometric.core :as biometric]
     [status-im.multiaccounts.core :as multiaccounts]
@@ -46,7 +45,8 @@
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [status-im.keycard.common :as keycard.common]))
 
 (re-frame/reg-fx
  ::initialize-transactions-management-enabled
@@ -146,7 +146,7 @@
   (rf/merge
    cofx
    {:db                          (assoc db
-                                        :multiaccount/accounts
+                                        :profile/wallet-accounts
                                         (rpc->accounts accounts))
     ;; NOTE: Local notifications should be enabled only after wallet was started
     ::enable-local-notifications nil}
@@ -179,7 +179,7 @@
 (rf/defn login-local-paired-user
   {:events [:multiaccounts.login/local-paired-user]}
   [{:keys [db]}]
-  (let [{:keys [key-uid name password]} (get-in db [:syncing :multiaccount])]
+  (let [{:keys [key-uid name password]} (get-in db [:syncing :profile/profile])]
     {::login [key-uid
               (types/clj->json {:name    name
                                 :key-uid key-uid})
@@ -188,9 +188,9 @@
 (rf/defn login
   {:events [:multiaccounts.login.ui/password-input-submitted]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password name]} (:multiaccounts/login db)]
+  (let [{:keys [key-uid password name]} (:profile/login db)]
     {:db     (-> db
-                 (assoc-in [:multiaccounts/login :processing] true)
+                 (assoc-in [:profile/login :processing] true)
                  (dissoc :intro-wizard :recovered-account?)
                  (update :keycard dissoc :flow))
      ::login [key-uid
@@ -201,7 +201,7 @@
 (rf/defn export-db-submitted
   {:events [:multiaccounts.login.ui/export-db-submitted]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password name]} (:multiaccounts/login db)]
+  (let [{:keys [key-uid password name]} (:profile/login db)]
     {::export-db [key-uid
                   (types/clj->json {:name    name
                                     :key-uid key-uid})
@@ -216,7 +216,7 @@
 (rf/defn import-db-submitted
   {:events [:multiaccounts.login.ui/import-db-submitted]}
   [{:keys [db]}]
-  (let [{:keys [key-uid password name]} (:multiaccounts/login db)]
+  (let [{:keys [key-uid password name]} (:profile/login db)]
     {::import-db [key-uid
                   (types/clj->json {:name    name
                                     :key-uid key-uid})
@@ -394,7 +394,7 @@
   [{:keys [db] :as cofx} node-config-json]
   (let [node-config (types/json->clj node-config-json)]
     {:db (assoc-in db
-          [:multiaccount :wakuv2-config]
+          [:profile/profile :wakuv2-config]
           (get node-config :WakuV2Config))}))
 
 (rf/defn get-node-config
@@ -438,10 +438,10 @@
         merged-networks (merge networks config/default-networks-by-id)]
     (rf/merge cofx
               {:db (-> db
-                       (dissoc :multiaccounts/login)
+                       (dissoc :profile/login)
                        (assoc :networks/current-network current-network
                               :networks/networks        merged-networks
-                              :multiaccount             multiaccount))}
+                              :profile/profile          multiaccount))}
               (data-store.chats/fetch-chats-rpc
                {:on-success
                 #(do (re-frame/dispatch [:chats-list/load-success %])
@@ -476,29 +476,29 @@
 (rf/defn check-last-chat
   {:events [::check-last-chat]}
   [{:keys [db]}]
-  {::open-last-chat (get-in db [:multiaccount :key-uid])})
+  {::open-last-chat (get-in db [:profile/profile :key-uid])})
 
 (rf/defn update-wallet-accounts
   [{:keys [db]} accounts]
-  (let [existing-accounts (into {} (map #(vector (:address %1) %1) (:multiaccount/accounts db)))
+  (let [existing-accounts (into {} (map #(vector (:address %1) %1) (:profile/wallet-accounts db)))
         reduce-fn         (fn [existing-accs new-acc]
                             (let [address (:address new-acc)]
                               (if (:removed new-acc)
                                 (dissoc existing-accs address)
                                 (assoc existing-accs address new-acc))))
         new-accounts      (reduce reduce-fn existing-accounts (rpc->accounts accounts))]
-    {:db (assoc db :multiaccount/accounts (vals new-accounts))}))
+    {:db (assoc db :profile/wallet-accounts (vals new-accounts))}))
 
 (rf/defn get-chats-callback
   {:events [::get-chats-callback]}
   [{:keys [db] :as cofx}]
   (let [{:networks/keys [current-network networks]} db
-        notifications-enabled? (get-in db [:multiaccount :notifications-enabled?])
+        notifications-enabled? (get-in db [:profile/profile :notifications-enabled?])
         current-network-config (get networks current-network)
         network-id (str (get-in networks
                                 [current-network :config :NetworkId]))
         remote-push-notifications-enabled?
-        (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+        (get-in db [:profile/profile :remote-push-notifications-enabled?])]
     (rf/merge cofx
               (cond-> {::eip1559/check-eip1559-activation
                        {:network-id  network-id
@@ -510,7 +510,7 @@
                         (fn [accounts tokens custom-tokens favourites]
                           (re-frame/dispatch [::initialize-wallet
                                               accounts tokens custom-tokens favourites]))]
-                       ::open-last-chat (get-in db [:multiaccount :key-uid])}
+                       ::open-last-chat (get-in db [:profile/profile :key-uid])}
                 (or notifications-enabled? remote-push-notifications-enabled?)
                 (assoc ::notifications/enable remote-push-notifications-enabled?))
               (transport/start-messenger)
@@ -555,23 +555,21 @@
 
 (rf/defn create-only-events
   [{:keys [db] :as cofx} recovered-account?]
-  (let [{:keys [multiaccount
-                :multiaccounts/multiaccounts
-                :multiaccount/accounts]}
+  (let [{:profile/keys [profile profiles-overview wallet-accounts]}
         db
-        {:keys [creating?]} (:multiaccounts/login db)
-        first-account? (and creating?
-                            (empty? multiaccounts))
+        {:keys [creating?]} (:profile/login db)
+        first-account? (and creating? (empty? profiles-overview))
         tos-accepted? (get db :tos/accepted?)
         {:networks/keys [current-network networks]} db
         network-id (str (get-in networks [current-network :config :NetworkId]))]
     (shell.utils/change-selected-stack-id :communities-stack true nil)
     (rf/merge cofx
               {:db          (-> db
-                                (dissoc :multiaccounts/login)
+                                (dissoc :profile/login)
                                 (assoc :tos/next-root :enable-notifications :chats/loading? false)
-                                (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
-               ::get-tokens [network-id accounts recovered-account?]}
+                                (assoc-in [:profile/profile :multiaccounts/first-account]
+                                          first-account?))
+               ::get-tokens [network-id wallet-accounts recovered-account?]}
               (finish-keycard-setup)
               (transport/start-messenger)
               (communities/fetch)
@@ -579,7 +577,7 @@
                {:on-success #(re-frame/dispatch [:chats-list/load-success %])})
               (multiaccounts/switch-preview-privacy-mode-flag)
               (link-preview/request-link-preview-whitelist)
-              (logging/set-log-level (:log-level multiaccount))
+              (logging/set-log-level (:log-level profile))
               (navigation/init-root :enable-notifications))))
 
 (defn- keycard-setup?
@@ -595,7 +593,7 @@
               :on-card-read
               :card-read-in-progress?
               :pin
-              :multiaccount)
+              :profile/profile)
       (assoc :tos-accept-next-root
              (if login-only?
                :shell-stack
@@ -606,9 +604,9 @@
 (rf/defn multiaccount-login-success
   [{:keys [db now] :as cofx}]
   (let [{:keys [key-uid password save-password? creating?]}
-        (:multiaccounts/login db)
+        (:profile/login db)
 
-        multiaccounts (:multiaccounts/multiaccounts db)
+        multiaccounts (:profile/profiles-overview db)
         recovered-account? (get db :recovered-account?)
         login-only? (not (or creating?
                              recovered-account?
@@ -638,29 +636,12 @@
                 (login-only-events key-uid password save-password?)
                 (create-only-events recovered-account?)))))
 
-;; FIXME(Ferossgp): We should not copy keys as we denormalize the database,
-;; this create desync between actual accounts and the one on login causing broken state
-;; UPDATE(cammellos): This code is copying over some fields explicitly as some values
-;; are alreayd in `multiaccounts/login` and should not be overriden, as they come from
-;; the keychain (save-password), this is not very explicit and we should probably
-;; make it clearer
-(rf/defn open-login
-  [{:keys [db]} override-multiaccount]
-  {:db (-> db
-           (update :multiaccounts/login
-                   merge
-                   override-multiaccount)
-           (update :multiaccounts/login
-                   dissoc
-                   :error
-                   :password))})
-
 (rf/defn open-login-callback
   {:events [:multiaccounts.login.callback/get-user-password-success]}
   [{:keys [db] :as cofx} password]
-  (let [key-uid           (get-in db [:multiaccounts/login :key-uid])
+  (let [key-uid           (get-in db [:profile/login :key-uid])
         keycard-account?  (boolean (get-in db
-                                           [:multiaccounts/multiaccounts
+                                           [:profile/profiles-overview
                                             key-uid
                                             :keycard-pairing]))
         goto-key-storage? (:goto-key-storage? db)]
@@ -668,7 +649,7 @@
       (rf/merge
        cofx
        {:db       (update-in db
-                             [:multiaccounts/login]
+                             [:profile/login]
                              assoc
                              :password       password
                              :save-password? true)
@@ -690,7 +671,7 @@
 (rf/defn get-credentials
   [{:keys [db] :as cofx} key-uid]
   (let [keycard-multiaccount? (boolean (get-in db
-                                               [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
+                                               [:profile/profiles-overview key-uid :keycard-pairing]))]
     (log/debug "[login] get-credentials"
                "keycard-multiacc?"
                keycard-multiaccount?)
@@ -702,12 +683,8 @@
   "Auth method: nil - not supported, \"none\" - not selected, \"password\", \"biometric\", \"biometric-prepare\""
   {:events [:multiaccounts.login/get-auth-method-success]}
   [{:keys [db] :as cofx} auth-method]
-  (let [key-uid               (get-in db [:multiaccounts/login :key-uid])
-        keycard-multiaccount? (boolean (get-in db
-                                               [:multiaccounts/multiaccounts key-uid :keycard-pairing]))]
-    (log/debug "[login] get-auth-method-success"
-               "auth-method"       auth-method
-               "keycard-multiacc?" keycard-multiaccount?)
+  (let [key-uid          (get-in db [:profile/login :key-uid])
+        keycard-profile? (boolean (get-in db [:profile/profiles-overview key-uid :keycard-pairing]))]
     (rf/merge
      cofx
      {:db (assoc db :auth-method auth-method)}
@@ -716,15 +693,14 @@
         (biometric/biometric-auth %)
         (= auth-method keychain/auth-method-password)
         (get-credentials % key-uid)
-        (and keycard-multiaccount?
-             (get-in db [:keycard :card-connected?]))
+        (and keycard-profile? (get-in db [:keycard :card-connected?]))
         (keycard.common/get-application-info % nil))
      (open-login-callback nil))))
 
 (rf/defn biometric-auth-done
   {:events [:biometric-auth-done]}
   [{:keys [db] :as cofx} {:keys [bioauth-success bioauth-message bioauth-code]}]
-  (let [key-uid     (get-in db [:multiaccounts/login :key-uid])
+  (let [key-uid     (get-in db [:profile/login :key-uid])
         auth-method (get db :auth-method)]
     (log/debug "[biometric] biometric-auth-done"
                "bioauth-success" bioauth-success
@@ -734,7 +710,7 @@
       (get-credentials cofx key-uid)
       (rf/merge cofx
                 {:db (assoc-in db
-                      [:multiaccounts/login :save-password?]
+                      [:profile/login :save-password?]
                       (= auth-method keychain/auth-method-biometric))}
                 (when-not (= auth-method keychain/auth-method-biometric)
                   (keychain/save-auth-method key-uid keychain/auth-method-none))
@@ -761,7 +737,7 @@
                 (and (not save-password?)
                      bioauth-supported?
                      (= previous-auth-method keychain/auth-method-none)))
-            (assoc-in [:multiaccounts/login :save-password?] save-password?))}
+            (assoc-in [:profile/login :save-password?] save-password?))}
      (when bioauth-supported?
        (if save-password?
          (popover/show-popover {:view :secure-with-biometric})
@@ -772,21 +748,6 @@
   {:events [:welcome-lets-go]}
   [_]
   {:set-root :shell-stack})
-
-(rf/defn multiaccount-selected
-  {:events [:multiaccounts.login.ui/multiaccount-selected]}
-  [{:keys [db] :as cofx} key-uid]
-  ;; We specifically pass a bunch of fields instead of the whole multiaccount
-  ;; as we want store some fields in multiaccount that are not here
-  (let [multiaccount          (get-in db [:multiaccounts/multiaccounts key-uid])
-        keycard-multiaccount? (boolean (:keycard-pairing multiaccount))]
-    (rf/merge
-     cofx
-     (merge
-      {:db (update db :keycard dissoc :application-info)}
-      (when keycard-multiaccount? {:navigate-to :keycard-login-pin}))
-     (open-login (select-keys multiaccount
-                              [:key-uid :name :public-key :images :customization-color])))))
 
 (rf/defn hide-keycard-banner
   {:events [:hide-keycard-banner]}

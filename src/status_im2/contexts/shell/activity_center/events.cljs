@@ -498,7 +498,7 @@
 (rf/defn show-toasts
   {:events [:activity-center.notifications/show-toasts]}
   [{:keys [db]} new-notifications]
-  (let [my-public-key (get-in db [:multiaccount :public-key])]
+  (let [my-public-key (get-in db [:profile/profile :public-key])]
     (reduce (fn [cofx {:keys [author type accepted dismissed message name] :as x}]
               (let [user-avatar {:full-name         name
                                  :status-indicator? true

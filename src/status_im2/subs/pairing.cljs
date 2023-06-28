@@ -19,12 +19,12 @@
 
 (re-frame/reg-sub
  :pairing/installation-id
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount] (:installation-id multiaccount)))
 
 (re-frame/reg-sub
  :pairing/installation-name
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount] (:installation-name multiaccount)))
 
 (re-frame/reg-sub

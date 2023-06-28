@@ -12,7 +12,7 @@
   {:events [:keycard/sign]}
   [{:keys [db] :as cofx} hash on-success]
   (let [card-connected?     (get-in db [:keycard :card-connected?])
-        key-uid             (get-in db [:multiaccount :key-uid])
+        key-uid             (get-in db [:profile/profile :key-uid])
         keycard-key-uid     (get-in db [:keycard :application-info :key-uid])
         keycard-pin-retries (get-in db [:keycard :application-info :pin-retry-counter])
         keycard-match?      (= key-uid keycard-key-uid)
@@ -28,7 +28,7 @@
                                (when (ethereum/address= from address)
                                  (reduced path)))
                              nil
-                             (:multiaccount/accounts db))]
+                             (:profile/wallet-accounts db))]
     (cond
       (not keycard-match?)
       (common/show-wrong-keycard-alert cofx)

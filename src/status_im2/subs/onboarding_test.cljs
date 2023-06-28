@@ -11,25 +11,25 @@
 (def port "mediaserver-port")
 (def cur-theme :current-theme)
 
-(h/deftest-sub :multiaccounts/login-profiles-picture
+(h/deftest-sub :profile/login-profiles-picture
   [sub-name]
   (with-redefs [image-server/get-account-image-uri identity
                 theme/get-theme                    (constantly cur-theme)]
     (t/testing "nil when no images"
-      (swap! rf-db/app-db assoc :multiaccounts/multiaccounts {key-uid {}})
+      (swap! rf-db/app-db assoc :profile/profiles-overview {key-uid {}})
       (t/is (nil? (rf/sub [sub-name key-uid]))))
 
     (t/testing "nil when no key-uid"
-      (swap! rf-db/app-db assoc :multiaccounts/multiaccounts {key-uid {}})
+      (swap! rf-db/app-db assoc :profile/profiles-overview {key-uid {}})
       (t/is (nil? (rf/sub [sub-name "0x2"]))))
 
     (t/testing "result from image-server/get-account-image-uri"
       (swap!
         rf-db/app-db
         assoc
-        :multiaccounts/multiaccounts {key-uid {:images [{:type "large"}
-                                                        {:type "thumbnail"}]}}
-        :mediaserver/port            port)
+        :profile/profiles-overview {key-uid {:images [{:type "large"}
+                                                      {:type "thumbnail"}]}}
+        :mediaserver/port          port)
       (t/is (= (rf/sub [sub-name key-uid])
                {:port       port
                 :image-name "large"

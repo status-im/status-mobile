@@ -245,8 +245,8 @@
          {:keys [data typed? pinless?] :as message}     :message
          :as                                            tx}
         (last queue)
-        keycard-multiaccount? (boolean (get-in db [:multiaccount :keycard-pairing]))
-        wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])]
+        keycard-multiaccount? (boolean (get-in db [:profile/profile :keycard-pairing]))
+        wallet-set-up-passed? (get-in db [:profile/profile :wallet-set-up-passed?])]
     (if message
       (rf/merge
        cofx
@@ -349,7 +349,7 @@
   [{:keys [db] :as cofx} transaction-hash hashed-password
    {:keys [message-id chat-id from] :as tx-obj}]
   (let [{:keys [on-result symbol amount contract value]} (get db :signing/tx)
-        data                                             (str (get-in db [:multiaccount :public-key])
+        data                                             (str (get-in db [:profile/profile :public-key])
                                                               (subs transaction-hash 2))]
     (rf/merge
      cofx

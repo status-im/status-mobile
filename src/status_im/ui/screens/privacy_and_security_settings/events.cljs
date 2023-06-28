@@ -39,7 +39,7 @@
   {:events [::delete-profile]}
   [{:keys [db] :as cofx} masked-password]
   (log/info "[delete-profile] delete")
-  (let [{:keys [key-uid wallet-root-address]} (:multiaccount db)]
+  (let [{:keys [key-uid wallet-root-address]} (:profile/profile db)]
     {:db (dissoc db :delete-profile/error)
      ::delete-profile
      {:masked-password masked-password

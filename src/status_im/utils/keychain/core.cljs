@@ -221,11 +221,6 @@
    (-> (.resetInternetCredentials react-native-keychain (string/lower-case key-uid))
        (.then #(when-not % (log/error (str "Error while clearing saved password.")))))))
 
-(rf/defn get-auth-method
-  [_ key-uid]
-  {:keychain/get-auth-method
-   [key-uid #(re-frame/dispatch [:multiaccounts.login/get-auth-method-success % key-uid])]})
-
 (rf/defn get-user-password
   [_ key-uid]
   {:keychain/get-user-password

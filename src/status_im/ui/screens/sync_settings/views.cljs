@@ -13,7 +13,7 @@
                           backup-enabled?
                           default-sync-period
                           use-mailservers?]}
-                  [:multiaccount]
+                  [:profile/profile]
                   current-mailserver-name [:mailserver/current-name]]
     [react/scroll-view
      [quo/list-header (i18n/label :t/data-syncing)]

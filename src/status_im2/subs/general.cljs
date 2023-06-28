@@ -34,7 +34,7 @@
 (re-frame/reg-sub
  :hide-screen?
  :<- [:app-state]
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [[state multiaccount]]
    (and (= state "inactive") (:preview-privacy? multiaccount))))
 
@@ -242,7 +242,7 @@
  :<- [:mailserver/connection-error?]
  :<- [:mailserver/request-error?]
  :<- [:network/type]
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [[network-status disconnected? mailserver-connecting? mailserver-connection-error?
        mailserver-request-error? network-type {:keys [syncing-on-mobile-network? use-mailservers?]}]]
    (merge {:mobile (mobile-network-utils/cellular? network-type)
@@ -272,20 +272,20 @@
 
 (re-frame/reg-sub
  :mnemonic
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [{:keys [mnemonic]}]
    mnemonic))
 
 (re-frame/reg-sub
  :get-profile-unread-messages-number
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [{:keys [mnemonic]}]
    (if mnemonic 1 0)))
 
 (re-frame/reg-sub
  :mobile-network/syncing-allowed?
  :<- [:network/type]
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [[network-type {:keys [syncing-on-mobile-network?]}]]
    (or (= network-type "wifi")
        (and

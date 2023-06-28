@@ -21,9 +21,7 @@
 
 (defn bottom-tab
   [icon stack-id shared-values notifications-data]
-  (let [{:keys [key-uid]}   (rf/sub [:multiaccount])
-        customization-color (or (:color (rf/sub [:onboarding-2/profile]))
-                                (rf/sub [:profile/customization-color key-uid]))
+  (let [customization-color (rf/sub [:profile/customization-color])
         icon-color          (->> stack-id
                                  (get shell.constants/tabs-icon-color-keywords)
                                  (get shared-values))]

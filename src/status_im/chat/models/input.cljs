@@ -148,7 +148,7 @@
   (when-not (string/blank? input-text)
     (let [{:keys [message-id]}
           (get-in db [:chat/inputs current-chat-id :metadata :responding-to-message])
-          preferred-name (get-in db [:multiaccount :preferred-name])
+          preferred-name (get-in db [:profile/profile :preferred-name])
           emoji? (message-content/emoji-only-content? {:text        input-text
                                                        :response-to message-id})]
       {:chat-id       current-chat-id

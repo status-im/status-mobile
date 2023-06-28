@@ -75,13 +75,13 @@
         (is (not (chat/group-chat? cofx chat-id)))))))
 
 (def test-db
-  {:multiaccount {:public-key "me"}
+  {:profile/profile {:public-key "me"}
 
-   :messages     {"status" {"4" {} "5" {} "6" {}}}
-   :chats        {"status" {:public?    true
-                            :group-chat true}
-                  "opened" {}
-                  "1-1"    {}}})
+   :messages        {"status" {"4" {} "5" {} "6" {}}}
+   :chats           {"status" {:public?    true
+                               :group-chat true}
+                     "opened" {}
+                     "1-1"    {}}})
 
 (deftest navigate-to-chat
   (let [chat-id "test_chat"

@@ -120,7 +120,7 @@
 
 (rf/defn switch-preview-privacy-mode-flag
   [{:keys [db]}]
-  (let [private? (get-in db [:multiaccount :preview-privacy?])]
+  (let [private? (get-in db [:profile/profile :preview-privacy?])]
     {::blank-preview-flag-changed private?}))
 
 (re-frame/reg-fx
@@ -153,7 +153,7 @@
   {:events [:multiaccounts.ui/switch-theme]}
   [cofx theme view-id]
   (let [theme (or theme
-                  (get-in cofx [:db :multiaccount :appearance])
+                  (get-in cofx [:db :profile/profile :appearance])
                   constants/theme-type-dark)]
     {:multiaccounts.ui/switch-theme-fx [theme view-id false]}))
 
@@ -180,7 +180,7 @@
 (rf/defn save-profile-picture
   {:events [::save-profile-picture]}
   [cofx path ax ay bx by]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
     (rf/merge cofx
               {:json-rpc/call [{:method     "multiaccounts_storeIdentityImage"
                                 :params     [key-uid (clean-path path) ax ay bx by]
@@ -191,7 +191,7 @@
 (rf/defn save-profile-picture-from-url
   {:events [::save-profile-picture-from-url]}
   [cofx url]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
     (rf/merge cofx
               {:json-rpc/call [{:method     "multiaccounts_storeIdentityImageFromURL"
                                 :params     [key-uid url]
@@ -207,7 +207,7 @@
 (rf/defn delete-profile-picture
   {:events [::delete-profile-picture]}
   [cofx name]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
     (rf/merge cofx
               {:json-rpc/call [{:method     "multiaccounts_deleteIdentityImage"
                                 :params     [key-uid]
@@ -219,7 +219,7 @@
 
 (rf/defn get-profile-picture
   [cofx]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
     {:json-rpc/call [{:method     "multiaccounts_getIdentityImages"
                       :params     [key-uid]
                       :on-success #(re-frame/dispatch [::update-local-picture %])}]}))

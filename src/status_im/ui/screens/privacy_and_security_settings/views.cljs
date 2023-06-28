@@ -33,7 +33,7 @@
                           webview-allow-permission-requests?
                           opensea-enabled?
                           profile-pictures-visibility]}
-                  [:multiaccount]
+                  [:profile/profile]
                   has-picture [:profile/has-picture]
                   supported-biometric-auth [:supported-biometric-auth]
                   keycard? [:keycard-multiaccount?]
@@ -174,7 +174,7 @@
 
 (views/defview profile-pic-show-to
   []
-  (views/letsubs [{:keys [profile-pictures-show-to]} [:multiaccount]]
+  (views/letsubs [{:keys [profile-pictures-show-to]} [:profile/profile]]
     [react/view {:margin-top 8}
      [ppst-radio-item constants/profile-pictures-show-to-everyone profile-pictures-show-to]
      [ppst-radio-item constants/profile-pictures-show-to-contacts-only profile-pictures-show-to]
@@ -194,7 +194,7 @@
 
 (views/defview profile-pic
   []
-  (views/letsubs [{:keys [profile-pictures-visibility]} [:multiaccount]]
+  (views/letsubs [{:keys [profile-pictures-visibility]} [:profile/profile]]
     [react/view {:margin-top 8}
      [ppvf-radio-item constants/profile-pictures-visibility-everyone profile-pictures-visibility]
      [ppvf-radio-item constants/profile-pictures-visibility-contacts-only profile-pictures-visibility]

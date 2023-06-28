@@ -316,8 +316,8 @@
             enter-step         [:keycard/pin-enter-step]
             status             [:keycard/pin-status]
             error-label        [:keycard/pin-error-label]
-            login-multiaccount [:multiaccounts/login]
-            multiaccount       [:multiaccount]
+            login-multiaccount [:profile/login]
+            multiaccount       [:profile/profile]
             small-screen?      [:dimensions/small-screen?]
             retry-counter      [:keycard/retry-counter]]
     (let [{:keys [name] :as account} (or login-multiaccount multiaccount)

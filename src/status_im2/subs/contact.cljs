@@ -21,13 +21,13 @@
 
 (re-frame/reg-sub
  :multiaccount/profile-pictures-show-to
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (get multiaccount :profile-pictures-show-to)))
 
 (re-frame/reg-sub
  ::profile-pictures-visibility
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (get multiaccount :profile-pictures-visibility)))
 
@@ -216,7 +216,7 @@
  :contacts/contact-two-names-by-identity
  (fn [[_ identity] _]
    [(re-frame/subscribe [:contacts/contact-by-identity identity])
-    (re-frame/subscribe [:multiaccount])])
+    (re-frame/subscribe [:profile/profile])])
  (fn [[contact current-multiaccount] [_ identity]]
    (multiaccounts/contact-two-names-by-identity contact
                                                 current-multiaccount
@@ -233,7 +233,7 @@
  :messages/quote-info
  :<- [:chats/messages]
  :<- [:contacts/contacts]
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [[messages contacts current-multiaccount] [_ message-id]]
    (when-let [message (get messages message-id)]
      (let [identity (:from message)
@@ -262,7 +262,7 @@
  :contacts/current-chat-contacts
  :<- [:chats/current-chat]
  :<- [:contacts/contacts]
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [[{:keys [contacts admins]} all-contacts current-multiaccount]]
    (contact.db/get-all-contacts-in-group-chat contacts admins all-contacts current-multiaccount)))
 

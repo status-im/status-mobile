@@ -46,13 +46,13 @@
 (re-frame/reg-sub
  :intro-wizard/recover-existing-account?
  :<- [:intro-wizard]
- :<- [:multiaccounts/multiaccounts]
+ :<- [:profile/profiles-overview]
  (fn [[intro-wizard multiaccounts]]
    (recover/existing-account? (:root-key intro-wizard) multiaccounts)))
 
 (re-frame/reg-sub
- :multiaccounts/login-profiles-picture
- :<- [:multiaccounts/multiaccounts]
+ :profile/login-profiles-picture
+ :<- [:profile/profiles-overview]
  :<- [:mediaserver/port]
  (fn [[multiaccounts port] [_ target-key-uid]]
    (let [image-name (-> multiaccounts
@@ -66,15 +66,15 @@
                                             :theme      (theme/get-theme)
                                             :ring?      true})))))
 
-(defn login-ma-keycard-pairing
+(defn login-profile-keycard-pairing
   "Compute the keycard-pairing value of the multiaccount selected for login"
   [db _]
-  (when-let [acc-to-login (-> db :multiaccounts/login)]
+  (when-let [acc-to-login (-> db :profile/login)]
     (-> db
-        :multiaccounts/multiaccounts
+        :profile/profiles-overview
         (get (:key-uid acc-to-login))
         :keycard-pairing)))
 
 (re-frame/reg-sub
  :intro-wizard/acc-to-login-keycard-pairing
- login-ma-keycard-pairing)
+ login-profile-keycard-pairing)

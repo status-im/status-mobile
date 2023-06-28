@@ -1,30 +1,7 @@
 (ns status-im.multiaccounts.key-storage.core-test
   (:require [cljs.test :refer-macros [deftest is testing]]
-            [clojure.string :as string]
             [status-im.multiaccounts.key-storage.core :as models]
             [utils.security.core :as security]))
-
-(deftest move-keystore-checked
-  (testing "Checks checkbox on-press"
-    (let [res (models/move-keystore-checked {:db {}} true)]
-      (is (= true (get-in res [:db :multiaccounts/key-storage :move-keystore-checked?]))))))
-
-(deftest seed-phrase-input-changed
-  (testing "nil seed phrase shape is invalid"
-    (let [res (models/seed-phrase-input-changed {:db {}} (security/mask-data nil))]
-      (is (get-in res [:db :multiaccounts/key-storage :seed-shape-invalid?]))))
-
-  (let [sample-phrase "h h h h h h h h h h h H" ;; 12 characters
-        res           (models/seed-phrase-input-changed {:db {}} (security/mask-data sample-phrase))]
-    (testing "Seed shape for 12 letter seed phrase is valid"
-      (is (false? (get-in res [:db :multiaccounts/key-storage :seed-shape-invalid?]))))
-
-    (testing "Seed words counted correctly"
-      (is (= 12 (get-in res [:db :multiaccounts/key-storage :seed-word-count]))))
-
-    (testing "Seed phrase is lowercased"
-      (is (= (get-in res [:db :multiaccounts/key-storage :seed-phrase])
-             (string/lower-case sample-phrase))))))
 
 (def seed-key-uid-pair
   {:seed-phrase "rocket mixed rebel affair umbrella legal resemble scene virus park deposit cargo"

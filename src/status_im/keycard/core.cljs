@@ -543,7 +543,7 @@
           :not-paired       :pair
           :no-pairing-slots :no-slots
           :init             :card-ready
-          :multiaccount     :import-multiaccount
+          :profile/profile  :import-multiaccount
           :begin))})
 
 (rf/defn show-no-keycard-applet-alert
@@ -586,7 +586,7 @@
                      (common/clear-on-card-read)
                      (load-pin-screen)))))
 
-              (when (and (= card-state :multiaccount)
+              (when (and (= card-state :profile/profile)
                          (= flow :import))
                 (if (common/find-multiaccount-by-key-uid db key-uid)
                   (multiaccounts.recover/show-existing-multiaccount-alert key-uid)
@@ -599,7 +599,7 @@
                   (navigation/navigate-to :keycard-recovery-no-key nil)
                   (show-no-keycard-applet-alert)))
 
-              (when (and (= card-state :multiaccount)
+              (when (and (= card-state :profile/profile)
                          (#{:create :recovery} flow))
                 (show-keycard-has-multiaccount-alert)))))
 

@@ -401,5 +401,5 @@
   [{:keys [db]}]
   {:transactions/get-transfers
    {:chain-tokens (:wallet/all-tokens db)
-    :addresses    (map :address (get db :multiaccount/accounts))
+    :addresses    (map :address (get db :profile/wallet-accounts))
     :fetch-more?  false}})

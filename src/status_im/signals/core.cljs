@@ -21,8 +21,8 @@
   (if error
     (cond->
       {:db (-> db
-               (update :multiaccounts/login dissoc :processing)
-               (assoc-in [:multiaccounts/login :error]
+               (update :profile/login dissoc :processing)
+               (assoc-in [:profile/login :error]
                          ;; NOTE: the only currently known error is
                          ;; "file is not a database" which occurs
                          ;; when the user inputs the wrong password
@@ -86,7 +86,7 @@
                   (assoc-in [:syncing :pairing-status] :connected)
 
                   received-account?
-                  (assoc-in [:syncing :multiaccount] multiaccount-data)
+                  (assoc-in [:syncing :profile/profile] multiaccount-data)
 
                   error-on-pairing?
                   (assoc-in [:syncing :pairing-status] :error)
@@ -120,7 +120,9 @@
         type         (.-type data)]
     (case type
       "node.login"              (status-node-started cofx (js->clj event-js :keywordize-keys true))
-      "backup.performed"        {:db (assoc-in db [:multiaccount :last-backup] (.-lastBackup event-js))}
+      "backup.performed"        {:db (assoc-in db
+                                      [:profile/profile :last-backup]
+                                      (.-lastBackup event-js))}
       "envelope.sent"           (transport.message/update-envelopes-status cofx
                                                                            (:ids
                                                                             (js->clj event-js

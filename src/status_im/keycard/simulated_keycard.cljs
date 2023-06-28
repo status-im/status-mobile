@@ -44,7 +44,7 @@
      :initialized? true
      :pin-retry-counter 3
      :puk-retry-counter 5
-     :key-uid (get-in @re-frame.db/app-db [:multiaccounts/login :key-uid])})
+     :key-uid (get-in @re-frame.db/app-db [:profile/login :key-uid])})
   (swap! state assoc :pin default-pin :puk default-puk :password kk1-password)
   (connect-card))
 
@@ -389,11 +389,11 @@
    pin
    on-failure
    #(let [{:keys [key-uid wallet-root-address]}
-          (get @re-frame.db/app-db :multiaccount)
-          accounts (get @re-frame.db/app-db :multiaccount/accounts)
+          (get @re-frame.db/app-db :profile/profile)
+          accounts (get @re-frame.db/app-db :profile/wallet-accounts)
           hashed-password account-password
           path-num (inc (get-in @re-frame.db/app-db
-                                [:multiaccount :latest-derived-path]))
+                                [:profile/profile :latest-derived-path]))
           path (str "m/" path-num)]
       (native-module/multiaccount-load-account
        wallet-root-address
@@ -460,8 +460,8 @@
                         (when (= path (:path acc))
                           (reduced address)))
                       nil
-                      (:multiaccount/accounts @re-frame.db/app-db))
-                     (-> (:multiaccount/accounts @re-frame.db/app-db)
+                      (:profile/wallet-accounts @re-frame.db/app-db))
+                     (-> (:profile/wallet-accounts @re-frame.db/app-db)
                          first
                          :address))
                    password account-password]

@@ -32,7 +32,7 @@
   []
   (views/letsubs
     [{:keys [last-backup backup-enabled?]}
-     [:multiaccount]
+     [:profile/profile]
      performing-backup? [:backup/performing-backup]]
     [:<>
      [react/scroll-view

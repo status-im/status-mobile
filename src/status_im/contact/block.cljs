@@ -49,7 +49,7 @@
                     (assoc-in [:contacts/contacts public-key :added?] false))
             :dispatch [:shell/close-switcher-card public-key]
             :clear-message-notifications
-            [[public-key] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
+            [[public-key] (get-in db [:profile/profile :remote-push-notifications-enabled?])]}
            (activity-center/notifications-fetch-unread-count)
            fxs)))
 

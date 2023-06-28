@@ -225,13 +225,13 @@
                  :keycard-pairing      keycard-pairing
                  :keycard-paired-on    keycard-paired-on))
         db (assoc db
-                  :multiaccounts/login      {:key-uid    key-uid
+                  :profile/login            {:key-uid    key-uid
                                              :name       name
                                              :password   password
                                              :creating?  true
                                              :processing true}
-                  :multiaccount             new-multiaccount
-                  :multiaccount/accounts    [wallet-account]
+                  :profile/profile          new-multiaccount
+                  :profile/wallet-accounts  [wallet-account]
                   :networks/current-network config/default-network
                   :networks/networks        (data-store.settings/rpc->networks config/default-networks))
         settings (assoc new-multiaccount

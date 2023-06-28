@@ -33,7 +33,7 @@
   (let [{:keys [remote-push-notifications-enabled?
                 push-notifications-block-mentions?
                 push-notifications-from-contacts-only?]}
-        @(re-frame/subscribe [:multiaccount])]
+        @(re-frame/subscribe [:profile/profile])]
     [:<>
      [quo/list-item
       {:size                :small
@@ -71,7 +71,7 @@
 
 (defn notifications-settings-android
   []
-  (let [{:keys [notifications-enabled?]} @(re-frame/subscribe [:multiaccount])]
+  (let [{:keys [notifications-enabled?]} @(re-frame/subscribe [:profile/profile])]
     [:<>
      [quo/list-item
       {:title               (i18n/label :t/local-notifications)
@@ -97,7 +97,7 @@
   (let [{:keys [remote-push-notifications-enabled?
                 send-push-notifications?
                 push-notifications-server-enabled?]}
-        @(re-frame/subscribe [:multiaccount])]
+        @(re-frame/subscribe [:profile/profile])]
     [react/scroll-view
      {:style                   {:flex 1}
       :content-container-style {:padding-vertical 8}}
