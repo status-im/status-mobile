@@ -1,7 +1,7 @@
 (ns status-im2.navigation.screens
   (:require
     [status-im2.config :as config]
-    [status-im2.contexts.activity-center.view :as activity-center]
+    [status-im2.contexts.shell.activity-center.view :as activity-center]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
     [status-im2.contexts.chat.lightbox.view :as lightbox]
     [status-im2.contexts.chat.messages.view :as chat]
@@ -25,13 +25,14 @@
     [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
     [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
+    [status-im2.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im2.navigation.options :as options]
     [status-im2.contexts.chat.group-details.view :as group-details]
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
-    [status-im2.contexts.share.view :as share]
     [status-im2.contexts.scan.view :as scan]
+    [status-im2.contexts.shell.share.view :as share]
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im2.contexts.chat.new-chat.view :as new-chat]))
@@ -88,7 +89,12 @@
     {:name      :how-to-pair
      :options   {:theme  :dark
                  :sheet? true}
-     :component how-to-pair/instructions}
+     :component how-to-pair/view}
+
+    {:name      :find-sync-code
+     :options   {:theme  :dark
+                 :sheet? true}
+     :component find-sync-code/view}
 
     {:name      :discover-communities
      :component communities.discover/discover}

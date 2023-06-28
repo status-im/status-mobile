@@ -116,16 +116,6 @@
       (gstring/format (str "%." places "f") amount)
       (or (str amount) 0))))
 
-(defn safe-trim
-  [s]
-  (when (string? s)
-    (string/trim s)))
-
-(defn safe-replace
-  [s m r]
-  (when (string? s)
-    (string/replace s m r)))
-
 (defn safe-nth
   [coll index]
   (when (number? index)

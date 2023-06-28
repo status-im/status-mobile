@@ -1243,9 +1243,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 home.get_chat(self.username_2 if i == 0 else self.username_1).click()
         try:
             chat_element.wait_for_status_to_be(expected_status='Delivered', timeout=120)
-        except TimeoutException:
-            self.errors.append(
-                'Message status was not delivered after back up online, it is "%s"!' % status)
+        except TimeoutException as e:
+            self.errors.append('%s after back up online!' % e.msg)
 
         self.home_1.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
         if not self.chat_1.chat_element_by_text(message_1).is_element_displayed(60):

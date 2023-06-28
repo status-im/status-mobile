@@ -307,9 +307,11 @@ def create_shared_drivers(quantity):
             for i in range(quantity):
                 test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
                 drivers[i].implicitly_wait(implicit_wait)
+            if len(drivers) < quantity:
+                test_suite_data.current_test.testruns[-1].error = "Not all %s drivers are created" % quantity
             return drivers, loop
         except MaxRetryError as e:
-            test_suite_data.current_test.testruns[-1].error = e.reason
+            test_suite_data.current_test.testruns[-1].error += "%s" % e.reason
             raise e
 
 

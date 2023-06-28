@@ -5,14 +5,10 @@
 
 (def content-container
   {:position :absolute
-   :top      170
+   :top      166
    :bottom   0
    :left     0
    :right    0})
-
-(def card-style
-  {:margin-horizontal 20
-   :margin-bottom     :auto})
 
 (def button
   {:justify-self      :flex-end

@@ -10,7 +10,8 @@
             [quo2.core :as quo]
             [react-native.core :as rn]
             [utils.re-frame :as rf]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [status-im2.constants :as constants]))
 
 (def ^:const media-server-uri-prefix "https://localhost:")
 (def ^:const audio-path "/messages/audio")
@@ -104,8 +105,21 @@
               (let [player       (@active-players player-key)
                     current-time (audio/get-player-current-time player)
                     playing?     (= @player-state :playing)]
-                (when (and playing? (not @seeking-audio?) (> current-time 0))
-                  (reset! progress current-time))))
+                (when (and playing?
+                           (not @seeking-audio?)
+                           (> current-time 0)
+                           (< current-time constants/audio-max-duration-ms))
+                  (reset! progress current-time))
+                (when (>= current-time constants/audio-max-duration-ms)
+                  (audio/stop-playing
+                   player
+                   (fn []
+                     (update-state player-state :ready-to-play)
+                     (reset! progress 0)
+                     (when (and @progress-timer (= @current-player-key player-key))
+                       (js/clearInterval @progress-timer)
+                       (reset! progress-timer nil)))
+                   #(log/error "[audio-message] stop player - error: " %)))))
             100)))
        (fn []
          (update-state player-state :ready-to-play)
@@ -135,9 +149,7 @@
    {:keys [in-pinned-view?]}]
   (let [player-key       (get-player-key message-id in-pinned-view?)
         player           (@active-players player-key)
-        duration         (if (and player (not (#{:preparing :not-loaded :error} @player-state)))
-                           (audio/get-player-duration player)
-                           audio-duration-ms)
+        duration         (min constants/audio-max-duration-ms audio-duration-ms)
         time-secs        (quot
                           (if (or @seeking-audio? (#{:playing :seeking} @player-state))
                             (if (<= @progress 1) (* duration @progress) @progress)
@@ -200,7 +212,8 @@
         {:style                 style/slider-container
          :audio-current-time-ms progress
          :player-ref            (@active-players player-key)
-         :seeking-audio?        seeking-audio?}]
+         :seeking-audio?        seeking-audio?
+         :max-audio-duration-ms constants/audio-max-duration-ms}]
        [quo/text
         {:style               style/timestamp
          :accessibility-label :audio-duration-label

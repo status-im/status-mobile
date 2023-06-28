@@ -6,7 +6,7 @@
             [status-im2.contexts.contacts.events :as contacts-store]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]
-            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.contexts.shell.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]))
 
 (rf/defn clean-up-chat

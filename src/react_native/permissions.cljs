@@ -1,5 +1,5 @@
 (ns react-native.permissions
-  (:require ["react-native-permissions" :refer (check requestMultiple PERMISSIONS RESULTS)]
+  (:require ["react-native-permissions" :refer (check openSettings requestMultiple PERMISSIONS RESULTS)]
             [react-native.platform :as platform]))
 
 (def permissions-map
@@ -38,3 +38,5 @@
   (-> (check (get permissions-map permission))
       (.then #(on-result (not (#{(.-BLOCKED RESULTS) (.-DENIED RESULTS)} %))))
       (.catch #(on-error %))))
+
+(def open-settings openSettings)

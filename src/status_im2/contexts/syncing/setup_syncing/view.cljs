@@ -28,7 +28,7 @@
                              :icon-override-theme :dark
                              :on-press            #(rf/dispatch [:navigate-back])}
      :right-section-buttons [{:type                :grey
-                              :label               (i18n/label :t/how-to-scan)
+                              :label               (i18n/label :t/how-to-pair)
                               :icon                :i/info
                               :icon-override-theme :dark
                               :on-press            #(rf/dispatch [:open-modal :how-to-pair

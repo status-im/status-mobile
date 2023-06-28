@@ -32,6 +32,8 @@
 
 (defonce progress (atom nil))
 (defonce paused? (atom nil))
+(defonce is-dragging? (atom nil))
+(defonce drag-amount (atom nil))
 
 (defn store-screen-height
   [evt]
@@ -60,7 +62,7 @@
         animate?     (not dark-overlay?)
         window-width (rf/sub [:dimensions/window-width])]
     (when animate?
-      (carousel.animation/use-initialize-animation progress paused? animate?))
+      (carousel.animation/use-initialize-animation progress paused? animate? is-dragging? drag-amount))
 
     (rn/use-effect
      (fn []
@@ -78,8 +80,10 @@
        :progress          progress
        :paused?           paused?
        :header-text       header-text
+       :is-dragging?      is-dragging?
+       :drag-amount       drag-amount
        :header-background true
-       :swipeable?        true
+       :gesture           :swipeable
        :background        [background-image (* 4 window-width)]}]
      (when dark-overlay?
        [blur/view

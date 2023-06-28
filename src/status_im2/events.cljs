@@ -14,7 +14,7 @@
             [status-im2.db :as db]
             [utils.re-frame :as rf]
             [utils.datetime :as datetime]
-            status-im2.contexts.share.events
+            status-im2.contexts.shell.share.events
             status-im2.contexts.syncing.events
             status-im2.contexts.chat.events
             status-im2.common.password-authentication.events

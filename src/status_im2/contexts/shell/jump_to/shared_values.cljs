@@ -84,16 +84,19 @@
                       (if (utils/floating-screen-open? screen-id)
                         shell.constants/open-screen-without-animation
                         shell.constants/close-screen-without-animation))]
-    {:screen-state   screen-state
-     :screen-left    (worklets.shell/floating-screen-left screen-state width switcher-card-left-position)
-     :screen-top     (worklets.shell/floating-screen-top screen-state switcher-card-top-position)
-     :screen-z-index (worklets.shell/floating-screen-z-index screen-state)
-     :screen-width   (worklets.shell/floating-screen-width screen-state
-                                                           width
-                                                           shell.constants/switcher-card-size)
-     :screen-height  (worklets.shell/floating-screen-height screen-state
-                                                            height
-                                                            shell.constants/switcher-card-size)}))
+    {:screen-state         screen-state
+     :screen-left          (worklets.shell/floating-screen-left screen-state
+                                                                width
+                                                                switcher-card-left-position)
+     :screen-top           (worklets.shell/floating-screen-top screen-state switcher-card-top-position)
+     :screen-z-index       (worklets.shell/floating-screen-z-index screen-state)
+     :screen-width         (worklets.shell/floating-screen-width screen-state
+                                                                 width
+                                                                 shell.constants/switcher-card-size)
+     :screen-border-radius (worklets.shell/floating-screen-border-radius screen-state)
+     :screen-height        (worklets.shell/floating-screen-height screen-state
+                                                                  height
+                                                                  shell.constants/switcher-card-size)}))
 
 (defn calculate-and-set-shared-values
   []

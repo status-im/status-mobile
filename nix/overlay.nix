@@ -44,6 +44,11 @@ in {
     };
   });
 
+  # Checks fail on darwin.
+  git-lfs = super.git-lfs.overrideAttrs (old: {
+    doCheck = false;
+  });
+
   # Package version adjustments
   gradle = super.gradle_7;
   nodejs = super.nodejs-18_x;

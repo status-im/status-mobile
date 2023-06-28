@@ -34,6 +34,7 @@
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
 
 (def view (reagent/adapt-react-class (.-View reanimated)))
+(def text (reagent/adapt-react-class (.-Text reanimated)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
 

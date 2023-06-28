@@ -5,6 +5,7 @@
             [utils.re-frame :as rf]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [status-im2.contexts.onboarding.identifiers.profile-card.view :as profile-card]
             [status-im2.contexts.onboarding.identifiers.style :as style]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.common.carousel.view :as carousel]
@@ -24,12 +25,14 @@
   []
   (let [progress             (atom nil)
         paused?              (atom nil)
+        is-dragging?         (atom nil)
+        drag-amount          (atom nil)
         {:keys [emoji-hash display-name compressed-key
                 public-key]} (rf/sub [:multiaccount])
         {:keys [color]}      (rf/sub [:onboarding-2/profile])
         photo-path           (rf/sub [:chats/photo-path public-key])
         emoji-string         (string/join emoji-hash)]
-    (carousel.animation/use-initialize-animation progress paused? true)
+    (carousel.animation/use-initialize-animation progress paused? true is-dragging? drag-amount)
     (rn/use-effect
      (fn []
        (carousel.animation/cleanup-animation progress paused?))
@@ -38,21 +41,21 @@
      [background/view true]
      [rn/view {:style style/page-container}
       [carousel/view
-       {:animate?    true
-        :progress    progress
-        :paused?     paused?
-        :swipeable?  false
-        :header-text header-text}]
+       {:animate?     true
+        :progress     progress
+        :paused?      paused?
+        :gesture      :tappable
+        :is-dragging? is-dragging?
+        :drag-amount  drag-amount
+        :header-text  header-text}]
       [rn/view {:style style/content-container}
-       [quo/profile-card
+       [profile-card/profile-card
         {:profile-picture     photo-path
          :name                display-name
          :hash                compressed-key
-         :customization-color color
          :emoji-hash          emoji-string
-         :show-emoji-hash?    true
-         :show-user-hash?     true
-         :card-style          style/card-style}]
+         :customization-color color
+         :progress            progress}]
        [quo/button
         {:accessibility-label       :skip-identifiers
          :on-press                  #(rf/dispatch [:navigate-to :enable-notifications])

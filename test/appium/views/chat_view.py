@@ -714,7 +714,9 @@ class ChatView(BaseView):
 
         # Chat header
         self.user_name_text = Text(self.driver, accessibility_id="chat-name-text")
-        self.user_name_text_new_UI = Text(self.driver, xpath="//android.view.ViewGroup/android.widget.TextView")
+        self.user_name_text_new_UI = Text(
+            self.driver,
+            xpath="//*[@content-desc='user-avatar']/../following-sibling::android.widget.TextView")
         self.add_to_contacts = Button(self.driver, accessibility_id="add-to-contacts-button")
         ## Options
         self.chat_options = ChatOptionsButton(self.driver)

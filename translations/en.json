@@ -2156,6 +2156,10 @@
     "scan-or-enter-a-sync-code": "Scan or enter a sync code",
     "scan-the-qr-code-or-copy-the-sync-code": "Scan the QR code or copy the sync code",
     "already-logged-in-on-the-other-device": "Already logged in on the other device",
+    "open-your": "Open your",
+    "go-to": "Go to",
+    "sync-new-device": "Sync new device",
+    "set-up-sync": "Set up sync",
     "how-to-pair": "How to pair",
     "mobile": "Mobile",
     "desktop": "Desktop",
@@ -2243,5 +2247,6 @@
     "chat-muted-till-unmuted": "Chat muted till unmuted\n (until {{duration}}) ",
     "until": "until",
     "chat-unmuted-successfully": "Chat unmuted successfully! ",
-    "channel-unmuted-successfully": "Channel unmuted successfully! "
+    "channel-unmuted-successfully": "Channel unmuted successfully! ",
+    "photo-saved": "Photo saved to your device"
 }

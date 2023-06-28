@@ -16,7 +16,8 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.utils.utils :as utils]
-            [utils.debounce :as debounce])
+            [utils.debounce :as debounce]
+            [utils.string :as utils.string])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- recipient-topbar
@@ -304,7 +305,7 @@
                                      (re-frame/dispatch [:set-in [:wallet/recipient :searching]
                                                          :searching])
                                      (debounce/debounce-and-dispatch [:wallet.recipient/address-changed
-                                                                      (utils/safe-trim %)]
+                                                                      (utils.string/safe-trim %)]
                                                                      600))
              :accessibility-label :recipient-address-input}]]
           [react/view {:align-items :center :height 30 :padding-bottom 8}

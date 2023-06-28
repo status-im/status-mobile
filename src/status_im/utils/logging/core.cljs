@@ -13,7 +13,8 @@
             [utils.datetime :as datetime]
             [status-im.utils.platform :as platform]
             [status-im.utils.types :as types]
-            [status-im2.common.log :as log]))
+            [status-im2.common.log :as log]
+            [status-im2.config :as config]))
 
 (def report-email "error-reports@status.im")
 
@@ -96,8 +97,11 @@
         (re-frame/dispatch [:show-client-error]))))))
 
 (defn logs-enabled?
-  [db]
-  (not (string/blank? (get-in db [:multiaccount :log-level]))))
+  [{:keys [multiaccount]}]
+  (let [log-level (if multiaccount ;; already login
+                    (get multiaccount :log-level)
+                    config/log-level)]
+    (not (string/blank? log-level))))
 
 (rf/defn send-logs
   {:events [:logging.ui/send-logs-pressed]}

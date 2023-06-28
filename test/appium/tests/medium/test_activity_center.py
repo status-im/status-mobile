@@ -104,13 +104,13 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_1.activity_notification_swipe_button.click()
         self.home_1.close_activity_centre.click()
         self.home_1.contacts_tab.click()
-        if not self.home_1.contact_details(username=self.username_2).is_element_displayed(20):
+        if not self.home_1.contact_details_row(username=self.username_2).is_element_displayed(20):
             self.errors.append("Contact was not added to contact list after accepting contact request (as receiver)")
 
         self.device_2.just_fyi('Device1 check that contact appeared in contact list mutually')
         self.home_2.chats_tab.click()
         self.home_2.contacts_tab.click()
-        if not self.home_2.contact_details(username=self.username_1).is_element_displayed(20):
+        if not self.home_2.contact_details_row(username=self.username_1).is_element_displayed(20):
             self.errors.append("Contact was not added to contact list after accepting contact request (as sender)")
 
         self.errors.verify_no_errors()
