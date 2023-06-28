@@ -19,7 +19,8 @@
   (when (and (empty? @text-value) (not= input-text nil))
     (reset! text-value input-text)
     (reset! content-height input-content-height)
-    (reset! saved-cursor-position (count input-text)))
+    (reset! saved-cursor-position (count input-text))
+    (rf/dispatch [:mention/on-change-text @text-value]))
   (when input-maximized?
     (reset! maximized? true)))
 
@@ -109,7 +110,6 @@
      (let [edit-text (get-in edit [:content :text])]
        (when (and edit @input-ref)
          (.focus ^js @input-ref)
-         (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
          (reset! text-value edit-text)
          (reset! saved-cursor-position (count edit-text)))))
    [(:message-id edit)]))
@@ -126,32 +126,12 @@
        (.focus ^js @input-ref)))
    [(:message-id reply)]))
 
-(defn edit-mentions
-  [{:keys [input-ref]} {:keys [text-value cursor-position]} {:keys [input-with-mentions]}]
-  (rn/use-effect (fn []
-                   (let [input-text (reduce (fn [acc item]
-                                              (str acc (second item)))
-                                            ""
-                                            input-with-mentions)]
-                     (reset! text-value input-text)
-                     (reset! cursor-position (count input-text))
-                     (js/setTimeout #(when @input-ref
-                                       (.setNativeProps ^js @input-ref
-                                                        (clj->js {:selection {:start (count input-text)
-                                                                              :end   (count
-                                                                                      input-text)}})))
-                                    300)))
-                 [(some #(= :mention (first %)) (seq input-with-mentions))]))
-
 (defn update-input-mention
-  [{:keys [input-ref]}
-   {:keys [text-value]}
+  [{:keys [text-value]}
    {:keys [input-text]}]
   (rn/use-effect
    (fn []
      (when (and input-text (not= @text-value input-text))
-       (when @input-ref
-         (.setNativeProps ^js @input-ref (clj->js {:text input-text})))
        (reset! text-value input-text)
        (rf/dispatch [:mention/on-change-text input-text])))
    [input-text]))

@@ -125,3 +125,10 @@
    {:transform [{:translate-y translate-y}]
     :opacity   opacity}
    {}))
+
+(def mention
+  {:color                 (colors/theme-colors colors/primary-50
+                                               colors/primary-60)
+   :background-color      colors/primary-50-opa-10
+   :selection-color       :transparent
+   :suppress-highlighting true})

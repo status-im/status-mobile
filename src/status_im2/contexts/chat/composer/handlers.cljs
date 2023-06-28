@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.composer.handlers
   (:require
-    [clojure.string :as string]
     [oops.core :as oops]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
@@ -133,9 +132,7 @@
     (@record-reset-fn)
     (reset! recording? false))
   (rf/dispatch [:chat.ui/set-chat-input-text text])
-  (if (string/ends-with? text "@")
-    (rf/dispatch [:mention/on-change-text text])
-    (debounce/debounce-and-dispatch [:mention/on-change-text text] 300)))
+  (rf/dispatch [:mention/on-change-text text]))
 
 (defn selection-change
   [event
