@@ -24,9 +24,9 @@
     (is (= (wallet.transactions/group-transactions-by-date transactions)
            grouped-transactions))))
 
-(deftest login-ma-keycard-pairing
+(deftest login-profile-keycard-pairing
   (testing "returns nil when no :profile/login"
-    (let [res (onboarding/login-ma-keycard-pairing
+    (let [res (onboarding/login-profile-keycard-pairing
                {:profile/login nil
                 :profile/profiles-overview
                 {"0x1" {:keycard-pairing "keycard-pairing-code"}}}
@@ -34,7 +34,7 @@
       (is (nil? res))))
 
   (testing "returns :keycard-pairing when :profile/login is present"
-    (let [res (onboarding/login-ma-keycard-pairing
+    (let [res (onboarding/login-profile-keycard-pairing
                {:profile/login {:key-uid "0x1"}
                 :profile/profiles-overview
                 {"0x1" {:keycard-pairing "keycard-pairing-code"}}}

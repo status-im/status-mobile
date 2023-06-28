@@ -66,7 +66,7 @@
                                             :theme      (theme/get-theme)
                                             :ring?      true})))))
 
-(defn login-ma-keycard-pairing
+(defn login-profile-keycard-pairing
   "Compute the keycard-pairing value of the multiaccount selected for login"
   [db _]
   (when-let [acc-to-login (-> db :profile/login)]
@@ -77,4 +77,4 @@
 
 (re-frame/reg-sub
  :intro-wizard/acc-to-login-keycard-pairing
- login-ma-keycard-pairing)
+ login-profile-keycard-pairing)

@@ -89,6 +89,7 @@
 (reg-root-key-sub :profile/profiles-overview :profile/profiles-overview)
 (reg-root-key-sub :profile/login :profile/login)
 ;; we have some fields only in overview, would be cool to merge them in status-go
+;; https://github.com/status-im/status-mobile/issues/16422
 (reg-root-key-sub :profile/profile-settings :profile/profile)
 (reg-root-key-sub :profile/wallet-accounts :profile/wallet-accounts)
 
