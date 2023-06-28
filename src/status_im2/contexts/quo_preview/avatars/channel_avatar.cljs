@@ -42,13 +42,13 @@
       (let [amount-initials (utils.number/parse-int (:amount-initials @state) 1)
             color           (colors/custom-color-by-theme (:color @state) 50 60)]
         [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-         [rn/view {:padding-bottom 150}
-          [rn/view {:flex 1}
+         [rn/view {:style {:padding-bottom 150}}
+          [rn/view {:style {:flex 1}}
            [preview/customizer state descriptor]]
           [rn/view
-           {:padding-vertical 60
-            :flex-direction   :row
-            :justify-content  :center}
+           {:style {:padding-vertical 60
+                    :flex-direction   :row
+                    :justify-content  :center}}
            [quo/channel-avatar
             (assoc @state
                    :amount-initials amount-initials
@@ -57,8 +57,8 @@
 (defn preview-channel-avatar
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
+   {:style {:background-color (colors/theme-colors colors/white colors/neutral-90)
+            :flex             1}}
    [rn/flat-list
     {:flex                         1
      :keyboard-should-persist-taps :always
