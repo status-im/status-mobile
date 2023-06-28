@@ -48,7 +48,7 @@
           :on-success on-success}]}
 
        (when (#{:name :preferred-name} setting)
-         (constantly {:get-profiles-overview #(rf/dispatch [:multiaccounts.ui/update-name %])}))
+         (constantly {:profile/get-profiles-overview #(rf/dispatch [:multiaccounts.ui/update-name %])}))
 
        (when (and (not dont-sync?) (#{:name :preferred-name} setting))
          (send-contact-update))))))

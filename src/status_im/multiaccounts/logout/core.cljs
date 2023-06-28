@@ -21,8 +21,9 @@
                ::logout                              nil
                ::multiaccounts/webview-debug-changed false
                :keychain/clear-user-password         key-uid
-               :get-profiles-overview                #(re-frame/dispatch [:get-profiles-overview-success
-                                                                          %])}
+               :profile/get-profiles-overview        #(re-frame/dispatch
+                                                       [:profile/get-profiles-overview-success
+                                                        %])}
               (keychain/save-auth-method key-uid auth-method)
               (wallet/clear-timeouts)
               (init/initialize-app-db))))

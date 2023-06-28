@@ -35,12 +35,12 @@
               :goto-key-storage?        goto-key-storage?)})
 
 (re-frame/reg-fx
- :get-profiles-overview
+ :profile/get-profiles-overview
  (fn [callback]
    (native-module/open-accounts callback)))
 
 (rf/defn get-profiles-overview-success
-  {:events [:get-profiles-overview-success]}
+  {:events [:profile/get-profiles-overview-success]}
   [cofx profiles-overview]
   (if (seq profiles-overview)
     (profile.events/init-profiles-overview cofx profiles-overview)
@@ -50,12 +50,13 @@
   {:events [:app-started]}
   [cofx]
   (rf/merge cofx
-            {:init-theme                     nil
-             :get-profiles-overview          #(re-frame/dispatch [:get-profiles-overview-success %])
-             :get-supported-biometric-auth   nil
-             :network/listen-to-network-info nil
-             :keycard/register-card-events   nil
-             :keycard/check-nfc-support      nil
-             :keycard/check-nfc-enabled      nil
-             :keycard/retrieve-pairings      nil}
+            {:theme/init-theme                       nil
+             :biometric/get-supported-biometric-auth nil
+             :network/listen-to-network-info         nil
+             :keycard/register-card-events           nil
+             :keycard/check-nfc-support              nil
+             :keycard/check-nfc-enabled              nil
+             :keycard/retrieve-pairings              nil
+             :profile/get-profiles-overview          #(re-frame/dispatch
+                                                       [:profile/get-profiles-overview-success %])}
             (initialize-app-db)))

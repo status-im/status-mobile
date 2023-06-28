@@ -73,7 +73,7 @@
    (rf-test/wait-for
      ;; use initialize-view because it has the longest avg. time and
      ;; is dispatched by initialize-multiaccounts (last non-view event)
-     [:get-profiles-overview-success]
+     [:profile/get-profiles-overview-success]
      (assert-app-initialized))))
 
 (deftest create-account-test
@@ -81,7 +81,7 @@
   (rf-test/run-test-async
    (initialize-app!) ; initialize app
    (rf-test/wait-for
-     [:get-profiles-overview-success]
+     [:profile/get-profiles-overview-success]
      (generate-and-derive-addresses!) ; generate 5 new keys
      (rf-test/wait-for
        [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
@@ -97,7 +97,7 @@
   (rf-test/run-test-async
    (initialize-app!) ; initialize app
    (rf-test/wait-for
-     [:get-profiles-overview-success]
+     [:profile/get-profiles-overview-success]
      (generate-and-derive-addresses!) ; generate 5 new keys
      (rf-test/wait-for
        [:multiaccount-generate-and-derive-addresses-success]
@@ -120,7 +120,7 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-     [:get-profiles-overview-success]
+     [:profile/get-profiles-overview-success]
      (generate-and-derive-addresses!) ; generate 5 new keys
      (rf-test/wait-for
        [:multiaccount-generate-and-derive-addresses-success]
@@ -140,7 +140,7 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-     [:get-profiles-overview-success]
+     [:profile/get-profiles-overview-success]
      (generate-and-derive-addresses!)
      (rf-test/wait-for
        [:multiaccount-generate-and-derive-addresses-success]
@@ -179,7 +179,7 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-     [:get-profiles-overview-success]
+     [:profile/get-profiles-overview-success]
      (generate-and-derive-addresses!)
      (rf-test/wait-for
        [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
@@ -200,7 +200,7 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-     [:get-profiles-overview-success]
+     [:profile/get-profiles-overview-success]
      (generate-and-derive-addresses!)
      (rf-test/wait-for
        [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
@@ -224,7 +224,7 @@
   (rf-test/run-test-async
    (initialize-app!)
    (rf-test/wait-for
-     [:get-profiles-overview-success]
+     [:profile/get-profiles-overview-success]
      (generate-and-derive-addresses!)
      (rf-test/wait-for
        [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
@@ -259,7 +259,7 @@
     (rf-test/run-test-async
      (initialize-app!)
      (rf-test/wait-for
-       [:get-profiles-overview-success]
+       [:profile/get-profiles-overview-success]
        (generate-and-derive-addresses!)
        (rf-test/wait-for
          [:multiaccount-generate-and-derive-addresses-success]

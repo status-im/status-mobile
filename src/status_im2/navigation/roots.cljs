@@ -80,7 +80,7 @@
 ;; Theme Order for navigation roots
 ;; 1. Themes hardcoded in below map
 ;; 2. If nil or no entry in map, then theme stored in
-;;    [:db :multiaccount :appearance] will be used (for mulitaccounts)
+;;    [:db :profile/profile :appearance] will be used (for mulitaccounts)
 ;; 3). Fallback theme - Dark
 (def themes
   {:intro       constants/theme-type-dark

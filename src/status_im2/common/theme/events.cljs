@@ -3,6 +3,6 @@
             [status-im2.common.theme.core :as theme]))
 
 (re-frame/reg-fx
- :init-theme
+ :theme/init-theme
  (fn []
    (theme/add-device-theme-change-listener)))

@@ -101,7 +101,7 @@
        (.catch #(cb (generate-error-result %))))))
 
 (re-frame/reg-fx
- :get-supported-biometric-auth
+ :biometric/get-supported-biometric-auth
  (fn []
    (let [callback #(re-frame/dispatch [:init.callback/get-supported-biometric-auth-success %])]
      ;;NOTE: if we can't save user password, we can't support biometrics
