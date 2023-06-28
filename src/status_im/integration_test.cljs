@@ -150,11 +150,11 @@
          (assert-messenger-started)
          (rf/dispatch-sync [:set-in [:my-profile/seed :step] :12-words]) ; display seed phrase to user
          (rf/dispatch-sync [:my-profile/enter-two-random-words]) ; begin prompting user for seed words
-         (let [ma    @(rf/subscribe [:profile/profile])
-               seed  @(rf/subscribe [:my-profile/seed])
-               word1 (second (:first-word seed))
-               word2 (second (:second-word seed))]
-           (is (= 12 (count (string/split (:mnemonic ma) #" ")))) ; assert 12-word seed phrase
+         (let [{:keys [mnemonic]} @(rf/subscribe [:profile/profile])
+               seed               @(rf/subscribe [:my-profile/seed])
+               word1              (second (:first-word seed))
+               word2              (second (:second-word seed))]
+           (is (= 12 (count (string/split mnemonic #" ")))) ; assert 12-word seed phrase
            (rf/dispatch-sync [:set-in [:my-profile/seed :word] word1])
            (rf/dispatch-sync [:my-profile/set-step :second-word])
            (rf/dispatch-sync [:set-in [:my-profile/seed :word] word2])
