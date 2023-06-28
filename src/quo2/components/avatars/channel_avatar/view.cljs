@@ -23,7 +23,7 @@
   (when (boolean? locked?)
     [rn/view
      {:accessibility-label :lock
-      :style               (style/lock-container {:big? big?})}
+      :style               (style/lock-container big?)}
      [icons/icon (if locked? :i/locked :i/unlocked)
       {:color           (colors/theme-colors colors/neutral-50 colors/neutral-40)
        :container-style style/lock-icon

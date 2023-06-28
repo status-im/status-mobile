@@ -14,7 +14,7 @@
      :background-color (colors/theme-alpha color 0.1 0.1)}))
 
 (defn lock-container
-  [{:keys [big?]}]
+  [big?]
   (let [distance (if big? 20 12)]
     {:position         :absolute
      :left             distance
