@@ -16,11 +16,11 @@
     :key   :full-name
     :type  :text}
    (preview/customization-color-option)
-   {:label   "Is Locked?"
-    :key     :locked?
+   {:label   "Locked state"
+    :key     :locked-state
     :type    :select
     :options [{:key   :not-set
-               :value "None"}
+               :value "Not set"}
               {:key   :unlocked
                :value "Unlocked"}
               {:key   :locked
@@ -28,14 +28,14 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:big?      true
-                             :locked?   :not-set
-                             :emoji     "🍑"
-                             :full-name "Some channel"
-                             :color     :blue})]
+  (let [state (reagent/atom {:big?         true
+                             :locked-state :not-set
+                             :emoji        "🍑"
+                             :full-name    "Some channel"
+                             :color        :blue})]
     (fn []
       (let [color   (colors/custom-color-by-theme (:color @state) 50 60)
-            locked? (case (:locked? @state)
+            locked? (case (:locked-state @state)
                       :not-set  nil
                       :unlocked false
                       :locked   true
