@@ -154,7 +154,7 @@
    [(re-frame/subscribe [:chats/chat id])
     (re-frame/subscribe [:communities])
     (re-frame/subscribe [:contacts/contacts])
-    (re-frame/subscribe [:multiaccount])])
+    (re-frame/subscribe [:profile/profile])])
  (fn [[chat communities contacts current-multiaccount] [_ id]]
    (let [from         (get-in chat [:last-message :from])
          contact      (when from (multiaccounts/contact-by-identity contacts from))
