@@ -8,15 +8,14 @@
             utils.string))
 
 (defn- initials
-  [full-name amount-initials color]
-  [text/text
-   {:accessibility-label :initials
-    :size                :paragraph-2
-    :number-of-lines     1
-    :ellipsize-mode      :clip
-    :weight              :semi-bold
-    :style               {:color color}}
-   (utils.string/get-initials full-name amount-initials)])
+  [full-name big? color]
+  (let [amount-initials (if big? 2 1)]
+    [text/text
+     {:accessibility-label :initials
+      :size                :paragraph-2
+      :weight              :semi-bold
+      :style               {:color color}}
+     (utils.string/get-initials full-name amount-initials)]))
 
 (defn- lock
   [locked? big?]
@@ -45,19 +44,15 @@
 
   :full-name - string (default nil) - When :emoji is blank, this value will be
   used to extract the initials.
-
-  :amount-initials - int (default 1) - Number of initials to be extracted
-  from :full-name when :emoji is blank.
   "
-  [{:keys [big? emoji color locked? full-name amount-initials]}]
-  (let [amount-initials (or amount-initials 1)]
-    [rn/view
-     {:accessibility-label :channel-avatar
-      :style               (style/outer-container {:big? big? :color color})}
-     (if (string/blank? emoji)
-       [initials full-name amount-initials color]
-       [text/text
-        {:accessibility-label :emoji
-         :size                (if big? :paragraph-1 :label)}
-        emoji])
-     [lock locked? big?]]))
+  [{:keys [big? emoji color locked? full-name]}]
+  [rn/view
+   {:accessibility-label :channel-avatar
+    :style               (style/outer-container {:big? big? :color color})}
+   (if (string/blank? emoji)
+     [initials full-name big? color]
+     [text/text
+      {:accessibility-label :emoji
+       :size                (if big? :paragraph-1 :label)}
+      emoji])
+   [lock locked? big?]])

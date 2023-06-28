@@ -24,12 +24,12 @@
     (h/render [component/view {:locked? false}])
     (h/is-truthy (h/query-by-label-text :lock)))
 
-  (h/test "no emoji, 1 initial"
+  (h/test "no emoji, smaller size"
     (h/render [component/view {:full-name "Status Mobile"}])
     (h/is-truthy (h/query-by-text "S")))
 
-  (h/test "no emoji, 2 initials"
+  (h/test "no emoji, big size"
     (h/render [component/view
-               {:full-name       "Status Mobile"
-                :amount-initials 2}])
+               {:full-name "Status Mobile"
+                :big?      true}])
     (h/is-truthy (h/query-by-text "SM"))))

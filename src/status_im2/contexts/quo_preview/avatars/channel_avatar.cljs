@@ -3,8 +3,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            utils.number))
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Big?"
@@ -15,9 +14,6 @@
     :type  :text}
    {:label "Full name"
     :key   :full-name
-    :type  :text}
-   {:label "Number of initials"
-    :key   :amount-initials
     :type  :text}
    (preview/customization-color-option)
    {:label   "Is Locked?"
@@ -32,20 +28,18 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:big?            true
-                             :locked?         :not-set
-                             :emoji           "🍑"
-                             :full-name       "Some channel"
-                             :amount-initials "1"
-                             :color           :blue})]
+  (let [state (reagent/atom {:big?      true
+                             :locked?   :not-set
+                             :emoji     "🍑"
+                             :full-name "Some channel"
+                             :color     :blue})]
     (fn []
-      (let [amount-initials (utils.number/parse-int (:amount-initials @state) 1)
-            color           (colors/custom-color-by-theme (:color @state) 50 60)
-            locked?         (case (:locked? @state)
-                              :not-set  nil
-                              :unlocked false
-                              :locked   true
-                              nil)]
+      (let [color   (colors/custom-color-by-theme (:color @state) 50 60)
+            locked? (case (:locked? @state)
+                      :not-set  nil
+                      :unlocked false
+                      :locked   true
+                      nil)]
         [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
          [rn/view {:style {:padding-bottom 150}}
           [rn/view {:style {:flex 1}}
@@ -56,9 +50,8 @@
                     :justify-content  :center}}
            [quo/channel-avatar
             (assoc @state
-                   :locked?         locked?
-                   :amount-initials amount-initials
-                   :color           color)]]]]))))
+                   :locked? locked?
+                   :color   color)]]]]))))
 
 (defn preview-channel-avatar
   []
