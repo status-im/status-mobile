@@ -23,24 +23,29 @@
    {:label   "Is Locked?"
     :key     :locked?
     :type    :select
-    :options [{:key   nil
+    :options [{:key   :not-set
                :value "None"}
-              {:key   false
+              {:key   :unlocked
                :value "Unlocked"}
-              {:key   true
+              {:key   :locked
                :value "Locked"}]}])
 
 (defn cool-preview
   []
   (let [state (reagent/atom {:big?            true
-                             :locked?         nil
+                             :locked?         :not-set
                              :emoji           "🍑"
                              :full-name       "Some channel"
                              :amount-initials "1"
                              :color           :blue})]
     (fn []
       (let [amount-initials (utils.number/parse-int (:amount-initials @state) 1)
-            color           (colors/custom-color-by-theme (:color @state) 50 60)]
+            color           (colors/custom-color-by-theme (:color @state) 50 60)
+            locked?         (case (:locked? @state)
+                              :not-set  nil
+                              :unlocked false
+                              :locked   true
+                              nil)]
         [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
          [rn/view {:style {:padding-bottom 150}}
           [rn/view {:style {:flex 1}}
@@ -51,6 +56,7 @@
                     :justify-content  :center}}
            [quo/channel-avatar
             (assoc @state
+                   :locked?         locked?
                    :amount-initials amount-initials
                    :color           color)]]]]))))
 
