@@ -13,6 +13,7 @@
    "A"   "ab"          1
    "A"   " ab  "       1
    "A"   "a b"         1
+   "A"   "ab"          2
    "AB"  "a b"         2
    "ABC" "a b c d"     3
    "ABC" " a  b  c  d" 3))
