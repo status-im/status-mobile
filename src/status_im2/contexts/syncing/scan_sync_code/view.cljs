@@ -60,8 +60,7 @@
       :size                32
       :accessibility-label :find-sync-code
       :override-theme      :dark
-      :on-press            #(rf/dispatch [:open-modal :find-sync-code
-                                          {:override-theme :dark}])}
+      :on-press            #(rf/dispatch [:open-modal :find-sync-code])}
      (i18n/label :t/find-sync-code)]]
    [quo/text
     {:size   :heading-1
