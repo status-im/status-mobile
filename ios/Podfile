@@ -35,18 +35,24 @@ abstract_target 'Status' do
   target 'StatusImPR' do
   end
 
-  #commented out temporarily
-  #use_flipper!({ 'Flipper' => '0.74.0' })
-  #post_install do |installer|
-  #  flipper_post_install(installer)
-  #end
-
   # some of libs wouldn't be build for x86_64 otherwise and that is
   # necessary for ios simulators
   post_install do |installer_representation|
+    # some of libs wouldn't be build for x86_64 otherwise and that is
+    # necessary for ios simulators
     installer_representation.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
+      end
+    end
+
+    # FIXME: Fix dependency signing broken on Xcode 14 due to lack of Team ID.
+    # https://github.com/CocoaPods/CocoaPods/issues/11402
+    installer_representation.pods_project.targets.each do |target|
+      if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+        target.build_configurations.each do |config|
+          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+        end
       end
     end
   end
