@@ -81,33 +81,46 @@
                                           (merge account {:password password}))
         navigate-to-syncing-devices?    (and (or connection-success? error-on-pairing?) receiver?)
         user-in-syncing-devices-screen? (= (:view-id db) :syncing-progress)]
-    (merge {:db (cond-> db
-                  connection-success?
-                  (assoc-in [:syncing :pairing-status] :connected)
 
-                  received-account?
-                  (assoc-in [:syncing :profile/profile] multiaccount-data)
+    (if error-on-pairing?
+      (rf/dispatch [:toasts/upsert
+                    {:icon           :i/info
+                     :icon-color     colors/danger-50
+                     :override-theme :dark
+                     :text           (i18n/label (condp = type
+                                                   constants/local-pairing-event-connection-error
+                                                   :t/error-this-sync-qr-code-has-expired
+                                                   constants/local-pairing-event-transfer-error
+                                                   :t/error-devices-are-not-in-the-same-network
+                                                   constants/local-pairing-event-process-error
+                                                   :t/error-this-sync-qr-code-has-been-used-before
+                                                   :t/error-syncing-connection-failed))}])
+      (merge {:db (cond-> db
+                    connection-success?
+                    (assoc-in [:syncing :pairing-status] :connected)
+                    received-account?
+                    (assoc-in [:syncing :profile/profile] multiaccount-data)
 
-                  error-on-pairing?
-                  (assoc-in [:syncing :pairing-status] :error)
+                    error-on-pairing?
+                    (assoc-in [:syncing :pairing-status] :error)
 
-                  completed-pairing?
-                  (assoc-in [:syncing :pairing-status] :completed))}
-           (cond
-             (and navigate-to-syncing-devices? (not user-in-syncing-devices-screen?))
-             {:dispatch [:navigate-to :syncing-progress]}
+                    completed-pairing?
+                    (assoc-in [:syncing :pairing-status] :completed))}
+             (cond
+               (and navigate-to-syncing-devices? (not user-in-syncing-devices-screen?))
+               {:dispatch [:navigate-to :syncing-progress]}
 
-             (and completed-pairing? sender?)
-             {:dispatch [:syncing/clear-states]}
+               (and completed-pairing? sender?)
+               {:dispatch [:syncing/clear-states]}
 
-             (and completed-pairing? receiver?)
-             {:dispatch [:multiaccounts.login/local-paired-user]}
+               (and completed-pairing? receiver?)
+               {:dispatch [:multiaccounts.login/local-paired-user]}
 
-             (and error-on-pairing? (some? error))
-             {:dispatch [:toasts/upsert
-                         {:icon       :i/alert
-                          :icon-color colors/danger-50
-                          :text       error}]}))))
+               (and error-on-pairing? (some? error))
+               {:dispatch [:toasts/upsert
+                           {:icon       :i/alert
+                            :icon-color colors/danger-50
+                            :text       error}]})))))
 
 (rf/defn process
   {:events [:signals/signal-received]}

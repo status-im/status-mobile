@@ -232,7 +232,7 @@
       (rf/dispatch [:toasts/upsert
                     {:icon           :i/info
                      :icon-color     colors/danger-50
-                     :override-theme :light
+                     :override-theme :dark
                      :text           (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
 
 (defn render-camera

@@ -12,10 +12,8 @@
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [react-native.hooks :as hooks]
-            [status-im2.contexts.syncing.utils :as sync-utils]))
-
-(def code-valid-for-ms 120000)
-(def one-min-ms 60000)
+            [status-im2.contexts.syncing.utils :as sync-utils]
+            [status-im2.constants :as constants]))
 
 (defn navigation-bar
   []
@@ -41,7 +39,7 @@
 
 (defn view
   []
-  (let [valid-for-ms  (reagent/atom code-valid-for-ms)
+  (let [valid-for-ms  (reagent/atom constants/local-pairing-timeout)
         code          (reagent/atom nil)
         delay         (reagent/atom nil)
         timestamp     (reagent/atom nil)
@@ -51,11 +49,11 @@
                           (reset! delay 1000)
                           (reset! code connection-string)))
         clock         (fn []
-                        (if (pos? (- code-valid-for-ms
+                        (if (pos? (- constants/local-pairing-timeout
                                      (- (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000)))
                                         @timestamp)))
                           (swap! valid-for-ms (fn [_]
-                                                (- code-valid-for-ms
+                                                (- constants/local-pairing-timeout
                                                    (- (* 1000
                                                          (js/Math.ceil (/ (datetime/timestamp) 1000)))
                                                       @timestamp))))
@@ -63,7 +61,7 @@
         cleanup-clock (fn []
                         (reset! code nil)
                         (reset! timestamp nil)
-                        (reset! valid-for-ms code-valid-for-ms))]
+                        (reset! valid-for-ms constants/local-pairing-timeout))]
 
     (fn []
       [rn/view {:style style/container-main}
@@ -107,7 +105,7 @@
                (i18n/label :t/sync-code)]
               [quo/text
                {:size  :paragraph-2
-                :style {:color (if (< @valid-for-ms one-min-ms)
+                :style {:color (if (< @valid-for-ms constants/local-pairing-timeout-warning)
                                  colors/danger-60
                                  colors/white-opa-40)}}
                (i18n/label :t/valid-for-time {:valid-for (datetime/ms-to-duration @valid-for-ms)})]]

@@ -271,6 +271,9 @@
 (def ^:const local-pairing-role-sender "sender")
 (def ^:const local-pairing-role-receiver "receiver")
 
+(def ^:const local-pairing-timeout 120000)
+(def ^:const local-pairing-timeout-warning 60000)
+
 ;; sender and receiver events
 (def ^:const local-pairing-event-connection-success "connection-success")
 (def ^:const local-pairing-event-connection-error "connection-error")
