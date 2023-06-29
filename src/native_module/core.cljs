@@ -4,7 +4,8 @@
             [taoensso.timbre :as log]
             [react-native.platform :as platform]
             [react-native.core :as rn]
-            [utils.transforms :as types]))
+            [utils.transforms :as types]
+            [clojure.string :as string]))
 
 (defn status
   []
@@ -386,6 +387,14 @@
      :brand     (.-brand status)
      :build-id  (.-buildId status)
      :device-id (.-deviceId status)}))
+
+(defn get-installation-name
+  []
+  ;; NOTE(rasom): Only needed for android devices currently
+  (when platform/android?
+    (string/join " "
+                 ((juxt :model :device-id)
+                  (get-device-model-info)))))
 
 (defn get-node-config
   [callback]
