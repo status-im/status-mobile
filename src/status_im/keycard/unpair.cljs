@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.keycard.common :as common]
-            [status-im.multiaccounts.key-storage.core :as key-storage]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [utils.re-frame :as rf]
             [status-im2.navigation.events :as navigation]
@@ -124,31 +123,32 @@
         pairings     (get-in db [:keycard :pairings])]
     (rf/merge
      cofx
-     {:db                               (-> db
-                                            (update :profile/profiles-overview dissoc key-uid)
-                                            (assoc-in [:keycard :secrets] nil)
-                                            (update-in [:keycard :pairings]
-                                                       dissoc
-                                                       (keyword instance-uid))
-                                            (update-in [:keycard :pairings] dissoc instance-uid)
-                                            (assoc-in [:keycard :whisper-public-key] nil)
-                                            (assoc-in [:keycard :wallet-address] nil)
-                                            (assoc-in [:keycard :application-info] nil)
-                                            (assoc-in [:keycard :pin]
-                                                      {:status      nil
-                                                       :error-label nil
-                                                       :on-verified nil}))
-      :keycard/persist-pairings         (dissoc pairings (keyword instance-uid))
-      :utils/show-popup                 {:title      (i18n/label (if keys-removed-from-card?
-                                                                   :t/profile-deleted-title
-                                                                   :t/database-reset-title))
-                                         :content    (i18n/label (if keys-removed-from-card?
-                                                                   :t/profile-deleted-keycard
-                                                                   :t/database-reset-content))
-                                         :on-dismiss #(re-frame/dispatch [:logout])}
-      ::key-storage/delete-multiaccount {:key-uid    key-uid
-                                         :on-success #(log/debug "[keycard] remove account ok")
-                                         :on-error   #(log/warn "[keycard] remove account: " %)}}
+     {:db                       (-> db
+                                    (update :profile/profiles-overview dissoc key-uid)
+                                    (assoc-in [:keycard :secrets] nil)
+                                    (update-in [:keycard :pairings]
+                                               dissoc
+                                               (keyword instance-uid))
+                                    (update-in [:keycard :pairings] dissoc instance-uid)
+                                    (assoc-in [:keycard :whisper-public-key] nil)
+                                    (assoc-in [:keycard :wallet-address] nil)
+                                    (assoc-in [:keycard :application-info] nil)
+                                    (assoc-in [:keycard :pin]
+                                              {:status      nil
+                                               :error-label nil
+                                               :on-verified nil}))
+      :keycard/persist-pairings (dissoc pairings (keyword instance-uid))
+      :utils/show-popup         {:title      (i18n/label (if keys-removed-from-card?
+                                                           :t/profile-deleted-title
+                                                           :t/database-reset-title))
+                                 :content    (i18n/label (if keys-removed-from-card?
+                                                           :t/profile-deleted-keycard
+                                                           :t/database-reset-content))
+                                 :on-dismiss #(re-frame/dispatch [:logout])}}
+     ;;should be reimplemented
+     ;;:key-storage/delete-profile {:key-uid    key-uid
+     ;;:on-success #(log/debug "[keycard] remove account ok")
+     ;;                                  :on-error   #(log/warn "[keycard] remove account: " %)}
      (common/clear-on-card-connected)
      (common/hide-connection-sheet))))
 

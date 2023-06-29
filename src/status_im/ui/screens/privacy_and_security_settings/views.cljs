@@ -4,7 +4,6 @@
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.multiaccounts.key-storage.core :as key-storage]
             [status-im.multiaccounts.reset-password.core :as reset-password]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.components.common.common :as components.common]
@@ -127,14 +126,6 @@
          :on-press           #(re-frame/dispatch
                                [:multiaccounts.ui/webview-permission-requests-switched
                                 ((complement boolean) webview-allow-permission-requests?)])}])
-     (when (not keycard?)
-       [quo/list-item
-        {:size                :small
-         :title               (i18n/label :t/manage-keys-and-storage)
-         :chevron             true
-         :on-press            #(re-frame/dispatch [::key-storage/logout-and-goto-key-storage])
-         :accessibility-label :key-managment}])
-
      [separator]
      [quo/list-header (i18n/label :t/privacy-photos)]
      [quo/list-item
