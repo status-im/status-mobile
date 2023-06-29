@@ -1,4 +1,4 @@
-(ns status-im2.contexts.scan.style
+(ns status-im2.contexts.shell.scan.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def screen-padding 20)

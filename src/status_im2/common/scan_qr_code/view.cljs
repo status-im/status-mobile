@@ -14,7 +14,6 @@
             [react-native.platform :as platform]
             [react-native.permissions :as permissions]
             [status-im2.contexts.syncing.utils :as sync-utils]
-            [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.common.alert.events :as alert]
             [status-im.ui.components.react :as react]
             [react-native.safe-area :as safe-area]))
@@ -216,9 +215,11 @@
                                                (when (and (not @read-qr-once?)
                                                           (not user-in-syncing-progress-screen?))
                                                  (reset! read-qr-once? true)
-                                                 (js/setTimeout (fn []
+                                                 (let [timer-id (js/setTimeout (fn []
                                                                   (reset! read-qr-once? false))
-                                                                3000)
+                                                                3000)]
+                                                    (fn []
+                                                            (js/clearTimeout timer-id)))
                                                  (check-qr-code-data data)))
             show-camera?                     (and @camera-permission-granted?
                                                   @preflight-check-passed?)
@@ -232,7 +233,11 @@
                                               #(reset! camera-permission-granted? %)
                                               #(reset! camera-permission-granted? false)))))
         [:<>
-         [background/view true]
+         [blur/view
+          {:style         style/background-blur-overlay
+          :blur-amount   80
+          :blur-type     :transparent
+          :overlay-color :transparent}]
          [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
          [rn/view {:style (style/root-container (:top insets))}
           [header]

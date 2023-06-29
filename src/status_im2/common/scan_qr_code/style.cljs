@@ -15,8 +15,7 @@
 
 (def hole
   (assoc absolute-fill
-         :z-index 2
-         :opacity 0.95))
+         :z-index 2 :opacity 0.95))
 
 (defn root-container
   [padding-top]
@@ -78,11 +77,11 @@
 (defn border
   [border1 border2 corner]
   {:border-color colors/white
-   :width        78
-   :height       78
-   border1       2
-   border2       2
-   corner        16})
+        :width        78
+        :height       78
+        border1       2
+        border2       2
+        corner        16})
 
 (defn border-tip
   [top bottom right left]
@@ -151,3 +150,11 @@
    :right         0
    :bottom        0
    :border-radius 16})
+   
+(def background-blur-overlay
+  {:position         :absolute
+   :left             0
+   :top              0
+   :bottom           0
+   :right            0
+   :background-color colors/neutral-80-opa-80-blur})

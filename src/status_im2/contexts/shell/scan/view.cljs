@@ -1,6 +1,6 @@
-(ns status-im2.contexts.scan.view
+(ns status-im2.contexts.shell.scan.view
   (:require [react-native.core :as rn]
-            [status-im2.contexts.scan.style :as style]
+            [status-im2.contexts.shell.scan.style :as style]
             [status-im2.common.scan-qr-code.view :as scan-qr-code]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
