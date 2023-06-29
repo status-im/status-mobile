@@ -212,7 +212,10 @@
                                  opts)}})))
 
 ;; toast
-(navigation/register-component "toasts" (fn [] views/toasts) js/undefined)
+(navigation/register-component "toasts"
+                               #(gesture/gesture-handler-root-hoc views/toasts
+                                                                  #js {:flex 0})
+                               (fn [] views/toasts))
 
 (re-frame/reg-fx :show-toasts
                  (fn []
