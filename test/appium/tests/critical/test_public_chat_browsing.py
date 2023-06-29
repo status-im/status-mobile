@@ -773,10 +773,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat_1.click_system_back_button_until_element_is_shown()
 
         self.home_2.just_fyi("Check that can send message in community after unblock")
-        self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
         self.chat_2.send_message(message_unblocked)
+        self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
         if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(120):
-            self.errors.append("Message was not received in public chat after user unblock!")
+            self.errors.append("%s was not received in public chat after user unblock!" % message_unblocked)
+            self.errors.verify_no_errors()
 
         self.home_1.just_fyi("Add blocked user to contacts again after removing(removed automatically when blocked)")
         chat_element = self.channel_1.chat_element_by_text(message_unblocked)

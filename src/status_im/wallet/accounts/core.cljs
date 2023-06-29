@@ -12,7 +12,6 @@
     [status-im.ethereum.stateofus :as stateofus]
     [utils.i18n :as i18n]
     [status-im.multiaccounts.core :as multiaccounts]
-    [status-im.multiaccounts.key-storage.core :as key-storage]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
     [native-module.core :as native-module]
     [status-im.ui.components.list-selection :as list-selection]
@@ -342,7 +341,7 @@
     (if (= (string/lower-case dapps-address) (string/lower-case deleted-address))
       {:utils/show-popup {:title   (i18n/label :t/warning)
                           :content (i18n/label :t/account-is-used)}}
-      {::key-storage/delete-imported-key
+      {:key-storage/delete-imported-key
        {:key-uid    (get-in db [:profile/profile :key-uid])
         :address    (:address account)
         :password   password

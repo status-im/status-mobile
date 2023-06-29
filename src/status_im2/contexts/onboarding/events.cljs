@@ -80,6 +80,7 @@
                           :multiaccount/restore-account-and-login
                           :multiaccount/create-account-and-login)
         request         {:displayName                 display-name
+                         :deviceName                  (native-module/get-installation-name)
                          :password                    (ethereum/sha3 (security/safe-unmask-data
                                                                       password))
                          :mnemonic                    (when seed-phrase

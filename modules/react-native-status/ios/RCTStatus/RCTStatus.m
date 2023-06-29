@@ -1156,23 +1156,7 @@ RCT_EXPORT_METHOD(deactivateKeepAwake)
 
 - (NSString*) deviceName
 {
-
-    NSString* deviceName = nil;
-
-    if ([self.deviceId rangeOfString:@"iPod"].location != NSNotFound) {
-        deviceName = @"iPod Touch";
-    }
-    else if([self.deviceId rangeOfString:@"iPad"].location != NSNotFound) {
-        deviceName = @"iPad";
-    }
-    else if([self.deviceId rangeOfString:@"iPhone"].location != NSNotFound){
-        deviceName = @"iPhone";
-    }
-    else if([self.deviceId rangeOfString:@"AppleTV"].location != NSNotFound){
-        deviceName = @"Apple TV";
-    }
-
-    return deviceName;
+    return [[UIDevice currentDevice] name];;
 }
 
 - (NSDictionary *)constantsToExport

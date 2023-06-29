@@ -26,6 +26,7 @@
   (let [db {:networks/current-network config/default-network
             :networks/networks        (data-store.settings/rpc->networks config/default-networks)
             :profile/profile          {:installation-id           installation-id
+                                       :device-name               (native-module/get-installation-name)
                                        :log-level                 config/log-level
                                        :waku-bloom-filter-mode    false
                                        :custom-bootnodes          nil
@@ -59,7 +60,9 @@
                                         {:receiverConfig {:kdfIterations config/default-kdf-iterations
                                                           :nodeConfig final-node-config
                                                           :settingCurrentNetwork config/default-network
-                                                          :deviceType utils.platform/os}}))]
+                                                          :deviceType utils.platform/os
+                                                          :deviceName
+                                                          (native-module/get-installation-name)}}))]
             (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
             (native-module/input-connection-string-for-bootstrapping
              connection-string
