@@ -393,8 +393,10 @@ class CommunityView(HomeView):
         self.community_description_text = Text(self.driver, accessibility_id="community-description-text")
 
     def join_community(self):
+        self.driver.info("Joining community")
         self.join_button.click()
-        self.checkbox_button.scroll_and_click()
+        self.checkbox_button.scroll_to_element()
+        self.checkbox_button.enable()
         self.join_community_button.scroll_and_click()
 
     def get_channel(self, channel_name: str):

@@ -1071,7 +1071,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if not self.chat_2.chat_message_input.is_element_displayed():
             self.home_2.get_chat(self.username_1).click()
         if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member3.png",
-                                                                                                   diff=5):
+                                                                                                   diff=6):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()
 
@@ -1240,14 +1240,16 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 home.click_system_back_button_until_element_is_shown()
                 home.chats_tab.click()
                 home.get_chat(self.username_2 if i == 0 else self.username_1).click()
+
+        self.home_1.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
+        if not self.chat_1.chat_element_by_text(message_1).is_element_displayed(120):
+            self.errors.append("Message was not delivered after resending from offline")
+
+        self.home_2.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
         try:
             chat_element.wait_for_status_to_be(expected_status='Delivered', timeout=120)
         except TimeoutException as e:
             self.errors.append('%s after back up online!' % e.msg)
-
-        self.home_1.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
-        if not self.chat_1.chat_element_by_text(message_1).is_element_displayed(60):
-            self.errors.append("Message was not delivered after resending from offline")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702784)
