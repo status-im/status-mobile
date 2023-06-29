@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.bottom-sheet.bottom-sheet
-  (:require [quo2.components.buttons.button.view :as button]
-            [quo2.components.markdown.text :as text]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
             [react-native.core :as rn]
@@ -26,9 +25,9 @@
   [rn/view
    {:style {:justify-content :center
             :align-items     :center}}
-   [button/button {:on-press #(do (re-frame/dispatch [:hide-bottom-sheet]))} "Close bottom sheet"]
+   [quo/button {:on-press #(do (re-frame/dispatch [:hide-bottom-sheet]))} "Close bottom sheet"]
 
-   [text/text {:style {:padding-top 20}} "Hello world!"]])
+   [quo/text {:style {:padding-top 20}} "Hello world!"]])
 
 (defn cool-preview
   []
@@ -51,7 +50,7 @@
          {:style {:align-items :center
                   :padding     16}}
 
-         [button/button {:on-press on-bottom-sheet-open} "Open bottom sheet"]]]])))
+         [quo/button {:on-press on-bottom-sheet-open} "Open bottom sheet"]]]])))
 
 (defn preview-bottom-sheet
   []

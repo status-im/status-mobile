@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.notifications.toast
-  (:require [quo2.components.buttons.button.view :as button]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -13,7 +13,7 @@
          toast!     #(rf/dispatch [:toasts/upsert (assoc opts :id id)])
          dismissed? (not toast-opts)]
      [rn/view {:style {:margin-bottom 10}}
-      [button/button
+      [quo/button
        {:size     32
         :on-press #(if dismissed? (toast!) (dismiss!))}
        (if dismissed? text (str "DISMISS " text))]])))
@@ -73,7 +73,7 @@
       (let [toast-opts (rf/sub [:toasts/toast "Toast: 30s duration"])]
         (when toast-opts
           [rn/view {:style {:margin-bottom 10}}
-           [button/button
+           [quo/button
             {:size 32
              :on-press
              #(rf/dispatch

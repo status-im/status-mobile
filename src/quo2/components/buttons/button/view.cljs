@@ -74,7 +74,7 @@
                                             :width width
                                             :before before
                                             :after after
-                                            blur-active? blur-active?})
+                                            :blur-active? blur-active?})
                     (when (= state :pressed) {:opacity 0.9})
                     inner-style)}
            (when (and (= type :blurred)

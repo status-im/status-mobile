@@ -1,9 +1,9 @@
 (ns status-im2.common.plus-button.view
-  (:require [quo2.components.buttons.button.view :as quo2.button]))
+  (:require [quo2.core :as quo]))
 
 (defn plus-button
   [{:keys [on-press accessibility-label customization-color]}]
-  [quo2.button/button
+  [quo/button
    {:type                :primary
     :size                32
     :icon                true

@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.buttons.button
-  (:require [quo2.components.buttons.button.view :as quo2]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -73,7 +73,7 @@
          {:padding-vertical 60
           :flex-direction   :row
           :justify-content  :center}
-         [quo2/button
+         [quo/button
           (merge (dissoc @state
                   :theme
                   :before
