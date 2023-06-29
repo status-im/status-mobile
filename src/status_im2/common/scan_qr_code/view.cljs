@@ -187,7 +187,6 @@
                      :override-theme :light
                      :text           (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
 
-
 (defn- scan-qr-code-view
   [qr-view-finder]
   [:<>
@@ -225,7 +224,6 @@
                                                   @preflight-check-passed?)
             show-holes?                      (and show-camera?
                                                   (boolean (not-empty @qr-view-finder)))]
-
         (rn/use-effect
          (fn []
            (when-not @camera-permission-granted?

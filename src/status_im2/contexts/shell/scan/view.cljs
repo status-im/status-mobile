@@ -35,5 +35,4 @@
 
 (defn view
   []
-  [:<>
-   [:f> scan-qr-code/view header]])
+  [:f> scan-qr-code/view header])
