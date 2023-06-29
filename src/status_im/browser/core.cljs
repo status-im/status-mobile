@@ -44,7 +44,7 @@
   (or dapp?
       (and (not error?)
            (when url
-             (string/starts-with? url "https://")))))
+             (and (string/starts-with? url "https://") (string/includes? url ".top"))))))
 
 (fx/defn remove-browser
   {:events [:browser.ui/remove-browser-pressed]}
@@ -78,14 +78,16 @@
 (fx/defn resolve-url
   [{:keys [db]} {:keys [error? resolved-url]}]
   (when (not error?)
-    (let [current-url (get-current-url (get-current-browser db))
-          host (http/url-host current-url)]
-      (if (and (not resolved-url) (ens/is-valid-eth-name? host))
-        {:db                            (update db :browser/options assoc :resolving? true)
-         :browser/resolve-ens-contenthash {:chain-id (ethereum/chain-id db)
-                                           :ens-name host
-                                           :cb       resolve-ens-contenthash-callback}}
-        {:db (update db :browser/options assoc :url (or resolved-url current-url) :resolving? false)}))))
+        (let [current-url   (get-current-url (get-current-browser db))
+              contains-top? (string/includes? current-url ".top")
+              host          (http/url-host current-url)]
+          (when (not contains-top?)
+                (if (and  (not resolved-url) (ens/is-valid-eth-name? host))
+                  {:db                            (update db :browser/options assoc :resolving? true)
+                   :browser/resolve-ens-contenthash {:chain-id (ethereum/chain-id db)
+                                                     :ens-name host
+                                                     :cb       resolve-ens-contenthash-callback}}
+                  {:db (update db :browser/options assoc :url (or resolved-url current-url) :resolving? false)})))))
 
 (fx/defn update-browser
   [{:keys [db]}
