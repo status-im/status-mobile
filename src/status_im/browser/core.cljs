@@ -44,7 +44,7 @@
   (or dapp?
       (and (not error?)
            (when url
-             (and (string/starts-with? url "https://") (string/includes? url ".top"))))))
+             (and (string/starts-with? url "https://") (not (string/includes? url ".top")))))))
 
 (fx/defn remove-browser
   {:events [:browser.ui/remove-browser-pressed]}

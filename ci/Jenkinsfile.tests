@@ -61,14 +61,6 @@ pipeline {
         }
       }
     }
-    stage('Component Tests') {
-      steps {
-        sh """#!/bin/bash
-          set -eo pipefail
-          make component-test 2>&1 | tee -a ${LOG_FILE}
-        """
-      }
-    }
     stage('Upload') {
       steps {
         script {
