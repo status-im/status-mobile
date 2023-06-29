@@ -170,10 +170,10 @@
                         16)]
                 [])}
       [blur/view
-       {:style            style/absolute-fill
-        :blur-amount      10
-        :blur-type        :transparent
-        :overlay-color    colors/neutral-80-opa-80}]]]))
+       {:style         style/absolute-fill
+        :blur-amount   10
+        :blur-type     :transparent
+        :overlay-color colors/neutral-80-opa-80}]]]))
 
 (defn- check-qr-code-data
   [event]
@@ -215,10 +215,11 @@
                                                           (not user-in-syncing-progress-screen?))
                                                  (reset! read-qr-once? true)
                                                  (let [timer-id (js/setTimeout (fn []
-                                                                  (reset! read-qr-once? false))
-                                                                3000)]
-                                                    (fn []
-                                                            (js/clearTimeout timer-id)))
+                                                                                 (reset! read-qr-once?
+                                                                                   false))
+                                                                               3000)]
+                                                   (fn []
+                                                     (js/clearTimeout timer-id)))
                                                  (check-qr-code-data data)))
             show-camera?                     (and @camera-permission-granted?
                                                   @preflight-check-passed?)
@@ -234,9 +235,9 @@
         [:<>
          [blur/view
           {:style         style/background-blur-overlay
-          :blur-amount   80
-          :blur-type     :transparent
-          :overlay-color :transparent}]
+           :blur-amount   80
+           :blur-type     :transparent
+           :overlay-color :transparent}]
          [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
          [rn/view {:style (style/root-container (:top insets))}
           [header]

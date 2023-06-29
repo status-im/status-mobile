@@ -24,7 +24,7 @@
                                                            (max 0 (dec item-count)))})))
                        25)]
          (fn []
-           (js/clearTimeout timer-id)) )))
+           (js/clearTimeout timer-id)))))
    [item-count item-width]))
 
 (defn- separator
