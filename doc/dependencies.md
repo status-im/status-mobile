@@ -164,3 +164,25 @@ Used for taking emoji input, for custom emoji thumbnails for community channels
 ## "react-native-draggable-flatlist": "https://github.com/computerjazz/react-native-draggable-flatlist"
 
 A drag-and-drop-enabled FlatList component for React Native
+
+## "@babel/preset-typescript": "^7.17.12"
+
+Babel preset for compiling TypeScript code in React Native applications.
+
+## "@react-native-community/cameraroll": "^3.5.0"
+
+Used to access the device's camera roll in React Native applications.
+
+## "@react-native-community/push-notification-ios": "^1.11.1"
+
+Used for handling push notifications specifically for iOS devices in React Native applications.
+
+## "react-native-navigation": "^7.17.0"
+
+Used for navigation and routing in React Native applications.
+
+## "react-native-permissions": "^13.1.0"
+
+Used for handling runtime permissions in React Native applications.
+
+
