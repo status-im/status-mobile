@@ -14,17 +14,17 @@ WHITE  := $(shell tput -Txterm setaf 7)
 YELLOW := $(shell tput -Txterm setaf 3)
 RESET  := $(shell tput -Txterm sgr0)
 HELP_FUN = \
-		   %help; \
-		   while(<>) { push @{$$help{$$2 // 'options'}}, [$$1, $$3] if /^([a-zA-Z\-]+)\s*:.*\#\#(?:@([a-zA-Z\-]+))?\s(.*)$$/ }; \
-		   print "Usage: make [target]\n\nSee STARTING_GUIDE.md for more info.\n\n"; \
-		   for (sort keys %help) { \
-			   print "${WHITE}$$_:${RESET}\n"; \
-			   for (@{$$help{$$_}}) { \
-				   $$sep = " " x (32 - length $$_->[0]); \
-				   print "  ${YELLOW}$$_->[0]${RESET}$$sep${GREEN}$$_->[1]${RESET}\n"; \
-			   }; \
-			   print "\n"; \
-		   }
+			 %help; \
+			 while(<>) { push @{$$help{$$2 // 'options'}}, [$$1, $$3] if /^([a-zA-Z\-]+)\s*:.*\#\#(?:@([a-zA-Z\-]+))?\s(.*)$$/ }; \
+			 print "Usage: make [target]\n\nSee STARTING_GUIDE.md for more info.\n\n"; \
+			 for (sort keys %help) { \
+				 print "${WHITE}$$_:${RESET}\n"; \
+				 for (@{$$help{$$_}}) { \
+					 $$sep = " " x (32 - length $$_->[0]); \
+					 print "  ${YELLOW}$$_->[0]${RESET}$$sep${GREEN}$$_->[1]${RESET}\n"; \
+				 }; \
+				 print "\n"; \
+			 }
 HOST_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 
 # This can come from Jenkins
@@ -307,6 +307,7 @@ lint: ##@test Run code style checks
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
+	sh scripts/lint-trailing-newline.sh && \
 	yarn prettier
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
@@ -315,8 +316,8 @@ lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
+	sh scripts/lint-trailing-newline.sh --fix && \
 	yarn prettier
-
 
 shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
