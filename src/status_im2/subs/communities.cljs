@@ -52,7 +52,7 @@
  :communities/sorted-community-members
  (fn [[_ community-id]]
    (let [contacts     (re-frame/subscribe [:contacts/contacts])
-         multiaccount (re-frame/subscribe [:multiaccount])
+         multiaccount (re-frame/subscribe [:profile/profile])
          members      (re-frame/subscribe [:communities/community-members community-id])]
      [contacts multiaccount members]))
  (fn [[contacts multiaccount members] _]

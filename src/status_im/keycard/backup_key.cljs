@@ -17,7 +17,7 @@
   (rf/merge cofx
             {:db (-> db
                      (assoc-in [:keycard :creating-backup?] backup-type))}
-            (when (:multiaccount db)
+            (when (:profile/profile db)
               (navigation/navigate-to :my-profile nil))
             (navigation/navigate-to :seed-phrase nil)))
 

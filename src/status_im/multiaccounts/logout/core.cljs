@@ -12,7 +12,7 @@
 (rf/defn logout-method
   {:events [::logout-method]}
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
-  (let [key-uid (get-in db [:multiaccount :key-uid])]
+  (let [key-uid (get-in db [:profile/profile :key-uid])]
     (rf/merge cofx
               {:set-root                             :progress
                :chat.ui/clear-inputs                 nil
@@ -21,8 +21,9 @@
                ::logout                              nil
                ::multiaccounts/webview-debug-changed false
                :keychain/clear-user-password         key-uid
-               :setup/open-multiaccounts             #(re-frame/dispatch [:setup/initialize-multiaccounts
-                                                                          % {:logout? logout?}])}
+               :profile/get-profiles-overview        #(re-frame/dispatch
+                                                       [:profile/get-profiles-overview-success
+                                                        %])}
               (keychain/save-auth-method key-uid auth-method)
               (wallet/clear-timeouts)
               (init/initialize-app-db))))
@@ -56,7 +57,7 @@
             (logout-method {:auth-method keychain/auth-method-biometric-prepare
                             :logout?     false})
             (fn [{:keys [db]}]
-              {:db (assoc-in db [:multiaccounts/login :save-password?] true)})))
+              {:db (assoc-in db [:profile/login :save-password?] true)})))
 
 (re-frame/reg-fx
  ::logout

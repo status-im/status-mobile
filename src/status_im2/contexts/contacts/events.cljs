@@ -78,7 +78,7 @@
 (rf/defn send-contact-request
   {:events [:contact.ui/send-contact-request]}
   [{:keys [db]} id]
-  (when (not= id (get-in db [:multiaccount :public-key]))
+  (when (not= id (get-in db [:profile/profile :public-key]))
     {:json-rpc/call
      [{:method      "wakuext_sendContactRequest"
        :js-response true

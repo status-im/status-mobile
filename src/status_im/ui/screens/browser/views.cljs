@@ -251,7 +251,7 @@
                   [:browser/options]
                   dapps-account [:dapps-account]
                   network-id [:chain-id]
-                  {:keys [webview-allow-permission-requests?]} [:multiaccount]]
+                  {:keys [webview-allow-permission-requests?]} [:profile/profile]]
     (let [can-go-back?    (browser/can-go-back? browser)
           can-go-forward? (browser/can-go-forward? browser)
           url-original    (browser/get-current-url browser)]

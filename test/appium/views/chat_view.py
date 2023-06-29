@@ -220,8 +220,9 @@ class ChatElementByText(Text):
     def wait_for_status_to_be(self, expected_status: str, timeout: int = 30):
         self.driver.info("Waiting for message to be sent for %s sec" % timeout)
         start_time = time.time()
-        current_status = self.status
+        current_status = 'not set'
         while time.time() - start_time <= timeout:
+            current_status = self.status
             if current_status == expected_status:
                 return
             time.sleep(1)

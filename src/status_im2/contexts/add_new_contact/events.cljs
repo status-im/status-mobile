@@ -95,7 +95,7 @@
 (rf/defn set-new-identity
   {:events [:contacts/set-new-identity]}
   [{:keys [db]} input scanned]
-  (let [user-public-key (get-in db [:multiaccount :public-key])
+  (let [user-public-key (get-in db [:profile/profile :public-key])
         {:keys [input id ens state]
          :as   contact} (-> {:user-public-key user-public-key
                              :input           input

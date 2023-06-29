@@ -101,7 +101,7 @@
        (.catch #(cb (generate-error-result %))))))
 
 (re-frame/reg-fx
- :get-supported-biometric-auth
+ :biometric/get-supported-biometric-auth
  (fn []
    (let [callback #(re-frame/dispatch [:init.callback/get-supported-biometric-auth-success %])]
      ;;NOTE: if we can't save user password, we can't support biometrics
@@ -149,8 +149,8 @@
 
 (rf/defn update-biometric
   [{db :db :as cofx} biometric-auth?]
-  (let [key-uid (or (get-in db [:multiaccount :key-uid])
-                    (get-in db [:multiaccounts/login :key-uid]))]
+  (let [key-uid (or (get-in db [:profile/profile :key-uid])
+                    (get-in db [:profile/login :key-uid]))]
     (rf/merge cofx
               (keychain/save-auth-method
                key-uid
@@ -214,7 +214,7 @@
    cofx
    {:db (-> db
             (assoc :auth-method keychain/auth-method-none)
-            (assoc-in [:multiaccounts/login :save-password?] false))}
+            (assoc-in [:profile/login :save-password?] false))}
    (popover/hide-popover)))
 
 (rf/defn setup-done

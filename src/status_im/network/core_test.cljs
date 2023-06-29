@@ -123,7 +123,7 @@
                                          :db                  {:networks/manage {:url   {:value "wrong"}
                                                                                  :chain {:value "1"}
                                                                                  :name  {:value "empty"}}
-                                                               :multiaccount    {}}})))))
+                                                               :profile/profile {}}})))))
 
 (deftest save-valid-network
   (testing "save a valid network"
@@ -133,7 +133,7 @@
                                                          :chain  {:value :mainnet}
                                                          :symbol {:value "symbol"}
                                                          :name   {:value "valid"}}
-                                     :multiaccount      {}
+                                     :profile/profile   {}
                                      :networks/networks {"random2"
                                                          {:id     "random2"
                                                           :name   "network-name"
@@ -156,7 +156,7 @@
                                                              :chain      {:value :custom}
                                                              :name       {:value "valid"}
                                                              :network-id {:value 1}}
-                                         :multiaccount      {}
+                                         :profile/profile   {}
                                          :networks/networks {"random"
                                                              {:id     "random"
                                                               :name   "network-name"
@@ -176,7 +176,7 @@
                                                          :name       {:value "valid"}
                                                          :symbol     {:value "symbol"}
                                                          :network-id {:value 5}}
-                                     :multiaccount      {}
+                                     :profile/profile   {}
                                      :networks/networks {"randomid"
                                                          {:id     "randomid"
                                                           :name   "network-name"

@@ -53,7 +53,7 @@
   (views/letsubs [current-mailserver-id      [:mailserver/current-id]
                   preferred-mailserver-id    [:mailserver/preferred-id]
                   mailservers                [:mailserver/fleet-mailservers]
-                  {:keys [use-mailservers?]} [:multiaccount]]
+                  {:keys [use-mailservers?]} [:profile/profile]]
     [react/view {:style styles/wrapper}
      [topbar/topbar
       {:title (i18n/label :t/history-nodes)

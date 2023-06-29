@@ -2,7 +2,7 @@
 
 (defn has-paired-installations?
   [cofx]
-  (let [our-installation-id (get-in cofx [:db :multiaccount :installation-id])]
+  (let [our-installation-id (get-in cofx [:db :profile/profile :installation-id])]
     (->>
       (get-in cofx [:db :pairing/installations])
       vals

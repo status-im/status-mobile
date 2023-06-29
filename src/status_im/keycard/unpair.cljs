@@ -119,13 +119,13 @@
 
 (defn handle-account-removal
   [{:keys [db] :as cofx} keys-removed-from-card?]
-  (let [key-uid      (get-in db [:multiaccount :key-uid])
+  (let [key-uid      (get-in db [:profile/profile :key-uid])
         instance-uid (get-in db [:keycard :application-info :instance-uid])
         pairings     (get-in db [:keycard :pairings])]
     (rf/merge
      cofx
      {:db                               (-> db
-                                            (update :multiaccounts/multiaccounts dissoc key-uid)
+                                            (update :profile/profiles-overview dissoc key-uid)
                                             (assoc-in [:keycard :secrets] nil)
                                             (update-in [:keycard :pairings]
                                                        dissoc

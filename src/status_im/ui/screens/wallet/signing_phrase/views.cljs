@@ -10,7 +10,7 @@
 (views/defview signing-phrase
   []
   (views/letsubs [phrase                          [:signing/phrase]
-                  {:keys [wallet-set-up-passed?]} [:multiaccount]]
+                  {:keys [wallet-set-up-passed?]} [:profile/profile]]
     [react/view
      [react/view {:margin-top 24 :margin-horizontal 24 :align-items :center}
       [react/view

@@ -59,8 +59,8 @@
   (group-chats/create-from-link cofx params))
 
 (defn own-public-key?
-  [{:keys [multiaccount]} public-key]
-  (= (:public-key multiaccount) public-key))
+  [{:keys [profile/profile]} public-key]
+  (= (:public-key profile) public-key))
 
 (rf/defn handle-private-chat
   [{:keys [db] :as cofx} {:keys [chat-id]}]
@@ -123,7 +123,7 @@
     (some #(when (= (string/lower-case (:address %))
                     (string/lower-case address))
              %)
-          (:multiaccount/accounts db))))
+          (:profile/wallet-accounts db))))
 
 (rf/defn handle-wallet-account
   [cofx {address :account}]

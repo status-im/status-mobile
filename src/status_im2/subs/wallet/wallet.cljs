@@ -17,7 +17,7 @@
 (re-frame/reg-sub
  :balance-default
  :<- [:wallet]
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  (fn [[wallet accounts]]
    (get-in wallet [:accounts (:address (ethereum/get-default-account accounts)) :balance])))
 
@@ -55,7 +55,7 @@
 
 (re-frame/reg-sub
  :wallet.settings/currency
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [settings]
    (or (get settings :currency) :usd)))
 
@@ -170,7 +170,7 @@
 (re-frame/reg-sub
  :wallet/visible-tokens-symbols
  :<- [:ethereum/chain-keyword]
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [[chain current-multiaccount]]
    (get-in current-multiaccount [:wallet/visible-tokens chain])))
 

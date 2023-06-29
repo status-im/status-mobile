@@ -66,7 +66,7 @@
 (rf/defn get-cached-balances
   [{:keys [db]} scan-all-tokens?]
   (let [addresses (map (comp string/lower-case :address)
-                       (get db :multiaccount/accounts))]
+                       (get db :profile/wallet-accounts))]
     {:wallet/get-cached-balances
      {:addresses  addresses
       :on-success #(re-frame/dispatch [::set-cached-balances addresses % scan-all-tokens?])
@@ -155,11 +155,11 @@
   {:events [::fetch-collectibles-collection]}
   [{:keys [db]}]
   (let [addresses (map (comp string/lower-case :address)
-                       (get db :multiaccount/accounts))
+                       (get db :profile/wallet-accounts))
         chain-id  (-> db
                       ethereum/current-network
                       ethereum/network->chain-id)]
-    (when (get-in db [:multiaccount :opensea-enabled?])
+    (when (get-in db [:profile/profile :opensea-enabled?])
       {:json-rpc/call (map
                        (fn [address]
                          {:method     "wallet_getOpenseaCollectionsByOwner"
@@ -230,16 +230,18 @@
 
 (rf/defn update-balances
   {:events [:wallet/update-balances]}
-  [{{:keys [network-status :wallet/all-tokens
-            multiaccount :multiaccount/accounts]
-     :as   db}
+  [{{:keys         [network-status]
+     :wallet/keys  [all-tokens]
+     :profile/keys [profile wallet-accounts]
+     :as           db}
     :db
     :as cofx} addresses scan-all-tokens?]
   (log/debug "update-balances"
              "accounts"         addresses
              "scan-all-tokens?" scan-all-tokens?)
-  (let [addresses                        (or addresses (map (comp string/lower-case :address) accounts))
-        {:keys [:wallet/visible-tokens]} multiaccount
+  (let [addresses                        (or addresses
+                                             (map (comp string/lower-case :address) wallet-accounts))
+        {:keys [:wallet/visible-tokens]} profile
         chain                            (ethereum/chain-keyword db)
         assets                           (get visible-tokens chain)
         tokens                           (->> (vals all-tokens)
@@ -306,9 +308,9 @@
         (get-in db [:wallet :accounts])))
 
 (rf/defn update-toggle-in-settings
-  [{{:keys [multiaccount] :as db} :db :as cofx} symbol checked?]
+  [{{:profile/keys [profile] :as db} :db :as cofx} symbol checked?]
   (let [chain          (ethereum/chain-keyword db)
-        visible-tokens (get multiaccount :wallet/visible-tokens)]
+        visible-tokens (get profile :wallet/visible-tokens)]
     (rf/merge cofx
               (multiaccounts.update/multiaccount-update
                :wallet/visible-tokens
@@ -353,7 +355,7 @@
   {:events [::tokens-found]}
   [{:keys [db] :as cofx} balances]
   (let [chain                (ethereum/chain-keyword db)
-        visible-tokens       (get-in db [:multiaccount :wallet/visible-tokens])
+        visible-tokens       (get-in db [:profile/profile :wallet/visible-tokens])
         chain-visible-tokens (into (or (config/default-visible-tokens chain)
                                        #{})
                                    (flatten (map keys (vals balances))))]
@@ -460,7 +462,7 @@
         amount-text (str (money/internal->formatted value symbol decimals))]
     {:db       (assoc db
                       :wallet/prepare-transaction
-                      {:from               (ethereum/get-default-account (:multiaccount/accounts db))
+                      {:from               (ethereum/get-default-account (:profile/wallet-accounts db))
                        :to                 (or (get-in db [:contacts/contacts identity])
                                                (-> identity
                                                    contact.db/public-key->new-contact
@@ -515,7 +517,7 @@
     (cond-> {:db       (assoc db
                               :wallet/prepare-transaction
                               {:from       (ethereum/get-default-account
-                                            (:multiaccount/accounts db))
+                                            (:profile/wallet-accounts db))
                                :to         contact
                                :symbol     :ETH
                                :from-chat? true})
@@ -535,7 +537,7 @@
   (let [identity (:current-chat-id db)]
     {:db       (assoc db
                       :wallet/prepare-transaction
-                      {:from             (ethereum/get-default-account (:multiaccount/accounts db))
+                      {:from             (ethereum/get-default-account (:profile/wallet-accounts db))
                        :to               (or (get-in db [:contacts/contacts identity])
                                              (-> identity
                                                  contact.db/public-key->new-contact
@@ -709,7 +711,7 @@
 (rf/defn check-recent-history
   [{:keys [db] :as cofx}
    {:keys [on-recent-history-fetching force-restart?]}]
-  (let [addresses   (map :address (get db :multiaccount/accounts))
+  (let [addresses   (map :address (get db :profile/wallet-accounts))
         old-timeout (get db :wallet-service/restart-timeout)
         timeout     (if force-restart?
                       old-timeout
@@ -729,7 +731,7 @@
   [{:keys [db] :as cofx}
    {:keys [force-restart? on-recent-history-fetching]
     :as   params}]
-  (when (:multiaccount db)
+  (when (:profile/profile db)
     (let [syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)
           binance-chain?   (ethereum/binance-chain? db)]
       (log/info "restart-wallet-service"
@@ -832,7 +834,7 @@
 (rf/defn wallet-will-focus
   {:events [::wallet-stack]}
   [{:keys [db]}]
-  (let [wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])
+  (let [wallet-set-up-passed? (get-in db [:profile/profile :wallet-set-up-passed?])
         sign-phrase-showed?   (get db :wallet/sign-phrase-showed?)]
     {:dispatch-n [[:wallet.ui/pull-to-refresh]] ;TODO temporary simple fix for v1
      ;;[:show-popover {:view [signing-phrase/signing-phrase]}]]

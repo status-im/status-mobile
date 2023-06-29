@@ -88,7 +88,7 @@
 
 (defn save-password
   []
-  (let [{:keys [save-password?]} @(re-frame/subscribe [:multiaccounts/login])
+  (let [{:keys [save-password?]} @(re-frame/subscribe [:profile/login])
         auth-method              @(re-frame/subscribe [:auth-method])]
     (when-not (and platform/android? (not auth-method))
       [react/view

@@ -51,7 +51,7 @@
 
 (defn- left-section
   [{:keys [avatar]}]
-  (let [{:keys [public-key]} (rf/sub [:multiaccount])
+  (let [{:keys [public-key]} (rf/sub [:profile/profile])
         online?              (rf/sub [:visibility-status-updates/online? public-key])]
     [rn/touchable-without-feedback {:on-press #(rf/dispatch [:navigate-to :my-profile])}
      [rn/view

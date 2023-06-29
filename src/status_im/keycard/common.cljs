@@ -52,7 +52,7 @@
     :init
 
     has-master-key?
-    :multiaccount
+    :profile/profile
 
     (and (not paired?)
          (zero? free-pairing-slots))
@@ -68,7 +68,7 @@
 (defn find-multiaccount-by-keycard-instance-uid
   [db keycard-instance-uid]
   (when keycard-instance-uid
-    (->> (:multiaccounts/multiaccounts db)
+    (->> (:profile/profiles-overview db)
          vals
          (filter #(= keycard-instance-uid (:keycard-instance-uid %)))
          first)))
@@ -76,7 +76,7 @@
 (defn find-multiaccount-by-key-uid
   [db key-uid]
   (when key-uid
-    (->> (:multiaccounts/multiaccounts db)
+    (->> (:profile/profiles-overview db)
          vals
          (filter #(= (ethereum/normalized-hex key-uid) (:key-uid %)))
          first)))
@@ -86,7 +86,7 @@
    (get-pairing db (get-in db [:keycard :application-info :key-uid])))
   ([db key-uid]
    (or
-    (get-in db [:multiaccount :keycard-pairing])
+    (get-in db [:profile/profile :keycard-pairing])
     (get-in db [:keycard :secrets :pairing])
     (when key-uid
       (:keycard-pairing
@@ -324,7 +324,7 @@
 
 (rf/defn get-keys-from-keycard
   [{:keys [db]}]
-  (let [key-uid (get-in db [:multiaccounts/login :key-uid])
+  (let [key-uid (get-in db [:profile/login :key-uid])
         pin     (string/join (get-in db [:keycard :pin :login]))]
     (log/debug "[keycard] get-keys-from-keycard"
                ", not empty pin:"
@@ -339,11 +339,11 @@
   (let [{:keys [key-uid encryption-public-key whisper-private-key]
          :as   account-data}
         (js->clj data :keywordize-keys true)
-        {:keys [name]} (get-in db [:multiaccounts/multiaccounts key-uid])
+        {:keys [name]} (get-in db [:profile/profiles-overview key-uid])
         key-uid (get-in db [:keycard :application-info :key-uid])
         multiaccount-data (types/clj->json {:name    name
                                             :key-uid key-uid})
-        save-keys? (get-in db [:multiaccounts/login :save-password?])]
+        save-keys? (get-in db [:profile/login :save-password?])]
     (rf/merge cofx
               {:db
                (-> db
@@ -353,13 +353,13 @@
                               assoc
                               :puk-retry-counter 5
                               :pin-retry-counter 3)
-                   (assoc-in [:keycard :multiaccount]
+                   (assoc-in [:keycard :profile/profile]
                              (update account-data :whisper-public-key ethereum/normalized-hex))
                    (assoc-in [:keycard :flow] nil)
-                   (update :multiaccounts/login assoc
-                           :password            encryption-public-key
-                           :key-uid             key-uid
-                           :name                name))
+                   (update :profile/login assoc
+                           :password      encryption-public-key
+                           :key-uid       key-uid
+                           :name          name))
 
                :keycard/login-with-keycard {:multiaccount-data multiaccount-data
                                             :password          encryption-public-key
@@ -379,7 +379,7 @@
    (hide-connection-sheet)
    ; do not try to display the popover if it is already open or
    ; we are in the login interface (which has a different handling)
-   (when-not (or (:multiaccounts/login db) (:popover/popover db))
+   (when-not (or (:profile/login db) (:popover/popover db))
      (popover/show-popover {:view card-status}))))
 
 (rf/defn blocked-keycard-popup
@@ -536,7 +536,7 @@
 
 (defn keycard-multiaccount?
   [db]
-  (boolean (get-in db [:multiaccount :keycard-pairing])))
+  (boolean (get-in db [:profile/profile :keycard-pairing])))
 
 (rf/defn verify-pin
   {:events [:keycard/verify-pin]}

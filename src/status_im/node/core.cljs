@@ -102,7 +102,7 @@
 (defn current-fleet-key
   [db]
   (keyword (get-in db
-                   [:multiaccount :fleet]
+                   [:profile/profile :fleet]
                    config/fleet)))
 
 (defn get-current-fleet
@@ -116,9 +116,9 @@
     (some #(string/includes? (str %) "waku") ks)))
 
 (defn get-multiaccount-node-config
-  [{:keys [multiaccount :networks/networks :networks/current-network]
+  [{:keys [profile/profile :networks/networks :networks/current-network]
     :as   db}]
-  (let [wakuv2-config (get multiaccount :wakuv2-config {})
+  (let [wakuv2-config (get profile :wakuv2-config {})
         current-fleet-key (current-fleet-key db)
         current-fleet (get-current-fleet db)
         wakuv2-enabled (wakuv2-enabled? current-fleet)
@@ -127,7 +127,7 @@
         {:keys [installation-id log-level
                 waku-bloom-filter-mode
                 custom-bootnodes custom-bootnodes-enabled?]}
-        multiaccount
+        profile
         use-custom-bootnodes (get custom-bootnodes-enabled? current-network)]
     (cond-> (get-in networks [current-network :config])
       :always
@@ -212,7 +212,7 @@ app-db"
 (rf/defn prepare-new-config
   "Use this function to apply settings to the current account node config"
   [{:keys [db]} {:keys [on-success]}]
-  (let [key-uid (get-in db [:multiaccount :key-uid])]
+  (let [key-uid (get-in db [:profile/profile :key-uid])]
     {::prepare-new-config [key-uid
                            (get-new-config db)
                            #(re-frame/dispatch

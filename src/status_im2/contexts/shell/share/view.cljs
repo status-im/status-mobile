@@ -6,11 +6,11 @@
             [utils.re-frame :as rf]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
-            [clojure.string :as string]
             [react-native.blur :as blur]
             [status-im.ui.components.list-selection :as list-selection]
             [utils.image-server :as image-server]
-            [react-native.navigation :as navigation]))
+            [react-native.navigation :as navigation]
+            [clojure.string :as string]))
 
 (defn header
   []
@@ -45,18 +45,21 @@
 
 (defn profile-tab
   [window-width]
-  (let [multiaccount    (rf/sub [:multiaccount])
-        emoji-hash      (string/join (get multiaccount :emoji-hash))
-        qr-size         (int (- window-width 64))
-        public-pk       (get multiaccount :compressed-key)
-        abbreviated-url (abbreviated-url image-server/status-profile-base-url-without-https public-pk)
-        profile-url     (str image-server/status-profile-base-url public-pk)
-        port            (rf/sub [:mediaserver/port])
-        key-uid         (get multiaccount :key-uid)
-        source-uri      (image-server/get-account-qr-image-uri {:key-uid    key-uid
-                                                                :public-key public-pk
-                                                                :port       port
-                                                                :qr-size    qr-size})]
+  (let [{:keys [emoji-hash
+                compressed-key
+                key-uid]} (rf/sub [:profile/profile])
+        port              (rf/sub [:mediaserver/port])
+        emoji-hash-string (string/join emoji-hash)
+        qr-size           (int (- window-width 64))
+        abbreviated-url   (abbreviated-url
+                           image-server/status-profile-base-url-without-https
+                           compressed-key)
+        profile-url       (str image-server/status-profile-base-url compressed-key)
+        source-uri        (image-server/get-account-qr-image-uri
+                           {:key-uid    key-uid
+                            :public-key compressed-key
+                            :port       port
+                            :qr-size    qr-size})]
     [:<>
      [rn/view {:style style/qr-code-container}
       [quo/qr-code
@@ -110,12 +113,12 @@
           :underlay-color   colors/neutral-80-opa-1-blur
           :background-color :transparent
           :on-press         #(rf/dispatch [:share/copy-text-and-show-toast
-                                           {:text-to-copy      emoji-hash
+                                           {:text-to-copy      emoji-hash-string
                                             :post-copy-message (i18n/label :t/emoji-hash-copied)}])
           :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast
-                                           {:text-to-copy      emoji-hash
+                                           {:text-to-copy      emoji-hash-string
                                             :post-copy-message (i18n/label :t/emoji-hash-copied)}])}
-         [rn/text {:style style/emoji-hash-content} emoji-hash]]]]
+         [rn/text {:style style/emoji-hash-content} emoji-hash-string]]]]
       [rn/view {:style style/emoji-share-button-container}
        [quo/button
         {:icon                true
@@ -125,10 +128,10 @@
          :override-theme      :dark
          :style               {:margin-right 12}
          :on-press            #(rf/dispatch [:share/copy-text-and-show-toast
-                                             {:text-to-copy      emoji-hash
+                                             {:text-to-copy      emoji-hash-string
                                               :post-copy-message (i18n/label :t/emoji-hash-copied)}])
          :on-long-press       #(rf/dispatch [:share/copy-text-and-show-toast
-                                             {:text-to-copy      emoji-hash
+                                             {:text-to-copy      emoji-hash-string
                                               :post-copy-message (i18n/label :t/emoji-hash-copied)}])}
         :i/copy]]]]))
 

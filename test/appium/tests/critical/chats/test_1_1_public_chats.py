@@ -1209,7 +1209,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         [device.click_system_back_button_until_element_is_shown() for device in (self.device_1, self.device_2)]
         self.errors.verify_no_errors()
 
-    @marks.xfail(reason="Issue with messages not being sent for a long time")
     @marks.testrail_id(702783)
     def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
         self.chat_2.jump_to_card_by_text(self.username_1)

@@ -41,7 +41,7 @@
   (let [custom-nodes (into {}
                            (map #(vector (random-guid-generator)
                                          {:name (name (first %1)) :address (second %1)})
-                                (get-in db [:multiaccount :wakuv2-config :CustomNodes])))]
+                                (get-in db [:profile/profile :wakuv2-config :CustomNodes])))]
     (rf/merge cofx
               {:db       (assoc db :wakuv2-nodes/list custom-nodes)
                :dispatch [:navigate-to :wakuv2-settings]})))
@@ -109,7 +109,7 @@
                        (into {}))]
     (rf/merge cofx
               {:db       (-> db
-                             (assoc-in [:multiaccount :wakuv2-config :CustomNodes] new-nodes)
+                             (assoc-in [:profile/profile :wakuv2-config :CustomNodes] new-nodes)
                              (dissoc :wakuv2-nodes/manage :wakuv2-nodes/list))
                :dispatch [:navigate-back]}
               (node/prepare-new-config

@@ -42,8 +42,8 @@
             (navigation/navigate-back)))
 
 (defn own-public-key?
-  [{:keys [multiaccount]} public-key]
-  (= (:public-key multiaccount) public-key))
+  [{:keys [profile/profile]} public-key]
+  (= (:public-key profile) public-key))
 
 (rf/defn handle-private-chat
   [{:keys [db] :as cofx} {:keys [chat-id]}]

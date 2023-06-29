@@ -7,7 +7,6 @@
             [utils.i18n :as i18n]
             [status-im.keycard.backup-key :as keycard.backup]
             [status-im.keycard.common :as common]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im.multiaccounts.logout.core :as multiaccounts.logout]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
@@ -28,16 +27,6 @@
      :actions-logged-in
      :actions-not-logged-in)
    nil))
-
-(rf/defn move-keystore-checked
-  {:events [::move-keystore-checked]}
-  [{:keys [db] :as cofx} checked?]
-  {:db (assoc-in db [:multiaccounts/key-storage :move-keystore-checked?] checked?)})
-
-(rf/defn reset-db-checked
-  {:events [::reset-db-checked]}
-  [{:keys [db] :as cofx} checked?]
-  {:db (assoc-in db [:multiaccounts/key-storage :reset-db-checked?] checked?)})
 
 (rf/defn navigate-back
   {:events [::navigate-back]}
@@ -61,18 +50,6 @@
    cofx
    {:db (assoc db :recovered-account? true)}
    (navigation/navigate-to :seed-phrase nil)))
-
-(rf/defn seed-phrase-input-changed
-  {:events [::seed-phrase-input-changed]}
-  [{:keys [db] :as cofx} masked-seed-phrase]
-  (let [seed-phrase (security/safe-unmask-data masked-seed-phrase)]
-    {:db (update db
-                 :multiaccounts/key-storage assoc
-                 :seed-phrase               (when seed-phrase
-                                              (string/lower-case seed-phrase))
-                 :seed-shape-invalid?       (or (empty? seed-phrase)
-                                                (not (mnemonic/valid-length? seed-phrase)))
-                 :seed-word-count           (mnemonic/words-count seed-phrase))}))
 
 (rf/defn key-uid-seed-mismatch
   {:events [::show-seed-key-uid-mismatch-error-popup]}
@@ -116,27 +93,19 @@
                         :error
                         string/blank?
                         not)
-        onboarding? (not (or (:multiaccounts/login db) (:multiaccount db)))]
+        onboarding? (not (or (:profile/login db) (:profile/profile db)))]
     (if error?
       (popover/show-popover cofx {:view :custom-seed-phrase})
       {::validate-seed-against-key-uid {:seed-phrase (-> db :multiaccounts/key-storage :seed-phrase)
                                         ;; Unique key-uid of the account for which we are going to move
                                         ;; keys
-                                        :key-uid     (or (-> db :multiaccounts/login :key-uid)
-                                                         (-> db :multiaccount :key-uid)
+                                        :key-uid     (or (-> db :profile/login :key-uid)
+                                                         (-> db :profile/profile :key-uid)
                                                          (and onboarding?
                                                               (-> db
                                                                   :keycard
                                                                   :application-info
                                                                   :key-uid)))}})))
-
-(rf/defn choose-storage-pressed
-  {:events [::choose-storage-pressed]}
-  [{:keys [db] :as cofx}]
-  (let [{:keys [seed-phrase]} (:multiaccounts/key-storage db)]
-    {::multiaccounts/validate-mnemonic
-     [(mnemonic/sanitize-passphrase seed-phrase)
-      #(re-frame/dispatch [::seed-phrase-validated %])]}))
 
 (rf/defn keycard-storage-pressed
   {:events [::keycard-storage-pressed]}
@@ -224,7 +193,7 @@ We don't need to take the exact steps, just set the required state and redirect 
   {:events [::verify-password]}
   [{:keys [db] :as cofx}]
   (native-module/verify-database-password
-   (get-in db [:multiaccounts/login :key-uid])
+   (get-in db [:profile/login :key-uid])
    (ethereum/sha3 (security/safe-unmask-data (get-in db [:keycard :migration-password])))
    #(re-frame/dispatch [::verify-password-result %])))
 

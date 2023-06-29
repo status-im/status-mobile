@@ -385,7 +385,7 @@
 (rf/defn web3-send-async
   [cofx dapp-name {:keys [method params id] :as payload} message-id]
   (let [message?      (web3-sign-message? method)
-        dapps-address (get-in cofx [:db :multiaccount :dapps-address])
+        dapps-address (get-in cofx [:db :profile/profile :dapps-address])
         typed?        (and (not= constants/web3-personal-sign method)
                            (not= constants/web3-eth-sign method))]
     (if (or message? (= constants/web3-send-transaction method))

@@ -1,6 +1,5 @@
 (ns status-im2.contexts.shell.jump-to.view
-  (:require [re-frame.db]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [react-native.core :as rn]
@@ -13,7 +12,8 @@
             [status-im2.contexts.shell.jump-to.components.home-stack.view :as home-stack]
             [status-im2.contexts.shell.jump-to.components.bottom-tabs.view :as bottom-tabs]
             [status-im2.contexts.shell.jump-to.components.jump-to-screen.view :as jump-to-screen]
-            [status-im2.contexts.shell.jump-to.components.floating-screens.view :as floating-screens]))
+            [status-im2.contexts.shell.jump-to.components.floating-screens.view :as floating-screens]
+            re-frame.db))
 
 (defn navigate-back-handler
   []
@@ -30,14 +30,20 @@
         true)
       false)))
 
+(defn floating-button
+  [shared-values]
+  [quo/floating-shell-button
+   {:jump-to {:on-press            #(animation/close-home-stack true)
+              :label               (i18n/label :t/jump-to)
+              :customization-color (rf/sub [:profile/customization-color])}}
+   {:position :absolute
+    :bottom   (+ (utils/bottom-tabs-container-height) 12)}
+   (:home-stack-opacity shared-values)])
+
 (defn f-shell-stack
   []
   (let [shared-values       (shared-values/calculate-and-set-shared-values)
-        {:keys [key-uid]}   (rf/sub [:multiaccount])
-        profile-color       (:color (rf/sub [:onboarding-2/profile]))
-        customization-color (if profile-color ;; Todo - 1. Use single sub for customization color
-                              profile-color   ;; Todo - 2. Move sub to child view
-                              (rf/sub [:profile/customization-color key-uid]))]
+        customization-color (rf/sub [:profile/customization-color])]
     (rn/use-effect
      (fn []
        (rn/hw-back-add-listener navigate-back-handler)
@@ -47,13 +53,7 @@
      [jump-to-screen/view customization-color]
      [:f> bottom-tabs/f-bottom-tabs]
      [:f> home-stack/f-home-stack]
-     [quo/floating-shell-button
-      {:jump-to {:on-press            #(animation/close-home-stack true)
-                 :label               (i18n/label :t/jump-to)
-                 :customization-color customization-color}}
-      {:position :absolute
-       :bottom   (+ (utils/bottom-tabs-container-height) 12)}
-      (:home-stack-opacity shared-values)]
+     [floating-button shared-values]
      (when-not config/shell-navigation-disabled?
        [floating-screens/view])]))
 

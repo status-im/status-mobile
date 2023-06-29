@@ -11,16 +11,16 @@
                              :supported-biometric-auth false}}
           {:keys [db]} (login/save-password initial-cofx true)]
       (test/is (= false (contains? db :popover/popover)))
-      (test/is (= true (get-in db [:multiaccounts/login :save-password?])))
+      (test/is (= true (get-in db [:profile/login :save-password?])))
       (test/testing "uncheck save password"
         (let [{:keys [db]} (login/save-password {:db db} false)]
           (test/is (= false (contains? db :popover/popover)))
-          (test/is (= false (get-in db [:multiaccounts/login :save-password?])))))))
+          (test/is (= false (get-in db [:profile/login :save-password?])))))))
   (test/testing "check save password, biometric available"
     (let [initial-cofx {:db {:auth-method              keychain/auth-method-none
                              :supported-biometric-auth true}}
           {:keys [db]} (login/save-password initial-cofx true)]
-      (test/is (= true (get-in db [:multiaccounts/login :save-password?])))
+      (test/is (= true (get-in db [:profile/login :save-password?])))
       (test/testing "enable biometric auth"
         (let [{:keys [db] :as res} (biometric/enable {:db db})]
           (test/is (contains? res :biometric-auth/authenticate))
@@ -53,10 +53,10 @@
                                                :bioauth-message nil
                                                :bioauth-code    nil}))
                                             false)]
-      (test/is (= true (get-in db [:multiaccounts/login :save-password?])))
+      (test/is (= true (get-in db [:profile/login :save-password?])))
       ;; case 2 from https://github.com/status-im/status-mobile/issues/9573
       (test/is (= keychain/auth-method-biometric-prepare (:auth-method db)))
       (test/testing "disable biometric"
         (let [{:keys [db]} (biometric/disable {:db db})]
-          (test/is (= false (get-in db [:multiaccounts/login :save-password?])))
+          (test/is (= false (get-in db [:profile/login :save-password?])))
           (test/is (= keychain/auth-method-none (:auth-method db))))))))

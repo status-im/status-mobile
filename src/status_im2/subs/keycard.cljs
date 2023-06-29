@@ -106,7 +106,7 @@
 (re-frame/reg-sub
  :keycard-multiaccount
  (fn [db]
-   (get-in db [:keycard :multiaccount])))
+   (get-in db [:keycard :profile/profile])))
 
 (re-frame/reg-sub
  :keycard-multiaccount-wallet-address
@@ -121,13 +121,13 @@
 (re-frame/reg-sub
  :keycard-paired-on
  (fn [db]
-   (some-> (get-in db [:multiaccount :keycard-paired-on])
+   (some-> (get-in db [:profile/profile :keycard-paired-on])
            (datetime/timestamp->year-month-day-date))))
 
 (re-frame/reg-sub
  :keycard-multiaccount-pairing
  (fn [db]
-   (get-in db [:multiaccount :keycard-pairing])))
+   (get-in db [:profile/profile :keycard-pairing])))
 
 (re-frame/reg-sub
  :keycard/pin-retry-counter

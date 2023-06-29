@@ -10,28 +10,28 @@
 (deftest on-password-input-submitted
   (testing
     "handling :multiaccounts.login.ui/password-input-submitted event"
-    (let [cofx {:db {:multiaccounts/login {:key-uid  "key-uid"
-                                           :password "password"
-                                           :name     "user"}}}
+    (let [cofx {:db {:profile/login {:key-uid  "key-uid"
+                                     :password "password"
+                                     :name     "user"}}}
           efx  (login.core/login cofx)]
       (testing "Change multiaccount."
         (is (= (::login.core/login efx)
                ["key-uid" "{\"name\":\"user\",\"key-uid\":\"key-uid\"}"
                 (ethereum/sha3 "password")])))
       (testing "start activity indicator"
-        (is (= (get-in efx [:db :multiaccounts/login :processing]) true))))))
+        (is (= (get-in efx [:db :profile/login :processing]) true))))))
 
 (deftest login-success
   (testing ":accounts.login.callback/login-success event received."
-    (let [db       {:multiaccounts/login {:address  "address"
-                                          :password "password"}
-                    :multiaccount        data/multiaccount}
+    (let [db       {:profile/login   {:address  "address"
+                                      :password "password"}
+                    :profile/profile data/multiaccount}
           cofx     {:db db}
           efx      (login.core/multiaccount-login-success cofx)
           json-rpc (into #{} (map :method (:json-rpc/call efx)))]
       ;; TODO: Account is now cleared only after all sign in fx are executed.
       ;; (testing ":accounts/login cleared."
-      ;;   (is (not (contains? new-db :multiaccounts/login))))
+      ;;   (is (not (contains? new-db :profile/login))))
       (testing "Check the rest of effects."
         (is (json-rpc "web3_clientVersion"))))))
 
@@ -44,7 +44,7 @@
          "04f43da85ff1c333f3e7277b9ac4df92c9120fbb251f1dede7d41286e8c055acfeb845f6d2654821afca25da119daff9043530b296ee0e28e202ba92ec5842d617"
          db
          {:keycard
-          {:multiaccount
+          {:profile/profile
            {:encryption-public-key epk
             :whisper-private-key wpk
             :wallet-address "83278851e290d2488b6add2a257259f5741a3b7d"

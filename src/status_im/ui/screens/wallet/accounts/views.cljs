@@ -146,7 +146,7 @@
                   portfolio-value    [:portfolio-value]
                   empty-balances?    [:empty-balances?]
                   frozen-card?       [:keycard/frozen-card?]
-                  {:keys [mnemonic]} [:multiaccount]]
+                  {:keys [mnemonic]} [:profile/profile]]
     [reanimated/view {:style (styles/container {:minimized minimized})}
      (when (or
             (and frozen-card? minimized)

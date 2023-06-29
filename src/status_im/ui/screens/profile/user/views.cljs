@@ -71,7 +71,7 @@
   (let [{:keys [preferred-name
                 mnemonic
                 keycard-pairing]}
-        @(re-frame/subscribe [:multiaccount])
+        @(re-frame/subscribe [:profile/profile])
         active-contacts-count @(re-frame/subscribe [:contacts/active-count])
         chain @(re-frame/subscribe [:chain-keyword])
         registrar (stateofus/get-cached-registrar chain)

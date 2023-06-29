@@ -73,13 +73,13 @@
 (deftest on-import-multiaccount-success
   (testing "importing a new multiaccount"
     (let [res (models/on-import-multiaccount-success
-               {:db {:multiaccounts/multiaccounts {:acc1 {}}}}
+               {:db {:profile/profiles-overview {:acc1 {}}}}
                {:key-uid :acc2}
                nil)]
       (is (nil? (:utils/show-confirmation res)))))
   (testing "importing an existing multiaccount"
     (let [res (models/on-import-multiaccount-success
-               {:db {:multiaccounts/multiaccounts {:acc1 {}}}}
+               {:db {:profile/profiles-overview {:acc1 {}}}}
                {:key-uid :acc1}
                nil)]
       (is (contains? res :utils/show-confirmation)))))
