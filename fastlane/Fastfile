@@ -254,7 +254,10 @@ platform :ios do
       export_options: {
         "combileBitcode": true,
         "uploadBitcode": false,
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        provisioningProfiles: {
+          "im.status.ethereum": "match AdHoc im.status.ethereum"
+        }
       }
     )
 
