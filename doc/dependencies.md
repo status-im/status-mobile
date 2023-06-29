@@ -1,4 +1,4 @@
-## "@react-native-community/netinfo": "^3.2.1"
+## "@react-native-community/netinfo": "^4.4.0"
 
 no known issue while updating version
 
@@ -30,7 +30,7 @@ internal react library, used by figwheel for instance but also probably react
 
 used for emojis
 
-## "eth-phishing-detect": "^1.1.13"
+## "eth-phishing-detect": "^1.2.0"
 
 used to check if URL is known for phishing
 
@@ -52,15 +52,15 @@ used to generate identicons
 
 used to generate QR code
 
-## "react": "16.8.3"
+## "react": "18.0.0"
 
 react library, update based on react-native recommendation
 
-## "react-dom": "16.4.2"
+## "react-dom": "18.0.0"
 
 react library, update based on react-native recommendation
 
-## "react-native": "git+https://github.com/status-im/react-native.git#v0.59.10"
+## "react-native": "git+https://github.com/status-im/react-native.git#v0.69.10"
 
 react-native
 
@@ -95,7 +95,7 @@ doesn't then this is useless and we are better of using a simple seTimeout
 
 used for some filesystem related functions, for instance to get no-backup directory in `status-im.utils.platform`
 
-## "react-native-gesture-handler": "1.3.0"
+## "react-native-gesture-handler": "2.6.1"
 
 library used by react-navigation
 use version recommended by react-navigation
@@ -118,7 +118,7 @@ TODO: check if fork is necessary, merge with upstream?
 TODO DEPRECATED, should be replaced with https://github.com/react-native-community/react-native-localize
 used to get user language and interact with i18n.js
 
-## "react-native-mail": "git+https://github.com/status-im/react-native-mail.git#v3.0.8_status"
+## "react-native-mail": "git+https://github.com/status-im/react-native-mail.git#v6.1.2-status"
 
 used to send email to support when phone is shaked
 
@@ -135,11 +135,11 @@ used to send email to support when phone is shaked
 
 used to make splash screen with lottie animation during initial loading for android, also used as replacement of "react-native-splash-screen" for iOS
 
-## "react-native-status-keycard": "^2.5.7"
+## "react-native-status-keycard": "^2.5.39"
 
 used for keycard
 
-## "react-native-svg": "9.7.1"
+## "react-native-svg": "9.8.4"
 
 used for svg icons, mostly collectibles are using svg
 TODO: updating requires a pod update on iOS
@@ -148,11 +148,11 @@ TODO: updating requires a pod update on iOS
 
 used for touch-id identification
 
-## "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#v8.0.7_3"
+## "react-native-webview": "git+https://github.com/status-im/react-native-webview.git#refs/tags/v11.16.0-status"
 
 used for browser
 
-## "react-navigation": "3.11.0"
+## "react-navigation": "7.27.1"
 
 used for native navigation
 fixed because even bugfix version upgrade causes runtime errors with current version of react-native
