@@ -213,6 +213,11 @@
 
 ;; toast
 (navigation/register-component "toasts"
+                               ; `:flex 0` is the same as `flex: 0 0 auto` in CSS.
+                               ; We need this to override the HOC default layout which is
+                               ; flex 1. If we don't override this property, this HOC
+                               ; will catch all touches/gestures while the toast is shown,
+                               ; preventing the user doing any action in the app
                                #(gesture/gesture-handler-root-hoc views/toasts
                                                                   #js {:flex 0})
                                (fn [] views/toasts))
