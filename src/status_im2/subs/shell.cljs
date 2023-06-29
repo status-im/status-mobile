@@ -215,8 +215,8 @@
        :counter-label          (:unviewed-mentions-count community-stack)}
       :chats-stack
       {:new-notifications?     (pos? (:unviewed-messages-count chats-stack))
-       :notification-indicator (if (pos? (:unviewed-mentions-count chats-stack)) :counter :unread-dot)
-       :counter-label          (:unviewed-mentions-count chats-stack)}})))
+       :notification-indicator :counter
+       :counter-label          (:unviewed-messages-count chats-stack)}})))
 
 ;; Floating screens
 (re-frame/reg-sub
