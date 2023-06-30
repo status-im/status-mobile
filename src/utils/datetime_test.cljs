@@ -5,8 +5,7 @@
             [cljs.test :refer-macros [deftest testing is are]]
             [clojure.string :as string]
             [utils.datetime :as datetime]
-            [utils.i18n-goog :as i18n-goog]
-            [cljs-time.coerce :as t.coerce]))
+            [utils.i18n-goog :as i18n-goog]))
 
 (defn match
   [name symbols]
