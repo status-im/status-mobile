@@ -1,7 +1,9 @@
 (ns utils.datetime-test
   (:require [cljs-time.coerce :as time-coerce]
             [cljs-time.core :as t]
-            [cljs.test :refer-macros [deftest testing is]]
+            [cljs-time.format :as t.format]
+            [cljs.test :refer-macros [deftest testing is are]]
+            [clojure.string :as string]
             [utils.datetime :as datetime]
             [utils.i18n-goog :as i18n-goog]))
 
@@ -23,6 +25,7 @@
 (def epoch 0)
 ;; 1970-01-03 00:00:00 UTC
 (def epoch-plus-3d 172800000)
+(def mock-current-time-epoch 1655731506000)
 
 (deftest is-24-hour-locale-en-test
   (is (= (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "en")) false)))
@@ -190,9 +193,8 @@
                                               #'utils.datetime/medium-date-time-format)]
        (is (= (datetime/day-relative epoch) "01 gen 1970, 12:00:00 AM")))))
 
-;; TODO(@ibrkhalil): This test sometimes fail in the CI. Make the test agnostic
-;; of the current time and timezone.
-#_(deftest format-mute-till-test
+(deftest format-mute-till-test
+  (with-redefs [t/*ms-fn* (constantly mock-current-time-epoch)]
     (let [remove-msecs              #(string/replace % #"\.\w*Z" "Z")
           time-str-to-obj           #(t.format/parse (remove-msecs (time-coerce/to-string %)))
           curr-time                 (t/now)
@@ -262,4 +264,4 @@
          will-unmute-in-five-days  (write-date mock-in-five-days)
          will-unmute-in-six-days   (write-date mock-in-six-days)))
       (testing "Until the user turns it back on"
-        (is (= "you turn it back on" (datetime/format-mute-till datetime/go-default-time))))))
+        (is (= "you turn it back on" (datetime/format-mute-till datetime/go-default-time)))))))
