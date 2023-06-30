@@ -1,10 +1,10 @@
 (ns quo2.components.counter.step.view
   (:require
-   [quo2.components.counter.step.style :as style]
-   [quo2.components.markdown.text :as text]
-   [quo2.theme :as theme]
-   [react-native.core :as rn]
-   [utils.number]))
+    [quo2.components.counter.step.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [utils.number]))
 
 (defn step-internal
   [{:keys [type accessibility-label theme in-blur-view? customization-color]} value]
@@ -18,7 +18,7 @@
       :style               (style/container {:size                size
                                              :type                type
                                              :in-blur-view?       in-blur-view?
-                                             :theme      theme
+                                             :theme               theme
                                              :customization-color customization-color})}
      [text/text
       {:weight :medium

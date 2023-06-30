@@ -1,10 +1,11 @@
 (ns quo2.components.markdown.list.style)
 
-(def container
-  {:flex-direction :row
-   :flex           1
-   :align-items    :flex-start
-   :margin-top     7})
+(defn container
+  [container-style]
+  (merge container-style
+         {:flex-direction :row
+          :flex           1
+          :align-items    :flex-start}))
 
 (def index
   {:margin-left 5})
