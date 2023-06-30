@@ -1,72 +1,142 @@
 (ns quo2.components.list-items.community-list.view
-  (:require [quo2.components.community.icon :as community-icon]
-            [quo2.components.community.community-view :as community-view]
-            [quo2.components.list-items.community-list.style :as style]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.icon :as icons]
+  (:require [quo2.components.community.community-view :as community-view]
             [quo2.components.counter.counter :as counter]
-            [quo2.components.common.unread-grey-dot.view :refer [unread-grey-dot]]
+            [quo2.components.icon :as icons]
+            [quo2.components.list-items.community-list.style :as style]
             [quo2.components.markdown.text :as text]
-            [react-native.core :as rn]))
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]))
 
-(defn- notification-view
-  [{:keys [muted?
-           unread-messages?
-           unread-mentions-count]}]
-  (cond
-    muted?
-    [icons/icon :i/muted
-     {:container-style {:align-items     :center
-                        :justify-content :center}
-      :resize-mode     :center
-      :size            20
-      :color           (colors/theme-colors colors/neutral-40 colors/neutral-50)}]
-    (pos? unread-mentions-count)
-    [counter/counter {:type :default} unread-mentions-count]
+(defn- logo-component
+  [logo]
+  [rn/image {:source logo :style style/logo}])
 
-    unread-messages?
-    [unread-grey-dot :unviewed-messages-public]))
+(defn- title-component
+  [{:keys [title type] :as props}]
+  [text/text
+   {:weight              :semi-bold
+    :size                :paragraph-1
+    :accessibility-label :community-name-text
+    :number-of-lines     1
+    :ellipsize-mode      :tail
+    :style               (style/title props)}
+   (if (= type :share)
+     (str "# " title)
+     title)])
 
-(defn view
-  [props
-   {:keys [name
-           locked?
-           status
-           muted?
-           unread-messages?
-           unread-mentions-count
-           community-icon
-           tokens]}]
+(defn- notification-dot
+  [blur? theme]
   [rn/view
-   {:style (merge (style/community-card 16)
-                  {:margin-bottom 12})}
-   [rn/touchable-highlight
-    (merge {:style {:height        56
-                    :border-radius 16}}
-           props)
-    [rn/view {:style style/detail-container}
-     [rn/view (style/list-info-container)
-      [community-icon/community-icon
-       {:images community-icon} 32]
-      [rn/view
-       {:style {:flex              1
-                :margin-horizontal 12}}
-       [text/text
-        {:weight              :semi-bold
-         :size                :paragraph-1
-         :accessibility-label :community-name-text
-         :number-of-lines     1
-         :ellipsize-mode      :tail
-         :style               {:color (when muted?
-                                        (colors/theme-colors colors/neutral-40 colors/neutral-60))}}
-        name]
-       [community-view/community-stats-column
-        {:type :list-view}]]
-      (if (= status :gated)
-        [community-view/permission-tag-container
-         {:locked? locked?
-          :tokens  tokens}]
-        [notification-view
-         {:muted?                muted?
-          :unread-mentions-count unread-mentions-count
-          :unread-messages?      unread-messages?}])]]]])
+   {:style               (style/notification-dot blur? theme)
+    :accessibility-label :notification-dot}])
+
+(defn- info-component
+  [{:keys [customization-color info type blur? locked? on-press-info theme tokens unread-count]}]
+  (let [component (cond
+                    (and (= type :discover) (= info :token-gated))
+                    [community-view/permission-tag-container
+                     {:locked? locked? :tokens tokens :on-press on-press-info :theme theme}]
+
+                    (and (= type :engage) (= info :mention) (pos? unread-count))
+                    [counter/counter
+                     {:type              :default
+                      :override-bg-color customization-color}
+                     unread-count]
+
+                    (and (= type :engage) (= info :notification))
+                    [notification-dot blur? theme]
+
+                    (and (= type :engage) (= info :muted))
+                    [icons/icon :i/muted
+                     {:color (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)}]
+
+                    (and (= type :engage) (= info :token-gated))
+                    [icons/icon (if locked? :i/locked :i/unlocked)
+                     {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+
+                    (and (= type :engage) (= info :navigation))
+                    [icons/icon :i/chevron-right
+                     {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}])]
+    (when component
+      [rn/view {:style {:margin-left 10}}
+       component])))
+
+(defn- view-internal
+  "Options:
+
+  :type - :discover/engage/share
+  :info - keyword - Acceptable values vary based on the :type option.
+
+  :title - string
+  :logo - image resource
+  :theme - :light/dark
+
+  :container-style - style map - Override styles in top-level view component.
+
+  :members - {:members-count number, :active-count number} - When non-nil, the
+  statistics component will be shown.
+
+  :tokens - A sequence of maps, e.g. [{:id 1 :group [{:id 1 :token-icon an-icon}]}].
+
+  :locked? - boolean - When true, the permission-tag icon or the token gated
+  icon will appear as closed.
+
+  :blur? - boolean - It will be taken into account when true and dark mode is
+  enabled.
+
+  :customization-color - color - It will be passed down to components that
+  should vary based on a custom color.
+
+  :on-press/:on-long-press - fn - Used by the top-level pressable component.
+
+  :on-press-info - fn - Will be called when the info component is pressed.
+
+  :unread-count - number - When the info is :mention, it will be used to show
+  the number of unread mentions.
+  "
+  []
+  (let [pressed? (reagent/atom false)]
+    (fn [{:keys [members type info tokens locked? title logo
+                 blur? customization-color
+                 on-press on-long-press on-press-info
+                 container-style unread-count theme]}]
+      [rn/pressable
+       {:on-press-in   (fn [] (reset! pressed? true))
+        :on-press      on-press
+        :on-long-press on-long-press
+        :on-press-out  (fn [] (reset! pressed? false))}
+       [rn/view
+        (merge {:style (style/container {:blur?               blur?
+                                         :customization-color customization-color
+                                         :info                info
+                                         :type                type
+                                         :pressed?            @pressed?
+                                         :theme               theme})}
+               container-style)
+        [logo-component logo]
+        [rn/view {:style {:flex 1}}
+         [title-component
+          {:blur? blur?
+           :info  info
+           :theme theme
+           :title title
+           :type  type}]
+         (when (and members (= type :discover))
+           [community-view/community-stats-column
+            {:type          :list-view
+             :members-count (:members-count members)
+             :active-count  (:active-count members)}])]
+        [info-component
+         {:blur?               blur?
+          :customization-color customization-color
+          :info                info
+          :type                type
+          :locked?             locked?
+          :on-press-info       on-press-info
+          :theme               theme
+          :tokens              tokens
+          :unread-count        unread-count}]]])))
+
+(def view (theme/with-theme view-internal))

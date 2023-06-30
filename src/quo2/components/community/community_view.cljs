@@ -5,8 +5,10 @@
             [quo2.components.tags.permission-tag :as permission]
             [quo2.components.tags.tag :as tag]
             [quo2.foundations.colors :as colors]
-            [quo.gesture-handler :as gesture-handler] ;;TODO move to quo2
-            [react-native.core :as rn]))
+            [quo2.theme :as theme]
+            [quo.gesture-handler :as gesture-handler]
+            [react-native.core :as rn]
+            [status-im.utils.money :as money]))
 
 (defn community-stats
   [{:keys [icon members-count icon-color]}]
@@ -24,7 +26,7 @@
     members-count]])
 
 (defn community-stats-column
-  [{:keys [type]}]
+  [{:keys [type members-count active-count]}]
   (let [icon-color (colors/theme-colors colors/neutral-50 colors/neutral-40)]
     [rn/view
      (if (= type :card-view)
@@ -32,12 +34,11 @@
        (style/list-stats-container))
      [community-stats
       {:icon          :i/group
-       :members-count "629.2K" ;;TODO here should be formatted value, use money/format-members from
-                               ;;outside this component
+       :members-count (money/format-amount members-count)
        :icon-color    icon-color}]
      [community-stats
       {:icon          :i/lightning
-       :members-count "112.1K"
+       :members-count (money/format-amount active-count)
        :icon-color    icon-color}]]))
 
 (defn community-tags
@@ -84,13 +85,13 @@
        :style               {:margin-top (if (= size :large) 8 2)}}
       description])])
 
-(defn permission-tag-container
-  [{:keys [locked? tokens on-press]}]
+(defn- permission-tag-container-internal
+  [{:keys [locked? tokens on-press theme]}]
   [permission/tag
-   {:background-color (colors/theme-colors
-                       colors/neutral-10
-                       colors/neutral-80)
+   {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
     :locked?          locked?
     :tokens           tokens
     :size             24
     :on-press         on-press}])
+
+(def permission-tag-container (theme/with-theme permission-tag-container-internal))
