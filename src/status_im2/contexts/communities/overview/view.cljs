@@ -9,15 +9,15 @@
             [reagent.core :as reagent]
             [status-im2.common.home.actions.view :as actions]
             [status-im2.common.password-authentication.view :as password-authentication]
-            [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.common.scroll-page.style :as scroll-page.style]
+            [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.constants :as constants]
+            [status-im2.contexts.communities.actions.chat.view :as chat-actions]
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im2.contexts.communities.overview.style :as style]
             [status-im2.contexts.communities.overview.utils :as utils]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.communities.actions.chat.view :as chat-actions]))
+            [utils.re-frame :as rf]))
 
 (defn preview-user-list
   [user-list]
@@ -48,6 +48,20 @@
   [event]
   (oops/oget event "nativeEvent.layout.y"))
 
+(defn- channel-chat-item
+  [community-id {chat-id :id muted? :muted? :as chat}]
+  (let [sheet-content      [actions/chat-actions
+                            (assoc chat :chat-type constants/community-chat-type)
+                            false]
+        channel-sheet-data {:selected-item (fn [] [quo/channel-list-item chat])
+                            :content       (fn [] sheet-content)}]
+    [rn/view {:key chat-id :style {:margin-top 4}}
+     [quo/channel-list-item
+      (assoc chat
+             :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data])
+             :muted?        (or muted?
+                                (rf/sub [:chat/check-channel-muted? community-id chat-id])))]]))
+
 (defn channel-list-component
   [{:keys [on-category-layout community-id on-first-channel-height-changed]}
    channels-list]
@@ -57,48 +71,28 @@
                     (int (Math/ceil (layout-y %))))
                  (into #{} (map (comp :name second) channels-list)))
     :style     {:margin-top 20 :flex 1}}
-   (for [[category-id {:keys [chats name collapsed?]}] channels-list]
-     [rn/view
-      {:flex      1
-       :key       category-id
-       ;; on-layout fires only when the component re-renders, so
-       ;; in case the category hasn't changed, it will not be fired
-       :on-layout #(on-category-layout name (int (layout-y %)))}
-      (when-not (= constants/empty-category-id category-id)
-        [quo/divider-label
-         {:label            name
-          :on-press         #(collapse-category
-                              community-id
-                              category-id
-                              collapsed?)
-          :chevron-icon     (if collapsed? :main-icons/chevron-right :main-icons/chevron-down)
-          :padding-bottom   (if collapsed? 7 0)
-          :chevron-position :left}])
-      (when-not collapsed?
-        [rn/view
-         {:style {:margin-left   8
-                  :margin-top    10
-                  :margin-bottom 8}}
-         (for [{:keys [muted? id] :as chat} chats
-               :let                         [chat           (assoc chat
-                                                                   :chat-type
-                                                                   constants/community-chat-type)
-                                             channel-muted? (or muted?
-                                                                (rf/sub [:chat/check-channel-muted?
-                                                                         community-id id]))]]
-           [rn/view
-            {:key   (:id chat)
-             :style {:margin-top 4}}
-            [quo/channel-list-item
-             (assoc chat
-                    :muted?
-                    channel-muted?
-                    :on-long-press
-                    (fn []
-                      (rf/dispatch [:show-bottom-sheet
-                                    {:content       (fn [] [actions/chat-actions chat false])
-                                     :selected-item (fn []
-                                                      [quo/channel-list-item chat])}])))]])])])])
+   (doall
+    (for [[category-id {:keys [chats name collapsed?]}] channels-list]
+      [rn/view
+       {:style     {:flex 1}
+        :key       category-id
+        ;; on-layout fires only when the component re-renders, so
+        ;; in case the category hasn't changed, it will not be fired
+        :on-layout #(on-category-layout name (int (layout-y %)))}
+       (when-not (= constants/empty-category-id category-id)
+         [quo/divider-label
+          {:container-style  {:padding-left   16
+                              :padding-right  20
+                              :padding-top    6 ; Because of border width of 1
+                              :padding-bottom 7}
+           :label            name
+           :on-press         #(collapse-category community-id category-id collapsed?)
+           :chevron-icon     (if collapsed? :main-icons/chevron-right :main-icons/chevron-down)
+           :chevron-position :left}])
+       (when-not collapsed?
+         (into [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}]
+               (map #(channel-chat-item community-id %))
+               chats))]))])
 
 (defn request-to-join-text
   [is-open?]
@@ -208,7 +202,7 @@
 (defn status-tag
   [pending? joined]
   (when (or pending? joined)
-    [rn/view {:position :absolute :top 12 :right 12}
+    [rn/view {:style {:position :absolute :top 12 :right 12}}
      [quo/status-tag
       {:status {:type (if joined :positive :pending)}
        :label  (if joined
@@ -317,9 +311,8 @@
   (->> categories-heights
        (sort-by (comp - second))
        (some (fn [[category height]]
-               (and
-                (>= scroll-height (+ height first-channel-height))
-                category)))))
+               (and (>= scroll-height (+ height first-channel-height))
+                    category)))))
 
 (defn community-card-page-view
   []
@@ -327,11 +320,11 @@
         first-channel-height (reagent/atom 0)
         scroll-height        (reagent/atom 0)]
     (fn [id]
-      (let [{:keys [name images id] :as community}
-            (rf/sub [:communities/community id])
-            pending? (rf/sub [:communities/my-pending-request-to-join id])
-            cover {:uri (get-in images [:banner :uri])}
-            logo {:uri (get-in images [:thumbnail :uri])}]
+      (let [{:keys [name images id]
+             :as   community} (rf/sub [:communities/community id])
+            pending?          (rf/sub [:communities/my-pending-request-to-join id])
+            cover             {:uri (get-in images [:banner :uri])}
+            logo              {:uri (get-in images [:thumbnail :uri])}]
         [scroll-page/scroll-page
          {:cover-image                    cover
           :logo                           logo
@@ -362,8 +355,7 @@
 (defn overview
   [id]
   (let [id (or id (rf/sub [:get-screen-params :community-overview]))]
-    [rn/view
-     {:style style/community-overview-container}
+    [rn/view {:style style/community-overview-container}
      [community-card-page-view id]
      [floating-shell-button/floating-shell-button
       {:jump-to {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
