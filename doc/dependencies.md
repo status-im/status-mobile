@@ -34,19 +34,9 @@ used for emojis
 
 used to check if URL is known for phishing
 
-## "hi-base32": "^0.5.0"
-
-used only in `status-im.browser.core` to convert base58 hash into base32 hash
-TODO: could be replaced by a simple implementation of ascii to base32
-
 ## "i18n-js": "^3.3.0"
 
 used to manage translations
-
-## "identicon.js": "git+https://github.com/status-im/identicon.js.git#v1.2.1-status"
-
-TODO: switch to latest upstream version, fork is seriously outdated and changes have been merged to master long time ago
-used to generate identicons
 
 ## "qrcode": "^1.4.1"
 
@@ -113,6 +103,24 @@ TODO: check if fork is necessary, merge with upstream?
 used by react-navigation
 
 TODO: update once bug is fixed for Android that causes crash when app is back from background after being put in background with hardware backbutton press
+
+## "react-native-languages": "^3.0.2"
+
+TODO DEPRECATED, should be replaced with https://github.com/react-native-community/react-native-localize
+used to get user language and interact with i18n.js
+
+## "react-native-mail": "git+https://github.com/status-im/react-native-mail.git#v3.0.8_status"
+
+used to send email to support when phone is shaked
+
+## "react-native-shake": "^3.3.1"
+
+used to send email to support when phone is shaked
+
+## "react-native-lottie-splash-screen": "^1.0.1"
+
+used to make splash screen with lottie animation during initial loading for android, also used as replacement of "react-native-splash-screen" for iOS
+
 
 ## "react-native-status-keycard": "^2.5.39"
 
