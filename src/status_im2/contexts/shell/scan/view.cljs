@@ -268,6 +268,7 @@
          [rn/view {:style (style/root-container (:top insets))}
           [header]
           [scan-qr-code-view qr-view-finder]]]))))
+
 (defn view
   []
   [:f> f-view])
