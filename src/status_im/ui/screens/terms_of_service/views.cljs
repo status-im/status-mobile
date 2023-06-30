@@ -103,9 +103,7 @@
        [react/view {:padding-horizontal 8}
         [quo/button
          {:type     :primary
-          :on-press #(do
-                       (re-frame/dispatch [:hide-terms-of-services-opt-in-screen])
-                       (re-frame/dispatch [:init-root next-root]))}
+          :on-press #(re-frame/dispatch [:init-root next-root])}
          (i18n/label :t/accept-and-continue)]]}]]))
 
 (comment

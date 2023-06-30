@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
-            [status-im.multiaccounts.biometric.core :as biometric]
             [status-im.multiaccounts.reset-password.core :as reset-password]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.components.common.common :as components.common]
@@ -34,9 +33,7 @@
                           profile-pictures-visibility]}
                   [:profile/profile]
                   has-picture [:profile/has-picture]
-                  supported-biometric-auth [:biometric/supported-type]
                   keycard? [:keycard-multiaccount?]
-                  auth-method [:auth-method]
                   profile-pictures-show-to [:multiaccount/profile-pictures-show-to]]
     [react/scroll-view {:padding-vertical 8}
      [quo/list-header (i18n/label :t/security)]
@@ -48,18 +45,6 @@
        :chevron             (boolean mnemonic)
        :accessory           (when mnemonic [components.common/counter {:size 22} 1])
        :on-press            #(re-frame/dispatch [:navigate-to :backup-seed])}]
-     (when supported-biometric-auth
-       [quo/list-item
-        {:size                :small
-         :title               (str (i18n/label :t/lock-app-with)
-                                   " "
-                                   (biometric/get-label supported-biometric-auth))
-         :active              (= auth-method "biometric")
-         :accessibility-label :biometric-auth-settings-switch
-         :accessory           :switch
-         :on-press            #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched
-                                                   ((complement boolean)
-                                                    (= auth-method "biometric"))])}])
      [separator]
      [quo/list-header (i18n/label :t/privacy)]
      [quo/list-item

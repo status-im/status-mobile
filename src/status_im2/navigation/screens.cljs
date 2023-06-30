@@ -19,7 +19,7 @@
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
     [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
-    [status-im2.contexts.onboarding.profiles.view :as profiles]
+    [status-im2.contexts.profile.profiles.view :as profiles]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.jump-to.view :as shell]
     [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
@@ -143,7 +143,7 @@
     {:name      :profiles
      :options   {:theme  :dark
                  :layout options/onboarding-layout}
-     :component profiles/views}
+     :component profiles/view}
 
     {:name      :new-to-status
      :options   {:theme  :dark

@@ -3,7 +3,6 @@
             [clojure.string :as string]
             [taoensso.timbre :as log]))
 
-
 ;; ********************************************************************************
 ;; Storing / Retrieving a user password to/from Keychain
 ;; ********************************************************************************

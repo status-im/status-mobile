@@ -5,13 +5,13 @@
             [react-native.safe-area :as safe-area]
             [status-im2.contexts.onboarding.enable-biometrics.style :as style]
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-            [status-im.multiaccounts.biometric.core :as biometric]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [status-im2.common.resources :as resources]
             [status-im2.common.parallax.view :as parallax]
             [status-im2.contexts.onboarding.common.background.view :as background]
-            [status-im2.common.parallax.whitelist :as whitelist]))
+            [status-im2.common.parallax.whitelist :as whitelist]
+            [status-im2.common.biometric.events :as biometric]))
 
 (defn page-title
   []
@@ -24,9 +24,9 @@
 
 (defn enable-biometrics-buttons
   [insets]
-  (let [supported-biometric (rf/sub [:biometric/supported-type])
-        bio-type-label      (biometric/get-label supported-biometric)
-        profile-color       (:color (rf/sub [:onboarding-2/profile]))]
+  (let [supported-biometric-type (rf/sub [:biometric/supported-type])
+        bio-type-label           (biometric/get-label-by-type supported-biometric-type)
+        profile-color            (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view {:style (style/buttons insets)}
      [quo/button
       {:accessibility-label       :enable-biometrics-button

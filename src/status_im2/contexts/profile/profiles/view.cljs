@@ -1,11 +1,11 @@
-(ns status-im2.contexts.onboarding.profiles.view
+(ns status-im2.contexts.profile.profiles.view
   (:require [native-module.core :as native-module]
             [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
             [status-im2.contexts.onboarding.common.background.view :as background]
-            [status-im2.contexts.onboarding.profiles.style :as style]
+            [status-im2.contexts.profile.profiles.style :as style]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
@@ -14,10 +14,6 @@
             [quo2.foundations.colors :as colors]
             [react-native.safe-area :as safe-area]
             [clojure.string :as string]))
-
-(defn login-multiaccount
-  []
-  (rf/dispatch [:multiaccounts.login.ui/password-input-submitted]))
 
 (defn new-account-options
   []
@@ -76,8 +72,10 @@
                  :shell?  true}]))
 
 (defn profile-card
-  [{:keys [name key-uid customization-color keycard-pairing last-index set-hide-profiles]}
-   index]
+  [{:keys [name key-uid customization-color keycard-pairing]}
+   index
+   _
+   {:keys [last-index set-hide-profiles]}]
   (let [last-item?      (= last-index index)
         profile-picture (rf/sub [:profile/login-profiles-picture key-uid])]
     [quo/profile-card
@@ -101,11 +99,7 @@
 
 (defn profiles-section
   [{:keys [set-hide-profiles]}]
-  (let [multiaccounts (vals (rf/sub [:profile/profiles-overview]))
-        profiles-data (map #(assoc %
-                                   :last-index        (- (count multiaccounts) 1)
-                                   :set-hide-profiles set-hide-profiles)
-                           multiaccounts)]
+  (let [profiles (vals (rf/sub [:profile/profiles-overview]))]
     [rn/view
      {:style style/profiles-container}
      [rn/view
@@ -123,9 +117,11 @@
         :accessibility-label :show-new-account-options}
        :main-icons/add]]
      [rn/flat-list
-      {:data                    (sort-by :timestamp > profiles-data)
+      {:data                    (sort-by :timestamp > profiles)
        :key-fn                  :key-uid
        :content-container-style {:padding-bottom 20}
+       :render-data             {:last-index        (- (count profiles) 1)
+                                 :set-hide-profiles set-hide-profiles}
        :render-fn               profile-card}]]))
 
 (defn forget-password-doc
@@ -175,19 +171,23 @@
       [quo/text {:size :paragraph-2}
        (i18n/label :t/forgot-your-password-info-create-new-password-description)]]]]])
 
+(defn- get-error-message
+  [error]
+  (if (and (some? error)
+           (or (= error "file is not a database")
+               (string/starts-with? error "failed to set ")
+               (string/starts-with? error "Failed")))
+    (i18n/label :t/oops-wrong-password)
+    error))
+
 (defn login-section
   [{:keys [set-show-profiles]}]
   (let [{:keys [error processing password]}        (rf/sub [:profile/login])
         {:keys [key-uid name customization-color]} (rf/sub [:profile/login-profile])
         sign-in-enabled?                           (rf/sub [:sign-in-enabled?])
         profile-picture                            (rf/sub [:profile/login-profiles-picture key-uid])
-        error                                      (if (and (some? error)
-                                                            (or (= error "file is not a database")
-                                                                (string/starts-with? error
-                                                                                     "failed to set ")
-                                                                (string/starts-with? error "Failed")))
-                                                     (i18n/label :t/oops-wrong-password)
-                                                     error)]
+        error                                      (get-error-message error)
+        login-multiaccount                         #(rf/dispatch [:profile.login/login])]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
       :keyboardVerticalOffset (- (safe-area/get-bottom))}
@@ -257,7 +257,7 @@
        :style               {:margin-bottom (+ (safe-area/get-bottom) 12)}}
       (i18n/label :t/log-in)]]))
 
-(defn views
+(defn view
   []
   (let [show-profiles?    (reagent/atom false)
         set-show-profiles #(reset! show-profiles? true)

@@ -18,6 +18,13 @@
                             (touch-id/get-supported-type callback))
         :else             (callback nil)))
 
+(defn get-label-by-type
+  [biometric-type]
+  (case biometric-type
+    :fingerprint (i18n/label :t/biometric-fingerprint)
+    :FaceID      (i18n/label :t/biometric-faceid)
+    (i18n/label :t/biometric-touchid)))
+
 (re-frame/reg-fx
  :biometric/get-supported-biometric-type
  (fn []
@@ -32,54 +39,38 @@
   [{:keys [db]} supported-type]
   {:db (assoc db :biometric/supported-type supported-type)})
 
-(rf/defn biometric-auth-success
-  {:events [:biometric/auth-success]}
-  [{:keys [db] :as cofx}]
-  (let [key-uid (get-in db [:profile/login :key-uid])]
-    (keychain/get-user-password cofx key-uid #(rf/dispatch [:profile/get-user-password-success %]))))
-
 (rf/defn show-message
-  [_ message code]
-  (let [content (if (get #{"NOT_AVAILABLE" "NOT_ENROLLED"} code)
+  [_ code]
+  (let [content (if (#{"NOT_AVAILABLE" "NOT_ENROLLED"} code)
                   (i18n/label :t/grant-face-id-permissions)
-                  message)]
+                  (when-not (or (= code "USER_CANCELED") (= code "USER_FALLBACK"))
+                    (i18n/label :t/biometric-auth-error {:code code})))]
     (when content
       {:utils/show-popup
        {:title   (i18n/label :t/biometric-auth-login-error-title)
         :content content}})))
 
-(rf/defn biometric-auth-fail
-  {:events [:biometric/auth-fail]}
-  [{:keys [db] :as cofx} code]
-  (let [auth-method (get db :auth-method)]
-    (rf/merge cofx
-              (show-message
-               (when-not (or (= code "USER_CANCELED") (= code "USER_FALLBACK"))
-                 (i18n/label :t/biometric-auth-error {:code code}))
-               code))))
-              ;(open-login-callback nil)))))
-
 (re-frame/reg-fx
  :biometric/authenticate
  (fn [options]
-   (touch-id/authenticate options)))
+   (touch-id/authenticate
+    (merge
+     {:reason  (i18n/label :t/biometric-auth-reason-login)
+      :options (merge
+                {:unifiedErrors true}
+                (when platform/ios?
+                  {:passcodeFallback false
+                   :fallbackLabel    (i18n/label :t/biometric-auth-login-ios-fallback-label)})
+                (when platform/android?
+                  {:title                  (i18n/label :t/biometric-auth-android-title)
+                   :imageColor             :blue
+                   :imageErrorColor        :red
+                   :sensorDescription      (i18n/label :t/biometric-auth-android-sensor-desc)
+                   :sensorErrorDescription (i18n/label :t/biometric-auth-android-sensor-error-desc)
+                   :cancelText             (i18n/label :cancel)}))}
+     options))))
 
-(rf/defn biometric-auth
+(rf/defn authenticate
   {:events [:biometric/authenticate]}
-  [_]
-  {:biometric/authenticate
-   {:on-success #(rf/dispatch [:biometric/auth-success])
-    :on-fail    #(rf/dispatch [:biometric/auth-fail %])
-    :reason     (i18n/label :t/biometric-auth-reason-login)
-    :options    (merge
-                 {:unifiedErrors true}
-                 (when platform/ios?
-                   {:passcodeFallback false
-                    :fallbackLabel    (i18n/label :t/biometric-auth-login-ios-fallback-label)})
-                 (when platform/android?
-                   {:title                  (i18n/label :t/biometric-auth-android-title)
-                    :imageColor             :blue
-                    :imageErrorColor        :red
-                    :sensorDescription      (i18n/label :t/biometric-auth-android-sensor-desc)
-                    :sensorErrorDescription (i18n/label :t/biometric-auth-android-sensor-error-desc)
-                    :cancelText             (i18n/label :cancel)}))}})
+  [_ opts]
+  {:biometric/authenticate opts})

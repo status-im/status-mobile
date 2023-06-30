@@ -6,8 +6,6 @@
 ;; defaulting to :fingerprint
 (def android-default-support :fingerprint)
 
-(def success-result {:bioauth-success true})
-
 (defn get-supported-type
   [callback]
   (-> (.isSupported ^js touchid)
@@ -17,5 +15,5 @@
 (defn authenticate
   [{:keys [on-success on-fail reason options]}]
   (-> (.authenticate ^js touchid reason (clj->js options))
-      (.then on-success)
+      (.then #(when on-success (on-success)))
       (.catch #(when on-fail (on-fail (aget % "code"))))))

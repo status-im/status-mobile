@@ -15,7 +15,6 @@
     status-im2.subs.mailservers
     status-im2.subs.profile
     status-im2.subs.networks
-    status-im2.subs.onboarding
     status-im2.subs.pairing
     status-im2.subs.search
     status-im2.subs.shell
@@ -289,8 +288,6 @@
 ; Testing
 
 (reg-root-key-sub :messenger/started? :messenger/started?)
-
-(reg-root-key-sub :information-box-states :information-box-states)
 
 ; Messages home view -> tabs
 (reg-root-key-sub :messages-home/selected-tab :messages-home/selected-tab)

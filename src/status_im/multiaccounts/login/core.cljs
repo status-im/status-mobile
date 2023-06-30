@@ -17,17 +17,14 @@
     [status-im.fleet.core :as fleet]
     [utils.i18n :as i18n]
     [status-im.mobile-sync-settings.core :as mobile-network]
-    [status-im.multiaccounts.biometric.core :as biometric]
     [status-im.multiaccounts.core :as multiaccounts]
     [native-module.core :as native-module]
     [status-im.notifications.core :as notifications]
-    [status-im.popover.core :as popover]
     [status-im.signing.eip1559 :as eip1559]
     [status-im.transport.core :as transport]
     [status-im.ui.components.react :as react]
     [status-im2.config :as config]
     [utils.re-frame :as rf]
-    [status-im.utils.keychain.core :as keychain]
     [status-im.utils.mobile-sync :as utils.mobile-sync]
     [status-im.utils.platform :as platform]
     [status-im.utils.types :as types]
@@ -45,7 +42,8 @@
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [status-im2.common.keychain.events :as keychain]))
 
 (re-frame/reg-fx
  ::initialize-transactions-management-enabled
@@ -54,22 +52,6 @@
      (async-storage/get-item
       :transactions-management-enabled?
       callback))))
-
-(re-frame/reg-fx
- ::login
- (fn [[key-uid _ hashed-password]]
-   (native-module/login-account {:keyUid                      key-uid
-                                 :password                    hashed-password
-                                 :wakuV2Nameserver            "1.1.1.1"
-                                 :openseaAPIKey               config/opensea-api-key
-
-                                 :poktToken                   config/POKT_TOKEN
-                                 :infuraToken                 config/INFURA_TOKEN
-
-                                 :alchemyOptimismMainnetToken config/ALCHEMY_OPTIMISM_MAINNET_TOKEN
-                                 :alchemyOptimismGoerliToken  config/ALCHEMY_OPTIMISM_GOERLI_TOKEN
-                                 :alchemyArbitrumMainnetToken config/ALCHEMY_ARBITRUM_MAINNET_TOKEN
-                                 :alchemyArbitrumGoerliToken  config/ALCHEMY_ARBITRUM_GOERLI_TOKEN})))
 
 (re-frame/reg-fx
  ::export-db
@@ -379,7 +361,7 @@
 
 (rf/defn get-node-config-callback
   {:events [::get-node-config-callback]}
-  [{:keys [db] :as cofx} node-config-json]
+  [{:keys [db]} node-config-json]
   (let [node-config (types/json->clj node-config-json)]
     {:db (assoc-in db
           [:profile/profile :wakuv2-config]
@@ -401,7 +383,7 @@
       (get db :onboarding-2/new-account?)
       {:dispatch [:onboarding-2/finalize-setup]}
 
-      (get db :tos/accepted?)
+      true
       (rf/merge
        cofx
        (multiaccounts/switch-theme nil :shell-stack)
@@ -435,7 +417,6 @@
                 #(do (re-frame/dispatch [:chats-list/load-success %])
                      (rf/dispatch [:communities/get-user-requests-to-join])
                      (re-frame/dispatch [::get-chats-callback]))})
-              (initialize-wallet-connect)
               (get-node-config)
               (communities/fetch)
               (contract-communities/fetch-contract-communities)
@@ -534,10 +515,8 @@
                [{:method     "settings_getSettings"
                  :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
               (notifications/load-notification-preferences)
-              (when save-password?
-                (keychain/save-user-password key-uid password))
-              #_(keychain/save-auth-method key-uid
-                                           (or new-auth-method auth-method keychain/auth-method-none)))))
+              (keychain/save-auth-method key-uid
+                                         (or new-auth-method auth-method keychain/auth-method-none)))))
 
 (rf/defn create-only-events
   [{:keys [db] :as cofx} recovered-account?]
@@ -545,7 +524,6 @@
         db
         {:keys [creating?]} (:profile/login db)
         first-account? (and creating? (empty? profiles-overview))
-        tos-accepted? (get db :tos/accepted?)
         {:networks/keys [current-network networks]} db
         network-id (str (get-in networks [current-network :config :NetworkId]))]
     (shell.utils/change-selected-stack-id :communities-stack true nil)
@@ -621,80 +599,3 @@
               (if login-only?
                 (login-only-events key-uid password save-password?)
                 (create-only-events recovered-account?)))))
-
-(rf/defn get-credentials
-  [{:keys [db] :as cofx} key-uid]
-  (let [keycard-multiaccount? (boolean (get-in db
-                                               [:profile/profiles-overview key-uid :keycard-pairing]))]
-    (log/debug "[login] get-credentials"
-               "keycard-multiacc?"
-               keycard-multiaccount?)
-    (when keycard-multiaccount?
-      (keychain/get-keycard-keys cofx key-uid))))
-
-(rf/defn save-password
-  {:events [:multiaccounts/save-password]}
-  [{:keys [db] :as cofx} save-password?]
-  (let [bioauth-supported?   (boolean (get db :biometric/supported-type))
-        previous-auth-method (get db :auth-method)]
-    (log/debug "[login] save-password"
-               "save-password?"       save-password?
-               "bioauth-supported?"   bioauth-supported?
-               "previous-auth-method" previous-auth-method)
-    (rf/merge
-     cofx
-     {:db (cond-> db
-            (not= previous-auth-method
-                  keychain/auth-method-biometric-prepare)
-            (assoc :auth-method keychain/auth-method-none)
-            (or save-password?
-                (not bioauth-supported?)
-                (and (not save-password?)
-                     bioauth-supported?
-                     (= previous-auth-method keychain/auth-method-none)))
-            (assoc-in [:profile/login :save-password?] save-password?))}
-     (when bioauth-supported?
-       (if save-password?
-         (popover/show-popover {:view :secure-with-biometric})
-         (when-not (= previous-auth-method keychain/auth-method-none)
-           (popover/show-popover {:view :disable-password-saving})))))))
-
-(rf/defn welcome-lets-go
-  {:events [:welcome-lets-go]}
-  [_]
-  {:set-root :shell-stack})
-
-(rf/defn hide-keycard-banner
-  {:events [:hide-keycard-banner]}
-  [{:keys [db]}]
-  {:db                  (assoc db :keycard/banner-hidden true)
-   ::async-storage/set! {:keycard-banner-hidden true}})
-
-(rf/defn get-keycard-banner-preference-cb
-  {:events [:get-keycard-banner-preference-cb]}
-  [{:keys [db]} {:keys [keycard-banner-hidden]}]
-  {:db (assoc db :keycard/banner-hidden keycard-banner-hidden)})
-
-(rf/defn get-keycard-banner-preference
-  {:events [:get-keycard-banner-preference]}
-  [_]
-  {::async-storage/get {:keys [:keycard-banner-hidden]
-                        :cb   #(re-frame/dispatch [:get-keycard-banner-preference-cb %])}})
-
-(rf/defn get-opted-in-to-new-terms-of-service-cb
-  {:events [:get-opted-in-to-new-terms-of-service-cb]}
-  [{:keys [db]} {:keys [new-terms-of-service-accepted]}]
-  {:db (assoc db :tos/accepted? new-terms-of-service-accepted)})
-
-(rf/defn get-opted-in-to-new-terms-of-service
-  "New TOS sprint https://github.com/status-im/status-mobile/pull/12240"
-  {:events [:get-opted-in-to-new-terms-of-service]}
-  [{:keys [db]}]
-  {::async-storage/get {:keys [:new-terms-of-service-accepted]
-                        :cb   #(re-frame/dispatch [:get-opted-in-to-new-terms-of-service-cb %])}})
-
-(rf/defn hide-terms-of-services-opt-in-screen
-  {:events [:hide-terms-of-services-opt-in-screen]}
-  [{:keys [db]}]
-  {::async-storage/set! {:new-terms-of-service-accepted true}
-   :db                  (assoc db :tos/accepted? true)})

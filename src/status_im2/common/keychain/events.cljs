@@ -46,25 +46,6 @@
 (def auth-method-biometric-prepare "biometric-prepare")
 (def auth-method-none "none")
 
-(re-frame/reg-fx
- :keychain/get-auth-method
- (fn [[key-uid]]
-   (let [callback #(rf/dispatch [:keychain/get-auth-method-success % key-uid])]
-     (can-save-user-password?
-      (fn [can-save?]
-        (if can-save?
-          (keychain/get-credentials
-           (str key-uid "-auth")
-           #(callback (if % (oops/oget % "password") auth-method-none)))
-          (callback nil)))))))
-
-(rf/defn get-auth-method-success
-  {:events [:keychain/get-auth-method-success]}
-  [{:keys [db]} auth-method]
-  (merge {:db (assoc db :auth-method auth-method)}
-         (when (= auth-method auth-method-biometric)
-           {:dispatch [:biometric/authenticate]})))
-
 (defn save-auth-method!
   [key-uid method]
   (keychain/save-credentials
@@ -81,11 +62,6 @@
 (re-frame/reg-fx
  :keychain/save-auth-method
  (fn [[key-uid method]]
-   (log/debug "[keychain] :keychain/save-auth-method"
-              "key-uid"
-              key-uid
-              "method"
-              method)
    (when-not (empty? key-uid) ; key-uid may be nil after restore from local pairing
      (save-auth-method! key-uid method))))
 
@@ -95,10 +71,40 @@
    :keychain/save-auth-method [key-uid method]})
 
 (re-frame/reg-fx
+ :keychain/get-auth-method
+ (fn [[key-uid callback]]
+   (can-save-user-password?
+    (fn [can-save?]
+      (if can-save?
+        (keychain/get-credentials
+         (str key-uid "-auth")
+         #(callback (if % (oops/oget % "password") auth-method-none)))
+        (callback nil))))))
+
+(defn save-user-password!
+  [key-uid password]
+  (keychain/save-credentials key-uid key-uid (security/safe-unmask-data password) #()))
+
+(re-frame/reg-fx
  :keychain/get-user-password
  (fn [[key-uid callback]]
-   (keychain/get-credentials key-uid #(if % (callback (security/mask-data (oops/oget % "password"))) (callback nil)))))
+   (keychain/get-credentials
+    key-uid
+    #(if % (callback (security/mask-data (oops/oget % "password"))) (callback nil)))))
 
 (rf/defn get-user-password
   [_ key-uid callback]
   {:keychain/get-user-password [key-uid callback]})
+
+(re-frame/reg-fx
+ :keychain/clear-user-password
+ (fn [key-uid]
+   (keychain/reset-credentials key-uid)))
+
+(re-frame/reg-fx
+ :keychain/save-password-and-auth-method
+ (fn [{:keys [key-uid masked-password on-success on-error]}]
+   (-> (save-user-password! key-uid masked-password)
+       (.then #(save-auth-method! key-uid auth-method-biometric))
+       (.then #(when on-success (on-success)))
+       (.catch #(when on-error (on-error %))))))

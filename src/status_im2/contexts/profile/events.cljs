@@ -33,7 +33,8 @@
       (assoc :customization-color (keyword customizationColor))
       (assoc :keycard-pairing (when-not (string/blank? keycard-pairing) keycard-pairing))))
 
-(defn reduce-profiles [profiles]
+(defn reduce-profiles
+  [profiles]
   (reduce
    (fn [acc {:keys [key-uid] :as profile}]
      (assoc acc key-uid (rpc->profiles-overview profile)))
@@ -47,9 +48,9 @@
     (let [profiles          (reduce-profiles profiles-overview)
           {:keys [key-uid]} (first (sort-by :timestamp > (vals profiles)))]
       (rf/merge cofx
-                {:dispatch-n               [[:get-opted-in-to-new-terms-of-service]
-                                            [:load-information-box-states]]}
                 (navigation/init-root :profiles)
-                (init-profiles-overview profiles-overview)
-                (login/login-with-biometric-if-available)))
+                (init-profiles-overview profiles key-uid)
+                ;;we check if biometric is available, and try to login with it,
+                ;;if succeed "node.login" signal will be triggered
+                (login/login-with-biometric-if-available key-uid)))
     (navigation/init-root cofx :intro)))

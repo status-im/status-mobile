@@ -9,7 +9,6 @@
             [utils.i18n :as i18n]
             [status-im.keycard.login :as keycard.login]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
@@ -444,7 +443,6 @@
   {:events [:multiaccounts.create.ui/get-new-key]}
   [{:keys [db] :as cofx}]
   (rf/merge cofx
-            (multiaccounts.create/prepare-intro-wizard)
             (bottom-sheet/hide-bottom-sheet-old)
             (navigation/navigate-to :get-your-keys nil)))
 
