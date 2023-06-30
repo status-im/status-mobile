@@ -9,7 +9,7 @@
 
 (defn get-supported-biometric-auth
   []
-  @(re-frame/subscribe [:supported-biometric-auth]))
+  @(re-frame/subscribe [:biometric/supported-type]))
 
 (defn get-bio-type-label
   []

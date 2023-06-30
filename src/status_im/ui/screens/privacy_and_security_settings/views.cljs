@@ -34,7 +34,7 @@
                           profile-pictures-visibility]}
                   [:profile/profile]
                   has-picture [:profile/has-picture]
-                  supported-biometric-auth [:supported-biometric-auth]
+                  supported-biometric-auth [:biometric/supported-type]
                   keycard? [:keycard-multiaccount?]
                   auth-method [:auth-method]
                   profile-pictures-show-to [:multiaccount/profile-pictures-show-to]]

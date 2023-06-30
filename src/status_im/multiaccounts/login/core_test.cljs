@@ -8,7 +8,7 @@
 (test/deftest save-password-test
   (test/testing "check save password, biometric unavailable"
     (let [initial-cofx {:db {:auth-method              keychain/auth-method-none
-                             :supported-biometric-auth false}}
+                             :biometric/supported-type false}}
           {:keys [db]} (login/save-password initial-cofx true)]
       (test/is (= false (contains? db :popover/popover)))
       (test/is (= true (get-in db [:profile/login :save-password?])))
@@ -18,7 +18,7 @@
           (test/is (= false (get-in db [:profile/login :save-password?])))))))
   (test/testing "check save password, biometric available"
     (let [initial-cofx {:db {:auth-method              keychain/auth-method-none
-                             :supported-biometric-auth true}}
+                             :biometric/supported-type true}}
           {:keys [db]} (login/save-password initial-cofx true)]
       (test/is (= true (get-in db [:profile/login :save-password?])))
       (test/testing "enable biometric auth"
@@ -43,7 +43,7 @@
   (test/testing (str "check save password, enable biometric auth,"
                      "uncheck save password")
     (let [initial-cofx {:db {:auth-method              keychain/auth-method-none
-                             :supported-biometric-auth true}}
+                             :biometric/supported-type true}}
           {:keys [db]} (login/save-password (rf/merge
                                              initial-cofx
                                              (login/save-password true)

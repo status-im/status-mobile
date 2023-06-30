@@ -24,7 +24,7 @@
 
 (defn enable-biometrics-buttons
   [insets]
-  (let [supported-biometric (rf/sub [:supported-biometric-auth])
+  (let [supported-biometric (rf/sub [:biometric/supported-type])
         bio-type-label      (biometric/get-label supported-biometric)
         profile-color       (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view {:style (style/buttons insets)}

@@ -45,8 +45,7 @@
     [status-im2.common.log :as logging]
     [taoensso.timbre :as log]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]
-    [utils.security.core :as security]
-    [status-im.keycard.common :as keycard.common]))
+    [utils.security.core :as security]))
 
 (re-frame/reg-fx
  ::initialize-transactions-management-enabled
@@ -186,18 +185,6 @@
                                 :key-uid key-uid})
               password]}))
 
-(rf/defn login
-  {:events [:multiaccounts.login.ui/password-input-submitted]}
-  [{:keys [db]}]
-  (let [{:keys [key-uid password name]} (:profile/login db)]
-    {:db     (-> db
-                 (assoc-in [:profile/login :processing] true)
-                 (dissoc :intro-wizard :recovered-account?)
-                 (update :keycard dissoc :flow))
-     ::login [key-uid
-              (types/clj->json {:name    name
-                                :key-uid key-uid})
-              (ethereum/sha3 (security/safe-unmask-data password))]}))
 
 (rf/defn export-db-submitted
   {:events [:multiaccounts.login.ui/export-db-submitted]}
@@ -530,11 +517,9 @@
 (defn get-new-auth-method
   [auth-method save-password?]
   (when save-password?
-    (when-not (or (= keychain/auth-method-biometric auth-method)
-                  (= keychain/auth-method-password auth-method))
-      (if (= auth-method keychain/auth-method-biometric-prepare)
-        keychain/auth-method-biometric
-        keychain/auth-method-password))))
+    (when-not (= keychain/auth-method-biometric auth-method)
+      (when (= auth-method keychain/auth-method-biometric-prepare)
+        keychain/auth-method-biometric))))
 
 (rf/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
@@ -551,8 +536,8 @@
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))
-              (keychain/save-auth-method key-uid
-                                         (or new-auth-method auth-method keychain/auth-method-none)))))
+              #_(keychain/save-auth-method key-uid
+                                           (or new-auth-method auth-method keychain/auth-method-none)))))
 
 (rf/defn create-only-events
   [{:keys [db] :as cofx} recovered-account?]
@@ -637,38 +622,6 @@
                 (login-only-events key-uid password save-password?)
                 (create-only-events recovered-account?)))))
 
-(rf/defn open-login-callback
-  {:events [:multiaccounts.login.callback/get-user-password-success]}
-  [{:keys [db] :as cofx} password]
-  (let [key-uid           (get-in db [:profile/login :key-uid])
-        keycard-account?  (boolean (get-in db
-                                           [:profile/profiles-overview
-                                            key-uid
-                                            :keycard-pairing]))
-        goto-key-storage? (:goto-key-storage? db)]
-    (if password
-      (rf/merge
-       cofx
-       {:db       (update-in db
-                             [:profile/login]
-                             assoc
-                             :password       password
-                             :save-password? true)
-        :set-root :progress}
-       login)
-      (rf/merge
-       cofx
-       {:db (dissoc db :goto-key-storage?)}
-       (when keycard-account?
-         {:db (-> db
-                  (assoc-in [:keycard :pin :status] nil)
-                  (assoc-in [:keycard :pin :login] []))})
-       #(if keycard-account?
-          {:set-root :multiaccounts-keycard}
-          {:set-root :profiles})
-       #(when goto-key-storage?
-          (navigation/navigate-to % :actions-not-logged-in nil))))))
-
 (rf/defn get-credentials
   [{:keys [db] :as cofx} key-uid]
   (let [keycard-multiaccount? (boolean (get-in db
@@ -676,52 +629,13 @@
     (log/debug "[login] get-credentials"
                "keycard-multiacc?"
                keycard-multiaccount?)
-    (if keycard-multiaccount?
-      (keychain/get-keycard-keys cofx key-uid)
-      (keychain/get-user-password cofx key-uid))))
-
-(rf/defn get-auth-method-success
-  "Auth method: nil - not supported, \"none\" - not selected, \"password\", \"biometric\", \"biometric-prepare\""
-  {:events [:multiaccounts.login/get-auth-method-success]}
-  [{:keys [db] :as cofx} auth-method]
-  (let [key-uid          (get-in db [:profile/login :key-uid])
-        keycard-profile? (boolean (get-in db [:profile/profiles-overview key-uid :keycard-pairing]))]
-    (rf/merge
-     cofx
-     {:db (assoc db :auth-method auth-method)}
-     #(cond
-        (= auth-method keychain/auth-method-biometric)
-        (biometric/biometric-auth %)
-        (= auth-method keychain/auth-method-password)
-        (get-credentials % key-uid)
-        (and keycard-profile? (get-in db [:keycard :card-connected?]))
-        (keycard.common/get-application-info % nil))
-     (open-login-callback nil))))
-
-(rf/defn biometric-auth-done
-  {:events [:biometric-auth-done]}
-  [{:keys [db] :as cofx} {:keys [bioauth-success bioauth-message bioauth-code]}]
-  (let [key-uid     (get-in db [:profile/login :key-uid])
-        auth-method (get db :auth-method)]
-    (log/debug "[biometric] biometric-auth-done"
-               "bioauth-success" bioauth-success
-               "bioauth-message" bioauth-message
-               "bioauth-code"    bioauth-code)
-    (if bioauth-success
-      (get-credentials cofx key-uid)
-      (rf/merge cofx
-                {:db (assoc-in db
-                      [:profile/login :save-password?]
-                      (= auth-method keychain/auth-method-biometric))}
-                (when-not (= auth-method keychain/auth-method-biometric)
-                  (keychain/save-auth-method key-uid keychain/auth-method-none))
-                (biometric/show-message bioauth-message bioauth-code)
-                (open-login-callback nil)))))
+    (when keycard-multiaccount?
+      (keychain/get-keycard-keys cofx key-uid))))
 
 (rf/defn save-password
   {:events [:multiaccounts/save-password]}
   [{:keys [db] :as cofx} save-password?]
-  (let [bioauth-supported?   (boolean (get db :supported-biometric-auth))
+  (let [bioauth-supported?   (boolean (get db :biometric/supported-type))
         previous-auth-method (get db :auth-method)]
     (log/debug "[login] save-password"
                "save-password?"       save-password?
