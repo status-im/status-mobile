@@ -144,7 +144,7 @@
 
 (rf/defn on-return-from-background
   [{:keys [db now] :as cofx}]
-  (let [new-account?            (get db :onboarding-2/new-account?)
+  (let [new-account?            (get db :profile/new?)
         app-in-background-since (get db :app-in-background-since)
         signed-up?              (get-in db [:profile/profile :signed-up?])
         biometric-auth?         (= (:auth-method db) "biometric")

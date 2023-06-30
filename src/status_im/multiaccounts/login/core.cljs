@@ -410,7 +410,7 @@
       {:db       (dissoc db :syncing)
        :dispatch [:init-root :syncing-results]}
 
-      (get db :onboarding-2/new-account?)
+      (get db :profile/new?)
       {:dispatch [:onboarding-2/finalize-setup]}
 
       (get db :tos/accepted?)
@@ -430,8 +430,9 @@
         (data-store.settings/rpc->settings settings)
         multiaccount (-> settings
                          (dissoc :networks/current-network :networks/networks)
-                         (set/rename-keys {:compressedKey :compressed-key
-                                           :emojiHash     :emoji-hash}))
+                         (set/rename-keys {:compressedKey      :compressed-key
+                                           :customizationColor :customization-color
+                                           :emojiHash          :emoji-hash}))
         ;;for some reason we save default networks in db, in case when we want to modify default-networks
         ;;for
         ;; existing accounts we have to merge them again into networks

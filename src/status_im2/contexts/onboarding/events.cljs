@@ -117,7 +117,7 @@
      :db       (-> db
                    (dissoc :profile/login)
                    (dissoc :auth-method)
-                   (assoc :onboarding-2/new-account? true))}))
+                   (assoc :profile/new? true))}))
 
 (rf/defn on-delete-profile-success
   {:events [:onboarding-2/on-delete-profile-success]}

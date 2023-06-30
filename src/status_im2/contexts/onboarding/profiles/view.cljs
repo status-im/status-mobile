@@ -84,7 +84,7 @@
      {:name                 name
       :login-card?          true
       :last-item?           (= last-index index)
-      :customization-color  (or customization-color :primary)
+      :customization-color  (or customization-color :blue)
       :keycard-account?     keycard-pairing
       :show-options-button? true
       :profile-picture      (when profile-picture {:uri profile-picture})
@@ -207,7 +207,7 @@
        :style                        {:flex 1}}
       [quo/profile-card
        {:name                name
-        :customization-color (or customization-color :primary)
+        :customization-color (or customization-color :blue)
         :profile-picture     (when profile-picture {:uri profile-picture})
         :card-style          style/login-profile-card}]
       [quo/input

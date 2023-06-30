@@ -11,13 +11,6 @@
             [status-im2.constants :as constants]))
 
 (re-frame/reg-sub
- :profile/profile
- :<- [:profile/profile-settings]
- :<- [:profile/profiles-overview]
- (fn [[{:keys [key-uid] :as profile} profiles-overview]]
-   (merge (get profiles-overview key-uid) profile)))
-
-(re-frame/reg-sub
  :profile/customization-color
  :<- [:profile/profile]
  (fn [{:keys [customization-color]}]

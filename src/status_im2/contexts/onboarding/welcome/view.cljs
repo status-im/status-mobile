@@ -13,7 +13,7 @@
 
 (defn page-title
   []
-  (let [new-account? (rf/sub [:onboarding-2/new-account?])]
+  (let [new-account? (rf/sub [:profile/new?])]
     [quo/title
      {:container-style              {:margin-top 12}
       :title                        (i18n/label (if new-account?
