@@ -1,7 +1,7 @@
-(ns status-im2.contexts.quo-preview.community.community-list-view
+(ns status-im2.contexts.quo-preview.list-items.community-list
   (:require [quo.previews.preview :as preview]
             [quo.react-native :as rn]
-            [quo2.components.community.community-list-view :as community-list-view]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.community.data :as data]))
@@ -37,15 +37,10 @@
                                                       :open)})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [rn/view
-         {:flex    1
-          :padding 16}
-         [preview/customizer state descriptor]]
-        [rn/view
-         {:padding-vertical 60
-          :justify-content  :center}
-         [community-list-view/communities-list-view-item {}
+       [rn/view {:style {:margin-bottom 20}}
+        [preview/customizer state descriptor]
+        [rn/view {:style {:margin-top 20}}
+         [quo/community-list {}
           (cond-> (merge @state data/community)
             (= :muted (:notifications @state))
             (assoc :muted? true)
@@ -56,11 +51,10 @@
             (= :unread-messages-count (:notifications @state))
             (assoc :unread-messages? true))]]]])))
 
-(defn preview-community-list-view
+(defn preview
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/neutral-5
-                                           colors/neutral-95)
+   {:background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)
     :flex             1}
    [rn/flat-list
     {:flex                         1
