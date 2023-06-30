@@ -13,10 +13,10 @@
 
 (defn page-title
   []
-  (let [new-account? (rf/sub [:profile/new?])]
+  (let [new-profile? (rf/sub [:profile/new?])]
     [quo/title
      {:container-style              {:margin-top 12}
-      :title                        (i18n/label (if new-account?
+      :title                        (i18n/label (if new-profile?
                                                   :t/welcome-to-web3
                                                   :t/welcome-back))
       :title-accessibility-label    :welcome-title
