@@ -48,7 +48,7 @@
   {:events [::start-keycard-backup]}
   [{:keys [db] :as cofx}]
   {::multiaccounts.recover/import-multiaccount {:passphrase    (-> db
-                                                                   :multiaccounts/key-storage
+                                                                   :profile/key-storage
                                                                    :seed-phrase
                                                                    mnemonic/sanitize-passphrase)
                                                 :password      nil
@@ -66,7 +66,7 @@
                                            :recovering? true
                                            :selected-storage-type :advanced)
                                    (assoc-in [:keycard :flow] :recovery)
-                                   (update :multiaccounts/key-storage dissoc :seed-phrase))
+                                   (update :profile/key-storage dissoc :seed-phrase))
              :dismiss-keyboard nil}
             (common/listen-to-hardware-back-button)
             (navigation/navigate-to :keycard-onboarding-intro nil)))

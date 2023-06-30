@@ -93,7 +93,6 @@
 (reg-root-key-sub :profile/profile-settings :profile/profile)
 (reg-root-key-sub :profile/wallet-accounts :profile/wallet-accounts)
 
-(reg-root-key-sub :multiaccounts/key-storage :multiaccounts/key-storage)
 (reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)
 (reg-root-key-sub :multiaccount/reset-password-errors :multiaccount/reset-password-errors)
 (reg-root-key-sub :multiaccount/resetting-password? :multiaccount/resetting-password?)

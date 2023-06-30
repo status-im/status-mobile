@@ -393,8 +393,10 @@ class CommunityView(HomeView):
         self.community_description_text = Text(self.driver, accessibility_id="community-description-text")
 
     def join_community(self):
+        self.driver.info("Joining community")
         self.join_button.click()
-        self.checkbox_button.scroll_and_click()
+        self.checkbox_button.scroll_to_element()
+        self.checkbox_button.enable()
         self.join_community_button.scroll_and_click()
 
     def get_channel(self, channel_name: str):
@@ -1147,6 +1149,9 @@ class ChatView(BaseView):
         community_button.click()
         return CommunityView(self.driver)
 
+    def user_list_element_by_name(self, user_name: str):
+        return BaseElement(self.driver, xpath="//*[@content-desc='user-list']//*[@text='%s']" % user_name)
+
     def mention_user(self, user_name: str):
         self.driver.info("Mention user %s in the chat" % user_name)
         gboard = self.driver.available_ime_engines[0]
@@ -1155,8 +1160,7 @@ class ChatView(BaseView):
         self.chat_message_input.send_keys("@")
         try:
             self.mentions_list.wait_for_element()
-            self.driver.find_element(MobileBy.XPATH,
-                                     "//*[@content-desc='user-list']//*[@text='%s']" % user_name).click()
+            self.user_list_element_by_name(user_name).click()
         except TimeoutException:
             self.driver.fail("Mentions list is not shown")
 
@@ -1218,3 +1222,6 @@ class ChatView(BaseView):
     @staticmethod
     def pn_wants_you_to_join_to_group_chat(admin, chat_name):
         return '%s wants you to join group %s' % (admin, chat_name)
+
+    def authors_for_reaction(self, emoji: str):
+        return Button(self.driver, accessibility_id='authors-for-reaction-%s' % emojis[emoji])

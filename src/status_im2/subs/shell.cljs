@@ -154,7 +154,7 @@
    [(re-frame/subscribe [:chats/chat id])
     (re-frame/subscribe [:communities])
     (re-frame/subscribe [:contacts/contacts])
-    (re-frame/subscribe [:multiaccount])])
+    (re-frame/subscribe [:profile/profile])])
  (fn [[chat communities contacts current-multiaccount] [_ id]]
    (let [from         (get-in chat [:last-message :from])
          contact      (when from (multiaccounts/contact-by-identity contacts from))
@@ -215,8 +215,8 @@
        :counter-label          (:unviewed-mentions-count community-stack)}
       :chats-stack
       {:new-notifications?     (pos? (:unviewed-messages-count chats-stack))
-       :notification-indicator (if (pos? (:unviewed-mentions-count chats-stack)) :counter :unread-dot)
-       :counter-label          (:unviewed-mentions-count chats-stack)}})))
+       :notification-indicator :counter
+       :counter-label          (:unviewed-messages-count chats-stack)}})))
 
 ;; Floating screens
 (re-frame/reg-sub

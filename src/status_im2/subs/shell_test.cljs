@@ -29,8 +29,8 @@
                        :notification-indicator :unread-dot
                        :counter-label          0}
    :chats-stack       {:new-notifications?     true
-                       :notification-indicator :unread-dot
-                       :counter-label          0}})
+                       :notification-indicator :counter
+                       :counter-label          7}})
 
 (def one-to-one-group-community-chats2
   (merge
@@ -51,7 +51,7 @@
                        :counter-label          7}
    :chats-stack       {:new-notifications?     true
                        :notification-indicator :counter
-                       :counter-label          9}})
+                       :counter-label          19}})
 
 (h/deftest-sub :shell/bottom-tabs-notifications-data
   [sub-name]
