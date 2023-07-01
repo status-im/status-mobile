@@ -33,6 +33,10 @@
   [comp]
   (.showOverlay Navigation (clj->js comp)))
 
+(defn pop-to
+  [comp]
+  (.popTo Navigation (clj->js comp)))
+
 (defn pop-to-root
   [tab]
   (.popToRoot Navigation (clj->js tab)))
