@@ -61,6 +61,7 @@
  (fn [[key-uid _ hashed-password]]
    (native-module/login-account {:keyUid                      key-uid
                                  :password                    hashed-password
+                                 :wakuV2Nameserver            "1.1.1.1"
                                  :openseaAPIKey               config/opensea-api-key
 
                                  :poktToken                   config/POKT_TOKEN
