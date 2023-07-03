@@ -150,7 +150,8 @@
      :component generating-keys/generating-keys}
 
     {:name      :enter-seed-phrase
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme  :dark
+                 :layout options/onboarding-layout}
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications

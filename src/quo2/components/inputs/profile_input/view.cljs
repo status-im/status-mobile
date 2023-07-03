@@ -37,7 +37,6 @@
     [buttons/button
      {:accessibility-label       :select-profile-picture-button
       :type                      :grey
-      :override-theme            :dark
       :override-background-color (colors/alpha colors/white 0.05)
       :on-press                  on-press
       :icon-size                 20
@@ -50,6 +49,5 @@
     [title-input/title-input
      (merge title-input-props
             {:blur?               true
-             :override-theme      :dark
              :placeholder         placeholder
              :customization-color customization-color})]]])

@@ -1,3 +1,4 @@
+#!/usr/bin/env groovy
 library 'status-jenkins-lib@v1.7.9'
 
 pipeline {
