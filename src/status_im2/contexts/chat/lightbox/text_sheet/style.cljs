@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.lightbox.text-sheet.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.reanimated :as reanimated]))
 
 
 
@@ -7,7 +8,8 @@
   {:color             colors/white
    :align-self        :center
    :margin-horizontal 20
-   :margin-vertical   12})
+   :margin-vertical   12
+   :flex-grow 1})
 
 
 (def bar-container
@@ -16,7 +18,6 @@
    :right           0
    :top             0
    :z-index         1
-   :background-color :green
    :justify-content :center
    :align-items     :center})
 
@@ -25,4 +26,7 @@
   {:width            32
    :height           4
    :border-radius    100
-   :background-color (colors/theme-colors colors/neutral-100-opa-5 colors/white-opa-10)})
+   :background-color colors/white-opa-40
+   :border-width 0.5
+   :border-color colors/neutral-100})
+

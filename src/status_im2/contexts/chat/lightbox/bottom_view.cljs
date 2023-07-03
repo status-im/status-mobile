@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.lightbox.bottom-view
   (:require
+    [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
@@ -55,16 +56,15 @@
   [messages index scroll-index insets animations derived item-width props]
   (let [padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
     [reanimated/linear-gradient
-     {:colors [:black :transparent]
+     {:colors [colors/neutral-100-opa-100 colors/neutral-100-opa-50]
       :start  {:x 0 :y 1}
       :end    {:x 0 :y 0}
       :style  (style/gradient-container insets animations derived)}
-     [text-sheet/view messages]
+     [text-sheet/view messages animations]
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)
        :key-fn                            :message-id
-       :style                             {:height c/small-list-height
-                                           :background-color :blue}
+       :style                             {:height c/small-list-height}
        :data                              messages
        :render-fn                         small-image
        :render-data                       {:scroll-index scroll-index
@@ -76,7 +76,6 @@
        :initial-scroll-index              index
        :content-container-style           (style/content-container padding-horizontal)}]
      [rn/view {:style {:height (:bottom insets)
-                       :background-color :blue
                        :position :absolute
                        :bottom 0
                        :left 0

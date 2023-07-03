@@ -75,6 +75,7 @@
                 {:transform [{:translateY (:pan-y animations)}
                              {:translateX (:pan-x animations)}]}
                 {})}
+       [reanimated/view {:style (style/background (:overlay-opacity animations))}]
        [gesture/flat-list
         {:ref                               #(reset! (:flat-list-ref props) %)
          :key-fn                            :message-id
