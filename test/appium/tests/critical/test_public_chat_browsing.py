@@ -388,10 +388,10 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                     else:
                         chat = self.home.get_chat_view()
                         chat.profile_send_message_button.click()
-                        shown_name_text = chat.user_name_text_new_UI.text
-                        if shown_name_text in waku_user.contacts:
-                            waku_user.contacts.remove(shown_name_text)
-                            continue
+                        for name in waku_user.contacts:
+                            if chat.element_starts_with_text(name).is_element_displayed(sec=20):
+                                waku_user.contacts.remove(name)
+                                continue
         if waku_user.contacts:
             self.errors.append(
                 "Contact(s) was (were) not restored from backup: %s!" % ", ".join(waku_user.contacts))
@@ -814,11 +814,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     def test_community_mark_all_messages_as_read(self):
         self.channel_1.click_system_back_button_until_element_is_shown()
         self.home_1.communities_tab.click()
-        if not self.channel_2.chat_message_input.is_element_displayed():
-            self.channel_2.click_system_back_button_until_element_is_shown()
-            self.home_2.communities_tab.click()
-            self.home_2.get_chat(self.community_name, community=True).click()
-            self.community_2.get_channel(self.channel_name).click()
+        self.channel_2.click_system_back_button_until_element_is_shown()
+        self.home_2.communities_tab.click()
+        self.home_2.get_chat(self.community_name, community=True).click()
+        self.community_2.get_channel(self.channel_name).click()
         self.channel_2.send_message(self.text_message)
         community_1_element = self.community_1.get_chat(self.community_name)
         if not community_1_element.new_messages_public_chat.is_element_displayed(90):
