@@ -28,24 +28,24 @@
 (defn effect
   [{:keys [flat-list-ref scroll-index-lock? timers]} {:keys [opacity layout border]} index]
   (rn/use-effect
-    (fn []
-      (reagent/next-tick (fn []
-                           (when @flat-list-ref
-                             (.scrollToIndex ^js @flat-list-ref
-                                             #js {:animated false :index index}))))
-      (swap! timers assoc
-             :mount-animation
-             (js/setTimeout (fn []
-                              (anim/animate opacity 1)
-                              (anim/animate layout 0)
-                              (anim/animate border 12))
-                            (if platform/ios? 250 100)))
-      (swap! timers assoc :mount-index-lock (js/setTimeout #(reset! scroll-index-lock? false) 300))
-      (fn []
-        (rf/dispatch [:chat.ui/zoom-out-signal nil])
-        (when platform/android?
-          (rf/dispatch [:chat.ui/lightbox-scale 1]))
-        (clear-timers timers)))))
+   (fn []
+     (reagent/next-tick (fn []
+                          (when @flat-list-ref
+                            (.scrollToIndex ^js @flat-list-ref
+                                            #js {:animated false :index index}))))
+     (swap! timers assoc
+       :mount-animation
+       (js/setTimeout (fn []
+                        (anim/animate opacity 1)
+                        (anim/animate layout 0)
+                        (anim/animate border 12))
+                      (if platform/ios? 250 100)))
+     (swap! timers assoc :mount-index-lock (js/setTimeout #(reset! scroll-index-lock? false) 300))
+     (fn []
+       (rf/dispatch [:chat.ui/zoom-out-signal nil])
+       (when platform/android?
+         (rf/dispatch [:chat.ui/lightbox-scale 1]))
+       (clear-timers timers)))))
 
 (defn handle-orientation
   [result {:keys [flat-list-ref]} {:keys [scroll-index]} animations]
@@ -72,27 +72,27 @@
       (= result orientation/portrait)
       (orientation/lock-to-portrait "lightbox"))
     (js/setTimeout
-      (fn []
-        (when @flat-list-ref
-          (.scrollToOffset
-            ^js @flat-list-ref
-            #js {:animated false :offset (* (+ item-width constants/separator-width) @scroll-index)})))
-      100)
+     (fn []
+       (when @flat-list-ref
+         (.scrollToOffset
+          ^js @flat-list-ref
+          #js {:animated false :offset (* (+ item-width constants/separator-width) @scroll-index)})))
+     100)
     (when platform/ios?
       (top-view/animate-rotation result screen-width screen-height insets animations))))
 
 (defn orientation-change
   [props state animations]
   (orientation/use-device-orientation-change
-    (fn [result]
-      (if platform/ios?
-        (handle-orientation result props state animations)
-        ;; `use-device-orientation-change` will always be called on Android, so need to check
-        (orientation/get-auto-rotate-state
-          (fn [enabled?]
-            ;; RNN does not support landscape-right
-            (when (and enabled? (not= result orientation/landscape-right))
-              (handle-orientation result props state animations))))))))
+   (fn [result]
+     (if platform/ios?
+       (handle-orientation result props state animations)
+       ;; `use-device-orientation-change` will always be called on Android, so need to check
+       (orientation/get-auto-rotate-state
+        (fn [enabled?]
+          ;; RNN does not support landscape-right
+          (when (and enabled? (not= result orientation/landscape-right))
+            (handle-orientation result props state animations))))))))
 
 (defn drag-gesture
   [{:keys [pan-x pan-y background-color opacity layout]} x? set-full-height?]
@@ -135,7 +135,8 @@
   {:data             (reagent/atom (if (number? index) [(nth messages index)] []))
    :scroll-index     (reagent/atom index)
    :transparent?     (reagent/atom false)
-   :set-full-height? (reagent/atom false)})
+   :set-full-height? (reagent/atom false)
+   :overlay-z-index  (reagent/atom 0)})
 
 (defn init-animations
   []

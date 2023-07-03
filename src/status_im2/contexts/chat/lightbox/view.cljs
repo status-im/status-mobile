@@ -43,7 +43,8 @@
    [rn/view {:style {:width constants/separator-width}}]])
 
 (defn lightbox-content
-  [props {:keys [data transparent? scroll-index set-full-height?]} animations derived messages index
+  [props {:keys [data transparent? scroll-index set-full-height?] :as state} animations derived messages
+   index
    callback]
   (let [insets           (safe-area/get-insets)
         window           (rn/get-window)
@@ -75,7 +76,7 @@
                 {:transform [{:translateY (:pan-y animations)}
                              {:translateX (:pan-x animations)}]}
                 {})}
-       [reanimated/view {:style (style/background (:overlay-opacity animations))}]
+       [reanimated/view {:style (style/background animations state)}]
        [gesture/flat-list
         {:ref                               #(reset! (:flat-list-ref props) %)
          :key-fn                            :message-id
@@ -103,7 +104,7 @@
          :on-viewable-items-changed         callback}]]]
      (when (and (not @transparent?) (not landscape?))
        [:f> bottom-view/bottom-view messages index scroll-index insets animations derived
-        item-width props])]))
+        item-width props state])]))
 
 (defn- f-lightbox
   [{:keys [messages index]}]

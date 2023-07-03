@@ -19,26 +19,26 @@
    {:keys [opacity rotate top-view-y top-view-x top-view-width top-view-bg]}
    {:keys [top-layout]}]
   (reanimated/apply-animations-to-style
-    (if platform/ios?
-      {:transform        [{:translateY top-layout}
-                          {:rotate rotate}
-                          {:translateY top-view-y}
-                          {:translateX top-view-x}]
-       :opacity          opacity
-       :width            top-view-width
-       :background-color top-view-bg}
-      {:transform [{:translateY top-layout}]
-       :opacity   opacity})
-    {:position           :absolute
-     :padding-horizontal 20
-     :top                (if (or platform/ios? (not landscape?)) top-inset 0)
-     :height             c/top-view-height
-     :z-index            4
-     :flex-direction     :row
-     :justify-content    :space-between
-     :width              (when platform/android? window-width)
-     :background-color   (when platform/android? bg-color)
-     :align-items        :center}))
+   (if platform/ios?
+     {:transform        [{:translateY top-layout}
+                         {:rotate rotate}
+                         {:translateY top-view-y}
+                         {:translateX top-view-x}]
+      :opacity          opacity
+      :width            top-view-width
+      :background-color top-view-bg}
+     {:transform [{:translateY top-layout}]
+      :opacity   opacity})
+   {:position           :absolute
+    :padding-horizontal 20
+    :top                (if (or platform/ios? (not landscape?)) top-inset 0)
+    :height             c/top-view-height
+    :z-index            4
+    :flex-direction     :row
+    :justify-content    :space-between
+    :width              (when platform/android? window-width)
+    :background-color   (when platform/android? bg-color)
+    :align-items        :center}))
 
 (defn top-gradient
   [insets]
@@ -63,13 +63,13 @@
 (defn gradient-container
   [insets {:keys [opacity]} {:keys [bottom-layout]}]
   (reanimated/apply-animations-to-style
-    {:transform [{:translateY bottom-layout}]
-     :opacity   opacity}
-    {:position       :absolute
-     :overflow       :visible
-     :bottom         0
-     :padding-bottom (:bottom insets)
-     :z-index        3}))
+   {:transform [{:translateY bottom-layout}]
+    :opacity   opacity}
+   {:position       :absolute
+    :overflow       :visible
+    :bottom         0
+    :padding-bottom (:bottom insets)
+    :z-index        3}))
 
 (defn content-container
   [padding-horizontal]
@@ -80,13 +80,13 @@
 
 
 (defn background
-  [opacity]
+  [{:keys [overlay-opacity]} {:keys [overlay-z-index]}]
   (reanimated/apply-animations-to-style
-    {:opacity opacity}
-    {:background-color colors/neutral-100-opa-70
-     :position         :absolute
-     :top              0
-     :bottom           0
-     :z-index          1
-     :left             0
-     :right            0}))
+   {:opacity overlay-opacity}
+   {:background-color colors/neutral-100-opa-70
+    :position         :absolute
+    :top              0
+    :bottom           0
+    :z-index          @overlay-z-index
+    :left             0
+    :right            0}))

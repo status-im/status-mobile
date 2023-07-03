@@ -9,7 +9,7 @@
    :align-self        :center
    :margin-horizontal 20
    :margin-vertical   12
-   :flex-grow 1})
+   :flex-grow         1})
 
 
 (def bar-container
@@ -27,6 +27,6 @@
    :height           4
    :border-radius    100
    :background-color colors/white-opa-40
-   :border-width 0.5
-   :border-color colors/neutral-100})
+   :border-width     0.5
+   :border-color     colors/neutral-100})
 

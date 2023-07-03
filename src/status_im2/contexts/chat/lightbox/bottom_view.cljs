@@ -15,13 +15,13 @@
 (defn get-small-item-layout
   [_ index]
   #js
-          {:length c/small-image-size
-           :offset (* (+ c/small-image-size 8) index)
-           :index  index})
+   {:length c/small-image-size
+    :offset (* (+ c/small-image-size 8) index)
+    :index  index})
 
 (defn- f-small-image
   [item index _ {:keys [scroll-index props]}]
-  (let [size       (if (= @scroll-index index) c/focused-image-size c/small-image-size)
+  (let [size (if (= @scroll-index index) c/focused-image-size c/small-image-size)
         size-value (anim/use-val size)
         {:keys [scroll-index-lock? small-list-ref flat-list-ref]}
         props]
@@ -33,13 +33,13 @@
                         (reset! scroll-index-lock? true)
                         (js/setTimeout #(reset! scroll-index-lock? false) 500)
                         (js/setTimeout
-                          (fn []
-                            (reset! scroll-index index)
-                            (.scrollToIndex ^js @small-list-ref
-                                            #js {:animated true :index index})
-                            (.scrollToIndex ^js @flat-list-ref
-                                            #js {:animated true :index index}))
-                          (if platform/ios? 50 150))
+                         (fn []
+                           (reset! scroll-index index)
+                           (.scrollToIndex ^js @small-list-ref
+                                           #js {:animated true :index index})
+                           (.scrollToIndex ^js @flat-list-ref
+                                           #js {:animated true :index index}))
+                         (if platform/ios? 50 150))
                         (rf/dispatch [:chat.ui/update-shared-element-id (:message-id item)]))}
      [reanimated/fast-image
       {:source {:uri (:image (:content item))}
@@ -53,14 +53,14 @@
 
 
 (defn bottom-view
-  [messages index scroll-index insets animations derived item-width props]
+  [messages index scroll-index insets animations derived item-width props state]
   (let [padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
     [reanimated/linear-gradient
      {:colors [colors/neutral-100-opa-100 colors/neutral-100-opa-50]
       :start  {:x 0 :y 1}
       :end    {:x 0 :y 0}
       :style  (style/gradient-container insets animations derived)}
-     [text-sheet/view messages animations]
+     [text-sheet/view messages animations state]
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)
        :key-fn                            :message-id
@@ -75,8 +75,9 @@
        :separator                         [rn/view {:style {:width 8}}]
        :initial-scroll-index              index
        :content-container-style           (style/content-container padding-horizontal)}]
-     [rn/view {:style {:height (:bottom insets)
-                       :position :absolute
-                       :bottom 0
-                       :left 0
-                       :right 0}}]]))
+     [rn/view
+      {:style {:height   (:bottom insets)
+               :position :absolute
+               :bottom   0
+               :left     0
+               :right    0}}]]))
