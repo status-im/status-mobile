@@ -67,7 +67,7 @@
         [rn/view {:style (wrapped-screen-style insets background-color)}
          [inactive]
          (if sheet?
-           [:f> bottom-sheet-screen/f-view component]
+           [bottom-sheet-screen/view {:content component}]
            [component])]
         (when js/goog.DEBUG
           [reloader/reload-view])]))))
