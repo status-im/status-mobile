@@ -31,8 +31,12 @@
    (fn []
      (reagent/next-tick (fn []
                           (when @flat-list-ref
-                            (.scrollToIndex ^js @flat-list-ref
-                                            #js {:animated false :index index}))))
+                            (.scrollToOffset ^js @flat-list-ref
+                                             #js
+                                              {:animated false
+                                               :offset   (* (+ (:width (rn/get-window))
+                                                               constants/separator-width)
+                                                            index)}))))
      (swap! timers assoc
        :mount-animation
        (js/setTimeout (fn []
@@ -135,13 +139,15 @@
   {:data             (reagent/atom (if (number? index) [(nth messages index)] []))
    :scroll-index     (reagent/atom index)
    :transparent?     (reagent/atom false)
-   :set-full-height? (reagent/atom false)})
+   :set-full-height? (reagent/atom false)
+   :overlay-z-index  (reagent/atom 0)})
 
 (defn init-animations
   []
   {:background-color (anim/use-val colors/neutral-100-opa-0)
    :border           (anim/use-val (if platform/ios? 0 12))
    :opacity          (anim/use-val 0)
+   :overlay-opacity  (anim/use-val 0)
    :rotate           (anim/use-val "0deg")
    :layout           (anim/use-val -10)
    :top-view-y       (anim/use-val 0)

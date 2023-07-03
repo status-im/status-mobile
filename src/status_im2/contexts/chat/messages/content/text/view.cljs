@@ -139,9 +139,11 @@
       (conj parsed-text {:type :edited-block :children [edited-tag]}))))
 
 (defn render-parsed-text
-  [{:keys [content chat-id edited-at style-override]}]
+  [{:keys [content chat-id edited-at style-override on-layout]}]
   ^{:key (:parsed-text content)}
-  [rn/view {:style style-override}
+  [rn/view
+   {:style     style-override
+    :on-layout on-layout}
    (reduce (fn [acc e]
              (render-block acc e chat-id style-override))
            [:<>]

@@ -16,4 +16,11 @@
 
 (def ^:const drag-threshold 100)
 
-(def ^:const image-description-in-lightbox? false)
+;;; TEXT SHEET
+(def ^:const text-min-height 68)
+
+(def ^:const text-margin 12)
+
+(def ^:const bar-container-height 20)
+
+(def ^:const line-height 22)
