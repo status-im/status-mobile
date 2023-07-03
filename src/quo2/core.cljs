@@ -49,6 +49,7 @@
     quo2.components.list-items.preview-list
     quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
+    quo2.components.loaders.skeleton.view
     quo2.components.markdown.list.view
     quo2.components.markdown.text
     quo2.components.messages.author.view
@@ -113,6 +114,7 @@
 (def checkbox quo2.components.selectors.selectors.view/checkbox)
 (def filter quo2.components.selectors.filter.view/view)
 (def skeleton quo2.components.loaders.skeleton/skeleton)
+(def static-skeleton quo2.components.loaders.skeleton.view/view)
 (def author quo2.components.messages.author.view/author)
 
 ;;;; SELECTORS
