@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.lightbox.view
   (:require
     [clojure.string :as string]
+    [oops.core :as oops]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.orientation :as orientation]
@@ -14,7 +15,6 @@
     [status-im2.contexts.chat.lightbox.zoomable-image.view :as zoomable-image]
     [status-im2.contexts.chat.lightbox.top-view :as top-view]
     [status-im2.contexts.chat.lightbox.bottom-view :as bottom-view]
-    [oops.core :refer [oget]]
     [status-im2.contexts.chat.lightbox.utils :as utils]
     [status-im2.contexts.chat.lightbox.constants :as constants]))
 
@@ -28,12 +28,12 @@
 (defn on-viewable-items-changed
   [e {:keys [scroll-index-lock? small-list-ref]} {:keys [scroll-index]}]
   (when-not @scroll-index-lock?
-    (let [changed (-> e (oget :changed) first)
-          index   (oget changed :index)]
+    (let [changed (-> e (oops/oget :changed) first)
+          index   (oops/oget changed :index)]
       (reset! scroll-index index)
       (when @small-list-ref
         (.scrollToIndex ^js @small-list-ref #js {:animated true :index index}))
-      (rf/dispatch [:chat.ui/update-shared-element-id (:message-id (oget changed :item))]))))
+      (rf/dispatch [:chat.ui/update-shared-element-id (:message-id (oops/oget changed :item))]))))
 
 (defn image
   [message index _ {:keys [screen-width screen-height] :as args}]
@@ -41,6 +41,20 @@
    {:style (style/image (+ screen-width constants/separator-width) screen-height)}
    [:f> zoomable-image/zoomable-image message index args]
    [rn/view {:style {:width constants/separator-width}}]])
+
+(defn on-scroll
+  [e item-width images-opacity landscape?]
+  (let [total-item-width (+ item-width constants/separator-width)
+        progress         (/ (if landscape?
+                              (oops/oget e "nativeEvent.contentOffset.y")
+                              (oops/oget e "nativeEvent.contentOffset.x"))
+                            total-item-width)
+        index-i          (max (Math/floor progress) 0)
+        index-f          (inc index-i)
+        decimal-part     (- progress index-i)]
+    (reanimated/set-shared-value (nth images-opacity index-i) (- 1 decimal-part))
+    (when (< index-f (count images-opacity))
+      (reanimated/set-shared-value (nth images-opacity index-f) decimal-part))))
 
 (defn lightbox-content
   [props {:keys [data transparent? scroll-index set-full-height?] :as state}
@@ -77,30 +91,34 @@
                 {})}
        [reanimated/view {:style (style/background animations @(:overlay-z-index state))}]
        [gesture/flat-list
-        {:ref                               #(reset! (:flat-list-ref props) %)
-         :key-fn                            :message-id
-         :style                             {:width (+ screen-width constants/separator-width)}
-         :data                              @data
-         :render-fn                         image
-         :render-data                       {:opacity-value    (:opacity animations)
-                                             :border-value     (:border animations)
-                                             :transparent?     transparent?
-                                             :set-full-height? set-full-height?
-                                             :screen-height    screen-height
-                                             :screen-width     screen-width
-                                             :window-height    window-height
-                                             :window-width     window-width
-                                             :props            props
-                                             :curr-orientation curr-orientation}
-         :horizontal                        horizontal?
-         :inverted                          inverted?
-         :paging-enabled                    true
-         :get-item-layout                   (fn [_ index] (get-item-layout _ index item-width))
-         :viewability-config                {:view-area-coverage-percent-threshold 50
-                                             :wait-for-interaction                 true}
-         :shows-vertical-scroll-indicator   false
+        {:ref #(reset! (:flat-list-ref props) %)
+         :key-fn :message-id
+         :on-scroll (fn [e] (on-scroll e item-width (:images-opacity animations) landscape?))
+         :scroll-event-throttle 8
+         :style {:width (+ screen-width constants/separator-width)}
+         :data @data
+         :render-fn image
+         :render-data {:opacity-value     (:opacity animations)
+                       :border-value      (:border animations)
+                       :full-screen-scale (:full-screen-scale animations)
+                       :images-opacity    (:images-opacity animations)
+                       :transparent?      transparent?
+                       :set-full-height?  set-full-height?
+                       :screen-height     screen-height
+                       :screen-width      screen-width
+                       :window-height     window-height
+                       :window-width      window-width
+                       :props             props
+                       :curr-orientation  curr-orientation}
+         :horizontal horizontal?
+         :inverted inverted?
+         :paging-enabled true
+         :get-item-layout (fn [_ index] (get-item-layout _ index item-width))
+         :viewability-config {:view-area-coverage-percent-threshold 50
+                              :wait-for-interaction                 true}
+         :shows-vertical-scroll-indicator false
          :shows-horizontal-scroll-indicator false
-         :on-viewable-items-changed         handle-items-changed}]]]
+         :on-viewable-items-changed handle-items-changed}]]]
      (when (and (not @transparent?) (not landscape?))
        [:f> bottom-view/bottom-view messages index scroll-index insets animations derived
         item-width props state])]))
@@ -113,7 +131,7 @@
         handle-items-changed     (fn [e]
                                    (on-viewable-items-changed e props state))]
     (fn []
-      (let [animations (utils/init-animations)
+      (let [animations (utils/init-animations (count messages) index)
             derived    (utils/init-derived-animations animations)]
         (anim/animate (:background-color animations) colors/neutral-100)
         (reset! (:data state) messages)

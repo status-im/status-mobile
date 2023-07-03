@@ -142,20 +142,31 @@
    :set-full-height? (reagent/atom false)
    :overlay-z-index  (reagent/atom 0)})
 
+(defn initialize-opacity
+  [size selected-index]
+  (vec (map-indexed
+        (fn [i _]
+          (if (= i selected-index)
+            (anim/use-val 1)
+            (anim/use-val 0)))
+        (range size))))
+
 (defn init-animations
-  []
-  {:background-color (anim/use-val colors/neutral-100-opa-0)
-   :border           (anim/use-val (if platform/ios? 0 16))
-   :opacity          (anim/use-val 0)
-   :overlay-opacity  (anim/use-val 0)
-   :rotate           (anim/use-val "0deg")
-   :layout           (anim/use-val -10)
-   :top-view-y       (anim/use-val 0)
-   :top-view-x       (anim/use-val 0)
-   :top-view-width   (anim/use-val (:width (rn/get-window)))
-   :top-view-bg      (anim/use-val colors/neutral-100-opa-0)
-   :pan-y            (anim/use-val 0)
-   :pan-x            (anim/use-val 0)})
+  [size index]
+  {:background-color  (anim/use-val colors/neutral-100-opa-0)
+   :border            (anim/use-val (if platform/ios? 0 16))
+   :full-screen-scale (anim/use-val 1)
+   :opacity           (anim/use-val 0)
+   :overlay-opacity   (anim/use-val 0)
+   :images-opacity    (initialize-opacity size index)
+   :rotate            (anim/use-val "0deg")
+   :layout            (anim/use-val -10)
+   :top-view-y        (anim/use-val 0)
+   :top-view-x        (anim/use-val 0)
+   :top-view-width    (anim/use-val (:width (rn/get-window)))
+   :top-view-bg       (anim/use-val colors/neutral-100-opa-0)
+   :pan-y             (anim/use-val 0)
+   :pan-x             (anim/use-val 0)})
 
 (defn init-derived-animations
   [{:keys [layout]}]
