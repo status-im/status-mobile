@@ -87,7 +87,7 @@
                               :padding-bottom 7}
            :label            name
            :on-press         #(collapse-category community-id category-id collapsed?)
-           :chevron-icon     (if collapsed? :main-icons/chevron-right :main-icons/chevron-down)
+           :chevron-icon     (if collapsed? :i/chevron-right :i/chevron-down)
            :chevron-position :left}])
        (when-not collapsed?
          (into [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}]
