@@ -66,6 +66,7 @@
    {:transform [{:translateY bottom-layout}]
     :opacity   opacity}
    {:position       :absolute
+    :overflow :visible
     :bottom         0
     :padding-bottom (:bottom insets)
     :z-index        3}))
@@ -77,8 +78,3 @@
    :align-items        :center
    :justify-content    :center})
 
-(def text-style
-  {:color             colors/white
-   :align-self        :center
-   :margin-horizontal 20
-   :margin-vertical   12})
