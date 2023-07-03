@@ -13,10 +13,9 @@
    [quo/page-nav
     {:align-mid?   true
      :mid-section  {:type :text-only :main-text ""}
-     :left-section {:type                :grey
-                    :icon                :i/arrow-left
-                    :icon-override-theme :dark
-                    :on-press            #(rf/dispatch [:navigate-back])}}]])
+     :left-section {:type     :grey
+                    :icon     :i/arrow-left
+                    :on-press #(rf/dispatch [:navigate-back])}}]])
 
 (defn view
   []

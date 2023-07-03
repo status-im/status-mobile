@@ -107,8 +107,8 @@
 (def group-avatar-tag quo2.components.tags.context-tag.view/group-avatar-tag)
 (def audio-tag quo2.components.tags.context-tag.view/audio-tag)
 (def community-tag quo2.components.tags.context-tag.view/community-tag)
-(def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
-(def page-nav quo2.components.navigation.page-nav/page-nav)
+
+
 (def disclaimer quo2.components.selectors.disclaimer.view/view)
 (def checkbox quo2.components.selectors.selectors.view/checkbox)
 (def filter quo2.components.selectors.filter.view/view)
@@ -189,6 +189,10 @@
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
 (def user-list quo2.components.list-items.user-list/user-list)
+
+;;;; NAVIGATION
+(def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
+(def page-nav quo2.components.navigation.page-nav/page-nav)
 
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)

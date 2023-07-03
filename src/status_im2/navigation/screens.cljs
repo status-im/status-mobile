@@ -170,7 +170,7 @@
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
     {:name      :scan-sync-code-page
-     :options   {:theme :dark}
+     :options   options/dark-screen
      :component scan-sync-code-page/view}
 
     {:name      :sign-in
