@@ -406,16 +406,19 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 except WebDriverException:
                     pass
                 url = 'https://api.%s/rest/v1/%s/jobs/%s/assets/%s' % (apibase, sauce_username, session_id, "log.json")
-                WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
-                commands = requests_session.get(url).json()
-                for command in commands:
-                    try:
-                        if command['message'].startswith("Started "):
-                            for test in test_suite_data.tests:
-                                if command['message'] == "Started %s" % test.name:
-                                    test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
-                    except KeyError:
-                        continue
+                try:
+                    WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
+                    commands = requests_session.get(url).json()
+                    for command in commands:
+                        try:
+                            if command['message'].startswith("Started "):
+                                for test in test_suite_data.tests:
+                                    if command['message'] == "Started %s" % test.name:
+                                        test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
+                        except KeyError:
+                            continue
+                except (RemoteDisconnected, requests.exceptions.ConnectionError):
+                    pass
         if cls.loop:
             cls.loop.close()
         for test in test_suite_data.tests:
