@@ -261,7 +261,7 @@
         [:<>
          [blur/view
           {:style         style/background-blur-overlay
-           :blur-amount   80
+           :blur-amount   20
            :blur-type     :transparent
            :overlay-color :transparent}]
          [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?]
