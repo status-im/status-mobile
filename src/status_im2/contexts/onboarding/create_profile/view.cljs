@@ -120,8 +120,7 @@
                                      (rf/dispatch [:dismiss-keyboard])
                                      (rf/dispatch
                                       [:show-bottom-sheet
-                                       {:override-theme :dark
-                                        :content
+                                       {:content
                                         (fn []
                                           [method-menu/view on-change-profile-pic])}]))
               :image-picker-props  {:profile-picture     (when @profile-pic {:uri @profile-pic})
