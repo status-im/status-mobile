@@ -7,5 +7,5 @@ communities = {
     'member_closed': 'test_comm_enc',
     'member_pending': 'RC1 testing community'
 }
-contacts = ['Test_contact', 'my-custom-nickname']
+contacts = ['Test_contact', 'MyCustomNickname']
 blocked_user = 'Clear Flat Milkweedbug'
