@@ -35,8 +35,8 @@
                           (reset! expanded? true))))))
 
 (defn expand-sheet
-  [{:keys [derived-value overlay-opacity saved-top]} expanded-height max-height overlay-z-index
-   expanded?]
+  [{:keys [derived-value overlay-opacity saved-top]}
+   expanded-height max-height overlay-z-index expanded?]
   (reanimated/animate derived-value expanded-height)
   (reanimated/animate overlay-opacity (/ expanded-height max-height))
   (reanimated/set-shared-value saved-top (- expanded-height))

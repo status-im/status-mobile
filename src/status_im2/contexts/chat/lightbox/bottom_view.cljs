@@ -73,4 +73,5 @@
        :separator                         [rn/view {:style {:width 8}}]
        :initial-scroll-index              index
        :content-container-style           (style/content-container padding-horizontal)}]
+     ;; This is needed so that text does not show in the bottom inset part as it is transparent
      [rn/view {:style (style/bottom-inset-cover-up insets)}]]))

@@ -91,7 +91,6 @@
     :left             0
     :right            0}))
 
-;; This is needed so that text does not show in the bottom inset part as it is transparent
 (defn bottom-inset-cover-up
   [insets]
   {:height   (:bottom insets)

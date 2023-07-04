@@ -3,7 +3,6 @@
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.chat.lightbox.constants :as c]))
 
-
 (defn sheet-container
   [{:keys [height top]}]
   (reanimated/apply-animations-to-style
@@ -29,8 +28,7 @@
    :justify-content :center
    :align-items     :center})
 
-(defn bar
-  []
+(def bar
   {:width            32
    :height           4
    :border-radius    100
@@ -61,4 +59,3 @@
    :height   28
    :bottom   0
    :z-index  1})
-

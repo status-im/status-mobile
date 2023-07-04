@@ -17,7 +17,7 @@
   [text-height]
   (when (> @text-height (* c/line-height 2))
     [rn/view {:style style/bar-container}
-     [rn/view {:style (style/bar)}]]))
+     [rn/view {:style style/bar}]]))
 
 (defn text-sheet
   [messages text-height expanded? overlay-opacity overlay-z-index]
@@ -61,7 +61,8 @@
          :on-layout      #(utils/on-layout % text-height)}]]]]))
 
 (defn view
-  [messages {:keys [overlay-opacity]} {:keys [overlay-z-index]}]
+  []
   (let [text-height (reagent/atom 0)
         expanded?   (reagent/atom false)]
-    [:f> text-sheet messages text-height expanded? overlay-opacity overlay-z-index]))
+    (fn [messages {:keys [overlay-opacity]} {:keys [overlay-z-index]}]
+      [:f> text-sheet messages text-height expanded? overlay-opacity overlay-z-index])))
