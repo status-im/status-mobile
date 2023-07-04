@@ -97,8 +97,7 @@
          :inverted                          inverted?
          :paging-enabled                    true
          :get-item-layout                   (fn [_ index] (get-item-layout _ index item-width))
-         :viewability-config                {:view-area-coverage-percent-threshold 50
-                                             :wait-for-interaction                 true}
+         :viewability-config                @(:viewability-config props)
          :shows-vertical-scroll-indicator   false
          :shows-horizontal-scroll-indicator false
          :on-viewable-items-changed         callback}]]]
