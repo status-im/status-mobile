@@ -39,6 +39,8 @@
        :on-press #(utils/expand-sheet animations expanded-height max-height overlay-z-index expanded?)
        :style (style/sheet-container derived)}
       [bar text-height]
+      ;[rn/view {:style {:background-color :red
+      ;                  :position :absolute}}]
       [reanimated/linear-gradient
        {:colors [colors/neutral-100-opa-0 colors/neutral-100]
         :start  {:x 0 :y 1}
