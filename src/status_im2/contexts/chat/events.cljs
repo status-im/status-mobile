@@ -293,6 +293,12 @@
             (deactivate-chat chat-id)
             (offload-messages chat-id)))
 
+(rf/defn unmute-chat-community
+  {:events [:chat/unmute-chat-community]}
+  [{:keys [db]} chat-id muted?]
+  (let [{:keys [community-id]} (get-in db [:chats chat-id])]
+    {:db (assoc-in db [:communities community-id :muted] muted?)}))
+
 (rf/defn mute-chat-failed
   {:events [:chat/mute-failed]}
   [{:keys [db]} chat-id muted? error]
@@ -303,6 +309,8 @@
   {:events [:chat/mute-successfully]}
   [{:keys [db]} chat-id muted-till mute-type muted? chat-type]
   (log/debug "muted chat successfully" chat-id " for" muted-till)
+  (when-not muted?
+    (rf/dispatch [:chat/unmute-chat-community chat-id muted?]))
   (let [time-string (fn [duration-kw unmute-time]
                       (i18n/label duration-kw {:duration unmute-time}))
         not-community-chat? #(contains? #{constants/public-chat-type
@@ -361,7 +369,7 @@
                       :params     params
                       :on-error   #(rf/dispatch [:chat/mute-failed chat-id muted? %])
                       :on-success #(rf/dispatch [:chat/mute-successfully chat-id % mute-type
-                                                 (not muted?) chat-type])}]}))
+                                                 muted? chat-type])}]}))
 
 (rf/defn show-clear-history-confirmation
   {:events [:chat.ui/show-clear-history-confirmation]}

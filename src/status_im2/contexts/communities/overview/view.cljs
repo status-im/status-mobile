@@ -37,8 +37,8 @@
 (defn add-category-height
   [categories-heights category height]
   (swap! categories-heights
-         (fn [heights]
-           (assoc heights category height))))
+    (fn [heights]
+      (assoc heights category height))))
 
 (defn collapse-category
   [community-id category-id collapsed?]

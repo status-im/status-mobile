@@ -955,7 +955,6 @@
         chats    (mapv vector (keys channels) (vals channels))]
     (doseq [x chats]
       (doseq [{:keys [id]} x]
-        (js/console.log (str "chat muted " x muted?))
         (let [chat-id (str community-id id)]
           (rf/dispatch [:community/mute-community-chats chat-id muted? mute-till]))))))
 
