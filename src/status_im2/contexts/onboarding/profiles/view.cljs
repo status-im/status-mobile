@@ -28,7 +28,7 @@
       :accessibility-label :create-new-profile}
      {:icon                :i/multi-profile
       :label               (i18n/label :t/add-existing-status-profile)
-      :on-press            #(rf/dispatch [:navigate-to :sign-in])
+      :on-press            #(rf/dispatch [:open-modal :sign-in])
       :accessibility-label :multi-profile}]]])
 
 (defn show-new-account-options

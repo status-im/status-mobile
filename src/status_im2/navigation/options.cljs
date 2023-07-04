@@ -37,6 +37,11 @@
    :orientation              ["portrait"]
    :backgroundColor          colors/neutral-80-opa-80-blur})
 
+(def onboarding-transparent-layout
+  {:componentBackgroundColor :transparent
+   :orientation              ["portrait"]
+   :backgroundColor          :transparent})
+
 (defn navbar
   ([dark?]
    {:navigationBar {:backgroundColor (if (or dark? (colors/dark?)) colors/neutral-100 colors/white)}})
