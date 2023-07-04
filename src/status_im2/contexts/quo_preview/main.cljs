@@ -54,6 +54,7 @@
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.markdown.text :as text]
+    [status-im2.contexts.quo-preview.markdown.list :as markdown-list]
     [status-im2.contexts.quo-preview.messages.author :as messages-author]
     [status-im2.contexts.quo-preview.messages.gap :as messages-gap]
     [status-im2.contexts.quo-preview.messages.system-message :as system-message]
@@ -245,7 +246,10 @@
                             :component user-list/preview-user-list}]
    :markdown              [{:name      :texts
                             :options   {:topBar {:visible true}}
-                            :component text/preview-text}]
+                            :component text/preview-text}
+                           {:name      :markdown-list
+                            :options   {:topBar {:visible true}}
+                            :component markdown-list/preview-markdown-list}]
    :messages              [{:name      :gap
                             :options   {:topBar {:visible true}}
                             :component messages-gap/preview-messages-gap}

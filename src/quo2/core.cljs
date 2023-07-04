@@ -49,6 +49,7 @@
     quo2.components.list-items.preview-list
     quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
+    quo2.components.markdown.list.view
     quo2.components.markdown.text
     quo2.components.messages.author.view
     quo2.components.messages.gap
@@ -91,7 +92,6 @@
     quo2.components.settings.reorder-item.view
     quo2.components.community.channel-actions))
 
-(def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
 (def separator quo2.components.separator/separator)
 (def header quo2.components.header/header)
@@ -193,6 +193,10 @@
 ;;;; NAVIGATION
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
 (def page-nav quo2.components.navigation.page-nav/page-nav)
+
+;;;; MARKDOWN
+(def markdown-list quo2.components.markdown.list.view/view)
+(def text quo2.components.markdown.text/text)
 
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)
