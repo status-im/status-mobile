@@ -126,13 +126,13 @@
           loading-indicator-page-loading-height)]])))
 
 (defn list-header
-  [insets composer-height]
+  [insets]
   [rn/view
    {:background-color (colors/theme-colors colors/white colors/neutral-95)
     :margin-bottom    (- 0
                          (:top insets)
                          (when platform/ios? style/overscroll-cover-height))
-    :height           (+ composer-height
+    :height           (+ composer.constants/composer-default-height
                          (:bottom insets)
                          spacing-between-composer-and-content
                          (when platform/ios? style/overscroll-cover-height))}])
@@ -251,11 +251,11 @@
 
 (defn render-fn
   [{:keys [type value content-type] :as message-data} _ _
-   {:keys [context keyboard-shown? insets composer-height]}]
+   {:keys [context keyboard-shown? insets]}]
   ;;TODO temporary hide mutual-state-updates https://github.com/status-im/status-mobile/issues/16254
   (when (not= content-type constants/content-type-system-mutual-state-update)
     (if (= type :header)
-      [list-header insets composer-height]
+      [list-header insets]
       [rn/view
        (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
        (if (= type :datemark)
@@ -281,9 +281,7 @@
         recording?                (when shell-animation-complete?
                                     (rf/sub [:chats/recording?]))
         all-loaded?               (when shell-animation-complete?
-                                    (rf/sub [:chats/all-loaded? (:chat-id chat)]))
-        composer-height           (when shell-animation-complete?
-                                    (rf/sub [:chats/composer-height]))]
+                                    (rf/sub [:chats/all-loaded? (:chat-id chat)]))]
     ;; NOTE(rasom): Top bar needs to react on `all-loaded?` only after messages
     ;; rendering, otherwise animation flickers
     (rn/use-effect (fn []
@@ -305,13 +303,12 @@
        :data                         (into [{:type :header}] messages)
        :render-data                  {:context         context
                                       :keyboard-shown? keyboard-shown?
-                                      :insets          insets
-                                      :composer-height composer-height}
+                                      :insets          insets}
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               #(list-on-end-reached scroll-y)
        :on-scroll-to-index-failed    identity
-       :scroll-indicator-insets      {:top (- composer-height 12)}
+       :scroll-indicator-insets      {:top (- composer.constants/composer-default-height 16)}
        :keyboard-dismiss-mode        :interactive
        :keyboard-should-persist-taps :always
        :on-scroll-begin-drag         rn/dismiss-keyboard!
