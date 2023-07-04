@@ -97,7 +97,8 @@
          :inverted                          inverted?
          :paging-enabled                    true
          :get-item-layout                   (fn [_ index] (get-item-layout _ index item-width))
-         :viewability-config                @(:viewability-config props)
+         :viewability-config                {:view-area-coverage-percent-threshold 50
+                                             :wait-for-interaction                 true}
          :shows-vertical-scroll-indicator   false
          :shows-horizontal-scroll-indicator false
          :on-viewable-items-changed         callback}]]]
@@ -109,8 +110,8 @@
   [{:keys [messages index]}]
   (let [props (utils/init-props)
         state (utils/init-state messages index)
-        callback   (rn/use-callback
-                     #(on-viewable-items-changed % props state))]
+        callback   (fn [e]
+                     (on-viewable-items-changed e props state))]
     (fn [{:keys [messages index]}]
       (let [animations (utils/init-animations)
             derived    (utils/init-derived-animations animations)]

@@ -126,9 +126,7 @@
   {:flat-list-ref      (atom nil)
    :small-list-ref     (atom nil)
    :scroll-index-lock? (atom true)
-   :timers             (atom {})
-   :viewability-config (atom {:view-area-coverage-percent-threshold 50
-                              :wait-for-interaction                 true})})
+   :timers             (atom {})})
 
 (defn init-state
   [messages index]
