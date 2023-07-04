@@ -11,7 +11,7 @@
   (-> (gesture/gesture-pan)
       (gesture/on-start (fn []
                           (reset! overlay-z-index 1)
-                          (reanimated/animate gradient-opacity c/gradient-min-opacity)))
+                          (reanimated/animate gradient-opacity 0)))
       (gesture/on-update
        (fn [e]
          (let [new-value     (+ (reanimated/get-shared-value saved-top) (oops/oget e "translationY"))
@@ -47,7 +47,7 @@
   [e expanded? {:keys [gradient-opacity]}]
   (if (and (> (oops/oget e "nativeEvent.contentOffset.y") 0) @expanded?)
     (reanimated/animate gradient-opacity 1)
-    (reanimated/animate gradient-opacity c/gradient-min-opacity)))
+    (reanimated/animate gradient-opacity 0)))
 
 (defn on-layout
   [e text-height]
@@ -57,7 +57,7 @@
   [overlay-opacity]
   {:derived-value    (reanimated/use-shared-value c/text-min-height)
    :saved-top        (reanimated/use-shared-value (- c/text-min-height))
-   :gradient-opacity (reanimated/use-shared-value c/gradient-min-opacity)
+   :gradient-opacity (reanimated/use-shared-value 0)
    :overlay-opacity  overlay-opacity})
 
 (defn init-derived-animations
