@@ -16,11 +16,12 @@
 
 
 (defn drag-gesture
-  [top saved-top expanded-height max-height height opacity overlay-z-index expanded?]
+  [top saved-top expanded-height max-height height opacity gradient-opacity overlay-z-index expanded?]
   (-> (gesture/gesture-pan)
       (gesture/enabled true)
       (gesture/max-pointers 1)
-      (gesture/on-start (fn [] (reset! overlay-z-index 1)))
+      (gesture/on-start (fn [] (reset! overlay-z-index 1)
+                          (reanimated/animate gradient-opacity 0)))
       (gesture/on-update
        (fn [e]
          (let [new-value (+ (reanimated/get-shared-value saved-top) (oops/oget e "translationY"))
@@ -67,7 +68,7 @@
         height                    (reanimated/use-shared-value 80)
         gradient-opacity          (reanimated/use-shared-value 0)]
     [gesture/gesture-detector
-     {:gesture (drag-gesture top saved-top expanded-height max-height height opacity overlay-z-index expanded?)}
+     {:gesture (drag-gesture top saved-top expanded-height max-height height opacity gradient-opacity overlay-z-index expanded?)}
      [reanimated/touchable-opacity
       {:active-opacity 1
        :on-press       (fn []
