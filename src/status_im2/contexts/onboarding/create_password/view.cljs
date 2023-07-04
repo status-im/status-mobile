@@ -187,54 +187,44 @@
 (defn create-password-doc
   []
   [quo/documentation-drawers
-   {:title  (i18n/label
-             :t/create-profile-password-info-box-title)
+   {:title  (i18n/label :t/create-profile-password-info-box-title)
     :shell? true}
    [rn/view
-    [quo/text
-     {:size :paragraph-2}
-     (i18n/label
-      :t/create-profile-password-info-box-description)]]])
-
-(defn- f-create-password
-  []
-  (let [keyboard-shown?      (reagent/atom false)
-        {:keys [top bottom]} (safe-area/get-insets)]
-    (fn []
-      (rn/use-effect
-       (let [will-show-listener (ocall rn/keyboard
-                                       "addListener"
-                                       "keyboardWillShow"
-                                       #(reset! keyboard-shown? true))
-             will-hide-listener (ocall rn/keyboard
-                                       "addListener"
-                                       "keyboardWillHide"
-                                       #(reset! keyboard-shown? false))]
-         (fn []
-           (fn []
-             (ocall will-show-listener "remove")
-             (ocall will-hide-listener "remove"))))
-       [])
-      [rn/touchable-without-feedback
-       {:on-press   rn/dismiss-keyboard!
-        :accessible false}
-       [rn/view {:style style/flex-fill}
-        [rn/keyboard-avoiding-view {:style style/flex-fill}
-         [navigation-bar/navigation-bar
-          {:top                   top
-           :right-section-buttons [{:type                :blur-bg
-                                    :icon                :i/info
-                                    :icon-override-theme :dark
-                                    :on-press            (fn []
-                                                           (rn/dismiss-keyboard!)
-                                                           (rf/dispatch [:show-bottom-sheet
-                                                                         {:content create-password-doc
-                                                                          :shell?  true}]))}]}]
-         [password-form]
-         [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]]])))
+    [quo/text {:size :paragraph-2}
+     (i18n/label :t/create-profile-password-info-box-description)]]])
 
 (defn create-password
   []
-  [:<>
-   [background/view true]
-   [:f> f-create-password]])
+  (reagent/with-let [keyboard-shown?      (reagent/atom false)
+                     {:keys [top bottom]} (safe-area/get-insets)
+                     will-show-listener   (ocall rn/keyboard
+                                                 "addListener"
+                                                 "keyboardWillShow"
+                                                 #(reset! keyboard-shown? true))
+                     will-hide-listener   (ocall rn/keyboard
+                                                 "addListener"
+                                                 "keyboardWillHide"
+                                                 #(reset! keyboard-shown? false))
+                     on-press-info        (fn []
+                                            (rn/dismiss-keyboard!)
+                                            (rf/dispatch [:show-bottom-sheet
+                                                          {:content create-password-doc
+                                                           :shell?  true}]))]
+    [:<>
+     [background/view true]
+     [rn/touchable-without-feedback
+      {:on-press   rn/dismiss-keyboard!
+       :accessible false}
+      [rn/view {:style style/flex-fill}
+       [rn/keyboard-avoiding-view {:style style/flex-fill}
+        [navigation-bar/navigation-bar
+         {:top                   top
+          :right-section-buttons [{:type                :blur-bg
+                                   :icon                :i/info
+                                   :icon-override-theme :dark
+                                   :on-press            on-press-info}]}]
+        [password-form]
+        [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]]]]
+    (finally
+     (ocall will-show-listener "remove")
+     (ocall will-hide-listener "remove"))))
