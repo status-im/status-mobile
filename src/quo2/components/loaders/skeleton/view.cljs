@@ -29,7 +29,7 @@
                                     :content content
                                     :color   color})}])]])
 
-(defn internal-view
+(defn- internal-view
   [{:keys [content theme blur? parent-height]}]
   (let [number-of-skeletons (int (Math/floor (/ parent-height
                                                 (get-in constants/layout-dimensions [content :height]))))

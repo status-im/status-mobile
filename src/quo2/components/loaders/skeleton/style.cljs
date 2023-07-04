@@ -20,11 +20,10 @@
 
 (defn content-view
   [{:keys [type index content color]}]
-  (let [{:keys [width height margin-bottom margin-top]}
+  (let [{:keys [width height margin-bottom]}
         (get-in constants/content-dimensions [content index type])]
     {:height           height
      :width            width
      :border-radius    6
      :background-color color
-     :margin-bottom    margin-bottom
-     :margin-top       margin-top}))
+     :margin-bottom    margin-bottom}))
