@@ -12,41 +12,36 @@
     [status-im2.contexts.chat.lightbox.constants :as c]
     [oops.core :as oops]
     [status-im2.contexts.chat.lightbox.text-sheet.style :as style]
-    [status-im2.contexts.chat.messages.content.text.view :as message-view]))
+    [status-im2.contexts.chat.messages.content.text.view :as message-view]
+    [utils.worklets.lightbox :as worklet]))
 
 
 (defn drag-gesture
-  [top saved-top expanded-height max-height height opacity gradient-opacity overlay-z-index expanded?]
+  [derived-value saved-top expanded-height max-height opacity gradient-opacity overlay-z-index expanded?]
   (-> (gesture/gesture-pan)
       (gesture/enabled true)
       (gesture/max-pointers 1)
-      (gesture/on-start (fn [] (reset! overlay-z-index 1)
+      (gesture/on-start (fn []
+                          (reset! overlay-z-index 1)
                           (reanimated/animate gradient-opacity 0)))
       (gesture/on-update
        (fn [e]
          (let [new-value (+ (reanimated/get-shared-value saved-top) (oops/oget e "translationY"))
                progress  (/ (- new-value) max-height)]
-           (println "qqqqq" (min (max new-value (- expanded-height))
-                                 (- c/small-list-height))
-                    (max (min (- new-value) expanded-height) c/small-list-height))
-           (reanimated/set-shared-value top
-                                        (min (max new-value (- expanded-height))
-                                             (- c/small-list-height)))
            (reanimated/set-shared-value opacity progress)
-           (reanimated/set-shared-value height (max (min (- new-value) expanded-height) c/small-list-height)))))
+           (reanimated/set-shared-value derived-value (max (min (- new-value) expanded-height) c/small-list-height)))))
       (gesture/on-end (fn [e]
-                        (if (or (> (reanimated/get-shared-value top)
+                        (if (or (> (- (reanimated/get-shared-value derived-value))
                                    (reanimated/get-shared-value saved-top))
-                                (= (reanimated/get-shared-value height) c/small-list-height))
+                                (= (reanimated/get-shared-value derived-value) c/small-list-height))
                           (do
-                            (reanimated/animate top (- c/small-list-height))
-                            (reanimated/animate height c/small-list-height)
+                            (reanimated/animate derived-value c/small-list-height)
                             (reanimated/animate opacity 0)
                             (reanimated/set-shared-value saved-top (- c/small-list-height))
                             (reset! expanded? false)
                             (js/setTimeout #(reset! overlay-z-index 0) 300))
-                          (reanimated/set-shared-value saved-top (reanimated/get-shared-value top)))
-                        (when (= (reanimated/get-shared-value height) expanded-height)
+                          (reanimated/set-shared-value saved-top (- (reanimated/get-shared-value derived-value))))
+                        (when (= (reanimated/get-shared-value derived-value) expanded-height)
                           (reset! expanded? true))))))
 
 (defn bar
@@ -66,17 +61,17 @@
                                      (when platform/ios? (:top insets)))
         text-padding              24
         expanded-height           (min max-height (+ 20 @text-height text-padding))
-        top                       (reanimated/use-shared-value (- c/small-list-height))
+        derived-value             (reanimated/use-shared-value c/small-list-height)
+        height                    (worklet/text-sheet derived-value true)
+        top                       (worklet/text-sheet derived-value false)
         saved-top                 (reanimated/use-shared-value (- c/small-list-height))
-        height                    (reanimated/use-shared-value c/small-list-height)
         gradient-opacity          (reanimated/use-shared-value 0)]
     [gesture/gesture-detector
-     {:gesture (drag-gesture top saved-top expanded-height max-height height opacity gradient-opacity overlay-z-index expanded?)}
+     {:gesture (drag-gesture derived-value saved-top expanded-height max-height opacity gradient-opacity overlay-z-index expanded?)}
      [reanimated/touchable-opacity
       {:active-opacity 1
        :on-press       (fn []
-                         (reanimated/animate top (- expanded-height))
-                         (reanimated/animate height expanded-height)
+                         (reanimated/animate derived-value expanded-height)
                          (reanimated/animate opacity 1)
                          (reanimated/set-shared-value saved-top (- expanded-height))
                          (reset! overlay-z-index 1)
@@ -113,6 +108,7 @@
                  :z-index  1}}]
       [gesture/scroll-view
        {:scroll-enabled true
+        :scroll-event-throttle 16
         :on-scroll      (fn [e]
                           (if (and (> (oops/oget e "nativeEvent.contentOffset.y") 0) @expanded?)
                             (reanimated/animate gradient-opacity 1)

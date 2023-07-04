@@ -26,7 +26,7 @@
   (js/clearTimeout (:show-2 @timers)))
 
 (defn effect
-  [{:keys [flat-list-ref scroll-index-lock? timers]} {:keys [opacity layout border]} index]
+  [{:keys [flat-list-ref scroll-index-lock? timers]} {:keys [transparent]} {:keys [opacity layout border]} index]
   (rn/use-effect
    (fn []
      (reagent/next-tick (fn []
@@ -42,6 +42,7 @@
                       (if platform/ios? 250 100)))
      (swap! timers assoc :mount-index-lock (js/setTimeout #(reset! scroll-index-lock? false) 300))
      (fn []
+       (reset! transparent true)
        (rf/dispatch [:chat.ui/zoom-out-signal nil])
        (when platform/android?
          (rf/dispatch [:chat.ui/lightbox-scale 1]))

@@ -67,7 +67,7 @@
      {:style (reanimated/apply-animations-to-style {:background-color (:background-color animations)}
                                                    {:height screen-height})}
      (when-not @transparent?
-       [:f> top-view/top-view data insets scroll-index animations derived landscape?
+       [:f> top-view/top-view messages insets scroll-index animations derived landscape?
         screen-width])
      [gesture/gesture-detector
       {:gesture (utils/drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
@@ -119,7 +119,7 @@
         (reset! (:data state) messages)
         (when platform/ios? ; issue: https://github.com/wix/react-native-navigation/issues/7726
           (utils/orientation-change props state animations))
-        (utils/effect props animations index)
+        (utils/effect props state animations index)
         [:f> lightbox-content props state animations derived messages index callback]))))
 
 (defn lightbox
