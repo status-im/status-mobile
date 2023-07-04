@@ -63,7 +63,7 @@
                            window-height
                            window-width)
         item-width       (if (and landscape? platform/ios?) screen-height screen-width)
-        curr-image   (when (number? index) (nth @messages @index))]
+        curr-image   (when (number? scroll-index) (nth @messages @scroll-index))]
     [reanimated/view
      {:style (reanimated/apply-animations-to-style {:background-color (:background-color animations)}
                                                    {:height screen-height})}
