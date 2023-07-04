@@ -1,5 +1,4 @@
-(ns status-im2.contexts.chat.lightbox.constants
-  (:require [react-native.platform :as platform]))
+(ns status-im2.contexts.chat.lightbox.constants)
 
 (def ^:const small-image-size 40)
 (def ^:const focused-extra-size 16)
