@@ -1285,8 +1285,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi('Device2 checks "Sending" status when sending message from offline')
         self.chat_2.send_message(message_1)
-        chat_element = self.chat_2.chat_element_by_text(message_1)
-        status = chat_element.status
+        status = self.chat_2.chat_element_by_text(message_1).status
         if not (status == 'Sending' or status == 'Sent'):
             self.errors.append('Message status is not "Sending", it is "%s"!' % status)
 
@@ -1304,7 +1303,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.home_2.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
         try:
-            chat_element.wait_for_status_to_be(expected_status='Delivered', timeout=120)
+            self.chat_2.chat_element_by_text(message_1).wait_for_status_to_be(expected_status='Delivered', timeout=120)
         except TimeoutException as e:
             self.errors.append('%s after back up online!' % e.msg)
         self.errors.verify_no_errors()

@@ -399,6 +399,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         if not pytest_config_global['pr_number']:
             self.home.just_fyi("Perform back up")
+            self.home.click_system_back_button_until_element_is_shown()
             self.home.profile_button.click()
             profile.sync_settings_button.click()
             profile.backup_settings_button.click()

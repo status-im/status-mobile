@@ -12,7 +12,7 @@ from support.appium_container import AppiumContainer
 from support.test_data import TestSuiteData
 
 
-async def start_threads(quantity: int, func: type, returns: dict, *args):
+async def start_threads(test_name: str, quantity: int, func: type, returns: dict, *args):
     loop = asyncio.get_event_loop()
     #    from tests.conftest import sauce
     #     for _ in range(60):
@@ -26,7 +26,7 @@ async def start_threads(quantity: int, func: type, returns: dict, *args):
                 returns[k] = await returns[k]
                 break
             except MaxRetryError:
-                print("MaxRetryError when creating a driver")
+                print("MaxRetryError when creating a driver for %s" % test_name)
                 time.sleep(10)
     return returns
 
