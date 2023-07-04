@@ -134,7 +134,7 @@
   ;; for the transition animation to execute properly, otherwise it would animate towards
   ;; outside the screen (even if we have `initialScrollIndex` set).
   {:data             (reagent/atom (if (number? index) [(nth messages index)] []))
-   :scroll-index     (reagent/atom (or index 0))
+   :scroll-index     (reagent/atom index)
    :transparent?     (reagent/atom false)
    :set-full-height? (reagent/atom false)
    :overlay-z-index  (reagent/atom 0)})

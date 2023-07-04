@@ -107,12 +107,13 @@
         item-width props state])]))
 
 (defn- f-lightbox
-  [{:keys [messages index]}]
-  (let [props (utils/init-props)
+  []
+  (let [{:keys [messages index]} (rf/sub [:get-screen-params])
+        props (utils/init-props)
         state (utils/init-state messages index)
         callback   (fn [e]
                      (on-viewable-items-changed e props state))]
-    (fn [{:keys [messages index]}]
+    (fn []
       (let [animations (utils/init-animations)
             derived    (utils/init-derived-animations animations)]
         (anim/animate (:background-color animations) colors/neutral-100)
@@ -124,5 +125,4 @@
 
 (defn lightbox
   []
-  (let [screen-params (rf/sub [:get-screen-params])]
-    [:f> f-lightbox screen-params]))
+  [:f> f-lightbox])
