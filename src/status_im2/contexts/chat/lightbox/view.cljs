@@ -119,7 +119,7 @@
         (reset! (:data state) messages)
         (when platform/ios? ; issue: https://github.com/wix/react-native-navigation/issues/7726
           (utils/orientation-change props state animations))
-        (utils/effect props state animations index)
+        (utils/effect props animations index)
         [:f> lightbox-content props state animations derived messages index callback]))))
 
 (defn lightbox
