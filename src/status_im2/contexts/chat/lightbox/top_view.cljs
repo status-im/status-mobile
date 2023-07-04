@@ -62,8 +62,8 @@
                                                 :text            (i18n/label :t/photo-saved)}])))}]]]))
 
 (defn top-view
-  [curr-image insets index animations derived landscape? screen-width]
-  (let [{:keys [from timestamp content]}   curr-image
+  [messages insets index animations derived landscape? screen-width]
+  (let [{:keys [from timestamp content]}   (when (number? index) (nth @messages @index))
         display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
                                                            from]))
         bg-color                           (if landscape?

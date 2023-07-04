@@ -62,13 +62,12 @@
         screen-height    (if (or platform/ios? (= curr-orientation orientation/portrait))
                            window-height
                            window-width)
-        item-width       (if (and landscape? platform/ios?) screen-height screen-width)
-        curr-image   (when (number? scroll-index) (nth @messages @scroll-index))]
+        item-width       (if (and landscape? platform/ios?) screen-height screen-width)]
     [reanimated/view
      {:style (reanimated/apply-animations-to-style {:background-color (:background-color animations)}
                                                    {:height screen-height})}
-     (when (and (not @transparent?) curr-image)
-       [:f> top-view/top-view curr-image insets scroll-index animations derived landscape?
+     (when-not @transparent?
+       [:f> top-view/top-view data insets scroll-index animations derived landscape?
         screen-width])
      [gesture/gesture-detector
       {:gesture (utils/drag-gesture animations (and landscape? platform/ios?) set-full-height?)}

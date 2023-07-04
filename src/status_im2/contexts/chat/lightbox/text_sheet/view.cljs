@@ -26,18 +26,21 @@
        (fn [e]
          (let [new-value (+ (reanimated/get-shared-value saved-top) (oops/oget e "translationY"))
                progress  (/ (- new-value) max-height)]
+           (println "qqqqq" (min (max new-value (- expanded-height))
+                                 (- c/small-list-height))
+                    (max (min (- new-value) expanded-height) c/small-list-height))
            (reanimated/set-shared-value top
                                         (min (max new-value (- expanded-height))
                                              (- c/small-list-height)))
            (reanimated/set-shared-value opacity progress)
-           (reanimated/set-shared-value height (max (min (- new-value) expanded-height) 80)))))
+           (reanimated/set-shared-value height (max (min (- new-value) expanded-height) c/small-list-height)))))
       (gesture/on-end (fn [e]
                         (if (or (> (reanimated/get-shared-value top)
                                    (reanimated/get-shared-value saved-top))
-                                (= (reanimated/get-shared-value height) 80))
+                                (= (reanimated/get-shared-value height) c/small-list-height))
                           (do
                             (reanimated/animate top (- c/small-list-height))
-                            (reanimated/animate height 80)
+                            (reanimated/animate height c/small-list-height)
                             (reanimated/animate opacity 0)
                             (reanimated/set-shared-value saved-top (- c/small-list-height))
                             (reset! expanded? false)
@@ -65,7 +68,7 @@
         expanded-height           (min max-height (+ 20 @text-height text-padding))
         top                       (reanimated/use-shared-value (- c/small-list-height))
         saved-top                 (reanimated/use-shared-value (- c/small-list-height))
-        height                    (reanimated/use-shared-value 80)
+        height                    (reanimated/use-shared-value c/small-list-height)
         gradient-opacity          (reanimated/use-shared-value 0)]
     [gesture/gesture-detector
      {:gesture (drag-gesture top saved-top expanded-height max-height height opacity gradient-opacity overlay-z-index expanded?)}
