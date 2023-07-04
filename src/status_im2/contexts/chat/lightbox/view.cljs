@@ -109,12 +109,12 @@
 (defn- f-lightbox
   [{:keys [messages index]}]
   (let [props (utils/init-props)
-        state (utils/init-state messages index)
-        callback   (fn [e]
-                     (on-viewable-items-changed e props state))]
+        state (utils/init-state messages index)]
     (fn [{:keys [messages index]}]
       (let [animations (utils/init-animations)
-            derived    (utils/init-derived-animations animations)]
+            derived    (utils/init-derived-animations animations)
+            callback   (fn [e]
+                         (on-viewable-items-changed e props state))]
         (anim/animate (:background-color animations) colors/neutral-100)
         (reset! (:data state) messages)
         (when platform/ios? ; issue: https://github.com/wix/react-native-navigation/issues/7726
