@@ -100,7 +100,7 @@
        [quo/text
         {:weight :medium
          :size   :paragraph-2
-         :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]]
+         :style  {:color colors/neutral-40}} "TODAY"]]]
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
        {:active-opacity 1
