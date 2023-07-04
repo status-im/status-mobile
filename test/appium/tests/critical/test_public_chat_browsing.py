@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import emoji
 import pytest
+from _pytest.outcomes import Failed
 from dateutil import parser
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
@@ -500,6 +501,12 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         for channel in (self.channel_1, self.channel_2):
             if not channel.element_by_text_part(message_after_edit).is_element_displayed(60):
                 self.errors.append('Message is not edited')
+        message_text_after_edit = message_after_edit + ' (Edited)'
+        self.channel_2.set_reaction(message_text_after_edit)
+        try:
+            self.channel_1.chat_element_by_text(message_text_after_edit).emojis_below_message().wait_for_element_text(1)
+        except (Failed, NoSuchElementException):
+            self.errors.append("Message reaction is not shown for the sender")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702839)
@@ -577,6 +584,21 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         chat_element_1 = self.channel_1.chat_element_by_text(message_text)
         if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != image_description:
             self.errors.append('Reply message was not received by the sender')
+
+        self.channel_2.just_fyi("Set a reaction for the image message")
+        self.channel_2.set_reaction(message=image_description)
+        try:
+            self.channel_1.chat_element_by_text(image_description).emojis_below_message().wait_for_element_text(1)
+        except (Failed, NoSuchElementException):
+            self.errors.append("Image message reaction is not shown for the sender")
+
+        self.channel_1.just_fyi("Set a reaction for the message reply")
+        self.channel_2.set_reaction(message=image_description, emoji="love")
+        try:
+            self.channel_2.chat_element_by_text(message_text).emojis_below_message(
+                emoji="love").wait_for_element_text(1)
+        except (Failed, NoSuchElementException):
+            self.errors.append("Reply message reaction is not shown for the reply sender")
 
         self.errors.verify_no_errors()
 
@@ -700,6 +722,15 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             shown_link = message.preview_link.text
             if shown_link != data['link']:
                 self.errors.append("Link is not equal expected for '%s', actual is '%s'" % (url, shown_link))
+
+        self.channel_1.just_fyi("Set reaction and check it")
+        message_with_reaction = list(preview_urls.values())[-1]['url']
+        self.channel_1.set_reaction(message=message_with_reaction, emoji="laugh")
+        try:
+            self.channel_2.chat_element_by_text(message_with_reaction).emojis_below_message(
+                emoji="laugh").wait_for_element_text(1)
+        except (Failed, NoSuchElementException):
+            self.errors.append("Link message reaction is not shown for the sender")
 
         self.errors.verify_no_errors()
 
@@ -852,9 +883,11 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.device_1.just_fyi("Admin gets push notification with the mention and tap it")
         self.device_1.open_notification_bar()
+        message_received = False
         if self.home_1.get_pn(self.username_1):
             self.device_1.click_upon_push_notification_by_text(self.username_1)
             if not self.channel_1.chat_element_by_text(self.username_1).is_element_displayed():
+                message_received = True
                 if self.channel_1.chat_message_input.is_element_displayed():
                     self.errors.append("Message with the mention is not shown in the chat for the admin")
                 else:
@@ -862,6 +895,15 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                         "Channel did not open by clicking on a notification with the mention for admin")
         else:
             self.errors.append("Push notification with the mention was not received by admin")
+
+        if message_received:
+            self.channel_1.just_fyi("Set reaction for the message with a mention")
+            self.channel_1.set_reaction(message=self.username_1, emoji="sad")
+            try:
+                self.channel_2.chat_element_by_text(self.username_1).emojis_below_message(
+                    emoji="sad").wait_for_element_text(1)
+            except (Failed, NoSuchElementException):
+                self.errors.append("Message reaction is not shown for the sender")
 
         # ToDo: this part is skipped because of an issue - sent messages stuck without any status for a long time
         # and can not be edited during that time

@@ -1,5 +1,6 @@
 (ns status-im2.contexts.syncing.scan-sync-code.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.reanimated :as reanimated]))
 
 (def screen-padding 20)
 
@@ -62,7 +63,7 @@
   [viewfinder]
   {:position :absolute
    :left     (:x viewfinder)
-   :top      (:y viewfinder)})
+   :top      19})
 
 (def view-finder-border-container
   {:flex-direction  :row
@@ -104,6 +105,7 @@
 
 (def camera-permission-container
   {:height            335
+   :margin-top        19
    :margin-horizontal screen-padding
    :background-color  colors/white-opa-5
    :border-color      colors/white-opa-10
@@ -126,15 +128,17 @@
    :align-items     :center})
 
 (defn bottom-container
-  [padding-bottom]
-  {:z-index                 6
-   :padding-top             12
-   :padding-bottom          padding-bottom
-   :background-color        colors/white-opa-5
-   :border-top-left-radius  20
-   :border-top-right-radius 20
-   :align-items             :center
-   :justify-content         :center})
+  [translate-y padding-bottom]
+  (reanimated/apply-animations-to-style
+   {:transform [{:translate-y translate-y}]}
+   {:z-index                 6
+    :padding-top             12
+    :padding-bottom          padding-bottom
+    :background-color        colors/white-opa-5
+    :border-top-left-radius  20
+    :border-top-right-radius 20
+    :align-items             :center
+    :justify-content         :center}))
 
 (def bottom-text
   {:color          colors/white

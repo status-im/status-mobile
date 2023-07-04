@@ -49,6 +49,7 @@
     quo2.components.list-items.preview-list
     quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
+    quo2.components.loaders.skeleton.view
     quo2.components.markdown.list.view
     quo2.components.markdown.text
     quo2.components.messages.author.view
@@ -112,7 +113,6 @@
 (def disclaimer quo2.components.selectors.disclaimer.view/view)
 (def checkbox quo2.components.selectors.selectors.view/checkbox)
 (def filter quo2.components.selectors.filter.view/view)
-(def skeleton quo2.components.loaders.skeleton/skeleton)
 (def author quo2.components.messages.author.view/author)
 
 ;;;; SELECTORS
@@ -189,6 +189,10 @@
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
 (def user-list quo2.components.list-items.user-list/user-list)
+
+;;;; LOADERS
+(def skeleton quo2.components.loaders.skeleton/skeleton)
+(def static-skeleton quo2.components.loaders.skeleton.view/view)
 
 ;;;; NAVIGATION
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)

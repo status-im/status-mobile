@@ -1,6 +1,8 @@
 import pytest
+from _pytest.outcomes import Failed
+from selenium.common.exceptions import NoSuchElementException
 
-from tests import marks, run_in_parallel, common_password
+from tests import marks, run_in_parallel
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from views.chat_view import ChatView
 from views.sign_in_view import SignInView
@@ -224,6 +226,119 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[1].chat_element_by_text(message_to_admin).wait_for_status_to_be('Delivered', timeout=120)
         if not self.chats[0].chat_element_by_text(message_to_admin).is_element_displayed(30):
             self.errors.append('Message %s was not received by admin' % message_to_admin)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703202)
+    def test_group_chat_reactions(self):
+        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+        [self.homes[i].get_chat(self.chat_name).click() for i in range(3)]
+        message = "This is a test message to check some reactions."
+        self.chats[0].just_fyi("Admin sends a message")
+        self.chats[0].send_message(message)
+
+        self.chats[1].just_fyi("Member_1 sets 2 reactions on the message: 'thumbs-up' and 'love'")
+        self.chats[1].set_reaction(message=message, emoji="thumbs-up")
+        self.chats[1].set_reaction(message=message, emoji="love")
+
+        self.chats[2].just_fyi("Member_2 sets 2 reactions on the message: 'thumbs-up' and 'laugh'")
+        self.chats[2].add_remove_same_reaction(message=message, emoji="thumbs-up")
+        self.chats[2].set_reaction(message=message, emoji="laugh")
+
+        for i in range(3):
+            self.chats[i].just_fyi("Checking reactions count for each group member and admin")
+            message_element = self.chats[i].chat_element_by_text(message)
+            message_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(2)
+            message_element.emojis_below_message(emoji="love").wait_for_element_text(1)
+            message_element.emojis_below_message(emoji="laugh").wait_for_element_text(1)
+
+        self.chats[0].just_fyi("Admin checks info about voted users")
+        self.chats[0].chat_element_by_text(message).emojis_below_message(
+            emoji="thumbs-up").long_press_until_element_is_shown(self.chats[0].authors_for_reaction(emoji="thumbs-up"))
+        if not self.chats[0].user_list_element_by_name(
+                self.usernames[1]).is_element_displayed() or not self.chats[0].user_list_element_by_name(
+            self.usernames[2]).is_element_displayed():
+            self.errors.append("Incorrect users are shown for 'thumbs-up' reaction.")
+
+        self.chats[0].authors_for_reaction(emoji="love").click()
+        if not self.chats[0].user_list_element_by_name(
+                self.usernames[1]).is_element_displayed() or self.chats[0].user_list_element_by_name(
+            self.usernames[2]).is_element_displayed():
+            self.errors.append("Incorrect users are shown for 'love' reaction.")
+
+        self.chats[0].authors_for_reaction(emoji="laugh").click()
+        if self.chats[0].user_list_element_by_name(
+                self.usernames[1]).is_element_displayed() or not self.chats[0].user_list_element_by_name(
+            self.usernames[2]).is_element_displayed():
+            self.errors.append("Incorrect users are shown for 'laugh' reaction.")
+
+        self.chats[0].just_fyi("Admin opens member_2 profile")
+        self.chats[0].user_list_element_by_name(self.usernames[2]).click()
+        try:
+            username_shown = self.chats[0].get_profile_view().default_username_text.text
+            if username_shown != self.usernames[2]:
+                self.errors.append(
+                    "Incorrect profile is opened from the list of reactions, username is %s but expected to be %s" % (
+                    username_shown, self.usernames[2])
+                )
+        except NoSuchElementException:
+            self.errors.append("User profile was not opened from the list of reactions")
+        self.chats[0].click_system_back_button_until_element_is_shown(element="chat")
+
+        self.chats[1].just_fyi("Member_1 removes 'thumbs-up' reaction and adds 'sad' one")
+        self.chats[1].add_remove_same_reaction(message=message, emoji="thumbs-up")
+        self.chats[1].set_reaction(message=message, emoji="sad")
+
+        self.chats[2].just_fyi("Member_2 removes 'laugh' reaction and adds 'sad' one")
+        self.chats[2].add_remove_same_reaction(message=message, emoji="laugh")
+        self.chats[2].add_remove_same_reaction(message=message, emoji="sad")
+
+        for i in range(3):
+            self.chats[i].just_fyi("Checking reactions count for each group member and admin after they were changed")
+            message_element = self.chats[i].chat_element_by_text(message)
+            try:
+                message_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
+                message_element.emojis_below_message(emoji="love").wait_for_element_text(1)
+                message_element.emojis_below_message(emoji="sad").wait_for_element_text(2)
+            except (Failed, NoSuchElementException):
+                self.errors.append("Incorrect reactions count for %s after changing the reactions" % self.usernames[i])
+
+        self.chats[0].just_fyi("Admin relogins")
+        self.chats[0].reopen_app()
+        self.homes[0].get_chat(self.chat_name).click()
+
+        self.chats[0].just_fyi("Admin checks reactions count after relogin")
+        message_element = self.chats[0].chat_element_by_text(message)
+        try:
+            message_element.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
+            message_element.emojis_below_message(emoji="love").wait_for_element_text(1)
+            message_element.emojis_below_message(emoji="sad").wait_for_element_text(2)
+        except (Failed, NoSuchElementException):
+            self.errors.append("Incorrect reactions count after relogin")
+
+        for chat in self.chats[1], self.chats[2]:
+            chat.just_fyi("Just making the session not to quit")
+            chat.click_system_back_button_until_element_is_shown()
+
+        self.chats[0].just_fyi("Admin checks info about voted users after relogin")
+        message_element.emojis_below_message(
+            emoji="thumbs-up").long_press_until_element_is_shown(self.chats[0].authors_for_reaction(emoji="thumbs-up"))
+        if self.chats[0].user_list_element_by_name(
+                self.usernames[1]).is_element_displayed() or not self.chats[0].user_list_element_by_name(
+            self.usernames[2]).is_element_displayed():
+            self.errors.append("Incorrect users are shown for 'thumbs-up' reaction after relogin.")
+
+        self.chats[0].authors_for_reaction(emoji="love").click()
+        if not self.chats[0].user_list_element_by_name(
+                self.usernames[1]).is_element_displayed() or self.chats[0].user_list_element_by_name(
+            self.usernames[2]).is_element_displayed():
+            self.errors.append("Incorrect users are shown for 'love' reaction after relogin.")
+
+        self.chats[0].authors_for_reaction(emoji="sad").click()
+        if not self.chats[0].user_list_element_by_name(
+                self.usernames[1]).is_element_displayed() or not self.chats[0].user_list_element_by_name(
+            self.usernames[2]).is_element_displayed():
+            self.errors.append("Incorrect users are shown for 'laugh' reaction after relogin.")
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702808)

@@ -164,11 +164,18 @@
 
 (navigation/reg-button-pressed-listener
  (fn [id]
-   (if (= "dismiss-modal" id)
+   (cond
+     (= "dismiss-modal" id)
      (do
        (when-let [event (get-in views/screens [(last @state/modals) :on-dissmiss])]
          (re-frame/dispatch event))
        (dissmissModal))
+     (= "RNN.hardwareBackButton" id)
+     (when-let [handler (get-in views/screens
+                                [(or (last @state/modals) @state/pushed-screen-id)
+                                 :hardware-back-button-handler])]
+       (handler))
+     :else
      (when-let [handler (get-in views/screens [(keyword id) :right-handler])]
        (handler)))))
 
