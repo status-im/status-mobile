@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.lightbox.text-sheet.view
   (:require
     [quo2.foundations.colors :as colors]
-    [quo2.foundations.typography :as typography]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.linear-gradient :as linear-gradient]

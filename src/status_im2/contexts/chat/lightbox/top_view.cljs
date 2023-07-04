@@ -107,7 +107,7 @@
        [quo/text
         {:weight :medium
          :size   :paragraph-2
-         :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]]
+         :style  {:color colors/neutral-40}} (when timestamp (datetime/to-short-str timestamp))]]]
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
        {:active-opacity 1
