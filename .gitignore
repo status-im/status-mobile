@@ -190,3 +190,6 @@ test/appium/tests/users.py
 
 ## git hooks
 lefthook.yml
+
+## storybook
+storybook-target/

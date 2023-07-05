@@ -292,6 +292,14 @@ ifndef DEVICE_NAME
 endif
 	react-native run-ios --device "$(DEVICE_NAME)"
 
+storybook-clojure: export TARGET := clojure
+storybook-clojure: ## compile stories for stoybook
+	shadow-cljs watch storybook
+
+storybook-dev: export TARGET := clojure
+storybook-dev: ##@ run storybook
+	storybook dev -p 6006
+
 #--------------
 # Tests
 #--------------

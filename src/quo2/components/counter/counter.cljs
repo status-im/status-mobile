@@ -17,17 +17,17 @@
            :outline   colors/neutral-70}})
 
 (defn get-color
-  [key]
-  (get-in themes [(theme/get-theme) key]))
+  [key theme]
+  (get-in themes [theme key]))
 
-(defn counter
-  [{:keys [type override-text-color override-bg-color style accessibility-label max-value]
+(defn- counter-internal
+  [{:keys [type override-text-color override-bg-color style accessibility-label max-value theme]
     :or   {max-value 99}}
    value]
   (let [type       (or type :default)
         text-color (or override-text-color
                        (if (or
-                            (= (theme/get-theme) :dark)
+                            (= theme :dark)
                             (= type :default))
                          colors/white
                          colors/neutral-100))
@@ -52,12 +52,12 @@
                                     style)
                              (= type :outline)
                              (merge {:border-width 1
-                                     :border-color (get-color type)})
+                                     :border-color (get-color type theme)})
 
                              (not= type :outline)
                              (assoc :background-color
                                     (or override-bg-color
-                                        (get-color type)))
+                                        (get-color type theme)))
 
                              (> value max-value)
                              (assoc :padding-left 0.5))}
@@ -65,3 +65,5 @@
       {:weight :medium
        :size   :label
        :style  {:color text-color}} label]]))
+
+(def counter (theme/with-theme counter-internal))

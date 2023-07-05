@@ -99,7 +99,27 @@
     "process": "0.11.10",
     "react-test-renderer": "18.0.0",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#refs/tags/v2.0.2-status",
-    "shadow-cljs": "2.11.16"
+    "shadow-cljs": "2.11.16",
+
+    "@babel/core": "^7.9.6",
+    "@storybook/addon-actions": "^5.3.18",
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
+
+    "@storybook/addon-essentials": "^7.0.23",
+    "@storybook/addon-interactions": "^7.0.23",
+    "@storybook/addon-links": "^7.0.23",
+    "@storybook/addon-react-native-web": "^0.0.20",
+    "@storybook/blocks": "^7.0.23",
+    "@storybook/react": "^7.0.23",
+    "@storybook/react-webpack5": "^7.0.23",
+    "@storybook/testing-library": "^0.0.14-next.2",
+    "babel-loader": "^9.1.2",
+    "babel-plugin-react-native-web": "^0.19.5",
+    "metro-react-native-babel-preset": "^0.76.7",
+    "prop-types": "^15.8.1",
+    "react-native-web": "^0.19.5",
+    "storybook": "^7.0.23"
+
   },
   "binary": {
     "module_name": "status_nodejs_addon",
