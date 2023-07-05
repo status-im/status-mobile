@@ -10,7 +10,7 @@
 (def ^:const drag-threshold 100)
 
 ;;; TEXT SHEET
-(def ^:const text-min-height 68)
 (def ^:const text-margin 12)
 (def ^:const bar-container-height 30)
 (def ^:const line-height 22)
+(def ^:const text-min-height (+ bar-container-height (* line-height 2) 4))
