@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.lightbox.text-sheet.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.lightbox.constants :as c]))
+            [status-im2.contexts.chat.lightbox.constants :as constants]))
 
 (defn sheet-container
   [{:keys [height top]}]
@@ -16,15 +16,14 @@
   {:color             colors/white
    :align-self        :center
    :margin-horizontal 20
-   :margin-bottom     c/text-margin
+   :margin-bottom     constants/text-margin
    :flex-grow         1})
 
 (def bar-container
-  {:height          c/bar-container-height
+  {:height          constants/bar-container-height
    :left            0
    :right           0
    :top             0
-   :z-index         1
    :justify-content :center
    :align-items     :center})
 
@@ -44,12 +43,12 @@
     :left     0
     :right    0
     :top      (- (+ (:top insets)
-                    c/top-view-height))
+                    constants/top-view-height))
     :height   (+ (:top insets)
-                 c/top-view-height
-                 c/bar-container-height
-                 c/text-margin
-                 (* c/line-height 2))
+                 constants/top-view-height
+                 constants/bar-container-height
+                 constants/text-margin
+                 (* constants/line-height 2))
     :z-index  1}))
 
 (def bottom-gradient

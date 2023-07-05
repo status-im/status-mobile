@@ -2,7 +2,7 @@
   (:require [react-native.gesture :as gesture]
             [react-native.reanimated :as reanimated]
             [oops.core :as oops]
-            [status-im2.contexts.chat.lightbox.constants :as c]
+            [status-im2.contexts.chat.lightbox.constants :as constants]
             [utils.worklets.lightbox :as worklet]))
 
 (defn sheet-gesture
@@ -15,18 +15,19 @@
       (gesture/on-update
        (fn [e]
          (let [new-value     (+ (reanimated/get-shared-value saved-top) (oops/oget e "translationY"))
-               bounded-value (max (min (- new-value) expanded-height) c/text-min-height)
+               bounded-value (max (min (- new-value) expanded-height) constants/text-min-height)
                progress      (/ (- new-value) max-height)]
            (reanimated/set-shared-value overlay-opacity progress)
            (reanimated/set-shared-value derived-value bounded-value))))
       (gesture/on-end (fn []
                         (if (or (> (- (reanimated/get-shared-value derived-value))
                                    (reanimated/get-shared-value saved-top))
-                                (= (reanimated/get-shared-value derived-value) c/text-min-height))
+                                (= (reanimated/get-shared-value derived-value)
+                                   constants/text-min-height))
                           (do ; minimize
-                            (reanimated/animate derived-value c/text-min-height)
+                            (reanimated/animate derived-value constants/text-min-height)
                             (reanimated/animate overlay-opacity 0)
-                            (reanimated/set-shared-value saved-top (- c/text-min-height))
+                            (reanimated/set-shared-value saved-top (- constants/text-min-height))
                             (reset! expanded? false)
                             (js/setTimeout #(reset! overlay-z-index 0) 300))
                           (reanimated/set-shared-value saved-top
@@ -45,7 +46,7 @@
 
 (defn on-scroll
   [e expanded? {:keys [gradient-opacity]}]
-  (if (and (> (oops/oget e "nativeEvent.contentOffset.y") 0) @expanded?)
+  (if (and (> (oops/oget e "nativeEvent.contentOffset.y") 0) expanded?)
     (reanimated/animate gradient-opacity 1)
     (reanimated/animate gradient-opacity 0)))
 
@@ -55,8 +56,8 @@
 
 (defn init-animations
   [overlay-opacity]
-  {:derived-value    (reanimated/use-shared-value c/text-min-height)
-   :saved-top        (reanimated/use-shared-value (- c/text-min-height))
+  {:derived-value    (reanimated/use-shared-value constants/text-min-height)
+   :saved-top        (reanimated/use-shared-value (- constants/text-min-height))
    :gradient-opacity (reanimated/use-shared-value 0)
    :overlay-opacity  overlay-opacity})
 

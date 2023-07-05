@@ -42,7 +42,7 @@
        (js/setTimeout (fn []
                         (anim/animate opacity 1)
                         (anim/animate layout 0)
-                        (anim/animate border 12))
+                        (anim/animate border 16))
                       (if platform/ios? 250 100)))
      (swap! timers assoc :mount-index-lock (js/setTimeout #(reset! scroll-index-lock? false) 300))
      (fn []
@@ -145,7 +145,7 @@
 (defn init-animations
   []
   {:background-color (anim/use-val colors/neutral-100-opa-0)
-   :border           (anim/use-val (if platform/ios? 0 12))
+   :border           (anim/use-val (if platform/ios? 0 16))
    :opacity          (anim/use-val 0)
    :overlay-opacity  (anim/use-val 0)
    :rotate           (anim/use-val "0deg")

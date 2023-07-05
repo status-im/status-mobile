@@ -80,14 +80,14 @@
 
 
 (defn background
-  [{:keys [overlay-opacity]} {:keys [overlay-z-index]}]
+  [{:keys [overlay-opacity]} z-index]
   (reanimated/apply-animations-to-style
    {:opacity overlay-opacity}
    {:background-color colors/neutral-100-opa-70
     :position         :absolute
     :top              0
     :bottom           0
-    :z-index          @overlay-z-index
+    :z-index          z-index
     :left             0
     :right            0}))
 

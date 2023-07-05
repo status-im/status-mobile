@@ -44,7 +44,7 @@
 
 (defn drawer
   [messages index]
-  (let [{:keys [content]} (nth messages @index)
+  (let [{:keys [content]} (nth messages index)
         uri               (http/replace-port (:image content)
                                              (rf/sub [:mediaserver/port]))]
     [quo/action-drawer
@@ -64,7 +64,7 @@
 
 (defn share-image
   [messages index]
-  (let [{:keys [content]} (nth messages @index)
+  (let [{:keys [content]} (nth messages index)
         uri               (http/replace-port (:image content)
                                              (rf/sub [:mediaserver/port]))]
     (images/share-image uri)))
@@ -112,11 +112,11 @@
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
        {:active-opacity 1
-        :on-press       #(share-image messages index)
+        :on-press       #(share-image messages @index)
         :style          (merge style/close-container {:margin-right 12})}
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
        {:active-opacity 1
-        :on-press       #(rf/dispatch [:show-bottom-sheet {:content (fn [] [drawer messages index])}])
+        :on-press       #(rf/dispatch [:show-bottom-sheet {:content (fn [] [drawer messages @index])}])
         :style          style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))

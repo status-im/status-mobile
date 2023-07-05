@@ -43,9 +43,8 @@
    [rn/view {:style {:width constants/separator-width}}]])
 
 (defn lightbox-content
-  [props {:keys [data transparent? scroll-index set-full-height?] :as state} animations derived messages
-   index
-   callback]
+  [props {:keys [data transparent? scroll-index set-full-height?] :as state}
+   animations derived messages index handle-items-changed]
   (let [insets           (safe-area/get-insets)
         window           (rn/get-window)
         window-width     (:width window)
@@ -76,7 +75,7 @@
                 {:transform [{:translateY (:pan-y animations)}
                              {:translateX (:pan-x animations)}]}
                 {})}
-       [reanimated/view {:style (style/background animations state)}]
+       [reanimated/view {:style (style/background animations @(:overlay-z-index state))}]
        [gesture/flat-list
         {:ref                               #(reset! (:flat-list-ref props) %)
          :key-fn                            :message-id
@@ -101,7 +100,7 @@
                                              :wait-for-interaction                 true}
          :shows-vertical-scroll-indicator   false
          :shows-horizontal-scroll-indicator false
-         :on-viewable-items-changed         callback}]]]
+         :on-viewable-items-changed         handle-items-changed}]]]
      (when (and (not @transparent?) (not landscape?))
        [:f> bottom-view/bottom-view messages index scroll-index insets animations derived
         item-width props state])]))
@@ -111,7 +110,7 @@
   (let [{:keys [messages index]} (rf/sub [:get-screen-params])
         props                    (utils/init-props)
         state                    (utils/init-state messages index)
-        callback                 (fn [e]
+        handle-items-changed     (fn [e]
                                    (on-viewable-items-changed e props state))]
     (fn []
       (let [animations (utils/init-animations)
@@ -121,7 +120,7 @@
         (when platform/ios? ; issue: https://github.com/wix/react-native-navigation/issues/7726
           (utils/orientation-change props state animations))
         (utils/effect props animations index)
-        [:f> lightbox-content props state animations derived messages index callback]))))
+        [:f> lightbox-content props state animations derived messages index handle-items-changed]))))
 
 (defn lightbox
   []
