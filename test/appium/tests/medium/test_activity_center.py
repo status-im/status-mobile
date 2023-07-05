@@ -116,7 +116,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="new_one_3")
+@pytest.mark.xdist_group(name="new_four_2")
 @marks.new_ui_critical
 class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
