@@ -19,7 +19,7 @@
     {:position         :absolute
      :left             distance
      :top              distance
-     :background-color (colors/theme-colors colors/white colors/neutral-90)
+     :background-color (colors/theme-colors colors/white colors/neutral-95)
      :border-radius    (* 2 lock-icon-size)
      :padding          2}))
 
