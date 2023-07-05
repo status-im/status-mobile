@@ -25,7 +25,7 @@
    :padding-bottom     10})
 
 (def profile-container
-  {:margin-bottom  8
+  {:margin-bottom  4
    :flex-direction :row})
 
 (def metrics-container
@@ -33,12 +33,12 @@
    :align-items    :center})
 
 (def title
-  {:margin-bottom 9})
+  {:margin-bottom 8})
 
 (defn account-name
   [watch-only?]
   {:style  {:color       (text-color watch-only?)
-            :margin-left 5}
+            :margin-left 2}
    :size   :paragraph-2
    :weight :medium})
 
@@ -88,3 +88,6 @@
   {:size       :paragraph-2
    :weight     :medium
    :margin-top 4})
+
+(def emoji
+  {:font-size      12})
