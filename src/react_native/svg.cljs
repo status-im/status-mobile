@@ -1,12 +1,13 @@
 (ns react-native.svg
-  (:require ["react-native-svg" :as Svg]
-            [reagent.core :as reagent]))
+  (:require ["react-native-svg" :refer [default Path Rect ClipPath Defs Circle SvgXml G]]
+            [reagent.core :as reagent]
+            [react-native.core :as rn]))
 
-(def svg (reagent/adapt-react-class Svg/default))
-(def path (reagent/adapt-react-class Svg/Path))
-(def rect (reagent/adapt-react-class Svg/Rect))
-(def clippath (reagent/adapt-react-class Svg/ClipPath))
-(def defs (reagent/adapt-react-class Svg/Defs))
-(def circle (reagent/adapt-react-class Svg/Circle))
-(def svgxml (reagent/adapt-react-class Svg/SvgXml))
-(def g (reagent/adapt-react-class Svg/G))
+(def svg (reagent/adapt-react-class default))
+(def path (reagent/adapt-react-class Path))
+(def rect (reagent/adapt-react-class Rect))
+(def clippath (reagent/adapt-react-class ClipPath))
+(def defs (reagent/adapt-react-class Defs))
+(def circle (reagent/adapt-react-class Circle))
+(def svgxml rn/view) ; FIX
+(def g (reagent/adapt-react-class G))

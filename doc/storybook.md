@@ -21,3 +21,10 @@ Then: Open two terminal shells -
 make storybook-clojure
 make storybook-dev
 
+NOTES:
+
+"styles" must be in a `style` block or they will not be picked up. Perhaps we can adjust this in the configurations? Either way it's in the best practices so it's something the codebase is trying to get to.
+
+FIX SVG Imports
+
+Fix Icon imports resolver

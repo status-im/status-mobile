@@ -7,7 +7,7 @@
 (defn- require-icon
   [size path]
   (fn [el]
-    (let [s (str "." path el ".png")
+    (let [s (str "." path el "@2x.png") ; FIX!
           k (-> el
                 (string/replace "_" "-")
                 (string/replace " " "-")

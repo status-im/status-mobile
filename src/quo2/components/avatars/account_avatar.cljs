@@ -1,7 +1,7 @@
 (ns quo2.components.avatars.account-avatar
-  (:require [quo2.components.icon :as icons]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [quo2.theme :as theme]))
 
 (defn get-border-radius
   [size]
@@ -9,26 +9,28 @@
     80 16
     48 12
     32 10
+    28 8
     24 8
-    20 6))
+    20 6
+    16 4))
 
-(defn get-inner-icon-sizes
+(defn get-emoji-size
   [size]
   (case size
     80 36
     48 24
     32 15
-    24 11
-    20 11))
+    28 12
+    24 12
+    20 11
+    16 11))
 
-(defn account-avatar
-  [{:keys [size icon color]
-    :or   {size  80
-           icon  :i/placeholder
-           color :purple}}]
-  (let [icon-color           (colors/custom-color-by-theme color 50 60)
-        avatar-border-radius (get-border-radius size)
-        inner-icon-size      (get-inner-icon-sizes size)]
+(defn- account-avatar-internal
+  [{:keys [size emoji customization-color theme]}]
+  (let [icon-color           (colors/theme-colors (colors/custom-color customization-color 50)
+                                                  (colors/custom-color customization-color 60)
+                                                  theme)
+        avatar-border-radius (get-border-radius size)]
     [rn/view
      {:style {:width            size
               :background-color icon-color
@@ -36,6 +38,8 @@
               :border-radius    avatar-border-radius
               :justify-content  :center
               :align-items      :center}}
-     [icons/icon icon
-      {:no-color true
-       :size     inner-icon-size}]]))
+     [rn/text
+      {:style {:font-size (get-emoji-size size)}}
+      emoji]]))
+
+(def account-avatar (theme/with-theme account-avatar-internal))

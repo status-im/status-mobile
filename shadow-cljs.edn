@@ -134,18 +134,18 @@
    :output-dir       "target/mocks"
    :compiler-options {:optimizations :simple
                       :source-map    false}}
-  :component-test 
+  :component-test
   {:target           :npm-module
-                   :entries          [quo2.core-spec status-im2.core-spec]
-                   :ns-regexp        "component-spec$"
-                   :output-dir       "component-spec"
-                   :compiler-options {:warnings-as-errors false
-                                      :static-fns         false
-                                      :infer-externs      true}}
-  :storybook {:target :npm-module
-            :ns-regexp  "-stories$"
-            :entries [stories.core]
-            :output-dir "storybook-target"
+   :entries          [quo2.core-spec status-im2.core-spec]
+   :ns-regexp        "component-spec$"
+   :output-dir       "component-spec"
+   :compiler-options {:warnings-as-errors false
+                      :static-fns         false
+                      :infer-externs      true}}
+  :storybook {:target           :npm-module
+              :ns-regexp        "-stories$"
+              :entries          [stories.core]
+              :output-dir       "storybook-target"
               :compiler-options {:output-feature-set :es5
-                                :source-map false
-                                :infer-externs true}}}}
+                                 :source-map         false
+                                 :infer-externs      true}}}}

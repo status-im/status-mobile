@@ -1,34 +1,30 @@
-(ns stories.counter.counter-story
+(ns stories.avatars.account-avatar-story
   (:require
     [react-native.core :as rn]
-    [quo2.components.counter.counter :as counter]
+    [quo2.components.avatars.account-avatar :as account-avatar]
     [reagent.core :as reagent]
     [quo2.foundations.colors :as colors]
     [quo2.theme :as theme]))
 
 (def ^:export default
   #js
-   {:title     "Counter Stories"
-    :component counter/counter})
+   {:title     "Avatar Stories"
+    :component account-avatar/account-avatar})
 
-(def counter-configs
-  [[{:customization-color :blue} 5]
-   [{:type :secondary} 5]
-   [{:type :grey} 5]
-   [{:type :outline} 5]
-   [{:customization-color :blue} 10]
-   [{:type :secondary} 10]
-   [{:type :grey} 10]
-   [{:type :outline} 10]
-   [{:customization-color :blue} 100]
-   [{:type :secondary} 100]
-   [{:type :grey} 100]
-   [{:type :outline} 100]])
+(def avatar-configs
+  [{:size 80 :customization-color :purple :emoji "🍑"}
+   {:size 48 :customization-color :purple :emoji "🍑"}
+   {:size 32 :customization-color :purple :emoji "🍑"}
+   {:size 28 :customization-color :purple :emoji "🍑"}
+   {:size 24 :customization-color :purple :emoji "🍑"}
+   {:size 20 :customization-color :purple :emoji "🍑"}
+   {:size 16 :customization-color :purple :emoji "🍑"}])
 
-(defn ^:export Counter
+(defn ^:export AccountAvatar
   []
   (reagent/as-element
    [:<>
+    [rn/view {:style {:background-color :red}}]
     [rn/view
      {:style {:flex           1
               :width          200
@@ -39,12 +35,11 @@
                 :align-items   :center
                 :border-radius 16
                 :padding-top   26}}
-       (map (fn [[props children]]
+       (map (fn [props]
               [rn/view
                {:style {:margin-bottom 28}}
-               [counter/counter props children]])
-            counter-configs)]]
-
+               [account-avatar/account-avatar props]])
+            avatar-configs)]]
      [theme/provider {:theme :dark}
       [rn/view
        {:style {:flex             1
@@ -52,11 +47,11 @@
                 :border-radius    16
                 :padding-top      26
                 :background-color colors/neutral-95}}
-       (map (fn [[props children]]
+       (map (fn [props]
               [rn/view
                {:style {:margin-bottom 28}}
-               [counter/counter props children]])
-            counter-configs)]]]]))
+               [account-avatar/account-avatar props]])
+            avatar-configs)]]]]))
 
 
 
