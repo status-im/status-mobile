@@ -62,7 +62,7 @@
     :customization-color customize jump-to and mention button color}"
   [_]
   (let [pressed? (reagent/atom false)]
-    (fn [{:keys [type label on-press count customization-color style]}]
+    (fn [{:keys [type label on-press customization-color style] :as args}]
       [rn/touchable-opacity
        {:on-press-in         #(reset! pressed? true)
         :on-press-out        #(reset! pressed? false)
@@ -102,6 +102,6 @@
            (case type
              :jump-to                                       label
              :search-with-label                             label
-             (:mention :notification-down :notification-up) (str count))])
+             (:mention :notification-down :notification-up) (str (:count args)))])
         (when (#{:jump-to :notification-down :notification-up} type)
           [icon-view type])]])))
