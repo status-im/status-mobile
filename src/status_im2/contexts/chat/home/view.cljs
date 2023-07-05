@@ -73,7 +73,7 @@
         :get-item-layout                   get-item-layout
         :on-end-reached                    #(re-frame/dispatch [:chat/show-more-chats])
         :keyboard-should-persist-taps      :always
-        :data                              items
+        :data                              (concat items items items items items items items items)
         :render-fn                         chat-list-item/chat-list-item}])))
 
 (defn contact-item-render
@@ -129,10 +129,15 @@
        [contacts pending-contact-requests top]
        [chats selected-tab top])
      [rn/view {:style (style/blur-container top)}
-      [blur/view
-       {:blur-amount (if platform/ios? 20 10)
-        :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-        :style       style/blur}]
+      (let [{:keys [sheets]} (rf/sub [:bottom-sheet])]
+        [blur/view
+         {:blur-amount   (if platform/ios? 20 10)
+          :blur-type     (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+          :style         style/blur
+          :overlay-color (if (seq sheets)
+                           (theme/theme-value colors/white colors/neutral-95-opa-70)
+                           (when (colors/dark?)
+                             colors/neutral-95-opa-70))}])
       [common.home/top-nav
        {:type   :grey
         :avatar {:customization-color customization-color
