@@ -8,12 +8,12 @@
             [quo2.components.markdown.text :as text]))
 
 (defn user-account-view
-  [{:keys [name balance percentage-value amount customization-color type]}]
+  [{:keys [name balance percentage-value amount customization-color type emoji]}]
   (let [watch-only? (= :watch-only type)]
     [:<>
      [rn/view (style/card customization-color watch-only?)
       [rn/view style/profile-container
-       [icon/icon :contact]
+       [text/text {:style style/emoji} emoji]
        [rn/view style/watch-only-container
         [text/text (style/account-name watch-only?)
          name]
@@ -21,10 +21,10 @@
 
       [text/text (style/account-value watch-only?) balance]
       [rn/view style/metrics-container
-       [rn/view {:margin-right 5.5}
+       [rn/view {:margin-right 4}
         [icon/icon :positive
          {:color (if (and watch-only? (not (colors/dark?)))
-                   colors/neutral-100
+                   colors/neutral-50
                    colors/white)
           :size  16}]]
        [text/text (style/metrics watch-only?) percentage-value]
