@@ -28,18 +28,18 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:big?         true
-                             :locked-state :not-set
-                             :emoji        "🍑"
-                             :full-name    "Some channel"
-                             :color        :blue})]
+  (let [state (reagent/atom {:big?                true
+                             :locked-state        :not-set
+                             :emoji               "🍑"
+                             :full-name           "Some channel"
+                             :customization-color :blue})]
     (fn []
-      (let [color   (colors/custom-color-by-theme (:color @state) 50 60)
-            locked? (case (:locked-state @state)
-                      :not-set  nil
-                      :unlocked false
-                      :locked   true
-                      nil)]
+      (let [customization-color (colors/custom-color-by-theme (:customization-color @state) 50 60)
+            locked?             (case (:locked-state @state)
+                                  :not-set  nil
+                                  :unlocked false
+                                  :locked   true
+                                  nil)]
         [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
          [rn/view {:style {:padding-bottom 150}}
           [rn/view {:style {:flex 1}}
@@ -50,8 +50,8 @@
                     :justify-content  :center}}
            [quo/channel-avatar
             (assoc @state
-                   :locked? locked?
-                   :color   color)]]]]))))
+                   :locked?             locked?
+                   :customization-color customization-color)]]]]))))
 
 (defn preview-channel-avatar
   []

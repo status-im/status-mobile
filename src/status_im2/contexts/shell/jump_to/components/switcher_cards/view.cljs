@@ -41,8 +41,8 @@
       {:style {:flex-direction :row
                :align-items    :center}}
       [quo/channel-avatar
-       {:emoji (:emoji community-channel)
-        :color color-50}]
+       {:emoji               (:emoji community-channel)
+        :customization-color color-50}]
       [quo/text
        {:size            :paragraph-2
         :weight          :medium

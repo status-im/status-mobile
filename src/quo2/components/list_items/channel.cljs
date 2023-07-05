@@ -38,11 +38,11 @@
         :accessible          true
         :accessibility-label :chat-name-text}
        [channel-avatar/view
-        {:big?      true
-         :locked?   locked?
-         :full-name (:name props)
-         :color     channel-color
-         :emoji     emoji}]
+        {:big?                true
+         :locked?             locked?
+         :full-name           (:name props)
+         :customization-color channel-color
+         :emoji               emoji}]
        [quo2.text/text
         {:style  (cond-> {:margin-left 12}
                    (and (not locked?) muted?)
