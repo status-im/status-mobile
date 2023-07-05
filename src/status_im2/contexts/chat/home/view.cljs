@@ -73,7 +73,7 @@
         :get-item-layout                   get-item-layout
         :on-end-reached                    #(re-frame/dispatch [:chat/show-more-chats])
         :keyboard-should-persist-taps      :always
-        :data                              (concat items items items items items items items items)
+        :data                              items
         :render-fn                         chat-list-item/chat-list-item}])))
 
 (defn contact-item-render
