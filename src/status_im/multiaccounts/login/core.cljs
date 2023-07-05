@@ -158,14 +158,7 @@
      (wallet/request-current-block-update))
    (prices/update-prices)))
 
-(rf/defn login-local-paired-user
-  {:events [:multiaccounts.login/local-paired-user]}
-  [{:keys [db]}]
-  (let [{:keys [key-uid name password]} (get-in db [:syncing :profile/profile])]
-    {::login [key-uid
-              (types/clj->json {:name    name
-                                :key-uid key-uid})
-              password]}))
+
 
 
 (rf/defn export-db-submitted
@@ -383,14 +376,11 @@
       (get db :onboarding-2/new-account?)
       {:dispatch [:onboarding-2/finalize-setup]}
 
-      true
+      :else
       (rf/merge
        cofx
        (multiaccounts/switch-theme nil :shell-stack)
-       (navigation/init-root :shell-stack))
-
-      :else
-      {:dispatch [:init-root :tos]})))
+       (navigation/init-root :shell-stack)))))
 
 (rf/defn get-settings-callback
   {:events [::get-settings-callback]}
@@ -530,7 +520,7 @@
     (rf/merge cofx
               {:db          (-> db
                                 (dissoc :profile/login)
-                                (assoc :tos/next-root :enable-notifications :chats/loading? false)
+                                (assoc :chats/loading? false)
                                 (assoc-in [:profile/profile :multiaccounts/first-account]
                                           first-account?))
                ::get-tokens [network-id wallet-accounts recovered-account?]}
@@ -549,7 +539,7 @@
   (boolean (get-in cofx [:db :keycard :flow])))
 
 (defn on-login-update-db
-  [db login-only? now]
+  [db now]
   (-> db
       (dissoc :connectivity/ui-status-properties)
       (update :keycard dissoc :from-key-storage-and-migration?)
@@ -558,10 +548,6 @@
               :card-read-in-progress?
               :pin
               :profile/profile)
-      (assoc :tos-accept-next-root
-             (if login-only?
-               :shell-stack
-               :onboarding-notification))
       (assoc :logged-in-since now)
       (assoc :view-id :home)))
 
@@ -583,7 +569,7 @@
                "login-only?"        login-only?
                "recovered-account?" recovered-account?)
     (rf/merge cofx
-              {:db (on-login-update-db db login-only? now)
+              {:db (on-login-update-db db now)
                :json-rpc/call
                [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}

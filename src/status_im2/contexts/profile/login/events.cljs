@@ -7,7 +7,8 @@
             [status-im2.navigation.events :as navigation]
             [status-im2.common.keychain.events :as keychain]
             [status-im2.common.biometric.events :as biometric]
-            [status-im2.contexts.profile.config :as profile.config]))
+            [status-im2.contexts.profile.config :as profile.config]
+            [utils.transforms :as transforms]))
 
 (re-frame/reg-fx
  ::login
@@ -22,6 +23,15 @@
   (let [{:keys [key-uid password]} (:profile/login db)]
     {:db     (assoc-in db [:profile/login :processing] true)
      ::login [key-uid (ethereum/sha3 (security/safe-unmask-data password))]}))
+
+(rf/defn login-local-paired-user
+  {:events [:profile.login/local-paired-user]}
+  [{:keys [db]}]
+  (let [{:keys [key-uid name password]} (get-in db [:syncing :profile])]
+    {::login [key-uid
+              (transforms/clj->json {:name    name
+                                     :key-uid key-uid})
+              password]}))
 
 (rf/defn login-with-biometric-if-available
   {:events [:profile.login/login-with-biometric-if-available]}

@@ -230,8 +230,6 @@
 
 (reg-root-key-sub :auth-method :auth-method)
 
-(reg-root-key-sub :tos-accept-next-root :tos-accept-next-root)
-
 ;; keycard
 (reg-root-key-sub :keycard/banner-hidden :keycard/banner-hidden)
 
