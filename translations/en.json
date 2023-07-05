@@ -870,6 +870,8 @@
     "logging-enabled": "Logging enabled?",
     "login-pin-description": "Enter your 6-digit passcode to unlock your keys",
     "logout": "Log out",
+    "allow-access": "Please Allow Access",
+    "camera-access-description": "To scan a qr code, Status needs access to your camera.\n\nPlease tap on Settings and turn on Camera.",
     "logout-app-content": "The account will be logged out. When you unlock it again, the selected network will be used",
     "logout-are-you-sure": "Are you sure you want\nto log out?",
     "logout-title": "Log out?",
