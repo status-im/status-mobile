@@ -1,8 +1,8 @@
 (ns quo2.components.dividers.divider-label
-  (:require [quo2.theme :as theme]
-            [quo2.components.icon :as icons]
+  (:require [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as markdown.text]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
             [react-native.core :as rn]))
 
 (def chevron-icon-container-width 20)
@@ -36,18 +36,18 @@
         padding-top                 (if increase-padding-top? 16 8)
         text-and-icon-color         (if dark? colors/neutral-40 colors/neutral-50)
         counter-text-color          (if dark? colors/white colors/neutral-100)]
-    [rn/touchable-without-feedback
-     {:on-press on-press}
+    [rn/touchable-without-feedback {:on-press on-press}
      [rn/view
       {:accessible          true
        :accessibility-label :divider-label
-       :style               (merge {:border-top-width   1
-                                    :border-top-color   border-and-counter-bg-color
-                                    :padding-top        padding-top
-                                    :padding-bottom     padding-bottom
-                                    :padding-horizontal 16
-                                    :align-items        :center
-                                    :flex-direction     :row}
+       :style               (merge {:border-top-width 1
+                                    :border-top-color border-and-counter-bg-color
+                                    :padding-top      padding-top
+                                    :padding-bottom   padding-bottom
+                                    :padding-left     16
+                                    :padding-right    16
+                                    :align-items      :center
+                                    :flex-direction   :row}
                                    container-style)}
       (when (= chevron-position :left)
         [rn/view
