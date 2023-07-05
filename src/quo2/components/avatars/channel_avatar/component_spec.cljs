@@ -9,9 +9,9 @@
     (h/is-null (h/query-by-label-text :emoji))
     (h/is-null (h/query-by-label-text :lock)))
 
-  (h/test "with emoji, no lock set, big size"
+  (h/test "with emoji, no lock set, large size"
     (let [emoji "🍓"]
-      (h/render [component/view {:emoji emoji :big? true}])
+      (h/render [component/view {:emoji emoji :size :size/l}])
       (h/is-null (h/query-by-label-text :initials))
       (h/is-truthy (h/query-by-text emoji))
       (h/is-null (h/query-by-label-text :lock))))
@@ -28,8 +28,8 @@
     (h/render [component/view {:full-name "Status Mobile"}])
     (h/is-truthy (h/query-by-text "S")))
 
-  (h/test "no emoji, big size"
+  (h/test "no emoji, large size"
     (h/render [component/view
                {:full-name "Status Mobile"
-                :big?      true}])
+                :size      :size/l}])
     (h/is-truthy (h/query-by-text "SM"))))

@@ -4,8 +4,8 @@
 (def lock-icon-size 12)
 
 (defn outer-container
-  [{:keys [big? color]}]
-  (let [size (if big? 32 24)]
+  [{:keys [size color]}]
+  (let [size (if (= size :size/l) 32 24)]
     {:width            size
      :height           size
      :border-radius    size
@@ -14,8 +14,8 @@
      :background-color (colors/theme-alpha color 0.1 0.1)}))
 
 (defn lock-container
-  [big?]
-  (let [distance (if big? 20 12)]
+  [size]
+  (let [distance (if (= size :size/l) 20 12)]
     {:position         :absolute
      :left             distance
      :top              distance

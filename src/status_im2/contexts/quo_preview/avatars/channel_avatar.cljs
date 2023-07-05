@@ -6,17 +6,19 @@
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Big?"
-    :key   :big?
-    :type  :boolean}
-   {:label "Emoji"
+  [{:label   "Size:"
+    :key     :size
+    :type    :select
+    :options [{:key :size/l :value "Large"}
+              {:key :default :value "Default"}]}
+   {:label "Emoji:"
     :key   :emoji
     :type  :text}
-   {:label "Full name"
+   {:label "Full name:"
     :key   :full-name
     :type  :text}
    (preview/customization-color-option)
-   {:label   "Locked state"
+   {:label   "Locked state:"
     :key     :locked-state
     :type    :select
     :options [{:key   :not-set
@@ -28,7 +30,7 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:big?                true
+  (let [state (reagent/atom {:size                :size/l
                              :locked-state        :not-set
                              :emoji               "🍑"
                              :full-name           "Some channel"
@@ -56,7 +58,7 @@
 (defn preview-channel-avatar
   []
   [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-90)
+   {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
             :flex             1}}
    [rn/flat-list
     {:flex                         1

@@ -8,8 +8,8 @@
             utils.string))
 
 (defn- initials
-  [full-name big? color]
-  (let [amount-initials (if big? 2 1)]
+  [full-name size color]
+  (let [amount-initials (if (= size :size/l) 2 1)]
     [text/text
      {:accessibility-label :initials
       :size                :paragraph-2
@@ -18,12 +18,12 @@
      (utils.string/get-initials full-name amount-initials)]))
 
 (defn- lock
-  [locked? big?]
+  [locked? size]
   ;; When `locked?` is nil, we must not display the unlocked icon.
   (when (boolean? locked?)
     [rn/view
      {:accessibility-label :lock
-      :style               (style/lock-container big?)}
+      :style               (style/lock-container size)}
      [icons/icon (if locked? :i/locked :i/unlocked)
       {:color           (colors/theme-colors colors/neutral-50 colors/neutral-40)
        :container-style style/lock-icon
@@ -32,7 +32,8 @@
 (defn view
   "Options:
 
-  :big? - bool (default nil) - Container size
+  :size - keyword (default nil) - Container size, for the moment,
+  only :size/l (meaning large) is supported.
 
   :emoji - string (default nil)
 
@@ -46,14 +47,14 @@
   :full-name - string (default nil) - When :emoji is blank, this value will be
   used to extract the initials.
   "
-  [{:keys [big? emoji customization-color locked? full-name]}]
+  [{:keys [size emoji customization-color locked? full-name]}]
   [rn/view
    {:accessibility-label :channel-avatar
-    :style               (style/outer-container {:big? big? :color customization-color})}
+    :style               (style/outer-container {:size size :color customization-color})}
    (if (string/blank? emoji)
-     [initials full-name big? customization-color]
+     [initials full-name size customization-color]
      [text/text
       {:accessibility-label :emoji
-       :size                (if big? :paragraph-1 :label)}
+       :size                (if (= size :size/l) :paragraph-1 :label)}
       emoji])
-   [lock locked? big?]])
+   [lock locked? size]])
