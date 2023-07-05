@@ -131,8 +131,8 @@
      [rn/view {:style (style/blur-container top)}
       [blur/view
        {:blur-amount   (if platform/ios? 20 10)
-        :blur-type     (theme/theme-value (if platform/ios? :light :xlight) :dark)
-        :overlay-color (theme/theme-value colors/white-opa-70 colors/neutral-95-opa-70)
+        :blur-type     :transparent
+        :overlay-color :transparent
         :style         style/blur}]
       [common.home/top-nav
        {:type   :grey
