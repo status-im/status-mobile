@@ -10,8 +10,11 @@
   [{:label   "Color:"
     :key     :color
     :type    :select
-    :options (map (fn [color] (let [key (get color :name)] {:key key :value key})) (quo/picker-colors))}
-   {:label "Blur:"
+    :options (map (fn [color]
+                    (let [k (get color :name)]
+                      {:key k :value k}))
+                  (quo/picker-colors))}
+   {:label "Blur?"
     :key   :blur
     :type  :boolean}])
 
@@ -43,4 +46,3 @@
      :keyboard-should-persist-taps :always
      :header                       [cool-preview]
      :key-fn                       str}]])
-

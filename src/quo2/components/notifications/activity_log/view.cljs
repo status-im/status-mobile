@@ -150,8 +150,8 @@
          [activity-reply-text-input props reply-input])
        (when items
          [rn/view style/footer-container
-          (for [{:keys [key] :as item} items]
-            ^{:key key}
+          (for [item items]
+            ^{:key (:key item)}
             [footer-item-view item replying? reply-input])])])))
 
 (defn view

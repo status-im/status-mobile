@@ -51,18 +51,18 @@
      {:padding-top (safe-area/get-top)})))
 
 (defn screen
-  [key]
+  [screen-key]
   (reagent.core/reactify-component
    (fn []
      (let [{:keys [component options]}   (get (if js/goog.DEBUG
                                                 (get-screens)
                                                 screens)
-                                              (keyword key))
+                                              (keyword screen-key))
            {:keys [insets sheet? theme]} options
            user-theme                    (theme/get-theme)
            background-color              (or (get-in options [:layout :backgroundColor])
                                              (when sheet? :transparent))]
-       ^{:key (str "root" key @reloader/cnt)}
+       ^{:key (str "root" screen-key @reloader/cnt)}
        [theme/provider {:theme (or theme user-theme)}
         [rn/view {:style (wrapped-screen-style insets background-color)}
          [inactive]

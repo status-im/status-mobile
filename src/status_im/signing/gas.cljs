@@ -53,19 +53,19 @@
   "Takes the previous edit, either :gas or :gas-price and a value as string.
   Wei for gas, and gwei for gas price.
   Validates them and sets max fee"
-  [edit-value key value]
+  [edit-value k value]
   (let [^js bn-value    (money/bignumber value)
-        error-label-key (get-error-label-key key bn-value)
+        error-label-key (get-error-label-key k bn-value)
         data            (if error-label-key
                           {:value   value
                            :max-fee 0
                            :error   (i18n/label error-label-key)}
                           {:value        value
-                           :value-number (if (= :gasPrice key)
+                           :value-number (if (= :gasPrice k)
                                            (money/->wei :gwei bn-value)
                                            bn-value)})]
     (-> edit-value
-        (assoc key data)
+        (assoc k data)
         edit-max-fee)))
 
 ;; TODO(rasom): this number is almost arbitrary, I was able to sent txs with
