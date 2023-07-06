@@ -27,11 +27,8 @@
 (rf/defn login-local-paired-user
   {:events [:profile.login/local-paired-user]}
   [{:keys [db]}]
-  (let [{:keys [key-uid name password]} (get-in db [:syncing :profile])]
-    {::login [key-uid
-              (transforms/clj->json {:name    name
-                                     :key-uid key-uid})
-              password]}))
+  (let [{:keys [key-uid password]} (get-in db [:syncing :profile])]
+    {::login [key-uid password]}))
 
 (rf/defn login-with-biometric-if-available
   {:events [:profile.login/login-with-biometric-if-available]}
