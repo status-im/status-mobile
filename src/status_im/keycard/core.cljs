@@ -14,7 +14,6 @@
             [status-im.keycard.sign :as sign]
             status-im.keycard.unpair
             [status-im.keycard.wallet :as wallet]
-            [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [utils.re-frame :as rf]
             [utils.datetime :as datetime]
@@ -589,7 +588,8 @@
               (when (and (= card-state :profile/profile)
                          (= flow :import))
                 (if (common/find-multiaccount-by-key-uid db key-uid)
-                  (multiaccounts.recover/show-existing-multiaccount-alert key-uid)
+                  ;; reimplement
+                  ;;(multiaccounts.recover/show-existing-multiaccount-alert key-uid)
                   (if paired?
                     (load-recovery-pin-screen)
                     (recovery/load-pair-screen))))
@@ -681,3 +681,11 @@
   {:events [:keycard.callback/stop-nfc-failure]}
   [{:keys [db]} _]
   (log/debug "[keycard] nfc failed stopping")) ;; leave current value on :nfc-running
+
+(rf/defn init
+  {:events [:keycard/init]}
+  [_]
+  {:keycard/register-card-events nil
+   :keycard/check-nfc-support    nil
+   :keycard/check-nfc-enabled    nil
+   :keycard/retrieve-pairings    nil})

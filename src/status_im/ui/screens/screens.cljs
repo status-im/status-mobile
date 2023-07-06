@@ -58,7 +58,6 @@
     [status-im.ui.screens.rpc-usage-info :as rpc-usage-info]
     [status-im.ui.screens.stickers.views :as stickers]
     [status-im.ui.screens.sync-settings.views :as sync-settings]
-    [status-im.ui.screens.terms-of-service.views :as terms-of-service]
     [status-im.ui.screens.wakuv2-settings.edit-node.views :as edit-wakuv2-node]
     [status-im.ui.screens.wakuv2-settings.views :as wakuv2-settings]
     [status-im.ui.screens.wallet.account-settings.views :as account-settings]
@@ -349,9 +348,6 @@
     :options   {:topBar {:title {:text (i18n/label :t/principles)}}
                 :insets {:top? true}}
     :component about-app/principles}
-   {:name      :force-accept-tos
-    :options   {:insets {:top? true}}
-    :component terms-of-service/force-accept-tos}
    {:name      :manage-dapps-permissions
     ;;TODO dynamic title
     :options   {:insets {:top? true}}

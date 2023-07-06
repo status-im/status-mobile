@@ -139,7 +139,6 @@
               {:db (-> db
                        (update :keycard dissoc :flow)
                        (dissoc :restored-account?))}
-              (multiaccounts.create/prepare-intro-wizard)
               (if (pos? (count accs))
                 (navigation/navigate-to :get-your-keys nil)
                 (navigation/set-stack-root :onboarding [:get-your-keys])))))

@@ -5,9 +5,24 @@
             [native-module.core :as native-module]
             [status-im.notifications.core :as notifications]
             [utils.re-frame :as rf]
-            [status-im.utils.keychain.core :as keychain]
             [status-im.wallet.core :as wallet]
-            [status-im2.events :as init]))
+            [status-im2.common.keychain.events :as keychain]
+            [status-im2.db :as db]))
+
+(re-frame/reg-fx
+ ::logout
+ (fn []
+   (native-module/logout)))
+
+(rf/defn initialize-app-db
+  [{{:keys           [keycard]
+     :biometric/keys [supported-type]
+     :network/keys   [type]}
+    :db}]
+  {:db (assoc db/app-db
+              :network/type             type
+              :keycard                  (dissoc keycard :secrets :pin :application-info)
+              :biometric/supported-type supported-type)})
 
 (rf/defn logout-method
   {:events [::logout-method]}
@@ -21,12 +36,11 @@
                ::logout                              nil
                ::multiaccounts/webview-debug-changed false
                :keychain/clear-user-password         key-uid
-               :profile/get-profiles-overview        #(re-frame/dispatch
-                                                       [:profile/get-profiles-overview-success
-                                                        %])}
+               :profile/get-profiles-overview        #(rf/dispatch
+                                                       [:profile/get-profiles-overview-success %])}
               (keychain/save-auth-method key-uid auth-method)
               (wallet/clear-timeouts)
-              (init/initialize-app-db))))
+              (initialize-app-db))))
 
 (rf/defn logout
   {:events [:logout :multiaccounts.logout.ui/logout-confirmed
@@ -49,17 +63,3 @@
     :confirm-button-text (i18n/label :t/logout)
     :on-accept           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])
     :on-cancel           nil}})
-
-(rf/defn biometric-logout
-  {:events [:biometric-logout]}
-  [cofx]
-  (rf/merge cofx
-            (logout-method {:auth-method keychain/auth-method-biometric-prepare
-                            :logout?     false})
-            (fn [{:keys [db]}]
-              {:db (assoc-in db [:profile/login :save-password?] true)})))
-
-(re-frame/reg-fx
- ::logout
- (fn []
-   (native-module/logout)))
