@@ -1,6 +1,9 @@
 # Description
 
 This document provides information on how to start developing Status App.
+note : This guide only works for Linux and MacOS Environments.
+
+For Windows OS refer this guide : [setup-guide-for-windows-os.md](setup-guide-for-windows-os.md)
 
 # Getting Started
 
