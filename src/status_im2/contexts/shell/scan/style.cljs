@@ -1,5 +1,6 @@
 (ns status-im2.contexts.shell.scan.style
   (:require [quo2.foundations.colors :as colors]
+            [quo.design-system.typography :as typography]
             [react-native.platform :as platform]))
 
 (def screen-padding 20)
@@ -101,7 +102,9 @@
    :justify-content   :center})
 
 (def enable-camera-access-header
-  {:color colors/white})
+  (merge
+   {:color colors/white}
+   typography/font-semi-bold))
 
 (def enable-camera-access-sub-text
   {:color         colors/white-opa-70
