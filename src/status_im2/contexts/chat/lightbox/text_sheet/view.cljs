@@ -23,7 +23,7 @@
   [messages overlay-opacity overlay-z-index]
   (let [text-height (reagent/atom 0)
         expanded?   (reagent/atom false)
-        dragging?   (reagent/atom false)]
+        dragging?   (atom false)]
     (fn []
       (let [{:keys [chat-id content]} (first messages)
             insets                    (safe-area/get-insets)
