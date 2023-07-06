@@ -56,5 +56,5 @@
      [text/text
       {:accessibility-label :emoji
        :size                (if (= size :size/l) :paragraph-1 :label)}
-      emoji])
+      (string/trim emoji)])
    [lock locked? size]])
