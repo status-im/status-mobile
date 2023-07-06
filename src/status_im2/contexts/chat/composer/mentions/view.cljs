@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.composer.mentions.view
   (:require
-    [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.chat.composer.utils :as utils]
@@ -10,23 +9,12 @@
     [status-im2.common.contact-list-item.view :as contact-list-item]
     [status-im2.contexts.chat.composer.mentions.style :as style]))
 
-(defn update-cursor
-  [user {:keys [cursor-position input-ref]}]
-  (when platform/android?
-    (let [new-cursor-pos (+ (count (:primary-name user)) @cursor-position 1)]
-      (reset! cursor-position new-cursor-pos)
-      (reagent/next-tick #(when @input-ref
-                            (.setNativeProps ^js @input-ref
-                                             (clj->js {:selection {:start new-cursor-pos
-                                                                   :end
-                                                                   new-cursor-pos}})))))))
 
 (defn mention-item
-  [user _ _ render-data]
+  [user _ _ _]
   [contact-list-item/contact-list-item
    {:on-press (fn []
-                (rf/dispatch [:chat.ui/select-mention nil user])
-                (update-cursor user render-data))}
+                (rf/dispatch [:chat.ui/select-mention nil user]))}
    user])
 
 (defn- f-view

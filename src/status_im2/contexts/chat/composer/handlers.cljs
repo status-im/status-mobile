@@ -3,7 +3,6 @@
     [oops.core :as oops]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
     [status-im2.contexts.chat.composer.selection :as selection]
@@ -118,16 +117,12 @@
 
 (defn change-text
   [text
-   {:keys [input-ref record-reset-fn]}
-   {:keys [text-value cursor-position recording?]}]
+   {:keys [record-reset-fn]}
+   {:keys [text-value recording?]}]
   (debounce/debounce-and-dispatch [:link-preview/unfurl-urls text]
                                   constants/unfurl-debounce-ms)
 
   (reset! text-value text)
-  (reagent/next-tick #(when @input-ref
-                        (.setNativeProps ^js @input-ref
-                                         (clj->js {:selection {:start @cursor-position
-                                                               :end   @cursor-position}}))))
   (when @recording?
     (@record-reset-fn)
     (reset! recording? false))
