@@ -28,8 +28,8 @@
   ([] @london-activated?)
   ([network-id enabled-callback disabled-callback]
    (let [definitely-activated? (london-is-definitely-activated network-id)
-         enabled-callback (or enabled-callback #())
-         disabled-callback (or disabled-callback #())]
+         enabled-callback      (or enabled-callback #())
+         disabled-callback     (or disabled-callback #())]
      (cond
        definitely-activated?
        (do
