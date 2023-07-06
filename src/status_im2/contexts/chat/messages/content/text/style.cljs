@@ -21,7 +21,8 @@
   {:background-color   colors/primary-50-opa-10
    :padding-horizontal 3
    :border-radius      6
-   :margin-bottom      -3})
+   :margin-bottom      -3
+   :height             22})
 
 (def mention-tag-text
   {:color                 (colors/theme-colors colors/primary-50
