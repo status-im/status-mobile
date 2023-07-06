@@ -42,15 +42,14 @@
 
 (defn f-shell-stack
   []
-  (let [shared-values       (shared-values/calculate-and-set-shared-values)
-        customization-color (rf/sub [:profile/customization-color])]
+  (let [shared-values (shared-values/calculate-and-set-shared-values)]
     (rn/use-effect
      (fn []
        (rn/hw-back-add-listener navigate-back-handler)
        #(rn/hw-back-remove-listener navigate-back-handler))
      [])
     [:<>
-     [jump-to-screen/view customization-color]
+     [jump-to-screen/view]
      [:f> bottom-tabs/f-bottom-tabs]
      [:f> home-stack/f-home-stack]
      [floating-button shared-values]

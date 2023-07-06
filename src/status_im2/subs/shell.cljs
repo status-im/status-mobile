@@ -77,7 +77,7 @@
   (let [images          (:images contact)
         profile-picture (:uri (or (:thumbnail images) (:large images) (first images)))]
     {:title               (first names)
-     :avatar-params       {:full-name       (last names)
+     :avatar-params       {:full-name       (first names)
                            :profile-picture (when profile-picture
                                               (str profile-picture "&addRing=0"))}
      :customization-color (or (:customization-color contact) :primary)
