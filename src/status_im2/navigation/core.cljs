@@ -3,7 +3,6 @@
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.navigation :as navigation]
-            [status-im.multiaccounts.login.core :as login-core]
             [status-im2.navigation.roots :as roots]
             [status-im2.navigation.state :as state]
             [status-im2.navigation.view :as views]
@@ -30,7 +29,7 @@
      (when @state/root-id
        (reset! theme/device-theme (rn/get-color-scheme))
        (re-frame/dispatch [:init-root @state/root-id])
-       (re-frame/dispatch [::login-core/check-last-chat])))
+       (re-frame/dispatch [:chat/check-last-chat])))
    (rn/hide-splash-screen)))
 
 (defn set-view-id
