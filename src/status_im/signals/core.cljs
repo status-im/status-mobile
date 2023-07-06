@@ -88,7 +88,7 @@
                   (assoc-in [:syncing :pairing-status] :connected)
 
                   received-account?
-                  (assoc-in [:syncing :profile/profile] multiaccount-data)
+                  (assoc-in [:syncing :profile] multiaccount-data)
 
                   error-on-pairing?
                   (assoc-in [:syncing :pairing-status] :error)
@@ -105,7 +105,7 @@
              {:dispatch [:syncing/clear-states]}
 
              (and completed-pairing? receiver?)
-             {:dispatch [:multiaccounts.login/local-paired-user]}
+             {:dispatch [:profile.login/local-paired-user]}
 
              (and error-on-pairing? (some? error))
              {:dispatch [:toasts/upsert

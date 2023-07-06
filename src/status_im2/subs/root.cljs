@@ -15,7 +15,6 @@
     status-im2.subs.mailservers
     status-im2.subs.profile
     status-im2.subs.networks
-    status-im2.subs.onboarding
     status-im2.subs.pairing
     status-im2.subs.search
     status-im2.subs.shell
@@ -66,7 +65,7 @@
 (reg-root-key-sub :networks/manage :networks/manage)
 (reg-root-key-sub :get-pairing-installations :pairing/installations)
 (reg-root-key-sub :tooltips :tooltips)
-(reg-root-key-sub :supported-biometric-auth :supported-biometric-auth)
+(reg-root-key-sub :biometric/supported-type :biometric/supported-type)
 (reg-root-key-sub :connectivity/ui-status-properties :connectivity/ui-status-properties)
 (reg-root-key-sub :logged-in-since :logged-in-since)
 (reg-root-key-sub :app-state :app-state)
@@ -231,8 +230,6 @@
 
 (reg-root-key-sub :auth-method :auth-method)
 
-(reg-root-key-sub :tos-accept-next-root :tos-accept-next-root)
-
 ;; keycard
 (reg-root-key-sub :keycard/banner-hidden :keycard/banner-hidden)
 
@@ -289,8 +286,6 @@
 ; Testing
 
 (reg-root-key-sub :messenger/started? :messenger/started?)
-
-(reg-root-key-sub :information-box-states :information-box-states)
 
 ; Messages home view -> tabs
 (reg-root-key-sub :messages-home/selected-tab :messages-home/selected-tab)

@@ -17,17 +17,14 @@
     [status-im.fleet.core :as fleet]
     [utils.i18n :as i18n]
     [status-im.mobile-sync-settings.core :as mobile-network]
-    [status-im.multiaccounts.biometric.core :as biometric]
     [status-im.multiaccounts.core :as multiaccounts]
     [native-module.core :as native-module]
     [status-im.notifications.core :as notifications]
-    [status-im.popover.core :as popover]
     [status-im.signing.eip1559 :as eip1559]
     [status-im.transport.core :as transport]
     [status-im.ui.components.react :as react]
     [status-im2.config :as config]
     [utils.re-frame :as rf]
-    [status-im.utils.keychain.core :as keychain]
     [status-im.utils.mobile-sync :as utils.mobile-sync]
     [status-im.utils.platform :as platform]
     [status-im.utils.types :as types]
@@ -46,7 +43,7 @@
     [taoensso.timbre :as log]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]
     [utils.security.core :as security]
-    [status-im.keycard.common :as keycard.common]))
+    [status-im2.common.keychain.events :as keychain]))
 
 (re-frame/reg-fx
  ::initialize-transactions-management-enabled
@@ -55,22 +52,6 @@
      (async-storage/get-item
       :transactions-management-enabled?
       callback))))
-
-(re-frame/reg-fx
- ::login
- (fn [[key-uid _ hashed-password]]
-   (native-module/login-account {:keyUid                      key-uid
-                                 :password                    hashed-password
-                                 :wakuV2Nameserver            "1.1.1.1"
-                                 :openseaAPIKey               config/opensea-api-key
-
-                                 :poktToken                   config/POKT_TOKEN
-                                 :infuraToken                 config/INFURA_TOKEN
-
-                                 :alchemyOptimismMainnetToken config/ALCHEMY_OPTIMISM_MAINNET_TOKEN
-                                 :alchemyOptimismGoerliToken  config/ALCHEMY_OPTIMISM_GOERLI_TOKEN
-                                 :alchemyArbitrumMainnetToken config/ALCHEMY_ARBITRUM_MAINNET_TOKEN
-                                 :alchemyArbitrumGoerliToken  config/ALCHEMY_ARBITRUM_GOERLI_TOKEN})))
 
 (re-frame/reg-fx
  ::export-db
@@ -177,27 +158,8 @@
      (wallet/request-current-block-update))
    (prices/update-prices)))
 
-(rf/defn login-local-paired-user
-  {:events [:multiaccounts.login/local-paired-user]}
-  [{:keys [db]}]
-  (let [{:keys [key-uid name password]} (get-in db [:syncing :profile/profile])]
-    {::login [key-uid
-              (types/clj->json {:name    name
-                                :key-uid key-uid})
-              password]}))
 
-(rf/defn login
-  {:events [:multiaccounts.login.ui/password-input-submitted]}
-  [{:keys [db]}]
-  (let [{:keys [key-uid password name]} (:profile/login db)]
-    {:db     (-> db
-                 (assoc-in [:profile/login :processing] true)
-                 (dissoc :intro-wizard :recovered-account?)
-                 (update :keycard dissoc :flow))
-     ::login [key-uid
-              (types/clj->json {:name    name
-                                :key-uid key-uid})
-              (ethereum/sha3 (security/safe-unmask-data password))]}))
+
 
 (rf/defn export-db-submitted
   {:events [:multiaccounts.login.ui/export-db-submitted]}
@@ -392,7 +354,7 @@
 
 (rf/defn get-node-config-callback
   {:events [::get-node-config-callback]}
-  [{:keys [db] :as cofx} node-config-json]
+  [{:keys [db]} node-config-json]
   (let [node-config (types/json->clj node-config-json)]
     {:db (assoc-in db
           [:profile/profile :wakuv2-config]
@@ -414,14 +376,11 @@
       (get db :onboarding-2/new-account?)
       {:dispatch [:onboarding-2/finalize-setup]}
 
-      (get db :tos/accepted?)
+      :else
       (rf/merge
        cofx
        (multiaccounts/switch-theme nil :shell-stack)
-       (navigation/init-root :shell-stack))
-
-      :else
-      {:dispatch [:init-root :tos]})))
+       (navigation/init-root :shell-stack)))))
 
 (rf/defn get-settings-callback
   {:events [::get-settings-callback]}
@@ -448,7 +407,6 @@
                 #(do (re-frame/dispatch [:chats-list/load-success %])
                      (rf/dispatch [:communities/get-user-requests-to-join])
                      (re-frame/dispatch [::get-chats-callback]))})
-              (initialize-wallet-connect)
               (get-node-config)
               (communities/fetch)
               (contract-communities/fetch-contract-communities)
@@ -530,11 +488,9 @@
 (defn get-new-auth-method
   [auth-method save-password?]
   (when save-password?
-    (when-not (or (= keychain/auth-method-biometric auth-method)
-                  (= keychain/auth-method-password auth-method))
-      (if (= auth-method keychain/auth-method-biometric-prepare)
-        keychain/auth-method-biometric
-        keychain/auth-method-password))))
+    (when-not (= keychain/auth-method-biometric auth-method)
+      (when (= auth-method keychain/auth-method-biometric-prepare)
+        keychain/auth-method-biometric))))
 
 (rf/defn login-only-events
   [{:keys [db] :as cofx} key-uid password save-password?]
@@ -549,8 +505,6 @@
                [{:method     "settings_getSettings"
                  :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
               (notifications/load-notification-preferences)
-              (when save-password?
-                (keychain/save-user-password key-uid password))
               (keychain/save-auth-method key-uid
                                          (or new-auth-method auth-method keychain/auth-method-none)))))
 
@@ -560,14 +514,13 @@
         db
         {:keys [creating?]} (:profile/login db)
         first-account? (and creating? (empty? profiles-overview))
-        tos-accepted? (get db :tos/accepted?)
         {:networks/keys [current-network networks]} db
         network-id (str (get-in networks [current-network :config :NetworkId]))]
     (shell.utils/change-selected-stack-id :communities-stack true nil)
     (rf/merge cofx
               {:db          (-> db
                                 (dissoc :profile/login)
-                                (assoc :tos/next-root :enable-notifications :chats/loading? false)
+                                (assoc :chats/loading? false)
                                 (assoc-in [:profile/profile :multiaccounts/first-account]
                                           first-account?))
                ::get-tokens [network-id wallet-accounts recovered-account?]}
@@ -586,7 +539,7 @@
   (boolean (get-in cofx [:db :keycard :flow])))
 
 (defn on-login-update-db
-  [db login-only? now]
+  [db now]
   (-> db
       (dissoc :connectivity/ui-status-properties)
       (update :keycard dissoc :from-key-storage-and-migration?)
@@ -595,10 +548,6 @@
               :card-read-in-progress?
               :pin
               :profile/profile)
-      (assoc :tos-accept-next-root
-             (if login-only?
-               :shell-stack
-               :onboarding-notification))
       (assoc :logged-in-since now)
       (assoc :view-id :home)))
 
@@ -620,7 +569,7 @@
                "login-only?"        login-only?
                "recovered-account?" recovered-account?)
     (rf/merge cofx
-              {:db (on-login-update-db db login-only? now)
+              {:db (on-login-update-db db now)
                :json-rpc/call
                [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}
@@ -636,151 +585,3 @@
               (if login-only?
                 (login-only-events key-uid password save-password?)
                 (create-only-events recovered-account?)))))
-
-(rf/defn open-login-callback
-  {:events [:multiaccounts.login.callback/get-user-password-success]}
-  [{:keys [db] :as cofx} password]
-  (let [key-uid           (get-in db [:profile/login :key-uid])
-        keycard-account?  (boolean (get-in db
-                                           [:profile/profiles-overview
-                                            key-uid
-                                            :keycard-pairing]))
-        goto-key-storage? (:goto-key-storage? db)]
-    (if password
-      (rf/merge
-       cofx
-       {:db       (update-in db
-                             [:profile/login]
-                             assoc
-                             :password       password
-                             :save-password? true)
-        :set-root :progress}
-       login)
-      (rf/merge
-       cofx
-       {:db (dissoc db :goto-key-storage?)}
-       (when keycard-account?
-         {:db (-> db
-                  (assoc-in [:keycard :pin :status] nil)
-                  (assoc-in [:keycard :pin :login] []))})
-       #(if keycard-account?
-          {:set-root :multiaccounts-keycard}
-          {:set-root :profiles})
-       #(when goto-key-storage?
-          (navigation/navigate-to % :actions-not-logged-in nil))))))
-
-(rf/defn get-credentials
-  [{:keys [db] :as cofx} key-uid]
-  (let [keycard-multiaccount? (boolean (get-in db
-                                               [:profile/profiles-overview key-uid :keycard-pairing]))]
-    (log/debug "[login] get-credentials"
-               "keycard-multiacc?"
-               keycard-multiaccount?)
-    (if keycard-multiaccount?
-      (keychain/get-keycard-keys cofx key-uid)
-      (keychain/get-user-password cofx key-uid))))
-
-(rf/defn get-auth-method-success
-  "Auth method: nil - not supported, \"none\" - not selected, \"password\", \"biometric\", \"biometric-prepare\""
-  {:events [:multiaccounts.login/get-auth-method-success]}
-  [{:keys [db] :as cofx} auth-method]
-  (let [key-uid          (get-in db [:profile/login :key-uid])
-        keycard-profile? (boolean (get-in db [:profile/profiles-overview key-uid :keycard-pairing]))]
-    (rf/merge
-     cofx
-     {:db (assoc db :auth-method auth-method)}
-     #(cond
-        (= auth-method keychain/auth-method-biometric)
-        (biometric/biometric-auth %)
-        (= auth-method keychain/auth-method-password)
-        (get-credentials % key-uid)
-        (and keycard-profile? (get-in db [:keycard :card-connected?]))
-        (keycard.common/get-application-info % nil))
-     (open-login-callback nil))))
-
-(rf/defn biometric-auth-done
-  {:events [:biometric-auth-done]}
-  [{:keys [db] :as cofx} {:keys [bioauth-success bioauth-message bioauth-code]}]
-  (let [key-uid     (get-in db [:profile/login :key-uid])
-        auth-method (get db :auth-method)]
-    (log/debug "[biometric] biometric-auth-done"
-               "bioauth-success" bioauth-success
-               "bioauth-message" bioauth-message
-               "bioauth-code"    bioauth-code)
-    (if bioauth-success
-      (get-credentials cofx key-uid)
-      (rf/merge cofx
-                {:db (assoc-in db
-                      [:profile/login :save-password?]
-                      (= auth-method keychain/auth-method-biometric))}
-                (when-not (= auth-method keychain/auth-method-biometric)
-                  (keychain/save-auth-method key-uid keychain/auth-method-none))
-                (biometric/show-message bioauth-message bioauth-code)
-                (open-login-callback nil)))))
-
-(rf/defn save-password
-  {:events [:multiaccounts/save-password]}
-  [{:keys [db] :as cofx} save-password?]
-  (let [bioauth-supported?   (boolean (get db :supported-biometric-auth))
-        previous-auth-method (get db :auth-method)]
-    (log/debug "[login] save-password"
-               "save-password?"       save-password?
-               "bioauth-supported?"   bioauth-supported?
-               "previous-auth-method" previous-auth-method)
-    (rf/merge
-     cofx
-     {:db (cond-> db
-            (not= previous-auth-method
-                  keychain/auth-method-biometric-prepare)
-            (assoc :auth-method keychain/auth-method-none)
-            (or save-password?
-                (not bioauth-supported?)
-                (and (not save-password?)
-                     bioauth-supported?
-                     (= previous-auth-method keychain/auth-method-none)))
-            (assoc-in [:profile/login :save-password?] save-password?))}
-     (when bioauth-supported?
-       (if save-password?
-         (popover/show-popover {:view :secure-with-biometric})
-         (when-not (= previous-auth-method keychain/auth-method-none)
-           (popover/show-popover {:view :disable-password-saving})))))))
-
-(rf/defn welcome-lets-go
-  {:events [:welcome-lets-go]}
-  [_]
-  {:set-root :shell-stack})
-
-(rf/defn hide-keycard-banner
-  {:events [:hide-keycard-banner]}
-  [{:keys [db]}]
-  {:db                  (assoc db :keycard/banner-hidden true)
-   ::async-storage/set! {:keycard-banner-hidden true}})
-
-(rf/defn get-keycard-banner-preference-cb
-  {:events [:get-keycard-banner-preference-cb]}
-  [{:keys [db]} {:keys [keycard-banner-hidden]}]
-  {:db (assoc db :keycard/banner-hidden keycard-banner-hidden)})
-
-(rf/defn get-keycard-banner-preference
-  {:events [:get-keycard-banner-preference]}
-  [_]
-  {::async-storage/get {:keys [:keycard-banner-hidden]
-                        :cb   #(re-frame/dispatch [:get-keycard-banner-preference-cb %])}})
-
-(rf/defn get-opted-in-to-new-terms-of-service-cb
-  {:events [:get-opted-in-to-new-terms-of-service-cb]}
-  [{:keys [db]} {:keys [new-terms-of-service-accepted]}]
-  {:db (assoc db :tos/accepted? new-terms-of-service-accepted)})
-
-(rf/defn get-opted-in-to-new-terms-of-service
-  "New TOS sprint https://github.com/status-im/status-mobile/pull/12240"
-  {:events [:get-opted-in-to-new-terms-of-service]}
-  [{:keys [db]}]
-  {::async-storage/get {:keys [:new-terms-of-service-accepted]
-                        :cb   #(re-frame/dispatch [:get-opted-in-to-new-terms-of-service-cb %])}})
-
-(rf/defn hide-terms-of-services-opt-in-screen
-  {:events [:hide-terms-of-services-opt-in-screen]}
-  [{:keys [db]}]
-  {::async-storage/set! {:new-terms-of-service-accepted true}
-   :db                  (assoc db :tos/accepted? true)})
