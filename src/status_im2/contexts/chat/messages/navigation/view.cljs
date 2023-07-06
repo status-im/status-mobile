@@ -14,11 +14,13 @@
             [status-im2.common.home.actions.view :as actions]))
 
 (defn f-navigation-view
-  [{:keys [scroll-y shared-all-loaded?]}]
+  [{:keys [scroll-y]}]
   (let [{:keys [group-chat chat-id chat-name emoji
                 chat-type]
          :as   chat}             (rf/sub [:chats/current-chat-chat-view])
-        all-loaded?              @shared-all-loaded?
+        shell-animation-complete? (rf/sub [:shell/animation-complete? (:chat-type chat)])
+        all-loaded?               (when shell-animation-complete?
+                                    (rf/sub [:chats/all-loaded? (:chat-id chat)]))
         display-name             (if (= chat-type constants/one-to-one-chat-type)
                                    (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                    (str emoji " " chat-name))

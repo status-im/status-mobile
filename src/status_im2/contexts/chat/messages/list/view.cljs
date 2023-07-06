@@ -138,7 +138,7 @@
                          (when platform/ios? style/overscroll-cover-height))}])
 
 (defn f-list-footer-avatar
-  [{:keys [scroll-y display-name online? photo-path]}]
+  [{:keys [scroll-y display-name online? profile-picture]}]
   (let [image-scale-animation       (reanimated/interpolate scroll-y
                                                             scroll-animation-input-range
                                                             [1 0.5]
@@ -158,7 +158,7 @@
      [quo/user-avatar
       {:full-name       display-name
        :online?         online?
-       :profile-picture photo-path
+       :profile-picture profile-picture
        :size            :big}]]))
 
 (defn list-footer-avatar
@@ -193,7 +193,8 @@
   [{:keys [chat scroll-y cover-bg-color on-layout shell-animation-complete?]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]} chat
-        all-loaded?          (rf/sub [:chats/all-loaded? chat-id])
+        all-loaded?          (when shell-animation-complete?
+                               (rf/sub [:chats/all-loaded? chat-id]))
         display-name         (if (= chat-type constants/one-to-one-chat-type)
                                (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                (str emoji " " chat-name))
@@ -272,7 +273,7 @@
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn f-messages-list-content
-  [{:keys [chat insets scroll-y cover-bg-color keyboard-shown? shared-all-loaded?]}]
+  [{:keys [chat insets scroll-y cover-bg-color keyboard-shown?]}]
   (let [shell-animation-complete? (rf/sub [:shell/animation-complete? (:chat-type chat)])
         context                   (when shell-animation-complete?
                                     (rf/sub [:chats/current-chat-message-list-view-context]))
@@ -282,11 +283,6 @@
                                     (rf/sub [:chats/recording?]))
         all-loaded?               (when shell-animation-complete?
                                     (rf/sub [:chats/all-loaded? (:chat-id chat)]))]
-    ;; NOTE(rasom): Top bar needs to react on `all-loaded?` only after messages
-    ;; rendering, otherwise animation flickers
-    (rn/use-effect (fn []
-                     (reset! shared-all-loaded? all-loaded?))
-                   [all-loaded?])
     [rn/view {:style {:flex 1}}
      [rn/flat-list
       {:key-fn                       list-key-fn
@@ -338,7 +334,6 @@
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
   (let [insets                                   (safe-area/get-insets)
         scroll-y                                 (reanimated/use-shared-value 0)
-        all-loaded?                              (reagent/atom false)
         {:keys [keyboard-height keyboard-shown]} (hooks/use-keyboard)]
     (rn/use-effect
      (fn []
@@ -353,8 +348,7 @@
 
      (when header-comp
        [header-comp
-        {:scroll-y           scroll-y
-         :shared-all-loaded? all-loaded?}])
+        {:scroll-y scroll-y}])
 
      [:f>
       f-messages-list-content
@@ -362,8 +356,7 @@
        :insets             insets
        :scroll-y           scroll-y
        :cover-bg-color     cover-bg-color
-       :keyboard-shown?    keyboard-shown
-       :shared-all-loaded? all-loaded?}]
+       :keyboard-shown?    keyboard-shown}]
 
      (when footer-comp
        [footer-comp {:insets insets}])]))
