@@ -25,9 +25,9 @@
 
 (defn filter-and-sort-items-by-tab
   [tab items]
-  (let [key (if (= tab :tab/groups) :group-chat :chat-id)]
+  (let [k (if (= tab :tab/groups) :group-chat :chat-id)]
     (->> items
-         (filter key)
+         (filter k)
          (sort-by :timestamp >))))
 
 (defn empty-state-content

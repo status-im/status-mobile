@@ -12,9 +12,9 @@
             [status-im2.navigation.options :as options]))
 
 (navigation/set-lazy-component-registrator
- (fn [key]
-   (let [screen (views/screen key)]
-     (navigation/register-component key
+ (fn [screen-key]
+   (let [screen (views/screen screen-key)]
+     (navigation/register-component screen-key
                                     (fn [] (gesture/gesture-handler-root-hoc screen))
                                     (fn [] screen)))))
 
@@ -257,10 +257,9 @@
 (re-frame/reg-fx
  :set-stack-root-fx
  (fn [[stack comp]]
-   ;; We don't have bottom tabs as separate stacks anymore,
-   ;; So the old way of pushing screens in specific tabs will not work.
-   ;; Disabled set-stack-root for :shell-stack as it is not working and
-   ;; currently only being used for browser and some rare keycard flows after login
+   ;; We don't have bottom tabs as separate stacks anymore,. So the old way of pushing screens in
+   ;; specific tabs will not work. Disabled set-stack-root for :shell-stack as it is not working
+   ;; and currently only being used for browser and some rare keycard flows after login
    (when-not (= @state/root-id :shell-stack)
      (log/debug :set-stack-root-fx stack comp)
      (navigation/set-stack-root

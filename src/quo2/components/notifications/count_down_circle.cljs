@@ -30,10 +30,10 @@
      :path-length path-length}))
 
 (defn- linear-ease
-  [time start goal duration]
+  [input-time start goal duration]
   (if (zero? duration)
     start
-    (-> time
+    (-> input-time
         (/ duration)
         (* goal)
         (+ start))))

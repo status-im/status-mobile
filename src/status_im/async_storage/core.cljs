@@ -10,9 +10,9 @@
 (def key->string str)
 
 (defn set-item!
-  [key value]
+  [k value]
   (-> ^js async-storage
-      (.setItem (key->string key)
+      (.setItem (key->string k)
                 (clj->transit value))
       (.catch (fn [error]
                 (log/error "[async-storage]" error)))))
