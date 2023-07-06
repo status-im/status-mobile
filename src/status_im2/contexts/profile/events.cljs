@@ -1,6 +1,6 @@
 (ns status-im2.contexts.profile.events
   (:require [utils.re-frame :as rf]
-            [clojure.string :as string]
+            [status-im2.contexts.profile.rpc :as profile.rpc]
             [re-frame.core :as re-frame]
             [native-module.core :as native-module]
             [status-im2.navigation.events :as navigation]
@@ -26,18 +26,11 @@
             {:db (assoc db :profile/profiles-overview profiles)}
             (profile-selected key-uid)))
 
-(defn rpc->profiles-overview
-  [{:keys [customizationColor keycard-pairing] :as profile}]
-  (-> profile
-      (dissoc :customizationColor)
-      (assoc :customization-color (keyword customizationColor))
-      (assoc :keycard-pairing (when-not (string/blank? keycard-pairing) keycard-pairing))))
-
 (defn reduce-profiles
   [profiles]
   (reduce
    (fn [acc {:keys [key-uid] :as profile}]
-     (assoc acc key-uid (rpc->profiles-overview profile)))
+     (assoc acc key-uid (profile.rpc/rpc->profiles-overview profile)))
    {}
    profiles))
 

@@ -13,14 +13,14 @@
     [status-im.data-store.invitations :as data-store.invitations]
     [status-im.data-store.reactions :as data-store.reactions]
     [status-im.group-chats.core :as models.group]
-    [status-im.multiaccounts.login.core :as multiaccounts.login]
     [status-im.multiaccounts.update.core :as update.core]
     [status-im.pairing.core :as models.pairing]
     [utils.re-frame :as rf]
     [status-im.utils.types :as types]
     [status-im.visibility-status-updates.core :as models.visibility-status-updates]
     [status-im2.contexts.shell.activity-center.events :as activity-center]
-    [status-im2.contexts.chat.messages.pin.events :as messages.pin]))
+    [status-im2.contexts.chat.messages.pin.events :as messages.pin]
+    [status-im.wallet.core :as wallet]))
 
 (rf/defn process-next
   [cofx ^js response-js sync-handler]
@@ -171,7 +171,7 @@
         (js-delete response-js "accounts")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (multiaccounts.login/update-wallet-accounts (types/js->clj accounts))))
+                  (wallet/update-wallet-accounts (types/js->clj accounts))))
 
       (seq settings)
       (do

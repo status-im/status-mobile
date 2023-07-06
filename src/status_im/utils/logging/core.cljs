@@ -26,6 +26,17 @@
     (string/join "\n" (log/get-logs-queue))
     #(re-frame/dispatch [callback-handler %]))))
 
+(rf/defn store-web3-client-version
+  {:events [:logging/store-web3-client-version]}
+  [{:keys [db]} node-version]
+  {:db (assoc db :web3-node-version node-version)})
+
+(rf/defn initialize-web3-client-version
+  {:events [:logging/initialize-web3-client-version]}
+  [_]
+  {:json-rpc/call [{:method     "web3_clientVersion"
+                    :on-success #(re-frame/dispatch [:logging/store-web3-client-version %])}]})
+
 (defn email-body
   "logs attached"
   [{:keys [:web3-node-version :mailserver/current-id
