@@ -22,7 +22,8 @@
 (defn text-sheet
   [messages overlay-opacity overlay-z-index]
   (let [text-height (reagent/atom 0)
-        expanded?   (reagent/atom false)]
+        expanded?   (reagent/atom false)
+        dragging?   (reagent/atom false)]
     (fn []
       (let [{:keys [chat-id content]} (first messages)
             insets                    (safe-area/get-insets)
@@ -39,7 +40,12 @@
             animations                (utils/init-animations overlay-opacity)
             derived                   (utils/init-derived-animations animations)]
         [gesture/gesture-detector
-         {:gesture (utils/sheet-gesture animations expanded-height max-height overlay-z-index expanded?)}
+         {:gesture (utils/sheet-gesture animations
+                                        expanded-height
+                                        max-height
+                                        overlay-z-index
+                                        expanded?
+                                        dragging?)}
          [reanimated/touchable-opacity
           {:active-opacity 1
            :on-press
@@ -59,7 +65,7 @@
           [gesture/scroll-view
            {:scroll-enabled        @expanded?
             :scroll-event-throttle 16
-            :on-scroll             #(utils/on-scroll % @expanded? animations)
+            :on-scroll             #(utils/on-scroll % @expanded? @dragging? animations)
             :style                 {:height (- max-height constants/bar-container-height)}}
            [message-view/render-parsed-text
             {:content        content

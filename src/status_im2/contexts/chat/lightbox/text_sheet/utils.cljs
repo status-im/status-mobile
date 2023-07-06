@@ -7,10 +7,11 @@
 
 (defn sheet-gesture
   [{:keys [derived-value saved-top overlay-opacity gradient-opacity]}
-   expanded-height max-height overlay-z-index expanded?]
+   expanded-height max-height overlay-z-index expanded? dragging?]
   (-> (gesture/gesture-pan)
       (gesture/on-start (fn []
                           (reset! overlay-z-index 1)
+                          (reset! dragging? true)
                           (reanimated/animate gradient-opacity 0)))
       (gesture/on-update
        (fn [e]
@@ -19,21 +20,23 @@
                progress      (/ (- new-value) max-height)]
            (reanimated/set-shared-value overlay-opacity progress)
            (reanimated/set-shared-value derived-value bounded-value))))
-      (gesture/on-end (fn []
-                        (if (or (> (- (reanimated/get-shared-value derived-value))
-                                   (reanimated/get-shared-value saved-top))
-                                (= (reanimated/get-shared-value derived-value)
-                                   constants/text-min-height))
-                          (do ; minimize
-                            (reanimated/animate derived-value constants/text-min-height)
-                            (reanimated/animate overlay-opacity 0)
-                            (reanimated/set-shared-value saved-top (- constants/text-min-height))
-                            (reset! expanded? false)
-                            (js/setTimeout #(reset! overlay-z-index 0) 300))
-                          (reanimated/set-shared-value saved-top
-                                                       (- (reanimated/get-shared-value derived-value))))
-                        (when (= (reanimated/get-shared-value derived-value) expanded-height)
-                          (reset! expanded? true))))))
+      (gesture/on-end
+       (fn []
+         (if (or (> (- (reanimated/get-shared-value derived-value))
+                    (reanimated/get-shared-value saved-top))
+                 (= (reanimated/get-shared-value derived-value)
+                    constants/text-min-height))
+           (do ; minimize
+             (reanimated/animate derived-value constants/text-min-height)
+             (reanimated/animate overlay-opacity 0)
+             (reanimated/set-shared-value saved-top (- constants/text-min-height))
+             (reset! expanded? false)
+             (js/setTimeout #(reset! overlay-z-index 0) 300))
+           (reanimated/set-shared-value saved-top
+                                        (- (reanimated/get-shared-value derived-value))))
+         (when (= (reanimated/get-shared-value derived-value) expanded-height)
+           (reset! expanded? true))
+         (reset! dragging? false)))))
 
 (defn expand-sheet
   [{:keys [derived-value overlay-opacity saved-top]}
@@ -45,8 +48,8 @@
   (reset! expanded? true))
 
 (defn on-scroll
-  [e expanded? {:keys [gradient-opacity]}]
-  (if (and (> (oops/oget e "nativeEvent.contentOffset.y") 0) expanded?)
+  [e expanded? dragging? {:keys [gradient-opacity]}]
+  (if (and (> (oops/oget e "nativeEvent.contentOffset.y") 0) expanded? (not dragging?))
     (reanimated/animate gradient-opacity 1)
     (reanimated/animate gradient-opacity 0)))
 
