@@ -251,16 +251,18 @@
 
 (defn render-fn
   [{:keys [type value content-type] :as message-data} _ _
-   {:keys [context keyboard-shown?]}]
+   {:keys [context keyboard-shown? insets]}]
   ;;TODO temporary hide mutual-state-updates https://github.com/status-im/status-mobile/issues/16254
   (when (not= content-type constants/content-type-system-mutual-state-update)
-    [rn/view
-     (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
-     (if (= type :datemark)
-       [quo/divider-date value]
-       (if (= content-type constants/content-type-gap)
-         [message.gap/gap message-data]
-         [message/message message-data context keyboard-shown?]))]))
+    (if (= type :header)
+      [list-header insets]
+      [rn/view
+       (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
+       (if (= type :datemark)
+         [quo/divider-date value]
+         (if (= content-type constants/content-type-gap)
+           [message.gap/gap message-data]
+           [message/message message-data context keyboard-shown?]))])))
 
 (defn scroll-handler
   [event scroll-y]
@@ -291,22 +293,21 @@
        :ref                          list-ref
        :header                       [:<>
                                       (when (= (:chat-type chat) constants/private-group-chat-type)
-                                        [list-group-chat-header chat])
-                                      [list-header insets]]
+                                        [list-group-chat-header chat])]
        :footer                       [list-footer
                                       {:chat                      chat
                                        :scroll-y                  scroll-y
                                        :cover-bg-color            cover-bg-color
                                        :on-layout                 footer-on-layout
                                        :shell-animation-complete? shell-animation-complete?}]
-       :data                         messages
+       :data                         (into [{:type :header}] messages)
        :render-data                  {:context         context
-                                      :keyboard-shown? keyboard-shown?}
+                                      :keyboard-shown? keyboard-shown?
+                                      :insets          insets}
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               #(list-on-end-reached scroll-y)
        :on-scroll-to-index-failed    identity
-       :content-container-style      {:padding-bottom style/messages-list-bottom-offset}
        :scroll-indicator-insets      {:top (- composer.constants/composer-default-height 16)}
        :keyboard-dismiss-mode        :interactive
        :keyboard-should-persist-taps :always
@@ -329,9 +330,6 @@
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
        :inverted                     (when platform/ios? true)
        :on-layout                    (fn [e]
-                                       ;; FIXME: this is due to Android not triggering the initial
-                                       ;; scrollTo event
-                                       (scroll-to-offset 1)
                                        (let [layout-height (oops/oget e "nativeEvent.layout.height")]
                                          (reset! messages-view-height layout-height)))
        :scroll-enabled               (not recording?)}]]))

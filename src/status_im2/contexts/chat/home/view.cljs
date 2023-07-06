@@ -129,10 +129,15 @@
        [contacts pending-contact-requests top]
        [chats selected-tab top])
      [rn/view {:style (style/blur-container top)}
-      [blur/view
-       {:blur-amount (if platform/ios? 20 10)
-        :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-        :style       style/blur}]
+      (let [{:keys [sheets]} (rf/sub [:bottom-sheet])]
+        [blur/view
+         {:blur-amount   (if platform/ios? 20 10)
+          :blur-type     (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+          :style         style/blur
+          :overlay-color (if (seq sheets)
+                           (theme/theme-value colors/white colors/neutral-95-opa-70)
+                           (when (colors/dark?)
+                             colors/neutral-95-opa-70))}])
       [common.home/top-nav
        {:type   :grey
         :avatar {:customization-color customization-color
