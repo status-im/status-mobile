@@ -7,8 +7,7 @@
             [status-im2.navigation.events :as navigation]
             [status-im2.common.keychain.events :as keychain]
             [status-im2.common.biometric.events :as biometric]
-            [status-im2.contexts.profile.config :as profile.config]
-            [utils.transforms :as transforms]))
+            [status-im2.contexts.profile.config :as profile.config]))
 
 (re-frame/reg-fx
  ::login
