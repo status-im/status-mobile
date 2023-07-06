@@ -58,6 +58,7 @@
 
 (defn on-viewable-items-changed
   [e]
+  #_(js/console.log "ALWX on-viewable-items-changed" e)
   (when @messages-list-ref
     (reset! state/first-not-visible-item
       (when-let [last-visible-element (aget (oops/oget e "viewableItems")
@@ -255,21 +256,20 @@
    {:keys [context keyboard-shown? insets]}]
   ;;TODO temporary hide mutual-state-updates https://github.com/status-im/status-mobile/issues/16254
   (when (not= content-type constants/content-type-system-mutual-state-update)
-    (if (= type :header)
-      [list-header insets]
-      [rn/view
-       (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
-       (if (= type :datemark)
-         [quo/divider-date value]
-         (if (= content-type constants/content-type-gap)
-           [message.gap/gap message-data]
-           [message/message message-data context keyboard-shown?]))])))
+    [rn/view
+     (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
+     (if (= type :datemark)
+       [quo/divider-date value]
+       (if (= content-type constants/content-type-gap)
+         [message.gap/gap message-data]
+         [message/message message-data context keyboard-shown?]))]))
 
 (defn scroll-handler
   [event scroll-y]
   (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y      (oops/oget event "nativeEvent.contentOffset.y")]
+    (js/console.log "ALWX new scroll-y" scroll-y)
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn f-messages-list-content
@@ -288,6 +288,7 @@
       {:key-fn                       list-key-fn
        :ref                          list-ref
        :header                       [:<>
+                                      [list-header insets]
                                       (when (= (:chat-type chat) constants/private-group-chat-type)
                                         [list-group-chat-header chat])]
        :footer                       [list-footer
@@ -296,12 +297,17 @@
                                        :cover-bg-color            cover-bg-color
                                        :on-layout                 footer-on-layout
                                        :shell-animation-complete? shell-animation-complete?}]
-       :data                         (into [{:type :header}] messages)
+       :data                         messages
        :render-data                  {:context         context
                                       :keyboard-shown? keyboard-shown?
                                       :insets          insets}
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
+       :on-content-size-change       (fn [x y]
+                                       ;; TODO(alwx): triggered when either a new message is added or the screen is loaded
+                                       (js/console.log "ALWX on-content-size-change" x y)
+                                       (when (= (reanimated/get-shared-value scroll-y) 0)
+                                         (reanimated/set-shared-value scroll-y y)))
        :on-end-reached               #(list-on-end-reached scroll-y)
        :on-scroll-to-index-failed    identity
        :scroll-indicator-insets      {:top (- composer.constants/composer-default-height 16)}
@@ -316,13 +322,13 @@
                                        (when on-scroll
                                          (on-scroll event)))
        :style                        (add-inverted-y-android
-                                      {:background-color (if all-loaded?
-                                                           (colors/theme-colors
-                                                            (colors/custom-color cover-bg-color 50 20)
-                                                            (colors/custom-color cover-bg-color 50 40))
-                                                           (colors/theme-colors
-                                                            colors/white
-                                                            colors/neutral-95))})
+                                       {:background-color (if all-loaded?
+                                                            (colors/theme-colors
+                                                              (colors/custom-color cover-bg-color 50 20)
+                                                              (colors/custom-color cover-bg-color 50 40))
+                                                            (colors/theme-colors
+                                                              colors/white
+                                                              colors/neutral-95))})
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
        :inverted                     (when platform/ios? true)
        :on-layout                    (fn [e]
@@ -332,16 +338,16 @@
 
 (defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
-  (let [insets                                   (safe-area/get-insets)
-        scroll-y                                 (reanimated/use-shared-value 0)
+  (let [insets (safe-area/get-insets)
+        scroll-y (reanimated/use-shared-value 0)
         {:keys [keyboard-height keyboard-shown]} (hooks/use-keyboard)]
     (rn/use-effect
-     (fn []
-       (when keyboard-shown
-         (reanimated/set-shared-value scroll-y
-                                      (+ (reanimated/get-shared-value scroll-y)
-                                         keyboard-height))))
-     [keyboard-shown keyboard-height])
+      (fn []
+        (when keyboard-shown
+          (reanimated/set-shared-value scroll-y
+                                       (+ (reanimated/get-shared-value scroll-y)
+                                          keyboard-height))))
+      [keyboard-shown keyboard-height])
     [rn/keyboard-avoiding-view
      {:style                    (style/keyboard-avoiding-container insets)
       :keyboard-vertical-offset (- (:bottom insets))}
@@ -352,11 +358,11 @@
 
      [:f>
       f-messages-list-content
-      {:chat               chat
-       :insets             insets
-       :scroll-y           scroll-y
-       :cover-bg-color     cover-bg-color
-       :keyboard-shown?    keyboard-shown}]
+      {:chat            chat
+       :insets          insets
+       :scroll-y        scroll-y
+       :cover-bg-color  cover-bg-color
+       :keyboard-shown? keyboard-shown}]
 
      (when footer-comp
        [footer-comp {:insets insets}])]))
