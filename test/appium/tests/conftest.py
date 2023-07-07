@@ -226,7 +226,7 @@ def pytest_configure(config):
                                 resp = sauce.storage._session.request('post', '/v1/storage/upload',
                                                                       files={'payload': f})
                                 try:
-                                    if resp['item']['name'] != apk_name:
+                                    if resp['item']['name'] != test_suite_data.apk_name:
                                         raise UploadApkException(
                                             "Incorrect apk was uploaded to Sauce storage, response:\n%s" % resp)
                                 except KeyError:
@@ -234,9 +234,8 @@ def pytest_configure(config):
                                         "Error when uploading apk to Sauce storage, response:\n%s" % resp)
 
                     if 'http' in config.getoption('apk'):
-                        apk_name = config.getoption('apk').split("/")[-1]
                         # it works with just a file_name, but I've added full path because not sure how it'll behave on the remote run (Jenkins)
-                        file_path, to_remove = os.path.join(os.path.dirname(__file__), apk_name), True
+                        file_path, to_remove = os.path.join(os.path.dirname(__file__), test_suite_data.apk_name), True
                         urllib.request.urlretrieve(config.getoption('apk'),
                                                    filename=file_path)  # if url is not valid it raises an error
                     else:
