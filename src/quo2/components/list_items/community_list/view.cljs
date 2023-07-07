@@ -119,41 +119,40 @@
        {:on-press-in   (fn [] (reset! pressed? true))
         :on-press      on-press
         :on-long-press on-long-press
-        :on-press-out  (fn [] (reset! pressed? false))}
-       [rn/view
-        (merge {:style (style/container {:blur?               blur?
-                                         :customization-color customization-color
-                                         :info                info
-                                         :type                type
-                                         :pressed?            @pressed?
-                                         :theme               theme})}
-               container-style)
-        [logo-component logo]
-        [rn/view {:style {:flex 1}}
-         [title-component
-          {:blur? blur?
-           :info  info
-           :theme theme
-           :title title
-           :type  type}]
-         (when (and (= type :share) subtitle)
-           [subtitle-component subtitle blur? theme])
-         (when (and members (= type :discover))
-           [community-view/community-stats-column
-            {:type          :list-view
-             :theme         theme
-             :blur?         blur?
-             :members-count (:members-count members)
-             :active-count  (:active-count members)}])]
-        [info-component
-         {:blur?               blur?
-          :customization-color customization-color
-          :info                info
-          :type                type
-          :locked?             locked?
-          :on-press-info       on-press-info
-          :theme               theme
-          :tokens              tokens
-          :unread-count        unread-count}]]])))
+        :on-press-out  (fn [] (reset! pressed? false))
+        :style         (merge (style/container {:blur?               blur?
+                                                :customization-color customization-color
+                                                :info                info
+                                                :type                type
+                                                :pressed?            @pressed?
+                                                :theme               theme})
+                              container-style)}
+       [logo-component logo]
+       [rn/view {:style {:flex 1}}
+        [title-component
+         {:blur? blur?
+          :info  info
+          :theme theme
+          :title title
+          :type  type}]
+        (when (and (= type :share) subtitle)
+          [subtitle-component subtitle blur? theme])
+        (when (and members (= type :discover))
+          [community-view/community-stats-column
+           {:type          :list-view
+            :theme         theme
+            :blur?         blur?
+            :members-count (:members-count members)
+            :active-count  (:active-count members)}])]
+       [info-component
+        {:blur?               blur?
+         :customization-color customization-color
+         :info                info
+         :type                type
+         :locked?             locked?
+         :on-press-info       on-press-info
+         :theme               theme
+         :tokens              tokens
+         :unread-count        unread-count}]])))
 
 (def view (quo.theme/with-theme view-internal))
