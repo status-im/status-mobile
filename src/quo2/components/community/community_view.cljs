@@ -1,14 +1,14 @@
 (ns quo2.components.community.community-view
-  (:require [quo2.components.community.style :as style]
+  (:require [quo.gesture-handler :as gesture-handler]
+            [quo2.components.community.style :as style]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.permission-tag :as permission]
             [quo2.components.tags.tag :as tag]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
-            [quo.gesture-handler :as gesture-handler]
             [react-native.core :as rn]
-            [status-im.utils.money :as money]))
+            utils.money))
 
 (defn community-stats
   [{:keys [icon members-count icon-color]}]
@@ -36,11 +36,11 @@
        (style/list-stats-container))
      [community-stats
       {:icon          :i/group
-       :members-count (money/format-amount members-count)
+       :members-count (utils.money/format-amount members-count)
        :icon-color    icon-color}]
      [community-stats
       {:icon          :i/lightning
-       :members-count (money/format-amount active-count)
+       :members-count (utils.money/format-amount active-count)
        :icon-color    icon-color}]]))
 
 (defn community-tags
