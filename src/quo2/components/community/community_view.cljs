@@ -90,7 +90,7 @@
 (defn- permission-tag-container-internal
   [{:keys [locked? blur? tokens on-press theme]}]
   [permission/tag
-   {:background-color (if blur?
+   {:background-color (if (and (= :dark theme) blur?)
                         colors/white-opa-10
                         (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))
     :locked?          locked?
