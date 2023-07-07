@@ -53,7 +53,7 @@
            :style (style/sheet-container derived)}
           [bar @text-height]
           [reanimated/linear-gradient
-           {:colors [colors/neutral-100-opa-0 colors/neutral-100]
+           {:colors [colors/neutral-100-opa-10 colors/neutral-100]
             :start  {:x 0 :y 1}
             :end    {:x 0 :y 0}
             :style  (style/top-gradient animations insets)}]
