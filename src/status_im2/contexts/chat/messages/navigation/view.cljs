@@ -17,41 +17,41 @@
   [{:keys [scroll-y]}]
   (let [{:keys [group-chat chat-id chat-name emoji
                 chat-type]
-         :as   chat}             (rf/sub [:chats/current-chat-chat-view])
+         :as   chat}              (rf/sub [:chats/current-chat-chat-view])
         shell-animation-complete? (rf/sub [:shell/animation-complete? (:chat-type chat)])
         all-loaded?               (when shell-animation-complete?
                                     (rf/sub [:chats/all-loaded? (:chat-id chat)]))
-        display-name             (if (= chat-type constants/one-to-one-chat-type)
-                                   (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                                   (str emoji " " chat-name))
-        online?                  (rf/sub [:visibility-status-updates/online? chat-id])
-        contact                  (when-not group-chat
-                                   (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path               (when-not (empty? (:images contact))
-                                   (rf/sub [:chats/photo-path chat-id]))
-        opacity-animation        (reanimated/interpolate scroll-y
-                                                         [style/navigation-bar-height
-                                                          (+ style/navigation-bar-height 30)]
-                                                         [0 1]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "extend"})
-        banner-opacity-animation (reanimated/interpolate scroll-y
-                                                         [(+ style/navigation-bar-height 150)
-                                                          (+ style/navigation-bar-height 200)]
-                                                         [0 1]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "extend"})
-        translate-animation      (reanimated/interpolate scroll-y
-                                                         [(+ style/navigation-bar-height 25)
-                                                          (+ style/navigation-bar-height 100)]
-                                                         [50 0]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "clamp"})
-        title-opacity-animation  (reanimated/interpolate scroll-y
-                                                         [0 50]
-                                                         [0 1]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "clamp"})]
+        display-name              (if (= chat-type constants/one-to-one-chat-type)
+                                    (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                                    (str emoji " " chat-name))
+        online?                   (rf/sub [:visibility-status-updates/online? chat-id])
+        contact                   (when-not group-chat
+                                    (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path                (when-not (empty? (:images contact))
+                                    (rf/sub [:chats/photo-path chat-id]))
+        opacity-animation         (reanimated/interpolate scroll-y
+                                                          [style/navigation-bar-height
+                                                           (+ style/navigation-bar-height 30)]
+                                                          [0 1]
+                                                          {:extrapolateLeft  "clamp"
+                                                           :extrapolateRight "extend"})
+        banner-opacity-animation  (reanimated/interpolate scroll-y
+                                                          [(+ style/navigation-bar-height 150)
+                                                           (+ style/navigation-bar-height 200)]
+                                                          [0 1]
+                                                          {:extrapolateLeft  "clamp"
+                                                           :extrapolateRight "extend"})
+        translate-animation       (reanimated/interpolate scroll-y
+                                                          [(+ style/navigation-bar-height 25)
+                                                           (+ style/navigation-bar-height 100)]
+                                                          [50 0]
+                                                          {:extrapolateLeft  "clamp"
+                                                           :extrapolateRight "clamp"})
+        title-opacity-animation   (reanimated/interpolate scroll-y
+                                                          [0 50]
+                                                          [0 1]
+                                                          {:extrapolateLeft  "clamp"
+                                                           :extrapolateRight "clamp"})]
     [rn/view {:style style/navigation-view}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation)}]
