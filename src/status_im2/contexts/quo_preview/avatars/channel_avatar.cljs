@@ -1,53 +1,65 @@
 (ns status-im2.contexts.quo-preview.avatars.channel-avatar
-  (:require [quo2.components.avatars.channel-avatar :as quo2]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Big?"
-    :key   :big?
-    :type  :boolean}
-   {:label "Avatar color"
-    :key   :emoji-background-color
-    :type  :text}
-   {:label "Avatar color"
+  [{:label   "Size:"
+    :key     :size
+    :type    :select
+    :options [{:key :size/l :value "Large"}
+              {:key :default :value "Default"}]}
+   {:label "Emoji:"
     :key   :emoji
     :type  :text}
-   {:label   "is Locked?"
-    :key     :locked?
+   {:label "Full name:"
+    :key   :full-name
+    :type  :text}
+   (preview/customization-color-option)
+   {:label   "Locked state:"
+    :key     :locked-state
     :type    :select
-    :options [{:key   nil
-               :value "None"}
-              {:key   false
+    :options [{:key   :not-set
+               :value "Not set"}
+              {:key   :unlocked
                :value "Unlocked"}
-              {:key   true
+              {:key   :locked
                :value "Locked"}]}])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:big?                   true
-                             :locked?                nil
-                             :emoji                  "🍑"
-                             :emoji-background-color :gray})]
+  (let [state (reagent/atom {:size                :size/l
+                             :locked-state        :not-set
+                             :emoji               "🍑"
+                             :full-name           "Some channel"
+                             :customization-color :blue})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [rn/view {:flex 1}
-         [preview/customizer state descriptor]]
-        [rn/view
-         {:padding-vertical 60
-          :flex-direction   :row
-          :justify-content  :center}
-         [quo2/channel-avatar @state]]]])))
+      (let [customization-color (colors/custom-color-by-theme (:customization-color @state) 50 60)
+            locked?             (case (:locked-state @state)
+                                  :not-set  nil
+                                  :unlocked false
+                                  :locked   true
+                                  nil)]
+        [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+         [rn/view {:style {:padding-bottom 150}}
+          [rn/view {:style {:flex 1}}
+           [preview/customizer state descriptor]]
+          [rn/view
+           {:style {:padding-vertical 60
+                    :flex-direction   :row
+                    :justify-content  :center}}
+           [quo/channel-avatar
+            (assoc @state
+                   :locked?             locked?
+                   :customization-color customization-color)]]]]))))
 
 (defn preview-channel-avatar
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-90)
-    :flex             1}
+   {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
+            :flex             1}}
    [rn/flat-list
     {:flex                         1
      :keyboard-should-persist-taps :always
