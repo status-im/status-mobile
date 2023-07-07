@@ -187,21 +187,22 @@
                                      :show-reactions? true}]])}]))
 
 (defn message
-  [{:keys [pinned-by mentioned in-pinned-view? content-type last-in-group? deleted? deleted-for-me?]
+  [{:keys [pinned-by mentioned content-type last-in-group? deleted? deleted-for-me?]
     :as   message-data} context keyboard-shown?]
-  (if (or deleted? deleted-for-me?)
-    [rn/view {:style (style/message-container)}
-     [content.deleted/deleted-message message-data context]]
-    [rn/view
-     {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
-      :accessibility-label :chat-item}
-     (if (#{constants/content-type-system-text constants/content-type-community
-            constants/content-type-contact-request
-            constants/content-type-system-pinned-message}
-          content-type)
-       [system-message-content message-data]
-       [user-message-content
-        {:message-data    message-data
-         :context         context
-         :keyboard-shown? keyboard-shown?
-         :show-reactions? true}])]))
+  (let [in-pinned-view? (:in-pinned-view? context)]
+    (if (or deleted? deleted-for-me?)
+      [rn/view {:style (style/message-container)}
+       [content.deleted/deleted-message message-data context]]
+      [rn/view
+       {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
+        :accessibility-label :chat-item}
+       (if (#{constants/content-type-system-text constants/content-type-community
+              constants/content-type-contact-request
+              constants/content-type-system-pinned-message}
+            content-type)
+         [system-message-content message-data]
+         [user-message-content
+          {:message-data    message-data
+           :context         context
+           :keyboard-shown? keyboard-shown?
+           :show-reactions? true}])])))
