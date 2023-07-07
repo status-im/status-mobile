@@ -7,9 +7,9 @@
     [reagent.core :as reagent]
     [status-im.multiaccounts.core :as multiaccounts]
     [status-im.qr-scanner.core :as qr-scanner]
-    [status-im.utils.utils :as utils]
     [status-im2.contexts.add-new-contact.style :as style]
     [utils.debounce :as debounce]
+    [utils.address :as address]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -37,7 +37,7 @@
           {:weight :regular
            :size   :paragraph-2
            :style  (style/found-user-key)}
-          (utils/get-shortened-address compressed-key)]]]])))
+          (address/get-shortened-compressed-key compressed-key)]]]])))
 
 (defn new-contact
   []

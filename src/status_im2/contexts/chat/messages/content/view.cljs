@@ -54,7 +54,7 @@
       [quo/author
        {:primary-name   primary-name
         :secondary-name secondary-name
-        :short-chat-key (address/get-shortened-key (or compressed-key from))
+        :short-chat-key (address/get-shortened-compressed-key (or compressed-key from))
         :time-str       (datetime/timestamp->time timestamp)
         :contact?       added?
         :verified?      ens-verified}])))
