@@ -1,12 +1,46 @@
-(ns quo2.components.buttons.button
-  (:require [quo2.components.icon :as quo2.icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]
-            [react-native.blur :as blur]
-            [reagent.core :as reagent]
-            [quo2.components.buttons.style :as style]))
+(ns quo2.components.buttons.button.style
+  (:require [quo2.foundations.colors :as colors]))
+
+(def blur-view
+  {:position :absolute
+   :top      0
+   :left     0
+   :right    0
+   :bottom   0})
+
+(defn before-icon-style
+  [{:keys [override-margins size icon-container-size icon-background-color icon-container-rounded?
+           icon-size]}]
+  (merge
+   {:margin-left     (or (get override-margins :left)
+                         (if (= size 40) 12 8))
+    :margin-right    (or (get override-margins :right) 4)
+    :align-items     :center
+    :justify-content :center}
+   (when icon-container-size
+     {:width  icon-container-size
+      :height icon-container-size})
+   (when icon-background-color
+     {:background-color icon-background-color})
+   (when icon-container-rounded?
+     {:border-radius (/ (or icon-container-size icon-size) 2)})))
+
+(defn after-icon-style
+  [{:keys [override-margins size icon-container-size icon-background-color icon-container-rounded?
+           icon-size]}]
+  (merge
+   {:margin-left     (or (get override-margins :left) 4)
+    :margin-right    (or (get override-margins :right)
+                         (if (= size 40) 12 8))
+    :align-items     :center
+    :justify-content :center}
+   (when icon-container-size
+     {:width  icon-container-size
+      :height icon-container-size})
+   (when icon-background-color
+     {:background-color icon-background-color})
+   (when icon-container-rounded?
+     {:border-radius (/ (or icon-container-size icon-size) 2)})))
 
 (defn themes
   [customization-color]
@@ -179,7 +213,7 @@
                       24 8))})
 
 (defn style-container
-  [type size disabled background-color border-color icon above width before after blur-active?]
+  [{:keys [type size disabled background-color border-color icon above width before after blur-active?]}]
   (merge {:height             size
           :align-items        :center
           :justify-content    :center
@@ -228,132 +262,3 @@
             :border-width 1})
          (when disabled
            {:opacity 0.3})))
-
-(defn- button-internal
-  "with label
-   [button opts \"label\"]
-   opts
-   {:type   :primary/:secondary/:grey/:dark-grey/:outline/:ghost/
-            :danger/:photo-bg/:blur-bg/:blur-bg-outline/:shell/:community
-    :size   40 [default] /32/24
-    :icon   true/false
-    :community-color '#FFFFFF'
-    :community-text-color '#000000'
-    :before :icon-keyword
-    :after  :icon-keyword}
-
-   only icon
-   [button {:icon true} :i/close-circle]"
-  [_ _]
-  (let [pressed-in (reagent/atom false)]
-    (fn
-      [{:keys [on-press disabled type size before after above icon-secondary-no-color
-               width customization-color theme override-background-color pressed
-               on-long-press accessibility-label icon icon-no-color style inner-style test-ID
-               blur-active? override-before-margins override-after-margins icon-size icon-container-size
-               icon-container-rounded?]
-        :or   {type                :primary
-               size                40
-               customization-color :primary
-               blur-active?        true}}
-       children]
-      (let [{:keys [icon-color icon-secondary-color background-color label-color border-color blur-type
-                    blur-overlay-color icon-background-color]}
-            (get-in (themes customization-color)
-                    [theme type])
-            state (cond disabled                 :disabled
-                        (or @pressed-in pressed) :pressed
-                        :else                    :default)
-            blur-state (if blur-active? :blurred :default)
-            icon-size (or icon-size (when (= 24 size) 12))
-            icon-secondary-color (or icon-secondary-color icon-color)]
-        [rn/touchable-without-feedback
-         (merge {:test-ID             test-ID
-                 :disabled            disabled
-                 :accessibility-label accessibility-label
-                 :on-press-in         #(reset! pressed-in true)
-                 :on-press-out        #(reset! pressed-in nil)}
-                (when on-press
-                  {:on-press on-press})
-                (when on-long-press
-                  {:on-long-press on-long-press}))
-         [rn/view
-          {:style (merge
-                   (shape-style-container type icon size)
-                   {:width width}
-                   style)}
-          [rn/view
-           {:style (merge
-                    (style-container
-                     type
-                     size
-                     disabled
-                     (or override-background-color (get background-color state))
-                     (get border-color state)
-                     icon
-                     above
-                     width
-                     before
-                     after
-                     blur-active?)
-                    (when (= state :pressed) {:opacity 0.9})
-                    inner-style)}
-           (when (and (= type :blurred)
-                      blur-active?)
-             [blur/view
-              {:blur-radius   20
-               :blur-type     blur-type
-               :overlay-color blur-overlay-color
-               :style         style/blur-view}])
-           (when above
-             [rn/view
-              [quo2.icons/icon above
-               {:container-style {:margin-bottom 2}
-                :color           icon-secondary-color
-                :size            icon-size}]])
-           (when before
-             [rn/view
-              {:style (style/before-icon-style
-                       {:override-margins        override-before-margins
-                        :size                    size
-                        :icon-container-size     icon-container-size
-                        :icon-background-color   (get icon-background-color blur-state)
-                        :icon-container-rounded? icon-container-rounded?
-                        :icon-size               icon-size})}
-              [quo2.icons/icon before
-               {:color icon-secondary-color
-                :size  icon-size}]])
-           [rn/view
-            (cond
-              (or icon icon-no-color)
-              [quo2.icons/icon children
-               {:color    icon-color
-                :no-color icon-no-color
-                :size     icon-size}]
-
-              (string? children)
-              [text/text
-               {:size            (when (#{56 24} size) :paragraph-2)
-                :weight          :medium
-                :number-of-lines 1
-                :style           {:color label-color}}
-
-               children]
-
-              (vector? children)
-              children)]
-           (when after
-             [rn/view
-              {:style (style/after-icon-style
-                       {:override-margins        override-after-margins
-                        :size                    size
-                        :icon-container-size     icon-container-size
-                        :icon-background-color   (get icon-background-color blur-state)
-                        :icon-container-rounded? icon-container-rounded?
-                        :icon-size               icon-size})}
-              [quo2.icons/icon after
-               {:no-color icon-secondary-no-color
-                :color    icon-secondary-color
-                :size     icon-size}]])]]]))))
-
-(def button (theme/with-theme button-internal))

@@ -1,8 +1,7 @@
 (ns status-im2.contexts.quo-preview.main
   (:refer-clojure :exclude [filter])
   (:require
-    [quo2.components.buttons.button :as quo2-button]
-    [quo2.components.markdown.text :as quo2-text]
+    [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
@@ -387,8 +386,8 @@
   [rn/view
    {:style {:flex-direction  :row
             :margin-vertical 8}}
-   [quo2-button/button {:on-press #(theme/set-theme :light)} "Set light theme"]
-   [quo2-button/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
+   [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
+   [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
 
 (defn main-screen
   []
@@ -399,18 +398,18 @@
       :padding-horizontal 16
       :background-color   (colors/theme-colors colors/white colors/neutral-90)}
      [theme-switcher]
-     [quo2-text/text {:size :heading-1} "Preview Quo2 Components"]
+     [quo/text {:size :heading-1} "Preview Quo2 Components"]
      [rn/view
       (map (fn [category]
              ^{:key (get category 0)}
              [rn/view {:style {:margin-vertical 8}}
-              [quo2-text/text
+              [quo/text
                {:weight :semi-bold
                 :size   :heading-2}
                (clojure.core/name (key category))]
               (for [{:keys [name]} (val category)]
                 ^{:key name}
-                [quo2-button/button
+                [quo/button
                  {:test-ID  (str "quo2-" name)
                   :style    {:margin-vertical 8}
                   :on-press #(re-frame/dispatch [:navigate-to name])}

@@ -1,6 +1,6 @@
 (ns quo2.components.inputs.profile-input.view
   (:require
-    [quo2.components.buttons.button :as buttons]
+    [quo2.components.buttons.button.view :as buttons]
     [quo2.components.avatars.user-avatar.view :as user-avatar]
     [quo2.components.inputs.profile-input.style :as style]
     [quo2.components.inputs.title-input.view :as title-input]

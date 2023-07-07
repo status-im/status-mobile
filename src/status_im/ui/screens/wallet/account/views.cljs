@@ -3,7 +3,7 @@
     [quo.core :as quo]
     [quo.design-system.colors :as colors]
     [quo.design-system.spacing :as spacing]
-    [quo2.components.buttons.button :as quo2.button]
+    [quo2.core :as quo2]
     [quo2.components.markdown.text :as quo2.text]
     [quo2.components.tabs.tabs :as quo2.tabs]
     [quo2.foundations.colors :as quo2.colors]
@@ -293,14 +293,14 @@
      [react/view
       [react/scroll-view {:horizontal true :margin-bottom 32 :showsHorizontalScrollIndicator false}
        [react/view {:width 20}]
-       [quo2.button/button {:size 56 :width button-width :above :i/placeholder} "Buy"]
+       [quo2/button {:size 56 :width button-width :above :i/placeholder} "Buy"]
        [react/view {:width 12}]
-       [quo2.button/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Send"]
+       [quo2/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Send"]
        [react/view {:width 12}]
-       [quo2.button/button {:size 56 :width button-width :type :secondary :above :i/placeholder}
+       [quo2/button {:size 56 :width button-width :type :secondary :above :i/placeholder}
         "Receive"]
        [react/view {:width 12}]
-       [quo2.button/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Swap"]
+       [quo2/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Swap"]
        [react/view {:width 20}]]]
      [assets-and-collections-new selected-account]]))
 

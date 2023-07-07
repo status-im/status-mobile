@@ -6,7 +6,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.hole-view :as hole-view]
             [quo2.components.markdown.text :as text]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [quo2.components.profile.profile-card.style :as style]
             [quo2.components.avatars.user-avatar.view :as user-avatar]))
 
