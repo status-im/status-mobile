@@ -5,7 +5,7 @@
             [quo2.components.list-items.community-list.style :as style]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 
@@ -156,4 +156,4 @@
           :tokens              tokens
           :unread-count        unread-count}]]])))
 
-(def view (theme/with-theme view-internal))
+(def view (quo.theme/with-theme view-internal))
