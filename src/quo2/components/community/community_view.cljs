@@ -26,8 +26,10 @@
     members-count]])
 
 (defn community-stats-column
-  [{:keys [type members-count active-count]}]
-  (let [icon-color (colors/theme-colors colors/neutral-50 colors/neutral-40)]
+  [{:keys [type theme blur? members-count active-count]}]
+  (let [icon-color (if (and (= :dark theme) blur?)
+                     colors/white-opa-40
+                     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))]
     [rn/view
      (if (= type :card-view)
        (style/card-stats-container)

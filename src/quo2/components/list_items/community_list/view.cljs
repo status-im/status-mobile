@@ -141,6 +141,8 @@
          (when (and members (= type :discover))
            [community-view/community-stats-column
             {:type          :list-view
+             :theme         theme
+             :blur?         blur?
              :members-count (:members-count members)
              :active-count  (:active-count members)}])]
         [info-component
