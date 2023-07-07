@@ -11,8 +11,10 @@
             utils.money))
 
 (defn community-stats
-  [{:keys [icon members-count icon-color]}]
-  [rn/view (style/stats-count-container)
+  [{:keys [icon members-count icon-color accessibility-label]}]
+  [rn/view
+   {:accessibility-label accessibility-label
+    :style               (style/stats-count-container)}
    [rn/view {:margin-right 4}
     [icons/icon icon
      {:container-style {:align-items     :center
@@ -35,13 +37,15 @@
        (style/card-stats-container)
        (style/list-stats-container))
      [community-stats
-      {:icon          :i/group
-       :members-count (utils.money/format-amount members-count)
-       :icon-color    icon-color}]
+      {:accessibility-label :stats-members-count
+       :icon                :i/group
+       :members-count       (utils.money/format-amount members-count)
+       :icon-color          icon-color}]
      [community-stats
-      {:icon          :i/lightning
-       :members-count (utils.money/format-amount active-count)
-       :icon-color    icon-color}]]))
+      {:accessibility-label :stats-active-count
+       :icon                :i/lightning
+       :members-count       (utils.money/format-amount active-count)
+       :icon-color          icon-color}]]))
 
 (defn community-tags
   [{:keys [tags container-style last-item-style]}]
@@ -90,12 +94,13 @@
 (defn- permission-tag-container-internal
   [{:keys [locked? blur? tokens on-press theme]}]
   [permission/tag
-   {:background-color (if (and (= :dark theme) blur?)
-                        colors/white-opa-10
-                        (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))
-    :locked?          locked?
-    :tokens           tokens
-    :size             24
-    :on-press         on-press}])
+   {:accessibility-label :permission-tag
+    :background-color    (if (and (= :dark theme) blur?)
+                           colors/white-opa-10
+                           (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))
+    :locked?             locked?
+    :tokens              tokens
+    :size                24
+    :on-press            on-press}])
 
 (def permission-tag-container (theme/with-theme permission-tag-container-internal))

@@ -39,41 +39,47 @@
   [blur? theme]
   [rn/view
    {:style               (style/notification-dot blur? theme)
-    :accessibility-label :notification-dot}])
+    :accessibility-label :info-notification-dot}])
 
 (defn- info-component
   [{:keys [customization-color info type blur? locked? on-press-info theme tokens unread-count]}]
-  (let [component (cond
-                    (and (= type :discover) (= info :token-gated))
-                    [community-view/permission-tag-container
-                     {:locked?  locked?
-                      :tokens   tokens
-                      :on-press on-press-info
-                      :theme    theme
-                      :blur?    blur?}]
+  (let [component
+        (cond
+          (and (= type :discover) (= info :token-gated) (seq tokens))
+          [community-view/permission-tag-container
+           {:locked?  locked?
+            :tokens   tokens
+            :on-press on-press-info
+            :theme    theme
+            :blur?    blur?}]
 
-                    (and (= type :engage) (= info :mention) (pos? unread-count))
-                    [counter/counter
-                     {:type              :default
-                      :override-bg-color customization-color}
-                     unread-count]
+          (and (= type :engage) (= info :mention) (pos? unread-count))
+          [counter/counter
+           {:type              :default
+            :override-bg-color customization-color}
+           unread-count]
 
-                    (and (= type :engage) (= info :notification))
-                    [notification-dot blur? theme]
+          (and (= type :engage) (= info :notification))
+          [notification-dot blur? theme]
 
-                    (and (= type :engage) (= info :muted))
-                    [icons/icon :i/muted
-                     {:color (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)}]
+          (and (= type :engage) (= info :muted))
+          [icons/icon :i/muted
+           {:accessibility-label :info-muted
+            :color               (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)}]
 
-                    (and (= type :engage) (= info :token-gated))
-                    [icons/icon (if locked? :i/locked :i/unlocked)
-                     {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
+          (and (= type :engage) (= info :token-gated))
+          [icons/icon (if locked? :i/locked :i/unlocked)
+           {:accessibility-label :info-token-gated
+            :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]
 
-                    (and (= type :engage) (= info :navigation))
-                    [icons/icon :i/chevron-right
-                     {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}])]
+          (and (= type :engage) (= info :navigation))
+          [icons/icon :i/chevron-right
+           {:accessibility-label :info-navigation
+            :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}])]
     (when component
-      [rn/view {:style {:margin-left 10}}
+      [rn/view
+       {:accessibility-label :community-item-info
+        :style               {:margin-left 10}}
        component])))
 
 (defn- view-internal
@@ -116,17 +122,18 @@
                  on-press on-long-press on-press-info
                  container-style unread-count theme]}]
       [rn/pressable
-       {:on-press-in   (fn [] (reset! pressed? true))
-        :on-press      on-press
-        :on-long-press on-long-press
-        :on-press-out  (fn [] (reset! pressed? false))
-        :style         (merge (style/container {:blur?               blur?
-                                                :customization-color customization-color
-                                                :info                info
-                                                :type                type
-                                                :pressed?            @pressed?
-                                                :theme               theme})
-                              container-style)}
+       {:accessibility-label :container
+        :on-press-in         (fn [] (reset! pressed? true))
+        :on-press            on-press
+        :on-long-press       on-long-press
+        :on-press-out        (fn [] (reset! pressed? false))
+        :style               (merge (style/container {:blur?               blur?
+                                                      :customization-color customization-color
+                                                      :info                info
+                                                      :type                type
+                                                      :pressed?            @pressed?
+                                                      :theme               theme})
+                                    container-style)}
        [logo-component logo]
        [rn/view {:style {:flex 1}}
         [title-component
