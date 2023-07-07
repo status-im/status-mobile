@@ -25,6 +25,7 @@
 (defonce ^:const loading-indicator-page-loading-height 100)
 (defonce ^:const scroll-animation-input-range [50 125])
 (defonce ^:const spacing-between-composer-and-content 64)
+(defonce ^:const min-message-height 32)
 
 (defonce messages-list-ref (atom nil))
 (defonce messages-view-height (reagent/atom 0))
@@ -311,7 +312,8 @@
                                              content-height-shared (reanimated/get-shared-value
                                                                     content-height)]
                                          (when (or (= scroll-y-shared 0)
-                                                   (> (Math/abs (- content-height-shared y)) 32))
+                                                   (> (Math/abs (- content-height-shared y))
+                                                      min-message-height))
                                            (reanimated/set-shared-value scroll-y
                                                                         (- y
                                                                            window-height
