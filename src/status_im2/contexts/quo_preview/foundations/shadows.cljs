@@ -1,8 +1,9 @@
 (ns status-im2.contexts.quo-preview.foundations.shadows
   (:require
-    [quo2.foundations.shadows :as shadows]
-    [quo2.foundations.colors :as colors]
     [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.foundations.shadows :as shadows]
+    [quo2.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -41,19 +42,19 @@
                    :margin-right :auto
                    :align-items  :center}}
           "Normal Scales"]
-         [demo-box (:shadow-on? @state) "shadow 1" (:shadow-1 shadows/normal-scale)]
-         [demo-box (:shadow-on? @state) "shadow 2" (:shadow-2 shadows/normal-scale)]
-         [demo-box (:shadow-on? @state) "shadow 3" (:shadow-3 shadows/normal-scale)]
-         [demo-box (:shadow-on? @state) "shadow 4" (:shadow-4 shadows/normal-scale)]
+         [demo-box (:shadow-on? @state) "shadow 1" (shadows/get 1)]
+         [demo-box (:shadow-on? @state) "shadow 2" (shadows/get 2)]
+         [demo-box (:shadow-on? @state) "shadow 3" (shadows/get 3)]
+         [demo-box (:shadow-on? @state) "shadow 4" (shadows/get 4)]
          [quo/text
           {:style {:margin-left  :auto
                    :margin-right :auto
                    :align-items  :center}}
           "Inverted Scales"]
-         [demo-box (:shadow-on? @state) "shadow 1" (:shadow-1 shadows/inverted-scale)]
-         [demo-box (:shadow-on? @state) "shadow 2" (:shadow-2 shadows/inverted-scale)]
-         [demo-box (:shadow-on? @state) "shadow 3" (:shadow-3 shadows/inverted-scale)]
-         [demo-box (:shadow-on? @state) "shadow 4" (:shadow-4 shadows/inverted-scale)]
+         [demo-box (:shadow-on? @state) "shadow 1" (shadows/get 1 (quo.theme/get-theme) true)]
+         [demo-box (:shadow-on? @state) "shadow 2" (shadows/get 2 (quo.theme/get-theme) true)]
+         [demo-box (:shadow-on? @state) "shadow 3" (shadows/get 3 (quo.theme/get-theme) true)]
+         [demo-box (:shadow-on? @state) "shadow 4" (shadows/get 4 (quo.theme/get-theme) true)]
          [quo/text
           {:style {:margin-left  :auto
                    :margin-right :auto
