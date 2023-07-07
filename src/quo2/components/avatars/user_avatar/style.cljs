@@ -32,10 +32,14 @@
    :offline colors/neutral-40})
 
 (defn outer
-  [size]
-  (let [dimensions (get-in sizes [size :dimensions])]
-    {:width  dimensions
-     :height dimensions}))
+  [size static-profile-picture?]
+  (let [dimensions                     (get-in sizes [size :dimensions])
+        outer-style                    {:width  dimensions
+                                        :height dimensions}
+        outer-style-with-border-radius (assoc outer-style :border-radius dimensions)]
+    (if static-profile-picture?
+      outer-style-with-border-radius
+      outer-style)))
 
 (defn customization-color
   [color-id theme]

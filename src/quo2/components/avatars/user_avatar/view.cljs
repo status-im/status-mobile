@@ -41,7 +41,7 @@
            ring?               true
            customization-color :turquoise}}]
   (let [full-name          (or full-name "Your Name")
-        outer-styles       (style/outer size)
+        outer-styles       (style/outer size (:uri profile-picture))
         ;; Once image is loaded, fast image re-renders view with the help of reagent atom,
         ;; But dynamic updates don't work when user-avatar is used inside hole-view
         ;; https://github.com/status-im/status-mobile/issues/15553

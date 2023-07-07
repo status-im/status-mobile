@@ -155,7 +155,6 @@
             {:style style/profile-input-container}
             [quo/profile-input
              {:customization-color @custom-color
-              :profile-picture     (rf/sub [:profile/onboarding-placeholder-avatar @profile-pic])
               :placeholder         (i18n/label :t/your-name)
               :on-press            (fn []
                                      (rf/dispatch [:dismiss-keyboard])
@@ -163,9 +162,12 @@
                                       [:show-bottom-sheet
                                        {:content
                                         (fn []
-                                          [method-menu/view on-change-profile-pic])
-                                        :theme :dark}]))
-              :image-picker-props  {:profile-picture     (when @profile-pic {:uri @profile-pic})
+                                          [method-menu/view on-change-profile-pic])}]))
+              :image-picker-props  {:profile-picture     (or
+                                                          @profile-pic
+                                                          (rf/sub
+                                                           [:profile/onboarding-placeholder-avatar
+                                                            @profile-pic]))
                                     :full-name           (if (seq @full-name)
                                                            @full-name
                                                            (i18n/label :t/your-name))
