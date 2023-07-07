@@ -28,3 +28,8 @@ NOTES:
 FIX SVG Imports
 
 Fix Icon imports resolver
+
+Blur fixed with expo blur - not sure how representative it is but at least it does not break
+
+Fast image has this issue - 
+Perhaps can be fixed: https://github.com/DylanVann/react-native-fast-image/issues/884
