@@ -251,8 +251,10 @@
              :weight :medium
              :style  style/subtitle}
             (subtitle type content)]
-           [bottom-container type (merge {:color-50 color-50
-                                          :color-60 color-60} content)]]
+           [bottom-container type
+            (merge {:color-50 color-50
+                    :color-60 color-60}
+                   content)]]
           (when avatar-params
             [rn/view {:style style/avatar-container}
              [avatar avatar-params type customization-color]])
