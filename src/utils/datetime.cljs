@@ -148,9 +148,8 @@
 (defn- to-str
   [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
   (let [date      (t.coerce/from-long ms)
-        local     (t/plus date time-zone-offset) ; NOTE(edge-case): this is wrong, it uses the current
-                                                 ; timezone offset,
-                                                 ; regardless of DST
+        ;; NOTE(edge-case): this is wrong, it uses the current timezone offset, regardless of DST.
+        local     (t/plus date time-zone-offset)
         today     (t/minus (t/today-at-midnight) time-zone-offset)
         yesterday (t/plus today (t/days -1))]
     (cond
@@ -235,15 +234,15 @@
                    :number         diff
                    :time-intervals name}))))
 (defn seconds-ago
-  [time]
+  [date-time]
   (let [now (t/now)]
-    (if (<= (.getTime ^js time) (.getTime ^js now))
-      (t/in-seconds (t/interval time now))
+    (if (<= (.getTime ^js date-time) (.getTime ^js now))
+      (t/in-seconds (t/interval date-time now))
       0)))
 
 (defn time-ago
-  [time]
-  (let [diff (seconds-ago time)
+  [date-time]
+  (let [diff (seconds-ago date-time)
         unit (first (drop-while #(and (>= diff (:limit %))
                                       (:limit %))
                                 units))]
@@ -253,8 +252,8 @@
         (format-time-ago unit))))
 
 (defn time-ago-long
-  [time]
-  (let [seconds-ago (seconds-ago time)
+  [date-time]
+  (let [seconds-ago (seconds-ago date-time)
         unit        (first (drop-while #(and (>= seconds-ago (:limit %))
                                              (:limit %))
                                        units))

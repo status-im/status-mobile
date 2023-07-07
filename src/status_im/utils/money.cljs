@@ -224,9 +224,9 @@
   (.round (.dividedBy ^js bn1 bn2) 0))
 
 (defn format-members
-  [count]
-  (if (> count 1000000)
-    (str (with-precision (/ count 1000000) 1) (i18n/label :t/M))
-    (if (and (> count 999) (< count 1000000))
-      (str (with-precision (/ count 1000) 1) (i18n/label :t/K))
-      count)))
+  [amount]
+  (if (> amount 1000000)
+    (str (with-precision (/ amount 1000000) 1) (i18n/label :t/M))
+    (if (and (> amount 999) (< amount 1000000))
+      (str (with-precision (/ amount 1000) 1) (i18n/label :t/K))
+      amount)))

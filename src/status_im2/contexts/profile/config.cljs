@@ -1,7 +1,9 @@
 (ns status-im2.contexts.profile.config
   (:require [status-im2.config :as config]
             [native-module.core :as native-module]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [utils.transforms :as types]
+            [utils.re-frame :as rf]))
 
 (defn login
   []
@@ -40,3 +42,15 @@
   [path]
   (when path
     (string/replace-first path "file://" "")))
+
+(rf/defn get-node-config-callback
+  {:events [:profile.config/get-node-config-callback]}
+  [{:keys [db]} node-config-json]
+  (let [node-config (types/json->clj node-config-json)]
+    {:db (assoc-in db
+          [:profile/profile :wakuv2-config]
+          (get node-config :WakuV2Config))}))
+
+(rf/defn get-node-config
+  [_]
+  (native-module/get-node-config #(rf/dispatch [:profile.config/get-node-config-callback %])))

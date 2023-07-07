@@ -38,9 +38,9 @@
 
     :getNodeConfig (fn [] (types/clj->json {:WakuV2Config ""}))
 
-    :backupDisabledDataDir (fn [] "./smth")
+    :backupDisabledDataDir (fn [] (str test-dir "/backup"))
     :keystoreDir (fn [] "")
-    :logFileDirectory (fn [] "./smth")
+    :logFileDirectory (fn [] (str test-dir "/log"))
     :clearCookies identity
     :clearStorageAPIs identity
     :setBlankPreviewFlag identity

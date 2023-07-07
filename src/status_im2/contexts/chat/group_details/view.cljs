@@ -44,14 +44,15 @@
    [back-button] [options-button]])
 
 (defn count-container
-  [count accessibility-label]
+  [amount accessibility-label]
   [rn/view
    {:style               (style/count-container)
     :accessibility-label accessibility-label}
    [quo/text
     {:size   :label
      :weight :medium
-     :style  {:text-align :center}} count]])
+     :style  {:text-align :center}}
+    amount]])
 
 (defn contacts-section-header
   [{:keys [title]}]

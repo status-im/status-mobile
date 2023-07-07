@@ -30,12 +30,12 @@
            :close-button colors/white}})
 
 (defn get-color
-  [theme key]
-  (get-in themes [theme key]))
+  [theme k]
+  (get-in themes [theme k]))
 
 (defn get-color-by-type
-  [theme type key]
-  (get-in themes [theme type key]))
+  [theme type k]
+  (get-in themes [theme type k]))
 
 (defn container
   [{:keys [theme type include-button?]}]

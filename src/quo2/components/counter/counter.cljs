@@ -17,8 +17,8 @@
            :outline   colors/neutral-70}})
 
 (defn get-color
-  [key]
-  (get-in themes [(theme/get-theme) key]))
+  [k]
+  (get-in themes [(theme/get-theme) k]))
 
 (defn counter
   [{:keys [type override-text-color override-bg-color style accessibility-label max-value]

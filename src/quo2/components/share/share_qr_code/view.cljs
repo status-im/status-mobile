@@ -4,7 +4,7 @@
             [react-native.blur :as blur]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [react-native.core :as rn]))
 
 (defn view

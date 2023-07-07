@@ -97,7 +97,7 @@
 
 (rf/defn enable-all
   {:events [:chat.ui/enable-all-link-previews]}
-  [{{:profile/keys [profile]} :db :as cofx} link-previews-whitelist enabled?]
+  [cofx link-previews-whitelist enabled?]
   (multiaccounts.update/multiaccount-update
    cofx
    :link-previews-enabled-sites

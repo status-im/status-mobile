@@ -18,8 +18,8 @@
     :key     :color
     :type    :select
     :options (map (fn [color]
-                    (let [key (get color :name)]
-                      {:key key :value key}))
+                    (let [k (get color :name)]
+                      {:key k :value k}))
                   (quo/picker-colors))}])
 
 (defn cool-preview

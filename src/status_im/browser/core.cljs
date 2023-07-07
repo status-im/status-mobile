@@ -619,3 +619,40 @@
                                   bookmarks)
         stored-bookmarks  (get-in db [:bookmarks/bookmarks])]
     {:db (assoc-in db [:bookmarks/bookmarks] (merge stored-bookmarks changed-bookmarks))}))
+
+(rf/defn initialize-dapp-permissions
+  {:events [::initialize-dapp-permissions]}
+  [{:keys [db]} all-dapp-permissions]
+  (let [dapp-permissions (reduce (fn [acc {:keys [dapp] :as dapp-permissions}]
+                                   (assoc acc dapp dapp-permissions))
+                                 {}
+                                 all-dapp-permissions)]
+    {:db (assoc db :dapps/permissions dapp-permissions)}))
+
+(rf/defn initialize-browsers
+  {:events [::initialize-browsers]}
+  [{:keys [db]} all-stored-browsers]
+  (let [browsers (reduce (fn [acc {:keys [browser-id] :as browser}]
+                           (assoc acc browser-id browser))
+                         {}
+                         all-stored-browsers)]
+    {:db (assoc db :browser/browsers browsers)}))
+
+(rf/defn initialize-bookmarks
+  {:events [::initialize-bookmarks]}
+  [{:keys [db]} stored-bookmarks]
+  (let [bookmarks (reduce (fn [acc {:keys [url] :as bookmark}]
+                            (assoc acc url bookmark))
+                          {}
+                          stored-bookmarks)]
+    {:db (assoc db :bookmarks/bookmarks bookmarks)}))
+
+(rf/defn initialize-browser
+  [_]
+  {:json-rpc/call
+   [{:method     "wakuext_getBrowsers"
+     :on-success #(re-frame/dispatch [::initialize-browsers %])}
+    {:method     "browsers_getBookmarks"
+     :on-success #(re-frame/dispatch [::initialize-bookmarks %])}
+    {:method     "permissions_getDappPermissions"
+     :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}]})

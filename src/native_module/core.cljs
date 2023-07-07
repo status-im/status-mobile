@@ -287,11 +287,11 @@
   and then compressed. Example input/output :
   input key  = zQ3shTAten2v9CwyQD1Kc7VXAqNPDcHZAMsfbLHCZEx6nFqk9 and
   output key = 0x025596a7ff87da36860a84b0908191ce60a504afc94aac93c1abd774f182967ce6"
-  [key callback]
+  [input-key callback]
   (log/info "[native-module] Deserializing and then compressing public key"
             {:fn  :deserialize-and-compress-key
-             :key key})
-  (.deserializeAndCompressKey ^js (status) key callback))
+             :key input-key})
+  (.deserializeAndCompressKey ^js (status) input-key callback))
 
 (defn compressed-key->public-key
   "Provides compressed key to status-go and gets back the uncompressed public key via deserialization"

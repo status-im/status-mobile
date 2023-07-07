@@ -14,19 +14,19 @@
     (js/clearTimeout v)))
 
 (defn debounce-and-dispatch
-  "Dispatches event only if there were no calls of this function in period of *time* ms"
-  [event time]
+  "Dispatches `event` iff it was not dispatched for the duration of `duration-ms`."
+  [event duration-ms]
   (let [event-key (first event)]
     (clear event-key)
-    (swap! timeout assoc event-key (js/setTimeout #(re-frame/dispatch event) time))))
+    (swap! timeout assoc event-key (js/setTimeout #(re-frame/dispatch event) duration-ms))))
 
 (def chill (atom {}))
 
 (defn dispatch-and-chill
-  "Dispateches event and ignores next calls in period of *time* ms"
-  [event time]
+  "Dispatches event and ignores subsequent calls for the duration of `duration-ms`."
+  [event duration-ms]
   (let [event-key (first event)]
     (when-not (get @chill event-key)
       (swap! chill assoc event-key true)
-      (js/setTimeout #(swap! chill assoc event-key false) time)
+      (js/setTimeout #(swap! chill assoc event-key false) duration-ms)
       (re-frame/dispatch event))))

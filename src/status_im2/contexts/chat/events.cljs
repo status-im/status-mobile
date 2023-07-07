@@ -17,7 +17,10 @@
             [status-im.utils.types :as types]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
-            [utils.datetime :as datetime]))
+            [utils.datetime :as datetime]
+            [re-frame.core :as re-frame]
+            [status-im.async-storage.core :as async-storage]
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 (defn- get-chat
   [cofx chat-id]
@@ -417,3 +420,22 @@
   {:events [:chat.ui/lightbox-scale]}
   [{:keys [db]} value]
   {:db (assoc db :lightbox/scale value)})
+
+(re-frame/reg-fx
+ :chat/open-last-chat
+ (fn [key-uid]
+   (async-storage/get-item
+    :chat-id
+    (fn [chat-id]
+      (when chat-id
+        (async-storage/get-item
+         :key-uid
+         (fn [stored-key-uid]
+           (when (= stored-key-uid key-uid)
+             (re-frame/dispatch [:chat/navigate-to-chat chat-id
+                                 shell.constants/open-screen-without-animation])))))))))
+
+(rf/defn check-last-chat
+  {:events [:chat/check-last-chat]}
+  [{:keys [db]}]
+  {:chat/open-last-chat (get-in db [:profile/profile :key-uid])})
