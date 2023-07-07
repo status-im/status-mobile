@@ -1,5 +1,6 @@
 (ns quo2.components.list-items.community-list.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [quo2.foundations.shadows :as shadows]))
 
 (def logo
   {:border-radius 50
@@ -40,23 +41,25 @@
 
 (defn container
   [{:keys [type pressed? blur? customization-color theme info]}]
-  {:padding-vertical   8
-   :padding-horizontal 12
-   :border-radius      12
-   :flex-direction     :row
-   :align-items        :center
-   :background-color   (cond
-                         (and pressed? (= type :engage) (= info :default) (= :dark theme) blur?)
-                         colors/white-opa-5
+  (merge {:padding-vertical   8
+          :padding-horizontal 12
+          :border-radius      12
+          :flex-direction     :row
+          :align-items        :center
+          :background-color   (cond
+                                (and pressed? (= type :engage) (= info :default) (= :dark theme) blur?)
+                                colors/white-opa-5
 
-                         (and pressed? (#{:engage :share} type))
-                         (colors/theme-alpha customization-color 0.05 0.05)
+                                (and pressed? (#{:engage :share} type))
+                                (colors/theme-alpha customization-color 0.05 0.05)
 
-                         (and (not pressed?) (= type :discover) (not blur?))
-                         (colors/theme-colors colors/white colors/neutral-90 theme)
+                                (and (not pressed?) (= type :discover) (not blur?))
+                                (colors/theme-colors colors/white colors/neutral-90 theme)
 
-                         (and (not pressed?) (= type :discover) (= :dark theme) blur?)
-                         colors/white-opa-5
+                                (and (not pressed?) (= type :discover) (= :dark theme) blur?)
+                                colors/white-opa-5
 
-                         (and pressed? (= type :discover))
-                         (colors/theme-colors colors/white :transparent theme))})
+                                (and pressed? (= type :discover))
+                                (colors/theme-colors colors/white :transparent theme))}
+         (when (and (= type :discover) (not pressed?))
+           (:shadow-3 shadows/normal-scale))))
