@@ -102,7 +102,7 @@
         [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
          [rn/view {:style {:margin-bottom 20}}
           [preview/customizer state (descriptors @state)]
-          [rn/view {:style {:margin-top 20 :align-items :center}}
+          [rn/view {:style {:margin-vertical 30 :align-items :center}}
            [quo/community-list
             (merge @state
                    {:container-style     {:width 335}

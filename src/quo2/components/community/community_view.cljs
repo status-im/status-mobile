@@ -86,9 +86,11 @@
       description])])
 
 (defn- permission-tag-container-internal
-  [{:keys [locked? tokens on-press theme]}]
+  [{:keys [locked? blur? tokens on-press theme]}]
   [permission/tag
-   {:background-color (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
+   {:background-color (if blur?
+                        colors/white-opa-10
+                        (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))
     :locked?          locked?
     :tokens           tokens
     :size             24

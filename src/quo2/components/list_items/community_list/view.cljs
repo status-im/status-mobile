@@ -37,7 +37,11 @@
   (let [component (cond
                     (and (= type :discover) (= info :token-gated))
                     [community-view/permission-tag-container
-                     {:locked? locked? :tokens tokens :on-press on-press-info :theme theme}]
+                     {:locked?  locked?
+                      :tokens   tokens
+                      :on-press on-press-info
+                      :theme    theme
+                      :blur?    blur?}]
 
                     (and (= type :engage) (= info :mention) (pos? unread-count))
                     [counter/counter
