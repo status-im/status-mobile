@@ -1,9 +1,9 @@
 (ns quo2.components.avatars.user-avatar.view
   (:require [quo2.components.avatars.user-avatar.style :as style]
+            [quo2.components.common.no-flicker-image :as no-flicker-image]
             [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
-            utils.string))
+            [react-native.fast-image :as fast-image]))
 
 (defn user-avatar
   "Render user avatar with `profile-picture`
@@ -41,11 +41,13 @@
            ring?               true
            customization-color :turquoise}}]
   (let [full-name          (or full-name "Your Name")
-        outer-styles       (style/outer size (:uri profile-picture))
+        ;; image generated with profile-picture-fn is round cropped
+        ;; no need to add border-radius for them
+        outer-styles       (style/outer size (not (:fn profile-picture)))
         ;; Once image is loaded, fast image re-renders view with the help of reagent atom,
         ;; But dynamic updates don't work when user-avatar is used inside hole-view
         ;; https://github.com/status-im/status-mobile/issues/15553
-        image-view         (if static? rn/image fast-image/fast-image)
+        image-view         (if static? no-flicker-image/image fast-image/fast-image)
         font-size          (get-in style/sizes [size :font-size])
         amount-initials    (if (#{:xs :xxs :xxxs} size) 1 2)
         sizes              (get style/sizes size)
