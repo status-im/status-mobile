@@ -1,0 +1,22 @@
+(ns quo2.components.switchers.base-card.style
+  (:require [quo2.foundations.colors :as colors]))
+
+(defn base-container
+  [background-color]
+  {:width            160
+   :height           160
+   :border-radius    16
+   :background-color (colors/alpha background-color 0.4)})
+
+(def thumb-card
+  {:width            160
+   :height           120
+   :border-radius    16
+   :bottom           0
+   :position         :absolute
+   :background-color colors/neutral-95})
+
+(def close-button
+  {:position :absolute
+   :right    8
+   :top      8})
