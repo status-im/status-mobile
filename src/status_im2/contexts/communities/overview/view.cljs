@@ -162,7 +162,7 @@
        [quo/button
         {:on-press                  #(join-gated-community id)
          :accessibility-label       :join-community-button
-         :override-background-color community-color
+         :customization-color community-color
          :style                     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
          :disabled                  (not can-request-access?)
          :before                    (if can-request-access? :i/unlocked :i/locked)}

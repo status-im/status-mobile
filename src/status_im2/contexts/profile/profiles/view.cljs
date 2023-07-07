@@ -250,7 +250,6 @@
        :type                :primary
        :customization-color (or customization-color :primary)
        :accessibility-label :login-button
-       :override-theme      :dark
        :before              :i/unlocked
        :disabled            (or (not sign-in-enabled?) processing)
        :on-press            login-multiaccount
