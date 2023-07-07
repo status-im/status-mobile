@@ -18,7 +18,7 @@
   [text/text
    {:weight              :semi-bold
     :size                :paragraph-1
-    :accessibility-label :community-name-text
+    :accessibility-label :community-item-title
     :number-of-lines     1
     :ellipsize-mode      :tail
     :style               (style/title props)}
