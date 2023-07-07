@@ -1,13 +1,12 @@
-(ns quo2.components.buttons.button.view
+(ns quo2.components.dropdowns.old-button-view
   (:require [quo2.components.icon :as quo2.icons]
             [quo2.components.markdown.text :as text]
             [quo2.theme :as theme]
             [react-native.core :as rn]
             [react-native.blur :as blur]
             [reagent.core :as reagent]
-            [quo2.components.buttons.button.style :as style]
-            [quo2.components.buttons.button.type-values :as type-values]
-            [quo2.foundations.customization-colors :as customization-colors]))
+            [quo2.components.dropdowns.old-button-style :as style]))
+;TODO: Dropdown needs to be implemented as its own component - https://github.com/status-im/status-mobile/issues/16456
 
 (defn- button-internal
   "with label
@@ -27,30 +26,25 @@
   [_ _]
   (let [pressed-in (reagent/atom false)]
     (fn
-      [{:keys [on-press disabled type background size before after above icon-secondary-no-color
+      [{:keys [on-press disabled type size before after above icon-secondary-no-color
                width customization-color theme override-background-color pressed
                on-long-press accessibility-label icon icon-no-color style inner-style test-ID
-               blur-active?]
+               blur-active? override-before-margins override-after-margins icon-size icon-container-size
+               icon-container-rounded?]
         :or   {type                :primary
                size                40
                customization-color :primary
-               blur-active?        false}}
+               blur-active?        true}}
        children]
-      (let [pressed? (or @pressed-in pressed)
-            {:keys [icon-color icon-secondary-color background-color label-color border-color blur-type
+      (let [{:keys [icon-color icon-secondary-color background-color label-color border-color blur-type
                     blur-overlay-color icon-background-color]}
-            (type-values/get-value-from-type {:customization-color customization-color
-                                              :background background
-                                              :type type
-                                              :theme theme
-                                              :pressed? pressed})
-
-
+            (get-in (style/themes customization-color)
+                    [theme type])
             state (cond disabled                 :disabled
                         (or @pressed-in pressed) :pressed
                         :else                    :default)
             blur-state (if blur-active? :blurred :default)
-            icon-size (when (= 24 size) 12)
+            icon-size (or icon-size (when (= 24 size) 12))
             icon-secondary-color (or icon-secondary-color icon-color)]
         [rn/touchable-without-feedback
          (merge {:test-ID             test-ID
@@ -73,7 +67,7 @@
                                             :size size
                                             :disabled disabled
                                             :background-color
-                                            (or override-background-color background-color)
+                                            (or override-background-color (get background-color state))
                                             :border-color
                                             (get border-color state)
                                             :icon icon
@@ -82,12 +76,8 @@
                                             :before before
                                             :after after
                                             :blur-active? blur-active?})
-                   
+                    (when (= state :pressed) {:opacity 0.9})
                     inner-style)}
-           (when customization-color
-             [customization-colors/overlay
-              {:theme    theme
-               :pressed? pressed?}])
            (when (and (= type :blurred)
                       blur-active?)
              [blur/view
@@ -104,8 +94,11 @@
            (when before
              [rn/view
               {:style (style/before-icon-style
-                       {:size                    size
+                       {:override-margins        override-before-margins
+                        :size                    size
+                        :icon-container-size     icon-container-size
                         :icon-background-color   (get icon-background-color blur-state)
+                        :icon-container-rounded? icon-container-rounded?
                         :icon-size               icon-size})}
               [quo2.icons/icon before
                {:color icon-secondary-color
@@ -124,6 +117,7 @@
                 :weight          :medium
                 :number-of-lines 1
                 :style           {:color label-color}}
+
                children]
 
               (vector? children)
@@ -131,21 +125,15 @@
            (when after
              [rn/view
               {:style (style/after-icon-style
-                       {:size                    size
+                       {:override-margins        override-after-margins
+                        :size                    size
+                        :icon-container-size     icon-container-size
                         :icon-background-color   (get icon-background-color blur-state)
+                        :icon-container-rounded? icon-container-rounded?
                         :icon-size               icon-size})}
               [quo2.icons/icon after
                {:no-color icon-secondary-no-color
                 :color    icon-secondary-color
                 :size     icon-size}]])]]]))))
 
-(defn button-wrapper
-  [{:keys [type customization-color] :or {type :primary} :as props} label]
-  (let [color (case type
-                :primary  (or customization-color :primary)
-                :positive :positive
-                :danger   :danger
-                nil)]
-    [button-internal (assoc props :customization-color color :type type) label]))
-
-(def button (theme/with-theme button-wrapper))
+(def button (theme/with-theme button-internal))
