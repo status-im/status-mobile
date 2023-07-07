@@ -26,6 +26,15 @@
      (str "# " title)
      title)])
 
+(defn- subtitle-component
+  [subtitle blur? theme]
+  [text/text
+   {:size                :paragraph-2
+    :number-of-lines     1
+    :accessibility-label :community-item-subtitle
+    :style               (style/subtitle blur? theme)}
+   subtitle])
+
 (defn- notification-dot
   [blur? theme]
   [rn/view
@@ -102,8 +111,8 @@
   "
   []
   (let [pressed? (reagent/atom false)]
-    (fn [{:keys [members type info tokens locked? title logo
-                 blur? customization-color
+    (fn [{:keys [members type info tokens locked? title subtitle
+                 logo blur? customization-color
                  on-press on-long-press on-press-info
                  container-style unread-count theme]}]
       [rn/pressable
@@ -127,6 +136,8 @@
            :theme theme
            :title title
            :type  type}]
+         (when (and (= type :share) subtitle)
+           [subtitle-component subtitle blur? theme])
          (when (and members (= type :discover))
            [community-view/community-stats-column
             {:type          :list-view

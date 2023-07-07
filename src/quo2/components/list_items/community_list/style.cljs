@@ -32,6 +32,12 @@
             :else
             (colors/theme-colors colors/neutral-100 colors/white theme))})
 
+(defn subtitle
+  [blur? theme]
+  {:color (if blur?
+            colors/white-opa-40
+            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))})
+
 (defn container
   [{:keys [type pressed? blur? customization-color theme info]}]
   {:padding-vertical   8

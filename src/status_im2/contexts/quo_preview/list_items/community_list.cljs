@@ -64,6 +64,9 @@
                    {:key :navigation :value "Navigation"}
                    {:key :default :value "Default"}]}))
 
+(def descriptors-type-share
+  (conj descriptors-base {:label "Subtitle:" :key :subtitle :type :text}))
+
 (defn descriptors
   [{:keys [members? info] :as state}]
   (let [descs (case (:type state)
@@ -79,7 +82,7 @@
 
                             (= info :mention)
                             (into [descriptor-unread-count]))
-                :share    descriptors-base
+                :share    descriptors-type-share
                 nil)]
     (if (quo.theme/dark?)
       (into [descriptor-blur] descs)
@@ -94,6 +97,7 @@
                              :members?            false
                              :locked?             false
                              :title               "Status"
+                             :subtitle            "Subtitle"
                              :members-count       629200
                              :active-count        112100
                              :unread-count        5})]
