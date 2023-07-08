@@ -90,7 +90,6 @@
   {:title               (:chat-name chat)
    :avatar-params       {}
    :customization-color (or (:color chat) :primary)
-   :customization-color (or (:color chat) :primary)
    :content             (get-card-content
                          {:chat         chat
                           :communities  communities
