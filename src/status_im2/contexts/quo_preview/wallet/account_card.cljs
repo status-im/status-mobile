@@ -64,12 +64,12 @@
                   :justify-content  :center
                   :margin-left      8}}
          [icon/icon :i/check {:color colors/white :size 16}]]]
-       [rn/view {:flex 1}
+       [rn/view {:style {:flex 1}}
         [preview/customizer state descriptor]]
        (let [selected-type (:type @state)
              filtered-data (filter #(= selected-type (:type %)) mock-data)]
          (for [data filtered-data]
-           [rn/view {:align-items :center :margin-vertical 40}
+           [rn/view {:style {:align-items :center :margin-vertical 40}}
             [quo/account-card data]]))])))
 
 

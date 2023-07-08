@@ -34,10 +34,8 @@
 
 (defn account-name
   [watch-only?]
-  {:style  {:color       (text-color watch-only?)
-            :margin-left 2}
-   :size   :paragraph-2
-   :weight :medium})
+  {:color       (text-color watch-only?)
+   :margin-left 2})
 
 (def watch-only-container
   {:flex-direction  :row
@@ -47,17 +45,13 @@
 
 (defn account-value
   [watch-only?]
-  {:style  {:color (text-color watch-only?)}
-   :size   :heading-2
-   :weight :semi-bold})
+  {:color (text-color watch-only?)})
 
 (defn metrics
   [watch-only?]
-  {:weight :semi-bold
-   :size   :paragraph-2
-   :style  {:color (if (and watch-only? (not (colors/dark?)))
-                     colors/neutral-80-opa-60
-                     colors/white-opa-70)}})
+  {:color (if (and watch-only? (not (colors/dark?)))
+            colors/neutral-80-opa-60
+            colors/white-opa-70)})
 
 (defn separator
   [watch-only?]
@@ -68,7 +62,8 @@
                         colors/white-opa-40)
    :margin-horizontal 4})
 
-(def add-account-container
+(defn add-account-container
+  []
   {:width              161
    :height             88
    :border-color       (colors/theme-colors colors/neutral-20 colors/white-opa-5)
@@ -79,11 +74,6 @@
    :border-radius      16
    :padding-vertical   12
    :padding-horizontal 10})
-
-(def add-account-title
-  {:size       :paragraph-2
-   :weight     :medium
-   :margin-top 4})
 
 (def emoji
   {:font-size   10
