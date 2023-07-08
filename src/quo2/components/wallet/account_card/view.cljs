@@ -13,7 +13,8 @@
     [:<>
      [rn/view (style/card customization-color watch-only?)
       [rn/view style/profile-container
-       [text/text {:style style/emoji} emoji]
+       [rn/view {:style {:padding-bottom 2 :margin-right 2}}
+        [text/text {:style style/emoji} emoji]]
        [rn/view style/watch-only-container
         [text/text (style/account-name watch-only?)
          name]
@@ -21,7 +22,7 @@
 
       [text/text (style/account-value watch-only?) balance]
       [rn/view style/metrics-container
-       [rn/view {:margin-right 4}
+       [rn/view {:style {:margin-right 4}}
         [icon/icon :positive
          {:color (if (and watch-only? (not (colors/dark?)))
                    colors/neutral-50
@@ -32,7 +33,7 @@
        [text/text (style/metrics watch-only?) amount]]]]))
 
 (defn add-account-view
-  [{:keys [handler type add-account customization-color]}]
+  [{:keys [handler customization-color]}]
   [rn/view style/add-account-container
    [plus-button/plus-button
     {:on-press            handler

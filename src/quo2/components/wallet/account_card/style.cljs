@@ -21,19 +21,16 @@
                          (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5)
                          (colors/custom-color-by-theme customization-color 50 60))
    :padding-horizontal 12
-   :padding-top        8
+   :padding-top        6
    :padding-bottom     10})
 
 (def profile-container
-  {:margin-bottom  4
+  {:margin-bottom  6
    :flex-direction :row})
 
 (def metrics-container
   {:flex-direction :row
    :align-items    :center})
-
-(def title
-  {:margin-bottom 8})
 
 (defn account-name
   [watch-only?]
@@ -65,9 +62,8 @@
 (defn separator
   [watch-only?]
   {:width             1
-   :height            10
-   :border-width      1
-   :border-color      (if watch-only?
+   :height            8
+   :background-color  (if watch-only?
                         colors/neutral-80-opa-20
                         colors/white-opa-40)
    :margin-horizontal 4})
@@ -90,4 +86,5 @@
    :margin-top 4})
 
 (def emoji
-  {:font-size      12})
+  {:font-size   10
+   :line-height 20})
