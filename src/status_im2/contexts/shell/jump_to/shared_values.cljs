@@ -113,19 +113,19 @@
     ;; for Speed up UI reloading
     (utils/reset-bottom-tabs)
     (reset!
-     state/shared-values-atom
-     (merge
-      shared-values
-      (stacks-and-bottom-tabs-derived-values shared-values)
-      (home-stack-derived-values shared-values dimensions)
-      {shell.constants/community-screen (floating-screen-derived-values
-                                         shell.constants/community-screen
-                                         dimensions
-                                         switcher-card-left-position
-                                         switcher-card-top-position)
-       shell.constants/chat-screen      (floating-screen-derived-values
-                                         shell.constants/chat-screen
-                                         dimensions
-                                         switcher-card-left-position
-                                         switcher-card-top-position)}))
+      state/shared-values-atom
+      (merge
+       shared-values
+       (stacks-and-bottom-tabs-derived-values shared-values)
+       (home-stack-derived-values shared-values dimensions)
+       {shell.constants/community-screen (floating-screen-derived-values
+                                          shell.constants/community-screen
+                                          dimensions
+                                          switcher-card-left-position
+                                          switcher-card-top-position)
+        shell.constants/chat-screen      (floating-screen-derived-values
+                                          shell.constants/chat-screen
+                                          dimensions
+                                          switcher-card-left-position
+                                          switcher-card-top-position)}))
     @state/shared-values-atom))
