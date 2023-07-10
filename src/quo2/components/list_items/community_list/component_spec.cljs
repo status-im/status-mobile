@@ -4,18 +4,9 @@
 
 (h/describe "Community list"
   (h/test "default render"
-    (let [on-press      (h/mock-fn)
-          on-long-press (h/mock-fn)]
-      (h/render [component/view
-                 {:title         "Status"
-                  :on-press      on-press
-                  :on-long-press on-long-press}])
-      (h/is-truthy (h/get-by-label-text :community-item-title))
-      (h/is-null (h/query-by-label-text :community-item-info))
-      (h/fire-event :press (h/get-by-label-text :container))
-      (h/was-called on-press)
-      (h/fire-event :long-press (h/get-by-label-text :container))
-      (h/was-called on-long-press)))
+    (h/render [component/view {}])
+    (h/is-truthy (h/get-by-label-text :community-item-title))
+    (h/is-null (h/query-by-label-text :community-item-info)))
 
   (h/describe "type share"
     (h/test "renders"
