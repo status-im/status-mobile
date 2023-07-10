@@ -11,8 +11,8 @@
     [utils.re-frame :as rf]))
 
 (defn focus
-  [{:keys [input-ref] :as props}
-   {:keys [text-value focused? lock-selection? saved-cursor-position gradient-z-index]}
+  [props
+   {:keys [focused? lock-selection? gradient-z-index]}
    {:keys [height saved-height last-height opacity background-y gradient-opacity container-opacity]
     :as   animations}
    {:keys [max-height] :as dimensions}]
@@ -28,9 +28,6 @@
     (reanimated/animate gradient-opacity 1)
     (reset! gradient-z-index 1))
   (js/setTimeout #(reset! lock-selection? false) 300)
-  (when (and (not-empty @text-value) @input-ref)
-    (.setNativeProps ^js @input-ref
-                     (clj->js {:selection {:start @saved-cursor-position :end @saved-cursor-position}})))
   (kb/handle-refocus-emoji-kb-ios props animations dimensions))
 
 (defn blur
