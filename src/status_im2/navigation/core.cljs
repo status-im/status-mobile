@@ -132,6 +132,10 @@
                  (fn [comp-id]
                    (navigation/pop-to (name comp-id))))
 
+(re-frame/reg-fx :dismiss-modal
+                 (fn [comp-id]
+                   (dissmissModal (name comp-id))))
+
 (defn pop-to-root
   [root-id]
   (navigation/pop-to-root root-id)
