@@ -57,10 +57,11 @@
          :customization-color color
          :progress            progress}]
        [quo/button
-        {:accessibility-label       :skip-identifiers
-         :on-press                  #(rf/dispatch [:navigate-to :enable-notifications])
-         :override-background-color colors/white-opa-5
-         :style                     style/button}
+        {:accessibility-label :skip-identifiers
+         :type                :grey
+         :background          :blur
+         :on-press            #(rf/dispatch [:navigate-to :enable-notifications])
+         :style               style/button}
         (i18n/label :t/skip)]]]]))
 
 (defn view [props] [:f> f-view props])

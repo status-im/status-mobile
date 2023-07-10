@@ -4,7 +4,8 @@
 (defn dropdown
   [_ _]
   (fn [{:keys [on-change selected] :as opts} children]
-    ;TODO: Dropdown needs to be implemented/refactored to be its own component - https://github.com/status-im/status-mobile/issues/16456
+    ;TODO: Dropdown needs to be implemented/refactored to be its own component -
+    ;https://github.com/status-im/status-mobile/issues/16456
     [old-button/button
      (merge
       opts

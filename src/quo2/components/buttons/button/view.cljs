@@ -40,12 +40,10 @@
             {:keys [icon-color icon-secondary-color background-color label-color border-color blur-type
                     blur-overlay-color icon-background-color]}
             (type-values/get-value-from-type {:customization-color customization-color
-                                              :background background
-                                              :type type
-                                              :theme theme
-                                              :pressed? pressed})
-
-
+                                              :background          background
+                                              :type                type
+                                              :theme               theme
+                                              :pressed?            pressed?})
             state (cond disabled                 :disabled
                         (or @pressed-in pressed) :pressed
                         :else                    :default)
@@ -82,7 +80,6 @@
                                             :before before
                                             :after after
                                             :blur-active? blur-active?})
-                   
                     inner-style)}
            (when customization-color
              [customization-colors/overlay
@@ -104,9 +101,9 @@
            (when before
              [rn/view
               {:style (style/before-icon-style
-                       {:size                    size
-                        :icon-background-color   (get icon-background-color blur-state)
-                        :icon-size               icon-size})}
+                       {:size                  size
+                        :icon-background-color (get icon-background-color blur-state)
+                        :icon-size             icon-size})}
               [quo2.icons/icon before
                {:color icon-secondary-color
                 :size  icon-size}]])
@@ -131,9 +128,9 @@
            (when after
              [rn/view
               {:style (style/after-icon-style
-                       {:size                    size
-                        :icon-background-color   (get icon-background-color blur-state)
-                        :icon-size               icon-size})}
+                       {:size                  size
+                        :icon-background-color (get icon-background-color blur-state)
+                        :icon-size             icon-size})}
               [quo2.icons/icon after
                {:no-color icon-secondary-no-color
                 :color    icon-secondary-color
@@ -143,7 +140,7 @@
   [{:keys [type customization-color] :or {type :primary} :as props} label]
   (let [color (case type
                 :primary  (or customization-color :primary)
-                :positive :positive
+                :positive :success
                 :danger   :danger
                 nil)]
     [button-internal (assoc props :customization-color color :type type) label]))
