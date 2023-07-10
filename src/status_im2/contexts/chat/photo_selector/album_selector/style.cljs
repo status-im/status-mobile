@@ -1,5 +1,15 @@
 (ns status-im2.contexts.chat.photo-selector.album-selector.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.reanimated :as reanimated]))
+
+(defn selector-container
+  [top]
+  (reanimated/apply-animations-to-style {:top top}
+                                        {:position         :absolute
+                                         :z-index          1
+                                         :background-color :white
+                                         :left             0
+                                         :right            0}))
 
 (defn album-container
   [selected?]

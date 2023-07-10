@@ -60,13 +60,7 @@
         albums-sections [{:title no-title :data (:smart-albums albums)}
                          {:title (i18n/label :t/my-albums) :data (:my-albums albums)}]
         window-height   (:height (rn/get-window))]
-    [reanimated/view
-     {:style (reanimated/apply-animations-to-style {:top top}
-                                                   {:position         :absolute
-                                                    :z-index          1
-                                                    :background-color :white
-                                                    :left             0
-                                                    :right            0})}
+    [reanimated/view {:style (style/selector-container top)}
      [gesture/section-list
       {:data                           albums-sections
        :sections                       albums-sections
