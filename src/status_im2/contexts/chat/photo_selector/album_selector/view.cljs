@@ -9,7 +9,7 @@
     [status-im2.contexts.chat.photo-selector.album-selector.style :as style]))
 
 (defn render-album
-  [{:keys [title count uri]} index _ {:keys [album? selected-album]}]
+  [{title :title size :count uri :uri} index _ {:keys [album? selected-album]}]
   (let [selected? (= selected-album title)]
     [rn/touchable-opacity
      {:on-press            (fn []
@@ -31,7 +31,7 @@
       [quo/text
        {:size  :paragraph-2
         :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
-       (when count (str count " " (i18n/label :t/images)))]]
+       (when size (str size " " (i18n/label :t/images)))]]
      (when selected?
        [rn/view
         {:style {:position :absolute

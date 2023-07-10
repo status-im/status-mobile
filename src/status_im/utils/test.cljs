@@ -36,15 +36,20 @@
     (fn [json callback]
       (callback (.multiAccountStoreDerivedAccounts native-status json)))
 
+    :getNodeConfig (fn [] (types/clj->json {:WakuV2Config ""}))
+
+    :backupDisabledDataDir (fn [] (str test-dir "/backup"))
+    :keystoreDir (fn [] "")
+    :logFileDirectory (fn [] (str test-dir "/log"))
     :clearCookies identity
-
     :clearStorageAPIs identity
-
     :setBlankPreviewFlag identity
 
     :callPrivateRPC
     (fn [payload callback]
       (callback (.callPrivateRPC native-status payload)))
+
+    :createAccountAndLogin (fn [request] (.createAccountAndLogin native-status request))
 
     :saveAccountAndLogin
     (fn [multiaccount-data password settings config accounts-data]

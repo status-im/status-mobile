@@ -1,8 +1,5 @@
 (ns status-im2.contexts.quo-preview.notifications.notification
-  (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.components.buttons.button :as button]
-            [quo2.components.code.snippet :as snippet]
-            [quo2.components.info.info-message :as info-message]
+  (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.code.snippet :as snippet-preview]
@@ -16,7 +13,7 @@
          notification!     #(rf/dispatch [:toasts/upsert (assoc opts :id id)])
          dismissed?        (not notification-opts)]
      [rn/view {:style {:margin-bottom 10}}
-      [button/button
+      [quo/button
        {:size     32
         :on-press #(if dismissed? (notification!) (dismiss!))}
        (if dismissed? text (str "DISMISS " text))]])))
@@ -32,7 +29,7 @@
   []
   [notification-button
    "Notification: with title(header)"
-   {:avatar       [user-avatar/user-avatar
+   {:avatar       [quo/user-avatar
                    {:full-name           "A Y"
                     :status-indicator?   true
                     :online?             true
@@ -48,7 +45,7 @@
   []
   [notification-button
    "with title and body"
-   {:avatar   [user-avatar/user-avatar
+   {:avatar   [quo/user-avatar
                {:full-name           "A Y"
                 :status-indicator?   true
                 :online?             true
@@ -64,7 +61,7 @@
   []
   [notification-button
    "with anything as header & body"
-   {:avatar   [user-avatar/user-avatar
+   {:avatar   [quo/user-avatar
                {:full-name           "A Y"
                 :status-indicator?   true
                 :online?             true
@@ -72,12 +69,12 @@
                 :customization-color :blue
                 :ring-background     (resources/get-mock-image :ring)}]
     :header   [rn/view
-               [info-message/info-message
+               [quo/info-message
                 {:type :success
                  :size :tiny
                  :icon :i/placeholder}
                 "info-message as title"]]
-    :body     [snippet/snippet {:language :clojure :max-lines 15 :syntax true}
+    :body     [quo/snippet {:language :clojure :max-lines 15 :syntax true}
                snippet-preview/clojure-example]
     :duration 3000
     :type     :notification}])

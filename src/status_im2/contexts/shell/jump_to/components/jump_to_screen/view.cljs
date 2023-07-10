@@ -94,7 +94,7 @@
        [blur/view (bottom-tabs/blur-overlay-params style/top-nav-blur-overlay)])]))
 
 (defn view
-  [customization-color]
+  []
   (let [switcher-cards (rf/sub [:shell/sorted-switcher-cards])
         width          (rf/sub [:dimensions/window-width])
         top            (safe-area/get-top)
@@ -110,7 +110,6 @@
       [jump-to-list switcher-cards shell-margin]
       [top-nav-blur-overlay top]
       [common.home/top-nav
-       {:type   :shell
-        :avatar {:customization-color customization-color}
-        :style  {:margin-top top
-                 :z-index    2}}]]]))
+       {:type  :shell
+        :style {:margin-top top
+                :z-index    2}}]]]))

@@ -284,9 +284,10 @@
                                     :params      [community-id]
                                     :js-response true
                                     :on-success  #(re-frame/dispatch [::left %])
-                                    :on-error    (fn []
+                                    :on-error    (fn [response]
                                                    (log/error "failed to leave community"
-                                                              community-id)
+                                                              community-id
+                                                              response)
                                                    (re-frame/dispatch [::failed-to-leave]))}]}))
 
 (rf/defn status-tag-pressed

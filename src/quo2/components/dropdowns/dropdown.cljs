@@ -1,5 +1,5 @@
 (ns quo2.components.dropdowns.dropdown
-  (:require [quo2.components.buttons.button :as button]))
+  (:require [quo2.components.buttons.button.view :as button]))
 
 (defn dropdown
   [_ _]

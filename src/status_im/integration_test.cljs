@@ -26,13 +26,10 @@
   []
   (rf/dispatch [:app-started]))
 
-(defn generate-and-derive-addresses!
-  []
-  (rf/dispatch [:generate-and-derive-addresses]))
-
 (defn create-multiaccount!
   []
-  (rf/dispatch [:create-multiaccount password]))
+  (rf/dispatch [:profile.create/create-and-login
+                {:display-name account-name :password password :color "blue"}]))
 
 (defn assert-app-initialized
   []
@@ -82,15 +79,12 @@
    (initialize-app!) ; initialize app
    (rf-test/wait-for
      [:profile/get-profiles-overview-success]
-     (generate-and-derive-addresses!) ; generate 5 new keys
-     (rf-test/wait-for
-       [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
-       (create-multiaccount!) ; create a multiaccount
-       (rf-test/wait-for ; wait for login
-         [::transport/messenger-started]
-         (assert-messenger-started)
-         (logout!)
-         (rf-test/wait-for [::logout/logout-method]))))))
+     (create-multiaccount!) ; create a multiaccount
+     (rf-test/wait-for ; wait for login
+       [::transport/messenger-started]
+       (assert-messenger-started)
+       (logout!)
+       (rf-test/wait-for [::logout/logout-method])))))
 
 (deftest create-community-test
   (log/info "====== create-community-test ==================")
@@ -98,22 +92,19 @@
    (initialize-app!) ; initialize app
    (rf-test/wait-for
      [:profile/get-profiles-overview-success]
-     (generate-and-derive-addresses!) ; generate 5 new keys
-     (rf-test/wait-for
-       [:multiaccount-generate-and-derive-addresses-success]
-       (create-multiaccount!) ; create a multiaccount
-       (rf-test/wait-for ; wait for login
-         [::transport/messenger-started]
-         (assert-messenger-started)
-         (rf/dispatch-sync [:legacy-only-for-e2e/open-create-community])
-         (doseq [[k v] (dissoc community :membership)]
-           (rf/dispatch-sync [:status-im.communities.core/create-field k v]))
-         (rf/dispatch [:status-im.communities.core/create-confirmation-pressed])
-         (rf-test/wait-for
-           [:status-im.communities.core/community-created]
-           (assert-community-created)
-           (logout!)
-           (rf-test/wait-for [::logout/logout-method])))))))
+     (create-multiaccount!) ; create a multiaccount
+     (rf-test/wait-for ; wait for login
+       [::transport/messenger-started]
+       (assert-messenger-started)
+       (rf/dispatch-sync [:legacy-only-for-e2e/open-create-community])
+       (doseq [[k v] (dissoc community :membership)]
+         (rf/dispatch-sync [:status-im.communities.core/create-field k v]))
+       (rf/dispatch [:status-im.communities.core/create-confirmation-pressed])
+       (rf-test/wait-for
+         [:status-im.communities.core/community-created]
+         (assert-community-created)
+         (logout!)
+         (rf-test/wait-for [::logout/logout-method]))))))
 
 (deftest create-wallet-account-test
   (log/info "====== create-wallet-account-test ==================")
@@ -121,19 +112,16 @@
    (initialize-app!)
    (rf-test/wait-for
      [:profile/get-profiles-overview-success]
-     (generate-and-derive-addresses!) ; generate 5 new keys
-     (rf-test/wait-for
-       [:multiaccount-generate-and-derive-addresses-success]
-       (create-multiaccount!) ; create a multiaccount
-       (rf-test/wait-for ; wait for login
-         [::transport/messenger-started]
-         (assert-messenger-started)
-         (create-new-account!) ; create a new account
-         (rf-test/wait-for
-           [:wallet.accounts/account-stored]
-           (assert-new-account-created) ; assert account was created
-           (logout!)
-           (rf-test/wait-for [::logout/logout-method])))))))
+     (create-multiaccount!) ; create a multiaccount
+     (rf-test/wait-for ; wait for login
+       [::transport/messenger-started]
+       (assert-messenger-started)
+       (create-new-account!) ; create a new account
+       (rf-test/wait-for
+         [:wallet.accounts/account-stored]
+         (assert-new-account-created) ; assert account was created
+         (logout!)
+         (rf-test/wait-for [::logout/logout-method]))))))
 
 (deftest back-up-seed-phrase-test
   (log/info "========= back-up-seed-phrase-test ==================")
@@ -141,30 +129,27 @@
    (initialize-app!)
    (rf-test/wait-for
      [:profile/get-profiles-overview-success]
-     (generate-and-derive-addresses!)
+     (create-multiaccount!)
      (rf-test/wait-for
-       [:multiaccount-generate-and-derive-addresses-success]
-       (create-multiaccount!)
-       (rf-test/wait-for
-         [::transport/messenger-started]
-         (assert-messenger-started)
-         (rf/dispatch-sync [:set-in [:my-profile/seed :step] :12-words]) ; display seed phrase to user
-         (rf/dispatch-sync [:my-profile/enter-two-random-words]) ; begin prompting user for seed words
-         (let [{:keys [mnemonic]} @(rf/subscribe [:profile/profile])
-               seed               @(rf/subscribe [:my-profile/seed])
-               word1              (second (:first-word seed))
-               word2              (second (:second-word seed))]
-           (is (= 12 (count (string/split mnemonic #" ")))) ; assert 12-word seed phrase
-           (rf/dispatch-sync [:set-in [:my-profile/seed :word] word1])
-           (rf/dispatch-sync [:my-profile/set-step :second-word])
-           (rf/dispatch-sync [:set-in [:my-profile/seed :word] word2])
-           ;; TODO: refactor (defn next-handler) & (defn enter-word) to improve test coverage?
-           (rf/dispatch [:my-profile/finish])
-           (rf-test/wait-for
-             [:my-profile/finish-success]
-             (is (nil? @(rf/subscribe [:mnemonic]))) ; assert seed phrase has been removed
-             (logout!)
-             (rf-test/wait-for [::logout/logout-method]))))))))
+       [::transport/messenger-started]
+       (assert-messenger-started)
+       (rf/dispatch-sync [:set-in [:my-profile/seed :step] :12-words]) ; display seed phrase to user
+       (rf/dispatch-sync [:my-profile/enter-two-random-words]) ; begin prompting user for seed words
+       (let [{:keys [mnemonic]} @(rf/subscribe [:profile/profile])
+             seed               @(rf/subscribe [:my-profile/seed])
+             word1              (second (:first-word seed))
+             word2              (second (:second-word seed))]
+         (is (= 12 (count (string/split mnemonic #" ")))) ; assert 12-word seed phrase
+         (rf/dispatch-sync [:set-in [:my-profile/seed :word] word1])
+         (rf/dispatch-sync [:my-profile/set-step :second-word])
+         (rf/dispatch-sync [:set-in [:my-profile/seed :word] word2])
+         ;; TODO: refactor (defn next-handler) & (defn enter-word) to improve test coverage?
+         (rf/dispatch [:my-profile/finish])
+         (rf-test/wait-for
+           [:my-profile/finish-success]
+           (is (nil? @(rf/subscribe [:mnemonic]))) ; assert seed phrase has been removed
+           (logout!)
+           (rf-test/wait-for [::logout/logout-method])))))))
 
 (def multiaccount-name "Narrow Frail Lemming")
 (def multiaccount-mnemonic
@@ -180,20 +165,17 @@
    (initialize-app!)
    (rf-test/wait-for
      [:profile/get-profiles-overview-success]
-     (generate-and-derive-addresses!)
+     (create-multiaccount!)
      (rf-test/wait-for
-       [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
-       (create-multiaccount!)
+       [::transport/messenger-started]
+       (assert-messenger-started)
+       (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
        (rf-test/wait-for
-         [::transport/messenger-started]
-         (assert-messenger-started)
-         (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
-         (rf-test/wait-for
-           [:chat/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
-           (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
-           (logout!)
-           (rf-test/wait-for [::logout/logout-method])))))))
+         [:chat/one-to-one-chat-created]
+         (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
+         (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
+         (logout!)
+         (rf-test/wait-for [::logout/logout-method]))))))
 
 (deftest delete-chat-test
   (log/info "========= delete-chat-test ==================")
@@ -201,23 +183,20 @@
    (initialize-app!)
    (rf-test/wait-for
      [:profile/get-profiles-overview-success]
-     (generate-and-derive-addresses!)
+     (create-multiaccount!)
      (rf-test/wait-for
-       [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
-       (create-multiaccount!)
+       [::transport/messenger-started]
+       (assert-messenger-started)
+       (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
        (rf-test/wait-for
-         [::transport/messenger-started]
-         (assert-messenger-started)
-         (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
-         (rf-test/wait-for
-           [:chat/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
-           (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
-           (is @(rf/subscribe [:chats/chat chat-id]))
-           (rf/dispatch-sync [:chat.ui/show-remove-confirmation chat-id])
-           (rf/dispatch-sync [:chat.ui/remove-chat chat-id])
-           (logout!)
-           (rf-test/wait-for [::logout/logout-method])))))))
+         [:chat/one-to-one-chat-created]
+         (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
+         (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
+         (is @(rf/subscribe [:chats/chat chat-id]))
+         (rf/dispatch-sync [:chat.ui/show-remove-confirmation chat-id])
+         (rf/dispatch-sync [:chat.ui/remove-chat chat-id])
+         (logout!)
+         (rf-test/wait-for [::logout/logout-method]))))))
 
 (deftest mute-chat-test
   (log/info "========= mute-chat-test ==================")
@@ -225,29 +204,26 @@
    (initialize-app!)
    (rf-test/wait-for
      [:profile/get-profiles-overview-success]
-     (generate-and-derive-addresses!)
+     (create-multiaccount!)
      (rf-test/wait-for
-       [:multiaccount-generate-and-derive-addresses-success] ; wait for the keys
-       (create-multiaccount!)
+       [::transport/messenger-started]
+       (assert-messenger-started)
+       (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
        (rf-test/wait-for
-         [::transport/messenger-started]
-         (assert-messenger-started)
-         (rf/dispatch-sync [:chat.ui/start-chat chat-id]) ;; start a new chat
+         [:chat/one-to-one-chat-created]
+         (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
+         (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
+         (is @(rf/subscribe [:chats/chat chat-id]))
+         (rf/dispatch-sync [:chat.ui/mute chat-id true constants/mute-till-unmuted])
          (rf-test/wait-for
-           [:chat/one-to-one-chat-created]
-           (rf/dispatch-sync [:chat/navigate-to-chat chat-id])
-           (is (= chat-id @(rf/subscribe [:chats/current-chat-id])))
-           (is @(rf/subscribe [:chats/chat chat-id]))
-           (rf/dispatch-sync [:chat.ui/mute chat-id true constants/mute-till-unmuted])
+           [:chat/mute-successfully]
+           (is @(rf/subscribe [:chats/muted chat-id]))
+           (rf/dispatch-sync [:chat.ui/mute chat-id false])
            (rf-test/wait-for
              [:chat/mute-successfully]
-             (is @(rf/subscribe [:chats/muted chat-id]))
-             (rf/dispatch-sync [:chat.ui/mute chat-id false])
-             (rf-test/wait-for
-               [:chat/mute-successfully]
-               (is (not @(rf/subscribe [:chats/muted chat-id])))
-               (logout!)
-               (rf-test/wait-for [::logout/logout-method])))))))))
+             (is (not @(rf/subscribe [:chats/muted chat-id])))
+             (logout!)
+             (rf-test/wait-for [::logout/logout-method]))))))))
 
 (deftest add-contact-test
   (log/info "========= add-contact-test ==================")
@@ -260,27 +236,24 @@
      (initialize-app!)
      (rf-test/wait-for
        [:profile/get-profiles-overview-success]
-       (generate-and-derive-addresses!)
+       (create-multiaccount!)
        (rf-test/wait-for
-         [:multiaccount-generate-and-derive-addresses-success]
-         (create-multiaccount!)
+         [::transport/messenger-started]
+         (assert-messenger-started)
+         ;; search for contact using compressed key
+         (rf/dispatch [:contacts/set-new-identity compressed-key])
          (rf-test/wait-for
-           [::transport/messenger-started]
-           (assert-messenger-started)
-           ;; search for contact using compressed key
-           (rf/dispatch [:contacts/set-new-identity compressed-key])
+           [:contacts/set-new-identity-success]
+           (let [new-identity @(rf/subscribe [:contacts/new-identity])]
+             (is (= public-key (:public-key new-identity)))
+             (is (= :valid (:state new-identity))))
+           ;; click 'view profile' button
+           (rf/dispatch [:chat.ui/show-profile public-key])
            (rf-test/wait-for
-             [:contacts/set-new-identity-success]
-             (let [new-identity @(rf/subscribe [:contacts/new-identity])]
-               (is (= public-key (:public-key new-identity)))
-               (is (= :valid (:state new-identity))))
-             ;; click 'view profile' button
-             (rf/dispatch [:chat.ui/show-profile public-key])
+             [:contacts/build-contact]
              (rf-test/wait-for
-               [:contacts/build-contact]
-               (rf-test/wait-for
-                 [:contacts/contact-built]
-                 (let [contact @(rf/subscribe [:contacts/current-contact])]
-                   (is (= three-words-name (:primary-name contact))))
-                 (logout!)
-                 (rf-test/wait-for [::logout/logout-method]))))))))))
+               [:contacts/contact-built]
+               (let [contact @(rf/subscribe [:contacts/current-contact])]
+                 (is (= three-words-name (:primary-name contact))))
+               (logout!)
+               (rf-test/wait-for [::logout/logout-method])))))))))

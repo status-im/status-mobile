@@ -94,9 +94,10 @@
       [react/view
        {:style {:flex-direction :row}}
        [checkbox/checkbox
-        {:checked?        save-password?
-         :style           {:margin-right 10}
-         :on-value-change #(re-frame/dispatch [:multiaccounts/save-password %])}]
+        {:checked? save-password?
+         :style    {:margin-right 10}}]
+       ;; should be reimplemented
+       ;;:on-value-change #(re-frame/dispatch [:multiaccounts/save-password %])}]
        [react/text (i18n/label :t/keycard-dont-ask-card)]])))
 
 (defn bezier-easing

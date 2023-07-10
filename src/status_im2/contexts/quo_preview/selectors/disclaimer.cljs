@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.selectors.disclaimer
-  (:require [quo2.components.buttons.button :as button]
-            [quo2.components.selectors.disclaimer.view :as disclaimer]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
@@ -44,12 +43,12 @@
          [rn/view {:style {:padding-horizontal 15}}
           [blur-background blur?]
           [rn/view {:style {:margin-vertical 50}}
-           [disclaimer/view
+           [quo/disclaimer
             {:blur?     blur?
              :checked?  checked?
              :on-change #(swap! state update :checked? not)}
             text]]
-          [button/button {:disabled (not checked?)}
+          [quo/button {:disabled (not checked?)}
            "submit"]]]))))
 
 (defn preview-disclaimer

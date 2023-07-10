@@ -4,10 +4,10 @@
             [react-native.core :as rn]))
 
 (defn info-count
-  ([count]
-   (info-count {} count))
-  ([props count]
-   (when (> count 0)
+  ([amount]
+   (info-count {} amount))
+  ([props amount]
+   (when (> amount 0)
      [rn/view
       (merge props
              {:style (merge {:width            16
@@ -23,4 +23,4 @@
        {:style (merge typography/font-medium
                       typography/label
                       {:color colors/white :text-align :center})}
-       count]])))
+       amount]])))

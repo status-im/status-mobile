@@ -4,8 +4,6 @@
 
 (defonce london-activated? (atom false))
 
-(defonce activated-on-current-network? (atom nil))
-
 (defn london-is-definitely-activated
   [network-id]
   (contains? #{"1" "3"} network-id))
@@ -29,7 +27,9 @@
 (defn enabled?
   ([] @london-activated?)
   ([network-id enabled-callback disabled-callback]
-   (let [definitely-activated? (london-is-definitely-activated network-id)]
+   (let [definitely-activated? (london-is-definitely-activated network-id)
+         enabled-callback      (or enabled-callback #())
+         disabled-callback     (or disabled-callback #())]
      (cond
        definitely-activated?
        (do
@@ -49,7 +49,6 @@
          (disabled-callback))))))
 
 (re-frame/reg-fx
- ::check-eip1559-activation
- (fn [{:keys [network-id on-enabled on-disabled]}]
-   (enabled? network-id on-enabled on-disabled)))
-
+ :check-eip1559-activation
+ (fn [network-id]
+   (enabled? network-id nil nil)))

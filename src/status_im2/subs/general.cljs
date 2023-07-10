@@ -229,12 +229,6 @@
    (tokens/native-currency network)))
 
 (re-frame/reg-sub
- :information-box-closed?
- :<- [:information-box-states]
- (fn [states [_ id]]
-   (get states id)))
-
-(re-frame/reg-sub
  :connectivity/state
  :<- [:network-status]
  :<- [:disconnected?]

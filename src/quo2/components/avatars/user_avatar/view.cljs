@@ -1,22 +1,9 @@
 (ns quo2.components.avatars.user-avatar.view
-  (:require [clojure.string :as string]
-            [quo2.components.avatars.user-avatar.style :as style]
+  (:require [quo2.components.avatars.user-avatar.style :as style]
             [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]))
-
-(defn trim-whitespace [s] (string/join " " (string/split (string/trim s) #"\s+")))
-
-(defn- extract-initials
-  [full-name amount-initials]
-  (let [upper-case-first-letter (comp string/upper-case first)
-        names-list              (string/split (trim-whitespace full-name) " ")]
-    (if (= (first names-list) "")
-      ""
-      (->> names-list
-           (map upper-case-first-letter)
-           (take amount-initials)
-           (string/join)))))
+            [react-native.fast-image :as fast-image]
+            utils.string))
 
 (defn initials-avatar
   [{:keys [full-name size draw-ring? customization-color]}]
@@ -29,7 +16,7 @@
       {:style  style/initials-avatar-text
        :size   font-size
        :weight :semi-bold}
-      (extract-initials full-name amount-initials)]]))
+      (utils.string/get-initials full-name amount-initials)]]))
 
 (def valid-ring-sizes #{:big :medium :small})
 

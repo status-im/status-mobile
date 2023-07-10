@@ -49,3 +49,12 @@
   [s m r]
   (when (string? s)
     (string/replace s m r)))
+
+(defn get-initials
+  "Returns `n` number of initial letters from `s`, all uppercased."
+  [s n]
+  (let [words (-> s str string/trim (string/split #"\s+"))]
+    (->> words
+         (take n)
+         (map (comp string/upper-case str first))
+         string/join)))

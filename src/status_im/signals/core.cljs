@@ -1,9 +1,7 @@
 (ns status-im.signals.core
   (:require [status-im.chat.models.message :as models.message]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
-            [utils.i18n :as i18n]
             [status-im.mailserver.core :as mailserver]
-            [status-im.multiaccounts.login.core :as login]
             [status-im.notifications.local :as local-notifications]
             [status-im.transport.message.core :as transport.message]
             [status-im.visibility-status-updates.core :as visibility-status-updates]
@@ -11,32 +9,9 @@
             [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
             [taoensso.timbre :as log]
             [status-im2.constants :as constants]
-            [quo2.foundations.colors :as colors]))
-
-(rf/defn status-node-started
-  [{db :db :as cofx} {:keys [error]}]
-  (log/debug "[signals] status-node-started"
-             "error"
-             error)
-  (if error
-    (cond->
-      {:db (-> db
-               (update :profile/login dissoc :processing)
-               (assoc-in [:profile/login :error]
-                         ;; NOTE: the only currently known error is
-                         ;; "file is not a database" which occurs
-                         ;; when the user inputs the wrong password
-                         ;; if that is the error that is found
-                         ;; we show the i18n label for wrong password
-                         ;; to the user
-                         ;; in case of an unknown error we show the
-                         ;; error
-                         (if (= error "file is not a database")
-                           (i18n/label :t/wrong-password)
-                           error)))}
-      (= (:view-id db) :progress)
-      (assoc :dispatch [:navigate-to :login]))
-    (login/multiaccount-login-success cofx)))
+            [quo2.foundations.colors :as colors]
+            [status-im2.contexts.profile.login.events :as profile.login]
+            [utils.transforms :as transforms]))
 
 (rf/defn summary
   [{:keys [db] :as cofx} peers-summary]
@@ -50,13 +25,10 @@
 
 (rf/defn wakuv2-peer-stats
   [{:keys [db]} peer-stats]
-  (let [previous-stats (:peer-stats db)]
-    {:db (assoc db
-                :peer-stats  peer-stats
-                :peers-count (count (:peers peer-stats)))}))
+  {:db (assoc db :peer-stats peer-stats :peers-count (count (:peers peer-stats)))})
 
 (rf/defn handle-local-pairing-signals
-  [{:keys [db] :as cofx} {:keys [type action data error] :as event}]
+  [{:keys [db]} {:keys [type action data error] :as event}]
   (log/info "local pairing signal received"
             {:event event})
   (let [{:keys [account password]}      data
@@ -88,7 +60,7 @@
                   (assoc-in [:syncing :pairing-status] :connected)
 
                   received-account?
-                  (assoc-in [:syncing :profile/profile] multiaccount-data)
+                  (assoc-in [:syncing :profile] multiaccount-data)
 
                   error-on-pairing?
                   (assoc-in [:syncing :pairing-status] :error)
@@ -105,7 +77,7 @@
              {:dispatch [:syncing/clear-states]}
 
              (and completed-pairing? receiver?)
-             {:dispatch [:multiaccounts.login/local-paired-user]}
+             {:dispatch [:profile.login/local-paired-user]}
 
              (and error-on-pairing? (some? error))
              {:dispatch [:toasts/upsert
@@ -123,7 +95,7 @@
         ^js event-js (.-event data)
         type         (.-type data)]
     (case type
-      "node.login"              (status-node-started cofx (js->clj event-js :keywordize-keys true))
+      "node.login"              (profile.login/login-node-signal cofx (transforms/js->clj event-js))
       "backup.performed"        {:db (assoc-in db
                                       [:profile/profile :last-backup]
                                       (.-lastBackup event-js))}

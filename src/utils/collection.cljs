@@ -12,14 +12,14 @@
 (defn index-by
   "Given a collection and a unique key function, returns a map that indexes the collection.
   Similar to group-by except that the map values are single objects (depends on key uniqueness)."
-  [key coll]
-  (into {} (map #(vector (key %) %) coll)))
+  [k coll]
+  (into {} (map #(vector (k %) %) coll)))
 
 (defn distinct-by
   "Given a key and a collection returns a unique collection by that key"
-  [key coll]
-  (let [groups (group-by key coll)]
-    (map #(first (groups %)) (distinct (map key coll)))))
+  [k coll]
+  (let [groups (group-by k coll)]
+    (map #(first (groups %)) (distinct (map k coll)))))
 
 (defn map-keys
   [f m]

@@ -18,18 +18,13 @@
                             (reset! scan-sync-code/dismiss-animations reset-top-animation-fn))
      :animations-duration constants/onboarding-modal-animation-duration
      :animations-delay    constants/onboarding-modal-animation-delay
-     :top-card            {:on-press            (fn []
-                                                  (debounce/dispatch-and-chill [:open-modal
-                                                                                :sign-in-intro]
-                                                                               2000)
-                                                  (rf/dispatch [:hide-terms-of-services-opt-in-screen]))
+     :top-card            {:on-press            #(debounce/dispatch-and-chill [:open-modal
+                                                                               :sign-in-intro]
+                                                                              2000)
                            :heading             (i18n/label :t/sign-in)
                            :animated-heading    (i18n/label :t/sign-in-by-syncing)
                            :accessibility-label :already-use-status-button}
-     :bottom-card         {:on-press            (fn []
-                                                  (rf/dispatch [:navigate-to :new-to-status])
-                                                  (rf/dispatch
-                                                   [:hide-terms-of-services-opt-in-screen]))
+     :bottom-card         {:on-press            #(rf/dispatch [:navigate-to :new-to-status])
                            :heading             (i18n/label :t/new-to-status)
                            :accessibility-label :new-to-status-button}}
     [quo/text

@@ -11,17 +11,26 @@
             [status-im2.constants :as constants]))
 
 (re-frame/reg-sub
- :profile/profile
- :<- [:profile/profile-settings]
- :<- [:profile/profiles-overview]
- (fn [[{:keys [key-uid] :as profile} profiles-overview]]
-   (merge (get profiles-overview key-uid) profile)))
-
-(re-frame/reg-sub
  :profile/customization-color
  :<- [:profile/profile]
  (fn [{:keys [customization-color]}]
    (or customization-color constants/profile-default-color)))
+
+(re-frame/reg-sub
+ :profile/login-profiles-picture
+ :<- [:profile/profiles-overview]
+ :<- [:mediaserver/port]
+ (fn [[multiaccounts port] [_ target-key-uid]]
+   (let [image-name (-> multiaccounts
+                        (get-in [target-key-uid :images])
+                        first
+                        :type)]
+     (when image-name
+       (image-server/get-account-image-uri {:port       port
+                                            :image-name image-name
+                                            :key-uid    target-key-uid
+                                            :theme      (theme/get-theme)
+                                            :ring?      true})))))
 
 (re-frame/reg-sub
  :multiaccount/public-key

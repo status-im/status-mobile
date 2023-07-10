@@ -13,12 +13,12 @@
   (.insert tree item))
 
 (defn update
-  [^js iter item]
-  (.update iter item))
+  [^js iterator item]
+  (.update iterator item))
 
 (defn remove
-  [^js iter]
-  (.remove iter))
+  [^js iterator]
+  (.remove iterator))
 
 (defn get-values
   [^js tree]
@@ -26,26 +26,26 @@
 
 (defn get-prev-element
   "Get previous item in the iterator, and wind it back to the initial state"
-  [^js iter]
-  (.prev iter)
-  (let [e (.-value iter)]
-    (.next iter)
+  [^js iterator]
+  (.prev iterator)
+  (let [e (.-value iterator)]
+    (.next iterator)
     e))
 
 (defn get-prev
-  [^js iter]
-  (when (.-hasPrev iter)
-    (get-prev-element iter)))
+  [^js iterator]
+  (when (.-hasPrev iterator)
+    (get-prev-element iterator)))
 
 (defn get-next-element
   "Get next item in the iterator, and wind it back to the initial state"
-  [^js iter]
-  (.next iter)
-  (let [e (.-value iter)]
-    (.prev iter)
+  [^js iterator]
+  (.next iterator)
+  (let [e (.-value iterator)]
+    (.prev iterator)
     e))
 
 (defn get-next
-  [^js iter]
-  (when (.-hasNext iter)
-    (get-next-element iter)))
+  [^js iterator]
+  (when (.-hasNext iterator)
+    (get-next-element iterator)))

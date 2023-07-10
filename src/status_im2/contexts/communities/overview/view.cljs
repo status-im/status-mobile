@@ -49,7 +49,7 @@
   (oops/oget event "nativeEvent.layout.y"))
 
 (defn- channel-chat-item
-  [community-id {chat-id :id muted? :muted? :as chat}]
+  [community-id community-color {chat-id :id muted? :muted? :as chat}]
   (let [sheet-content      [actions/chat-actions
                             (assoc chat :chat-type constants/community-chat-type)
                             false]
@@ -58,12 +58,13 @@
     [rn/view {:key chat-id :style {:margin-top 4}}
      [quo/channel-list-item
       (assoc chat
+             :default-color community-color
              :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data])
              :muted?        (or muted?
                                 (rf/sub [:chat/check-channel-muted? community-id chat-id])))]]))
 
 (defn channel-list-component
-  [{:keys [on-category-layout community-id on-first-channel-height-changed]}
+  [{:keys [on-category-layout community-id community-color on-first-channel-height-changed]}
    channels-list]
   [rn/view
    {:on-layout #(on-first-channel-height-changed
@@ -91,7 +92,7 @@
            :chevron-position :left}])
        (when-not collapsed?
          (into [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}]
-               (map #(channel-chat-item community-id %))
+               (map #(channel-chat-item community-id community-color %))
                chats))]))])
 
 (defn request-to-join-text
@@ -262,7 +263,7 @@
    description])
 
 (defn community-content
-  [{:keys [name description joined tags id]
+  [{:keys [name description joined tags color id]
     :as   community}
    pending?
    {:keys [on-category-layout on-first-channel-height-changed]}]
@@ -280,6 +281,7 @@
      [channel-list-component
       {:on-category-layout              on-category-layout
        :community-id                    id
+       :community-color                 color
        :on-first-channel-height-changed on-first-channel-height-changed}
       (add-handlers-to-categorized-chats id chats-by-category)]]))
 

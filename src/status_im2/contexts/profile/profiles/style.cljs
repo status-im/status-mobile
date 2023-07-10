@@ -1,4 +1,4 @@
-(ns status-im2.contexts.onboarding.profiles.style
+(ns status-im2.contexts.profile.profiles.style
   (:require [quo2.foundations.colors :as colors]))
 
 ;; Profiles Section

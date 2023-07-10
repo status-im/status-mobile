@@ -276,7 +276,7 @@
 
 (rf/defn load-notification-preferences
   {:events [::load-notification-preferences]}
-  [cofx]
+  [_]
   {:json-rpc/call [{:method     "localnotifications_notificationPreferences"
                     :params     []
                     :on-success #(re-frame/dispatch [::preferences-loaded %])}]})

@@ -36,7 +36,7 @@
   []
   (let [state (reagent/atom {:primary-name    "Alisher Yakupov"
                              :seconadary-name ""
-                             :short-chat-key  (address/get-shortened-key
+                             :short-chat-key  (address/get-shortened-compressed-key
                                                "zQ3ssgRy5TtB47MMiMKMKaGyaawkCgMqqbrnAUYrZJ1sgt5N")
                              :time-str        "09:30"
                              :contact?        false

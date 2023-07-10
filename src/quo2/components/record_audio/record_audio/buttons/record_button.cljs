@@ -4,7 +4,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn :refer [use-effect]]
             [react-native.reanimated :as reanimated]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [quo2.components.record-audio.record-audio.helpers :as helpers]))
 
 (defn f-record-button

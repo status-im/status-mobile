@@ -23,7 +23,6 @@
     status-im.log-level.core
     status-im.mailserver.constants
     [status-im.mailserver.core :as mailserver]
-    [status-im.multiaccounts.biometric.core :as biometric]
     status-im.multiaccounts.login.core
     status-im.multiaccounts.logout.core
     [status-im.multiaccounts.model :as multiaccounts.model]
@@ -63,7 +62,8 @@
     [react-native.platform :as platform]
     status-im2.contexts.chat.home.events
     status-im2.contexts.communities.home.events
-    status-im.ui.components.invite.events))
+    status-im.ui.components.invite.events
+    [status-im2.common.biometric.events :as biometric]))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -124,33 +124,26 @@
        [(get-in db [:profile/profile :appearance])
         (:view-id db) true]})))
 
-(def authentication-options
-  {:reason (i18n/label :t/biometric-auth-reason-login)})
-
-(defn- on-biometric-auth-result
-  [{:keys [bioauth-success bioauth-code bioauth-message]}]
-  (when-not bioauth-success
-    (if (= bioauth-code "USER_FALLBACK")
-      (re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])
-      (utils/show-confirmation
-       {:title               (i18n/label :t/biometric-auth-confirm-title)
-        :content             (or bioauth-message (i18n/label :t/biometric-auth-confirm-message))
-        :confirm-button-text (i18n/label :t/biometric-auth-confirm-try-again)
-        :cancel-button-text  (i18n/label :t/biometric-auth-confirm-logout)
-        :on-accept           #(biometric/authenticate nil
-                                                      on-biometric-auth-result
-                                                      authentication-options)
-        :on-cancel           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])}))))
+(defn- on-biometric-auth-fail
+  [{:keys [code]}]
+  (if (= code "USER_FALLBACK")
+    (re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])
+    (utils/show-confirmation
+     {:title               (i18n/label :t/biometric-auth-confirm-title)
+      :content             (i18n/label :t/biometric-auth-confirm-message)
+      :confirm-button-text (i18n/label :t/biometric-auth-confirm-try-again)
+      :cancel-button-text  (i18n/label :t/biometric-auth-confirm-logout)
+      :on-accept           #(biometric/authenticate nil {:on-fail on-biometric-auth-fail})
+      :on-cancel           #(re-frame/dispatch [:multiaccounts.logout.ui/logout-confirmed])})))
 
 (rf/defn on-return-from-background
   [{:keys [db now] :as cofx}]
   (let [new-account?            (get db :onboarding-2/new-account?)
         app-in-background-since (get db :app-in-background-since)
         signed-up?              (get-in db [:profile/profile :signed-up?])
-        biometric-auth?         (= (:auth-method db) "biometric")
         requires-bio-auth       (and
                                  signed-up?
-                                 biometric-auth?
+                                 (= (:auth-method db) "biometric")
                                  (some? app-in-background-since)
                                  (>= (- now app-in-background-since)
                                      constants/ms-in-bg-for-require-bioauth))]
@@ -163,7 +156,7 @@
               #(when-let [chat-id (:current-chat-id db)]
                  {:dispatch [:chat/mark-all-as-read chat-id]})
               #(when requires-bio-auth
-                 (biometric/authenticate % on-biometric-auth-result authentication-options)))))
+                 (biometric/authenticate % {:on-fail on-biometric-auth-fail})))))
 
 (rf/defn on-going-in-background
   [{:keys [db now]}]
@@ -274,53 +267,3 @@
    cofx
    (navigation/open-modal :buy-crypto nil)
    (wallet/keep-watching-history)))
-
-;; Information Box
-
-(def closable-information-boxes
-  "[{:id      information box id
-     :global? true/false (close information box across all profiles)}]"
-  [])
-
-(defn information-box-id-hash
-  [id public-key global?]
-  (if global?
-    (hash id)
-    (hash (str public-key id))))
-
-(rf/defn close-information-box
-  {:events [:close-information-box]}
-  [{:keys [db]} id global?]
-  (let [public-key (get-in db [:profile/profile :public-key])
-        hash       (information-box-id-hash id public-key global?)]
-    {::async-storage/set! {hash true}
-     :db                  (assoc-in db [:information-box-states id] true)}))
-
-(rf/defn information-box-states-loaded
-  {:events [:information-box-states-loaded]}
-  [{:keys [db]} hashes states]
-  {:db (assoc db
-              :information-box-states
-              (reduce
-               (fn [acc [id hash]]
-                 (assoc acc id (get states hash)))
-               {}
-               hashes))})
-
-(rf/defn load-information-box-states
-  {:events [:load-information-box-states]}
-  [{:keys [db]}]
-  (let [public-key            (get-in db [:profile/profile :public-key])
-        {:keys [keys hashes]} (reduce (fn [acc {:keys [id global?]}]
-                                        (let [hash (information-box-id-hash
-                                                    id
-                                                    public-key
-                                                    global?)]
-                                          (-> acc
-                                              (assoc-in [:hashes id] hash)
-                                              (update :keys #(conj % hash)))))
-                                      {}
-                                      closable-information-boxes)]
-    {::async-storage/get {:keys keys
-                          :cb   #(re-frame/dispatch
-                                  [:information-box-states-loaded hashes %])}}))

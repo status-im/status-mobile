@@ -109,7 +109,7 @@
       rpc->type
       unmarshal-members))
 
-(rf/defn fetch-chats-rpc
+(rf/defn fetch-chats-preview
   [_ {:keys [on-success]}]
   {:json-rpc/call [{:method      "wakuext_chatsPreview"
                     :params      []

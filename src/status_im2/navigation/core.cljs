@@ -3,7 +3,6 @@
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.navigation :as navigation]
-            [status-im.multiaccounts.login.core :as login-core]
             [status-im2.navigation.roots :as roots]
             [status-im2.navigation.state :as state]
             [status-im2.navigation.view :as views]
@@ -12,9 +11,9 @@
             [status-im2.navigation.options :as options]))
 
 (navigation/set-lazy-component-registrator
- (fn [key]
-   (let [screen (views/screen key)]
-     (navigation/register-component key
+ (fn [screen-key]
+   (let [screen (views/screen screen-key)]
+     (navigation/register-component screen-key
                                     (fn [] (gesture/gesture-handler-root-hoc screen))
                                     (fn [] screen)))))
 
@@ -30,7 +29,7 @@
      (when @state/root-id
        (reset! theme/device-theme (rn/get-color-scheme))
        (re-frame/dispatch [:init-root @state/root-id])
-       (re-frame/dispatch [::login-core/check-last-chat])))
+       (re-frame/dispatch [:chat/check-last-chat])))
    (rn/hide-splash-screen)))
 
 (defn set-view-id
@@ -257,10 +256,9 @@
 (re-frame/reg-fx
  :set-stack-root-fx
  (fn [[stack comp]]
-   ;; We don't have bottom tabs as separate stacks anymore,
-   ;; So the old way of pushing screens in specific tabs will not work.
-   ;; Disabled set-stack-root for :shell-stack as it is not working and
-   ;; currently only being used for browser and some rare keycard flows after login
+   ;; We don't have bottom tabs as separate stacks anymore,. So the old way of pushing screens in
+   ;; specific tabs will not work. Disabled set-stack-root for :shell-stack as it is not working
+   ;; and currently only being used for browser and some rare keycard flows after login
    (when-not (= @state/root-id :shell-stack)
      (log/debug :set-stack-root-fx stack comp)
      (navigation/set-stack-root
