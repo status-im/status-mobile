@@ -51,7 +51,9 @@
 (defn- channel-chat-item
   [community-id community-color {:keys [:muted? id] :as chat}]
   (let [sheet-content      [actions/chat-actions
-                            (assoc chat :chat-type constants/community-chat-type :chat-id (str community-id id))
+                            (assoc chat
+                                   :chat-type constants/community-chat-type
+                                   :chat-id   (str community-id id))
                             false]
         channel-sheet-data {:selected-item (fn [] [quo/channel-list-item chat])
                             :content       (fn [] sheet-content)}]
