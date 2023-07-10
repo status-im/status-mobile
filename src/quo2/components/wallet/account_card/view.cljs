@@ -3,7 +3,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as icon]
             [quo2.components.wallet.account-card.style :as style]
-            [status-im2.common.plus-button.view :as plus-button]
+            [quo2.components.buttons.button :as button]
             [utils.i18n :as i18n]
             [quo2.components.markdown.text :as text]))
 
@@ -47,10 +47,14 @@
 (defn add-account-view
   [{:keys [handler customization-color]}]
   [rn/view (style/add-account-container)
-   [plus-button/plus-button
-    {:on-press            handler
-     :customization-color customization-color
-    }]
+   [button/button
+    {:type                :primary
+     :size                32
+     :icon                true
+     :accessibility-label :add-account
+     :on-press            handler
+     :customization-color customization-color}
+    :i/add]
    [text/text
     {:size   :paragraph-2
      :weight :medium
