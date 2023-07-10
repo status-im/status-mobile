@@ -84,14 +84,14 @@
 
 (re-frame/reg-sub
  :signing/phrase
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [{:keys [signing-phrase]}]
    signing-phrase))
 
 (re-frame/reg-sub
  :signing/sign-message
  :<- [:signing/sign]
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  :<- [:prices]
  (fn [[sign wallet-accounts prices]]
    (if (= :pinless (:type sign))

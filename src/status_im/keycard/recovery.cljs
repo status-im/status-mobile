@@ -134,12 +134,11 @@
 (rf/defn intro-wizard
   {:events [:multiaccounts.create.ui/intro-wizard]}
   [{:keys [db] :as cofx}]
-  (let [accs (get db :multiaccounts/multiaccounts)]
+  (let [accs (get db :profile/profiles-overview)]
     (rf/merge cofx
               {:db (-> db
                        (update :keycard dissoc :flow)
                        (dissoc :restored-account?))}
-              (multiaccounts.create/prepare-intro-wizard)
               (if (pos? (count accs))
                 (navigation/navigate-to :get-your-keys nil)
                 (navigation/set-stack-root :onboarding [:get-your-keys])))))
@@ -157,7 +156,7 @@
    :interceptors [(re-frame/inject-cofx :random-guid-generator)
                   (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
   [{:keys [db] :as cofx}]
-  (let [{{:keys [multiaccount secrets flow]} :keycard} db
+  (let [{{:keys [secrets flow] :profile/keys [profile]} :keycard} db
         {:keys [address
                 name
                 public-key
@@ -172,7 +171,7 @@
                 instance-uid
                 key-uid
                 recovered]}
-        multiaccount
+        profile
         {:keys [pairing paired-on]} secrets
         {:keys [name]}
         (if (nil? name)
@@ -238,7 +237,7 @@
               (multiaccounts.model/logged-in? db)
               (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings])
 
-              (:multiaccounts/login db)
+              (:profile/login db)
               (return-to-keycard-login)
 
               :else
@@ -263,9 +262,9 @@
   [{:keys [db] :as cofx}]
   (let [pairing         (get-in db [:keycard :secrets :pairing])
         paired-on       (get-in db [:keycard :secrets :paired-on])
-        instance-uid    (get-in db [:keycard :multiaccount :instance-uid])
+        instance-uid    (get-in db [:keycard :profile/profile :instance-uid])
         account         (-> db
-                            :multiaccounts/login
+                            :profile/login
                             (assoc :keycard-pairing pairing)
                             (assoc :save-password? false))
         key-uid         (-> account :key-uid)
@@ -275,14 +274,15 @@
         password        (ethereum/sha3 (security/safe-unmask-data (get-in db
                                                                           [:keycard
                                                                            :migration-password])))
-        encryption-pass (get-in db [:keycard :multiaccount :encryption-public-key])
+        encryption-pass (get-in db [:keycard :profile/profile :encryption-public-key])
         login-params    {:key-uid           key-uid
                          :multiaccount-data (types/clj->json account)
                          :password          encryption-pass
-                         :chat-key          (get-in db [:keycard :multiaccount :whisper-private-key])}]
+                         :chat-key          (get-in db
+                                                    [:keycard :profile/profile :whisper-private-key])}]
     {:db                (-> db
-                            (assoc-in [:multiaccounts/multiaccounts key-uid :keycard-pairing] pairing)
-                            (assoc :multiaccounts/login account)
+                            (assoc-in [:profile/profiles-overview key-uid :keycard-pairing] pairing)
+                            (assoc :profile/login account)
                             (assoc :auth-method keychain/auth-method-none)
                             (update :keycard dissoc :flow :migration-password)
                             (dissoc :recovered-account?))
@@ -290,7 +290,7 @@
 
 (rf/defn delete-multiaccount
   [{:keys [db]}]
-  (let [key-uid (get-in db [:multiaccounts/login :key-uid])]
+  (let [key-uid (get-in db [:profile/login :key-uid])]
     {:keycard/delete-multiaccount-before-migration
      {:key-uid    key-uid
       :on-error   #(re-frame/dispatch [::delete-multiaccount-error %])
@@ -313,7 +313,7 @@
      cofx
      {:db (-> db
               (assoc-in
-               [:keycard :multiaccount]
+               [:keycard :profile/profile]
                (-> account-data
                    (update :address ethereum/normalized-hex)
                    (update :whisper-address ethereum/normalized-hex)
@@ -323,7 +323,7 @@
                    (update :whisper-public-key ethereum/normalized-hex)
                    (update :wallet-public-key ethereum/normalized-hex)
                    (update :wallet-root-public-key ethereum/normalized-hex)
-                   (update :instance-uid #(get-in db [:keycard :multiaccount :instance-uid] %))))
+                   (update :instance-uid #(get-in db [:keycard :profile/profile :instance-uid] %))))
               (assoc-in [:keycard :multiaccount-wallet-address] (:wallet-address account-data))
               (assoc-in [:keycard :multiaccount-whisper-public-key] (:whisper-public-key account-data))
               (assoc-in [:keycard :pin :status] nil)
@@ -362,7 +362,7 @@
         pin               (common/vector->string (get-in db [:keycard :pin :import-multiaccount]))]
     (rf/merge cofx
               {:db (-> db
-                       (assoc-in [:keycard :multiaccount :instance-uid] instance-uid)
+                       (assoc-in [:keycard :profile/profile :instance-uid] instance-uid)
                        (assoc-in [:keycard :pin :status] :verifying)
                        (assoc-in [:keycard :secrets]
                                  {:pairing   pairing'
@@ -387,7 +387,7 @@
   (rf/merge
    cofx
    {:db (update-in db
-                   [:keycard :multiaccount]
+                   [:keycard :profile/profile]
                    (fn [multiacc]
                      (assoc multiacc
                             :recovered (get db :recovered-account?)

@@ -36,7 +36,7 @@
 
 (defn preferred-mailserver-id
   [db]
-  (get-in db [:multiaccount :pinned-mailservers (node/current-fleet-key db)]))
+  (get-in db [:profile/profile :pinned-mailservers (node/current-fleet-key db)]))
 
 (defn connection-error-dismissed
   [db]
@@ -61,7 +61,7 @@
 
 (defn fetch-use-mailservers?
   [{:keys [db]}]
-  (get-in db [:multiaccount :use-mailservers?]))
+  (get-in db [:profile/profile :use-mailservers?]))
 
 (defonce showing-connection-error-popup? (atom false))
 
@@ -105,7 +105,7 @@
   [{:keys [db] :as cofx}]
   (let [current-fleet     (node/current-fleet-key db)
         error-dismissed?  (connection-error-dismissed db)
-        pinned-mailserver (get-in db [:multiaccount :pinned-mailservers current-fleet])]
+        pinned-mailserver (get-in db [:profile/profile :pinned-mailservers current-fleet])]
     (when (and pinned-mailserver
                (not error-dismissed?)
                (not @showing-connection-error-popup?))
@@ -266,9 +266,9 @@
 (rf/defn upsert
   {:events       [:mailserver.ui/save-pressed]
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
-  [{{:mailserver.edit/keys [mailserver] :keys [multiaccount] :as db} :db
-    random-id-generator                                              :random-id-generator
-    :as                                                              cofx}]
+  [{{:mailserver.edit/keys [mailserver] :profile/keys [profile] :as db} :db
+    random-id-generator                                                 :random-id-generator
+    :as                                                                 cofx}]
 
   (let [{:keys [name url id]} mailserver
         current-fleet         (node/current-fleet-key db)]
@@ -364,7 +364,7 @@
   {:events [:mailserver.ui/connect-confirmed]}
   [{:keys [db] :as cofx} current-fleet mailserver-id]
   (let [pinned-mailservers (-> db
-                               (get-in [:multiaccount :pinned-mailservers])
+                               (get-in [:profile/profile :pinned-mailservers])
                                (assoc current-fleet mailserver-id))]
     (rf/merge cofx
               {:db            (assoc db :mailserver/current-id mailserver-id)
@@ -379,7 +379,7 @@
   [{:keys [db] :as cofx}]
   (let [current-fleet      (node/current-fleet-key db)
         pinned-mailservers (-> db
-                               (get-in [:multiaccount :pinned-mailservers])
+                               (get-in [:profile/profile :pinned-mailservers])
                                (dissoc current-fleet))]
     (rf/merge cofx
               {:json-rpc/call [{:method     "wakuext_setPinnedMailservers"
@@ -396,7 +396,7 @@
   [{:keys [db] :as cofx}]
   (let [current-fleet      (node/current-fleet-key db)
         mailserver-id      (:mailserver/current-id db)
-        pinned-mailservers (get-in db [:multiaccount :pinned-mailservers])]
+        pinned-mailservers (get-in db [:profile/profile :pinned-mailservers])]
     (rf/merge cofx
               (multiaccounts.update/multiaccount-update
                :pinned-mailservers

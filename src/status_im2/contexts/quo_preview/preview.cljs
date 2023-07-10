@@ -72,8 +72,8 @@
    :background-color   (colors/theme-colors colors/neutral-20 colors/white)})
 
 (defn customizer-boolean
-  [{:keys [label key state]}]
-  (let [state* (reagent/cursor state [key])]
+  [{:keys [label state] :as args}]
+  (let [state* (reagent/cursor state [(:key args)])]
     [rn/view {:style container}
      [label-view state label]
      [rn/view
@@ -100,8 +100,8 @@
         "False"]]]]))
 
 (defn customizer-text
-  [{:keys [label key state limit suffix]}]
-  (let [state* (reagent/cursor state [key])]
+  [{:keys [label state limit suffix] :as args}]
+  (let [state* (reagent/cursor state [(:key args)])]
     [rn/view {:style container}
      [label-view state label]
      [rn/view {:style {:flex 0.6}}
@@ -129,8 +129,8 @@
 (defn customizer-select
   []
   (let [open (reagent/atom nil)]
-    (fn [{:keys [label key state options]}]
-      (let [state*   (reagent/cursor state [key])
+    (fn [{:keys [label state options] :as args}]
+      (let [state*   (reagent/cursor state [(:key args)])
             selected (value-for-key @state* options)]
         [rn/view {:style container}
          [label-view state label]
@@ -145,15 +145,15 @@
             [rn/view {:style (modal-view)}
              [rn/scroll-view
               (doall
-               (for [{:keys [key value]} options]
-                 ^{:key key}
+               (for [{k :key v :value} options]
+                 ^{:key k}
                  [rn/touchable-opacity
-                  {:style    (select-option-style (= @state* key))
+                  {:style    (select-option-style (= @state* k))
                    :on-press #(do
                                 (reset! open false)
-                                (reset! state* key))}
-                  [rn/text {:color (if (= @state* key) :link :secondary)}
-                   value]]))]
+                                (reset! state* k))}
+                  [rn/text {:color (if (= @state* k) :link :secondary)}
+                   v]]))]
              [rn/view
               {:flex-direction   :row
                :padding-top      20
@@ -192,17 +192,29 @@
    {:style              {:flex 1}
     :padding-horizontal 16}
    (doall
-    (for [{:keys [key type]
-           :as   desc}
-          descriptors
-          :let [descriptor (merge desc
-                                  {:state state})]]
-      ^{:key key}
+    (for [desc descriptors
+          :let [descriptor (merge desc {:state state})]]
+      ^{:key (:key desc)}
       [:<>
-       (case type
+       (case (:type desc)
          :boolean [customizer-boolean descriptor]
          :text    [customizer-text descriptor]
-         :select  [customizer-select descriptor])]))])
+         :select  [customizer-select descriptor]
+         nil)]))])
+
+(defn customization-color-option
+  ([]
+   (customization-color-option {}))
+  ([opts]
+   (merge {:label   "Custom color:"
+           :key     :customization-color
+           :type    :select
+           :options (->> colors/customization
+                         keys
+                         sort
+                         (map (fn [k]
+                                {:key k :value (string/capitalize (name k))})))}
+          opts)))
 
 (comment
   [{:label "Show error:"

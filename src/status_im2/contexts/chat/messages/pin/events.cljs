@@ -80,7 +80,7 @@
   "Pin message, rebuild pinned messages list locally"
   {:events [:pin-message/send-pin-message-locally]}
   [{:keys [db] :as cofx} {:keys [chat-id message-id pinned] :as pin-message}]
-  (let [current-public-key       (get-in db [:multiaccount :public-key])
+  (let [current-public-key       (get-in db [:profile/profile :public-key])
         message                  (merge pin-message {:pinned-by current-public-key})
         pin-message-lists-exist? (some? (get-in db [:pin-message-lists chat-id]))]
     (rf/merge cofx

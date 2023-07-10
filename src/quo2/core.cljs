@@ -2,21 +2,24 @@
   (:refer-clojure :exclude [filter])
   (:require
     quo2.components.avatars.account-avatar
-    quo2.components.avatars.channel-avatar
+    quo2.components.avatars.channel-avatar.view
     quo2.components.avatars.group-avatar
     quo2.components.avatars.icon-avatar
     quo2.components.avatars.user-avatar.view
     quo2.components.avatars.wallet-user-avatar
     quo2.components.banners.banner.view
-    quo2.components.buttons.button
+    quo2.components.buttons.button.view
     quo2.components.buttons.dynamic-button
     quo2.components.buttons.predictive-keyboard.view
     quo2.components.buttons.slide-button.view
+    quo2.components.code.snippet
     quo2.components.colors.color-picker.view
+    quo2.components.common.separator.view
+    quo2.components.community.banner.view
+    quo2.components.community.channel-actions
     quo2.components.community.community-card-view
     quo2.components.community.community-list-view
     quo2.components.community.community-view
-    quo2.components.community.banner.view
     quo2.components.community.icon
     quo2.components.community.token-gating
     quo2.components.counter.counter
@@ -30,8 +33,8 @@
     quo2.components.drawers.drawer-buttons.view
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
-    quo2.components.header
     quo2.components.empty-state.empty-state.view
+    quo2.components.header
     quo2.components.icon
     quo2.components.info.info-message
     quo2.components.info.information-box.view
@@ -41,14 +44,16 @@
     quo2.components.inputs.search-input.view
     quo2.components.inputs.title-input.view
     quo2.components.keycard.view
+    quo2.components.links.link-preview.view
     quo2.components.links.url-preview-list.view
     quo2.components.links.url-preview.view
-    quo2.components.links.link-preview.view
     quo2.components.list-items.channel
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
     quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
+    quo2.components.loaders.skeleton.view
+    quo2.components.markdown.list.view
     quo2.components.markdown.text
     quo2.components.messages.author.view
     quo2.components.messages.gap
@@ -66,15 +71,16 @@
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
     quo2.components.reactions.reaction
-    quo2.components.selectors.reactions.view
     quo2.components.record-audio.record-audio.view
     quo2.components.record-audio.soundtrack.view
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
+    quo2.components.selectors.reactions.view
     quo2.components.selectors.selectors.view
-    quo2.components.separator
     quo2.components.settings.accounts.view
     quo2.components.settings.privacy-option
+    quo2.components.settings.reorder-item.view
+    quo2.components.settings.settings-list.view
     quo2.components.share.qr-code.view
     quo2.components.share.share-qr-code.view
     quo2.components.tabs.account-selector
@@ -86,14 +92,11 @@
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
-    quo2.components.text-combinations.title.view
-    quo2.components.settings.settings-list.view
-    quo2.components.wallet.account-card.view
-    quo2.components.settings.reorder-item.view))
+    quo2.components.text-combinations.title.view 
+    quo2.components.wallet.account-card.view))
 
-(def text quo2.components.markdown.text/text)
 (def icon quo2.components.icon/icon)
-(def separator quo2.components.separator/separator)
+(def separator quo2.components.common.separator.view/separator)
 (def header quo2.components.header/header)
 (def dropdown quo2.components.dropdowns.dropdown/dropdown)
 (def info-message quo2.components.info.info-message/info-message)
@@ -107,12 +110,11 @@
 (def group-avatar-tag quo2.components.tags.context-tag.view/group-avatar-tag)
 (def audio-tag quo2.components.tags.context-tag.view/audio-tag)
 (def community-tag quo2.components.tags.context-tag.view/community-tag)
-(def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
-(def page-nav quo2.components.navigation.page-nav/page-nav)
+
+
 (def disclaimer quo2.components.selectors.disclaimer.view/view)
 (def checkbox quo2.components.selectors.selectors.view/checkbox)
 (def filter quo2.components.selectors.filter.view/view)
-(def skeleton quo2.components.loaders.skeleton/skeleton)
 (def author quo2.components.messages.author.view/author)
 
 ;;;; SELECTORS
@@ -120,7 +122,7 @@
 
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
-(def channel-avatar quo2.components.avatars.channel-avatar/channel-avatar)
+(def channel-avatar quo2.components.avatars.channel-avatar.view/view)
 (def group-avatar quo2.components.avatars.group-avatar/group-avatar)
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
 (def user-avatar quo2.components.avatars.user-avatar.view/user-avatar)
@@ -130,10 +132,13 @@
 (def banner quo2.components.banners.banner.view/banner)
 
 ;;;; BUTTONS
-(def button quo2.components.buttons.button/button)
+(def button quo2.components.buttons.button.view/button)
 (def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo2.components.buttons.slide-button.view/view)
+
+;;;; CODE
+(def snippet quo2.components.code.snippet/snippet)
 
 ;;;; CARDS
 (def small-option-card quo2.components.onboarding.small-option-card.view/small-option-card)
@@ -156,6 +161,7 @@
 (def discover-card quo2.components.community.banner.view/view)
 (def community-icon quo2.components.community.icon/community-icon)
 (def token-requirement-list quo2.components.community.token-gating/token-requirement-list)
+(def channel-actions quo2.components.community.channel-actions/channel-actions)
 
 ;;;; COUNTER
 (def counter quo2.components.counter.counter/counter)
@@ -188,6 +194,18 @@
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
 (def user-list quo2.components.list-items.user-list/user-list)
+
+;;;; LOADERS
+(def skeleton quo2.components.loaders.skeleton/skeleton)
+(def static-skeleton quo2.components.loaders.skeleton.view/view)
+
+;;;; NAVIGATION
+(def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
+(def page-nav quo2.components.navigation.page-nav/page-nav)
+
+;;;; MARKDOWN
+(def markdown-list quo2.components.markdown.list.view/view)
+(def text quo2.components.markdown.text/text)
 
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)

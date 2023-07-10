@@ -10,7 +10,8 @@
 
 (defn- get-static-bottom
   []
-  (oops/oget StaticSafeAreaInsets "safeAreaInsetsBottom"))
+  (some-> StaticSafeAreaInsets
+          (oops/oget "safeAreaInsetsBottom")))
 
 (defn get-top
   []
@@ -20,8 +21,8 @@
 
 (defn get-bottom
   []
-  (if platform/ios?
-    (get-static-bottom)
+  (if-let [bottom (and platform/ios? (get-static-bottom))]
+    bottom
     0))
 
 (defn get-insets

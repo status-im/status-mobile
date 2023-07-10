@@ -4,6 +4,7 @@
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [status-im2.common.home.style :as style]
+    [status-im.multiaccounts.core :as multiaccounts]
     [status-im2.common.plus-button.view :as plus-button]
     [status-im2.constants :as constants]
     [utils.re-frame :as rf]
@@ -51,7 +52,7 @@
 
 (defn- left-section
   [{:keys [avatar]}]
-  (let [{:keys [public-key]} (rf/sub [:multiaccount])
+  (let [{:keys [public-key]} (rf/sub [:profile/profile])
         online?              (rf/sub [:visibility-status-updates/online? public-key])]
     [rn/touchable-without-feedback {:on-press #(rf/dispatch [:navigate-to :my-profile])}
      [rn/view
@@ -117,11 +118,15 @@
   props
   {:type    quo/button types
    :style   override-style
-   :avatar  user-avatar
    :search? When non-nil, show search button}
   "
-  [{:keys [type style avatar search?]
+  [{:keys [type style search?]
     :or   {type :default}}]
-  [rn/view {:style (merge style/top-nav-container style)}
-   [left-section {:avatar avatar}]
-   [right-section {:button-type type :search? search?}]])
+  (let [account             (rf/sub [:profile/multiaccount])
+        customization-color (rf/sub [:profile/customization-color])
+        avatar              {:customization-color customization-color
+                             :full-name           (multiaccounts/displayed-name account)
+                             :profile-picture     (multiaccounts/displayed-photo account)}]
+    [rn/view {:style (merge style/top-nav-container style)}
+     [left-section {:avatar avatar}]
+     [right-section {:button-type type :search? search?}]]))

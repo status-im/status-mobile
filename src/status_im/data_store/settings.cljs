@@ -1,7 +1,8 @@
 (ns status-im.data-store.settings
   (:require [status-im.data-store.visibility-status-updates :as visibility-status-updates]
             [status-im.ethereum.eip55 :as eip55]
-            [status-im2.config :as config]))
+            [status-im2.config :as config]
+            [clojure.set :as set]))
 
 (defn rpc->networks
   [networks]
@@ -33,27 +34,19 @@
              {}
              custom-bootnodes))
 
-(defn rpc->stickers-packs
-  [stickers-packs]
-  (reduce-kv (fn [acc pack-id stickers-pack]
-               (assoc acc (js/parseInt (name pack-id)) stickers-pack))
-             {}
-             stickers-packs))
-
 (defn rpc->settings
   [settings]
   (-> settings
       (update :dapps-address eip55/address->checksum)
       (update :address eip55/address->checksum)
       (update :networks/networks rpc->networks)
-      (update :networks/current-network
-              #(if (seq %)
-                 %
-                 config/default-network))
+      (update :networks/current-network #(if (seq %) % config/default-network))
       (update :wallet/visible-tokens rpc->visible-tokens)
       (update :pinned-mailservers rpc->pinned-mailservers)
       (update :link-previews-enabled-sites set)
       (update :custom-bootnodes rpc->custom-bootnodes)
       (update :custom-bootnodes-enabled? rpc->custom-bootnodes)
       (update :currency keyword)
-      (visibility-status-updates/<-rpc-settings)))
+      (visibility-status-updates/<-rpc-settings)
+      (set/rename-keys {:compressedKey :compressed-key
+                        :emojiHash     :emoji-hash})))

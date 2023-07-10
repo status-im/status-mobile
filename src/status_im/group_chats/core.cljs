@@ -7,9 +7,10 @@
             [re-frame.core :as re-frame]
             [status-im2.contexts.chat.events :as chat.events]
             [status-im2.constants :as constants]
-            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.contexts.shell.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im.data-store.invitations :as data-store.invitations]))
 
 (rf/defn navigate-chat-updated
   {:events [:navigate-chat-updated]}
@@ -258,3 +259,19 @@
       :on-accept           #(do
                               (re-frame/dispatch [:bottom-sheet/hide-old])
                               (re-frame/dispatch [:group-chats.ui/leave-chat-confirmed chat-id]))}}))
+
+(rf/defn initialize-invitations
+  {:events [::initialize-invitations]}
+  [{:keys [db]} invitations]
+  {:db (assoc db
+              :group-chat/invitations
+              (reduce (fn [acc {:keys [id] :as inv}]
+                        (assoc acc id (data-store.invitations/<-rpc inv)))
+                      {}
+                      invitations))})
+
+(rf/defn get-group-chat-invitations
+  [_]
+  {:json-rpc/call
+   [{:method     "wakuext_getGroupChatInvitations"
+     :on-success #(re-frame/dispatch [::initialize-invitations %])}]})

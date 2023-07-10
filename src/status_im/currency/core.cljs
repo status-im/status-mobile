@@ -5,7 +5,7 @@
 
 (defn get-currency
   [db]
-  (get-in db [:multiaccount :currency] :usd))
+  (get-in db [:profile/profile :currency] :usd))
 
 (rf/defn set-currency
   {:events [:wallet.settings.ui/currency-selected]}

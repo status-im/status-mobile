@@ -11,15 +11,14 @@
             [react-native.reanimated :as reanimated]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as message.gap]
-            [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
             [status-im2.contexts.chat.messages.list.style :as style]
             [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
             [status-im2.contexts.chat.composer.constants :as composer.constants]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.i18n :as i18n]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -173,6 +172,23 @@
     platform/android?
     (assoc :scale-y -1)))
 
+(defn actions
+  [chat-id cover-bg-color]
+  (let [latest-pin-text (rf/sub [:chats/last-pinned-message-text chat-id])
+        pins-count      (rf/sub [:chats/pin-messages-count chat-id])]
+    [quo/channel-actions
+     {:style   {:margin-top 16}
+      :actions [{:accessibility-label :action-button-pinned
+                 :big?                true
+                 :label               (or latest-pin-text (i18n/label :t/no-pinned-messages))
+                 :color               cover-bg-color
+                 :icon                :i/pin
+                 :counter-value       pins-count
+                 :on-press            (fn []
+                                        (rf/dispatch [:dismiss-keyboard])
+                                        (rf/dispatch [:pin-message/show-pins-bottom-sheet
+                                                      chat-id]))}]}]))
+
 (defn f-list-footer
   [{:keys [chat scroll-y cover-bg-color on-layout shell-animation-complete?]}]
   (let [{:keys [chat-id chat-name emoji chat-type
@@ -215,7 +231,8 @@
           [contact-icon contact]]]
         (when bio
           [quo/text {:style style/bio}
-           bio])]]]
+           bio])
+        [actions chat-id cover-bg-color]]]]
      [loading-view chat-id shell-animation-complete?]]))
 
 (defn list-footer
@@ -226,7 +243,6 @@
   [{:keys [chat-id invitation-admin]}]
   [rn/view
    [chat.group/group-chat-footer chat-id invitation-admin]])
-
 (defn footer-on-layout
   [e]
   (let [height (oops/oget e "nativeEvent.layout.height")
@@ -234,21 +250,19 @@
     (reset! messages-view-header-height (+ height y))))
 
 (defn render-fn
-  [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
-   {:keys [context keyboard-shown?]}]
+  [{:keys [type value content-type] :as message-data} _ _
+   {:keys [context keyboard-shown? insets]}]
   ;;TODO temporary hide mutual-state-updates https://github.com/status-im/status-mobile/issues/16254
   (when (not= content-type constants/content-type-system-mutual-state-update)
-    [rn/view
-     (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
-     (if (= type :datemark)
-       [quo/divider-date value]
-       (if (= content-type constants/content-type-gap)
-         [not-implemented/not-implemented
-          [message.gap/gap message-data]]
-         [rn/view {:padding-horizontal 8}
-          (if (or deleted? deleted-for-me?)
-            [content.deleted/deleted-message message-data context]
-            [message/message-with-reactions message-data context keyboard-shown?])]))]))
+    (if (= type :header)
+      [list-header insets]
+      [rn/view
+       (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
+       (if (= type :datemark)
+         [quo/divider-date value]
+         (if (= content-type constants/content-type-gap)
+           [message.gap/gap message-data]
+           [message/message message-data context keyboard-shown?]))])))
 
 (defn scroll-handler
   [event scroll-y]
@@ -279,25 +293,25 @@
        :ref                          list-ref
        :header                       [:<>
                                       (when (= (:chat-type chat) constants/private-group-chat-type)
-                                        [list-group-chat-header chat])
-                                      [list-header insets]]
+                                        [list-group-chat-header chat])]
        :footer                       [list-footer
                                       {:chat                      chat
                                        :scroll-y                  scroll-y
                                        :cover-bg-color            cover-bg-color
                                        :on-layout                 footer-on-layout
                                        :shell-animation-complete? shell-animation-complete?}]
-       :data                         messages
+       :data                         (into [{:type :header}] messages)
        :render-data                  {:context         context
-                                      :keyboard-shown? keyboard-shown?}
+                                      :keyboard-shown? keyboard-shown?
+                                      :insets          insets}
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
        :on-end-reached               #(list-on-end-reached scroll-y)
        :on-scroll-to-index-failed    identity
-       :content-container-style      {:padding-bottom style/messages-list-bottom-offset}
        :scroll-indicator-insets      {:top (- composer.constants/composer-default-height 16)}
        :keyboard-dismiss-mode        :interactive
-       :keyboard-should-persist-taps :handled
+       :keyboard-should-persist-taps :always
+       :on-scroll-begin-drag         rn/dismiss-keyboard!
        :on-momentum-scroll-begin     state/start-scrolling
        :on-momentum-scroll-end       state/stop-scrolling
        :scroll-event-throttle        16
@@ -307,17 +321,15 @@
                                          (on-scroll event)))
        :style                        (add-inverted-y-android
                                       {:background-color (if all-loaded?
-                                                           (colors/theme-colors (:light cover-bg-color)
-                                                                                (:dark cover-bg-color))
+                                                           (colors/theme-colors
+                                                            (colors/custom-color cover-bg-color 50 20)
+                                                            (colors/custom-color cover-bg-color 50 40))
                                                            (colors/theme-colors
                                                             colors/white
                                                             colors/neutral-95))})
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
        :inverted                     (when platform/ios? true)
        :on-layout                    (fn [e]
-                                       ;; FIXME: this is due to Android not triggering the initial
-                                       ;; scrollTo event
-                                       (scroll-to-offset 1)
                                        (let [layout-height (oops/oget e "nativeEvent.layout.height")]
                                          (reset! messages-view-height layout-height)))
        :scroll-enabled               (not recording?)}]]))

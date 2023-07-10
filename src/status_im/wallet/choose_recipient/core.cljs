@@ -61,7 +61,7 @@
          (cond-> {:to      address
                   :to-name (or name (find-address-name db address))
                   :from    (ethereum/get-default-account
-                            (get db :multiaccount/accounts))}
+                            (get db :profile/wallet-accounts))}
            gas      (assoc :gas (money/bignumber gas))
            gasLimit (assoc :gas (money/bignumber gasLimit))
            gasPrice (assoc :gasPrice (money/bignumber gasPrice))

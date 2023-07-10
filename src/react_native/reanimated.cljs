@@ -34,6 +34,7 @@
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
 
 (def view (reagent/adapt-react-class (.-View reanimated)))
+(def text (reagent/adapt-react-class (.-Text reanimated)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView reanimated)))
 (def image (reagent/adapt-react-class (.-Image reanimated)))
 
@@ -80,7 +81,8 @@
   {:linear  (bezier 0 0 1 1)
    :easing1 (bezier 0.25 0.1 0.25 1)
    :easing2 (bezier 0 0.3 0.6 0.9)
-   :easing3 (bezier 0.3 0.3 0.3 0.9)})
+   :easing3 (bezier 0.3 0.3 0.3 0.9)
+   :easing4 (bezier 0.3 0.3 1 1)})
 
 ;; Helper functions
 (defn get-shared-value

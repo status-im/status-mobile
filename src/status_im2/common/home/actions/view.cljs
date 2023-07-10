@@ -7,7 +7,9 @@
             [status-im2.constants :as constants]
             [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]
+            [utils.datetime :as datetime]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -51,8 +53,11 @@
                   :accessibility-label :edit-nickname}])}]))
 
 (defn mute-chat-action
-  [chat-id]
-  (hide-sheet-and-dispatch [:chat.ui/mute chat-id true constants/mute-till-unmuted]))
+  [chat-id chat-type]
+  (hide-sheet-and-dispatch [:show-bottom-sheet
+                            {:content (fn []
+                                        [mute-chat-drawer/mute-chat-drawer chat-id
+                                         :mute-chat-for-duration chat-type])}]))
 
 (defn unmute-chat-action
   [chat-id]
@@ -118,19 +123,22 @@
                                                                   public-key])}])}]))
 
 (defn mute-chat-entry
-  [chat-id]
+  [chat-id chat-type muted-till]
   (let [muted? (rf/sub [:chats/muted chat-id])]
     (entry {:icon                (if muted? :i/muted :i/activity-center)
             :label               (i18n/label
                                   (if muted?
                                     :unmute-chat
                                     :mute-chat))
+            :sub-label           (when (and muted? (some? muted-till))
+                                   (str (i18n/label :t/muted-until)
+                                        " "
+                                        (datetime/format-mute-till muted-till)))
             :on-press            (if muted?
                                    #(unmute-chat-action chat-id)
-                                   #(mute-chat-action chat-id))
+                                   #(mute-chat-action chat-id chat-type))
             :danger?             false
             :accessibility-label :mute-chat
-            :sub-label           nil
             :chevron?            true})))
 
 (defn mark-as-read-entry
@@ -237,7 +245,7 @@
           :label               (i18n/label :t/notifications)
           :on-press            #(js/alert "TODO: to be implemented, requires design input")
           :danger?             false
-          :sub-label           "All messages" ; TODO: placeholder
+          :sub-label           (i18n/label :t/all-messages)
           :accessibility-label :manage-notifications
           :chevron?            true
           :add-divider?        add-divider?}))
@@ -296,7 +304,7 @@
           :sub-label           nil
           :chevron?            false}))
 
-;; TODO(OmarBasem): to be implemented.
+;; TODO(OmarBasem): to be implemented.chat/check-channel-muted?
 (defn share-group-entry
   []
   (entry {:icon                :i/share
@@ -404,9 +412,9 @@
      (delete-chat-entry item inside-chat?))])
 
 (defn notification-actions
-  [{:keys [chat-id group-chat public?]} inside-chat? needs-divider?]
+  [{:keys [chat-id group-chat public? chat-type muted-till]} inside-chat? needs-divider?]
   [(mark-as-read-entry chat-id needs-divider?)
-   (mute-chat-entry chat-id)
+   (mute-chat-entry chat-id chat-type muted-till)
    (notifications-entry false)
    (when inside-chat?
      (fetch-messages-entry))

@@ -13,8 +13,7 @@
             [status-im.wallet.choose-recipient.core :as choose-recipient]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
-            [native-module.core :as native-module]
-            [react-native.platform :as platform]))
+            [native-module.core :as native-module]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
@@ -59,8 +58,8 @@
   (group-chats/create-from-link cofx params))
 
 (defn own-public-key?
-  [{:keys [multiaccount]} public-key]
-  (= (:public-key multiaccount) public-key))
+  [{:keys [profile/profile]} public-key]
+  (= (:public-key profile) public-key))
 
 (rf/defn handle-private-chat
   [{:keys [db] :as cofx} {:keys [chat-id]}]
@@ -123,7 +122,7 @@
     (some #(when (= (string/lower-case (:address %))
                     (string/lower-case address))
              %)
-          (:multiaccount/accounts db))))
+          (:profile/wallet-accounts db))))
 
 (rf/defn handle-wallet-account
   [cofx {address :account}]
@@ -175,15 +174,10 @@
 
 (rf/defn handle-url
   "Store url in the database if the user is not logged in, to be processed
-  on login, otherwise just handle it. On Android platform the app-state value
-  in db is `background` immediately after account creation, hence we avoid the
-  app-state check for android platforms to fix this e2e blocker :
-  https://github.com/status-im/status-mobile/issues/15859
-  "
+  on login, otherwise just handle it."
   {:events [:universal-links/handle-url]}
   [{:keys [db] :as cofx} url]
-  (if (and (multiaccounts.model/logged-in? db)
-           (or platform/android? (= (:app-state db) "active")))
+  (if (multiaccounts.model/logged-in? db)
     (route-url cofx url)
     (store-url-for-later cofx url)))
 

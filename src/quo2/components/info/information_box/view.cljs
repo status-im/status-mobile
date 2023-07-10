@@ -1,6 +1,6 @@
 (ns quo2.components.info.information-box.view
   (:require [clojure.string :as string]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [quo2.components.icon :as icons]
             [quo2.components.info.information-box.style :as style]
             [quo2.components.markdown.text :as text]

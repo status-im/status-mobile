@@ -35,7 +35,8 @@
            on-press
            add-divider?
            override-theme
-           accessibility-label]
+           accessibility-label
+           icon-color]
     :as   action-props}]
   (when action-props
     [:<> {:key label}
@@ -53,7 +54,7 @@
          :accessible          true
          :style               style/left-icon}
         [icon/icon icon
-         {:color (get-icon-color danger? override-theme)
+         {:color (or icon-color (get-icon-color danger? override-theme))
           :size  20}]]
        [rn/view
         {:style style/text-container}

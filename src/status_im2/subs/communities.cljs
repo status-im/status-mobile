@@ -52,7 +52,7 @@
  :communities/sorted-community-members
  (fn [[_ community-id]]
    (let [contacts     (re-frame/subscribe [:contacts/contacts])
-         multiaccount (re-frame/subscribe [:multiaccount])
+         multiaccount (re-frame/subscribe [:profile/profile])
          members      (re-frame/subscribe [:communities/community-members community-id])]
      [contacts multiaccount members]))
  (fn [[contacts multiaccount members] _]
@@ -71,16 +71,16 @@
           (sort-by #(visibility-status-utils/visibility-status-order (get % 0)))))))
 
 (re-frame/reg-sub
- :communities/featured-communities
- :<- [:communities]
- (fn [communities]
-   (vals communities)))
+ :communities/featured-contract-communities
+ :<- [:contract-communities]
+ (fn [contract-communities]
+   (sort-by :name (vals (:featured contract-communities)))))
 
 (re-frame/reg-sub
- :communities/sorted-communities
- :<- [:communities]
- (fn [communities]
-   (sort-by :name (vals communities))))
+ :communities/other-contract-communities
+ :<- [:contract-communities]
+ (fn [contract-communities]
+   (sort-by :name (vals (:other contract-communities)))))
 
 (re-frame/reg-sub
  :communities/community-ids
@@ -165,9 +165,12 @@
 
 (defn calculate-unviewed-counts
   [chats]
-  (reduce (fn [acc {:keys [unviewed-mentions-count unviewed-messages-count]}]
-            {:unviewed-messages-count (+ (:unviewed-messages-count acc) (or unviewed-messages-count 0))
-             :unviewed-mentions-count (+ (:unviewed-mentions-count acc) (or unviewed-mentions-count 0))})
+  (reduce (fn [acc {:keys [unviewed-mentions-count unviewed-messages-count muted]}]
+            (if-not muted
+              (-> acc
+                  (update :unviewed-messages-count + unviewed-messages-count)
+                  (update :unviewed-mentions-count + unviewed-mentions-count))
+              acc))
           {:unviewed-messages-count 0
            :unviewed-mentions-count 0}
           chats))
@@ -213,28 +216,30 @@
    full-chats-data]
   (fn [acc
        [_ {:keys [name categoryID position id emoji can-post?]}]]
-    (let [category-id                       (if (seq categoryID) categoryID constants/empty-category-id)
+    (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
-                  unviewed-mentions-count]} (get full-chats-data
-                                                 (str community-id id))
-          acc-with-category                 (if (get acc category-id)
-                                              acc
-                                              (assoc acc
-                                                     category-id
-                                                     (assoc
-                                                      (or (get categories category-id)
-                                                          {:name (i18n/label :t/none)})
-                                                      :collapsed? (get collapsed-categories
-                                                                       category-id)
-                                                      :chats      [])))
-          chat                              {:name             name
-                                             :emoji            emoji
-                                             :unread-messages? (pos? unviewed-messages-count)
-                                             :position         position
-                                             :mentions-count   (or unviewed-mentions-count 0)
-                                             :locked?          (or (not joined)
-                                                                   (not can-post?))
-                                             :id               id}]
+                  unviewed-mentions-count
+                  muted]}   (get full-chats-data
+                                 (str community-id id))
+          acc-with-category (if (get acc category-id)
+                              acc
+                              (assoc acc
+                                     category-id
+                                     (assoc
+                                      (or (get categories category-id)
+                                          {:name (i18n/label :t/none)})
+                                      :collapsed? (get collapsed-categories
+                                                       category-id)
+                                      :chats      [])))
+          chat              {:name             name
+                             :emoji            emoji
+                             :muted?           muted
+                             :unread-messages? (pos? unviewed-messages-count)
+                             :position         position
+                             :mentions-count   (or unviewed-mentions-count 0)
+                             :locked?          (or (not joined)
+                                                   (not can-post?))
+                             :id               id}]
       (update-in acc-with-category [category-id :chats] conj chat))))
 
 (re-frame/reg-sub

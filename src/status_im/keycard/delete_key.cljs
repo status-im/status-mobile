@@ -11,7 +11,7 @@
 (rf/defn delete-card
   [{:keys [db] :as cofx}]
   (let [key-uid              (get-in db [:keycard :application-info :key-uid])
-        multiaccount-key-uid (get-in db [:multiaccount :key-uid])]
+        multiaccount-key-uid (get-in db [:profile/profile :key-uid])]
     (if (and key-uid
              (= key-uid multiaccount-key-uid))
       {:keycard/delete nil}

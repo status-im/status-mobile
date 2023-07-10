@@ -6,7 +6,7 @@
 
 (rf/defn send-contact-update
   [{:keys [db]}]
-  (let [{:keys [name preferred-name display-name address]} (:multiaccount db)]
+  (let [{:keys [name preferred-name display-name address]} (:profile/profile db)]
     {:json-rpc/call [{:method     "wakuext_sendContactUpdates"
                       :params     [(or preferred-name display-name name) ""]
                       :on-success #(log/debug "sent contact update")}]}))
@@ -16,7 +16,7 @@
   {:events [:multiaccounts.ui/update-name]}
   [{:keys [db] :as cofx} raw-multiaccounts-from-status-go]
   (let [{:keys [key-uid name preferred-name
-                display-name]} (:multiaccount db)
+                display-name]} (:profile/profile db)
         account                (some #(and (= (:key-uid %) key-uid) %) raw-multiaccounts-from-status-go)]
     (when-let [new-name (and account (or preferred-name display-name name))]
       (rf/merge cofx
@@ -30,7 +30,7 @@
   [{:keys [db] :as cofx}
    setting setting-value
    {:keys [dont-sync? on-success] :or {on-success #()}}]
-  (let [current-multiaccount (:multiaccount db)]
+  (let [current-multiaccount (:profile/profile db)]
     (if (empty? current-multiaccount)
       ;; NOTE: this should never happen, but if it does this is a critical error
       ;; and it is better to crash than risk having an unstable state
@@ -40,15 +40,15 @@
       (rf/merge
        cofx
        {:db (if setting-value
-              (assoc-in db [:multiaccount setting] setting-value)
-              (update db :multiaccount dissoc setting))
+              (assoc-in db [:profile/profile setting] setting-value)
+              (update db :profile/profile dissoc setting))
         :json-rpc/call
         [{:method     "settings_saveSetting"
           :params     [setting setting-value]
           :on-success on-success}]}
 
        (when (#{:name :preferred-name} setting)
-         (constantly {:setup/open-multiaccounts #(rf/dispatch [:multiaccounts.ui/update-name %])}))
+         (constantly {:profile/get-profiles-overview #(rf/dispatch [:multiaccounts.ui/update-name %])}))
 
        (when (and (not dont-sync?) (#{:name :preferred-name} setting))
          (send-contact-update))))))
@@ -73,7 +73,7 @@
 
 (rf/defn optimistic
   [{:keys [db] :as cofx} setting setting-value]
-  (let [current-multiaccount (:multiaccount db)
+  (let [current-multiaccount (:profile/profile db)
         setting-value        (if (= :currency setting)
                                (keyword setting-value)
                                setting-value)
@@ -97,8 +97,8 @@
                                  (assoc db :stickers/recent-stickers recent-stickers-from-remote))
                                db)]
     {:db (if setting-value
-           (assoc-in db [:multiaccount setting] setting-value)
-           (update db :multiaccount dissoc setting))}))
+           (assoc-in db [:profile/profile setting] setting-value)
+           (update db :profile/profile dissoc setting))}))
 
 (rf/defn set-many-js
   [cofx settings-js]
@@ -119,7 +119,7 @@
   {:events [::toggle-opensea-nfts-visiblity]}
   [cofx visible?]
   (rf/merge cofx
-            {:db       (assoc-in (:db cofx) [:multiaccount :opensea-enabled?] visible?)
+            {:db       (assoc-in (:db cofx) [:profile/profile :opensea-enabled?] visible?)
              ;; need to add fully qualified namespace to counter circular deps
              :dispatch [:status-im.wallet.core/fetch-collectibles-collection]}
             (multiaccount-update :opensea-enabled? visible? {})))

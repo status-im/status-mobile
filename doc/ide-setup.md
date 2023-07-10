@@ -169,7 +169,7 @@ For VS Code users.
 ### Start and connect the REPL
 
 1. Open the `status-mobile` folder.
-1. Start [Status development](STARTING_GUIDE.md#development) (Starting the `run-clojure` and `run-metro` jobs in split view in the VS Code integrated terminal works great.)
+1. Start [Status development](starting-guide.md#development) (Starting the `run-clojure` and `run-metro` jobs in split view in the VS Code integrated terminal works great.)
 1. Run the VS Code command: **Calva: Connect to a running REPL Server in the project**
    1. Select the project type `shadow-cljs`
    1. Accept the suggested connection `host:port`

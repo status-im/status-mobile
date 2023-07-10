@@ -14,7 +14,8 @@
             [status-im2.navigation.screens :as screens]
             [status-im2.setup.hot-reload :as reloader]
             [utils.re-frame :as rf]
-            [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]))
+            [status-im2.common.bottom-sheet-screen.view :as bottom-sheet-screen]
+            [quo2.theme :as theme]))
 
 (defn get-screens
   []
@@ -50,21 +51,23 @@
      {:padding-top (safe-area/get-top)})))
 
 (defn screen
-  [key]
+  [screen-key]
   (reagent.core/reactify-component
    (fn []
-     (let [{:keys [component options]}
-           (get (if js/goog.DEBUG (get-screens) screens) (keyword key)) ;; needed for hot reload
-           {:keys [insets sheet?]} options
-           background-color (or (get-in options [:layout :backgroundColor])
-                                (when sheet? :transparent))]
-       ^{:key (str "root" key @reloader/cnt)}
-       [:<>
-        [rn/view
-         {:style (wrapped-screen-style insets background-color)}
+     (let [{:keys [component options]}   (get (if js/goog.DEBUG
+                                                (get-screens)
+                                                screens)
+                                              (keyword screen-key))
+           {:keys [insets sheet? theme]} options
+           user-theme                    (theme/get-theme)
+           background-color              (or (get-in options [:layout :backgroundColor])
+                                             (when sheet? :transparent))]
+       ^{:key (str "root" screen-key @reloader/cnt)}
+       [theme/provider {:theme (or theme user-theme)}
+        [rn/view {:style (wrapped-screen-style insets background-color)}
          [inactive]
          (if sheet?
-           [:f> bottom-sheet-screen/f-view component]
+           [bottom-sheet-screen/view {:content component}]
            [component])]
         (when js/goog.DEBUG
           [reloader/reload-view])]))))
@@ -72,19 +75,18 @@
 (def bottom-sheet
   (reagent/reactify-component
    (fn []
-     (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
-           sheet                  (last sheets)
-           insets                 (safe-area/get-insets)]
+     (let [{:keys [sheets hide? theme]} (rf/sub [:bottom-sheet])
+           sheet                        (last sheets)
+           insets                       (safe-area/get-insets)
+           user-theme                   (theme/get-theme)]
        ^{:key (str "sheet" @reloader/cnt)}
-       [:<>
+       [theme/provider {:theme (or theme user-theme)}
         [inactive]
         [rn/keyboard-avoiding-view
          {:style                    {:position :relative :flex 1}
           :keyboard-vertical-offset (- (max 20 (:bottom insets)))}
          (when sheet
-           [:f>
-            bottom-sheet/f-view
-            {:insets insets :hide? hide?}
+           [:f> bottom-sheet/f-view {:insets insets :hide? hide?}
             sheet])]]))))
 
 (def toasts (reagent/reactify-component toasts/toasts))

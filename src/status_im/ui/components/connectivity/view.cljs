@@ -88,7 +88,7 @@
   (letsubs [{:keys [peers node mobile sync]}     [:connectivity/state]
             current-mailserver-name              [:mailserver/current-name]
             peers-count                          [:peers-count]
-            {:keys [syncing-on-mobile-network?]} [:multiaccount]]
+            {:keys [syncing-on-mobile-network?]} [:profile/profile]]
     [:<>
      [quo/header {:title (i18n/label :t/connection-status) :border-bottom false}]
      [quo/list-header (i18n/label :t/peer-to-peer)]

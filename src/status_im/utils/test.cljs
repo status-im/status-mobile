@@ -1,5 +1,6 @@
 (ns status-im.utils.test
-  (:require [re-frame.core :as re-frame]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.utils.types :as types]))
 
 (def native-status (js/require "../../modules/react-native-status/nodejs/bindings"))
 
@@ -35,15 +36,20 @@
     (fn [json callback]
       (callback (.multiAccountStoreDerivedAccounts native-status json)))
 
+    :getNodeConfig (fn [] (types/clj->json {:WakuV2Config ""}))
+
+    :backupDisabledDataDir (fn [] (str test-dir "/backup"))
+    :keystoreDir (fn [] "")
+    :logFileDirectory (fn [] (str test-dir "/log"))
     :clearCookies identity
-
     :clearStorageAPIs identity
-
     :setBlankPreviewFlag identity
 
     :callPrivateRPC
     (fn [payload callback]
       (callback (.callPrivateRPC native-status payload)))
+
+    :createAccountAndLogin (fn [request] (.createAccountAndLogin native-status request))
 
     :saveAccountAndLogin
     (fn [multiaccount-data password settings config accounts-data]
@@ -125,4 +131,12 @@
     :validateMnemonic
     (fn [json callback] (callback (.validateMnemonic native-status json)))
 
-    :startLocalNotifications identity}))
+    :startLocalNotifications identity
+
+    :initLogging
+    (fn [enabled mobile-system log-level callback]
+      (callback (.initLogging native-status
+                              (types/clj->json {:Enabled      enabled
+                                                :MobileSystem mobile-system
+                                                :Level        log-level
+                                                :File         (str test-dir "/geth.log")}))))}))

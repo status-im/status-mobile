@@ -14,17 +14,17 @@ WHITE  := $(shell tput -Txterm setaf 7)
 YELLOW := $(shell tput -Txterm setaf 3)
 RESET  := $(shell tput -Txterm sgr0)
 HELP_FUN = \
-		   %help; \
-		   while(<>) { push @{$$help{$$2 // 'options'}}, [$$1, $$3] if /^([a-zA-Z\-]+)\s*:.*\#\#(?:@([a-zA-Z\-]+))?\s(.*)$$/ }; \
-		   print "Usage: make [target]\n\nSee STARTING_GUIDE.md for more info.\n\n"; \
-		   for (sort keys %help) { \
-			   print "${WHITE}$$_:${RESET}\n"; \
-			   for (@{$$help{$$_}}) { \
-				   $$sep = " " x (32 - length $$_->[0]); \
-				   print "  ${YELLOW}$$_->[0]${RESET}$$sep${GREEN}$$_->[1]${RESET}\n"; \
-			   }; \
-			   print "\n"; \
-		   }
+			 %help; \
+			 while(<>) { push @{$$help{$$2 // 'options'}}, [$$1, $$3] if /^([a-zA-Z\-]+)\s*:.*\#\#(?:@([a-zA-Z\-]+))?\s(.*)$$/ }; \
+			 print "Usage: make [target]\n\nSee STARTING_GUIDE.md for more info.\n\n"; \
+			 for (sort keys %help) { \
+				 print "${WHITE}$$_:${RESET}\n"; \
+				 for (@{$$help{$$_}}) { \
+					 $$sep = " " x (32 - length $$_->[0]); \
+					 print "  ${YELLOW}$$_->[0]${RESET}$$sep${GREEN}$$_->[1]${RESET}\n"; \
+				 }; \
+				 print "\n"; \
+			 }
 HOST_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 
 # This can come from Jenkins
@@ -42,7 +42,7 @@ export NODE_OPTIONS += --openssl-legacy-provider
 export KEYSTORE_PATH ?= $(HOME)/.gradle/status-im.keystore
 
 # Our custom config is located in nix/nix.conf
-export NIX_CONF_DIR = $(PWD)/nix
+export NIX_USER_CONF_FILES = $(PWD)/nix/nix.conf
 # Location of symlinks to derivations that should not be garbage collected
 export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-mobile
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
@@ -301,20 +301,23 @@ define find_all_clojure_files
 $$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort <(git ls-files --deleted)) | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn)
 endef
 
-lint: export TARGET := default
+lint: export TARGET := clojure
 lint: ##@test Run code style checks
 	@sh scripts/lint-re-frame-in-quo-components.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --lint src && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
-	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES
+	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
+	sh scripts/lint-trailing-newline.sh && \
+	yarn prettier
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
-lint-fix: export TARGET := default
+lint-fix: export TARGET := clojure
 lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
-	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES
-
+	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
+	sh scripts/lint-trailing-newline.sh --fix && \
+	yarn prettier
 
 shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
@@ -340,14 +343,6 @@ test: ##@test Run tests once in NodeJS
 	yarn shadow-cljs compile mocks && \
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js target/test/test.js
-
-
-run-visual-test-ios: export TARGET := clojure
-run-visual-test-ios: XCODE_DERIVED_DATA := $(HOME)/Library/Developer/Xcode/DerivedData
-run-visual-test-ios: APPLICATION_NAME := StatusIm-brfnruzfrkkycpbndmdoeyrigthc
-run-visual-test-ios: export TEST_BINARY_PATH := $(XCODE_DERIVED_DATA)/$(APPLICATION_NAME)/Build/Products/Debug-iphonesimulator/StatusIm.app
-run-visual-test-ios: ##@test Run tests once in NodeJS
-	detox test --configuration ios.sim.debug
 
 component-test-watch: export TARGET := clojure
 component-test-watch: export COMPONENT_TEST := true

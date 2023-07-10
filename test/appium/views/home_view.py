@@ -22,7 +22,8 @@ class ActivityTabButton(Button):
 
     @property
     def counter(self):
-        return BaseElement(self.driver, xpath='//*[@content-desc="%s"]//*[@content-desc="notification-dot"]'% self.accessibility_id)
+        return BaseElement(self.driver,
+                           xpath='//*[@content-desc="%s"]//*[@content-desc="notification-dot"]' % self.accessibility_id)
 
 
 class ChatElement(SilentButton):
@@ -31,11 +32,13 @@ class ChatElement(SilentButton):
         self.community = community
         self.community_channel = community_channel
         if self.community_channel is True:
-            super().__init__(driver,
-                             xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
+            super().__init__(
+                driver,
+                xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
         else:
-            super().__init__(driver,
-                    xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)
+            super().__init__(
+                driver,
+                xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)
 
     def navigate(self):
         if self.community:
@@ -86,6 +89,7 @@ class ChatElement(SilentButton):
         class NoMessageText(Text):
             def __init__(self, driver, parent_locator: str):
                 super().__init__(driver, xpath="%s//*[@content-desc='no-messages-text']" % parent_locator)
+
         return NoMessageText(self.driver, self.locator)
 
     @property
@@ -121,7 +125,7 @@ class ActivityCenterElement(SilentButton):
 
     @property
     def title(self):
-        return Button(self.driver, xpath=self.locator+'//*[@content-desc="activity-title"]')
+        return Button(self.driver, xpath=self.locator + '//*[@content-desc="activity-title"]')
 
     @property
     def unread_indicator(self):
@@ -183,6 +187,21 @@ class PushNotificationElement(SilentButton):
         return GroupChatIconElement(self.driver, self.locator)
 
 
+class ContactDetailsRow(BaseElement):
+    def __init__(self, driver, username=None, index=None):
+        main_locator = "//*[@content-desc='user-list']"
+        if username:
+            xpath_locator = "%s[*[contains(@text,'%s')]]" % (main_locator, username)
+        elif index:
+            xpath_locator = "%s[%s]" % (main_locator, index)
+        else:
+            xpath_locator = main_locator
+        super().__init__(driver, xpath=xpath_locator)
+
+        self.options_button = Button(self.driver, xpath="(%s//android.widget.ImageView)[2]" % xpath_locator)
+        self.username_text = Text(self.driver, xpath="(%s//android.widget.TextView)[2]" % xpath_locator)
+
+
 class HomeView(BaseView):
     def __init__(self, driver):
         super().__init__(driver)
@@ -206,7 +225,7 @@ class HomeView(BaseView):
         self.notifications_unread_badge = BaseElement(self.driver, accessibility_id="activity-center-unread-count")
         self.open_activity_center_button = Button(self.driver, accessibility_id="open-activity-center-button")
         self.close_activity_centre = Button(self.driver, accessibility_id="close-activity-center")
-        
+
         self.notifications_select_button = Button(self.driver, translation_id="select")
         self.notifications_reject_and_delete_button = Button(self.driver, accessibility_id="reject-and-delete"
                                                                                            "-activity-center")
@@ -220,8 +239,11 @@ class HomeView(BaseView):
         self.groups_tab = Button(self.driver, accessibility_id="tab-groups")
         self.contacts_tab = Button(self.driver, accessibility_id="tab-contacts")
         self.contact_new_badge = Button(self.driver, accessibility_id="notification-dot")
-        self.pending_contact_request_button = Button(self.driver, accessibility_id="open-activity-center-contact-requests")
-        self.pending_contact_request_text = Text(self.driver, xpath='//*[@content-desc="pending-contact-requests-count"]/android.widget.TextView')
+        self.pending_contact_request_button = Button(self.driver,
+                                                     accessibility_id="open-activity-center-contact-requests")
+        self.pending_contact_request_text = Text(
+            self.driver,
+            xpath='//*[@content-desc="pending-contact-requests-count"]/android.widget.TextView')
 
         # Tabs and elements on community home view
         self.pending_communities_tab = Button(self.driver, accessibility_id="pending-tab")
@@ -362,7 +384,7 @@ class HomeView(BaseView):
         self.driver.info("## Group chat %s is created successfully!" % group_chat_name, device=False)
         return chat
 
-    def send_contact_request_via_bottom_sheet(self, key:str):
+    def send_contact_request_via_bottom_sheet(self, key: str):
         chat = self.get_chat_view()
         self.new_chat_button.click()
         self.add_a_contact_chat_bottom_sheet_button.click()
@@ -458,5 +480,8 @@ class HomeView(BaseView):
         expected_element = PushNotificationElement(self.driver, pn_text)
         return expected_element if expected_element.is_element_displayed(60) else False
 
-    def contact_details(self, username):
-        return Button(self.driver, xpath="//*[contains(@text,'%s')]/../android.view.ViewGroup/android.widget.ImageView" % username)
+    def contact_details_row(self, username=None, index=None):
+        return ContactDetailsRow(self.driver, username=username, index=index)
+
+    def get_contact_rows_count(self):
+        return len(ContactDetailsRow(self.driver).find_elements())

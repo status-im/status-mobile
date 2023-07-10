@@ -23,16 +23,13 @@
    [quo/page-nav
     {:align-mid?            true
      :mid-section           {:type :text-only :main-text ""}
-     :left-section          {:type                :grey
-                             :icon                :i/close
-                             :icon-override-theme :dark
-                             :on-press            #(rf/dispatch [:navigate-back])}
-     :right-section-buttons [{:type                :grey
-                              :label               (i18n/label :t/how-to-scan)
-                              :icon                :i/info
-                              :icon-override-theme :dark
-                              :on-press            #(rf/dispatch [:open-modal :how-to-pair
-                                                                  {:override-theme :dark}])}]}]])
+     :left-section          {:type     :grey
+                             :icon     :i/close
+                             :on-press #(rf/dispatch [:navigate-back])}
+     :right-section-buttons [{:type     :grey
+                              :label    (i18n/label :t/how-to-pair)
+                              :icon     :i/info
+                              :on-press #(rf/dispatch [:open-modal :how-to-pair])}]}]])
 
 (defn f-use-interval
   [clock cleanup-clock delay]
@@ -118,17 +115,16 @@
                :default-shown? true
                :editable       false}]
              [quo/button
-              {:on-press       (fn []
-                                 (clipboard/set-string @code)
-                                 (rf/dispatch [:toasts/upsert
-                                               {:icon       :correct
-                                                :icon-color colors/success-50
-                                                :text       (i18n/label
-                                                             :t/sharing-copied-to-clipboard)}]))
-               :override-theme :dark
-               :type           :grey
-               :style          {:margin-top 12}
-               :before         :i/copy}
+              {:on-press (fn []
+                           (clipboard/set-string @code)
+                           (rf/dispatch [:toasts/upsert
+                                         {:icon       :correct
+                                          :icon-color colors/success-50
+                                          :text       (i18n/label
+                                                       :t/sharing-copied-to-clipboard)}]))
+               :type     :grey
+               :style    {:margin-top 12}
+               :before   :i/copy}
               (i18n/label :t/copy-qr)]])]]
         [rn/view {:style style/sync-code}
          [quo/divider-label

@@ -1,9 +1,19 @@
 (ns quo2.components.drawers.drawer-buttons.component-spec
   (:require [quo2.components.drawers.drawer-buttons.view :as drawer-buttons]
             [react-native.core :as rn]
-            [test-helpers.component :as h]))
+            [test-helpers.component :as h]
+            [react-native.safe-area :as safe-area]))
 
 (h/describe "drawer-buttons"
+  (h/before-each
+   (fn []
+     (h/use-fake-timers)))
+
+  (h/after-each
+   (fn []
+     (h/clear-all-timers)
+     (h/use-real-timers)))
+
   (h/test "the top heading and subheading render"
     (h/render [drawer-buttons/view
                {:top-card    {:heading :top-heading}
@@ -29,15 +39,16 @@
 
   (h/test "it clicks the top card"
     (let [event (h/mock-fn)]
-      (h/render [drawer-buttons/view
-                 {:top-card    {:on-press event
-                                :heading  :top-heading}
-                  :bottom-card {:heading :bottom-heading}}
-                 :top-sub-heading
-                 :bottom-sub-heading])
-      (h/fire-event :press (h/get-by-text "top-heading"))
-      (-> (js/expect event)
-          (.toHaveBeenCalled))))
+      (with-redefs [safe-area/get-top (fn [] 10)]
+        (h/render [drawer-buttons/view
+                   {:top-card    {:on-press event
+                                  :heading  :top-heading}
+                    :bottom-card {:heading :bottom-heading}}
+                   :top-sub-heading
+                   :bottom-sub-heading])
+        (h/fire-event :press (h/get-by-text "top-heading"))
+        (-> (js/expect event)
+            (.toHaveBeenCalled)))))
 
   (h/test "it clicks the bottom card"
     (let [event (h/mock-fn)]

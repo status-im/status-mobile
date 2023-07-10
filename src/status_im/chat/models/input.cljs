@@ -11,17 +11,18 @@
             [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.string :as utils.string]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
   [text]
-  (utils/safe-replace text
-                      #":([a-z_\-+0-9]*):"
-                      (fn [[original emoji-id]]
-                        (if-let [emoji-map (object/get (.-lib emojis) emoji-id)]
-                          (.-char ^js emoji-map)
-                          original))))
+  (utils.string/safe-replace text
+                             #":([a-z_\-+0-9]*):"
+                             (fn [[original emoji-id]]
+                               (if-let [emoji-map (object/get (.-lib emojis) emoji-id)]
+                                 (.-char ^js emoji-map)
+                                 original))))
 
 ;; effects
 (re-frame/reg-fx
@@ -147,7 +148,7 @@
   (when-not (string/blank? input-text)
     (let [{:keys [message-id]}
           (get-in db [:chat/inputs current-chat-id :metadata :responding-to-message])
-          preferred-name (get-in db [:multiaccount :preferred-name])
+          preferred-name (get-in db [:profile/profile :preferred-name])
           emoji? (message-content/emoji-only-content? {:text        input-text
                                                        :response-to message-id})]
       {:chat-id       current-chat-id
@@ -169,7 +170,7 @@
             {:chat-id      chat-id
              :album-id     album-id
              :content-type constants/content-type-image
-             :image-path   (utils/safe-replace resized-uri #"file://" "")
+             :image-path   (utils.string/safe-replace resized-uri #"file://" "")
              :image-width  width
              :image-height height
              :text         input-text

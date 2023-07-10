@@ -128,11 +128,11 @@
 (defn update-message
   "Update the message and siblings with positional info"
   [tree message]
-  (let [iter                  (red-black-tree/find tree message)
-        previous-message      (red-black-tree/get-prev iter)
-        next-message          (red-black-tree/get-next iter)
+  (let [iterator              (red-black-tree/find tree message)
+        previous-message      (red-black-tree/get-prev iterator)
+        next-message          (red-black-tree/get-next iterator)
         message-with-pos-data (add-group-info message previous-message next-message)]
-    (cond-> (red-black-tree/update iter message-with-pos-data)
+    (cond-> (red-black-tree/update iterator message-with-pos-data)
       next-message
       (-> (red-black-tree/find next-message)
           (red-black-tree/update (update-next-message message-with-pos-data next-message)))
@@ -145,11 +145,11 @@
 (defn remove-message
   "Remove a message in the list"
   [tree prepared-message]
-  (let [iter (red-black-tree/find tree prepared-message)]
-    (if (not iter)
+  (let [iterator (red-black-tree/find tree prepared-message)]
+    (if (not iterator)
       tree
-      (let [new-tree     (red-black-tree/remove iter)
-            next-message (red-black-tree/get-next iter)]
+      (let [new-tree     (red-black-tree/remove iterator)
+            next-message (red-black-tree/get-next iterator)]
         (if (not next-message)
           new-tree
           (update-message new-tree next-message))))))

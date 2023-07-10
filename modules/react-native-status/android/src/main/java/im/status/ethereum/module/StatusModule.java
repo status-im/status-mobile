@@ -154,8 +154,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         // Environment.getExternalStoragePublicDirectory doesn't work as expected on Android Q
         // https://developer.android.com/reference/android/os/Environment#getExternalStoragePublicDirectory(java.lang.String)
         return context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-
     }
+
     private File getLogsFile() {
         final File pubDirectory = this.getPublicStorageDirectory();
         final File logFile = new File(pubDirectory, gethLogFileName);
@@ -411,6 +411,17 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             Log.d(TAG, "LoginWithConfig result: " + result);
         } else {
             Log.e(TAG, "LoginWithConfig failed: " + result);
+        }
+    }
+
+    @ReactMethod
+    public void loginAccount(final String request) {
+        Log.d(TAG, "loginAccount");
+        String result = Statusgo.loginAccount(request);
+        if (result.startsWith("{\"error\":\"\"")) {
+            Log.d(TAG, "loginAccount result: " + result);
+        } else {
+            Log.e(TAG, "loginAccount failed: " + result);
         }
     }
 
@@ -1361,6 +1372,17 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                 Statusgo.initKeystore(keyStoreDir);
                 return Statusgo.convertToKeycardAccount(accountData, options, keycardUID, password, newPassword);
             }, callback);
+    }
+
+    @ReactMethod
+    public void initLogging(final boolean enabled, final boolean mobileSystem, final String logLevel, final Callback callback) throws JSONException {
+        final JSONObject jsonConfig = new JSONObject();
+        jsonConfig.put("Enabled", enabled);
+        jsonConfig.put("MobileSystem", mobileSystem);
+        jsonConfig.put("Level", logLevel);
+        jsonConfig.put("File", getLogsFile().getAbsolutePath());
+        final String config = jsonConfig.toString();
+        executeRunnableStatusGoMethod(() -> Statusgo.initLogging(config), callback);
     }
 
 }

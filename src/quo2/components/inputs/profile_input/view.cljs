@@ -1,6 +1,6 @@
 (ns quo2.components.inputs.profile-input.view
   (:require
-    [quo2.components.buttons.button :as buttons]
+    [quo2.components.buttons.button.view :as buttons]
     [quo2.components.avatars.user-avatar.view :as user-avatar]
     [quo2.components.inputs.profile-input.style :as style]
     [quo2.components.inputs.title-input.view :as title-input]
@@ -37,7 +37,6 @@
     [buttons/button
      {:accessibility-label       :select-profile-picture-button
       :type                      :grey
-      :override-theme            :dark
       :override-background-color (colors/alpha colors/white 0.05)
       :on-press                  on-press
       :icon-size                 20
@@ -50,6 +49,5 @@
     [title-input/title-input
      (merge title-input-props
             {:blur?               true
-             :override-theme      :dark
              :placeholder         placeholder
              :customization-color customization-color})]]])

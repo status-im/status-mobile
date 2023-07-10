@@ -4,7 +4,8 @@
             [taoensso.timbre :as log]
             [react-native.platform :as platform]
             [react-native.core :as rn]
-            [utils.transforms :as types]))
+            [utils.transforms :as types]
+            [clojure.string :as string]))
 
 (defn status
   []
@@ -81,6 +82,15 @@
     (init-keystore
      key-uid
      #(.loginWithConfig ^js (status) account-data hashed-password config))))
+
+(defn login-account
+  "NOTE: beware, the password has to be sha3 hashed"
+  [{:keys [keyUid] :as request}]
+  (log/debug "[native-module] loginWithConfig")
+  (clear-web-data)
+  (init-keystore
+   keyUid
+   #(.loginAccount ^js (status) (types/clj->json request))))
 
 (defn create-account-and-login
   [request]
@@ -277,11 +287,11 @@
   and then compressed. Example input/output :
   input key  = zQ3shTAten2v9CwyQD1Kc7VXAqNPDcHZAMsfbLHCZEx6nFqk9 and
   output key = 0x025596a7ff87da36860a84b0908191ce60a504afc94aac93c1abd774f182967ce6"
-  [key callback]
+  [input-key callback]
   (log/info "[native-module] Deserializing and then compressing public key"
             {:fn  :deserialize-and-compress-key
-             :key key})
-  (.deserializeAndCompressKey ^js (status) key callback))
+             :key input-key})
+  (.deserializeAndCompressKey ^js (status) input-key callback))
 
 (defn compressed-key->public-key
   "Provides compressed key to status-go and gets back the uncompressed public key via deserialization"
@@ -377,6 +387,14 @@
      :brand     (.-brand status)
      :build-id  (.-buildId status)
      :device-id (.-deviceId status)}))
+
+(defn get-installation-name
+  []
+  ;; NOTE(rasom): Only needed for android devices currently
+  (when platform/android?
+    (string/join " "
+                 ((juxt :model :device-id)
+                  (get-device-model-info)))))
 
 (defn get-node-config
   [callback]
@@ -536,3 +554,7 @@
 (defn log-file-directory
   []
   (.logFileDirectory ^js (status)))
+
+(defn init-status-go-logging
+  [{:keys [enable? mobile-system? log-level callback]}]
+  (.initLogging ^js (status) enable? mobile-system? log-level callback))

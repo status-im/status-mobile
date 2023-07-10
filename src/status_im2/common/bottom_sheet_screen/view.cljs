@@ -1,15 +1,15 @@
 (ns status-im2.common.bottom-sheet-screen.view
-  (:require
-    [react-native.gesture :as gesture]
-    [react-native.hooks :as hooks]
-    [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
-    [oops.core :as oops]
-    [react-native.safe-area :as safe-area]
-    [status-im2.common.bottom-sheet-screen.style :as style]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [utils.re-frame :as rf]))
+  (:require [oops.core :as oops]
+            [quo2.theme :as theme]
+            [react-native.core :as rn]
+            [react-native.gesture :as gesture]
+            [react-native.hooks :as hooks]
+            [react-native.platform :as platform]
+            [react-native.reanimated :as reanimated]
+            [react-native.safe-area :as safe-area]
+            [reagent.core :as reagent]
+            [status-im2.common.bottom-sheet-screen.style :as style]
+            [utils.re-frame :as rf]))
 
 (def ^:const drag-threshold 200)
 
@@ -43,12 +43,11 @@
   (let [y (oops/oget e "nativeEvent.contentOffset.y")]
     (reset! curr-scroll y)))
 
-(defn f-view
-  [content skip-background?]
-  (let [scroll-enabled           (reagent/atom true)
-        curr-scroll              (atom 0)
-        {:keys [override-theme]} (rf/sub [:get-screen-params])]
-    (fn []
+(defn- f-view
+  [_]
+  (let [scroll-enabled (reagent/atom true)
+        curr-scroll    (reagent/atom 0)]
+    (fn [{:keys [content skip-background? theme]}]
       (let [insets           (safe-area/get-insets)
             {:keys [height]} (rn/get-window)
             padding-top      (:top insets)
@@ -71,11 +70,18 @@
            [reanimated/view {:style (style/background opacity)}])
          [gesture/gesture-detector
           {:gesture (drag-gesture translate-y opacity scroll-enabled curr-scroll close)}
-          [reanimated/view {:style (style/main-view translate-y override-theme)}
+          [reanimated/view {:style (style/main-view translate-y theme)}
            [rn/view {:style style/handle-container}
-            [rn/view {:style (style/handle override-theme)}]]
+            [rn/view {:style (style/handle theme)}]]
            [content
             {:insets         insets
              :close          close
              :scroll-enabled scroll-enabled
+             :current-scroll curr-scroll
              :on-scroll      #(on-scroll % curr-scroll)}]]]]))))
+
+(defn- internal-view
+  [params]
+  [:f> f-view params])
+
+(def view (theme/with-theme internal-view))

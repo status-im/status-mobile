@@ -1,5 +1,18 @@
 # Known Issues
 
+## Ignoring Untrusted Substituter on NixOS
+
+When using our setup on NixOS users can see this warning:
+```
+warning: ignoring untrusted substituter 'https://nix-cache.status.im/', you are not a trusted user.
+```
+Which is due to incorrect `trusted-users` setting:
+```
+> grep trusted-users /etc/nix/nix.conf
+trusted-users = root
+```
+Which can be extended using the [`nix.settings.trusted-users`](https://search.nixos.org/options?channel=23.05&show=nix.settings.trusted-users) option.
+
 ## Too many open files
 
 ### Single-User Installation

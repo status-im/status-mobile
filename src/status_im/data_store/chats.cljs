@@ -65,7 +65,8 @@
                         :lastMessage            :last-message
                         :lastClockValue         :last-clock-value
                         :invitationAdmin        :invitation-admin
-                        :profile                :profile-public-key})
+                        :profile                :profile-public-key
+                        :muteTill               :muted-till})
       rpc->type
       unmarshal-members
       (update :last-message #(when % (messages/<-rpc %)))
@@ -81,7 +82,7 @@
        :alias                   (.-alias chat)
        :muted                   (.-muted chat)
        :joined                  (.-joined chat)
-       :muted-till              (.-mutetill chat)
+       :muted-till              (.-muteTill chat)
        :chat-id                 (.-id chat)
        :community-id            (.-communityId chat)
        :synced-from             (.-syncedFrom chat)
@@ -108,7 +109,7 @@
       rpc->type
       unmarshal-members))
 
-(rf/defn fetch-chats-rpc
+(rf/defn fetch-chats-preview
   [_ {:keys [on-success]}]
   {:json-rpc/call [{:method      "wakuext_chatsPreview"
                     :params      []

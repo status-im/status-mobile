@@ -9,7 +9,7 @@
   {:db                    (assoc db
                                  :commands/select-account
                                  {:message message
-                                  :from    (ethereum/get-default-account (:multiaccount/accounts db))})
+                                  :from    (ethereum/get-default-account (:profile/wallet-accounts db))})
    :show-select-acc-sheet nil})
 
 (rf/defn set-selected-account

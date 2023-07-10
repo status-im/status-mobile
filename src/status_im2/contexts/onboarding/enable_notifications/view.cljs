@@ -11,7 +11,7 @@
     [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
     [status-im2.contexts.onboarding.enable-notifications.style :as style]
-    [status-im2.contexts.shell.utils :as shell.utils]))
+    [status-im2.contexts.shell.jump-to.utils :as shell.utils]))
 
 (defn page-title
   []

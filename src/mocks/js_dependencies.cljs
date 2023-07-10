@@ -305,7 +305,9 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
   #js {:getInstallReferrer identity})
 
 (def react-native-camera-kit
-  #js {:CameraKitCamera #js {}})
+  #js
+   {:Camera     #js {}
+    :CameraType #js {}})
 
 (def react-native-push-notification
   #js
@@ -362,77 +364,79 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 (defn mock
   [module]
   (case module
-    "react-native-languages"                        react-native-languages
-    "react-native-background-timer"                 background-timer
-    "react-native-image-crop-picker"                image-crop-picker
-    "react-native-gesture-handler"                  react-native-gesture-handler
-    "react-native-static-safe-area-insets"          react-native-static-safe-area-insets
-    "react-native-config"                           config
-    "react-native-iphone-x-helper"                  (clj->js {:getStatusBarHeight (fn [])
-                                                              :getBottomSpace     (fn [])})
-    "react-native-screens"                          (clj->js {})
-    "react-native-reanimated"                       react-native-reanimated
-    "react-native-redash/lib/module/v1"             react-native-redash
-    "react-native-redash"                           react-native-redash
-    "react-native-fetch-polyfill"                   fetch
-    "react-native-status-keycard"                   status-keycard
-    "react-native-keychain"                         keychain
-    "react-native-touch-id"                         touchid
-    "@react-native-community/netinfo"               net-info
-    "react-native-dialogs"                          dialogs
-    "react-native"                                  react-native
-    "react-native-fs"                               fs
-    "react-native-mail"                             react-native-mail
-    "react-native-image-resizer"                    image-resizer
-    "react-native-haptic-feedback"                  react-native-haptic-feedback
-    "react-native-device-info"                      react-native-device-info
-    "react-native-push-notification"                react-native-push-notification
-    "react-native-linear-gradient"                  react-native-gradien
-    "@react-native-community/masked-view"           masked-view
-    "react-native-blob-util"                        react-native-blob-util
-    "react-native-navigation"                       react-native-navigation
-    "@react-native-community/push-notification-ios" push-notification-ios
-    "@react-native-community/blur"                  react-native-blur
-    "@react-native-community/cameraroll"            react-native-camera-roll
-    "react-native-camera-kit"                       react-native-camera-kit
-    "react-native-permissions"                      react-native-permissions
-    "rn-emoji-keyboard"                             rn-emoji-keyboard
-    "react-native-hole-view"                        react-native-hole-view
-    "react-native-draggable-flatlist"               react-native-draggable-flatlist
-    "react-native-webview"                          react-native-webview
-    "@react-native-community/audio-toolkit"         react-native-audio-toolkit
-    "react-native-image-viewing"                    react-native-image-viewing
-    "react-native-share"                            react-native-share
-    "@react-native-async-storage/async-storage"     async-storage
-    "react-native-svg"                              react-native-svg
-    "react-native-transparent-video"                react-native-transparent-video
-    "react-native-orientation-locker"               react-native-orientation-locker
-    "../src/js/worklets/core.js"                    worklet-factory
-    "../src/js/worklets/shell/bottom_tabs.js"       #js {}
-    "../src/js/worklets/shell/home_stack.js"        #js {}
-    "../src/js/worklets/shell/floating_screen.js"   #js {}
-    "../src/js/worklets/bottom_sheet.js"            #js {}
-    "../src/js/worklets/record_audio.js"            #js {}
-    "../src/js/worklets/scroll_view.js"             #js {}
-    "../src/js/worklets/onboarding_carousel.js"     #js {}
-    "../src/js/worklets/lightbox.js"                #js {}
-    "../src/js/worklets/parallax.js"                #js {}
-    "./fleets.js"                                   default-fleets
-    "@walletconnect/client"                         wallet-connect-client
-    "../translations/ar.json"                       (js/JSON.parse (slurp "./translations/ar.json"))
-    "../translations/de.json"                       (js/JSON.parse (slurp "./translations/de.json"))
-    "../translations/en.json"                       (js/JSON.parse (slurp "./translations/en.json"))
-    "../translations/es.json"                       (js/JSON.parse (slurp "./translations/es.json"))
-    "../translations/es_419.json"                   (js/JSON.parse (slurp "./translations/es_419.json"))
-    "../translations/fil.json"                      (js/JSON.parse (slurp "./translations/fil.json"))
-    "../translations/fr.json"                       (js/JSON.parse (slurp "./translations/fr.json"))
-    "../translations/id.json"                       (js/JSON.parse (slurp "./translations/id.json"))
-    "../translations/it.json"                       (js/JSON.parse (slurp "./translations/it.json"))
-    "../translations/ko.json"                       (js/JSON.parse (slurp "./translations/ko.json"))
-    "../translations/pt_BR.json"                    (js/JSON.parse (slurp "./translations/pt_BR.json"))
-    "../translations/ru.json"                       (js/JSON.parse (slurp "./translations/ru.json"))
-    "../translations/tr.json"                       (js/JSON.parse (slurp "./translations/tr.json"))
-    "../translations/zh.json"                       (js/JSON.parse (slurp "./translations/zh.json"))
-    "../translations/zh_hant.json"                  (js/JSON.parse (slurp "./translations/zh_hant.json"))
-    "../translations/zh_TW.json"                    (js/JSON.parse (slurp "./translations/zh_TW.json"))
+    "react-native-languages"                         react-native-languages
+    "react-native-background-timer"                  background-timer
+    "react-native-image-crop-picker"                 image-crop-picker
+    "react-native-gesture-handler"                   react-native-gesture-handler
+    "react-native-static-safe-area-insets"           react-native-static-safe-area-insets
+    "react-native-config"                            config
+    "react-native-iphone-x-helper"                   (clj->js {:getStatusBarHeight (fn [])
+                                                               :getBottomSpace     (fn [])})
+    "react-native-screens"                           (clj->js {})
+    "react-native-reanimated"                        react-native-reanimated
+    "react-native-redash/lib/module/v1"              react-native-redash
+    "react-native-redash"                            react-native-redash
+    "react-native-fetch-polyfill"                    fetch
+    "react-native-status-keycard"                    status-keycard
+    "react-native-keychain"                          keychain
+    "react-native-touch-id"                          touchid
+    "@react-native-community/netinfo"                net-info
+    "react-native-dialogs"                           dialogs
+    "react-native"                                   react-native
+    "react-native-fs"                                fs
+    "react-native-mail"                              react-native-mail
+    "react-native-image-resizer"                     image-resizer
+    "react-native-haptic-feedback"                   react-native-haptic-feedback
+    "react-native-device-info"                       react-native-device-info
+    "react-native-push-notification"                 react-native-push-notification
+    "react-native-linear-gradient"                   react-native-gradien
+    "@react-native-community/masked-view"            masked-view
+    "react-native-blob-util"                         react-native-blob-util
+    "react-native-navigation"                        react-native-navigation
+    "@react-native-community/push-notification-ios"  push-notification-ios
+    "@react-native-community/blur"                   react-native-blur
+    "@react-native-community/cameraroll"             react-native-camera-roll
+    "react-native-camera-kit"                        react-native-camera-kit
+    "react-native-permissions"                       react-native-permissions
+    "rn-emoji-keyboard"                              rn-emoji-keyboard
+    "react-native-hole-view"                         react-native-hole-view
+    "react-native-draggable-flatlist"                react-native-draggable-flatlist
+    "react-native-webview"                           react-native-webview
+    "@react-native-community/audio-toolkit"          react-native-audio-toolkit
+    "react-native-image-viewing"                     react-native-image-viewing
+    "react-native-share"                             react-native-share
+    "@react-native-async-storage/async-storage"      async-storage
+    "react-native-svg"                               react-native-svg
+    "react-native-transparent-video"                 react-native-transparent-video
+    "react-native-orientation-locker"                react-native-orientation-locker
+    "../src/js/worklets/core.js"                     worklet-factory
+    "../src/js/worklets/shell/bottom_tabs.js"        #js {}
+    "../src/js/worklets/shell/home_stack.js"         #js {}
+    "../src/js/worklets/shell/floating_screen.js"    #js {}
+    "../src/js/worklets/bottom_sheet.js"             #js {}
+    "../src/js/worklets/record_audio.js"             #js {}
+    "../src/js/worklets/scroll_view.js"              #js {}
+    "../src/js/worklets/onboarding_carousel.js"      #js {}
+    "../src/js/worklets/lightbox.js"                 #js {}
+    "../src/js/worklets/parallax.js"                 #js {}
+    "../src/js/worklets/identifiers_highlighting.js" #js {}
+    "./fleets.js"                                    default-fleets
+    "@walletconnect/client"                          wallet-connect-client
+    "../translations/ar.json"                        (js/JSON.parse (slurp "./translations/ar.json"))
+    "../translations/de.json"                        (js/JSON.parse (slurp "./translations/de.json"))
+    "../translations/en.json"                        (js/JSON.parse (slurp "./translations/en.json"))
+    "../translations/es.json"                        (js/JSON.parse (slurp "./translations/es.json"))
+    "../translations/es_419.json"                    (js/JSON.parse (slurp "./translations/es_419.json"))
+    "../translations/fil.json"                       (js/JSON.parse (slurp "./translations/fil.json"))
+    "../translations/fr.json"                        (js/JSON.parse (slurp "./translations/fr.json"))
+    "../translations/id.json"                        (js/JSON.parse (slurp "./translations/id.json"))
+    "../translations/it.json"                        (js/JSON.parse (slurp "./translations/it.json"))
+    "../translations/ko.json"                        (js/JSON.parse (slurp "./translations/ko.json"))
+    "../translations/pt_BR.json"                     (js/JSON.parse (slurp "./translations/pt_BR.json"))
+    "../translations/ru.json"                        (js/JSON.parse (slurp "./translations/ru.json"))
+    "../translations/tr.json"                        (js/JSON.parse (slurp "./translations/tr.json"))
+    "../translations/zh.json"                        (js/JSON.parse (slurp "./translations/zh.json"))
+    "../translations/zh_hant.json"                   (js/JSON.parse (slurp
+                                                                     "./translations/zh_hant.json"))
+    "../translations/zh_TW.json"                     (js/JSON.parse (slurp "./translations/zh_TW.json"))
     nil))

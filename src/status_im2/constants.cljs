@@ -334,3 +334,8 @@
 (def ^:const auth-method-none "none")
 
 (def ^:const image-description-in-lightbox? false)
+
+(def ^:const audio-max-duration-ms 120000)
+
+(def ^:const onboarding-modal-animation-duration 300)
+(def ^:const onboarding-modal-animation-delay 400)

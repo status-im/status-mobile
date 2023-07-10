@@ -16,7 +16,7 @@
 (defn sheet
   [{:keys [top bottom]} window-height override-theme padding-bottom-override shell?]
   {:position                :absolute
-   :max-height              (- window-height top 20)
+   :max-height              (- window-height top)
    :z-index                 1
    :bottom                  0
    :left                    0

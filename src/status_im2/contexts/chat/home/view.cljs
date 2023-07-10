@@ -7,7 +7,6 @@
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.home.actions.view :as actions]
@@ -26,9 +25,9 @@
 
 (defn filter-and-sort-items-by-tab
   [tab items]
-  (let [key (if (= tab :tab/groups) :group-chat :chat-id)]
+  (let [k (if (= tab :tab/groups) :group-chat :chat-id)]
     (->> items
-         (filter key)
+         (filter k)
          (sort-by :timestamp >))))
 
 (defn empty-state-content
@@ -121,25 +120,23 @@
   []
   (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
         selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
-        {:keys [key-uid]}        (rf/sub [:multiaccount])
-        account                  (rf/sub [:profile/multiaccount])
-        customization-color      (or (:color (rf/sub [:onboarding-2/profile]))
-                                     (rf/sub [:profile/customization-color key-uid]))
+        customization-color      (rf/sub [:profile/customization-color])
         top                      (safe-area/get-top)]
     [:<>
      (if (= selected-tab :tab/contacts)
        [contacts pending-contact-requests top]
        [chats selected-tab top])
      [rn/view {:style (style/blur-container top)}
-      [blur/view
-       {:blur-amount (if platform/ios? 20 10)
-        :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-        :style       style/blur}]
-      [common.home/top-nav
-       {:type   :grey
-        :avatar {:customization-color customization-color
-                 :full-name           (multiaccounts/displayed-name account)
-                 :profile-picture     (multiaccounts/displayed-photo account)}}]
+      (let [{:keys [sheets]} (rf/sub [:bottom-sheet])]
+        [blur/view
+         {:blur-amount   (if platform/ios? 20 10)
+          :blur-type     (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+          :style         style/blur
+          :overlay-color (if (seq sheets)
+                           (theme/theme-value colors/white colors/neutral-95-opa-70)
+                           (when (colors/dark?)
+                             colors/neutral-95-opa-70))}])
+      [common.home/top-nav {:type :grey}]
       [common.home/title-column
        {:label               (i18n/label :t/messages)
         :handler             #(rf/dispatch [:show-bottom-sheet {:content home.sheet/new-chat}])

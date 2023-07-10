@@ -623,6 +623,14 @@ RCT_EXPORT_METHOD(loginWithConfig:(NSString *)accountData
     NSLog(@"%@", result);
 }
 
+RCT_EXPORT_METHOD(loginAccount:(NSString *)request) {
+#if DEBUG
+    NSLog(@"LoginAccount() method called");
+#endif
+    NSString *result = StatusgoLoginAccount(request);
+    NSLog(@"%@", result);
+}
+
 RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
                   password:(NSString *)password
                   chatKey:(NSString *)chatKey) {
@@ -898,6 +906,37 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(logFileDirectory) {
     return rootUrl.path;
 }
 
+RCT_EXPORT_METHOD(initLogging:(BOOL)enabled
+                  mobileSystem:(BOOL)mobileSystem
+                  logLevel:(NSString *)logLevel
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    NSString *logDirectory = [self logFileDirectory];
+    NSString *logFilePath = [logDirectory stringByAppendingPathComponent:@"geth.log"];
+
+    NSMutableDictionary *jsonConfig = [NSMutableDictionary dictionary];
+    jsonConfig[@"Enabled"] = @(enabled);
+    jsonConfig[@"MobileSystem"] = @(mobileSystem);
+    jsonConfig[@"Level"] = logLevel;
+    jsonConfig[@"File"] = logFilePath;
+
+    NSError *error = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonConfig options:0 error:&error];
+
+    if (error) {
+        // Handle JSON serialization error
+        callback(@[error.localizedDescription]);
+        return;
+    }
+
+    NSString *config = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+
+    // Call your native logging initialization method here
+    NSString *initResult = StatusgoInitLogging(config);
+
+    callback(@[initResult]);
+}
+
 RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
@@ -1117,23 +1156,7 @@ RCT_EXPORT_METHOD(deactivateKeepAwake)
 
 - (NSString*) deviceName
 {
-
-    NSString* deviceName = nil;
-
-    if ([self.deviceId rangeOfString:@"iPod"].location != NSNotFound) {
-        deviceName = @"iPod Touch";
-    }
-    else if([self.deviceId rangeOfString:@"iPad"].location != NSNotFound) {
-        deviceName = @"iPad";
-    }
-    else if([self.deviceId rangeOfString:@"iPhone"].location != NSNotFound){
-        deviceName = @"iPhone";
-    }
-    else if([self.deviceId rangeOfString:@"AppleTV"].location != NSNotFound){
-        deviceName = @"Apple TV";
-    }
-
-    return deviceName;
+    return [[UIDevice currentDevice] name];;
 }
 
 - (NSDictionary *)constantsToExport

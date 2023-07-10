@@ -833,6 +833,37 @@ void _SaveAccountAndLogin(const FunctionCallbackInfo<Value>& args) {
 
 }
 
+void _CreateAccountAndLogin(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+        Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 1) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for SaveAccountAndLogin")));
+		return;
+	}
+
+	// Check the argument types
+
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'settingsJSON'")));
+		return;
+	}
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = CreateAccountAndLogin(arg0);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+	args.GetReturnValue().Set(ret);
+	delete c;
+
+}
+
 void _GenerateAlias(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
@@ -1873,6 +1904,35 @@ void _ConnectionChange(const FunctionCallbackInfo<Value>& args) {
 	ConnectionChange(arg0, arg1);
 }
 
+void _InitLogging(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+    Local<Context> context = isolate->GetCurrentContext();
+
+	if (args.Length() != 1) {
+		// Throw an Error that is passed back to JavaScript
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for InitLogging")));
+		return;
+	}
+
+	// Check the argument types
+	if (!args[0]->IsString()) {
+		isolate->ThrowException(Exception::TypeError(
+			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'logSettingsJSON'")));
+		return;
+	}
+
+	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
+	char *arg0 = *arg0Obj;
+
+	// Call exported Go function, which returns a C string
+	char *c = InitLogging(arg0);
+
+	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
+    args.GetReturnValue().Set(ret);
+    delete c;
+}
+
 
 void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "multiAccountGenerateAndDeriveAddresses", _MultiAccountGenerateAndDeriveAddresses);
@@ -1900,6 +1960,7 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "hashMessage", _HashMessage);
 	NODE_SET_METHOD(exports, "resetChainData", _ResetChainData);
 	NODE_SET_METHOD(exports, "saveAccountAndLogin", _SaveAccountAndLogin);
+	NODE_SET_METHOD(exports, "createAccountAndLogin", _CreateAccountAndLogin);
 	NODE_SET_METHOD(exports, "generateAlias", _GenerateAlias);
 	NODE_SET_METHOD(exports, "validateMnemonic", _ValidateMnemonic);
 	NODE_SET_METHOD(exports, "multiformatSerializePublicKey", _MultiformatSerializePublicKey);
@@ -1922,13 +1983,14 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "signTypedData", _SignTypedData);
 	NODE_SET_METHOD(exports, "sendTransaction", _SendTransaction);
 	NODE_SET_METHOD(exports, "appStateChange", _AppStateChange);
-        NODE_SET_METHOD(exports, "setSignalEventCallback", _SetSignalEventCallback);
+    NODE_SET_METHOD(exports, "setSignalEventCallback", _SetSignalEventCallback);
 	NODE_SET_METHOD(exports, "validateNodeConfig", _ValidateNodeConfig);
 	NODE_SET_METHOD(exports, "hashTypedData", _HashTypedData);
 	NODE_SET_METHOD(exports, "recover", _Recover);
 	NODE_SET_METHOD(exports, "hashTransaction", _HashTransaction);
 	NODE_SET_METHOD(exports, "connectionChange", _ConnectionChange);
 	NODE_SET_METHOD(exports, "pollSignal", _PollSignal);
+	NODE_SET_METHOD(exports, "initLogging", _InitLogging);
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, init)

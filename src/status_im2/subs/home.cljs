@@ -18,6 +18,6 @@
 
 (re-frame/reg-sub
  :hide-home-tooltip?
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (:hide-home-tooltip? multiaccount)))

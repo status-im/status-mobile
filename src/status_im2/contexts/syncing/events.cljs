@@ -25,7 +25,8 @@
   [installation-id]
   (let [db {:networks/current-network config/default-network
             :networks/networks        (data-store.settings/rpc->networks config/default-networks)
-            :multiaccount             {:installation-id           installation-id
+            :profile/profile          {:installation-id           installation-id
+                                       :device-name               (native-module/get-installation-name)
                                        :log-level                 config/log-level
                                        :waku-bloom-filter-mode    false
                                        :custom-bootnodes          nil
@@ -59,7 +60,9 @@
                                         {:receiverConfig {:kdfIterations config/default-kdf-iterations
                                                           :nodeConfig final-node-config
                                                           :settingCurrentNetwork config/default-network
-                                                          :deviceType utils.platform/os}}))]
+                                                          :deviceType utils.platform/os
+                                                          :deviceName
+                                                          (native-module/get-installation-name)}}))]
             (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
             (native-module/input-connection-string-for-bootstrapping
              connection-string
@@ -79,7 +82,7 @@
                           (rf/dispatch [:bottom-sheet/hide]))]
     (if valid-password?
       (let [sha3-pwd   (native-module/sha3 (str (security/safe-unmask-data entered-password)))
-            key-uid    (get-in db [:multiaccount :key-uid])
+            key-uid    (get-in db [:profile/profile :key-uid])
             config-map (.stringify js/JSON
                                    (clj->js {:senderConfig {:keyUID       key-uid
                                                             :keystorePath ""

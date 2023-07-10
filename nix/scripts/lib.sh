@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -eo pipefail
+GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 
 # Checking group ownership to identify installation type.
 file_group() {
@@ -6,7 +8,8 @@ file_group() {
     if [[ "${UNAME}" == "Linux" ]]; then
         stat -Lc "%G" "${1}" 2>/dev/null
     elif [[ "${UNAME}" == "Darwin" ]]; then
-        stat -Lf "%Sg" "${1}" 2>/dev/null
+        # Avoid using Nix GNU stat when in Nix shell.
+        /usr/bin/stat -Lf "%Sg" "${1}" 2>/dev/null
     fi
 }
 
@@ -51,4 +54,38 @@ nix_root() {
 
 nix_current_version() {
     nix-env --version | awk '{print $3}'
+}
+
+nix_get_local_setting() {
+    local NIX_LOCAL_CONFIG="${GIT_ROOT}/nix/nix.conf"
+    local KEY="${1}"
+    awk -F' = ' "/^${KEY} *=/{print \$2}" nix/nix.conf
+}
+
+nix_set_global_setting() {
+    local NIX_GLOBAL_CONFIG="/etc/nix/nix.conf"
+    local KEY="${1}"
+    local VAL="${2}"
+    if grep "${KEY}" "${NIX_GLOBAL_CONFIG}" 2>/dev/null; then
+        sed -i "s/${KEY} = \(.*\)$/${KEY} = ${VAL}/" "${NIX_GLOBAL_CONFIG}"
+    else
+        echo "${KEY} = ${VAL}" | sudo tee -a "${NIX_GLOBAL_CONFIG}" >/dev/null
+    fi
+}
+
+nix_daemon_restart() {
+    # Restarting Nix Daemon makes sense only on a multi-user install.
+    [[ $(nix_install_type) != "multi" ]] && return
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        echo "Restarting Nix daemon Launchd service..." >&2
+        sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+        sudo launchctl load   /Library/LaunchDaemons/org.nixos.nix-daemon.plist
+    elif [[ "$(uname -s)" == "Linux" ]] && [[ "$(nix_install_type)" == "multi" ]]; then
+        echo "Restarting Nix daemon Systemd service..." >&2
+        sudo systemctl daemon-reload
+        sudo systemctl restart nix-daemon
+    else
+        echo "Unknown platform! Unable to restart daemon!" >&2
+        exit 1
+    fi
 }

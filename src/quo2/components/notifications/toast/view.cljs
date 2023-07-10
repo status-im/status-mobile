@@ -21,8 +21,7 @@
 
 (defn toast-undo-action
   [duration on-press override-theme]
-  [toast-action-container
-   {:on-press on-press :accessibility-label :toast-undo-action}
+  [toast-action-container {:on-press on-press :accessibility-label :toast-undo-action}
    [rn/view {:style {:margin-right 5}}
     [count-down-circle/circle-timer {:duration duration}]]
    [text/text
@@ -31,17 +30,17 @@
 
 (defn- toast-container
   [{:keys [left title text right container-style override-theme]}]
-  [rn/view
-   {:style (merge style/box-container container-style)}
+  [rn/view {:style (merge style/box-container container-style)}
    [blur/view
     {:style         style/blur-container
      :blur-amount   13
      :blur-radius   10
      :blur-type     :transparent
      :overlay-color :transparent}]
-   [rn/view
-    {:style (style/content-container override-theme)}
-    [rn/view {:style style/left-side-container} left]
+
+   [rn/view {:style (style/content-container override-theme)}
+    [rn/view {:style style/left-side-container}
+     left]
     [rn/view {:style style/right-side-container}
      (when title
        [text/text
@@ -57,7 +56,7 @@
          :style               (style/text override-theme)
          :accessibility-label :toast-content}
         text])]
-    (when right right)]])
+    right]])
 
 (defn toast
   [{:keys [icon icon-color title text action undo-duration undo-on-press container-style

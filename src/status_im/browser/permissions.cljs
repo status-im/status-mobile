@@ -42,7 +42,7 @@
 
 (defn get-permission-data
   [cofx allowed-permission]
-  (let [multiaccount (get-in cofx [:db :multiaccount])]
+  (let [multiaccount (get-in cofx [:db :profile/profile])]
     (get {constants/dapp-permission-contact-code (:public-key multiaccount)
           constants/dapp-permission-web3         [(:dapps-address multiaccount)]}
          allowed-permission)))

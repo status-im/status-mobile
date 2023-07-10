@@ -3,16 +3,18 @@
             [status-im.currency.core :as models]))
 
 (deftest get-currency
-  (is (= :usd (models/get-currency {:multiaccount {:currency :usd}})))
-  (is (= :usd (models/get-currency {:multiaccount {:not-empty "would throw an error if was empty"}})))
-  (is (= :aud (models/get-currency {:multiaccount {:currency :aud}}))))
+  (is (= :usd (models/get-currency {:profile/profile {:currency :usd}})))
+  (is (= :usd (models/get-currency {:profile/profile {:not-empty "would throw an error if was empty"}})))
+  (is (= :aud (models/get-currency {:profile/profile {:currency :aud}}))))
 
 (deftest set-currency
-  (let [cofx (models/set-currency {:db {:multiaccount {:not-empty "would throw an error if was empty"}}}
+  (let [cofx (models/set-currency {:db {:profile/profile {:not-empty
+                                                          "would throw an error if was empty"}}}
                                   :usd)]
-    (is (= :usd (get-in cofx [:db :multiaccount :currency]))))
+    (is (= :usd (get-in cofx [:db :profile/profile :currency]))))
   (is
    (= :jpy
-      (get-in (models/set-currency {:db {:multiaccount {:not-empty "would throw an error if was empty"}}}
+      (get-in (models/set-currency {:db {:profile/profile {:not-empty
+                                                           "would throw an error if was empty"}}}
                                    :jpy)
-              [:db :multiaccount :currency]))))
+              [:db :profile/profile :currency]))))

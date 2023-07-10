@@ -10,8 +10,8 @@
             [status-im2.navigation.events :as navigation]
             [utils.validators :as validators]
             [status-im2.contexts.contacts.events :as data-store.contacts]
-            [status-im.utils.utils :as utils]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [utils.string :as utils.string]))
 
 (defn init-contact
   "Create a new contact (persisted to app-db as [:contacts/new-identity]).
@@ -37,7 +37,7 @@
 
 (defn ->id
   [{:keys [input] :as contact}]
-  (let [trimmed-input (utils/safe-trim input)]
+  (let [trimmed-input (utils.string/safe-trim input)]
     (->> {:id (if (empty? trimmed-input)
                 nil
                 (if-some [[_ id] (re-matches url-regex trimmed-input)]
@@ -95,7 +95,7 @@
 (rf/defn set-new-identity
   {:events [:contacts/set-new-identity]}
   [{:keys [db]} input scanned]
-  (let [user-public-key (get-in db [:multiaccount :public-key])
+  (let [user-public-key (get-in db [:profile/profile :public-key])
         {:keys [input id ens state]
          :as   contact} (-> {:user-public-key user-public-key
                              :input           input

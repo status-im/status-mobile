@@ -5,12 +5,11 @@
     [re-frame.core :as re-frame]
     [re-frame.interop :as interop]
     [react-native.core :as rn]
-    [react-native.languages :as react-native-languages]
     [react-native.platform :as platform]
     [react-native.shake :as react-native-shake]
     [reagent.impl.batching :as batching]
-    [status-im2.contexts.shell.utils :as shell.utils]
-    [status-im2.contexts.shell.state :as shell.state]
+    [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+    [status-im2.contexts.shell.jump-to.state :as shell.state]
     [status-im2.config :as config]
     [status-im2.setup.dev :as dev]
     [status-im2.setup.global-error :as global-error]
@@ -39,9 +38,8 @@
   (global-error/register-handler)
   (notifications/listen-notifications)
   (.addEventListener rn/app-state "change" #(re-frame/dispatch [:app-state-change %]))
-  (react-native-languages/add-change-listener #(fn [lang]
-                                                 (i18n/set-language lang)
-                                                 (i18n-resources/load-language lang)))
+  (i18n/set-language "en")
+  (i18n-resources/load-language "en")
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
   (utils.universal-links/initialize)
 
@@ -51,4 +49,4 @@
 
   (dev/setup)
 
-  (re-frame/dispatch-sync [:setup/app-started]))
+  (re-frame/dispatch-sync [:app-started]))

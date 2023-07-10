@@ -13,9 +13,8 @@
     status-im2.subs.home
     status-im2.subs.keycard
     status-im2.subs.mailservers
-    status-im2.subs.multiaccount
+    status-im2.subs.profile
     status-im2.subs.networks
-    status-im2.subs.onboarding
     status-im2.subs.pairing
     status-im2.subs.search
     status-im2.subs.shell
@@ -66,9 +65,7 @@
 (reg-root-key-sub :networks/manage :networks/manage)
 (reg-root-key-sub :get-pairing-installations :pairing/installations)
 (reg-root-key-sub :tooltips :tooltips)
-(reg-root-key-sub :supported-biometric-auth :supported-biometric-auth)
-(reg-root-key-sub :connectivity/ui-status-properties :connectivity/ui-status-properties)
-(reg-root-key-sub :logged-in-since :logged-in-since)
+(reg-root-key-sub :biometric/supported-type :biometric/supported-type)
 (reg-root-key-sub :app-state :app-state)
 (reg-root-key-sub :home-items-show-number :home-items-show-number)
 (reg-root-key-sub :waku/v2-peer-stats :peer-stats)
@@ -82,18 +79,15 @@
 ;; it is about cellular network/ wifi network
 (reg-root-key-sub :network/type :network/type)
 
-;;profile
+;;my profile
 (reg-root-key-sub :my-profile/seed :my-profile/seed)
-(reg-root-key-sub :my-profile/advanced? :my-profile/advanced?)
-(reg-root-key-sub :my-profile/profile :my-profile/profile)
 
-;;multiaccount
-(reg-root-key-sub :multiaccounts/multiaccounts :multiaccounts/multiaccounts)
-(reg-root-key-sub :multiaccounts/login :multiaccounts/login)
-(reg-root-key-sub :multiaccount :multiaccount)
-(reg-root-key-sub :multiaccount/accounts :multiaccount/accounts)
-(reg-root-key-sub :get-recover-multiaccount :multiaccounts/recover)
-(reg-root-key-sub :multiaccounts/key-storage :multiaccounts/key-storage)
+;;profiles
+(reg-root-key-sub :profile/profiles-overview :profile/profiles-overview)
+(reg-root-key-sub :profile/login :profile/login)
+(reg-root-key-sub :profile/profile :profile/profile)
+(reg-root-key-sub :profile/wallet-accounts :profile/wallet-accounts)
+
 (reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)
 (reg-root-key-sub :multiaccount/reset-password-errors :multiaccount/reset-password-errors)
 (reg-root-key-sub :multiaccount/resetting-password? :multiaccount/resetting-password?)
@@ -232,10 +226,6 @@
 
 (reg-root-key-sub :auth-method :auth-method)
 
-(reg-root-key-sub :multiaccounts/loading :multiaccounts/loading)
-
-(reg-root-key-sub :tos-accept-next-root :tos-accept-next-root)
-
 ;; keycard
 (reg-root-key-sub :keycard/banner-hidden :keycard/banner-hidden)
 
@@ -260,6 +250,8 @@
 (reg-root-key-sub :communities/my-pending-requests-to-join :communities/my-pending-requests-to-join)
 (reg-root-key-sub :communities/collapsed-categories :communities/collapsed-categories)
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
+
+(reg-root-key-sub :contract-communities :contract-communities)
 
 (reg-root-key-sub :activity-center :activity-center)
 
@@ -290,8 +282,6 @@
 ; Testing
 
 (reg-root-key-sub :messenger/started? :messenger/started?)
-
-(reg-root-key-sub :information-box-states :information-box-states)
 
 ; Messages home view -> tabs
 (reg-root-key-sub :messages-home/selected-tab :messages-home/selected-tab)

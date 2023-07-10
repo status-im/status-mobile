@@ -191,9 +191,9 @@
             (icons/icon icon {:color :dark})]}]])
 
 (defn card-body-row
-  [key value primary?]
+  [k value primary?]
   [react/view {:flex-direction :row}
-   [quo/text {:color (when-not primary? :secondary)} key]
+   [quo/text {:color (when-not primary? :secondary)} k]
    [quo/text
     {:style {:margin-right 4}
      :color (when-not primary? :secondary)} ":"]
@@ -268,13 +268,13 @@
      :on-change-text on-change}]])
 
 (defn help-label-kv
-  [{:keys [key value]}]
+  [{k :key v :value}]
   [react/view {:style {:flex-direction :row}}
-   [quo/text {:color :secondary} key]
+   [quo/text {:color :secondary} k]
    [quo/text
     {:color :secondary
      :style {:margin-right 4}} ":"]
-   [quo/text {:color :secondary} value]])
+   [quo/text {:color :secondary} v]])
 
 (defn nonce-modal
   []

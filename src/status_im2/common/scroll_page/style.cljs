@@ -27,16 +27,6 @@
                          colors/neutral-95-opa-70)
                         :transparent)}))
 
-(defn scroll-view-container
-  [border-radius]
-  {:flex          1
-   :position      :absolute
-   :top           (if platform/ios? -48 0)
-   :left          0
-   :right         0
-   :overflow      :scroll
-   :border-radius border-radius})
-
 (defn sticky-header-title
   [animation]
   (reanimated/apply-animations-to-style
@@ -55,24 +45,29 @@
    :height        24
    :margin-right  8})
 
+(defn children-container
+  [{:keys [border-radius background-color]}]
+  {:flex                    1
+   :border-top-left-radius  border-radius
+   :border-top-right-radius border-radius
+   :background-color        background-color})
+
+(def picture-radius 40)
+(def picture-diameter (* 2 picture-radius))
+(def picture-border-width 4)
+
 (defn display-picture-container
   [animation]
   (reanimated/apply-animations-to-style
    {:transform [{:scale animation}]}
-   {:border-radius    50
-    :border-width     1
-    :border-color     colors/white
-    :position         :absolute
-    :top              -40
-    :left             17
-    :padding          2
-    :background-color (colors/theme-colors
-                       colors/white
-                       colors/neutral-90)}))
+   {:border-radius picture-diameter
+    :border-width  picture-border-width
+    :border-color  (colors/theme-colors colors/white colors/neutral-95)
+    :position      :absolute
+    :top           (- (+ picture-radius picture-border-width))
+    :left          (- (/ picture-radius 2) picture-border-width)}))
 
 (def display-picture
-  {:border-radius 50
-   :border-width  0
-   :border-color  :transparent
-   :width         80
-   :height        80})
+  {:border-radius picture-diameter
+   :width         picture-diameter
+   :height        picture-diameter})

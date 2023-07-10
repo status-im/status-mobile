@@ -299,7 +299,8 @@ def create_shared_drivers(quantity):
         capabilities = {'maxDuration': 3600}
         print('SC Executor: %s' % executor_sauce_lab)
         try:
-            drivers = loop.run_until_complete(start_threads(quantity,
+            drivers = loop.run_until_complete(start_threads(test_suite_data.current_test.name,
+                                                            quantity,
                                                             Driver,
                                                             drivers,
                                                             executor_sauce_lab,
@@ -307,9 +308,11 @@ def create_shared_drivers(quantity):
             for i in range(quantity):
                 test_suite_data.current_test.testruns[-1].jobs[drivers[i].session_id] = i + 1
                 drivers[i].implicitly_wait(implicit_wait)
+            if len(drivers) < quantity:
+                test_suite_data.current_test.testruns[-1].error = "Not all %s drivers are created" % quantity
             return drivers, loop
-        except MaxRetryError as e:
-            test_suite_data.current_test.testruns[-1].error = e.reason
+        except (MaxRetryError, AttributeError) as e:
+            test_suite_data.current_test.testruns[-1].error += "%s" % e.reason
             raise e
 
 
@@ -392,7 +395,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
         from tests.conftest import sauce
         requests_session = requests.Session()
         requests_session.auth = (sauce_username, sauce_access_key)
-        if cls.drivers:
+        try:
             for _, driver in cls.drivers.items():
                 session_id = driver.session_id
                 try:
@@ -404,18 +407,26 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 except WebDriverException:
                     pass
                 url = 'https://api.%s/rest/v1/%s/jobs/%s/assets/%s' % (apibase, sauce_username, session_id, "log.json")
-                WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
-                commands = requests_session.get(url).json()
-                for command in commands:
-                    try:
-                        if command['message'].startswith("Started "):
-                            for test in test_suite_data.tests:
-                                if command['message'] == "Started %s" % test.name:
-                                    test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
-                    except KeyError:
-                        continue
-        if cls.loop:
-            cls.loop.close()
+                try:
+                    WebDriverWait(driver, 60, 2).until(lambda _: requests_session.get(url).status_code == 200)
+                    commands = requests_session.get(url).json()
+                    for command in commands:
+                        try:
+                            if command['message'].startswith("Started "):
+                                for test in test_suite_data.tests:
+                                    if command['message'] == "Started %s" % test.name:
+                                        test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
+                        except KeyError:
+                            continue
+                except (RemoteDisconnected, requests.exceptions.ConnectionError):
+                    pass
+        except AttributeError:
+            pass
+        finally:
+            try:
+                cls.loop.close()
+            except AttributeError:
+                pass
         for test in test_suite_data.tests:
             github_report.save_test(test)
 

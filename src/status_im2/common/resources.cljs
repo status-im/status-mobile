@@ -3,11 +3,14 @@
 
 (def ui
   {:add-new-contact               (js/require "../resources/images/ui2/add-contact.png")
+   :biometrics                    (js/require "../resources/images/ui2/biometrics.png")
    :desktop-how-to-pair-sign-in   (js/require "../resources/images/ui2/desktop-how-to-pair-sign-in.png")
    :desktop-how-to-pair-logged-in (js/require
                                    "../resources/images/ui2/desktop-how-to-pair-logged-in.png")
    :mobile-how-to-pair-sign-in    (js/require "../resources/images/ui2/mobile-how-to-pair-sign-in.png")
    :mobile-how-to-pair-logged-in  (js/require "../resources/images/ui2/mobile-how-to-pair-logged-in.png")
+   :find-sync-code-desktop        (js/require "../resources/images/ui2/find-sync-code-desktop.png")
+   :find-sync-code-mobile         (js/require "../resources/images/ui2/find-sync-code-mobile.png")
    :lifestyle                     (js/require "../resources/images/ui2/lifestyle.png")
    :music                         (js/require "../resources/images/ui2/music.png")
    :podcasts                      (js/require "../resources/images/ui2/podcasts.png")
@@ -79,6 +82,12 @@
    :fxc  (js/require "../resources/images/tokens/mainnet/FXC.png")
    :usdt (js/require "../resources/images/tokens/mainnet/USDT.png")
    :snt  (js/require "../resources/images/tokens/mainnet/SNT.png")})
+
+(def parallax-video
+  {:biometrics [(js/require "../resources/videos2/biometrics_01.mp4")
+                (js/require "../resources/videos2/biometrics_02.mp4")
+                (js/require "../resources/videos2/biometrics_03.mp4")
+                (js/require "../resources/videos2/biometrics_04.mp4")]})
 
 (defn get-mock-image
   [k]

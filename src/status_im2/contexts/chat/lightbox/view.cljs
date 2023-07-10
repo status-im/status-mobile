@@ -43,8 +43,8 @@
    [rn/view {:style {:width constants/separator-width}}]])
 
 (defn lightbox-content
-  [props {:keys [data transparent? scroll-index set-full-height?]} animations derived messages index
-   callback]
+  [props {:keys [data transparent? scroll-index set-full-height?] :as state}
+   animations derived messages index handle-items-changed]
   (let [insets           (safe-area/get-insets)
         window           (rn/get-window)
         window-width     (:width window)
@@ -66,7 +66,7 @@
      {:style (reanimated/apply-animations-to-style {:background-color (:background-color animations)}
                                                    {:height screen-height})}
      (when-not @transparent?
-       [:f> top-view/top-view data insets scroll-index animations derived landscape?
+       [:f> top-view/top-view messages insets scroll-index animations derived landscape?
         screen-width])
      [gesture/gesture-detector
       {:gesture (utils/drag-gesture animations (and landscape? platform/ios?) set-full-height?)}
@@ -75,6 +75,7 @@
                 {:transform [{:translateY (:pan-y animations)}
                              {:translateX (:pan-x animations)}]}
                 {})}
+       [reanimated/view {:style (style/background animations @(:overlay-z-index state))}]
        [gesture/flat-list
         {:ref                               #(reset! (:flat-list-ref props) %)
          :key-fn                            :message-id
@@ -99,28 +100,28 @@
                                              :wait-for-interaction                 true}
          :shows-vertical-scroll-indicator   false
          :shows-horizontal-scroll-indicator false
-         :on-viewable-items-changed         callback}]]]
+         :on-viewable-items-changed         handle-items-changed}]]]
      (when (and (not @transparent?) (not landscape?))
        [:f> bottom-view/bottom-view messages index scroll-index insets animations derived
-        item-width props])]))
+        item-width props state])]))
 
 (defn- f-lightbox
-  [{:keys [messages index]}]
-  (let [props (utils/init-props)
-        state (utils/init-state messages index)]
-    (fn [{:keys [messages index]}]
+  []
+  (let [{:keys [messages index]} (rf/sub [:get-screen-params])
+        props                    (utils/init-props)
+        state                    (utils/init-state messages index)
+        handle-items-changed     (fn [e]
+                                   (on-viewable-items-changed e props state))]
+    (fn []
       (let [animations (utils/init-animations)
-            derived    (utils/init-derived-animations animations)
-            callback   (fn [e]
-                         (on-viewable-items-changed e props state))]
+            derived    (utils/init-derived-animations animations)]
         (anim/animate (:background-color animations) colors/neutral-100)
         (reset! (:data state) messages)
         (when platform/ios? ; issue: https://github.com/wix/react-native-navigation/issues/7726
           (utils/orientation-change props state animations))
         (utils/effect props animations index)
-        [:f> lightbox-content props state animations derived messages index callback]))))
+        [:f> lightbox-content props state animations derived messages index handle-items-changed]))))
 
 (defn lightbox
   []
-  (let [screen-params (rf/sub [:get-screen-params])]
-    [:f> f-lightbox screen-params]))
+  [:f> f-lightbox])

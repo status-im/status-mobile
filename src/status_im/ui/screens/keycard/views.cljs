@@ -9,7 +9,6 @@
             [utils.i18n :as i18n]
             [status-im.keycard.login :as keycard.login]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
@@ -316,8 +315,8 @@
             enter-step         [:keycard/pin-enter-step]
             status             [:keycard/pin-status]
             error-label        [:keycard/pin-error-label]
-            login-multiaccount [:multiaccounts/login]
-            multiaccount       [:multiaccount]
+            login-multiaccount [:profile/login]
+            multiaccount       [:profile/profile]
             small-screen?      [:dimensions/small-screen?]
             retry-counter      [:keycard/retry-counter]]
     (let [{:keys [name] :as account} (or login-multiaccount multiaccount)
@@ -444,7 +443,6 @@
   {:events [:multiaccounts.create.ui/get-new-key]}
   [{:keys [db] :as cofx}]
   (rf/merge cofx
-            (multiaccounts.create/prepare-intro-wizard)
             (bottom-sheet/hide-bottom-sheet-old)
             (navigation/navigate-to :get-your-keys nil)))
 

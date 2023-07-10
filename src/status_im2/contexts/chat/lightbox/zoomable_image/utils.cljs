@@ -135,7 +135,7 @@
             :show-2
             (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible true}})
                            (if platform/ios? 150 50))))))
-    (anim/animate border-value (if (= opacity 1) 0 12))))
+    (anim/animate border-value (if (= opacity 1) 0 16))))
 
 ;;; Dimensions
 (defn get-dimensions

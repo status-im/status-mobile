@@ -2,7 +2,7 @@
   (:require [react-native.core :as rn]
             [status-im.fleet.core :as fleet]
             [status-im.wallet.db :as wallet.db]
-            [status-im2.contexts.activity-center.events :as activity-center]))
+            [status-im2.contexts.shell.activity-center.events :as activity-center]))
 
 ;; initial state of app-db
 (def app-db
