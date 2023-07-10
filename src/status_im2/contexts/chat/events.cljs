@@ -174,7 +174,9 @@
     (chat.state/reset-visible-item)
     (rf/merge cofx
               (merge
-               {:db (dissoc db :current-chat-id)}
+               {:db                  (dissoc db :current-chat-id)
+                ::async-storage/set! {:chat-id nil
+                                      :key-uid nil}}
                (let [community-id (get-in db [:chats chat-id :community-id])]
                  ;; When navigating back from community chat to community, update switcher card
                  ;; A close chat event is also called while opening any chat.
