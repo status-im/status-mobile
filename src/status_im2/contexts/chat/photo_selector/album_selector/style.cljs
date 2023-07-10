@@ -8,8 +8,8 @@
                                         {:position         :absolute
                                          :z-index          1
                                          :background-color (colors/theme-colors
-                                                             colors/white
-                                                             colors/neutral-100)
+                                                            colors/white
+                                                            colors/neutral-100)
                                          :left             0
                                          :right            0}))
 
