@@ -167,8 +167,9 @@
            colors/neutral-40)})
 
 (defn button-view-profile
-  [state]
+  [state customization-color]
   {:type                :primary
+   :customization-color customization-color
    :size                40
    :width               335
    :style               {:margin-top    24

@@ -108,8 +108,8 @@
    :label               (i18n/label :t/share-channel)})
 
 (defn actions
-  [{:keys [locked? id community-id]} inside-chat?]
-  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id (str community-id id)])]
+  [{:keys [locked? chat-id]} inside-chat?]
+  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id chat-id])]
     (cond
       locked?
       [quo/action-drawer
@@ -122,7 +122,7 @@
       [quo/action-drawer
        [[(action-view-members-and-details)
          (action-mark-as-read)
-         (action-toggle-muted (str community-id id) muted muted-till chat-type)
+         (action-toggle-muted chat-id muted muted-till chat-type)
          (action-notification-settings)
          (action-pinned-messages)
          (action-invite-people)
@@ -134,7 +134,7 @@
        [[(action-view-members-and-details)
          (action-token-requirements)
          (action-mark-as-read)
-         (action-toggle-muted (str community-id id) muted muted-till chat-type)
+         (action-toggle-muted chat-id muted muted-till chat-type)
          (action-notification-settings)
          (action-fetch-messages)
          (action-invite-people)
