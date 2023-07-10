@@ -80,9 +80,7 @@
                              :balance             "€2,269.12"
                              :percentage-value    "16.9%"
                              :amount              "€570.24"
-                             :customization-color (if (= :type :add-account)
-                              :blue
-                              :army)
+                             :customization-color :blue
                              :type                :default
                              :emoji               "💎"})]
     (fn []
