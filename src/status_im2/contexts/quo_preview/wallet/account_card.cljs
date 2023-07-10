@@ -39,7 +39,14 @@
               {:key   :watch-only
                :value "Watch Only"}
               {:key   :add-account
-               :value "Add Account"}]}])
+               :value "Add Account"}]}
+   {:label "Show FlatList:"
+    :key   :show-flatlist
+    :type  :boolean}])
+
+(defn- separator
+  []
+  [rn/view {:style {:width 40}}])
 
 (defn cool-preview
   []
@@ -66,11 +73,21 @@
          [icon/icon :i/check {:color colors/white :size 16}]]]
        [rn/view {:style {:flex 1}}
         [preview/customizer state descriptor]]
-       (let [selected-type (:type @state)
-             filtered-data (filter #(= selected-type (:type %)) mock-data)]
-         (for [data filtered-data]
-           [rn/view {:style {:align-items :center :margin-vertical 40}}
-            [quo/account-card data]]))])))
+       (if (:show-flatlist @state)
+         [rn/view {:style {:flex 1 :margin-top 40}}
+          [rn/flat-list
+           {:data                              mock-data
+            :key-extractor                     #(-> % :id)
+            :horizontal                        true
+            :content-container-style           {:padding-horizontal 40}
+            :separator                         [separator]
+            :render-fn                         quo/account-card
+            :shows-horizontal-scroll-indicator false}]]
+         (let [selected-type (:type @state)
+               filtered-data (filter #(= selected-type (:type %)) mock-data)]
+           (for [data filtered-data]
+             [rn/view {:style {:align-items :center :margin-top 40}}
+              [quo/account-card data]])))])))
 
 
 (defn preview-account-card
