@@ -224,7 +224,7 @@
       :on-long-press #(rf/dispatch
                        [:show-bottom-sheet
                         {:content (fn []
-                                    [chat-actions/actions community-id id])}])
+                                    [chat-actions/actions chat false])}])
       :community-id  community-id})))
 
 (defn add-handlers-to-chats
