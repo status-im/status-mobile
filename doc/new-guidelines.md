@@ -80,6 +80,52 @@ This mistake mostly happens with functional components
 
 it's important to name functional components with `f-` prefix
 
+### Component props and API scheme to match Figma as closely as possible
+
+Ideally, the prop names for components (particularly in quo2 Design System) should match the Figma properties as best as possible. This makes it easier for the developer using that component to configure it correctly for the screen it is being used on and avoids unnecessary overwrites and adjustments being made.
+
+#### Avoid unnecessarily grouping categories to reduce the number of props
+For example in Figma if there is a component and it has the following variants:
+
+|theme: "light" blur: "False"|theme: "dark" blur: "False"|theme: "light" blur: "True"|theme: "dark"  blur: "True"|
+|----------------------------|---------------------------|---------------------------|---------------------------|
+| type :neutral label "ABC"  | type :neutral label "ABC" |                           |                           |
+| type :active  label "ABC"  | type :active  label "ABC" |                           |                           |
+| type :danger  label "ABC"  | type :danger  label "ABC" | type :danger label "ABC"  | type :danger label "ABC"  |
+
+```clojure
+;; bad
+"theme - :light or :dark
+type - can be :neutral :active :danger :danger-blur"
+(defn my-component [{:keys [theme type]} label])
+
+;; good
+"theme - :light or :dark
+ type - can be :neutral :active :danger
+ blur? - boolean
+"
+(defn my-component [{:keys [theme blur? type]} label])
+```
+
+Please note this is only for the external API of the component and there should be no restriction of how the component manages its internal API as that will not affect the developer using the component with the issues described above.
+
+In some cases this is not always possible or does not make sense. However the thought process should be how easy will it be for another developer to use this component with the correct configuration given the screen designs for Figma.
+
+#### Avoid unnecessarily renaming props 
+In general it can be helpful to avoid renaming props from their counterpart in Figma.
+
+For example if Figma has sizes `:small`, `:medium` and `:large`
+
+```clojure
+;; bad
+":size - :little, :default or :big"
+(defn my-component [{:keys [size]}])
+
+;; good
+":size - :small, :medium or :large"
+(defn my-component [{:keys [size]}])
+```
+
 ### Component styles
 
 Prefer to define styles in a separate file named `style.cljs`, colocated with
