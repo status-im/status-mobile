@@ -356,11 +356,13 @@
 
 (defn overview
   [id]
-  (let [id (or id (rf/sub [:get-screen-params :community-overview]))]
+  (let [id                  (or id (rf/sub [:get-screen-params :community-overview]))
+        customization-color (rf/sub [:profile/customization-color])]
     [rn/view {:style style/community-overview-container}
      [community-card-page-view id]
      [floating-shell-button/floating-shell-button
-      {:jump-to {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
-                 :label    (i18n/label :t/jump-to)}}
+      {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
+                 :customization-color customization-color
+                 :label               (i18n/label :t/jump-to)}}
       {:position :absolute
        :bottom   41}]]))
