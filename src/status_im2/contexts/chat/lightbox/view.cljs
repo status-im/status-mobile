@@ -42,20 +42,6 @@
    [:f> zoomable-image/zoomable-image message index args]
    [rn/view {:style {:width constants/separator-width}}]])
 
-(defn on-scroll
-  [e item-width images-opacity landscape?]
-  (let [total-item-width (+ item-width constants/separator-width)
-        progress         (/ (if landscape?
-                              (oops/oget e "nativeEvent.contentOffset.y")
-                              (oops/oget e "nativeEvent.contentOffset.x"))
-                            total-item-width)
-        index-i          (max (Math/floor progress) 0)
-        index-f          (inc index-i)
-        decimal-part     (- progress index-i)]
-    (reanimated/set-shared-value (nth images-opacity index-i) (- 1 decimal-part))
-    (when (< index-f (count images-opacity))
-      (reanimated/set-shared-value (nth images-opacity index-f) decimal-part))))
-
 (defn lightbox-content
   [props {:keys [data transparent? scroll-index set-full-height?] :as state}
    animations derived messages index handle-items-changed]
@@ -93,7 +79,7 @@
        [gesture/flat-list
         {:ref #(reset! (:flat-list-ref props) %)
          :key-fn :message-id
-         :on-scroll (fn [e] (on-scroll e item-width (:images-opacity animations) landscape?))
+         :on-scroll (fn [e] (utils/on-scroll e item-width (:images-opacity animations) landscape?))
          :scroll-event-throttle 8
          :style {:width (+ screen-width constants/separator-width)}
          :data @data

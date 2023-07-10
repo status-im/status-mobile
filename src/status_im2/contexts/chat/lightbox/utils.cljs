@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.lightbox.utils
   (:require
     [clojure.string :as string]
+    [oops.core :as oops]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
@@ -97,6 +98,20 @@
           ;; RNN does not support landscape-right
           (when (and enabled? (not= result orientation/landscape-right))
             (handle-orientation result props state animations))))))))
+
+(defn on-scroll
+  [e item-width images-opacity landscape?]
+  (let [total-item-width (+ item-width constants/separator-width)
+        progress         (/ (if landscape?
+                              (oops/oget e "nativeEvent.contentOffset.y")
+                              (oops/oget e "nativeEvent.contentOffset.x"))
+                            total-item-width)
+        index-initial    (max (Math/floor progress) 0)
+        index-final      (inc index-initial)
+        decimal-part     (- progress index-initial)]
+    (anim/set-val (nth images-opacity index-initial) (- 1 decimal-part))
+    (when (< index-final (count images-opacity))
+      (anim/set-val (nth images-opacity index-final) decimal-part))))
 
 (defn drag-gesture
   [{:keys [pan-x pan-y background-color opacity layout]} x? set-full-height?]
