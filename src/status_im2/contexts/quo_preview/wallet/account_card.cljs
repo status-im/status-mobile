@@ -5,18 +5,19 @@
             [quo2.core :as quo]
             [quo2.components.icon :as icon]
             [reagent.core :as reagent]
+            [utils.collection]
             [status-im2.contexts.quo-preview.preview :as preview]
   ))
 
 (def mock-data
   [{:id                  1
-    :name                "Alisher account"
-    :balance             "€2,269.12"
+    :name                "Trip to Vegas"
+    :balance             "€21,872.93"
     :percentage-value    "16.9%"
     :amount              "€570.24"
-    :customization-color :army
+    :customization-color :turquoise
     :type                :default
-    :emoji               "💎"}
+    :emoji               "🎲"}
    {:id               2
     :name             "Ben’s fortune"
     :balance          "€2,269.12"
@@ -26,6 +27,14 @@
     :type             :watch-only
     :emoji            "💸"}
    {:id                  3
+    :name                "Alisher account"
+    :balance             "€2,269.12"
+    :percentage-value    "16.9%"
+    :amount              "€570.24"
+    :customization-color :purple
+    :type                :default
+    :emoji               "💎"}
+   {:id                  4
     :type                :add-account
     :customization-color :blue
     :handler             #(js/alert "Add account pressed")}])
@@ -42,15 +51,40 @@
                :value "Add Account"}]}
    {:label "Show FlatList:"
     :key   :show-flatlist
-    :type  :boolean}])
+    :type  :boolean}
+   {:label   "Customization color:"
+    :key     :customization-color
+    :type    :select
+    :options (map (fn [[color-kw _]]
+                    {:key   color-kw
+                     :value (name color-kw)})
+                  colors/customization)}
+   {:label "Name:"
+    :key   :name
+    :type  :text}
+   {:label "Balance:"
+    :key   :balance
+    :type  :text}
+   {:label "Emoji:"
+    :key   :emoji
+    :type  :text}])
 
 (defn- separator
   []
-  [rn/view {:style {:width 40}}])
+  [rn/view {:style {:width 12}}])
+
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:type :default})]
+  (let [state (reagent/atom {:name                "Alisher account"
+                             :balance             "€2,269.12"
+                             :percentage-value    "16.9%"
+                             :amount              "€570.24"
+                             :customization-color (if (= :type :add-account)
+                              :blue
+                              :army)
+                             :type                :default
+                             :emoji               "💎"})]
     (fn []
       [rn/view
        {:style {:flex 1}}
@@ -74,20 +108,27 @@
        [rn/view {:style {:flex 1}}
         [preview/customizer state descriptor]]
        (if (:show-flatlist @state)
-         [rn/view {:style {:flex 1 :margin-top 40}}
+         [rn/view {:style {:margin-top 40 :margin-vertical 20}}
           [rn/flat-list
            {:data                              mock-data
             :key-extractor                     #(-> % :id)
             :horizontal                        true
-            :content-container-style           {:padding-horizontal 40}
+            :content-container-style           {:padding-horizontal 20}
+            :content-container-styles          (fn [index]
+                                                 (let [last-index (- (count mock-data) 1)]
+                                                   (if (= index last-index)
+                                                     {:flex-grow 1 :align-self :flex-start}
+                                                     {})))
             :separator                         [separator]
             :render-fn                         quo/account-card
             :shows-horizontal-scroll-indicator false}]]
          (let [selected-type (:type @state)
-               filtered-data (filter #(= selected-type (:type %)) mock-data)]
-           (for [data filtered-data]
+               filtered-data (->> mock-data
+                                  (filter #(= selected-type (:type %)))
+                                  (utils.collection/distinct-by :type))]
+           (for [_ filtered-data]
              [rn/view {:style {:align-items :center :margin-top 40}}
-              [quo/account-card data]])))])))
+              [quo/account-card (assoc @state :type selected-type)]])))])))
 
 
 (defn preview-account-card
