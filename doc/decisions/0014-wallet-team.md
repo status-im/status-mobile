@@ -16,7 +16,7 @@ The responsibilities of the team are to implement the new wallet UI, with the su
 
 ## Decision
 
-Some team members have already expressed interest and some have been asked and accepted to join the wallet team, these team members are:
+The team members for the initial wallet team are:
 
 - @rasom
 - @OmarBasem
@@ -25,7 +25,6 @@ Some team members have already expressed interest and some have been asked and a
 - @briansztamfater
 - @smohamedjavid
 - @ulisesmac
-
-# Follow-up Actions
-
-- We still need 3/4 team members to join the wallet team
+- @erikseppanen
+- @rahulpsingh
+- @mmilad75
