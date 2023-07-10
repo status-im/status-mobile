@@ -1,6 +1,5 @@
 (ns quo2.components.community.community-view
-  (:require [quo.gesture-handler :as gesture-handler]
-            [quo2.components.community.style :as style]
+  (:require [quo2.components.community.style :as style]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.permission-tag :as permission]
@@ -8,6 +7,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
+            [react-native.gesture :as gesture]
             utils.money))
 
 (defn community-stats
@@ -49,7 +49,7 @@
 
 (defn community-tags
   [{:keys [tags container-style last-item-style]}]
-  [gesture-handler/scroll-view
+  [gesture/scroll-view
    {:shows-horizontal-scroll-indicator false
     :horizontal                        true
     :style                             container-style}
