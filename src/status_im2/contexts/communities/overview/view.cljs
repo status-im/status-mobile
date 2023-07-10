@@ -49,19 +49,19 @@
   (oops/oget event "nativeEvent.layout.y"))
 
 (defn- channel-chat-item
-  [community-id community-color {chat-id :id muted? :muted? :as chat}]
+  [community-id community-color {:keys [:muted? id] :as chat}]
   (let [sheet-content      [actions/chat-actions
-                            (assoc chat :chat-type constants/community-chat-type :chat-id (str community-id chat-id))
+                            (assoc chat :chat-type constants/community-chat-type :chat-id (str community-id id))
                             false]
         channel-sheet-data {:selected-item (fn [] [quo/channel-list-item chat])
                             :content       (fn [] sheet-content)}]
-    [rn/view {:key chat-id :style {:margin-top 4}}
+    [rn/view {:key id :style {:margin-top 4}}
      [quo/channel-list-item
       (assoc chat
              :default-color community-color
              :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data])
              :muted?        (or muted?
-                                (rf/sub [:chat/check-channel-muted? community-id chat-id])))]]))
+                                (rf/sub [:chat/check-channel-muted? community-id id])))]]))
 
 (defn channel-list-component
   [{:keys [on-category-layout community-id community-color on-first-channel-height-changed]}
