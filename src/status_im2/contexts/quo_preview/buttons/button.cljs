@@ -11,8 +11,8 @@
     :type    :select
     :options [{:key   :primary
                :value "Primary"}
-              {:key   :secondary
-               :value "Secondary"}
+              {:key   :positive
+               :value "Positive"}
               {:key   :grey
                :value "Grey"}
               {:key   :dark-grey
@@ -23,8 +23,8 @@
                :value "Ghost"}
               {:key   :danger
                :value "Danger"}
-              {:key   :positive
-               :value "Positive"}]}
+              {:key   :black
+               :value "Black"}]}
    {:label   "Size:"
     :key     :size
     :type    :select
@@ -36,6 +36,13 @@
                :value "32"}
               {:key   24
                :value "24"}]}
+   {:label   "Background:"
+    :key     :background
+    :type    :select
+    :options [{:key   :blur
+               :value "Blur"}
+              {:key   :photo
+               :value "Photo"}]}
    {:label "Icon:"
     :key   :icon
     :type  :boolean}
@@ -78,7 +85,8 @@
                   :theme
                   :before
                   :after)
-                 {:on-press #(println "Hello world!")}
+                 {:background (:background @state)
+                  :on-press   #(println "Hello world!")}
                  (when @above
                    {:above :i/placeholder})
                  (when @before

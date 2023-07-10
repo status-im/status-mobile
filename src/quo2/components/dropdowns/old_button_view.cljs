@@ -6,7 +6,6 @@
             [react-native.blur :as blur]
             [reagent.core :as reagent]
             [quo2.components.dropdowns.old-button-style :as style]))
-;TODO: Dropdown needs to be implemented as its own component - https://github.com/status-im/status-mobile/issues/16456
 
 (defn- button-internal
   "with label

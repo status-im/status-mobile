@@ -1,6 +1,5 @@
 (ns quo2.components.dropdowns.old-button-style
   (:require [quo2.foundations.colors :as colors]))
-;TODO: Dropdown needs to be implemented as its own component - https://github.com/status-im/status-mobile/issues/16456
 
 (def blur-view
   {:position :absolute

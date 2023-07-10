@@ -37,12 +37,13 @@
        :override-background-color (colors/custom-color profile-color 60)}
       (i18n/label :t/intro-wizard-title6)]
      [quo/button
-      {:on-press                  (fn []
-                                    (shell.utils/change-selected-stack-id :communities-stack true nil)
-                                    (rf/dispatch [:init-root :welcome]))
-       :accessibility-label       :enable-notifications-later-button
-       :override-background-color colors/white-opa-5
-       :style                     {:margin-top 12}}
+      {:on-press            (fn []
+                              (shell.utils/change-selected-stack-id :communities-stack true nil)
+                              (rf/dispatch [:init-root :welcome]))
+       :accessibility-label :enable-notifications-later-button
+       :type                :grey
+       :background          :blur
+       :style               {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
 (defn enable-notifications

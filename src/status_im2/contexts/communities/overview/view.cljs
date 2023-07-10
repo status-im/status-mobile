@@ -138,7 +138,7 @@
 (defn token-gates
   [{:keys [id]}]
   (rf/dispatch [:communities/check-permissions-to-join-community id])
-  (fn [{:keys [id community-color]}]
+  (fn [{:keys [id color]}]
     (let [{:keys [can-request-access?
                   number-of-hold-tokens tokens]} (rf/sub [:community/token-gated-overview id])]
       [rn/view {:style (style/token-gated-container)}
@@ -162,16 +162,16 @@
         {:tokens   tokens
          :padding? true}]
        [quo/button
-        {:on-press                  #(join-gated-community id)
-         :accessibility-label       :join-community-button
-         :customization-color community-color
-         :style                     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
-         :disabled                  (not can-request-access?)
-         :before                    (if can-request-access? :i/unlocked :i/locked)}
+        {:on-press            #(join-gated-community id)
+         :accessibility-label :join-community-button
+         :customization-color color
+         :style               {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
+         :disabled            (not can-request-access?)
+         :before              (if can-request-access? :i/unlocked :i/locked)}
         (i18n/label :t/join-open-community)]])))
 
 (defn join-community
-  [{:keys [joined can-join? community-color permissions token-permissions] :as community}
+  [{:keys [joined can-join? color permissions token-permissions] :as community}
    pending?]
   (let [access-type     (get-access-type (:access permissions))
         unknown-access? (= access-type :unknown-access)
@@ -183,10 +183,10 @@
        (if token-permissions
          [token-gates community]
          [quo/button
-          {:on-press                  #(rf/dispatch [:open-modal :community-requests-to-join community])
-           :accessibility-label       :show-request-to-join-screen-button
-           :override-background-color community-color
-           :before                    :i/communities}
+          {:on-press            #(rf/dispatch [:open-modal :community-requests-to-join community])
+           :accessibility-label :show-request-to-join-screen-button
+           :customization-color color
+           :before              :i/communities}
           (request-to-join-text is-open?)]))
 
      (when (and (not (or joined pending? token-permissions)) (not (or is-open? node-offline?)))

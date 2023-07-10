@@ -32,8 +32,11 @@
     :align-mid?              false
     :page-nav-color          :transparent
     :left-section            {:icon                  :i/arrow-left
+                              ;TODO this is wrong - page nav needs updating
+                              ;https://github.com/status-im/status-mobile/issues/16535
+                              ; should be type:grey, and page nav can use background instead.
                               :icon-background-color colors/white-opa-5
-                              :type                  :shell
+                              :type                  :grey
                               :on-press              #(rf/dispatch [:init-root root])}}])
 
 (defn dispatch-visibility-status-update

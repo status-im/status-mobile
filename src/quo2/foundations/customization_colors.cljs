@@ -5,8 +5,8 @@
 (defn get-overlay-color
   [theme pressed?]
   (if (= theme :light)
-    (colors/alpha colors/black (if-not pressed? 0 0.2))
-    (colors/alpha colors/black (if-not pressed? 0.2 0))))
+    (colors/alpha colors/black (if pressed? 0.2 0))
+    (colors/alpha colors/black (if pressed? 0 0.2))))
 
 (defn overlay
   [{:keys [theme pressed?]}]
