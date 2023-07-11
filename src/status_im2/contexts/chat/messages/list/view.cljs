@@ -257,11 +257,15 @@
   (when (not= content-type constants/content-type-system-mutual-state-update)
     [rn/view
      (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
-     (if (= type :datemark)
+     (cond
+       (= type :datemark)
        [quo/divider-date value]
-       (if (= content-type constants/content-type-gap)
-         [message.gap/gap message-data]
-         [message/message message-data context keyboard-shown?]))]))
+
+       (= content-type constants/content-type-gap)
+       [message.gap/gap message-data]
+
+       :else
+       [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
   [event scroll-y]
@@ -356,11 +360,13 @@
         {:keys [keyboard-height keyboard-shown]} (hooks/use-keyboard)]
     (rn/use-effect
      (fn []
-       (reanimated/set-shared-value scroll-y
-                                    (+ (reanimated/get-shared-value scroll-y)
-                                       (if keyboard-shown
-                                         keyboard-height
-                                         (- keyboard-height)))))
+       (if keyboard-shown
+         (reanimated/set-shared-value scroll-y
+                                      (+ (reanimated/get-shared-value scroll-y)
+                                         keyboard-height))
+         (reanimated/set-shared-value scroll-y
+                                      (- (reanimated/get-shared-value scroll-y)
+                                         keyboard-height))))
      [keyboard-shown keyboard-height])
     [rn/keyboard-avoiding-view
      {:style                    (style/keyboard-avoiding-container insets)
