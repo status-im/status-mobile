@@ -2,12 +2,14 @@
   (:require [react-native.safe-area :as safe-area]
             [react-native.core :as rn]))
 
-(def outer-container
-  {:position :absolute
-   :top      (if rn/small-screen? (safe-area/get-top) 0)
-   :left     0
-   :right    0
-   :bottom   0})
+(defn outer-container
+  [container-style]
+  (merge {:position :absolute
+          :top      (if rn/small-screen? (safe-area/get-top) 0)
+          :left     0
+          :right    0
+          :bottom   0}
+         container-style))
 
 (def video
   {:position :absolute
