@@ -40,12 +40,13 @@
 
 (defn expand-sheet
   [{:keys [derived-value overlay-opacity saved-top]}
-   expanded-height max-height overlay-z-index expanded?]
-  (reanimated/animate derived-value expanded-height)
-  (reanimated/animate overlay-opacity (/ expanded-height max-height))
-  (reanimated/set-shared-value saved-top (- expanded-height))
-  (reset! overlay-z-index 1)
-  (reset! expanded? true))
+   expanded-height max-height overlay-z-index expanded? text-sheet-lock?]
+  (when-not @text-sheet-lock?
+    (reanimated/animate derived-value expanded-height)
+    (reanimated/animate overlay-opacity (/ expanded-height max-height))
+    (reanimated/set-shared-value saved-top (- expanded-height))
+    (reset! overlay-z-index 1)
+    (reset! expanded? true)))
 
 (defn on-scroll
   [e expanded? dragging? {:keys [gradient-opacity]}]

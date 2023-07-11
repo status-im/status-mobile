@@ -6,6 +6,7 @@
 (defn container
   [{:keys [width height]}
    {:keys [pan-x pan-y pinch-x pinch-y scale]}
+   full-screen-scale
    set-full-height?
    portrait?]
   (reanimated/apply-animations-to-style
@@ -13,7 +14,8 @@
                 {:translateY pan-y}
                 {:translateX pinch-x}
                 {:translateY pinch-y}
-                {:scale scale}]}
+                {:scale scale}
+                {:scale full-screen-scale}]}
    {:justify-content :center
     :align-items     :center
     :width           (if (or platform/ios? portrait?) width "100%")
@@ -22,10 +24,12 @@
 (defn image
   [{:keys [image-width image-height]}
    {:keys [rotate rotate-scale]}
-   border-radius]
+   {:keys [border-value images-opacity]}
+   index]
   (reanimated/apply-animations-to-style
    {:transform     [{:rotate rotate}
                     {:scale rotate-scale}]
-    :border-radius border-radius}
+    :opacity       (nth images-opacity index)
+    :border-radius border-value}
    {:width  image-width
     :height image-height}))

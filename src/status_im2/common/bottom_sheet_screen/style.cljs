@@ -30,7 +30,7 @@
    :right           0
    :top             0
    :height          20
-   :z-index         1
+   :z-index         2
    :position        :absolute
    :justify-content :center
    :align-items     :center})

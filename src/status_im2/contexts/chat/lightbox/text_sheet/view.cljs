@@ -20,7 +20,7 @@
      [rn/view {:style style/bar}]]))
 
 (defn text-sheet
-  [messages overlay-opacity overlay-z-index]
+  [messages overlay-opacity overlay-z-index text-sheet-lock?]
   (let [text-height (reagent/atom 0)
         expanded?   (reagent/atom false)
         dragging?   (atom false)]
@@ -49,7 +49,12 @@
          [reanimated/touchable-opacity
           {:active-opacity 1
            :on-press
-           #(utils/expand-sheet animations expanded-height max-height overlay-z-index expanded?)
+           #(utils/expand-sheet animations
+                                expanded-height
+                                max-height
+                                overlay-z-index
+                                expanded?
+                                text-sheet-lock?)
            :style (style/sheet-container derived)}
           [bar @text-height]
           [reanimated/linear-gradient
@@ -74,5 +79,5 @@
              :on-layout      #(utils/on-layout % text-height)}]]]]))))
 
 (defn view
-  [messages {:keys [overlay-opacity]} {:keys [overlay-z-index]}]
-  [:f> text-sheet messages overlay-opacity overlay-z-index])
+  [messages {:keys [overlay-opacity]} {:keys [overlay-z-index]} {:keys [text-sheet-lock?]}]
+  [:f> text-sheet messages overlay-opacity overlay-z-index text-sheet-lock?])
