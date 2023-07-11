@@ -2245,5 +2245,11 @@
     "chat-unmuted-successfully": "Chat unmuted successfully! ",
     "channel-unmuted-successfully": "Channel unmuted successfully! ",
     "photo-saved": "Photo saved to your device",
+<<<<<<< HEAD
     "community-unmuted": "Community unmuted"
+=======
+    "retake": "Retake",
+    "use-photo": "Use Photo",
+    "PHOTO": "PHOTO"
+>>>>>>> bd813e99e (feat: camera)
 }

@@ -114,7 +114,7 @@
                    :animate         true
                    :drawBehind      true
                    :translucent     true}
-   :navigationBar {:backgroundColor colors/black}
+   :navigationBar {:backgroundColor colors/neutral-100}
    :layout        {:componentBackgroundColor :transparent
                    :backgroundColor          :transparent
                    ;; issue: https://github.com/wix/react-native-navigation/issues/7726
@@ -128,6 +128,9 @@
                                                       :interpolation {:type
                                                                       :decelerate
                                                                       :factor 1.5}}]}}})
+
+(def camera-screen
+  {:navigationBar {:backgroundColor colors/black}})
 
 (defn merge-top-bar
   [root-options options]

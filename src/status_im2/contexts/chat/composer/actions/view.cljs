@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.composer.actions.view
   (:require
     [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
@@ -148,11 +149,23 @@
                                                   50)}]))
        :max-duration-ms                    constants/audio-max-duration-ms}]]))
 
+(defn request-camera-permission
+  []
+  (rf/dispatch
+   [:request-permissions
+    {:permissions [:camera]
+     :on-allowed  #(rf/dispatch [:navigate-to :camera-screen])
+     :on-denied   #(rf/dispatch
+                    [:toasts/upsert
+                     {:icon           :i/info
+                      :icon-color     colors/danger-50
+                      :override-theme :light
+                      :text           (i18n/label :t/camera-permission-denied)}])}]))
 
 (defn camera-button
   []
   [quo/button
-   {:on-press #(js/alert "to be implemented")
+   {:on-press #(request-camera-permission)
     :icon     true
     :type     :outline
     :size     32
