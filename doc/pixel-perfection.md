@@ -8,7 +8,7 @@ To test your implementation is correct you can take the following steps
 - Open a new Figma file so that you have write privileges. 
 - Copy in the component or screen from the Figma file.
 
-- Using the "iPhone 11 Pro" simulator (it is the default now) you take a screen shot of your component and paste it into your Figma file.
+- Using the "iPhone 11 Pro" simulator (it is the default now) you take a screenshot of your component and paste it into your Figma file.
 
 - To get the right size, set your screenshot to width 375px
 
