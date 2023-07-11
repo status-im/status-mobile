@@ -424,13 +424,13 @@
           (when show-bottom-view? [bottom-view insets bottom-view-translate-y])
           (when (and (or (not animated?) @render-camera?) show-camera?)
             [quo/button
-             {:icon                      true
-              :type                      :blur-bg
-              :size                      style/flash-button-size
-              :accessibility-label       :camera-flash
-              :override-background-color colors/neutral-80-opa-40
-              :style                     (style/camera-flash-button @qr-view-finder)
-              :on-press                  #(swap! torch? not)}
+             {:icon                true
+              :type                :grey
+              :background          :blur
+              :size                style/flash-button-size
+              :accessibility-label :camera-flash
+              :style               (style/camera-flash-button @qr-view-finder)
+              :on-press            #(swap! torch? not)}
              flashlight-icon])]]))))
 
 (defn view

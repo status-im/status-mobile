@@ -47,10 +47,10 @@
   []
   (let [profile-color (:color (rf/sub [:onboarding-2/profile]))]
     [quo/button
-     {:on-press                  #(rf/dispatch [:init-root :enable-notifications])
-      :accessibility-label       :continue-button
-      :override-background-color (colors/custom-color profile-color 60)
-      :style                     style/continue-button}
+     {:on-press            #(rf/dispatch [:init-root :enable-notifications])
+      :accessibility-label :continue-button
+      :customization0color profile-color
+      :style               style/continue-button}
      (i18n/label :t/continue)]))
 
 (defn view

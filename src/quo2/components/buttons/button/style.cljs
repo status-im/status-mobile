@@ -56,8 +56,8 @@
                       8))})
 
 (defn style-container
-  [{:keys [type size disabled border-radius background-color border-color icon-only? icon-above width
-           icon-left icon-right blur-active?]}]
+  [{:keys [size disabled border-radius background-color border-color icon-only? icon-above width
+           icon-left icon-right]}]
   (merge {:height             size
           :align-items        :center
           :justify-content    :center
@@ -92,10 +92,8 @@
                                   40 9
                                   32 5
                                   4))
-          :overflow           :hidden}
-         (when (or (and (= type :blurred) (not blur-active?))
-                   (not= type :blurred))
-           {:background-color background-color})
+          :overflow           :hidden
+          :background-color   background-color}
          (shape-style-container size border-radius)
          (when width
            {:width width})

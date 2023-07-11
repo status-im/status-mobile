@@ -29,19 +29,16 @@
    only icon
    [button {:icon true} :i/close-circle]"
   [_ _]
-  (let [pressed-in (reagent/atom false)]
+  (let [pressed? (reagent/atom false)]
     (fn
       [{:keys [on-press on-long-press disabled type background size before after above
-               width customization-color theme override-background-color pressed
-               accessibility-label icon style inner-style
-               blur-active?]
+               width customization-color theme override-background-color
+               accessibility-label icon style inner-style]
         :or   {type                :primary
                size                40
-               customization-color :primary
-               blur-active?        true}}
+               customization-color (when (= type :primary) :blue)}}
        children]
-      (let [pressed? (or @pressed-in pressed)
-            icon-only? icon ;; TODO Update external api to icon-only? -
+      (let [icon-only? icon ;; TODO Update external api to icon-only? -
                             ;; https://github.com/status-im/status-mobile/issues/16535
             container-style style ;; TODO Update external api to container-style and remove prop width
             icon-left before ;; TODO Update external api to icon-left
@@ -53,19 +50,15 @@
                                            :background          background
                                            :type                type
                                            :theme               theme
-                                           :pressed?            pressed?
+                                           :pressed?            @pressed?
                                            :icon-only?          icon-only?})
-            state (cond disabled                 :disabled
-                        (or @pressed-in pressed) :pressed
-                        :else                    :default)
-            blur-state (if blur-active? :blurred :default)
             icon-size (when (= 24 size) 12)
             icon-secondary-color (or icon-secondary-color icon-color)]
         [rn/touchable-without-feedback
          {:disabled            disabled
           :accessibility-label accessibility-label
-          :on-press-in         #(reset! pressed-in true)
-          :on-press-out        #(reset! pressed-in nil)
+          :on-press-in         #(reset! pressed? true)
+          :on-press-out        #(reset! pressed? nil)
           :on-press            on-press
           :on-long-press       on-long-press}
          [rn/view
@@ -75,34 +68,32 @@
                    container-style)}
           [rn/view
            {:style (merge
-                    (style/style-container {:type type
-                                            :size size
+                    (style/style-container {:size size
                                             :disabled disabled
                                             :border-radius border-radius
                                             :background-color
                                             (or override-background-color background-color)
-                                            :border-color (get border-color state)
+                                            :border-color border-color
                                             :icon-only? icon-only?
-                                            :above above
+                                            :icon-above icon-above
                                             :width width
                                             :icon-left icon-left
-                                            :icon-right icon-right
-                                            :blur-active? blur-active?})
+                                            :icon-right icon-right})
                     inner-style)}
            (when customization-color
              [customization-colors/overlay
-              {:theme    theme
-               :pressed? pressed?}])
-           (when (and (= type :blurred)
-                      blur-active?)
+              {:customization-color customization-color
+               :theme               theme
+               :pressed?            @pressed?}])
+           (when (= background :photo)
              [blur/view
               {:blur-radius   20
                :blur-type     blur-type
                :overlay-color blur-overlay-color
                :style         style/blur-view}])
-           (when above
+           (when icon-above
              [rn/view
-              [quo2.icons/icon above
+              [quo2.icons/icon icon-above
                {:container-style {:margin-bottom 2}
                 :color           icon-secondary-color
                 :size            icon-size}]])
@@ -110,7 +101,7 @@
              [rn/view
               {:style (style/icon-left-icon-style
                        {:size                  size
-                        :icon-background-color (get icon-background-color blur-state)
+                        :icon-background-color icon-background-color
                         :icon-size             icon-size})}
               [quo2.icons/icon icon-left
                {:color icon-secondary-color
@@ -136,7 +127,7 @@
              [rn/view
               {:style (style/icon-right-icon-style
                        {:size                  size
-                        :icon-background-color (get icon-background-color blur-state)
+                        :icon-background-color icon-background-color
                         :icon-size             icon-size})}
               [quo2.icons/icon icon-right
                {:color icon-secondary-color

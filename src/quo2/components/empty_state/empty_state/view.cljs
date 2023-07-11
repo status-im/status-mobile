@@ -33,10 +33,10 @@
                upper-button-on-press :on-press} upper-button]
      [rn/view {:style styles/button-container}
       [button/button
-       {:type                      :primary
-        :size                      32
-        :override-background-color (styles/upper-button-color customization-color)
-        :on-press                  upper-button-on-press}
+       {:type                :primary
+        :size                32
+        :customization-color customization-color
+        :on-press            upper-button-on-press}
        upper-button-text]
       (when-let [{lower-button-text     :text
                   lower-button-on-press :on-press} lower-button]

@@ -4,7 +4,6 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [status-im2.contexts.onboarding.identifiers.profile-card.view :as profile-card]
             [status-im2.contexts.onboarding.identifiers.style :as style]
             [status-im2.contexts.onboarding.common.background.view :as background]

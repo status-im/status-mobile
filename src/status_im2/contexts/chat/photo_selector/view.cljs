@@ -56,11 +56,11 @@
   (when (and (not album?) (seq @selected))
     [rn/view {:style style/clear-container}
      [quo/button
-      {:type                :blurred
+      {:type                :grey
        :size                32
        :accessibility-label :clear
        :on-press            #(reset! selected [])
-       :blur-active?        blur-active?}
+       :background          (when blur-active? :photo)}
       (i18n/label :t/clear)]]))
 
 (defn remove-selected

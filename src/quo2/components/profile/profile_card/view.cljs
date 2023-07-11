@@ -73,7 +73,8 @@
          (when show-options-button?
            [button/button
             {:size                32
-             :type                :blur-bg
+             :type                :grey
+             :background          :blur
              :icon                true
              :style               style/option-button
              :on-press            on-options-press

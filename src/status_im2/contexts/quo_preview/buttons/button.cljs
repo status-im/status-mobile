@@ -60,7 +60,14 @@
     :type  :boolean}
    {:label "Label"
     :key   :label
-    :type  :text}])
+    :type  :text}
+   {:label   "Customization color:"
+    :key     :customization-color
+    :type    :select
+    :options (map (fn [color]
+                    (let [k (get color :name)]
+                      {:key k :value k}))
+                  (quo/picker-colors))}])
 
 (defn cool-preview
   []
@@ -85,8 +92,9 @@
                   :theme
                   :before
                   :after)
-                 {:background (:background @state)
-                  :on-press   #(println "Hello world!")}
+                 {:customization-color (:customization-color @state)
+                  :background          (:background @state)
+                  :on-press            #(println "Hello world!")}
                  (when @above
                    {:above :i/placeholder})
                  (when @before
@@ -98,7 +106,7 @@
 (defn preview-button
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
+   {:background-color (colors/theme-colors colors/white colors/neutral-95)
     :flex             1}
    [rn/flat-list
     {:flex                         1
