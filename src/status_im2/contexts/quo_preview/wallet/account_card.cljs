@@ -73,7 +73,6 @@
   []
   [rn/view {:style {:width 12}}])
 
-
 (defn cool-preview
   []
   (let [state (reagent/atom {:name                "Alisher account"
@@ -127,7 +126,6 @@
            (for [_ filtered-data]
              [rn/view {:style {:align-items :center :margin-top 40}}
               [quo/account-card (assoc @state :type selected-type)]])))])))
-
 
 (defn preview-account-card
   []

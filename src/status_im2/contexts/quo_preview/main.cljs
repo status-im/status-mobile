@@ -365,8 +365,8 @@
                         :options   {:topBar {:visible true}}
                         :component title/preview-title}]
    :wallet            [{:name      :account-card
-                            :options   {:topBar {:visible true}}
-                            :component account-card/preview-account-card}
+                        :options   {:topBar {:visible true}}
+                        :component account-card/preview-account-card}
                        {:name      :lowest-price
                         :options   {:topBar {:visible true}}
                         :component lowest-price/preview-lowest-price}

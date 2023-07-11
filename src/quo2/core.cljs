@@ -92,7 +92,7 @@
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
-    quo2.components.text-combinations.title.view 
+    quo2.components.text-combinations.title.view
     quo2.components.wallet.account-card.view))
 
 (def icon quo2.components.icon/icon)
