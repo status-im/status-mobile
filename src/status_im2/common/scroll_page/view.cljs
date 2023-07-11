@@ -81,7 +81,6 @@
                   :right-section-buttons   page-nav}
                  (when navigate-back?
                    {:left-section {:icon                  :i/close
-                                   :icon-background-color (icon-color)
                                    :on-press              #(rf/dispatch [:navigate-back])}}))]])
       (when title-colum
         title-colum)
