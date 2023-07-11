@@ -85,7 +85,7 @@
     (when platform/ios?
       (top-view/animate-rotation result screen-width screen-height insets animations))))
 
-(defn orientation-changeoo
+(defn orientation-change
   [props state animations]
   (orientation/use-device-orientation-change
    (fn [result]
