@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.list.style
   (:require [quo2.foundations.colors :as colors]
+            [status-im2.config :as config]
             [react-native.reanimated :as reanimated]))
 
 (defonce ^:const cover-height 168)
@@ -11,8 +12,8 @@
   [{:keys [top]}]
   {:position      :relative
    :flex          1
-   :top           (- top)
-   :margin-bottom (- top)})
+   :top           (if config/shell-navigation-disabled? (- top) 0)
+   :margin-bottom (if config/shell-navigation-disabled? (- top) 0)})
 
 (def list-container
   {:padding-vertical 16})

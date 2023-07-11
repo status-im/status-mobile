@@ -3,6 +3,7 @@
     [quo2.core :as quo]
     [react-native.blur :as blur]
     [react-native.core :as rn]
+    [status-im2.config :as config]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [status-im2.contexts.chat.composer.style :as style]
@@ -48,7 +49,8 @@
       [quo/floating-shell-button
        {:jump-to
         {:on-press            (fn []
-                                (rf/dispatch [:chat/close true])
+                                (when config/shell-navigation-disabled?
+                                  (rf/dispatch [:chat/close true]))
                                 (rf/dispatch [:shell/navigate-to-jump-to]))
          :customization-color customization-color
          :label               (i18n/label :t/jump-to)
