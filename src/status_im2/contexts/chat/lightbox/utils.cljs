@@ -12,7 +12,6 @@
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.top-view :as top-view]
     [utils.re-frame :as rf]
-    [oops.core :refer [oget]]
     [status-im2.contexts.chat.lightbox.constants :as constants]
     [utils.worklets.lightbox :as worklet]))
 
@@ -86,7 +85,7 @@
     (when platform/ios?
       (top-view/animate-rotation result screen-width screen-height insets animations))))
 
-(defn orientation-change
+(defn orientation-changeoo
   [props state animations]
   (orientation/use-device-orientation-change
    (fn [result]
@@ -100,7 +99,7 @@
             (handle-orientation result props state animations))))))))
 
 (defn on-scroll
-  [e item-width images-opacity landscape?]
+  [e item-width {:keys [images-opacity]} landscape?]
   (let [total-item-width (+ item-width constants/separator-width)
         progress         (/ (if landscape?
                               (oops/oget e "nativeEvent.contentOffset.y")
@@ -120,14 +119,15 @@
     (gesture/enabled true)
     (gesture/max-pointers 1)
     (gesture/on-start #(reset! set-full-height? false))
-    (gesture/on-update (fn [e]
-                         (let [translation (if x? (oget e "translationX") (oget e "translationY"))
-                               progress    (Math/abs (/ translation constants/drag-threshold))]
-                           (anim/set-val (if x? pan-x pan-y) translation)
-                           (anim/set-val opacity (- 1 progress))
-                           (anim/set-val layout (* progress -20)))))
+    (gesture/on-update
+     (fn [e]
+       (let [translation (if x? (oops/oget e "translationX") (oops/oget e "translationY"))
+             progress    (Math/abs (/ translation constants/drag-threshold))]
+         (anim/set-val (if x? pan-x pan-y) translation)
+         (anim/set-val opacity (- 1 progress))
+         (anim/set-val layout (* progress -20)))))
     (gesture/on-end (fn [e]
-                      (if (> (Math/abs (if x? (oget e "translationX") (oget e "translationY")))
+                      (if (> (Math/abs (if x? (oops/oget e "translationX") (oops/oget e "translationY")))
                              constants/drag-threshold)
                         (do
                           (anim/animate background-color "rgba(0,0,0,0)")
@@ -144,6 +144,7 @@
   {:flat-list-ref      (atom nil)
    :small-list-ref     (atom nil)
    :scroll-index-lock? (atom true)
+   :text-sheet-lock?   (atom false)
    :timers             (atom {})})
 
 (defn init-state
@@ -159,12 +160,10 @@
 
 (defn initialize-opacity
   [size selected-index]
-  (vec (map-indexed
-        (fn [i _]
-          (if (= i selected-index)
-            (anim/use-val 1)
-            (anim/use-val 0)))
-        (range size))))
+  (mapv #(if (= % selected-index)
+           (anim/use-val 1)
+           (anim/use-val 0))
+        (range size)))
 
 (defn init-animations
   [size index]

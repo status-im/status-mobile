@@ -77,34 +77,34 @@
                 {})}
        [reanimated/view {:style (style/background animations @(:overlay-z-index state))}]
        [gesture/flat-list
-        {:ref #(reset! (:flat-list-ref props) %)
-         :key-fn :message-id
-         :on-scroll (fn [e] (utils/on-scroll e item-width (:images-opacity animations) landscape?))
-         :scroll-event-throttle 8
-         :style {:width (+ screen-width constants/separator-width)}
-         :data @data
-         :render-fn image
-         :render-data {:opacity-value     (:opacity animations)
-                       :border-value      (:border animations)
-                       :full-screen-scale (:full-screen-scale animations)
-                       :images-opacity    (:images-opacity animations)
-                       :transparent?      transparent?
-                       :set-full-height?  set-full-height?
-                       :screen-height     screen-height
-                       :screen-width      screen-width
-                       :window-height     window-height
-                       :window-width      window-width
-                       :props             props
-                       :curr-orientation  curr-orientation}
-         :horizontal horizontal?
-         :inverted inverted?
-         :paging-enabled true
-         :get-item-layout (fn [_ index] (get-item-layout _ index item-width))
-         :viewability-config {:view-area-coverage-percent-threshold 50
-                              :wait-for-interaction                 true}
-         :shows-vertical-scroll-indicator false
+        {:ref                               #(reset! (:flat-list-ref props) %)
+         :key-fn                            :message-id
+         :on-scroll                         #(utils/on-scroll % item-width animations landscape?)
+         :scroll-event-throttle             8
+         :style                             {:width (+ screen-width constants/separator-width)}
+         :data                              @data
+         :render-fn                         image
+         :render-data                       {:opacity-value     (:opacity animations)
+                                             :border-value      (:border animations)
+                                             :full-screen-scale (:full-screen-scale animations)
+                                             :images-opacity    (:images-opacity animations)
+                                             :transparent?      transparent?
+                                             :set-full-height?  set-full-height?
+                                             :screen-height     screen-height
+                                             :screen-width      screen-width
+                                             :window-height     window-height
+                                             :window-width      window-width
+                                             :props             props
+                                             :curr-orientation  curr-orientation}
+         :horizontal                        horizontal?
+         :inverted                          inverted?
+         :paging-enabled                    true
+         :get-item-layout                   (fn [_ index] (get-item-layout _ index item-width))
+         :viewability-config                {:view-area-coverage-percent-threshold 50
+                                             :wait-for-interaction                 true}
+         :shows-vertical-scroll-indicator   false
          :shows-horizontal-scroll-indicator false
-         :on-viewable-items-changed handle-items-changed}]]]
+         :on-viewable-items-changed         handle-items-changed}]]]
      (when (and (not @transparent?) (not landscape?))
        [:f> bottom-view/bottom-view messages index scroll-index insets animations derived
         item-width props state])]))
