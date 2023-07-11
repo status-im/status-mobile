@@ -3,7 +3,7 @@
             [quo2.foundations.colors :as colors]
             [quo2.components.icon :as icon]
             [quo2.components.wallet.account-card.style :as style]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [utils.i18n :as i18n]
             [quo2.components.markdown.text :as text]))
 
