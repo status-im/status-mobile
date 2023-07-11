@@ -50,10 +50,10 @@
                   :margin-right :auto
                   :align-items  :center}}
          "Inverted Scales"]
-        [demo-box @shadow? "Shadow 1" (shadows/get 1 (quo.theme/get-theme) true)]
-        [demo-box @shadow? "Shadow 2" (shadows/get 2 (quo.theme/get-theme) true)]
-        [demo-box @shadow? "Shadow 3" (shadows/get 3 (quo.theme/get-theme) true)]
-        [demo-box @shadow? "Shadow 4" (shadows/get 4 (quo.theme/get-theme) true)]
+        [demo-box @shadow? "Shadow 1" (shadows/get 1 (quo.theme/get-theme) :inverted)]
+        [demo-box @shadow? "Shadow 2" (shadows/get 2 (quo.theme/get-theme) :inverted)]
+        [demo-box @shadow? "Shadow 3" (shadows/get 3 (quo.theme/get-theme) :inverted)]
+        [demo-box @shadow? "Shadow 4" (shadows/get 4 (quo.theme/get-theme) :inverted)]
         [quo/text
          {:style {:margin-left  :auto
                   :margin-right :auto

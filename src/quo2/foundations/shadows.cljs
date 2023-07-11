@@ -58,17 +58,20 @@
      :light {:normal light-normal :inverted light-normal-inverted}}))
 
 (defn get
-  "Get the appropriate shadow map for a given shadow `weight` and `theme`. If the
-  `inverted?` flag is truthy, then the inverted shadow scale is used."
+  "Get the appropriate shadow map for a given shadow `weight`, `theme`, and `scale-type`.
+
+  Return nil if no shadow is found.
+
+  `weight` - int (required) from 1 to 4.
+  `theme` - :light/:dark (optional).
+  `scale-type` - :normal/:inverted (optional).
+  "
   ([weight]
    (get weight (quo.theme/get-theme)))
   ([weight theme]
-   (get weight theme false))
-  ([weight theme inverted?]
-   (get-in shadows
-           [theme
-            (if inverted? :inverted :normal)
-            weight])))
+   (get weight theme :normal))
+  ([weight theme scale-type]
+   (get-in shadows [theme scale-type weight])))
 
 (def inner-shadow
   {:shadow-color   (colors/alpha colors/neutral-100 0.08)
