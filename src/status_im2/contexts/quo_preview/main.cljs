@@ -96,6 +96,7 @@
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
     [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
+    [status-im2.contexts.quo-preview.wallet.transaction-progress :as transaction-progress]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]))
@@ -375,7 +376,10 @@
                         :component network-breakdown/preview-network-breakdown}
                        {:name      :network-amount
                         :options   {:topBar {:visible true}}
-                        :component network-amount/preview}]
+                        :component network-amount/preview}
+                       {:name      :transaction-progress 
+                        :options   {:topBar {:visible true}} 
+                        :component transaction-progress/preview-transaction-progress}]
    :keycard           [{:name      :keycard-component
                         :options   {:topBar {:visible true}}
                         :component keycard/preview-keycard}]})
