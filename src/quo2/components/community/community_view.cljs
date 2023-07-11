@@ -15,7 +15,7 @@
   [rn/view
    {:accessibility-label accessibility-label
     :style               (style/stats-count-container)}
-   [rn/view {:margin-right 4}
+   [rn/view {:margin-right 2}
     [icons/icon icon
      {:container-style {:align-items     :center
                         :justify-content :center}
@@ -24,7 +24,7 @@
       :color           icon-color}]]
    [text/text
     {:weight :regular
-     :size   :paragraph-1}
+     :size   :paragraph-2}
     members-count]])
 
 (defn community-stats-column
@@ -43,7 +43,7 @@
        :icon-color          icon-color}]
      [community-stats
       {:accessibility-label :stats-active-count
-       :icon                :i/lightning
+       :icon                :i/active-members
        :members-count       (utils.money/format-amount active-count)
        :icon-color          icon-color}]]))
 
