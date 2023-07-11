@@ -58,7 +58,7 @@
       :start  {:x 0 :y 1}
       :end    {:x 0 :y 0}
       :style  (style/gradient-container insets animations derived)}
-     [text-sheet/view messages animations state]
+     [text-sheet/view messages animations state props]
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)
        :key-fn                            :message-id
