@@ -102,7 +102,10 @@
 (rf/defn reconcile-seen-state
   {:events [:activity-center/reconcile-seen-state]}
   [{:keys [db]} seen?]
-  {:db (assoc-in db [:activity-center :seen?] seen?)})
+  (cond-> {:db (assoc-in db [:activity-center :seen?] seen?)}
+
+    (= (:view-id db) :activity-center)
+    (assoc :dispatch [:activity-center/mark-as-seen])))
 
 ;;;; Status changes (read/dismissed/deleted)
 
