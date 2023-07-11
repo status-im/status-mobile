@@ -73,7 +73,7 @@
      [rn/flat-list
       {:data                              data
        :render-fn                         render-card
-       :key-fn                            :id
+       :key-fn                            :screen-id
        :header                            (jump-to-text)
        :ref                               #(reset! state/jump-to-list-ref %)
        :num-columns                       2
