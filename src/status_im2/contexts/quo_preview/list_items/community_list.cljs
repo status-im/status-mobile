@@ -107,7 +107,7 @@
          [rn/view {:style {:margin-bottom 20}}
           [preview/customizer state (descriptors @state)]
           [rn/view {:style {:margin-vertical 30 :align-items :center}}
-           [quo/community-list
+           [quo/community-list-item
             (merge @state
                    {:container-style     {:width 335}
                     :logo                (resources/get-mock-image :status-logo)

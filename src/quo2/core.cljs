@@ -48,7 +48,7 @@
     quo2.components.links.url-preview-list.view
     quo2.components.links.url-preview.view
     quo2.components.list-items.channel
-    quo2.components.list-items.community-list.view
+    quo2.components.list-items.community.view
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
     quo2.components.list-items.user-list
@@ -193,7 +193,7 @@
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
 (def user-list quo2.components.list-items.user-list/user-list)
-(def community-list quo2.components.list-items.community-list.view/view)
+(def community-list-item quo2.components.list-items.community.view/view)
 
 ;;;; LOADERS
 (def skeleton quo2.components.loaders.skeleton/skeleton)

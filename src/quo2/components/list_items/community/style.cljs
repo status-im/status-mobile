@@ -1,4 +1,4 @@
-(ns quo2.components.list-items.community-list.style
+(ns quo2.components.list-items.community.style
   (:require [quo2.foundations.colors :as colors]
             [quo2.foundations.shadows :as shadows]))
 

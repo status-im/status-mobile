@@ -29,7 +29,7 @@
     (if (= view-type :card-view)
       [quo/community-card-view-item (assoc item :width width :cover cover)
        #(rf/dispatch [:navigate-to :community-overview (:id item)])]
-      [quo/community-list
+      [quo/community-list-item
        {:on-press      (fn []
                          (rf/dispatch [:communities/load-category-states (:id item)])
                          (rf/dispatch [:dismiss-keyboard])
@@ -142,7 +142,7 @@
                    (get mock-community-item-data :data)
                    {:cover cover})
             #(rf/dispatch [:navigate-to :community-overview (:id community)])]
-           [quo/community-list
+           [quo/community-list-item
             {:on-press      (fn []
                               (rf/dispatch [:communities/load-category-states (:id community)])
                               (rf/dispatch [:dismiss-keyboard])
