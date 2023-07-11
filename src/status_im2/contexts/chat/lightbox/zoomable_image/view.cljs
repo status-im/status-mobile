@@ -221,12 +221,13 @@
      [reanimated/view
       {:style (style/container dimensions
                                animations
+                               (:full-screen-scale render-data)
                                @set-full-height?
                                (= curr-orientation orientation/portrait))}
       [reanimated/fast-image
        {:source    {:uri (http/replace-port (:image content) (rf/sub [:mediaserver/port]))}
         :native-ID (when focused? :shared-element)
-        :style     (style/image dimensions animations (:border-value render-data))}]]]))
+        :style     (style/image dimensions animations render-data index)}]]]))
 
 (defn zoomable-image
   []

@@ -15,3 +15,5 @@
 (def ^:const default-duration 300)
 
 (def ^:const default-dimension 1000)
+
+(def ^:const margin 8)
