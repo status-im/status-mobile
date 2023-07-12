@@ -62,4 +62,4 @@
                                 (and pressed? (= type :discover))
                                 (colors/theme-colors colors/white :transparent theme))}
          (when (and (= type :discover) (not pressed?))
-           (:shadow-3 shadows/normal-scale))))
+           (shadows/get 3))))
