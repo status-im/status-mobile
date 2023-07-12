@@ -246,7 +246,8 @@
      ([color suffix opacity]
       (let [color-keyword (keyword color)
             base-color    (get-in colors-map
-                                  [color-keyword suffix])]
+                                  [color-keyword suffix]
+                                  color)]
         (if opacity (alpha base-color (/ opacity 100)) base-color))))))
 
 (defn custom-color-by-theme

@@ -375,7 +375,8 @@
      [keyboard-shown keyboard-height])
     [rn/keyboard-avoiding-view
      {:style                    (style/keyboard-avoiding-container insets)
-      :keyboard-vertical-offset (- (:bottom insets))}
+      :keyboard-vertical-offset (- (:bottom insets))
+      :behavior                 :height}
 
      (when header-comp
        [header-comp
