@@ -1,5 +1,5 @@
 (ns status-im.wallet.utils
-  (:require [status-im.utils.money :as money]))
+  (:require [utils.money :as money]))
 
 (defn format-amount
   [amount decimals]
