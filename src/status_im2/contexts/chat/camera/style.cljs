@@ -5,9 +5,9 @@
 
 
 (def flash-container
-  {:position        :absolute
-   :top             50
-   :left            25})
+  {:position :absolute
+   :top      50
+   :left     25})
 
 (defn camera-window
   [width height top]

@@ -55,8 +55,9 @@
          {:style {:flex             1
                   :background-color colors/black}}
          [rn/view {:style style/flash-container}
-          [quo/icon :i/flash-camera {:color colors/white
-                                     :size 24}]]
+          [quo/icon :i/flash-camera
+           {:color colors/white
+            :size  24}]]
          (if-not @uri
            [camera-kit/camera
             {:ref   #(reset! camera-ref %)
