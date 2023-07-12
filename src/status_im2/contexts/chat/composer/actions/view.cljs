@@ -150,19 +150,6 @@
                                                   50)}]))
        :max-duration-ms                    constants/audio-max-duration-ms}]]))
 
-;(defn request-camera-permission
-;  []
-;  (rf/dispatch
-;   [:request-permissions
-;    {:permissions [:camera]
-;     :on-allowed  #
-;     :on-denied   #(rf/dispatch
-;                    [:toasts/upsert
-;                     {:icon           :i/info
-;                      :icon-color     colors/danger-50
-;                      :override-theme :light
-;                      :text           (i18n/label :t/camera-permission-denied)}])}]))
-
 (defn camera-button
   []
   [quo/button
