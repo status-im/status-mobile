@@ -7,7 +7,7 @@
             [utils.i18n :as i18n]
             [quo2.components.markdown.text :as text]))
 
-(defn user-account-view
+(defn user-account
   [{:keys [name balance percentage-value amount customization-color type emoji]}]
   (let [watch-only? (= :watch-only type)]
     [:<>
@@ -44,7 +44,7 @@
          :size   :paragraph-2
          :style  (style/metrics watch-only?)} amount]]]]))
 
-(defn add-account-view
+(defn- add-account-view
   [{:keys [handler customization-color]}]
   [rn/view (style/add-account-container)
    [button/button
@@ -63,8 +63,8 @@
 (defn view
   [{:keys [type] :as props}]
   (case type
-    :watch-only  [user-account-view props]
+    :watch-only  [user-account props]
     :add-account [add-account-view props]
-    :default     [user-account-view
+    :default     [user-account
                   props]
     nil))
