@@ -1,11 +1,27 @@
 (ns quo2.components.avatars.user-avatar.view
-  (:require [quo2.components.avatars.user-avatar.style :as style]
-            [quo2.components.common.no-flicker-image :as no-flicker-image]
-            [quo2.components.markdown.text :as text]
-            [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]))
+  (:require
+    [quo2.components.avatars.user-avatar.style :as style]
+    [quo2.components.common.no-flicker-image :as no-flicker-image]
+    [quo2.components.markdown.text :as text]
+    [quo2.theme]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    utils.string))
 
-(defn user-avatar
+(defn initials-avatar
+  [{:keys [full-name size customization-color theme]}]
+  (let [font-size       (get-in style/sizes [size :font-size])
+        amount-initials (if (#{:xs :xxs :xxxs} size) 1 2)]
+    [rn/view
+     {:accessibility-label :initials-avatar
+      :style               (style/initials-avatar size customization-color theme)}
+     [text/text
+      {:style  style/initials-avatar-text
+       :size   font-size
+       :weight :semi-bold}
+      (utils.string/get-initials full-name amount-initials)]]))
+
+(defn user-avatar-internal
   "Render user avatar with `profile-picture`
   `profile-picture` should be one of {:uri profile-picture-uri} or {:fn profile-picture-fn}
 
@@ -34,12 +50,13 @@
   the reason we use the `profile-picture-fn` here is to separate
   logic (pubkey, key-uid... in subs) and style (color, size... in this component)"
   [{:keys [full-name size profile-picture customization-color static?
-           status-indicator? online? ring? override-theme muted?]
+           status-indicator? online? ring? muted? theme]
     :or   {size                :big
            status-indicator?   true
            online?             true
            ring?               true
-           customization-color :turquoise}}]
+           customization-color :turquoise}
+    :as   props}]
   (let [full-name          (or full-name "Your Name")
         ;; image generated with profile-picture-fn is round cropped
         ;; no need to add border-radius for them
@@ -55,23 +72,33 @@
         profile-picture-fn (:fn profile-picture)]
 
     [rn/view {:style outer-styles :accessibility-label :user-avatar}
-     [image-view
-      {:accessibility-label :profile-picture
-       :style               outer-styles
-       :source              (if profile-picture-fn
-                              {:uri (profile-picture-fn
-                                     {:length           amount-initials
-                                      :full-name        full-name
-                                      :font-size        (:font-size (text/text-style {:size font-size}))
-                                      :indicator-size   (when status-indicator?
-                                                          (:status-indicator sizes))
-                                      :indicator-border (when status-indicator?
-                                                          (:status-indicator-border sizes))
-                                      :indicator-color  indicator-color
-                                      :override-theme   override-theme
-                                      :background-color (style/customization-color customization-color
-                                                                                   theme)
-                                      :color            (:color style/initials-avatar-text)
-                                      :size             (:width outer-styles)
-                                      :ring?            (if muted? false ring?)})}
-                              profile-picture)}]]))
+     (if (and full-name (not (or profile-picture-fn profile-picture)))
+       ;; this is for things that's not user-avatar
+       ;; but are currently using user-avatar to render the initials
+       ;; e.g. community avatar
+       [initials-avatar props]
+       [image-view
+        {:accessibility-label :profile-picture
+         :style outer-styles
+         :source
+         (cond profile-picture-fn
+               {:uri (profile-picture-fn
+                      {:length           amount-initials
+                       :full-name        full-name
+                       :font-size        (:font-size (text/text-style {:size
+                                                                       font-size}))
+                       :indicator-size   (when status-indicator?
+                                           (:status-indicator sizes))
+                       :indicator-border (when status-indicator?
+                                           (:status-indicator-border sizes))
+                       :indicator-color  indicator-color
+                       :override-theme   theme
+                       :background-color (style/customization-color customization-color theme)
+                       :color            (:color style/initials-avatar-text)
+                       :size             (:width outer-styles)
+                       :ring?            (if muted? false ring?)})}
+               (:uri profile-picture)
+               profile-picture
+               :else {:uri profile-picture})}])]))
+
+(def user-avatar (quo2.theme/with-theme user-avatar-internal))

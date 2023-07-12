@@ -27,6 +27,19 @@
             :status-indicator-border 0
             :font-size               :label}})
 
+(defn initials-avatar
+  [size customization-color theme]
+  (let [dimensions (get-in sizes [size :dimensions])]
+    {:position         :absolute
+     :top              0
+     :left             0
+     :width            dimensions
+     :height           dimensions
+     :border-radius    dimensions
+     :justify-content  :center
+     :align-items      :center
+     :background-color (colors/custom-color-by-theme customization-color 50 60 nil nil theme)}))
+
 (def indicator-color
   {:online  colors/success-50
    :offline colors/neutral-40})
