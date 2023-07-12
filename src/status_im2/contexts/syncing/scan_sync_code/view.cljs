@@ -295,17 +295,17 @@
 
 (defn f-view
   [{:keys [title show-bottom-view? background animated?]}]
-  (let [insets         (safe-area/get-insets)
-        active-tab     (reagent/atom 1)
-        qr-view-finder (reagent/atom {})
-        render-camera? (reagent/atom false)
-        torch?         (reagent/atom false)]
+  (let [insets             (safe-area/get-insets)
+        active-tab         (reagent/atom 1)
+        qr-view-finder     (reagent/atom {})
+        render-camera?     (reagent/atom false)
+        torch?             (reagent/atom false)
+        app-state-listener (atom nil)]
     (fn []
       (let [camera-ref (atom nil)
             read-qr-once? (atom false)
             torch-mode (if @torch? :on :off)
             flashlight-icon (if @torch? :i/flashlight-on :i/flashlight-off)
-            app-state (rf/sub [:app-state])
             ;; The below check is to prevent scanning of any QR code
             ;; when the user is in syncing progress screen
             user-in-syncing-progress-screen? (= (rf/sub [:view-id]) :syncing-progress)
@@ -353,9 +353,12 @@
                                                               :easing4))
                (if show-camera? 500 0)))]
         (rn/use-effect (fn []
-                         (when (and (not= app-state "active") @torch?)
-                           (reset! torch? false)))
-                       [app-state])
+                         (reset! app-state-listener
+                           (.addEventListener rn/app-state
+                                              "change"
+                                              #(when (and (not= % "active") @torch?)
+                                                 (reset! torch? false))))
+                         #(.remove @app-state-listener)))
         (when animated?
           (reanimated/animate-shared-value-with-delay subtitle-opacity
                                                       1 constants/onboarding-modal-animation-duration
