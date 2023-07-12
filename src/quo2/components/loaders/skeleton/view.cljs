@@ -31,8 +31,8 @@
 
 (defn- internal-view
   [{:keys [content theme blur? parent-height]}]
-  (let [number-of-skeletons (int (Math/floor (/ parent-height
-                                                (get-in constants/layout-dimensions [content :height]))))
+  (let [skeleton-height     (get-in constants/layout-dimensions [content :height])
+        number-of-skeletons (int (Math/ceil (/ parent-height skeleton-height)))
         color               (cond
                               blur?           colors/white-opa-5
                               (= theme :dark) colors/neutral-90
