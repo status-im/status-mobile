@@ -80,8 +80,8 @@
                                             :description-img nil}
                   :right-section-buttons   page-nav}
                  (when navigate-back?
-                   {:left-section {:icon                  :i/close
-                                   :on-press              #(rf/dispatch [:navigate-back])}}))]])
+                   {:left-section {:icon     :i/close
+                                   :on-press #(rf/dispatch [:navigate-back])}}))]])
       (when title-colum
         title-colum)
       sticky-header]]))
