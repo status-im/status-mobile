@@ -109,13 +109,13 @@
    :extrapolateRight "clamp"})
 
 (defn loading-view
-  [chat-id shell-animation-complete?]
+  [chat-id]
   (let [loading-messages?   (rf/sub [:chats/loading-messages? chat-id])
         all-loaded?         (rf/sub [:chats/all-loaded? chat-id])
         messages            (rf/sub [:chats/raw-chat-messages-stream chat-id])
         loading-first-page? (= (count messages) 0)
         top-spacing         (if loading-first-page? 0 navigation.style/navigation-bar-height)]
-    (when (or (not shell-animation-complete?) loading-messages? (not all-loaded?))
+    (when (or loading-messages? (not all-loaded?))
       [rn/view {:padding-top top-spacing}
        [quo/skeleton
         (if loading-first-page?
@@ -190,11 +190,10 @@
                                                       chat-id]))}]}]))
 
 (defn f-list-footer
-  [{:keys [chat scroll-y cover-bg-color on-layout shell-animation-complete?]}]
+  [{:keys [chat scroll-y cover-bg-color on-layout]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]} chat
-        all-loaded?          (when shell-animation-complete?
-                               (rf/sub [:chats/all-loaded? chat-id]))
+        all-loaded?          (rf/sub [:chats/all-loaded? chat-id])
         display-name         (if (= chat-type constants/one-to-one-chat-type)
                                (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                (str emoji " " chat-name))
@@ -234,7 +233,7 @@
           [quo/text {:style style/bio}
            bio])
         [actions chat-id cover-bg-color]]]]
-     [loading-view chat-id shell-animation-complete?]]))
+     [loading-view chat-id]]))
 
 (defn list-footer
   [props]
@@ -278,15 +277,10 @@
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown?]}]
   (let [{window-height :height}   (rn/get-window)
         {:keys [keyboard-height]} (hooks/use-keyboard)
-        shell-animation-complete? (rf/sub [:shell/animation-complete? (:chat-type chat)])
-        context                   (when shell-animation-complete?
-                                    (rf/sub [:chats/current-chat-message-list-view-context]))
-        messages                  (when shell-animation-complete?
-                                    (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)]))
-        recording?                (when shell-animation-complete?
-                                    (rf/sub [:chats/recording?]))
-        all-loaded?               (when shell-animation-complete?
-                                    (rf/sub [:chats/all-loaded? (:chat-id chat)]))]
+        context                   (rf/sub [:chats/current-chat-message-list-view-context])
+        messages                  (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        recording?                (rf/sub [:chats/recording?])
+        all-loaded?               (rf/sub [:chats/all-loaded? (:chat-id chat)])]
     [rn/view {:style {:flex 1}}
      [rn/flat-list
       {:key-fn                       list-key-fn
@@ -296,11 +290,10 @@
                                       (when (= (:chat-type chat) constants/private-group-chat-type)
                                         [list-group-chat-header chat])]
        :footer                       [list-footer
-                                      {:chat                      chat
-                                       :scroll-y                  scroll-y
-                                       :cover-bg-color            cover-bg-color
-                                       :on-layout                 footer-on-layout
-                                       :shell-animation-complete? shell-animation-complete?}]
+                                      {:chat           chat
+                                       :scroll-y       scroll-y
+                                       :cover-bg-color cover-bg-color
+                                       :on-layout      footer-on-layout}]
        :data                         messages
        :render-data                  {:context         context
                                       :keyboard-shown? keyboard-shown?
@@ -352,6 +345,18 @@
                                          (reset! messages-view-height layout-height)))
        :scroll-enabled               (not recording?)}]]))
 
+(defn message-list-content-view
+  [props]
+  (let [chat-screen-loaded? (rf/sub [:shell/chat-screen-loaded?])
+        window-height       (:height (rn/get-window))
+        content-height      (- window-height composer.constants/composer-default-height)]
+    (if chat-screen-loaded?
+      [:f> f-messages-list-content props]
+      [rn/view {:style {:flex 1}}
+       [quo/static-skeleton
+        {:content       :messages
+         :parent-height content-height}]])))
+
 (defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
   (let [insets                                   (safe-area/get-insets)
@@ -376,8 +381,7 @@
        [header-comp
         {:scroll-y scroll-y}])
 
-     [:f>
-      f-messages-list-content
+     [message-list-content-view
       {:chat            chat
        :insets          insets
        :scroll-y        scroll-y

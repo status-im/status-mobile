@@ -4,7 +4,6 @@
             [utils.datetime :as datetime]
             [status-im2.config :as config]
             [status-im2.constants :as constants]
-            [react-native.platform :as platform]
             [status-im2.common.resources :as resources]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
@@ -125,7 +124,7 @@
  :<- [:shell/switcher-cards]
  :<- [:view-id]
  (fn [[stacks view-id]]
-   (if (= view-id :shell)
+   (if (or (empty? @memo-shell-cards) (= view-id :shell))
      (let [sorted-shell-cards (sort-by :clock > (map val stacks))]
        (reset! memo-shell-cards sorted-shell-cards)
        sorted-shell-cards)
@@ -226,11 +225,8 @@
    (get screens screen-id)))
 
 (re-frame/reg-sub
- :shell/animation-complete?
+ :shell/chat-screen-loaded?
  :<- [:shell/loaded-screens]
- (fn [screens [_ chat-type]]
+ (fn [screens]
    (or config/shell-navigation-disabled?
-       platform/ios?
-       (cond-> (get screens shell.constants/chat-screen)
-         (= chat-type constants/community-chat-type)
-         (and (get screens shell.constants/community-screen))))))
+       (get screens shell.constants/chat-screen))))

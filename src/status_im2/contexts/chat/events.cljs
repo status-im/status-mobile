@@ -216,7 +216,7 @@
   [{db :db :as cofx} chat-id animation]
   (rf/merge cofx
             {:dispatch [(if animation :shell/navigate-to :navigate-to) :chat chat-id animation]}
-            (when-not (or (= (:view-id db) :community) (= (:view-id db) :community-overview))
+            (when-not (#{:community :community-overview :shell} (:view-id db))
               (navigation/pop-to-root :shell-stack))
             (close-chat false)
             (force-close-chat chat-id)
