@@ -2,7 +2,7 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn community-card
-  []
+  [theme]
   {:shadow-offset     {:width 0 :height 2}
    :shadow-radius     16
    :shadow-opacity    1
@@ -10,7 +10,7 @@
    :elevation         1
    :border-radius     16
    :justify-content   :space-between
-   :background-color  (colors/theme-colors colors/white colors/neutral-90)
+   :background-color  (colors/theme-colors colors/white colors/neutral-90 theme)
    :flex-direction    :row
    :margin-horizontal 20
    :margin-top        8
