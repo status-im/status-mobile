@@ -167,14 +167,16 @@
         {:keys [message-id]} (get-in db [:chat/inputs chat-id :metadata :responding-to-message])
         album-id             (str (random-uuid))]
     (mapv (fn [[_ {:keys [resized-uri width height]}]]
-            {:chat-id      chat-id
-             :album-id     album-id
-             :content-type constants/content-type-image
-             :image-path   (utils.string/safe-replace resized-uri #"file://" "")
-             :image-width  width
-             :image-height height
-             :text         input-text
-             :response-to  message-id})
+            {:chat-id       chat-id
+             :album-id      album-id
+             :content-type  constants/content-type-image
+             :image-path    (utils.string/safe-replace resized-uri #"file://" "")
+             :image-width   width
+             :image-height  height
+             :text          input-text
+             :link-previews (map #(select-keys % [:url :title :description :thumbnail])
+                                 (get-in db [:chat/link-previews :unfurled]))
+             :response-to   message-id})
           images)))
 
 (rf/defn clean-input
