@@ -1,11 +1,12 @@
 (ns status-im2.contexts.quo-preview.preview
   (:require [clojure.string :as string]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
-            [quo2.theme :as theme])
+            utils.number)
   (:require-macros status-im2.contexts.quo-preview.preview))
 
 (def container
@@ -122,6 +123,25 @@
         (when limit
           {:max-length limit}))]]]))
 
+(defn customizer-number
+  [{:keys [label state default] :as args}]
+  (let [state* (reagent/cursor state [(:key args)])]
+    [rn/view {:style container}
+     [label-view state label]
+     [rn/view {:style {:flex 0.6}}
+      [rn/text-input
+       (merge
+        {:value               (str @state*)
+         :show-cancel         false
+         :style               {:border-radius 4
+                               :border-width  1
+                               :color         (colors/theme-colors colors/neutral-100 colors/white)
+                               :border-color  (colors/theme-colors colors/neutral-100 colors/white)}
+         :keyboard-appearance (theme/theme-value :light :dark)
+         :on-change-text      (fn [v]
+                                (reset! state* (utils.number/parse-int v default))
+                                (reagent/flush))})]]]))
+
 (defn value-for-key
   [id v]
   (:value (first (filter #(= (:key %) id) v))))
@@ -199,6 +219,7 @@
        (case (:type desc)
          :boolean [customizer-boolean descriptor]
          :text    [customizer-text descriptor]
+         :number  [customizer-number descriptor]
          :select  [customizer-select descriptor]
          nil)]))])
 

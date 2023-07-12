@@ -47,17 +47,19 @@
 (defn- action-toggle-muted
   [id muted? muted-till chat-type]
   (let [muted (and muted? (some? muted-till))]
-    {:icon                :i/muted
-     :right-icon          :i/chevron-right
-     :accessibility-label :chat-toggle-muted
-     :sub-label           (when muted
-                            (str (i18n/label :t/muted-until) " " (datetime/format-mute-till muted-till)))
-     :on-press            (if muted?
-                            #(unmute-channel-action id)
-                            #(mute-channel-action id chat-type))
-     :label               (i18n/label (if muted
-                                        :t/unmute-channel
-                                        :t/mute-channel))}))
+    (cond-> {:icon                :i/muted
+             :accessibility-label :chat-toggle-muted
+             :sub-label           (when muted
+                                    (str (i18n/label :t/muted-until)
+                                         " "
+                                         (datetime/format-mute-till muted-till)))
+             :on-press            (if muted?
+                                    #(unmute-channel-action id)
+                                    #(mute-channel-action id chat-type))
+             :label               (i18n/label (if muted
+                                                :t/unmute-channel
+                                                :t/mute-channel))}
+      (not muted?) (assoc :right-icon :i/chevron-right))))
 
 (defn- action-notification-settings
   []

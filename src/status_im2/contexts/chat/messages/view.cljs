@@ -6,16 +6,9 @@
             [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
             [utils.re-frame :as rf]))
 
-(defn load-composer
-  [insets chat-type]
-  (let [shell-animation-complete? (rf/sub [:shell/animation-complete? chat-type])]
-    (when shell-animation-complete?
-      [:f> composer/composer insets])))
-
 (defn chat
   []
   (let [{:keys [chat-id
-                chat-type
                 contact-request-state
                 group-chat
                 able-to-send-message?]
@@ -23,13 +16,12 @@
     [messages.list/messages-list
      {:cover-bg-color :turquoise
       :chat           chat
-      :header-comp    (fn [{:keys [scroll-y shared-all-loaded?]}]
+      :header-comp    (fn [{:keys [scroll-y]}]
                         [:f>
                          messages.navigation/f-navigation-view
-                         {:scroll-y           scroll-y
-                          :shared-all-loaded? shared-all-loaded?}])
+                         {:scroll-y scroll-y}])
       :footer-comp    (fn [{:keys [insets]}]
                         (if-not able-to-send-message?
                           [contact-requests.bottom-drawer/view chat-id contact-request-state
                            group-chat]
-                          [load-composer insets chat-type]))}]))
+                          [:f> composer/composer insets]))}]))

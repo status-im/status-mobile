@@ -1,7 +1,6 @@
 (ns status-im.utils.money
   (:require ["bignumber.js" :as BigNumber]
-            [clojure.string :as string]
-            [utils.i18n :as i18n]))
+            [clojure.string :as string]))
 
 ;; The BigNumber version included in web3 sometimes hangs when dividing large
 ;; numbers Hence we want to use these functions instead of fromWei etc, which
@@ -222,11 +221,3 @@
 (defn div-and-round
   [bn1 bn2]
   (.round (.dividedBy ^js bn1 bn2) 0))
-
-(defn format-members
-  [amount]
-  (if (> amount 1000000)
-    (str (with-precision (/ amount 1000000) 1) (i18n/label :t/M))
-    (if (and (> amount 999) (< amount 1000000))
-      (str (with-precision (/ amount 1000) 1) (i18n/label :t/K))
-      amount)))

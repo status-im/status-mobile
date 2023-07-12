@@ -253,6 +253,10 @@ class BaseView(object):
         self.browser_tab = BrowserTab(self.driver)
         self.wallet_tab = WalletTab(self.driver)
 
+        # Floating screens (introduced by https://github.com/status-im/status-mobile/pull/16438)
+        self.chat_floating_screen = BaseElement(self.driver, accessibility_id=":chat-floating-screen")
+        self.community_floating_screen = BaseElement(self.driver, accessibility_id=":community-overview-floating-screen")
+
         self.jump_to_button = Button(self.driver, accessibility_id="jump-to")
 
         self.yes_button = Button(self.driver, xpath="//*[@text='YES' or @text='GOT IT']")
@@ -298,6 +302,7 @@ class BaseView(object):
         self.status_app_icon = Button(self.driver, translation_id="status")
         self.airplane_mode_button = AirplaneModeButton(self.driver)
         self.enter_qr_edit_box = EnterQRcodeEditBox(self.driver)
+
 
         self.element_types = {
             'base': BaseElement,
@@ -378,13 +383,13 @@ class BaseView(object):
 
     def click_system_back_button_until_element_is_shown(self, attempts=3, element='home'):
         counter = 0
+        if self.chat_floating_screen.is_element_displayed(2) or self.community_floating_screen.is_element_displayed(2):
+            self.driver.press_keycode(4)
         if element == 'home':
             element = self.chats_tab
         elif element == 'chat':
             chat = self.get_chat_view()
             element = chat.chat_message_input
-            # Old UI
-            # element = self.home_button
         while not element.is_element_displayed(1) and counter <= attempts:
             self.driver.press_keycode(4)
             try:
