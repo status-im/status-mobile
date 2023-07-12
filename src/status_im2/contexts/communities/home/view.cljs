@@ -15,6 +15,7 @@
             [status-im2.contexts.communities.home.style :as style]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
+            [utils.number]
             [utils.re-frame :as rf]))
 
 (defn item-render
@@ -72,6 +73,21 @@
        :title               title
        :description         description}]]))
 
+(def ^:private card-height (+ 56 16)) ; Card height + its vertical margins
+(def ^:private card-total-height (+ card-height 8)) ; added 8 from tabs top padding
+(def ^:private card-opacity-factor (/ 100 card-height 100))
+
+(defn- set-animated-card-values
+  [{:keys [scroll-offset height translation-y opacity]}]
+  (let [new-height        (- card-total-height scroll-offset)
+        new-opacity       (* (- card-height scroll-offset) card-opacity-factor)
+        new-translation-y (- scroll-offset)]
+    (reanimated/set-shared-value height (utils.number/value-in-range new-height 0 card-total-height))
+    (reanimated/set-shared-value opacity (utils.number/value-in-range new-opacity 0 1))
+    (reanimated/set-shared-value
+     translation-y
+     (utils.number/value-in-range new-translation-y (- card-total-height) 0))))
+
 (defn- animated-card
   [{{:keys [opacity height translate-y]} :animated-values :as props}]
   [reanimated/view {:style (style/animated-card-container height opacity)}
@@ -90,7 +106,7 @@
         top                             (safe-area/get-top)
         animated-card-opacity           (reanimated/use-shared-value 1)
         animated-card-translation-y     (reanimated/use-shared-value 0)
-        animated-card-height            (reanimated/use-shared-value style/card-total-height)]
+        animated-card-height            (reanimated/use-shared-value card-total-height)]
     [:<>
      (if (empty? selected-items)
        [empty-state
@@ -103,7 +119,7 @@
          :header                            [rn/view {:style (style/header-spacing top)}]
          :render-fn                         item-render
          :data                              selected-items
-         :on-scroll                         #(style/set-animated-card-values
+         :on-scroll                         #(set-animated-card-values
                                               {:scroll-offset (oops/oget % "nativeEvent.contentOffset.y")
                                                :height        animated-card-height
                                                :translation-y animated-card-translation-y

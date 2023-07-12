@@ -1,8 +1,7 @@
 (ns status-im2.contexts.communities.home.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [utils.number :as number]))
+            [react-native.reanimated :as reanimated]))
 
 (def header-height 245)
 
@@ -44,21 +43,7 @@
    :left        0
    :padding-top top})
 
-;;;; CARD ANIMATION
 (def card-bottom-override {:margin-bottom 16}) ; Original 8 + 8 from tabs top padding
-(def card-height (+ 56 16)) ; Card height + its vertical margins
-(def card-total-height (+ card-height 8)) ; added 8 from tabs top padding
-(def card-opacity-factor (/ 100 card-height 100))
-
-(defn set-animated-card-values
-  [{:keys [scroll-offset height translation-y opacity]}]
-  (let [new-height        (- card-total-height scroll-offset)
-        new-opacity       (* (- card-height scroll-offset) card-opacity-factor)
-        new-translation-y (- scroll-offset)]
-    (reanimated/set-shared-value height (number/value-in-range new-height 0 card-total-height))
-    (reanimated/set-shared-value opacity (number/value-in-range new-opacity 0 1))
-    (reanimated/set-shared-value translation-y
-                                 (number/value-in-range new-translation-y (- card-total-height) 0))))
 
 (defn animated-card-container
   [height opacity]
