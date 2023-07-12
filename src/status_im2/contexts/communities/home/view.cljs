@@ -3,7 +3,6 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
-            [utils.debounce :as debounce]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [react-native.platform :as platform]
@@ -14,6 +13,7 @@
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
             [status-im2.contexts.communities.home.style :as style]
+            [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 

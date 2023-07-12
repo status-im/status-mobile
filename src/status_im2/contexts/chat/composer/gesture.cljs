@@ -1,10 +1,11 @@
 (ns status-im2.contexts.chat.composer.gesture
   (:require
+    [oops.core :as oops]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
-    [oops.core :as oops]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.utils :as utils]
+    [utils.number]
     [utils.re-frame :as rf]))
 
 (defn set-opacity
@@ -83,7 +84,7 @@
            (let [translation    (oops/oget event "translationY")
                  min-height     (utils/get-min-height lines images link-previews?)
                  new-height     (- (reanimated/get-shared-value saved-height) translation)
-                 bounded-height (utils/bounded-val new-height min-height max-height)]
+                 bounded-height (utils.number/value-in-range new-height min-height max-height)]
              (when keyboard-shown
                (if (>= new-height min-height)
                  (do ; expand sheet

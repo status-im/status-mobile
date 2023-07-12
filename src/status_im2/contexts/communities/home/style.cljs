@@ -1,7 +1,8 @@
 (ns status-im2.contexts.communities.home.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]))
+            [react-native.reanimated :as reanimated]
+            [utils.number :as number]))
 
 (def header-height 245)
 
@@ -49,21 +50,15 @@
 (def card-total-height (+ card-height 8)) ; added 8 from tabs top padding
 (def card-opacity-factor (/ 100 card-height 100))
 
-(defn- value-in-range
-  "Returns `num` if is in the range [`lower-bound` `upper-bound`]
-  if `num` exceeds a given bound, then returns the bound exceeded."
-  [num [lower-bound upper-bound]]
-  (max lower-bound (min num upper-bound)))
-
 (defn set-animated-card-values
   [{:keys [scroll-offset height translation-y opacity]}]
   (let [new-height        (- card-total-height scroll-offset)
         new-opacity       (* (- card-height scroll-offset) card-opacity-factor)
         new-translation-y (- scroll-offset)]
-    (reanimated/set-shared-value height (value-in-range new-height [0 card-total-height]))
-    (reanimated/set-shared-value opacity (value-in-range new-opacity [0 1]))
+    (reanimated/set-shared-value height (number/value-in-range new-height 0 card-total-height))
+    (reanimated/set-shared-value opacity (number/value-in-range new-opacity 0 1))
     (reanimated/set-shared-value translation-y
-                                 (value-in-range new-translation-y [(- card-total-height) 0]))))
+                                 (number/value-in-range new-translation-y (- card-total-height) 0))))
 
 (defn animated-card-container
   [height opacity]

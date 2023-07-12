@@ -8,6 +8,7 @@
     [reagent.core :as reagent]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.selection :as selection]
+    [utils.number]
     [utils.re-frame :as rf]))
 
 (defn bounded-val
@@ -142,7 +143,7 @@
         base             (+ base (- curr-height constants/input-height))
         base             (+ base (calc-top-content-height reply edit))
         view-height      (- window-height keyboard-height (:top insets))
-        container-height (bounded-val
+        container-height (utils.number/value-in-range
                           (* (/ constants/mentions-max-height 4) size)
                           (/ constants/mentions-max-height 4)
                           constants/mentions-max-height)]
@@ -228,7 +229,7 @@
      :saved-height      (reanimated/use-shared-value
                          initial-height)
      :last-height       (reanimated/use-shared-value
-                         (bounded-val
+                         (utils.number/value-in-range
                           (+ @content-height bottom-content-height)
                           constants/input-height
                           max-height))
