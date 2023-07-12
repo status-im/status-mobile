@@ -350,7 +350,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703133)
     def test_restore_multiaccount_with_waku_backup_remove_switch(self):
-        self.home.click_system_back_button_until_element_is_shown()
+        self.home.jump_to_communities_home()
         profile = self.home.profile_button.click()
         profile.logout()
         self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True)
@@ -453,12 +453,13 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.handle_contact_request(self.username_1)
         self.text_message = 'hello'
 
-        self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
+        # self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
         self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message('hey')
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.chat_2.send_message(self.text_message)
-        [home.click_system_back_button_until_element_is_shown() for home in self.homes]
+        # self.chat_2.send_message(self.text_message)
+        # [home.click_system_back_button_until_element_is_shown() for home in self.homes]
+        self.home_1.click_system_back_button_until_element_is_shown()
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
@@ -472,7 +473,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.community_1.send_invite_to_community(self.community_name, self.username_2)
         self.home_1.get_to_community_channel_from_home(self.community_name)
 
-        self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        # self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
+        self.chat_2.send_message(self.text_message)
         self.chat_2.element_by_text_part('View').click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
@@ -487,6 +490,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                 self.errors.append("Timestamp is not shown, expected: '%s', in fact: '%s'" %
                                    (", ".join(sent_time_variants), timestamp))
         self.channel_1.verify_message_is_under_today_text(message, self.errors)
+        self.channel_2.send_message("one more message")
         new_message = "new message"
         self.channel_1.send_message(new_message)
         self.channel_2.verify_message_is_under_today_text(new_message, self.errors, 60)
@@ -773,12 +777,18 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.block_contact()
 
         self.chat_1.just_fyi('Check that messages from blocked user are hidden in public chat and close app')
-        if self.chat_1.chat_element_by_text(message_to_disappear).is_element_displayed():
+        if not self.chat_1.chat_element_by_text(message_to_disappear).is_element_disappeared(30):
             self.errors.append("Messages from blocked user is not cleared in public chat ")
         self.chat_1.jump_to_messages_home()
         if self.home_1.element_by_text(self.username_2).is_element_displayed():
             self.errors.append("1-1 chat from blocked user is not removed!")
         self.chat_1.toggle_airplane_mode()
+
+        # workaround for app closed after airplane mode
+        if not self.home_1.chats_tab.is_element_displayed() and \
+                not self.chat_1.chat_floating_screen.is_element_displayed():
+            self.device_1.driver.launch_app()
+            self.device_1.sign_in()
 
         self.home_2.just_fyi('Send message to public chat while device 1 is offline')
         message_blocked, message_unblocked = "Message from blocked user", "Hurray! unblocked"
@@ -950,6 +960,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702845)
     def test_community_leave(self):
+        self.home_2.click_system_back_button_until_element_is_shown()
         self.home_2.jump_to_communities_home()
         community = self.home_2.get_chat(self.community_name, community=True)
         community_to_leave = CommunityView(self.drivers[1])
