@@ -61,16 +61,16 @@
   [e]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-            (when-let [last-visible-element (aget (oops/oget e "viewableItems")
-                                                  (dec (oops/oget e "viewableItems.length")))]
-              (let [index             (oops/oget last-visible-element "index")
+      (when-let [last-visible-element (aget (oops/oget e "viewableItems")
+                                            (dec (oops/oget e "viewableItems.length")))]
+        (let [index             (oops/oget last-visible-element "index")
               ;; Get first not visible element, if it's a datemark/gap
               ;; we might add messages on receiving as they do not have
               ;; a clock value, but usually it will be a message
-                    first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
-                (when (and first-not-visible
-                           (= :message (:type first-not-visible)))
-                  first-not-visible))))))
+              first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
+          (when (and first-not-visible
+                     (= :message (:type first-not-visible)))
+            first-not-visible))))))
 
 
 (defn list-on-end-reached
