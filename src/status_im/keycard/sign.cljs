@@ -4,7 +4,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.common :as common]
             [utils.re-frame :as rf]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
@@ -38,8 +38,8 @@
                 {:db (assoc-in db [:signing/sign :keycard-step] :signing)}
                 (common/set-on-card-connected :keycard/sign))
 
-      (pos? keycard-pin-retries) ; if 0, get-application-info will have already closed the connection
-                                 ; sheet and opened the frozen card popup
+      (pos? keycard-pin-retries) ; if 0, get-application-info will have already closed the
+                                 ; connection sheet and opened the frozen card popup
       {:db           (-> db
                          (assoc-in [:keycard :card-read-in-progress?] true)
                          (assoc-in [:keycard :pin :status] :verifying))
