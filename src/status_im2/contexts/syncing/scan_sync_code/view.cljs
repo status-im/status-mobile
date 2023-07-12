@@ -305,6 +305,7 @@
             read-qr-once? (atom false)
             torch-mode (if @torch? :on :off)
             flashlight-icon (if @torch? :i/flashlight-on :i/flashlight-off)
+            app-state (rf/sub [:app-state])
             ;; The below check is to prevent scanning of any QR code
             ;; when the user is in syncing progress screen
             user-in-syncing-progress-screen? (= (rf/sub [:view-id]) :syncing-progress)
@@ -351,6 +352,10 @@
                                                               0
                                                               :easing4))
                (if show-camera? 500 0)))]
+        (rn/use-effect (fn []
+                         (when (and (not= app-state "active") @torch?)
+                           (reset! torch? false)))
+                       [app-state])
         (when animated?
           (reanimated/animate-shared-value-with-delay subtitle-opacity
                                                       1 constants/onboarding-modal-animation-duration
