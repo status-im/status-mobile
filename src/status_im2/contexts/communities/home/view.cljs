@@ -1,11 +1,13 @@
 (ns status-im2.contexts.communities.home.view
-  (:require [quo2.core :as quo]
+  (:require [oops.core :as oops]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [utils.debounce :as debounce]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [react-native.platform :as platform]
+            [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [status-im2.common.home.view :as common.home]
             [status-im2.common.resources :as resources]
@@ -70,6 +72,12 @@
        :title               title
        :description         description}]]))
 
+(defn- animated-card
+  [{{:keys [opacity height translate-y]} :animated-values :as props}]
+  [reanimated/view {:style (style/animated-card-container height opacity)}
+   [reanimated/view {:style (style/animated-card-translation translate-y)}
+    [quo/discover-card (dissoc props :animated-values)]]])
+
 (defn home
   []
   (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
@@ -79,7 +87,10 @@
                                           :joined  joined
                                           :pending pending
                                           :opened  opened)
-        top                             (safe-area/get-top)]
+        top                             (safe-area/get-top)
+        animated-card-opacity           (reanimated/use-shared-value 1)
+        animated-card-translation-y     (reanimated/use-shared-value 0)
+        animated-card-height            (reanimated/use-shared-value style/card-total-height)]
     [:<>
      (if (empty? selected-items)
        [empty-state
@@ -91,30 +102,38 @@
          :content-inset-adjustment-behavior :never
          :header                            [rn/view {:style (style/header-spacing top)}]
          :render-fn                         item-render
-         :data                              selected-items}])
+         :data                              selected-items
+         :on-scroll                         #(style/set-animated-card-values
+                                              {:scroll-offset (oops/oget % "nativeEvent.contentOffset.y")
+                                               :height        animated-card-height
+                                               :translation-y animated-card-translation-y
+                                               :opacity       animated-card-opacity})}])
 
      [rn/view {:style (style/blur-container top)}
       (let [{:keys [sheets]} (rf/sub [:bottom-sheet])]
         [blur/view
          {:blur-amount   (if platform/ios? 20 10)
-          :blur-type     (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+          :blur-type     (theme/theme-value (if platform/ios? :light :xlight) :dark)
           :style         style/blur
           :overlay-color (if (seq sheets)
-                           (theme/theme-value colors/white colors/neutral-95-opa-70)
-                           (when (colors/dark?)
-                             colors/neutral-95-opa-70))}])
+                           (colors/theme-colors colors/white colors/neutral-95-opa-70)
+                           (theme/theme-value nil colors/neutral-95-opa-70))}])
       [common.home/top-nav {:type :grey}]
       [common.home/title-column
        {:label               (i18n/label :t/communities)
         :handler             #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}])
         :accessibility-label :new-communities-button
         :customization-color customization-color}]
-      [quo/discover-card
-       {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
+      [:f> animated-card
+       {:style               style/card-bottom-override
+        :on-press            #(rf/dispatch [:navigate-to :discover-communities])
         :title               (i18n/label :t/discover)
         :description         (i18n/label :t/favorite-communities)
         :banner              (resources/get-image :discover)
-        :accessibility-label :communities-home-discover-card}]
+        :accessibility-label :communities-home-discover-card
+        :animated-values     {:opacity     animated-card-opacity
+                              :height      animated-card-height
+                              :translate-y animated-card-translation-y}}]
       ^{:key (str "tabs-" selected-tab)}
       [quo/tabs
        {:size           32
