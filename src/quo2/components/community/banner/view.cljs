@@ -29,16 +29,11 @@
      description]]])
 
 (defn view
-  [{:keys [title description on-press accessibility-label banner]}]
+  [{:keys [title description on-press accessibility-label banner style]}]
   [rn/touchable-without-feedback
    {:on-press            on-press
     :accessibility-label accessibility-label}
-   [rn/view
-    (merge (style/community-card 16)
-           {:background-color (colors/theme-colors
-                               colors/white
-                               colors/neutral-90)}
-           style/banner-card)
+   [rn/view {:style (merge (style/community-card) style)}
     [card-title-and-description title description]
     [rn/image
      {:style               style/discover-illustration
