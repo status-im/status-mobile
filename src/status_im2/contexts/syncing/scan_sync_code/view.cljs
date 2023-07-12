@@ -18,7 +18,16 @@
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
+<<<<<<< HEAD
             [utils.transforms :as transforms]))
+=======
+            [status-im2.contexts.syncing.utils :as sync-utils]
+            [status-im.utils.platform :as platform]
+            [react-native.reanimated :as reanimated]
+            [status-im2.constants :as constants]
+            [utils.debounce :as debounce]
+            [utils.device-permissions :as device-permissions]))
+>>>>>>> 22a4b6dc3 (review)
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
 (defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
@@ -26,19 +35,6 @@
 (defonce camera-permission-granted? (reagent/atom false))
 (defonce dismiss-animations (atom nil))
 (defonce navigate-back-fn (atom nil))
-
-(defn request-camera-permission
-  []
-  (rf/dispatch
-   [:request-permissions
-    {:permissions [:camera]
-     :on-allowed  #(reset! camera-permission-granted? true)
-     :on-denied   #(rf/dispatch
-                    [:toasts/upsert
-                     {:icon           :i/info
-                      :icon-color     colors/danger-50
-                      :override-theme :light
-                      :text           (i18n/label :t/camera-permission-denied)}])}]))
 
 (defn perform-preflight-check
   "Performing the check for the first time
@@ -140,7 +136,8 @@
      :button-icon           :i/camera
      :button-label          :t/enable-camera
      :accessibility-label   :request-camera-permission
-     :on-press              request-camera-permission}))
+     :on-press              (fn []
+                              (device-permissions/camera #(reset! camera-permission-granted? true)))}))
 
 (defn- camera-and-local-network-access-permission-view
   []
@@ -417,7 +414,12 @@
                      :transform [{:translate-y content-translate-y}]}
                     {})}
            (case @active-tab
+<<<<<<< HEAD
              1 [scan-qr-code-tab qr-view-finder]
+=======
+             1 [scan-qr-code-tab qr-view-finder
+                (fn [] (device-permissions/camera #(reset! camera-permission-granted? true)))]
+>>>>>>> 22a4b6dc3 (review)
              2 [enter-sync-code-tab]
              nil)]
           [rn/view {:style style/flex-spacer}]

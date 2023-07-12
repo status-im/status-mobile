@@ -13,12 +13,12 @@
     [utils.re-frame :as rf]))
 
 (defn- f-zoom-button
-  [{:keys [value curr-zoom]}]
-  (let [selected (= @curr-zoom value)
+  [{:keys [value current-zoom]}]
+  (let [selected (= @current-zoom value)
         size     (reanimated/use-shared-value (if selected 37 25))]
-    (rn/use-effect #(reanimated/animate size (if selected 37 25)) [@curr-zoom])
+    (rn/use-effect #(reanimated/animate size (if selected 37 25)) [@current-zoom])
     [rn/touchable-opacity
-     {:on-press #(reset! curr-zoom value)
+     {:on-press #(reset! current-zoom value)
       :style    style/zoom-button-container}
      [reanimated/view {:style (style/zoom-button size)}
       [quo/text
@@ -42,18 +42,16 @@
 
 (defn camera-screen
   []
-  (let [camera-ref (atom nil)
-        uri        (reagent/atom nil)
-        curr-zoom  (reagent/atom "1")]
+  (let [camera-ref   (atom nil)
+        uri          (reagent/atom nil)
+        current-zoom (reagent/atom "1")]
     (fn []
       (let [window                 (rn/get-window)
             {:keys [width height]} window
             camera-window-height   (* width 1.33)
             insets                 (safe-area/get-insets)
             top                    (/ (- height camera-window-height (:bottom insets)) 2)]
-        [rn/view
-         {:style {:flex             1
-                  :background-color colors/black}}
+        [rn/view {:style style/screen-container}
          [rn/view {:style style/flash-container}
           [quo/icon :i/flash-camera
            {:color colors/white
@@ -66,10 +64,10 @@
             {:style  (style/camera-window width camera-window-height top)
              :source {:uri @uri}}])
          [rn/view {:style (style/zoom-container top insets)}
-          [zoom-button {:value "0.5" :curr-zoom curr-zoom}]
-          [zoom-button {:value "1" :curr-zoom curr-zoom}]
-          [zoom-button {:value "2" :curr-zoom curr-zoom}]
-          [zoom-button {:value "3" :curr-zoom curr-zoom}]]
+          [zoom-button {:value "0.5" :current-zoom current-zoom}]
+          [zoom-button {:value "1" :current-zoom current-zoom}]
+          [zoom-button {:value "2" :current-zoom current-zoom}]
+          [zoom-button {:value "3" :current-zoom current-zoom}]]
          (if-not @uri
            [rn/view {:style (style/bottom-area top insets)}
             [quo/text {:style style/photo-text} (i18n/label :PHOTO)]

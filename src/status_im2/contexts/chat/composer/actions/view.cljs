@@ -10,6 +10,7 @@
     [status-im2.common.alert.events :as alert]
     [status-im2.contexts.chat.composer.constants :as comp-constants]
     [status-im2.contexts.chat.messages.list.view :as messages.list]
+    [utils.device-permissions :as device-permissions]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.composer.actions.style :as style]
@@ -149,23 +150,23 @@
                                                   50)}]))
        :max-duration-ms                    constants/audio-max-duration-ms}]]))
 
-(defn request-camera-permission
-  []
-  (rf/dispatch
-   [:request-permissions
-    {:permissions [:camera]
-     :on-allowed  #(rf/dispatch [:navigate-to :camera-screen])
-     :on-denied   #(rf/dispatch
-                    [:toasts/upsert
-                     {:icon           :i/info
-                      :icon-color     colors/danger-50
-                      :override-theme :light
-                      :text           (i18n/label :t/camera-permission-denied)}])}]))
+;(defn request-camera-permission
+;  []
+;  (rf/dispatch
+;   [:request-permissions
+;    {:permissions [:camera]
+;     :on-allowed  #
+;     :on-denied   #(rf/dispatch
+;                    [:toasts/upsert
+;                     {:icon           :i/info
+;                      :icon-color     colors/danger-50
+;                      :override-theme :light
+;                      :text           (i18n/label :t/camera-permission-denied)}])}]))
 
 (defn camera-button
   []
   [quo/button
-   {:on-press #(request-camera-permission)
+   {:on-press (fn [] (device-permissions/camera #(rf/dispatch [:navigate-to :camera-screen])))
     :icon     true
     :type     :outline
     :size     32

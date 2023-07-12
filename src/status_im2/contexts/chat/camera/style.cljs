@@ -3,6 +3,9 @@
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))
 
+(def screen-container
+  {:flex             1
+   :background-color colors/black})
 
 (def flash-container
   {:position :absolute

@@ -1,0 +1,18 @@
+(ns utils.device-permissions
+  (:require
+    [quo2.foundations.colors :as colors]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
+
+(defn camera
+  [callback]
+  (rf/dispatch
+   [:request-permissions
+    {:permissions [:camera]
+     :on-allowed  callback
+     :on-denied   #(rf/dispatch
+                    [:toasts/upsert
+                     {:icon           :i/info
+                      :icon-color     colors/danger-50
+                      :override-theme :light
+                      :text           (i18n/label :t/camera-permission-denied)}])}]))
