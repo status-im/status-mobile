@@ -8,8 +8,7 @@
 
 (def community-tag-container
   {:padding-horizontal screen-horizontal-padding
-   :margin-horizontal  (- screen-horizontal-padding)
-   :margin-bottom      20})
+   :margin-horizontal  (- screen-horizontal-padding)})
 
 (def community-content-container
   {:padding-horizontal screen-horizontal-padding})

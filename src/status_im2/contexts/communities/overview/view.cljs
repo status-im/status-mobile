@@ -73,29 +73,28 @@
                  (+ (if platform/ios? 0 38)
                     (int (Math/ceil (layout-y %))))
                  (into #{} (map (comp :name second) channels-list)))
-    :style     {:margin-top 20 :flex 1}}
+    :style     {:margin-top 10 :flex 1}}
    (doall
     (for [[category-id {:keys [chats name collapsed?]}] channels-list]
-      [rn/view
-       {:style     {:flex 1}
-        :key       category-id
-        ;; on-layout fires only when the component re-renders, so
-        ;; in case the category hasn't changed, it will not be fired
-        :on-layout #(on-category-layout name (int (layout-y %)))}
-       (when-not (= constants/empty-category-id category-id)
-         [quo/divider-label
-          {:container-style  {:padding-left   16
-                              :padding-right  20
-                              :padding-top    6 ; Because of border width of 1
-                              :padding-bottom 7}
-           :label            name
-           :on-press         #(collapse-category community-id category-id collapsed?)
-           :chevron-icon     (if collapsed? :i/chevron-right :i/chevron-down)
-           :chevron-position :left}])
-       (when-not collapsed?
-         (into [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}]
-               (map #(channel-chat-item community-id community-color %))
-               chats))]))])
+        [rn/view
+         {:key       category-id
+          ;; on-layout fires only when the component re-renders, so
+          ;; in case the category hasn't changed, it will not be fired
+          :on-layout #(on-category-layout name (int (layout-y %)))}
+         (when-not (= constants/empty-category-id category-id)
+           [quo/divider-label
+            {:container-style  {:padding-left   16
+                                :padding-right  20
+                                :padding-top    6 ; Because of border width of 1
+                                :padding-bottom 7}
+             :label            name
+             :on-press         #(collapse-category community-id category-id collapsed?)
+             :chevron-icon     (if collapsed? :i/chevron-right :i/chevron-down)
+             :chevron-position :left}])
+         (when-not collapsed?
+           (into [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}]
+                 (map #(channel-chat-item community-id community-color %))
+                 chats))]))])
 
 (defn request-to-join-text
   [is-open?]
@@ -278,7 +277,9 @@
       [quo/community-tags
        {:tags            tags
         :last-item-style style/last-community-tag
-        :container-style style/community-tag-container}]
+        :container-style (if (> (count tags) 0)
+                           (assoc style/community-tag-container :margin-bottom 20)
+                           style/community-tag-container)}]
       [join-community community pending?]]
      [channel-list-component
       {:on-category-layout              on-category-layout
