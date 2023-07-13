@@ -15,7 +15,8 @@
 (defn mention-tag-wrapper
   []
   {:flex-direction :row
-   :align-items    :center})
+   :align-items    :center
+   :height         22})
 
 (def mention-tag
   {:background-color   colors/primary-50-opa-10
@@ -28,7 +29,8 @@
   {:color                 (colors/theme-colors colors/primary-50
                                                colors/primary-60)
    :selection-color       :transparent
-   :suppress-highlighting true})
+   :suppress-highlighting true
+   :line-height           22})
 
 (defn code
   []
