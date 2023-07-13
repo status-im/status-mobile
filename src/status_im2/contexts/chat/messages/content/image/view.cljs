@@ -15,7 +15,7 @@
     {:width (min width max-width) :height (min height max-height)}))
 
 (defn image-message
-  [index {:keys [content image-width image-height message-id] :as message} on-long-press]
+  [index {:keys [content image-width image-height message-id] :as message} {:keys [on-long-press]}]
   (let [insets            (safe-area/get-insets)
         dimensions        (calculate-dimensions (or image-width 1000) (or image-height 1000))
         shared-element-id (rf/sub [:shared-element-id])
