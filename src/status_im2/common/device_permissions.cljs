@@ -16,4 +16,3 @@
                       :icon-color     colors/danger-50
                       :override-theme :light
                       :text           (i18n/label :t/camera-permission-denied)}])}]))
-

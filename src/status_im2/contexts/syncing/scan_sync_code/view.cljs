@@ -419,11 +419,15 @@
                     {})}
            (case @active-tab
 <<<<<<< HEAD
+<<<<<<< HEAD
              1 [scan-qr-code-tab qr-view-finder]
 =======
              1 [scan-qr-code-tab qr-view-finder
                 (fn [] (device-permissions/camera #(reset! camera-permission-granted? true)))]
 >>>>>>> 22a4b6dc3 (review)
+=======
+             1 [scan-qr-code-tab qr-view-finder]
+>>>>>>> b25e41738 (review)
              2 [enter-sync-code-tab]
              nil)]
           [rn/view {:style style/flex-spacer}]
