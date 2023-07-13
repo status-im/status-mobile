@@ -133,11 +133,6 @@
   {:color         colors/white-opa-70
    :margin-bottom 16})
 
-(def enter-sync-code-container
-  {:margin-top      20
-   :justify-content :center
-   :align-items     :center})
-
 (defn bottom-container
   [translate-y padding-bottom]
   (reanimated/apply-animations-to-style

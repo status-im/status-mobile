@@ -20,7 +20,8 @@
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [utils.transforms :as transforms]))
+            [utils.transforms :as transforms]
+            [status-im2.contexts.syncing.enter-sync-code.view :as enter-sync-code]))
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
 (defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
@@ -199,15 +200,6 @@
     [viewfinder qr-view-finder]
     [camera-and-local-network-access-permission-view]))
 
-(defn- enter-sync-code-tab
-  []
-  [rn/view {:style style/enter-sync-code-container}
-   [quo/text
-    {:size   :paragraph-1
-     :weight :medium
-     :style  {:color colors/white}}
-    "Yet to be implemented"]])
-
 (defn- f-bottom-view
   [insets translate-y]
   [rn/touchable-without-feedback
@@ -374,7 +366,7 @@
                     {})}
            (case @active-tab
              1 [scan-qr-code-tab @qr-view-finder]
-             2 [enter-sync-code-tab]
+             2 [enter-sync-code/view]
              nil)]
           [rn/view {:style style/flex-spacer}]
           (when show-bottom-view?
