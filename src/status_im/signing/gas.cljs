@@ -7,7 +7,7 @@
             [status-im.popover.core :as popover]
             [status-im.signing.eip1559 :as eip1559]
             [utils.re-frame :as rf]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im2.common.json-rpc.events :as json-rpc]
             [taoensso.timbre :as log]))
 
@@ -336,7 +336,7 @@
   (let [sorted-v (sort-by
                   identity
                   (fn [a b]
-                    (status-im.utils.money/greater-than b a))
+                    (utils.money/greater-than b a))
                   v)]
     (reduce
      (fn [acc p]

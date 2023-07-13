@@ -253,7 +253,7 @@ class SignInView(BaseView):
         if not second_user:
             self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_keys_button)
         else:
-            self.show_profiles_button.click()
+            self.show_profiles_button.wait_and_click(20)
             self.plus_profiles_button.click()
             self.create_new_profile_button.click()
         self.use_recovery_phrase_button.click()

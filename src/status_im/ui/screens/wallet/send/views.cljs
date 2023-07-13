@@ -18,7 +18,7 @@
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.ui.screens.wallet.send.sheets :as sheets]
             [status-im.ui.screens.wallet.send.styles :as styles]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im.utils.utils :as utils]
             [status-im.wallet.utils :as wallet.utils]))
 

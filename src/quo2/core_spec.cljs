@@ -22,6 +22,7 @@
     [quo2.components.links.link-preview.component-spec]
     [quo2.components.links.url-preview-list.component-spec]
     [quo2.components.links.url-preview.component-spec]
+    [quo2.components.list-items.community.component-spec]
     [quo2.components.markdown.--tests--.text-component-spec]
     [quo2.components.markdown.list.component-spec]
     [quo2.components.notifications.notification.component-spec]

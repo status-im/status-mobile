@@ -980,7 +980,7 @@ class ChatView(BaseView):
     def edit_message_in_chat(self, message_to_edit, message_to_update):
         self.driver.info("Looking for message '%s' to edit it" % message_to_edit)
         element = self.element_by_translation_id("edit-message")
-        self.element_by_text_part(message_to_edit).long_press_until_element_is_shown(element)
+        self.chat_view_element_starts_with_text(message_to_edit).long_press_until_element_is_shown(element)
         element.click()
         self.chat_message_input.clear()
         self.chat_message_input.send_keys(message_to_update)
@@ -988,7 +988,7 @@ class ChatView(BaseView):
 
     def delete_message_in_chat(self, message, everyone=True):
         self.driver.info("Looking for message '%s' to delete it" % message)
-        self.element_by_text_part(message).long_press_element()
+        self.chat_view_element_starts_with_text(message).long_press_element()
         for_everyone, for_me = self.element_by_translation_id("delete-for-everyone"), self.element_by_translation_id(
             "delete-for-me")
         for_everyone.click() if everyone else for_me.click()
@@ -998,9 +998,9 @@ class ChatView(BaseView):
         self.element_by_text_part(message_text).long_press_element()
         self.element_by_translation_id("copy-text").click()
 
-    def quote_message(self, message=str):
+    def quote_message(self, message: str):
         self.driver.info("Quoting '%s' message" % message)
-        self.element_by_text_part(message).long_press_until_element_is_shown(self.reply_message_button)
+        self.chat_view_element_starts_with_text(message).long_press_until_element_is_shown(self.reply_message_button)
         self.reply_message_button.click()
 
     def set_reaction(self, message: str, emoji: str = 'thumbs-up', emoji_message=False):
@@ -1225,3 +1225,7 @@ class ChatView(BaseView):
 
     def authors_for_reaction(self, emoji: str):
         return Button(self.driver, accessibility_id='authors-for-reaction-%s' % emojis[emoji])
+
+    def chat_view_element_starts_with_text(self, text: str):
+        return BaseElement(self.driver,
+                           xpath="//*[@content-desc=':chat-floating-screen']//*[starts-with(@text,'%s')]" % text)

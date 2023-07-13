@@ -8,7 +8,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]))
+            [utils.money :as money]))
 
 (def scheme "ethereum")
 (def scheme-separator ":")
