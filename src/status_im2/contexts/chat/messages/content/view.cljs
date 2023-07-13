@@ -154,7 +154,7 @@
                [audio/audio-message message-data context]
 
                constants/content-type-image
-               [image/image-message 0 message-data context on-long-press]
+               [image/image-message 0 message-data context]
 
                constants/content-type-album
                [album/album-message message-data context on-long-press]
