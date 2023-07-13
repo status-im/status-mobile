@@ -26,8 +26,12 @@
             [react-native.reanimated :as reanimated]
             [status-im2.constants :as constants]
             [utils.debounce :as debounce]
+<<<<<<< HEAD
             [utils.device-permissions :as device-permissions]))
 >>>>>>> 22a4b6dc3 (review)
+=======
+            [status-im2.common.device-permissions :as device-permissions]))
+>>>>>>> 39668ea66 (review)
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
 (defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))

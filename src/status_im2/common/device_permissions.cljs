@@ -1,4 +1,4 @@
-(ns utils.device-permissions
+(ns status-im2.common.device-permissions
   (:require
     [quo2.foundations.colors :as colors]
     [utils.i18n :as i18n]
@@ -16,3 +16,4 @@
                       :icon-color     colors/danger-50
                       :override-theme :light
                       :text           (i18n/label :t/camera-permission-denied)}])}]))
+
