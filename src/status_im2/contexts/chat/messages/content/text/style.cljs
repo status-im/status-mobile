@@ -30,7 +30,7 @@
                                                colors/primary-60)
    :selection-color       :transparent
    :suppress-highlighting true
-   :line-height           22})
+   :line-height           21})
 
 (defn code
   []
