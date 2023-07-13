@@ -99,7 +99,6 @@
    (merge {:style                style/community-tag
            :text-style           (style/community-tag-text override-theme)
            :text-container-style style/community-tag-text-container
-           :community-tag?       true
            :ellipsize-text?      true}
           params)
    avatar
