@@ -373,10 +373,11 @@
                                       (- (reanimated/get-shared-value scroll-y)
                                          keyboard-height))))
      [keyboard-shown keyboard-height])
+    ;; Note - Don't pass `behavior :height` to keyboard avoiding view,
+    ;; It breaks composer - https://github.com/status-im/status-mobile/issues/16595
     [rn/keyboard-avoiding-view
      {:style                    (style/keyboard-avoiding-container insets)
-      :keyboard-vertical-offset (- (:bottom insets))
-      :behavior                 :height}
+      :keyboard-vertical-offset (- (:bottom insets))}
 
      (when header-comp
        [header-comp
