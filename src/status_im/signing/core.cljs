@@ -14,7 +14,7 @@
             [status-im.signing.keycard :as signing.keycard]
             [utils.re-frame :as rf]
             [status-im.utils.hex :as utils.hex]
-            [utils.money :as money]
+            [status-im.utils.money :as money]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
@@ -313,8 +313,8 @@
   {:events [:sign/send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
   {:json-rpc/call [{:method "wakuext_sendTransaction"
-                    ;; We make sure `value` is serialized as string, and not as an integer or
-                    ;; big-int
+                    ;; We make sure `value` is serialized as string, and not
+                    ;; as an integer or big-int
                     :params [chat-id (str value) contract transaction-hash
                              (or (:result (types/json->clj signature))
                                  (ethereum/normalized-hex signature))]

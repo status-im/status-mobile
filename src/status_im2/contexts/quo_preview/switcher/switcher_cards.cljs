@@ -83,7 +83,7 @@
 
 ;; Mocked Data
 
-(def banner (resources/get-mock-image :community-banner))
+(def banner {:source (resources/get-mock-image :community-banner)})
 (def sticker {:source (resources/get-mock-image :sticker)})
 (def community-avatar {:source (resources/get-mock-image :community-logo)})
 (def gif {:source (resources/get-mock-image :gif)})

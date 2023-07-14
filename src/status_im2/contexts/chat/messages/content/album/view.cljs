@@ -74,5 +74,5 @@
        (map-indexed
         (fn [index item]
           [:<> {:key (:message-id item)}
-           [image/image-message index item {:on-long-press #(on-long-press message context)}]])
+           [image/image-message index item #(on-long-press message context)]])
         (:album message))])))

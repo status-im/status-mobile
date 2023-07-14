@@ -1,65 +1,65 @@
 (ns status-im2.contexts.quo-preview.foundations.shadows
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [quo2.foundations.shadows :as shadows]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.foundations.shadows :as shadows]
+    [quo2.foundations.colors :as colors]
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defn demo-box
-  [shadow? description shadow-style]
+  [shadow-on? name shadow-style]
   [rn/view
-   {:style {:margin-left   :auto
-            :margin-right  :auto
-            :margin-top    8
-            :margin-bottom 8
-            :align-items   :center}}
-   [quo/text {} description]
+   {:margin-left   :auto
+    :margin-right  :auto
+    :margin-top    8
+    :margin-bottom 8
+    :align-items   :center}
+   [quo/text {} name]
    [rn/view
     {:style (merge {:width            60
                     :height           60
                     :border-radius    16
                     :background-color (colors/theme-colors colors/white colors/neutral-90)}
-                   (when shadow? shadow-style))}]])
+                   (when shadow-on? shadow-style))}]])
 
 (def descriptor
-  [{:label "Shadows enabled?"
-    :key   :shadow?
+  [{:label "Shadow on?"
+    :key   :shadow-on?
     :type  :boolean}])
 
 (defn cool-preview
   []
-  (let [state   (reagent/atom {:shadow? true})
-        shadow? (reagent/cursor state [:shadow?])]
+  (let [state (reagent/atom {:shadow-on? true})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:style {:padding-bottom 150}}
+       [rn/view {:padding-bottom 150}
         [preview/customizer state descriptor]
-        [quo/text
-         {:style {:margin-left  :auto
-                  :margin-right :auto
-                  :align-items  :center}}
-         "Normal Scales"]
-        [demo-box @shadow? "Shadow 1" (shadows/get 1)]
-        [demo-box @shadow? "Shadow 2" (shadows/get 2)]
-        [demo-box @shadow? "Shadow 3" (shadows/get 3)]
-        [demo-box @shadow? "Shadow 4" (shadows/get 4)]
-        [quo/text
-         {:style {:margin-left  :auto
-                  :margin-right :auto
-                  :align-items  :center}}
-         "Inverted Scales"]
-        [demo-box @shadow? "Shadow 1" (shadows/get 1 (quo.theme/get-theme) :inverted)]
-        [demo-box @shadow? "Shadow 2" (shadows/get 2 (quo.theme/get-theme) :inverted)]
-        [demo-box @shadow? "Shadow 3" (shadows/get 3 (quo.theme/get-theme) :inverted)]
-        [demo-box @shadow? "Shadow 4" (shadows/get 4 (quo.theme/get-theme) :inverted)]
-        [quo/text
-         {:style {:margin-left  :auto
-                  :margin-right :auto
-                  :align-items  :center}}
-         "Inverted Scales"]
-        [demo-box @shadow? "Inner Shadow" shadows/inner-shadow]]])))
+        [:<>
+         [quo/text
+          {:style {:margin-left  :auto
+                   :margin-right :auto
+                   :align-items  :center}}
+          "Normal Scales"]
+         [demo-box (:shadow-on? @state) "shadow 1" (:shadow-1 shadows/normal-scale)]
+         [demo-box (:shadow-on? @state) "shadow 2" (:shadow-2 shadows/normal-scale)]
+         [demo-box (:shadow-on? @state) "shadow 3" (:shadow-3 shadows/normal-scale)]
+         [demo-box (:shadow-on? @state) "shadow 4" (:shadow-4 shadows/normal-scale)]
+         [quo/text
+          {:style {:margin-left  :auto
+                   :margin-right :auto
+                   :align-items  :center}}
+          "Inverted Scales"]
+         [demo-box (:shadow-on? @state) "shadow 1" (:shadow-1 shadows/inverted-scale)]
+         [demo-box (:shadow-on? @state) "shadow 2" (:shadow-2 shadows/inverted-scale)]
+         [demo-box (:shadow-on? @state) "shadow 3" (:shadow-3 shadows/inverted-scale)]
+         [demo-box (:shadow-on? @state) "shadow 4" (:shadow-4 shadows/inverted-scale)]
+         [quo/text
+          {:style {:margin-left  :auto
+                   :margin-right :auto
+                   :align-items  :center}}
+          "Inverted Scales"]
+         [demo-box (:shadow-on? @state) "Inner Shadow" shadows/inner-shadow]]]])))
 
 (defn preview-shadows
   []

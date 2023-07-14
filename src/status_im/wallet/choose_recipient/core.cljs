@@ -10,7 +10,7 @@
             [status-im.router.core :as router]
             [utils.re-frame :as rf]
             [status-im.utils.http :as http]
-            [utils.money :as money]
+            [status-im.utils.money :as money]
             [status-im.utils.universal-links.utils :as links]
             [status-im.utils.wallet-connect :as wallet-connect]
             [status-im2.navigation.events :as navigation]))
@@ -118,7 +118,8 @@
   {:events [:wallet/parse-eip681-uri-and-resolve-ens]}
   [{db :db :as cofx} {:keys [message uri paths ens-names error]} ignore-url]
   (if-not error
-    ;; first we get a vector of ens-names to resolve and a vector of paths of these names
+    ;; first we get a vector of ens-names to resolve and a vector of paths of
+    ;; these names
     (if (empty? ens-names)
       ;; if there are no ens-names, we dispatch request-uri-parsed immediately
       (request-uri-parsed cofx message uri)
@@ -129,7 +130,8 @@
         (fn [addresses]
           (re-frame/dispatch
            [:wallet/request-uri-parsed
-            ;; we replace ens-names at their path in the message by their actual address
+            ;; we replace ens-names at their path in the message by their
+            ;; actual address
             (reduce (fn [message [path address]]
                       (assoc-in message path address))
                     message

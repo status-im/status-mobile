@@ -1,6 +1,6 @@
 (ns status-im.wallet.db
   (:require [utils.i18n :as i18n]
-            [utils.money :as money]
+            [status-im.utils.money :as money]
             [status-im.utils.priority-map :refer [empty-transaction-map]]))
 
 (defn- too-precise-amount?

@@ -33,10 +33,10 @@
    :browser-stack     :browser-stack-z-index})
 
 ;; Home stack states
-(def ^:const close-without-animation 0)
-(def ^:const open-without-animation 1)
-(def ^:const close-with-animation 2)
-(def ^:const open-with-animation 3)
+(def ^:const close-with-animation 0)
+(def ^:const open-with-animation 1)
+(def ^:const close-without-animation 2)
+(def ^:const open-without-animation 3)
 
 ;; Switcher Cards
 (def ^:const empty-card 0)
@@ -54,17 +54,15 @@
 (def ^:const community-screen :community-overview)
 (def ^:const chat-screen :chat)
 
-(def ^:const floating-screens [chat-screen community-screen])
-
 ;; Floating Screen states
-(def ^:const close-screen-without-animation 0)
-(def ^:const open-screen-without-animation 1)
-(def ^:const close-screen-with-slide-animation 2)
-(def ^:const open-screen-with-slide-animation 3)
-(def ^:const close-screen-with-shell-animation 4)
-(def ^:const open-screen-with-shell-animation 5)
+(def ^:const close-screen-with-slide-animation 0)
+(def ^:const open-screen-with-slide-animation 1)
+(def ^:const close-screen-with-shell-animation 2)
+(def ^:const open-screen-with-shell-animation 3)
+(def ^:const close-screen-without-animation 4)
+(def ^:const open-screen-without-animation 5)
 
 ;; Floating Screen gesture
-(def ^:const gesture-width 30)
+(def ^:const gesture-width 20)
 (def ^:const gesture-fling-right-velocity 2000)
 (def ^:const gesture-fling-left-velocity -1000)

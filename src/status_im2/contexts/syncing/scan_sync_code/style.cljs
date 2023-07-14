@@ -3,8 +3,6 @@
             [react-native.reanimated :as reanimated]))
 
 (def screen-padding 20)
-(def flash-button-size 32)
-(def flash-button-spacing 12)
 
 (def flex-spacer {:flex 1})
 
@@ -71,11 +69,10 @@
   {:flex-direction  :row
    :justify-content :space-between})
 
-(defn camera-flash-button
-  [viewfinder]
+(def camera-flash-button
   {:position :absolute
-   :top      (- (+ (:y viewfinder) (:height viewfinder)) flash-button-size flash-button-spacing)
-   :right    (+ screen-padding flash-button-spacing)})
+   :right    20
+   :bottom   20})
 
 (defn border
   [border1 border2 corner]

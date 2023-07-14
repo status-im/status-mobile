@@ -47,7 +47,6 @@
       (clipboard/get-string #(reset! clipboard %))
       (let [{:keys [input scanned public-key ens state msg]}
             (rf/sub [:contacts/new-identity])
-            customization-color (rf/sub [:profile/customization-color])
             invalid? (= state :invalid)
             show-paste-button? (and (not (string/blank? @clipboard))
                                     (string/blank? @default-value)
@@ -108,7 +107,7 @@
             (when (= state :valid)
               [found-contact public-key])]
            [quo/button
-            (merge (style/button-view-profile state customization-color)
+            (merge (style/button-view-profile state)
                    {:on-press
                     (fn []
                       (reset! clipboard nil)

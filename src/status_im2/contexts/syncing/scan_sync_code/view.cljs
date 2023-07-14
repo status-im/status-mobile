@@ -3,22 +3,21 @@
             [oops.core :as oops]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
             [react-native.camera-kit :as camera-kit]
             [react-native.core :as rn]
+            [react-native.blur :as blur]
             [react-native.hole-view :as hole-view]
             [react-native.permissions :as permissions]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
-            [status-im2.constants :as constants]
             [status-im2.contexts.syncing.scan-sync-code.style :as style]
-            [status-im2.contexts.syncing.utils :as sync-utils]
-            [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [utils.transforms :as transforms]))
+            [status-im2.contexts.syncing.utils :as sync-utils]
+            [status-im.utils.platform :as platform]
+            [react-native.reanimated :as reanimated]
+            [status-im2.constants :as constants]
+            [utils.debounce :as debounce]))
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
 (defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
@@ -176,7 +175,9 @@
   [rn/view
    {:style     style/qr-view-finder
     :on-layout (fn [event]
-                 (let [layout      (transforms/js->clj (oops/oget event "nativeEvent.layout"))
+                 (let [layout      (js->clj (oops/oget event "nativeEvent.layout")
+                                            :keywordize-keys
+                                            true)
                        view-finder (assoc layout :height (:width layout))]
                    (reset! qr-view-finder view-finder)))}])
 
@@ -214,7 +215,15 @@
         [rn/view
          [border :border-bottom-width :border-right-width :border-bottom-right-radius]
          [border-tip {:right 0 :top -1}]
-         [border-tip {:left -1 :bottom 0}]]]]
+         [border-tip {:left -1 :bottom 0}]]]
+       [quo/button
+        {:icon                      true
+         :type                      :blur-bg
+         :size                      32
+         :accessibility-label       :camera-flash
+         :override-background-color colors/neutral-80-opa-40
+         :style                     style/camera-flash-button}
+        :i/flashlight-off]]
       [quo/text
        {:size   :paragraph-2
         :weight :regular
@@ -270,7 +279,7 @@
                      :text           (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
 
 (defn render-camera
-  [show-camera? torch-mode qr-view-finder camera-ref on-read-code]
+  [show-camera? qr-view-finder camera-ref on-read-code show-holes?]
   (when (and show-camera? (:x qr-view-finder))
     [:<>
      [rn/view {:style style/camera-container}
@@ -279,13 +288,16 @@
         :style        style/camera-style
         :camera-type  camera-kit/camera-type-back
         :zoom-mode    :off
-        :torch-mode   torch-mode
+        ;; https://github.com/status-im/status-mobile/issues/16243
+        :torch-mode   :off
         :scan-barcode true
         :on-read-code on-read-code}]]
      [hole-view/hole-view
       {:style style/hole
-       :holes [(merge qr-view-finder
-                      {:borderRadius 16})]}
+       :holes (if show-holes?
+                [(merge qr-view-finder
+                        {:borderRadius 16})]
+                [])}
       [blur/view
        {:style            style/absolute-fill
         :blur-amount      10
@@ -295,17 +307,13 @@
 
 (defn f-view
   [{:keys [title show-bottom-view? background animated?]}]
-  (let [insets             (safe-area/get-insets)
-        active-tab         (reagent/atom 1)
-        qr-view-finder     (reagent/atom {})
-        render-camera?     (reagent/atom false)
-        torch?             (reagent/atom false)
-        app-state-listener (atom nil)]
+  (let [insets         (safe-area/get-insets)
+        active-tab     (reagent/atom 1)
+        qr-view-finder (reagent/atom {})
+        render-camera? (reagent/atom false)]
     (fn []
       (let [camera-ref (atom nil)
             read-qr-once? (atom false)
-            torch-mode (if @torch? :on :off)
-            flashlight-icon (if @torch? :i/flashlight-on :i/flashlight-off)
             ;; The below check is to prevent scanning of any QR code
             ;; when the user is in syncing progress screen
             user-in-syncing-progress-screen? (= (rf/sub [:view-id]) :syncing-progress)
@@ -320,8 +328,9 @@
             scan-qr-code-tab? (= @active-tab 1)
             show-camera? (and scan-qr-code-tab?
                               @camera-permission-granted?
-                              @preflight-check-passed?
-                              (boolean (not-empty @qr-view-finder)))
+                              @preflight-check-passed?)
+            show-holes? (and show-camera?
+                             (boolean (not-empty @qr-view-finder)))
             title-opacity (reanimated/use-shared-value (if animated? 0 1))
             subtitle-opacity (reanimated/use-shared-value (if animated? 0 1))
             content-opacity (reanimated/use-shared-value (if animated? 0 1))
@@ -352,13 +361,6 @@
                                                               0
                                                               :easing4))
                (if show-camera? 500 0)))]
-        (rn/use-effect (fn []
-                         (reset! app-state-listener
-                           (.addEventListener rn/app-state
-                                              "change"
-                                              #(when (and (not= % "active") @torch?)
-                                                 (reset! torch? false))))
-                         #(.remove @app-state-listener)))
         (when animated?
           (reanimated/animate-shared-value-with-delay subtitle-opacity
                                                       1 constants/onboarding-modal-animation-duration
@@ -397,7 +399,7 @@
         [:<>
          background
          (when (or (not animated?) @render-camera?)
-           [render-camera show-camera? torch-mode @qr-view-finder camera-ref on-read-code])
+           [render-camera show-camera? @qr-view-finder camera-ref on-read-code show-holes?])
          [rn/view {:style (style/root-container (:top insets))}
           [header
            {:active-tab          active-tab
@@ -417,21 +419,11 @@
                      :transform [{:translate-y content-translate-y}]}
                     {})}
            (case @active-tab
-             1 [scan-qr-code-tab qr-view-finder]
+             1 [scan-qr-code-tab qr-view-finder request-camera-permission]
              2 [enter-sync-code-tab]
              nil)]
           [rn/view {:style style/flex-spacer}]
-          (when show-bottom-view? [bottom-view insets bottom-view-translate-y])
-          (when (and (or (not animated?) @render-camera?) show-camera?)
-            [quo/button
-             {:icon                      true
-              :type                      :blur-bg
-              :size                      style/flash-button-size
-              :accessibility-label       :camera-flash
-              :override-background-color colors/neutral-80-opa-40
-              :style                     (style/camera-flash-button @qr-view-finder)
-              :on-press                  #(swap! torch? not)}
-             flashlight-icon])]]))))
+          (when show-bottom-view? [bottom-view insets bottom-view-translate-y])]]))))
 
 (defn view
   [props]

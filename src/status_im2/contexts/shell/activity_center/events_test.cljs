@@ -436,19 +436,3 @@
                                               :type   types/one-to-one-chat}
                                      :cursor ""}}}
              (events/notifications-fetch-error cofx :dummy-error))))))
-
-(deftest seen-state-test
-  (testing "update seen state"
-    (is (= {:db {:activity-center {:seen? true}}}
-           (events/reconcile-seen-state {:db {}} true))))
-
-  (testing "update seen state when the user is on other screen"
-    (is (= {:db {:view-id         :chats-stack
-                 :activity-center {:seen? false}}}
-           (events/reconcile-seen-state {:db {:view-id :chats-stack}} false))))
-
-  (testing "update seen state when the user is on activity center"
-    (is (= {:db       {:view-id         :activity-center
-                       :activity-center {:seen? false}}
-            :dispatch [:activity-center/mark-as-seen]}
-           (events/reconcile-seen-state {:db {:view-id :activity-center}} false)))))

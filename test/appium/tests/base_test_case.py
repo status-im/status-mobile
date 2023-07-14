@@ -312,7 +312,7 @@ def create_shared_drivers(quantity):
                 test_suite_data.current_test.testruns[-1].error = "Not all %s drivers are created" % quantity
             return drivers, loop
         except (MaxRetryError, AttributeError) as e:
-            test_suite_data.current_test.testruns[-1].error += str(e)
+            test_suite_data.current_test.testruns[-1].error += "%s" % e.reason
             raise e
 
 

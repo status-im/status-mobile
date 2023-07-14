@@ -22,6 +22,7 @@
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
+    [status-im2.contexts.quo-preview.community.community-list-view :as community-list-view]
     [status-im2.contexts.quo-preview.community.community-membership-list-view :as
      community-membership-list-view]
     [status-im2.contexts.quo-preview.community.discover-card :as discover-card]
@@ -51,7 +52,6 @@
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
-    [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
     [status-im2.contexts.quo-preview.markdown.text :as text]
     [status-im2.contexts.quo-preview.markdown.list :as markdown-list]
     [status-im2.contexts.quo-preview.messages.author :as messages-author]
@@ -148,6 +148,9 @@
    :community         [{:name      :community-card-view
                         :options   {:topBar {:visible true}}
                         :component community-card/preview-community-card}
+                       {:name      :community-list-view
+                        :options   {:topBar {:visible true}}
+                        :component community-list-view/preview-community-list-view}
                        {:name      :community-membership-list-view
                         :options   {:topBar {:visible true}}
                         :component community-membership-list-view/preview-community-list-view}
@@ -234,10 +237,6 @@
    :list-items        [{:name      :channel
                         :options   {:topBar {:visible true}}
                         :component channel/preview-channel}
-                       {:name      :community-list
-                        :options   {:insets {:top? true}
-                                    :topBar {:visible true}}
-                        :component community-list/preview}
                        {:name      :preview-lists
                         :options   {:topBar {:visible true}}
                         :component preview-lists/preview-preview-lists}

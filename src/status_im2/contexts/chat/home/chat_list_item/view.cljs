@@ -3,7 +3,6 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [utils.datetime :as datetime]
-            [utils.debounce :as debounce]
             [status-im2.common.home.actions.view :as actions]
             [status-im2.contexts.chat.home.chat-list-item.style :as style]
             [utils.re-frame :as rf]
@@ -18,7 +17,7 @@
   [chat-id]
   (fn []
     (rf/dispatch [:dismiss-keyboard])
-    (debounce/dispatch-and-chill [:chat/navigate-to-chat chat-id] 500)))
+    (rf/dispatch [:chat/navigate-to-chat chat-id])))
 
 (defn parsed-text-to-one-line
   [parsed-text]

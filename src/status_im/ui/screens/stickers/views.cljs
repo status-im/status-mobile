@@ -7,7 +7,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.stickers.styles :as styles]
             [utils.re-frame :as rf]
-            [utils.money :as money])
+            [status-im.utils.money :as money])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn cache

@@ -49,24 +49,21 @@
   (oops/oget event "nativeEvent.layout.y"))
 
 (defn- channel-chat-item
-  [community-id community-color {:keys [:muted? id] :as chat}]
+  [community-id {chat-id :id muted? :muted? :as chat}]
   (let [sheet-content      [actions/chat-actions
-                            (assoc chat
-                                   :chat-type constants/community-chat-type
-                                   :chat-id   (str community-id id))
+                            (assoc chat :chat-type constants/community-chat-type)
                             false]
         channel-sheet-data {:selected-item (fn [] [quo/channel-list-item chat])
                             :content       (fn [] sheet-content)}]
-    [rn/view {:key id :style {:margin-top 4}}
+    [rn/view {:key chat-id :style {:margin-top 4}}
      [quo/channel-list-item
       (assoc chat
-             :default-color community-color
              :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data])
              :muted?        (or muted?
-                                (rf/sub [:chat/check-channel-muted? community-id id])))]]))
+                                (rf/sub [:chat/check-channel-muted? community-id chat-id])))]]))
 
 (defn channel-list-component
-  [{:keys [on-category-layout community-id community-color on-first-channel-height-changed]}
+  [{:keys [on-category-layout community-id on-first-channel-height-changed]}
    channels-list]
   [rn/view
    {:on-layout #(on-first-channel-height-changed
@@ -94,7 +91,7 @@
            :chevron-position :left}])
        (when-not collapsed?
          (into [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}]
-               (map #(channel-chat-item community-id community-color %))
+               (map #(channel-chat-item community-id %))
                chats))]))])
 
 (defn request-to-join-text
@@ -226,7 +223,7 @@
       :on-long-press #(rf/dispatch
                        [:show-bottom-sheet
                         {:content (fn []
-                                    [chat-actions/actions chat false])}])
+                                    [chat-actions/actions community-id id])}])
       :community-id  community-id})))
 
 (defn add-handlers-to-chats
@@ -265,7 +262,7 @@
    description])
 
 (defn community-content
-  [{:keys [name description joined tags color id]
+  [{:keys [name description joined tags id]
     :as   community}
    pending?
    {:keys [on-category-layout on-first-channel-height-changed]}]
@@ -283,7 +280,6 @@
      [channel-list-component
       {:on-category-layout              on-category-layout
        :community-id                    id
-       :community-color                 color
        :on-first-channel-height-changed on-first-channel-height-changed}
       (add-handlers-to-categorized-chats id chats-by-category)]]))
 
@@ -358,13 +354,11 @@
 
 (defn overview
   [id]
-  (let [id                  (or id (rf/sub [:get-screen-params :community-overview]))
-        customization-color (rf/sub [:profile/customization-color])]
+  (let [id (or id (rf/sub [:get-screen-params :community-overview]))]
     [rn/view {:style style/community-overview-container}
      [community-card-page-view id]
      [floating-shell-button/floating-shell-button
-      {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-                 :customization-color customization-color
-                 :label               (i18n/label :t/jump-to)}}
+      {:jump-to {:on-press #(rf/dispatch [:shell/navigate-to-jump-to])
+                 :label    (i18n/label :t/jump-to)}}
       {:position :absolute
        :bottom   41}]]))

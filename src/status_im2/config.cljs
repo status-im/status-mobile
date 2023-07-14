@@ -164,4 +164,4 @@
 
 (def default-kdf-iterations 3200)
 
-(def shell-navigation-disabled? false)
+(def shell-navigation-disabled? true)

@@ -2,7 +2,6 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
-            [utils.debounce :as debounce]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [react-native.platform :as platform]
@@ -21,7 +20,7 @@
         item            (merge item unviewed-counts)]
     [quo/communities-membership-list-item
      {:style         {:padding-horizontal 18}
-      :on-press      #(debounce/dispatch-and-chill [:navigate-to :community-overview id] 500)
+      :on-press      #(rf/dispatch [:navigate-to :community-overview id])
       :on-long-press #(rf/dispatch
                        [:show-bottom-sheet
                         {:content       (fn []

@@ -2,7 +2,7 @@
   (:require [cljs.test :refer [deftest is testing]]
             [re-frame.db :as rf-db]
             [test-helpers.unit :as h]
-            [utils.money :as money]
+            [status-im.utils.money :as money]
             [status-im2.subs.wallet.wallet :as wallet]
             [utils.re-frame :as rf]))
 

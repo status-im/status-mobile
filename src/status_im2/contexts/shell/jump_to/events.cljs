@@ -28,14 +28,10 @@
      (some-> ^js @state/jump-to-list-ref
              (.scrollToOffset #js {:y 0 :animated false})))))
 
-;; Note - pop-to-root resets currently opened screens to `close-screen-without-animation`.
-;; This might take some time. So don't directly merge the effect of `pop-to-root` and
-;; `navigate-to` for the floating screen. Because it might close even the currently opened screen.
-;; https://github.com/status-im/status-mobile/pull/16438#issuecomment-1623954774
 (re-frame/reg-fx
  :shell/pop-to-root-fx
  (fn []
-   (shell.utils/reset-floating-screens)))
+   (reset! state/floating-screens-state {})))
 
 (re-frame/reg-fx
  :shell/reset-state
@@ -160,7 +156,7 @@
 
 (rf/defn shell-navigate-to
   {:events [:shell/navigate-to]}
-  [{:keys [db now]} go-to-view-id screen-params animation hidden-screen?]
+  [{:keys [db]} go-to-view-id screen-params animation hidden-screen?]
   (if (shell.utils/shell-navigation? go-to-view-id)
     (let [current-view-id (:view-id db)
           community-id    (get-in db [:chats screen-params :community-id])]
@@ -170,7 +166,6 @@
                     {:id             screen-params
                      :community-id   community-id
                      :hidden-screen? hidden-screen?
-                     :clock          now
                      :animation      (or animation
                                          (case current-view-id
                                            :shell shell.constants/open-screen-with-shell-animation
@@ -195,22 +190,20 @@
 
 (rf/defn shell-navigate-back
   {:events [:shell/navigate-back]}
-  [{:keys [db]} animation]
+  [{:keys [db]}]
   (let [chat-screen-open?      (shell.utils/floating-screen-open? shell.constants/chat-screen)
         community-screen-open? (shell.utils/floating-screen-open? shell.constants/community-screen)
         current-chat-id        (:current-chat-id db)
-        current-view-id        (:view-id db)
         community-id           (when current-chat-id
                                  (get-in db [:chats current-chat-id :community-id]))]
     (if (and (not @navigation.state/curr-modal)
-             (shell.utils/shell-navigation? current-view-id)
              (or chat-screen-open? community-screen-open?))
       {:db         (assoc-in
                     db
                     [:shell/floating-screens
                      (if chat-screen-open? shell.constants/chat-screen shell.constants/community-screen)
                      :animation]
-                    (or animation shell.constants/close-screen-with-slide-animation))
+                    shell.constants/close-screen-with-slide-animation)
        :dispatch-n (cond-> [[:set-view-id
                              (cond
                                (and chat-screen-open? community-screen-open?)
@@ -227,23 +220,19 @@
   {:events [:shell/floating-screen-opened]}
   [{:keys [db]} screen-id id community-id hidden-screen?]
   (merge
-   {:db (assoc-in db [:shell/loaded-screens screen-id] true)
-    :dispatch-later
-    (cond-> []
-      community-id
-      ;; When opening community chat, open community screen in background
-      (conj {:ms       50
-             :dispatch [:shell/navigate-to shell.constants/community-screen
-                        community-id shell.constants/open-screen-without-animation true]})
-      ;; Only update switcher cards for top screen
-      (not hidden-screen?)
-      (conj {:ms       (* 2 shell.constants/shell-animation-time)
-             :dispatch [:shell/add-switcher-card screen-id id]}))}
+   {:db                  (assoc-in db [:shell/loaded-screens screen-id] true)
+    :shell/change-tab-fx (if (or (= screen-id shell.constants/community-screen)
+                                 community-id)
+                           :communities-stack
+                           :chats-stack)}
+   (when community-id
+     ;; When opening community chat, open community screen in background
+     {:dispatch [:shell/navigate-to shell.constants/community-screen
+                 community-id shell.constants/open-screen-without-animation true]})
+   ;; Only update switcher cards for top screen
    (when-not hidden-screen?
-     {:shell/change-tab-fx (if (or (= screen-id shell.constants/community-screen)
-                                   community-id)
-                             :communities-stack
-                             :chats-stack)})))
+     {:dispatch-later [{:ms       (* 2 shell.constants/shell-animation-time)
+                        :dispatch [:shell/add-switcher-card screen-id id]}]})))
 
 (rf/defn floating-screen-closed
   {:events [:shell/floating-screen-closed]}

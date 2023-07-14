@@ -5,9 +5,8 @@
             [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
-            [react-native.reanimated :as reanimated]
-            [status-im.async-storage.core :as async-storage]
             [status-im2.contexts.shell.jump-to.state :as state]
+            [status-im.async-storage.core :as async-storage]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 ;;;;  Helper Functions
@@ -85,15 +84,6 @@
     (reset! state/load-chats-stack? (= selected-stack-id :chats-stack))
     (reset! state/load-wallet-stack? (= selected-stack-id :wallet-stack))
     (reset! state/load-browser-stack? (= selected-stack-id :browser-stack))))
-
-(defn reset-floating-screens
-  []
-  (reset! state/floating-screens-state {})
-  (when @state/shared-values-atom
-    (doseq [screen-id (seq shell.constants/floating-screens)]
-      (reanimated/set-shared-value
-       (:screen-state (get @state/shared-values-atom screen-id))
-       shell.constants/close-screen-without-animation))))
 
 ;;; Floating screen
 (defn floating-screen-open?

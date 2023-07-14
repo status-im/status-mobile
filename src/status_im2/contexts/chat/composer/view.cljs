@@ -27,32 +27,32 @@
 
 (defn sheet-component
   [{:keys [insets window-height blur-height opacity background-y]} props state]
-  (let [{:keys [chat-screen-loaded?] :as subs} (utils/init-subs)
-        content-height                         (reagent/atom (or (:input-content-height subs)
-                                                                 constants/input-height))
-        {:keys [keyboard-shown]}               (hooks/use-keyboard)
-        max-height                             (utils/calc-max-height subs
-                                                                      window-height
-                                                                      @(:kb-height state)
-                                                                      insets)
-        lines                                  (utils/calc-lines (- @content-height
-                                                                    constants/extra-content-offset))
-        max-lines                              (utils/calc-lines max-height)
-        animations                             (utils/init-animations
-                                                subs
-                                                lines
-                                                content-height
-                                                max-height
-                                                opacity
-                                                background-y)
-        dimensions                             {:content-height content-height
-                                                :max-height     max-height
-                                                :window-height  window-height
-                                                :lines          lines
-                                                :max-lines      max-lines}
-        show-bottom-gradient?                  (utils/show-bottom-gradient? state dimensions)
-        cursor-pos                             (utils/cursor-y-position-relative-to-container props
-                                                                                              state)]
+  (let [subs                     (utils/init-subs)
+        content-height           (reagent/atom (or (:input-content-height subs)
+                                                   constants/input-height))
+        {:keys [keyboard-shown]} (hooks/use-keyboard)
+        max-height               (utils/calc-max-height subs
+                                                        window-height
+                                                        @(:kb-height state)
+                                                        insets)
+        lines                    (utils/calc-lines (- @content-height
+                                                      constants/extra-content-offset))
+        max-lines                (utils/calc-lines max-height)
+        animations               (utils/init-animations
+                                  subs
+                                  lines
+                                  content-height
+                                  max-height
+                                  opacity
+                                  background-y)
+        dimensions               {:content-height content-height
+                                  :max-height     max-height
+                                  :window-height  window-height
+                                  :lines          lines
+                                  :max-lines      max-lines}
+        show-bottom-gradient?    (utils/show-bottom-gradient? state dimensions)
+        cursor-pos               (utils/cursor-y-position-relative-to-container props
+                                                                                state)]
     (effects/did-mount props)
     (effects/initialize props
                         state
@@ -67,22 +67,19 @@
     (effects/images props state animations subs)
     [:<>
      [sub-view/shell-button state animations subs]
-     (when chat-screen-loaded?
-       [mentions/view props state animations max-height cursor-pos
-        (:images subs)
-        (:link-previews? subs)
-        (:reply subs)
-        (:edit subs)])
+     [mentions/view props state animations max-height cursor-pos
+      (:images subs)
+      (:link-previews? subs)
+      (:reply subs)
+      (:edit subs)]
      [gesture/gesture-detector
       {:gesture (drag-gesture/drag-gesture props state animations subs dimensions keyboard-shown)}
       [reanimated/view
        {:style     (style/sheet-container insets state animations)
         :on-layout #(handler/layout % state blur-height)}
        [sub-view/bar]
-       (when chat-screen-loaded?
-         [:<>
-          [reply/view state]
-          [edit/view state]])
+       [reply/view state]
+       [edit/view state]
        [reanimated/touchable-opacity
         {:active-opacity      1
          :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
@@ -116,11 +113,9 @@
            :style                    (style/input-text props state subs max-height)
            :max-length               constants/max-text-size
            :accessibility-label      :chat-message-input}]]
-        (when chat-screen-loaded?
-          [:<>
-           [gradients/view props state animations show-bottom-gradient?]
-           [link-preview/view]
-           [images/images-list]])]
+        [gradients/view props state animations show-bottom-gradient?]
+        [link-preview/view]
+        [images/images-list]]
        [actions/view props state animations window-height insets subs]]]]))
 
 (defn composer

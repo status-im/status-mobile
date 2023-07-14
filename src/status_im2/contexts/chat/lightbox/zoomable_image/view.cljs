@@ -205,8 +205,7 @@
              (anim/animate-decay pan-y-start velocity [lower-bound upper-bound]))))))))
 
 (defn- f-zoomable-image
-  [dimensions animations state rescale curr-orientation content focused? index render-data
-   image-dimensions-nil?]
+  [dimensions animations state rescale curr-orientation content focused? index render-data]
   (let [{:keys [transparent? set-full-height?]} render-data
         portrait? (= curr-orientation orientation/portrait)
         on-tap #(utils/toggle-opacity index render-data portrait?)
@@ -222,16 +221,12 @@
      [reanimated/view
       {:style (style/container dimensions
                                animations
-                               (:full-screen-scale render-data)
                                @set-full-height?
                                (= curr-orientation orientation/portrait))}
       [reanimated/fast-image
-       (merge
-        {:source    {:uri (http/replace-port (:image content) (rf/sub [:mediaserver/port]))}
-         :native-ID (when focused? :shared-element)
-         :style     (style/image dimensions animations render-data index)}
-        (when image-dimensions-nil?
-          {:resize-mode :contain}))]]]))
+       {:source    {:uri (http/replace-port (:image content) (rf/sub [:mediaserver/port]))}
+        :native-ID (when focused? :shared-element)
+        :style     (style/image dimensions animations (:border-value render-data))}]]]))
 
 (defn zoomable-image
   []
@@ -242,12 +237,9 @@
             zoom-out-signal                             (rf/sub [:lightbox/zoom-out-signal])
             {:keys [set-full-height? curr-orientation]} render-data
             focused?                                    (= shared-element-id message-id)
-            ;; TODO - remove `image-dimensions` check,
-            ;; once https://github.com/status-im/status-desktop/issues/10944 is fixed
-            image-dimensions-nil?                       (not (and image-width image-height))
             dimensions                                  (utils/get-dimensions
-                                                         (or image-width (:screen-width render-data))
-                                                         (or image-height (:screen-height render-data))
+                                                         (or image-width c/default-dimension)
+                                                         (or image-height c/default-duration)
                                                          curr-orientation
                                                          render-data)
             animations                                  (utils/init-animations)
@@ -268,4 +260,4 @@
                                              set-full-height?))
         (utils/handle-zoom-out-signal zoom-out-signal index (anim/get-val (:scale animations)) rescale)
         [:f> f-zoomable-image dimensions animations state rescale curr-orientation content focused?
-         index render-data image-dimensions-nil?]))))
+         index render-data]))))

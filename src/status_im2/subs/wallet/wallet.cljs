@@ -4,7 +4,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
             [status-im.utils.currency :as currency]
-            [utils.money :as money]
+            [status-im.utils.money :as money]
             [status-im2.config :as config]
             [utils.i18n :as i18n]))
 

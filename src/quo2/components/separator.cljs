@@ -1,4 +1,4 @@
-(ns quo2.components.common.separator.view
+(ns quo2.components.separator
   (:require [quo2.foundations.colors :as quo2.colors]
             [react-native.core :as rn]))
 

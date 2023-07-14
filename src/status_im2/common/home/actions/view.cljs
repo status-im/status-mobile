@@ -139,7 +139,7 @@
                                    #(mute-chat-action chat-id chat-type))
             :danger?             false
             :accessibility-label :mute-chat
-            :chevron?            (not muted?)})))
+            :chevron?            true})))
 
 (defn mark-as-read-entry
   [chat-id needs-divider?]

@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.photo-selector.view
   (:require
     [react-native.gesture :as gesture]
-    [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [react-native.platform :as platform]
     [utils.i18n :as i18n]
@@ -97,51 +96,43 @@
         sending-image   (into [] (vals (rf/sub [:chats/sending-image])))
         selected-images (reagent/atom sending-image)
         window-width    (:width (rn/get-window))]
-    [:f>
-     (fn []
-       (let [camera-roll-photos (rf/sub [:camera-roll/photos])
-             end-cursor         (rf/sub [:camera-roll/end-cursor])
-             loading?           (rf/sub [:camera-roll/loading-more])
-             has-next-page?     (rf/sub [:camera-roll/has-next-page])
-             selected-album     (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))
-             blur-active?       (> @current-scroll min-scroll-to-blur)
-             window-height      (:height (rn/get-window))
-             top                (reanimated/use-shared-value window-height)]
-         [rn/view {:style {:flex 1 :margin-top -20}}
-          (when @album?
-            [album-selector/album-selector sheet album? selected-album top])
-          [:<>
-           [gesture/flat-list
-            {:key-fn                  identity
-             :render-fn               render-image
-             :render-data             {:window-width window-width :selected selected-images}
-             :data                    camera-roll-photos
-             :num-columns             3
-             :content-container-style {:width          "100%"
-                                       :padding-bottom (+ (safe-area/get-bottom) 100)
-                                       :padding-top    64}
-             :on-scroll               on-scroll
-             :scroll-enabled          @scroll-enabled
-             :on-end-reached          (fn []
-                                        (when (and (not loading?) has-next-page?)
-                                          (rf/dispatch [:photo-selector/camera-roll-loading-more true])
-                                          (rf/dispatch [:photo-selector/get-photos-for-selected-album
-                                                        end-cursor])))}]
-           [confirm-button @selected-images sending-image close]]
-          [rn/view {:style style/buttons-container}
-           [quo/dropdown
-            {:type                      :blurred
-             :size                      32
-             :on-change                 (fn []
-                                          (if-not @album?
-                                            (do
-                                              (reset! album? true)
-                                              (reanimated/animate top 0))
-                                            (do
-                                              (reanimated/animate top window-height)
-                                              (js/setTimeout #(reset! album? false) 300))))
-             :selected                  @album?
-             :blur-active?              (and (not @album?) blur-active?)
-             :override-background-color (when-not @album? :transparent)}
-            selected-album]
-           [clear-button @album? selected-images blur-active?]]]))]))
+    (fn []
+      (let [camera-roll-photos (rf/sub [:camera-roll/photos])
+            end-cursor         (rf/sub [:camera-roll/end-cursor])
+            loading?           (rf/sub [:camera-roll/loading-more])
+            has-next-page?     (rf/sub [:camera-roll/has-next-page])
+            selected-album     (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))
+            blur-active?       (> @current-scroll min-scroll-to-blur)]
+        [rn/view {:style {:flex 1 :margin-top -20}}
+         (if @album?
+           [album-selector/album-selector sheet album? selected-album]
+           [:<>
+            [gesture/flat-list
+             {:key-fn                  identity
+              :render-fn               render-image
+              :render-data             {:window-width window-width :selected selected-images}
+              :data                    camera-roll-photos
+              :num-columns             3
+              :content-container-style {:width          "100%"
+                                        :padding-bottom (+ (safe-area/get-bottom) 100)
+                                        :padding-top    64}
+              :on-scroll               on-scroll
+              :scroll-enabled          @scroll-enabled
+              :on-end-reached          (fn []
+                                         (when (and (not loading?) has-next-page?)
+                                           (rf/dispatch [:photo-selector/camera-roll-loading-more true])
+                                           (rf/dispatch [:photo-selector/get-photos-for-selected-album
+                                                         end-cursor])))}]
+            [confirm-button @selected-images sending-image close]])
+         [rn/view {:style style/buttons-container}
+          [quo/dropdown
+           {:type                      :blurred
+            :size                      32
+            :on-change                 (fn []
+                                         (swap! album? not)
+                                         (reset! current-scroll 0))
+            :selected                  @album?
+            :blur-active?              (and (not @album?) blur-active?)
+            :override-background-color (when-not @album? :transparent)}
+           selected-album]
+          [clear-button @album? selected-images blur-active?]]]))))
