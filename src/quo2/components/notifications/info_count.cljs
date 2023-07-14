@@ -23,7 +23,7 @@
      :as   props}
     amount]
    (when (> amount 0)
-     [rn/view (merge props {:style (counter-style customization-color style)})
+     [rn/view (assoc props :style (counter-style customization-color style))
       [rn/text
        {:style (merge typography/font-medium
                       typography/label
