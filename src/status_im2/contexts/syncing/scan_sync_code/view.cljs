@@ -12,26 +12,14 @@
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
+            [status-im2.common.device-permissions :as device-permissions]
             [status-im2.constants :as constants]
             [status-im2.contexts.syncing.scan-sync-code.style :as style]
             [status-im2.contexts.syncing.utils :as sync-utils]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-<<<<<<< HEAD
             [utils.transforms :as transforms]))
-=======
-            [status-im2.contexts.syncing.utils :as sync-utils]
-            [status-im.utils.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.constants :as constants]
-            [utils.debounce :as debounce]
-<<<<<<< HEAD
-            [utils.device-permissions :as device-permissions]))
->>>>>>> 22a4b6dc3 (review)
-=======
-            [status-im2.common.device-permissions :as device-permissions]))
->>>>>>> 39668ea66 (review)
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
 (defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
@@ -418,16 +406,7 @@
                      :transform [{:translate-y content-translate-y}]}
                     {})}
            (case @active-tab
-<<<<<<< HEAD
-<<<<<<< HEAD
              1 [scan-qr-code-tab qr-view-finder]
-=======
-             1 [scan-qr-code-tab qr-view-finder
-                (fn [] (device-permissions/camera #(reset! camera-permission-granted? true)))]
->>>>>>> 22a4b6dc3 (review)
-=======
-             1 [scan-qr-code-tab qr-view-finder]
->>>>>>> b25e41738 (review)
              2 [enter-sync-code-tab]
              nil)]
           [rn/view {:style style/flex-spacer}]
