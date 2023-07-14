@@ -3,22 +3,22 @@
     [quo2.foundations.colors :as colors]))
 
 (defn text-color
-  [watch-only?]
-  (if (and watch-only? (not (colors/dark?)))
+  [watch-only? theme]
+  (if (and watch-only? (= :dark theme))
     colors/neutral-100
     colors/white))
 
 (defn card
-  [customization-color watch-only?]
+  [customization-color watch-only? theme]
   {:width              161
    :height             88
    :background-color   (if watch-only?
-                         (colors/theme-colors colors/neutral-80-opa-5 colors/neutral-95)
+                         (colors/theme-colors colors/neutral-80-opa-5 colors/neutral-95 theme)
                          (colors/custom-color-by-theme customization-color 50 60))
    :border-radius      16
    :border-width       1
    :border-color       (if watch-only?
-                         (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5)
+                         (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
                          (colors/custom-color-by-theme customization-color 50 60))
    :padding-horizontal 12
    :padding-top        6
@@ -33,8 +33,8 @@
    :align-items    :center})
 
 (defn account-name
-  [watch-only?]
-  {:color       (text-color watch-only?)
+  [watch-only? theme]
+  {:color       (text-color watch-only? theme)
    :margin-left 2})
 
 (def watch-only-container
@@ -44,8 +44,8 @@
    :flex            1})
 
 (defn account-value
-  [watch-only?]
-  {:color (text-color watch-only?)})
+  [watch-only? theme]
+  {:color (text-color watch-only? theme)})
 
 (defn metrics
   [watch-only?]
