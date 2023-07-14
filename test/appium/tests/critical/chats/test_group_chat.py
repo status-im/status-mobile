@@ -1,6 +1,6 @@
 import pytest
 from _pytest.outcomes import Failed
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, run_in_parallel
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
@@ -278,7 +278,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             if username_shown != self.usernames[2]:
                 self.errors.append(
                     "Incorrect profile is opened from the list of reactions, username is %s but expected to be %s" % (
-                    username_shown, self.usernames[2])
+                        username_shown, self.usernames[2])
                 )
         except NoSuchElementException:
             self.errors.append("User profile was not opened from the list of reactions")
@@ -338,6 +338,64 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                 self.usernames[1]).is_element_displayed() or not self.chats[0].user_list_element_by_name(
             self.usernames[2]).is_element_displayed():
             self.errors.append("Incorrect users are shown for 'laugh' reaction after relogin.")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703297)
+    def test_group_chat_send_image_save_and_share(self):
+        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+        for i in range(3):
+            self.homes[i].get_chat(self.chat_name).click()
+
+        self.chats[1].just_fyi("Member_1 sends an image")
+        image_description = "test image"
+        self.chats[1].send_images_with_description(description=image_description, indexes=[2])
+
+        self.chats[0].just_fyi("Admin checks image message")
+        self.chats[0].chat_element_by_text(image_description).wait_for_visibility_of_element(60)
+        if not self.chats[0].chat_element_by_text(
+                image_description).image_in_message.is_element_image_similar_to_template('saucelabs_sauce_chat.png'):
+            self.errors.append("Not expected image is shown to the admin.")
+
+        self.chats[2].just_fyi("Member_2 checks image message")
+        self.chats[2].chat_element_by_text(image_description).wait_for_visibility_of_element(60)
+        if not self.chats[2].chat_element_by_text(
+                image_description).image_in_message.is_element_image_similar_to_template('saucelabs_sauce_chat.png'):
+            self.errors.append("Not expected image is shown to the member_2.")
+
+        self.chats[0].just_fyi("Admin opens the image and shares it")
+        self.chats[0].chat_element_by_text(image_description).image_in_message.click()
+        self.chats[0].share_image_icon_button.click()
+        self.chats[0].element_starts_with_text("Gmail").click()
+        try:
+            self.chats[0].wait_for_current_package_to_be('com.google.android.gm')
+        except TimeoutException:
+            self.errors.append("Admin can't share an image via Gmail.")
+        self.chats[0].click_system_back_button_until_element_is_shown(element="chat")
+
+        self.chats[1].click_system_back_button_until_element_is_shown()
+
+        self.chats[2].just_fyi("Member_2 opens the image and saves it")
+        self.chats[2].chat_element_by_text(image_description).image_in_message.click()
+        self.chats[2].view_image_options_button.click()
+        self.chats[2].save_image_icon_button.click()
+        toast_element = self.chats[2].toast_content_element
+        if toast_element.is_element_displayed():
+            toast_element_text = toast_element.text
+            if toast_element_text != self.chats[2].get_translation_by_key("photo-saved"):
+                self.errors.append(
+                    "Shown message '%s' doesn't match expected '%s' after saving an image for member_2." % (
+                        toast_element_text, self.chats[2].get_translation_by_key("photo-saved")))
+        else:
+            self.errors.append("Message about saving a photo is not shown for member_2.")
+        self.chats[2].click_system_back_button_until_element_is_shown(element="chat")
+
+        self.chats[2].just_fyi("Member_2 checks that image was saved in gallery")
+        self.chats[2].show_images_button.click()
+        self.chats[2].allow_button.click_if_shown()
+        if not self.chats[2].get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
+            self.errors.append("Image is not saved to gallery for member_2.")
+        self.chats[2].click_system_back_button_until_element_is_shown(element="chat")
 
         self.errors.verify_no_errors()
 

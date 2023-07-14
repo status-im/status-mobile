@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from time import sleep
 
 import dateutil.parser
-from appium.webdriver.common.mobileby import MobileBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
@@ -284,13 +283,20 @@ class ChatElementByText(Text):
         except NoSuchElementException:
             self.driver.fail("No image is found in message!")
 
+    class ImageContainer(Button):
+        def __init__(self, driver, parent_locator):
+            super().__init__(driver, xpath='%s//*[@content-desc="image-container"]' % parent_locator)
+
+        def image_by_index(self, index: int):
+            return BaseElement(self.driver, xpath="(%s//android.widget.ImageView)[%s]" % (self.locator, index))
+
     @property
     def image_container_in_message(self):
         try:
             self.driver.info(
                 "Trying to access images (image container) inside message with text '%s'" % self.message_text)
             ChatElementByText(self.driver, self.message_text).wait_for_sent_state(60)
-            return Button(self.driver, xpath='%s//*[@content-desc="image-container"]' % self.locator)
+            return self.ImageContainer(self.driver, self.locator)
         except NoSuchElementException:
             self.driver.fail("No image container is found in message!")
 
@@ -773,10 +779,9 @@ class ChatView(BaseView):
         self.recent_image_in_gallery = Button(self.driver,
                                               xpath="//*[contains(@resource-id,'thumbnail')]")
         self.cancel_send_image_button = Button(self.driver, accessibility_id="cancel-send-image")
-        self.view_image_options = Button(self.driver,
-                                         xpath="//*[@content-desc='icon']/android.widget.ImageView")
-        self.share_image_icon_button = Button(self.driver, accessibility_id="share-button")
-        self.save_image_icon_button = Button(self.driver, accessibility_id="save-button")
+        self.share_image_icon_button = Button(self.driver, accessibility_id="share-image")
+        self.view_image_options_button = Button(self.driver, accessibility_id="image-options")
+        self.save_image_icon_button = Button(self.driver, accessibility_id="save-image")
         self.image_in_android_messenger = Button(self.driver, accessibility_id="Image")
 
         # Audio
