@@ -4,7 +4,7 @@
             [utils.i18n :as i18n]
             [status-im.notifications.core :as notifications]
             [utils.datetime :as datetime]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im.wallet.db :as wallet.db]
             [status-im.wallet.utils :as wallet.utils]))
 
@@ -69,11 +69,12 @@
    (reduce (fn [acc [hash transaction]]
              (assoc acc
                     hash
-                    (enrich-transaction transaction contacts native-currency))) ;;TODO this doesn't look
-                                                                                ;;good for performance,
-                                                                                ;;we need to calculate
-                                                                                ;;this only once for each
-                                                                                ;;transaction
+                    (enrich-transaction transaction contacts native-currency))) ;;TODO this doesn't
+                                                                                ;;look good for
+                                                                                ;;performance, we
+                                                                                ;;need to calculate
+                                                                                ;;this only once for
+                                                                                ;;each transaction
            {}
            transactions)))
 

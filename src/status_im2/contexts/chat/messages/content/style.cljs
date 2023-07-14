@@ -11,5 +11,5 @@
      (and (not in-pinned-view?) (or mentioned pinned-by))
      (assoc :background-color colors/primary-50-opa-5 :margin-bottom 4)
 
-     (or mentioned pinned-by last-in-group?)
+     (and (not in-pinned-view?) (or mentioned pinned-by last-in-group?))
      (assoc :margin-top 8))))

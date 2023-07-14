@@ -7,8 +7,9 @@
   [last-item?]
   ;; This part needs to be improved, inverted shadow is not supported in android
   ;; https://reactnative.dev/docs/shadow-props#shadowoffset-ios
-  ;; (merge
-  ;;  (:shadow-1 (shadows/get-scales true :dark))
+  ;;
+  ;;   (merge (shadows/get 1 :dark :inverted) ...)
+  ;;
   {:padding-horizontal 20
    :margin-bottom      (when-not last-item? -24)})
 

@@ -332,6 +332,8 @@ class HomeView(BaseView):
         return chat_element
 
     def handle_contact_request(self, username: str, action='accept'):
+        if self.toast_content_element.is_element_displayed(10):
+            self.toast_content_element.wait_for_invisibility_of_element()
         if self.notifications_unread_badge.is_element_displayed(30):
             self.open_activity_center_button.click()
         chat_element = ActivityCenterElement(self.driver, username[:25])

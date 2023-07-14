@@ -1,10 +1,14 @@
 (ns status-im2.contexts.onboarding.generating-keys.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def page-container
-  {:position         :absolute
-   :top              0
-   :bottom           0
-   :left             0
-   :right            0
+(defn page-container
+  [insets]
+  {:flex             1
+   :justify-content  :space-between
+   :padding-top      (:top insets)
    :background-color colors/neutral-80-opa-80-blur})
+
+(defn page-illustration
+  [width]
+  {:flex  1
+   :width width})

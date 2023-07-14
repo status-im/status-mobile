@@ -48,6 +48,5 @@
       (update :custom-bootnodes-enabled? rpc->custom-bootnodes)
       (update :currency keyword)
       (visibility-status-updates/<-rpc-settings)
-      (dissoc :networks/current-network :networks/networks)
       (set/rename-keys {:compressedKey :compressed-key
                         :emojiHash     :emoji-hash})))

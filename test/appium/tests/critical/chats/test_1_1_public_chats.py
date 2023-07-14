@@ -979,8 +979,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         url_message = 'http://status.im'
         self.chat_1.send_message(url_message)
         try:
-            self.chat_2.element_starts_with_text(url_message, 'button').wait_for_visibility_of_element(120)
-            self.chat_2.element_starts_with_text(url_message, 'button').click_inside_element_by_coordinate(0.2, 0.5)
+            element = self.chat_2.chat_view_element_starts_with_text(url_message)
+            element.wait_for_visibility_of_element(120)
+            element.click_inside_element_by_coordinate(0.2, 0.5)
             web_view = self.chat_2.open_in_status_button.click()
             if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
                 self.errors.append('URL was not opened from 1-1 chat')
@@ -1082,7 +1083,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702745)
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
-        self.home_1.click_system_back_button_until_element_is_shown()
+        self.home_1.jump_to_messages_home()
         self.home_1.profile_button.click()
         self.profile_1.edit_profile_picture('sauce_logo.png')
         self.profile_1.click_system_back_button_until_element_is_shown()
@@ -1097,7 +1098,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
         [self.chat_2.send_message(message) for message in messages]
         for message in messages:
-            if not self.chat_1.chat_element_by_text(message).is_element_displayed():
+            if not self.chat_1.chat_element_by_text(message).is_element_displayed(10):
                 self.errors.append("Message with text '%s' was not received" % message)
 
         self.chat_2.just_fyi("Checking updated member photo, timestamp and username on message")
@@ -1203,6 +1204,67 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                     message_text_after_edit).emojis_below_message().wait_for_element_text(1)
             except Failed:
                 self.errors.append("Message reaction is not shown for the sender")
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703391)
+    def test_1_1_chat_send_image_save_and_share(self):
+        if not self.chat_2.chat_message_input.is_element_displayed():
+            self.chat_2.jump_to_card_by_text(self.username_1)
+        if not self.chat_1.chat_message_input.is_element_displayed():
+            self.chat_1.jump_to_card_by_text(self.username_2)
+
+        self.chat_1.just_fyi("Device 1 sends an image")
+        image_description = "test image"
+        self.chat_1.send_images_with_description(description=image_description, indexes=[2])
+
+        self.chat_2.just_fyi("Device 2 checks image message")
+        if not self.chat_2.chat_element_by_text(image_description).is_element_displayed(30):
+            self.chat_2.hide_keyboard_if_shown()
+        self.chat_2.chat_element_by_text(image_description).wait_for_visibility_of_element(30)
+        if not self.chat_2.chat_element_by_text(
+                image_description).image_in_message.is_element_image_similar_to_template('saucelabs_sauce_chat.png'):
+            self.errors.append("Not expected image is shown to the receiver.")
+
+        for chat in self.chat_1, self.chat_2:
+            chat.just_fyi("Open the image and share it")
+            if not chat.chat_element_by_text(image_description).image_in_message.is_element_displayed():
+                chat.hide_keyboard_if_shown()
+            chat.chat_element_by_text(image_description).image_in_message.click()
+            chat.share_image_icon_button.click()
+            chat.element_starts_with_text("Gmail").click()
+            try:
+                chat.wait_for_current_package_to_be('com.google.android.gm')
+            except TimeoutException:
+                self.errors.append(
+                    "%s can't share an image via Gmail." % ("Sender" if chat is self.chat_1 else "Receiver"))
+            chat.click_system_back_button_until_element_is_shown(element="chat")
+
+        for chat in self.chat_1, self.chat_2:
+            chat.just_fyi("Open the image and save it")
+            device_name = "sender" if chat is self.chat_1 else "receiver"
+            chat.chat_element_by_text(image_description).image_in_message.click()
+            chat.view_image_options_button.click()
+            chat.save_image_icon_button.click()
+            toast_element = chat.toast_content_element
+            if toast_element.is_element_displayed():
+                toast_element_text = toast_element.text
+                if toast_element_text != chat.get_translation_by_key("photo-saved"):
+                    self.errors.append(
+                        "Shown message '%s' doesn't match expected '%s' after saving an image for %s." % (
+                            toast_element_text, chat.get_translation_by_key("photo-saved"), device_name))
+            else:
+                self.errors.append("Message about saving a photo is not shown for %s." % device_name)
+            chat.click_system_back_button_until_element_is_shown(element="chat")
+
+        for chat in self.chat_1, self.chat_2:
+            chat.just_fyi("Check that image is saved in gallery")
+            chat.show_images_button.click()
+            chat.allow_button.click_if_shown()
+            if not chat.get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
+                self.errors.append(
+                    "Image is not saved to gallery for %s." % ("sender" if chat is self.chat_1 else "receiver"))
+            chat.click_system_back_button()
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702733)
