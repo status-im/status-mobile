@@ -21,7 +21,7 @@
     [status-im.utils.core :as utils.core]
     [utils.re-frame :as rf]
     [utils.datetime :as datetime]
-    [status-im.utils.money :as money]
+    [utils.money :as money]
     [status-im.utils.utils :as utils.utils]
     [status-im.wallet.db :as wallet.db]
     [status-im.wallet.prices :as prices]
@@ -247,8 +247,8 @@
         assets                           (get visible-tokens chain)
         tokens                           (->> (vals all-tokens)
                                               (remove #(or (:hidden? %)
-                                                           ;;if not scan-all-tokens? remove not visible
-                                                           ;;tokens
+                                                           ;;if not scan-all-tokens? remove not
+                                                           ;;visible tokens
                                                            (and (not scan-all-tokens?)
                                                                 (not (get assets (:symbol %))))))
                                               (reduce (fn [acc {:keys [address symbol]}]
@@ -1141,8 +1141,7 @@
                                             eip55/address->checksum)
                               type
                               (update :type keyword))]
-                ;; if the account is the default wallet we
-                ;; put it first in the list
+                ;; if the account is the default wallet we put it first in the list
                 (if wallet
                   (into [account] acc)
                   (conj acc account)))))

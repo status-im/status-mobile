@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.lightbox.view
   (:require
     [clojure.string :as string]
+    [oops.core :as oops]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.orientation :as orientation]
@@ -14,7 +15,6 @@
     [status-im2.contexts.chat.lightbox.zoomable-image.view :as zoomable-image]
     [status-im2.contexts.chat.lightbox.top-view :as top-view]
     [status-im2.contexts.chat.lightbox.bottom-view :as bottom-view]
-    [oops.core :refer [oget]]
     [status-im2.contexts.chat.lightbox.utils :as utils]
     [status-im2.contexts.chat.lightbox.constants :as constants]))
 
@@ -28,12 +28,12 @@
 (defn on-viewable-items-changed
   [e {:keys [scroll-index-lock? small-list-ref]} {:keys [scroll-index]}]
   (when-not @scroll-index-lock?
-    (let [changed (-> e (oget :changed) first)
-          index   (oget changed :index)]
+    (let [changed (-> e (oops/oget :changed) first)
+          index   (oops/oget changed :index)]
       (reset! scroll-index index)
       (when @small-list-ref
         (.scrollToIndex ^js @small-list-ref #js {:animated true :index index}))
-      (rf/dispatch [:chat.ui/update-shared-element-id (:message-id (oget changed :item))]))))
+      (rf/dispatch [:chat.ui/update-shared-element-id (:message-id (oops/oget changed :item))]))))
 
 (defn image
   [message index _ {:keys [screen-width screen-height] :as args}]
@@ -79,19 +79,23 @@
        [gesture/flat-list
         {:ref                               #(reset! (:flat-list-ref props) %)
          :key-fn                            :message-id
+         :on-scroll                         #(utils/on-scroll % item-width animations landscape?)
+         :scroll-event-throttle             8
          :style                             {:width (+ screen-width constants/separator-width)}
          :data                              @data
          :render-fn                         image
-         :render-data                       {:opacity-value    (:opacity animations)
-                                             :border-value     (:border animations)
-                                             :transparent?     transparent?
-                                             :set-full-height? set-full-height?
-                                             :screen-height    screen-height
-                                             :screen-width     screen-width
-                                             :window-height    window-height
-                                             :window-width     window-width
-                                             :props            props
-                                             :curr-orientation curr-orientation}
+         :render-data                       {:opacity-value     (:opacity animations)
+                                             :border-value      (:border animations)
+                                             :full-screen-scale (:full-screen-scale animations)
+                                             :images-opacity    (:images-opacity animations)
+                                             :transparent?      transparent?
+                                             :set-full-height?  set-full-height?
+                                             :screen-height     screen-height
+                                             :screen-width      screen-width
+                                             :window-height     window-height
+                                             :window-width      window-width
+                                             :props             props
+                                             :curr-orientation  curr-orientation}
          :horizontal                        horizontal?
          :inverted                          inverted?
          :paging-enabled                    true
@@ -113,7 +117,7 @@
         handle-items-changed     (fn [e]
                                    (on-viewable-items-changed e props state))]
     (fn []
-      (let [animations (utils/init-animations)
+      (let [animations (utils/init-animations (count messages) index)
             derived    (utils/init-derived-animations animations)]
         (anim/animate (:background-color animations) colors/neutral-100)
         (reset! (:data state) messages)

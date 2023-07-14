@@ -4,6 +4,7 @@
             [re-frame.db]
             [react-native.blur :as blur]
             [react-native.core :as rn]
+            [status-im2.config :as config]
             [react-native.reanimated :as reanimated]
             [react-native.platform :as platform]
             [status-im2.contexts.chat.messages.navigation.style :as style]
@@ -14,11 +15,13 @@
             [status-im2.common.home.actions.view :as actions]))
 
 (defn f-navigation-view
-  [{:keys [scroll-y shared-all-loaded?]}]
+  [{:keys [scroll-y]}]
   (let [{:keys [group-chat chat-id chat-name emoji
                 chat-type]
          :as   chat}             (rf/sub [:chats/current-chat-chat-view])
-        all-loaded?              @shared-all-loaded?
+        chat-screen-loaded?      (rf/sub [:shell/chat-screen-loaded?])
+        all-loaded?              (when chat-screen-loaded?
+                                   (rf/sub [:chats/all-loaded? (:chat-id chat)]))
         display-name             (if (= chat-type constants/one-to-one-chat-type)
                                    (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                    (str emoji " " chat-name))
@@ -60,55 +63,54 @@
         :blur-type   (colors/theme-colors :light :dark)
         :blur-radius (if platform/ios? 20 10)
         :style       {:flex 1}}]]
-
-     [rn/view
-      [rn/view {:style style/header-container}
-       [rn/touchable-opacity
-        {:active-opacity      1
-         :on-press            #(do
-                                 (rf/dispatch [:chat/close])
-                                 (rf/dispatch [:navigate-back]))
-         :accessibility-label :back-button
-         :style               (style/button-container {:margin-left 20})}
-        [quo/icon :i/arrow-left
-         {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
-       [reanimated/view
-        {:style (style/animated-header all-loaded? translate-animation title-opacity-animation)}
-        [rn/view {:style style/header-content-container}
-         (when-not group-chat
-           [rn/view {:style style/header-avatar-container}
-            [quo/user-avatar
-             {:full-name       display-name
-              :online?         online?
-              :profile-picture photo-path
-              :size            :small}]])
-         [rn/view {:style style/header-text-container}
-          [rn/view {:style {:flex-direction :row}}
+     [rn/view {:style style/header-container}
+      [rn/touchable-opacity
+       {:active-opacity      1
+        :on-press            #(do
+                                (when config/shell-navigation-disabled?
+                                  (rf/dispatch [:chat/close]))
+                                (rf/dispatch [:navigate-back]))
+        :accessibility-label :back-button
+        :style               (style/button-container {:margin-left 20})}
+       [quo/icon :i/arrow-left
+        {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+      [reanimated/view
+       {:style (style/animated-header all-loaded? translate-animation title-opacity-animation)}
+       [rn/view {:style style/header-content-container}
+        (when-not group-chat
+          [rn/view {:style style/header-avatar-container}
+           [quo/user-avatar
+            {:full-name       display-name
+             :online?         online?
+             :profile-picture photo-path
+             :size            :small}]])
+        [rn/view {:style style/header-text-container}
+         [rn/view {:style {:flex-direction :row}}
+          [quo/text
+           {:weight          :semi-bold
+            :size            :paragraph-1
+            :number-of-lines 1
+            :style           (style/header-display-name)}
+           display-name]]
+         (when online?
            [quo/text
-            {:weight          :semi-bold
-             :size            :paragraph-1
-             :number-of-lines 1
-             :style           (style/header-display-name)}
-            display-name]]
-          (when online?
-            [quo/text
-             {:number-of-lines 1
-              :weight          :regular
-              :size            :paragraph-2
-              :style           (style/header-online)}
-             (i18n/label :t/online)])]]]
-       [rn/touchable-opacity
-        {:active-opacity      1
-         :style               (style/button-container {:margin-right 20})
-         :accessibility-label :options-button
-         :on-press            (fn []
-                                (rf/dispatch [:dismiss-keyboard])
-                                (rf/dispatch [:show-bottom-sheet
-                                              {:content (fn [] [actions/chat-actions chat true])}]))}
-        [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
-      [:f>
-       pin.banner/f-banner
-       {:chat-id           chat-id
-        :opacity-animation banner-opacity-animation
-        :all-loaded?       all-loaded?
-        :top-offset        style/navigation-bar-height}]]]))
+            {:number-of-lines 1
+             :weight          :regular
+             :size            :paragraph-2
+             :style           (style/header-online)}
+            (i18n/label :t/online)])]]]
+      [rn/touchable-opacity
+       {:active-opacity      1
+        :style               (style/button-container {:margin-right 20})
+        :accessibility-label :options-button
+        :on-press            (fn []
+                               (rf/dispatch [:dismiss-keyboard])
+                               (rf/dispatch [:show-bottom-sheet
+                                             {:content (fn [] [actions/chat-actions chat true])}]))}
+       [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
+     [:f>
+      pin.banner/f-banner
+      {:chat-id           chat-id
+       :opacity-animation banner-opacity-animation
+       :all-loaded?       all-loaded?
+       :top-offset        style/navigation-bar-height}]]))

@@ -14,7 +14,9 @@
 (def ^:const content-type-gap 10)
 (def ^:const content-type-contact-request 11) ;; TODO: temp, will be removed
 (def ^:const content-type-system-pinned-message 14)
-(def ^:const content-type-system-mutual-state-update 15)
+(def ^:const content-type-system-message-mutual-event-sent 15)
+(def ^:const content-type-system-message-mutual-event-accepted 16)
+(def ^:const content-type-system-message-mutual-event-removed 17)
 
 ;; Not implemented in status-go, only used for testing/ui work
 (def ^:const content-type-gif 100)
@@ -332,6 +334,9 @@
 (def ^:const auth-method-biometric "biometric")
 (def ^:const auth-method-biometric-prepare "biometric-prepare")
 (def ^:const auth-method-none "none")
+
+(def ^:const onboarding-generating-keys-animation-duration-ms 7000)
+(def ^:const onboarding-generating-keys-navigation-retry-ms 3000)
 
 (def ^:const image-description-in-lightbox? false)
 

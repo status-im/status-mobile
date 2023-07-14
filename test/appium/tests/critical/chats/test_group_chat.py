@@ -343,8 +343,10 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702808)
     def test_group_chat_offline_pn(self):
-        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+        self.homes[0].click_system_back_button_until_element_is_shown()
+        [self.homes[i].jump_to_messages_home() for i in range(3)]
         for i in range(1, 3):
+            self.homes[i].groups_tab.click()
             self.homes[i].get_chat(self.chat_name).click()
 
         message_1, message_2 = 'message from old member', 'message from new member'
@@ -364,6 +366,10 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         else:
             self.errors.append('Messages PN was not fetched from offline')
         self.homes[0].click_system_back_button()
+        # workaround for app closed after opening notifications
+        if not self.homes[0].chats_tab.is_element_displayed():
+            self.drivers[0].launch_app()
+            SignInView(self.drivers[0]).sign_in()
         self.homes[0].chats_tab.click()
         self.homes[0].get_chat(self.chat_name).click()
 

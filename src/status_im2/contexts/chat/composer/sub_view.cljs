@@ -3,6 +3,7 @@
     [quo2.core :as quo]
     [react-native.blur :as blur]
     [react-native.core :as rn]
+    [status-im2.config :as config]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [status-im2.contexts.chat.composer.style :as style]
@@ -27,13 +28,14 @@
 
 (defn- f-shell-button
   [{:keys [maximized? focused?]} {:keys [height]} {:keys [reply edit]}]
-  (let [insets       (safe-area/get-insets)
-        extra-height (utils/calc-top-content-height reply edit)
-        neg-y        (utils/calc-shell-neg-y insets maximized? extra-height)
-        y-container  (reanimated/use-shared-value neg-y)
-        hide-shell?  (or @focused? @messages.list/show-floating-scroll-down-button)
-        y-shell      (reanimated/use-shared-value (if hide-shell? 35 0))
-        opacity      (reanimated/use-shared-value (if hide-shell? 0 1))]
+  (let [customization-color (rf/sub [:profile/customization-color])
+        insets              (safe-area/get-insets)
+        extra-height        (utils/calc-top-content-height reply edit)
+        neg-y               (utils/calc-shell-neg-y insets maximized? extra-height)
+        y-container         (reanimated/use-shared-value neg-y)
+        hide-shell?         (or @focused? @messages.list/show-floating-scroll-down-button)
+        y-shell             (reanimated/use-shared-value (if hide-shell? 35 0))
+        opacity             (reanimated/use-shared-value (if hide-shell? 0 1))]
     (rn/use-effect
      (fn []
        (reanimated/animate opacity (if hide-shell? 0 1))
@@ -46,11 +48,13 @@
       {:style (style/shell-button y-shell opacity)}
       [quo/floating-shell-button
        {:jump-to
-        {:on-press (fn []
-                     (rf/dispatch [:chat/close true])
-                     (rf/dispatch [:shell/navigate-to-jump-to]))
-         :label    (i18n/label :t/jump-to)
-         :style    {:align-self :center}}} {}]]
+        {:on-press            (fn []
+                                (when config/shell-navigation-disabled?
+                                  (rf/dispatch [:chat/close true]))
+                                (rf/dispatch [:shell/navigate-to-jump-to]))
+         :customization-color customization-color
+         :label               (i18n/label :t/jump-to)
+         :style               {:align-self :center}}} {}]]
      [quo/floating-shell-button
       (when @messages.list/show-floating-scroll-down-button
         {:scroll-to-bottom {:on-press messages.list/scroll-to-bottom}})

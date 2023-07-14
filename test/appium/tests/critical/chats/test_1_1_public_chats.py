@@ -979,8 +979,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         url_message = 'http://status.im'
         self.chat_1.send_message(url_message)
         try:
-            self.chat_2.element_starts_with_text(url_message, 'button').wait_for_visibility_of_element(120)
-            self.chat_2.element_starts_with_text(url_message, 'button').click_inside_element_by_coordinate(0.2, 0.5)
+            element = self.chat_2.chat_view_element_starts_with_text(url_message)
+            element.wait_for_visibility_of_element(120)
+            element.click_inside_element_by_coordinate(0.2, 0.5)
             web_view = self.chat_2.open_in_status_button.click()
             if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
                 self.errors.append('URL was not opened from 1-1 chat')
@@ -1082,7 +1083,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702745)
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
-        self.home_1.click_system_back_button_until_element_is_shown()
+        self.home_1.jump_to_messages_home()
         self.home_1.profile_button.click()
         self.profile_1.edit_profile_picture('sauce_logo.png')
         self.profile_1.click_system_back_button_until_element_is_shown()
