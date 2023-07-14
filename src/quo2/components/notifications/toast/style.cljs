@@ -18,10 +18,10 @@
    :background-color :transparent})
 
 (defn content-container
-  [theme]
+  [override-theme]
   (merge
-   (shadows/get 1 theme)
-   {:background-color (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
+   (:shadow-1 shadows/normal-scale)
+   {:background-color (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 override-theme)
     :flex-direction   :row
     :justify-content  :space-between
     :padding-vertical 8

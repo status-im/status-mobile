@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.lightbox.utils
   (:require
     [clojure.string :as string]
-    [oops.core :as oops]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
@@ -12,6 +11,7 @@
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.top-view :as top-view]
     [utils.re-frame :as rf]
+    [oops.core :refer [oget]]
     [status-im2.contexts.chat.lightbox.constants :as constants]
     [utils.worklets.lightbox :as worklet]))
 
@@ -31,18 +31,14 @@
    (fn []
      (reagent/next-tick (fn []
                           (when @flat-list-ref
-                            (.scrollToOffset ^js @flat-list-ref
-                                             #js
-                                              {:animated false
-                                               :offset   (* (+ (:width (rn/get-window))
-                                                               constants/separator-width)
-                                                            index)}))))
+                            (.scrollToIndex ^js @flat-list-ref
+                                            #js {:animated false :index index}))))
      (swap! timers assoc
        :mount-animation
        (js/setTimeout (fn []
                         (anim/animate opacity 1)
                         (anim/animate layout 0)
-                        (anim/animate border 16))
+                        (anim/animate border 12))
                       (if platform/ios? 250 100)))
      (swap! timers assoc :mount-index-lock (js/setTimeout #(reset! scroll-index-lock? false) 300))
      (fn []
@@ -98,20 +94,6 @@
           (when (and enabled? (not= result orientation/landscape-right))
             (handle-orientation result props state animations))))))))
 
-(defn on-scroll
-  [e item-width {:keys [images-opacity]} landscape?]
-  (let [total-item-width (+ item-width constants/separator-width)
-        progress         (/ (if landscape?
-                              (oops/oget e "nativeEvent.contentOffset.y")
-                              (oops/oget e "nativeEvent.contentOffset.x"))
-                            total-item-width)
-        index-initial    (max (Math/floor progress) 0)
-        index-final      (inc index-initial)
-        decimal-part     (- progress index-initial)]
-    (anim/set-val (nth images-opacity index-initial) (- 1 decimal-part))
-    (when (< index-final (count images-opacity))
-      (anim/set-val (nth images-opacity index-final) decimal-part))))
-
 (defn drag-gesture
   [{:keys [pan-x pan-y background-color opacity layout]} x? set-full-height?]
   (->
@@ -119,15 +101,14 @@
     (gesture/enabled true)
     (gesture/max-pointers 1)
     (gesture/on-start #(reset! set-full-height? false))
-    (gesture/on-update
-     (fn [e]
-       (let [translation (if x? (oops/oget e "translationX") (oops/oget e "translationY"))
-             progress    (Math/abs (/ translation constants/drag-threshold))]
-         (anim/set-val (if x? pan-x pan-y) translation)
-         (anim/set-val opacity (- 1 progress))
-         (anim/set-val layout (* progress -20)))))
+    (gesture/on-update (fn [e]
+                         (let [translation (if x? (oget e "translationX") (oget e "translationY"))
+                               progress    (Math/abs (/ translation constants/drag-threshold))]
+                           (anim/set-val (if x? pan-x pan-y) translation)
+                           (anim/set-val opacity (- 1 progress))
+                           (anim/set-val layout (* progress -20)))))
     (gesture/on-end (fn [e]
-                      (if (> (Math/abs (if x? (oops/oget e "translationX") (oops/oget e "translationY")))
+                      (if (> (Math/abs (if x? (oget e "translationX") (oget e "translationY")))
                              constants/drag-threshold)
                         (do
                           (anim/animate background-color "rgba(0,0,0,0)")
@@ -144,7 +125,6 @@
   {:flat-list-ref      (atom nil)
    :small-list-ref     (atom nil)
    :scroll-index-lock? (atom true)
-   :text-sheet-lock?   (atom false)
    :timers             (atom {})})
 
 (defn init-state
@@ -155,32 +135,21 @@
   {:data             (reagent/atom (if (number? index) [(nth messages index)] []))
    :scroll-index     (reagent/atom index)
    :transparent?     (reagent/atom false)
-   :set-full-height? (reagent/atom false)
-   :overlay-z-index  (reagent/atom 0)})
-
-(defn initialize-opacity
-  [size selected-index]
-  (mapv #(if (= % selected-index)
-           (anim/use-val 1)
-           (anim/use-val 0))
-        (range size)))
+   :set-full-height? (reagent/atom false)})
 
 (defn init-animations
-  [size index]
-  {:background-color  (anim/use-val colors/neutral-100-opa-0)
-   :border            (anim/use-val (if platform/ios? 0 16))
-   :full-screen-scale (anim/use-val 1)
-   :opacity           (anim/use-val 0)
-   :overlay-opacity   (anim/use-val 0)
-   :images-opacity    (initialize-opacity size index)
-   :rotate            (anim/use-val "0deg")
-   :layout            (anim/use-val -10)
-   :top-view-y        (anim/use-val 0)
-   :top-view-x        (anim/use-val 0)
-   :top-view-width    (anim/use-val (:width (rn/get-window)))
-   :top-view-bg       (anim/use-val colors/neutral-100-opa-0)
-   :pan-y             (anim/use-val 0)
-   :pan-x             (anim/use-val 0)})
+  []
+  {:background-color (anim/use-val colors/neutral-100-opa-0)
+   :border           (anim/use-val (if platform/ios? 0 12))
+   :opacity          (anim/use-val 0)
+   :rotate           (anim/use-val "0deg")
+   :layout           (anim/use-val -10)
+   :top-view-y       (anim/use-val 0)
+   :top-view-x       (anim/use-val 0)
+   :top-view-width   (anim/use-val (:width (rn/get-window)))
+   :top-view-bg      (anim/use-val colors/neutral-100-opa-0)
+   :pan-y            (anim/use-val 0)
+   :pan-x            (anim/use-val 0)})
 
 (defn init-derived-animations
   [{:keys [layout]}]

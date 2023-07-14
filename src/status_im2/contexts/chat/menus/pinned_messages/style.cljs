@@ -13,8 +13,7 @@
    :align-self        :flex-start
    :margin-horizontal 20
    :padding           4
-   :margin-top        8
-   :margin-bottom     16})
+   :margin-top        8})
 
 (defn heading-text
   []

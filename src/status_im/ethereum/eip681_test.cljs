@@ -1,7 +1,7 @@
 (ns status-im.ethereum.eip681-test
   (:require [cljs.test :refer-macros [deftest is] :as test]
             [status-im.ethereum.eip681 :as eip681]
-            [utils.money :as money]))
+            [status-im.utils.money :as money]))
 
 (deftest parse-uri
   (is (= nil (eip681/parse-uri nil)))

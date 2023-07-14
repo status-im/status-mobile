@@ -5,7 +5,7 @@
             [status-im.ethereum.tokens :as tokens]
             [utils.i18n :as i18n]
             [status-im.signing.gas :as signing.gas]
-            [utils.money :as money]
+            [status-im.utils.money :as money]
             [status-im.wallet.db :as wallet.db]))
 
 (re-frame/reg-sub

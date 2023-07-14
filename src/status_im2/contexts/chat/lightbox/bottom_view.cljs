@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.lightbox.bottom-view
   (:require
-    [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
@@ -8,7 +7,7 @@
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.constants :as c]
-    [status-im2.contexts.chat.lightbox.text-sheet.view :as text-sheet]))
+    [status-im2.contexts.chat.messages.content.text.view :as message-view]))
 
 (defn get-small-item-layout
   [_ index]
@@ -49,16 +48,20 @@
   [item index _ render-data]
   [:f> f-small-image item index _ render-data])
 
-
 (defn bottom-view
-  [messages index scroll-index insets animations derived item-width props state]
-  (let [padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
+  [messages index scroll-index insets animations derived item-width props]
+  (let [{:keys [chat-id content]} (first messages)
+        padding-horizontal        (- (/ item-width 2) (/ c/focused-image-size 2))]
     [reanimated/linear-gradient
-     {:colors [colors/neutral-100-opa-100 colors/neutral-100-opa-50]
+     {:colors [:black :transparent]
       :start  {:x 0 :y 1}
       :end    {:x 0 :y 0}
       :style  (style/gradient-container insets animations derived)}
-     [text-sheet/view messages animations state props]
+     (when c/image-description-in-lightbox?
+       [message-view/render-parsed-text
+        {:content        content
+         :chat-id        chat-id
+         :style-override style/text-style}])
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)
        :key-fn                            :message-id
@@ -72,6 +75,4 @@
        :get-item-layout                   get-small-item-layout
        :separator                         [rn/view {:style {:width 8}}]
        :initial-scroll-index              index
-       :content-container-style           (style/content-container padding-horizontal)}]
-     ;; This is needed so that text does not show in the bottom inset part as it is transparent
-     [rn/view {:style (style/bottom-inset-cover-up insets)}]]))
+       :content-container-style           (style/content-container padding-horizontal)}]]))

@@ -3,7 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.ens.core :as ens]
             [status-im.ethereum.core :as ethereum]
-            [utils.money :as money]))
+            [status-im.utils.money :as money]))
 
 (re-frame/reg-sub
  :multiaccount/usernames

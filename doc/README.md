@@ -24,7 +24,6 @@
 
 [Patching](patching.md)
 
-[Creating a pixel perfect UI](pixel-perfection.md)
 
 ## Testing
 

@@ -47,19 +47,17 @@
 (defn- action-toggle-muted
   [id muted? muted-till chat-type]
   (let [muted (and muted? (some? muted-till))]
-    (cond-> {:icon                :i/muted
-             :accessibility-label :chat-toggle-muted
-             :sub-label           (when muted
-                                    (str (i18n/label :t/muted-until)
-                                         " "
-                                         (datetime/format-mute-till muted-till)))
-             :on-press            (if muted?
-                                    #(unmute-channel-action id)
-                                    #(mute-channel-action id chat-type))
-             :label               (i18n/label (if muted
-                                                :t/unmute-channel
-                                                :t/mute-channel))}
-      (not muted?) (assoc :right-icon :i/chevron-right))))
+    {:icon                :i/muted
+     :right-icon          :i/chevron-right
+     :accessibility-label :chat-toggle-muted
+     :sub-label           (when muted
+                            (str (i18n/label :t/muted-until) " " (datetime/format-mute-till muted-till)))
+     :on-press            (if muted?
+                            #(unmute-channel-action id)
+                            #(mute-channel-action id chat-type))
+     :label               (i18n/label (if muted
+                                        :t/unmute-channel
+                                        :t/mute-channel))}))
 
 (defn- action-notification-settings
   []
@@ -108,8 +106,8 @@
    :label               (i18n/label :t/share-channel)})
 
 (defn actions
-  [{:keys [locked? chat-id]} inside-chat?]
-  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id chat-id])]
+  [{:keys [locked? id community-id]} inside-chat?]
+  (let [{:keys [muted muted-till chat-type]} (rf/sub [:chat-by-id (str community-id id)])]
     (cond
       locked?
       [quo/action-drawer
@@ -122,7 +120,7 @@
       [quo/action-drawer
        [[(action-view-members-and-details)
          (action-mark-as-read)
-         (action-toggle-muted chat-id muted muted-till chat-type)
+         (action-toggle-muted (str community-id id) muted muted-till chat-type)
          (action-notification-settings)
          (action-pinned-messages)
          (action-invite-people)
@@ -134,7 +132,7 @@
        [[(action-view-members-and-details)
          (action-token-requirements)
          (action-mark-as-read)
-         (action-toggle-muted chat-id muted muted-till chat-type)
+         (action-toggle-muted (str community-id id) muted muted-till chat-type)
          (action-notification-settings)
          (action-fetch-messages)
          (action-invite-people)

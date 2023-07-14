@@ -51,7 +51,7 @@
          :render-fn   message-render-fn
          :footer      [rn/view {:style (style/list-footer bottom-inset)}]
          :key-fn      list-key-fn
-         :separator   [quo/separator {:style {:margin-vertical 8}}]}]
+         :separator   quo/separator}]
        [rn/view {:style (style/no-pinned-messages-container bottom-inset)}
         [rn/view {:style style/no-pinned-messages-icon}
          [quo/icon :i/placeholder]]

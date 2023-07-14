@@ -132,14 +132,13 @@
 
 (defn tag
   [_ _]
-  (fn [{:keys [locked? tokens size background-color on-press accessibility-label]
+  (fn [{:keys [locked? tokens size background-color on-press]
         :or   {size 24}}]
     [base-tag/base-tag
-     {:accessibility-label accessibility-label
-      :background-color    background-color
-      :size                size
-      :type                :permission
-      :on-press            on-press}
+     {:background-color background-color
+      :size             size
+      :type             :permission
+      :on-press         on-press}
      [rn/view
       {:flex-direction  :row
        :align-items     :center

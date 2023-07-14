@@ -1,6 +1,6 @@
 (ns quo2.components.list-items.channel
-  (:require [quo2.components.avatars.channel-avatar.view :as channel-avatar]
-            [quo2.components.common.unread-grey-dot.view :as unread-grey-dot]
+  (:require [quo2.components.avatars.channel-avatar :as channel-avatar]
+            [quo2.components.common.unread-grey-dot.view :refer [unread-grey-dot]]
             [quo2.components.counter.counter :as quo2.counter]
             [quo2.components.icon :as quo2.icons]
             [quo2.components.markdown.text :as quo2.text]
@@ -13,11 +13,10 @@
 
 (defn list-item
   [{:keys [locked? mentions-count unread-messages?
-           muted? is-active-channel? emoji channel-color
-           default-color]
+           muted? is-active-channel? emoji channel-color]
+    :or   {channel-color colors/primary-50}
     :as   props}]
-  (let [channel-color  (or channel-color default-color)
-        standard-props (apply dissoc props custom-props)
+  (let [standard-props (apply dissoc props custom-props)
         name-text      (:name props)]
     [rn/touchable-opacity standard-props
      [rn/view
@@ -37,12 +36,11 @@
                               :align-items     :center}
         :accessible          true
         :accessibility-label :chat-name-text}
-       [channel-avatar/view
-        {:size                :size/l
-         :locked?             locked?
-         :full-name           (:name props)
-         :customization-color channel-color
-         :emoji               emoji}]
+       [channel-avatar/channel-avatar
+        {:big?                   true
+         :locked?                locked?
+         :emoji-background-color (colors/theme-alpha channel-color 0.1 0.1)
+         :emoji                  emoji}]
        [quo2.text/text
         {:style  (cond-> {:margin-left 12}
                    (and (not locked?) muted?)
@@ -65,4 +63,4 @@
              mentions-count]]
 
            unread-messages?
-           [unread-grey-dot/unread-grey-dot :unviewed-messages-public])])]]))
+           [unread-grey-dot :unviewed-messages-public])])]]))

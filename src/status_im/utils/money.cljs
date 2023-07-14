@@ -1,4 +1,4 @@
-(ns utils.money
+(ns status-im.utils.money
   (:require ["bignumber.js" :as BigNumber]
             [clojure.string :as string]
             [utils.i18n :as i18n]))
@@ -223,16 +223,10 @@
   [bn1 bn2]
   (.round (.dividedBy ^js bn1 bn2) 0))
 
-(defn format-amount
-  "Format `amount` to thousands or millions. Return nil if `amount` is not truthy."
+(defn format-members
   [amount]
-  (when amount
-    (cond
-      (> amount 999999)
-      (str (with-precision (/ amount 1000000) 1) (i18n/label :t/M))
-
-      (< 999 amount 1000000)
+  (if (> amount 1000000)
+    (str (with-precision (/ amount 1000000) 1) (i18n/label :t/M))
+    (if (and (> amount 999) (< amount 1000000))
       (str (with-precision (/ amount 1000) 1) (i18n/label :t/K))
-
-      :else
-      (str amount))))
+      amount)))

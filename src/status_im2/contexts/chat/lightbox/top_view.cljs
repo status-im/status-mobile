@@ -43,10 +43,9 @@
         (anim/animate top-view-bg colors/neutral-100-opa-0)))))
 
 (defn drawer
-  [messages index]
-  (let [{:keys [content]} (nth messages index)
-        uri               (http/replace-port (:image content)
-                                             (rf/sub [:mediaserver/port]))]
+  [content]
+  (let [uri (http/replace-port (:image content)
+                               (rf/sub [:mediaserver/port]))]
     [quo/action-drawer
      [[{:icon                :i/save
         :accessibility-label :save-image
@@ -62,23 +61,17 @@
                                                 :container-style {:bottom (when platform/android? 20)}
                                                 :text            (i18n/label :t/photo-saved)}])))}]]]))
 
-(defn share-image
-  [messages index]
-  (let [{:keys [content]} (nth messages index)
-        uri               (http/replace-port (:image content)
-                                             (rf/sub [:mediaserver/port]))]
-    (images/share-image uri)))
-
 (defn top-view
   [messages insets index animations derived landscape? screen-width]
-  (let [{:keys [from timestamp]}  (first messages)
-        display-name              (first (rf/sub [:contacts/contact-two-names-by-identity
-                                                  from]))
-        bg-color                  (if landscape?
-                                    colors/neutral-100-opa-70
-                                    colors/neutral-100-opa-0)
-        {:keys [background-color opacity
-                overlay-opacity]} animations]
+  (let [{:keys [from timestamp content]}   (nth @messages @index)
+        display-name                       (first (rf/sub [:contacts/contact-two-names-by-identity
+                                                           from]))
+        bg-color                           (if landscape?
+                                             colors/neutral-100-opa-70
+                                             colors/neutral-100-opa-0)
+        {:keys [background-color opacity]} animations
+        uri                                (http/replace-port (:image content)
+                                                              (rf/sub [:mediaserver/port]))]
     [reanimated/view
      {:style
       (style/top-view-container (:top insets) screen-width bg-color landscape? animations derived)}
@@ -94,7 +87,6 @@
        {:on-press (fn []
                     (anim/animate background-color :transparent)
                     (anim/animate opacity 0)
-                    (anim/animate overlay-opacity 0)
                     (rf/dispatch (if platform/ios?
                                    [:chat.ui/exit-lightbox-signal @index]
                                    [:navigate-back])))
@@ -108,18 +100,15 @@
        [quo/text
         {:weight :medium
          :size   :paragraph-2
-         :style  {:color colors/neutral-40}} (when timestamp (datetime/to-short-str timestamp))]]]
+         :style  {:color colors/neutral-40}} (datetime/to-short-str timestamp)]]]
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
-       {:active-opacity      1
-        :accessibility-label :share-image
-        :on-press            #(share-image messages @index)
-        :style               (merge style/close-container {:margin-right 12})}
+       {:active-opacity 1
+        :on-press       #(images/share-image uri)
+        :style          (merge style/close-container {:margin-right 12})}
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
-       {:active-opacity      1
-        :accessibility-label :image-options
-        :on-press            #(rf/dispatch [:show-bottom-sheet
-                                            {:content (fn [] [drawer messages @index])}])
-        :style               style/close-container}
+       {:active-opacity 1
+        :on-press       #(rf/dispatch [:show-bottom-sheet {:content (fn [] [drawer content])}])
+        :style          style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))

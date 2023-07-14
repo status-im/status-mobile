@@ -9,7 +9,7 @@
   []
   {;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is
    ;; resolved
-   :wakuV2Nameserver            "8.8.8.8"
+   :wakuV2Nameserver            "1.1.1.1"
    :openseaAPIKey               config/opensea-api-key
    :poktToken                   config/POKT_TOKEN
    :infuraToken                 config/INFURA_TOKEN
@@ -36,7 +36,6 @@
             :upstreamConfig           config/default-network-rpc-url
             :networkId                config/default-network-id
             :currentNetwork           config/default-network
-            :wakuV2LightClient        true
             :previewPrivacy           config/blank-preview?})))
 
 (defn strip-file-prefix

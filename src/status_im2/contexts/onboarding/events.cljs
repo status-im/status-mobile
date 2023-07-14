@@ -51,13 +51,11 @@
   (let [{:keys [display-name seed-phrase password image-path color] :as profile}
         (:onboarding-2/profile db)]
     (rf/merge cofx
-              {:dispatch       [:navigate-to :generating-keys]
-               :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
-                                 :dispatch [:onboarding-2/navigate-to-identifiers]}]
-               :db             (-> db
-                                   (dissoc :profile/login)
-                                   (dissoc :auth-method)
-                                   (assoc :onboarding-2/new-account? true))}
+              {:dispatch [:navigate-to :generating-keys]
+               :db       (-> db
+                             (dissoc :profile/login)
+                             (dissoc :auth-method)
+                             (assoc :onboarding-2/new-account? true))}
               (if seed-phrase
                 (profile.recover/recover-profile-and-login profile)
                 (profile.create/create-profile-and-login profile)))))
@@ -118,7 +116,7 @@
         key-uid            (get-in db [:profile/profile :key-uid])
         biometric-enabled? (= (get-in db [:onboarding-2/profile :auth-method])
                               constants/auth-method-biometric)]
-    (cond-> {:db (assoc db :onboarding-2/generated-keys? true)}
+    (cond-> {:dispatch [:navigate-to :identifiers]}
       biometric-enabled?
       (assoc :keychain/save-password-and-auth-method
              {:key-uid         key-uid
@@ -127,11 +125,3 @@
               :on-error        #(log/error "failed to save biometrics"
                                            {:key-uid key-uid
                                             :error   %})}))))
-
-(rf/defn navigate-to-identifiers
-  {:events [:onboarding-2/navigate-to-identifiers]}
-  [{:keys [db]}]
-  (if (:onboarding-2/generated-keys? db)
-    {:dispatch [:navigate-to :identifiers]}
-    {:dispatch-later [{:ms       constants/onboarding-generating-keys-navigation-retry-ms
-                       :dispatch [:onboarding-2/navigate-to-identifiers]}]}))

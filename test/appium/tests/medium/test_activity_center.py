@@ -68,9 +68,14 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_2.jump_to_messages_home()
         self.home_2.open_activity_center_button.click()
         self.home_2.activity_unread_filter_button.click()
-        if not self.home_2.element_by_text_part(self.home_2.get_translation_by_key("add-me-to-your-contacts")).is_element_displayed(30):
+        activity_center_element = self.home_2.get_element_from_activity_center_view(self.username_1)
+        message_element = activity_center_element.message_body
+        message_element.wait_for_element(30)
+        message_text = message_element.text
+        if message_text != self.home_2.get_translation_by_key("add-me-to-your-contacts"):
             self.errors.append(
-                "Pending contact request is not shown on unread notification element on Activity center!")
+                "Pending contact request is not shown on unread notification element on Activity center!,"
+                " actual is '%s'" % message_text)
         self.home_2.close_activity_centre.click()
 
         self.errors.verify_no_errors()
@@ -78,7 +83,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
     @marks.testrail_id(702851)
     def test_activity_center_contact_request_accept_swipe_mark_all_as_read(self):
         self.device_2.just_fyi('Device2 re-sends a contact request to Device1')
-        self.home_2.jump_to_messages_home()
+        self.home_2.click_system_back_button_until_element_is_shown()
         self.home_2.add_contact(self.public_key_1, remove_from_contacts=True)
 
         self.device_1.just_fyi('Device1 accepts pending contact request by swiping')
@@ -256,7 +261,10 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702957)
     def test_activity_center_mentions(self):
         if not self.channel_2.chat_message_input.is_element_displayed():
-            self.channel_2.jump_to_card_by_text('# %s' % self.channel_name)
+            self.home_2.click_system_back_button_until_element_is_shown()
+            self.home_2.communities_tab.click()
+            self.home_2.get_chat(self.community_name, community=True).click()
+            self.community_2.get_channel(self.channel_name).click()
         self.home_1.jump_to_communities_home()
 
         self.device_2.just_fyi("Invited member sends a message with a mention")
@@ -292,7 +300,8 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702958)
     def test_activity_center_admin_notification_accept_swipe(self):
         self.home_2.just_fyi("Clearing history")
-        self.home_2.jump_to_messages_home()
+        self.home_2.click_system_back_button_until_element_is_shown()
+        self.home_2.chats_tab.click()
         self.home_2.clear_chat_long_press(self.username_1)
 
         [home.jump_to_communities_home() for home in (self.home_1, self.home_2)]

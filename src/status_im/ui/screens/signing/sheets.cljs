@@ -9,7 +9,7 @@
             [status-im.signing.gas :as gas]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [utils.money :as money]))
+            [status-im.utils.money :as money]))
 
 (views/defview fee-bottom-sheet
   [fee-display-symbol]

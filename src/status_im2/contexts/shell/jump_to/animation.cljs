@@ -1,12 +1,11 @@
 (ns status-im2.contexts.shell.jump-to.animation
   (:require [utils.re-frame :as rf]
-            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.shell.jump-to.utils :as utils]
             [status-im2.contexts.shell.jump-to.state :as state]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
-;;;; Home stack
+;; Home stack
 (defn open-home-stack
   [stack-id animate?]
   (let [home-stack-state-value (utils/calculate-home-stack-state-value stack-id animate?)]
@@ -44,13 +43,7 @@
     (utils/change-shell-status-bar-style)
     (when animate? (utils/update-view-id (or stack-id :shell)))))
 
-;;;; Floating Screen
-
-;; Dispatch Delay - Animation time for the opening of a screen is 200 ms,
-;; But starting and completion of animation sometimes takes a little extra time,
-;; according to the performance of the device. And if before the animation is
-;; complete we start other tasks like rendering messages or opening of the home screen
-;; in the background then the animation breaks. So we are adding a small delay for that dispatch.
+;; Floating Screen
 (defn animate-floating-screen
   [screen-id {:keys [id animation community-id hidden-screen?]}]
   (when (not= animation (get @state/floating-screens-state screen-id))
@@ -59,29 +52,17 @@
      (get-in @state/shared-values-atom [screen-id :screen-state])
      animation)
     (reset! state/floating-screens-state
-      (assoc @state/floating-screens-state screen-id animation))
-    (let [floating-screen-open? (utils/floating-screen-open? screen-id)
-          animation-time        (if (#{shell.constants/open-screen-without-animation
-                                       shell.constants/close-screen-without-animation}
-                                     animation)
-                                  0
-                                  shell.constants/shell-animation-time)
-          dispatch-delay        (cond
-                                  (not floating-screen-open?) 0
-                                  js/goog.DEBUG               100
-                                  platform/android?           75
-                                  :else                       50)
-          dispatch-time         (+ animation-time dispatch-delay)]
-      (js/setTimeout
-       (fn [floating-screen-open?]
-         (if floating-screen-open?
-           ;; Events realted to opening of a screen
-           (rf/dispatch [:shell/floating-screen-opened screen-id
-                         id community-id hidden-screen?])
-           ;; Events realted to closing of a screen
-           (rf/dispatch [:shell/floating-screen-closed screen-id])))
-       dispatch-time
-       floating-screen-open?))))
+      (assoc @state/floating-screens-state screen-id animation)))
+  (js/setTimeout
+   (fn [floating-screen-open?]
+     (if floating-screen-open?
+       ;; Events realted to opening of a screen
+       (rf/dispatch [:shell/floating-screen-opened screen-id
+                     id community-id hidden-screen?])
+       ;; Events realted to closing of a screen
+       (rf/dispatch [:shell/floating-screen-closed screen-id])))
+   shell.constants/shell-animation-time
+   (utils/floating-screen-open? screen-id)))
 
 (defn set-floating-screen-position
   [left top card-type]
