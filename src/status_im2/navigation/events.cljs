@@ -1,5 +1,6 @@
 (ns status-im2.navigation.events
   (:require [utils.re-frame :as rf]
+            [status-im2.contexts.shell.jump-to.state :as shell.state]
             [status-im2.contexts.shell.jump-to.utils :as shell.utils]
             [status-im2.contexts.shell.jump-to.events :as shell.events]))
 
@@ -42,7 +43,7 @@
 (rf/defn navigate-back
   {:events [:navigate-back]}
   [cofx]
-  (shell.events/shell-navigate-back cofx))
+  (shell.events/shell-navigate-back cofx nil))
 
 (rf/defn navigate-back-within-stack
   {:events [:navigate-back-within-stack]}
@@ -58,7 +59,10 @@
   {:events [:pop-to-root]}
   [{:keys [db]} tab]
   {:pop-to-root-fx       tab
-   :db                   (dissoc db :shell/floating-screens)
+   :db                   (-> db
+                             (dissoc :shell/floating-screens)
+                             (dissoc :shell/loaded-screens)
+                             (assoc :view-id (or @shell.state/selected-stack-id :shell)))
    :shell/pop-to-root-fx nil})
 
 (rf/defn init-root

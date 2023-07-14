@@ -41,8 +41,8 @@
       {:style {:flex-direction :row
                :align-items    :center}}
       [quo/channel-avatar
-       {:emoji                  (:emoji community-channel)
-        :emoji-background-color (colors/alpha color-50 0.1)}]
+       {:emoji               (:emoji community-channel)
+        :customization-color color-50}]
       [quo/text
        {:size            :paragraph-2
         :weight          :medium
@@ -235,8 +235,9 @@
          [rn/view {:style (style/base-container color-50)}
           (when banner
             [rn/image
-             {:source (:source banner)
-              :style  {:width 160}}])
+             {:source banner
+              :style  {:width  160
+                       :height 65}}])
           [rn/view {:style style/secondary-container}
            [quo/text
             {:size            :paragraph-1
@@ -250,7 +251,10 @@
              :weight :medium
              :style  style/subtitle}
             (subtitle type content)]
-           [bottom-container type (merge {:color-50 color-50 :color-60 color-60} content)]]
+           [bottom-container type
+            (merge {:color-50 color-50
+                    :color-60 color-60}
+                   content)]]
           (when avatar-params
             [rn/view {:style style/avatar-container}
              [avatar avatar-params type customization-color]])

@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [filter])
   (:require
     quo2.components.avatars.account-avatar
-    quo2.components.avatars.channel-avatar
+    quo2.components.avatars.channel-avatar.view
     quo2.components.avatars.group-avatar
     quo2.components.avatars.icon-avatar
     quo2.components.avatars.user-avatar.view
@@ -14,10 +14,12 @@
     quo2.components.buttons.slide-button.view
     quo2.components.code.snippet
     quo2.components.colors.color-picker.view
+    quo2.components.common.separator.view
+    quo2.components.community.banner.view
+    quo2.components.community.channel-actions
     quo2.components.community.community-card-view
     quo2.components.community.community-list-view
     quo2.components.community.community-view
-    quo2.components.community.banner.view
     quo2.components.community.icon
     quo2.components.community.token-gating
     quo2.components.counter.counter
@@ -31,8 +33,8 @@
     quo2.components.drawers.drawer-buttons.view
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
-    quo2.components.header
     quo2.components.empty-state.empty-state.view
+    quo2.components.header
     quo2.components.icon
     quo2.components.info.info-message
     quo2.components.info.information-box.view
@@ -42,10 +44,11 @@
     quo2.components.inputs.search-input.view
     quo2.components.inputs.title-input.view
     quo2.components.keycard.view
+    quo2.components.links.link-preview.view
     quo2.components.links.url-preview-list.view
     quo2.components.links.url-preview.view
-    quo2.components.links.link-preview.view
     quo2.components.list-items.channel
+    quo2.components.list-items.community.view
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
     quo2.components.list-items.user-list
@@ -69,15 +72,16 @@
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
     quo2.components.reactions.reaction
-    quo2.components.selectors.reactions.view
     quo2.components.record-audio.record-audio.view
     quo2.components.record-audio.soundtrack.view
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
+    quo2.components.selectors.reactions.view
     quo2.components.selectors.selectors.view
-    quo2.components.separator
     quo2.components.settings.accounts.view
     quo2.components.settings.privacy-option
+    quo2.components.settings.reorder-item.view
+    quo2.components.settings.settings-list.view
     quo2.components.share.qr-code.view
     quo2.components.share.share-qr-code.view
     quo2.components.tabs.account-selector
@@ -89,13 +93,10 @@
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
-    quo2.components.text-combinations.title.view
-    quo2.components.settings.settings-list.view
-    quo2.components.settings.reorder-item.view
-    quo2.components.community.channel-actions))
+    quo2.components.text-combinations.title.view))
 
 (def icon quo2.components.icon/icon)
-(def separator quo2.components.separator/separator)
+(def separator quo2.components.common.separator.view/separator)
 (def header quo2.components.header/header)
 (def dropdown quo2.components.dropdowns.dropdown/dropdown)
 (def info-message quo2.components.info.info-message/info-message)
@@ -121,7 +122,7 @@
 
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
-(def channel-avatar quo2.components.avatars.channel-avatar/channel-avatar)
+(def channel-avatar quo2.components.avatars.channel-avatar.view/view)
 (def group-avatar quo2.components.avatars.group-avatar/group-avatar)
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
 (def user-avatar quo2.components.avatars.user-avatar.view/user-avatar)
@@ -149,7 +150,6 @@
 
 ;;;; COMMUNITY
 (def community-card-view-item quo2.components.community.community-card-view/community-card-view-item)
-(def communities-list-view-item quo2.components.community.community-list-view/communities-list-view-item)
 (def communities-membership-list-item
   quo2.components.community.community-list-view/communities-membership-list-item)
 (def community-stats-column quo2.components.community.community-view/community-stats-column)
@@ -193,6 +193,7 @@
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
 (def user-list quo2.components.list-items.user-list/user-list)
+(def community-list-item quo2.components.list-items.community.view/view)
 
 ;;;; LOADERS
 (def skeleton quo2.components.loaders.skeleton/skeleton)

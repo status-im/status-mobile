@@ -100,7 +100,7 @@
  ;; and their data remained in app-db.
  ;; Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
  (fn [[view-id communities requests]]
-   (if (= view-id :communities-stack)
+   (if (or (empty? @memo-communities-stack-items) (= view-id :communities-stack))
      (let [grouped-communities (reduce (fn [acc community]
                                          (let [joined?      (:joined community)
                                                community-id (:id community)

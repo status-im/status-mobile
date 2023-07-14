@@ -5,6 +5,7 @@
   {:background-color colors/neutral-95
    :flex-direction   :row
    :position         :absolute
+   :overflow         :hidden
    :top              0
    :bottom           0
    :left             0
