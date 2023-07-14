@@ -1,12 +1,12 @@
 (ns status-im2.contexts.communities.actions.community-options.view
   (:require [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [utils.datetime :as datetime]
             [quo2.core :as quo]
             [status-im2.contexts.communities.actions.see-rules.view :as see-rules]
             [status-im2.contexts.communities.actions.leave.view :as leave-menu]
             [status-im2.common.mute-drawer.view :as mute-options]
             [status-im2.constants :as constants]
+            [status-im2.common.muting.helpers :refer [format-mute-till]]
             [status-im2.contexts.communities.actions.token-gating.view :as token-gating]))
 
 (defn hide-sheet-and-dispatch
@@ -55,7 +55,7 @@
      :accessibility-label (if muted? :unmute-community :mute-community)
      :label               (i18n/label (if muted? :t/unmute-community :t/mute-community))
      :sub-label           (when (and muted? (some? muted-till))
-                            (time-string :t/muted-until (datetime/format-mute-till muted-till)))
+                            (time-string :t/muted-until (format-mute-till muted-till)))
      :right-icon          :i/chevron-right
      :on-press            (if muted?
                             #(hide-sheet-and-dispatch [:community/set-muted id (not muted?)

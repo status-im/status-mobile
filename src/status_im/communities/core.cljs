@@ -17,7 +17,7 @@
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [utils.datetime :as datetime]
+            [status-im2.common.muting.helpers :refer [format-mute-till]]
             [status-im2.contexts.chat.events :as chat.events]))
 
 (def crop-size 1000)
@@ -980,7 +980,7 @@
                               quo2.colors/success-50)
                  :text       (if muted?
                                (when (some? muted-till)
-                                 (time-string :t/muted-until (datetime/format-mute-till muted-till)))
+                                 (time-string :t/muted-until (format-mute-till muted-till)))
                                (i18n/label :t/community-unmuted))}]}))
 
 

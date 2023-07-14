@@ -4,7 +4,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [status-im2.common.muting.helpers :refer [format-mute-till]]
-            [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]))
+            [status-im2.common.mute-drawer.view :as mute-drawer]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -50,13 +50,13 @@
 
 (defn- action-toggle-muted
   [id muted? muted-till chat-type]
-  (let [muted (and muted? (some? muted-till))]
+  (let [muted       (and muted? (some? muted-till))
+        time-string (fn [mute-title mute-duration]
+                      (i18n/label mute-title {:duration mute-duration}))]
     (cond-> {:icon                :i/muted
              :accessibility-label :chat-toggle-muted
-             :sub-label           (when muted
-                                    (str (i18n/label :t/muted-until)
-                                         " "
-                                         (format-mute-till muted-till)))
+             :sub-label           (when (and muted? (some? muted-till))
+                                    (time-string :t/muted-until (format-mute-till muted-till)))
              :on-press            (if muted?
                                     #(unmute-channel-action id)
                                     #(mute-channel-action id chat-type muted?))
