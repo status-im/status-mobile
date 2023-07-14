@@ -253,7 +253,10 @@
   [{:keys [type value content-type] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
   ;;TODO temporary hide mutual-state-updates https://github.com/status-im/status-mobile/issues/16254
-  (when (not= content-type constants/content-type-system-mutual-state-update)
+  (when-not (#{constants/content-type-system-message-mutual-event-sent
+               constants/content-type-system-message-mutual-event-accepted
+               constants/content-type-system-message-mutual-event-removed}
+             content-type)
     [rn/view
      (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
      (cond
