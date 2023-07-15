@@ -36,7 +36,7 @@
   []
   (rf/dispatch [:syncing/preflight-outbound-check #(reset! preflight-check-passed? %)]))
 
-(defn- f-header
+(defn- header
   [{:keys [active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn animated?]}]
   (let [subtitle-translate-x (reanimated/interpolate subtitle-opacity [0 1] [-13 0])
         subtitle-translate-y (reanimated/interpolate subtitle-opacity [0 1] [-85 0])
@@ -109,10 +109,6 @@
         :on-change      (fn [id]
                           (reset! active-tab id)
                           (reset! read-qr-once? false))}]]]))
-
-(defn- header
-  [props]
-  [:f> f-header props])
 
 (defn get-labels-and-on-press-method
   []
@@ -388,7 +384,7 @@
          (when (or (not animated?) @render-camera?)
            [render-camera show-camera? torch-mode @qr-view-finder camera-ref on-read-code])
          [rn/view {:style (style/root-container (:top insets))}
-          [header
+          [:f> header
            {:active-tab          active-tab
             :read-qr-once?       read-qr-once?
             :title               title
