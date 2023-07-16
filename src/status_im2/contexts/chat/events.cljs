@@ -17,10 +17,10 @@
             [status-im.utils.types :as types]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
-            [utils.datetime :as datetime]
             [re-frame.core :as re-frame]
             [status-im.async-storage.core :as async-storage]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+            [status-im2.common.muting.helpers :refer [format-mute-till]]))
 
 (defn- get-chat
   [cofx chat-id]
@@ -348,7 +348,7 @@
                  :icon-color (colors/theme-colors colors/success-60
                                                   colors/success-50)
                  :text       (mute-duration-text (when (some? muted-till)
-                                                   (str (datetime/format-mute-till muted-till))))}]}))
+                                                   (str (format-mute-till muted-till))))}]}))
 
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}

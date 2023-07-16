@@ -9,7 +9,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]
-            [utils.datetime :as datetime]))
+            [status-im2.common.muting.helpers :refer [format-mute-till]]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -133,7 +133,7 @@
             :sub-label           (when (and muted? (some? muted-till))
                                    (str (i18n/label :t/muted-until)
                                         " "
-                                        (datetime/format-mute-till muted-till)))
+                                        (format-mute-till muted-till)))
             :on-press            (if muted?
                                    #(unmute-chat-action chat-id)
                                    #(mute-chat-action chat-id chat-type))
