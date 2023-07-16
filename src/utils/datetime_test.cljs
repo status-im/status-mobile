@@ -1,9 +1,7 @@
 (ns utils.datetime-test
   (:require [cljs-time.coerce :as time-coerce]
             [cljs-time.core :as t]
-            [cljs-time.format :as t.format]
-            [cljs.test :refer-macros [deftest testing is are]]
-            [clojure.string :as string]
+            [cljs.test :refer-macros [deftest testing is]]
             [utils.datetime :as datetime]
             [utils.i18n-goog :as i18n-goog]))
 
