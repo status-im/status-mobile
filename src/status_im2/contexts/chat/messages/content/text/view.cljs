@@ -63,7 +63,8 @@
           :style          style/mention-tag}
          [quo/text
           {:weight :medium
-           :style  style/mention-tag-text}
+           :style  style/mention-tag-text
+           :size   :paragraph-1}
           (rf/sub [:messages/resolve-mention literal])]]])
 
       :edited
