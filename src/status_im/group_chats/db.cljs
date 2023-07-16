@@ -3,8 +3,8 @@
 (def members-added-type 3)
 
 (defn member?
-  [public-key {:keys [members contacts users]}]
-  (let [members-list (into #{} (concat (keys users) contacts (map #(:id %) members)))]
+  [public-key {:keys [contacts users]}]
+  (let [members-list (into #{} (concat (keys users) contacts))]
     (contains? members-list public-key)))
 
 (defn invited?
