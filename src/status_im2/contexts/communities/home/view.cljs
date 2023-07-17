@@ -99,6 +99,7 @@
   (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
         {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
         customization-color             (rf/sub [:profile/customization-color])
+        open-sheet?                     (-> (rf/sub [:bottom-sheet]) :sheets seq)
         selected-items                  (case selected-tab
                                           :joined  joined
                                           :pending pending
@@ -126,14 +127,13 @@
                                                :opacity       animated-card-opacity})}])
 
      [rn/view {:style (style/blur-container top)}
-      (let [{:keys [sheets]} (rf/sub [:bottom-sheet])]
-        [blur/view
-         {:blur-amount   (if platform/ios? 20 10)
-          :blur-type     (theme/theme-value (if platform/ios? :light :xlight) :dark)
-          :style         style/blur
-          :overlay-color (if (seq sheets)
-                           (colors/theme-colors colors/white colors/neutral-95-opa-70)
-                           (theme/theme-value nil colors/neutral-95-opa-70))}])
+      [blur/view
+       {:blur-amount   (if platform/ios? 20 10)
+        :blur-type     (theme/theme-value (if platform/ios? :light :xlight) :dark)
+        :style         style/blur
+        :overlay-color (if open-sheet?
+                         (colors/theme-colors colors/white colors/neutral-95-opa-70)
+                         (theme/theme-value nil colors/neutral-95-opa-70))}]
       [common.home/top-nav {:type :grey}]
       [common.home/title-column
        {:label               (i18n/label :t/communities)
