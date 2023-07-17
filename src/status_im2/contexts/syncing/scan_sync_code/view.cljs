@@ -253,10 +253,10 @@
                                        connection-string]
                                       300)
       (rf/dispatch [:toasts/upsert
-                    {:icon           :i/info
-                     :icon-color     colors/danger-50
-                     :override-theme :light
-                     :text           (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
+                    {:icon       :i/info
+                     :icon-color colors/danger-50
+                     :theme      :dark
+                     :text       (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
 
 (defn render-camera
   [show-camera? torch-mode qr-view-finder camera-ref on-read-code]

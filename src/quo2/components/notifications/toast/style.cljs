@@ -30,24 +30,24 @@
     :border-radius    12}))
 
 (defn title
-  [override-theme]
-  {:color (colors/theme-colors colors/white colors/neutral-100 override-theme)})
+  [theme]
+  {:color (colors/theme-colors colors/white colors/neutral-100 theme)})
 
 (defn text
-  [override-theme]
-  {:color (colors/theme-colors colors/white colors/neutral-100 override-theme)})
+  [theme]
+  {:color (colors/theme-colors colors/white colors/neutral-100 theme)})
 
 (defn icon
-  [override-theme]
-  {:color           (colors/theme-colors colors/white colors/neutral-100 override-theme)
+  [theme]
+  {:color           (colors/theme-colors colors/white colors/neutral-100 theme)
    :container-style {:width 20 :height 20}})
 
 (def left-side-container {:padding 2})
 (def right-side-container {:padding 4 :flex 1})
 
 (defn action-container
-  [override-theme]
-  {:background-color   (colors/theme-colors colors/white-opa-5 colors/neutral-80-opa-5 override-theme)
+  [theme]
+  {:background-color   (colors/theme-colors colors/white-opa-5 colors/neutral-80-opa-5 theme)
    :flex-direction     :row
    :padding-vertical   3
    :padding-horizontal 8
