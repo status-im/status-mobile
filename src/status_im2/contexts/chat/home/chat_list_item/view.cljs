@@ -211,8 +211,8 @@
 (defn notification
   [{:keys [muted group-chat unviewed-messages-count unviewed-mentions-count]}]
   (let [customization-color (rf/sub [:profile/customization-color])
-        unread-messages?    (> unviewed-messages-count 0)
-        unread-mentions?    (> unviewed-mentions-count 0)]
+        unread-messages?    (pos? unviewed-messages-count)
+        unread-mentions?    (pos? unviewed-mentions-count)]
     [rn/view {:style style/notification-container}
      (cond
        muted
