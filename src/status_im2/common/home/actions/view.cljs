@@ -217,7 +217,7 @@
                                  (rf/dispatch [:hide-bottom-sheet])
                                  (rf/dispatch [:toasts/upsert
                                                {:id         :remove-nickname
-                                                :icon       :correct
+                                                :icon       :i/correct
                                                 :icon-color (colors/theme-colors colors/success-60
                                                                                  colors/success-50)
                                                 :text       (i18n/label

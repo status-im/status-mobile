@@ -35,7 +35,7 @@
     :undo-duration 4
     :undo-on-press #(do
                       (rf/dispatch [:toasts/upsert
-                                    {:icon       :correct
+                                    {:icon       :i/correct
                                      :icon-color colors/success-50-opa-40
                                      :text       "Undo pressed"}])
                       (rf/dispatch [:toasts/close
@@ -54,7 +54,7 @@
     #(do
        (rf/dispatch
         [:toasts/upsert
-         {:icon :correct :icon-color colors/success-50-opa-40 :text "Undo pressed"}])
+         {:icon :i/correct :icon-color colors/success-50-opa-40 :text "Undo pressed"}])
        (rf/dispatch [:toasts/close "Toast: with undo action"]))}])
 
 (defn toast-button-30s-duration
@@ -79,7 +79,7 @@
              #(rf/dispatch
                [:toasts/upsert
                 {:id         "Toast: 30s duration"
-                 :icon       :info
+                 :icon       :i/info
                  :icon-color colors/danger-50-opa-40
                  :text       (str "This is an updated example toast" " - " (swap! suffix inc))
                  :duration   3000}])}

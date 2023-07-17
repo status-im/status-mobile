@@ -352,7 +352,7 @@
                           :t/channel-unmuted-successfully))))]
     {:db       (assoc-in db [:chats chat-id :muted-till] muted-till)
      :dispatch [:toasts/upsert
-                {:icon       :correct
+                {:icon       :i/correct
                  :icon-color (colors/theme-colors colors/success-60
                                                   colors/success-50)
                  :text       (mute-duration-text (when (some? muted-till)

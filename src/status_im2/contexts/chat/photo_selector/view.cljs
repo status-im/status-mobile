@@ -23,7 +23,7 @@
   []
   (rf/dispatch [:toasts/upsert
                 {:id              :random-id
-                 :icon            :info
+                 :icon            :i/info
                  :icon-color      colors/danger-50-opa-40
                  :container-style {:top (when platform/ios? 20)}
                  :text            (i18n/label :t/only-6-images)}]))
