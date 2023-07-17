@@ -1,10 +1,10 @@
 (ns status-im2.contexts.communities.actions.chat.view
   (:require [quo2.core :as quo]
             [status-im2.common.not-implemented :as not-implemented]
-            [utils.datetime :as datetime]
             [utils.i18n :as i18n]
-            [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.common.muting.helpers :refer [format-mute-till]]
+            [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]))
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -52,7 +52,7 @@
              :sub-label           (when muted
                                     (str (i18n/label :t/muted-until)
                                          " "
-                                         (datetime/format-mute-till muted-till)))
+                                         (format-mute-till muted-till)))
              :on-press            (if muted?
                                     #(unmute-channel-action id)
                                     #(mute-channel-action id chat-type))

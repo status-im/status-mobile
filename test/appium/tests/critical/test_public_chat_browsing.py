@@ -540,73 +540,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Deleted for me message is deleted all channel members")
         self.errors.verify_no_errors()
 
-    @marks.testrail_id(702859)
-    def test_community_one_image_send_reply(self):
-
-        self.home_1.just_fyi('Send image in 1-1 chat from Gallery')
-        image_description = 'description'
-        self.channel_1.send_images_with_description(image_description)
-        # self.channel_1.chat_element_by_text(image_description).image_in_message.click()
-        # self.channel_1.click_system_back_button_until_element_is_shown(element='chat')
-
-        # TODO: options for image are still WIP; add case with edit description of image and after 15901 fix
-        self.home_2.just_fyi('check image, description and options for receiver')
-        # self.channel_2.chat_element_by_text(image_description).image_in_message.click()
-        # self.home_1.just_fyi('save image')
-        # self.chat_1.save_image_button.click_until_presence_of_element(self.chat_1.show_images_button)
-        # self.chat_1.show_images_button.click_until_presence_of_element(self.chat_1.image_from_gallery_button)
-        # self.chat_1.image_from_gallery_button.click_until_presence_of_element(self.chat_1.recent_image_in_gallery)
-        # if not self.chat_1.recent_image_in_gallery.is_element_displayed():
-        #     self.errors.append('Saved image is not shown in Recent')
-        # self.home_1.click_system_back_button(2)
-        # self.home_2.just_fyi('check share and save options on opened image')
-        # self.chat_2.image_message_in_chat.scroll_to_element(direction='up')
-        # self.chat_2.image_message_in_chat.click_until_presence_of_element(self.chat_2.share_image_icon_button)
-        # self.chat_2.share_image_icon_button.click()
-        # self.chat_2.share_via_messenger()
-        # if not self.chat_2.image_in_android_messenger.is_element_displayed():
-        #     self.errors.append("Can't share image")
-        # self.chat_2.click_system_back_button_until_element_is_shown(element=self.chat_2.save_image_icon_button)
-        # self.chat_2.save_image_icon_button.click()
-        # self.chat_2.show_images_button.click()
-        # self.chat_2.allow_button.wait_and_click()
-        #
-        # if not self.chat_2.first_image_from_gallery.is_element_image_similar_to_template('saved.png'):
-        #     self.errors.append("New picture was not saved!")
-        #
-        # self.channel_2.chat_element_by_text(image_description).image_in_message.save_new_screenshot_of_element('images_test.png')
-
-        self.channel_2.chat_element_by_text(image_description).wait_for_visibility_of_element(60)
-        if not self.channel_2.chat_element_by_text(
-                image_description).image_in_message.is_element_image_similar_to_template('image_sent_in_community.png'):
-            self.errors.append("Not expected image is shown to the receiver")
-
-        self.channel_2.just_fyi("Can reply to images")
-        self.channel_2.quote_message(image_description)
-        message_text = 'reply to image'
-        self.channel_2.chat_message_input.send_keys(message_text)
-        self.channel_2.send_message_button.click()
-        chat_element_1 = self.channel_1.chat_element_by_text(message_text)
-        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != image_description:
-            self.errors.append('Reply message was not received by the sender')
-
-        self.channel_2.just_fyi("Set a reaction for the image message")
-        self.channel_2.set_reaction(message=image_description)
-        try:
-            self.channel_1.chat_element_by_text(image_description).emojis_below_message().wait_for_element_text(1)
-        except (Failed, NoSuchElementException):
-            self.errors.append("Image message reaction is not shown for the sender")
-
-        self.channel_1.just_fyi("Set a reaction for the message reply")
-        self.channel_2.set_reaction(message=image_description, emoji="love")
-        try:
-            self.channel_2.chat_element_by_text(message_text).emojis_below_message(
-                emoji="love").wait_for_element_text(1)
-        except (Failed, NoSuchElementException):
-            self.errors.append("Reply message reaction is not shown for the reply sender")
-
-        self.errors.verify_no_errors()
-
     @marks.testrail_id(703194)
     def test_community_several_images_send_reply(self):
         self.home_1.just_fyi('Send several images in 1-1 chat from Gallery')
@@ -627,6 +560,19 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             received = False
 
         if received:
+            self.channel_2.just_fyi("Checking an ability to save and share an image from gallery")
+            chat_element.image_container_in_message.image_by_index(1).click()
+            if not self.channel_2.share_image_icon_button.is_element_displayed():
+                self.errors.append("Can't share an image from gallery.")
+            if self.channel_2.view_image_options_button.is_element_displayed():
+                self.channel_2.view_image_options_button.click()
+                if not self.channel_2.save_image_icon_button.is_element_displayed():
+                    self.errors.append("Can't save an image from gallery.")
+            else:
+                self.errors.append("Image options button is not shown for an image from gallery.")
+
+            self.channel_2.click_system_back_button_until_element_is_shown(element="chat")
+
             self.channel_2.just_fyi("Can reply to gallery")
             self.channel_2.quote_message(image_description)
             message_text = 'reply to gallery'
@@ -636,6 +582,79 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             if not chat_element_1.is_element_displayed(
                     sec=60) or chat_element_1.replied_message_text != image_description:
                 self.errors.append('Reply message was not received by the sender')
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(702859)
+    def test_community_one_image_send_reply(self):
+        self.home_1.just_fyi('Send image in 1-1 chat from Gallery')
+        image_description = 'description'
+        self.channel_1.send_images_with_description(image_description)
+
+        self.home_2.just_fyi('Check image, description and options for receiver')
+        if not self.channel_2.chat_element_by_text(image_description).is_element_displayed(60):
+            self.channel_2.hide_keyboard_if_shown()
+        self.channel_2.chat_element_by_text(image_description).wait_for_visibility_of_element(10)
+        if not self.channel_2.chat_element_by_text(
+                image_description).image_in_message.is_element_image_similar_to_template('image_sent_in_community.png'):
+            self.errors.append("Not expected image is shown to the receiver")
+
+        if not self.channel_1.chat_element_by_text(image_description).is_element_displayed(60):
+            self.channel_1.hide_keyboard_if_shown()
+        self.channel_1.chat_element_by_text(image_description).image_in_message.click()
+        self.home_1.just_fyi('Save image')
+        self.channel_1.view_image_options_button.click()
+        self.channel_1.save_image_icon_button.click()
+        toast_element = self.channel_1.toast_content_element
+        if toast_element.is_element_displayed():
+            toast_element_text = toast_element.text
+            if toast_element_text != self.channel_1.get_translation_by_key("photo-saved"):
+                self.errors.append(
+                    "Shown message '%s' doesn't match expected '%s' after saving an image." % (
+                        toast_element_text, self.channel_1.get_translation_by_key("photo-saved")))
+        else:
+            self.errors.append("Message about saving a photo is not shown.")
+        self.channel_1.click_system_back_button_until_element_is_shown(element="chat")
+
+        self.channel_1.just_fyi("Check that image is saved in gallery")
+        self.channel_1.show_images_button.click()
+        self.channel_1.allow_button.click_if_shown()
+        if not self.channel_1.get_image_by_index(0).is_element_image_similar_to_template(
+                "sauce_dark_image_gallery.png"):
+            self.errors.append('Saved image is not shown in Recent')
+        self.channel_1.click_system_back_button()
+
+        self.home_2.just_fyi('Check share option on opened image')
+        self.channel_2.chat_element_by_text(image_description).image_in_message.click()
+        self.channel_2.share_image_icon_button.click()
+        self.channel_2.element_starts_with_text("Gmail").click()
+        try:
+            self.channel_2.wait_for_current_package_to_be('com.google.android.gm')
+        except TimeoutException:
+            self.errors.append("Can't share image")
+        self.channel_2.click_system_back_button_until_element_is_shown(element="chat")
+
+        self.channel_2.just_fyi("Can reply to images")
+        self.channel_2.quote_message(image_description)
+        message_text = 'reply to image'
+        self.channel_2.chat_message_input.send_keys(message_text)
+        self.channel_2.send_message_button.click()
+        chat_element_1 = self.channel_1.chat_element_by_text(message_text)
+        if not chat_element_1.is_element_displayed(sec=60) or chat_element_1.replied_message_text != image_description:
+            self.errors.append('Reply message was not received by the sender')
+        self.channel_2.just_fyi("Set a reaction for the image message")
+        self.channel_2.set_reaction(message=image_description)
+        try:
+            self.channel_1.chat_element_by_text(image_description).emojis_below_message().wait_for_element_text(1)
+        except (Failed, NoSuchElementException):
+            self.errors.append("Image message reaction is not shown for the sender")
+        self.channel_1.just_fyi("Set a reaction for the message reply")
+        self.channel_2.set_reaction(message=image_description, emoji="love")
+        try:
+            self.channel_2.chat_element_by_text(message_text).emojis_below_message(
+                emoji="love").wait_for_element_text(1)
+        except (Failed, NoSuchElementException):
+            self.errors.append("Reply message reaction is not shown for the reply sender")
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702840)
@@ -703,6 +722,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             #     'subtitle': 'Twitter'
             # }
         }
+        for home in self.home_1, self.home_2:
+            if not home.chat_floating_screen.is_element_displayed():
+                home.click_system_back_button_until_element_is_shown()
+                home.get_to_community_channel_from_home(self.community_name)
 
         for key, data in preview_urls.items():
             self.home_2.just_fyi("Checking %s preview case" % key)
@@ -731,6 +754,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.just_fyi("Set reaction and check it")
         message_with_reaction = list(preview_urls.values())[-1]['url']
         self.channel_1.set_reaction(message=message_with_reaction, emoji="laugh")
+        if not self.channel_2.chat_element_by_text(message_with_reaction).emojis_below_message(
+                emoji="laugh").is_element_displayed(10):
+            self.channel_2.hide_keyboard_if_shown()
         try:
             self.channel_2.chat_element_by_text(message_with_reaction).emojis_below_message(
                 emoji="laugh").wait_for_element_text(1)
@@ -743,6 +769,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     def test_community_unread_messages_badge(self):
         self.channel_1.jump_to_communities_home()
         message = 'test message'
+        if not self.home_2.chat_floating_screen.is_element_displayed():
+            self.home_2.jump_to_communities_home()
+            self.home_2.get_to_community_channel_from_home(self.community_name)
         self.channel_2.send_message(message)
         self.home_1.just_fyi('Check new messages badge is shown for community')
         community_element_1 = self.home_1.get_chat(self.community_name, community=True)
@@ -817,6 +846,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Check that can send message in community after unblock")
         self.chat_2.send_message(message_unblocked)
         self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
+        self.chat_1.hide_keyboard_if_shown()
         if not self.chat_1.chat_element_by_text(message_unblocked).is_element_displayed(120):
             self.errors.append("%s was not received in public chat after user unblock!" % message_unblocked)
             self.errors.verify_no_errors()
@@ -967,6 +997,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         community.long_press_until_element_is_shown(community_to_leave.leave_community_button)
         community_to_leave.leave_community_button.click()
         community_to_leave.leave_community_button.click()
-        if community.is_element_displayed():
+        if not community.is_element_disappeared():
             self.errors.append('Community is still shown in the list after leave')
         self.errors.verify_no_errors()

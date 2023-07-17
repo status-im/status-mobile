@@ -111,12 +111,15 @@
          :style  {:color colors/neutral-40}} (when timestamp (datetime/to-short-str timestamp))]]]
      [rn/view {:style style/top-right-buttons}
       [rn/touchable-opacity
-       {:active-opacity 1
-        :on-press       #(share-image messages @index)
-        :style          (merge style/close-container {:margin-right 12})}
+       {:active-opacity      1
+        :accessibility-label :share-image
+        :on-press            #(share-image messages @index)
+        :style               (merge style/close-container {:margin-right 12})}
        [quo/icon :share {:size 20 :color colors/white}]]
       [rn/touchable-opacity
-       {:active-opacity 1
-        :on-press       #(rf/dispatch [:show-bottom-sheet {:content (fn [] [drawer messages @index])}])
-        :style          style/close-container}
+       {:active-opacity      1
+        :accessibility-label :image-options
+        :on-press            #(rf/dispatch [:show-bottom-sheet
+                                            {:content (fn [] [drawer messages @index])}])
+        :style               style/close-container}
        [quo/icon :options {:size 20 :color colors/white}]]]]))
