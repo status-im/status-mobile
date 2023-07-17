@@ -31,6 +31,8 @@
 (defn has-special-characters [s] (not (re-find status-regex s)))
 (def min-length 5)
 (defn length-not-valid [s] (< (count (string/trim (str s))) min-length))
+(def scroll-view-height (reagent/atom 0))
+(def content-container-height (reagent/atom 0))
 
 (defn validation-message
   [s]
@@ -68,14 +70,17 @@
       children])])
 
 (defn show-button-background
-  [keyboard-shown? scroll-view-height visible-container-height]
+  [keyboard-shown?]
   (let [{:keys [keyboard-height]} (hooks/use-keyboard)
-        keyboard-button-height    (+ keyboard-height 64)
-        remaining-screen-height   (- scroll-view-height keyboard-button-height)]
+        button-container-height   64
+        keyboard-view-height      (+ keyboard-height button-container-height)]
     (when keyboard-shown?
       (cond
-        (< remaining-screen-height visible-container-height)
-        true
+        platform/android?
+        (< (- @scroll-view-height button-container-height) @content-container-height)
+
+        platform/ios?
+        (< (- @scroll-view-height keyboard-view-height) @content-container-height)
 
         :else
         false))))
@@ -108,31 +113,29 @@
                      profile-pic                             (reagent/atom image-path)
                      on-change-profile-pic                   #(reset! profile-pic %)
                      on-change                               #(reset! custom-color %)]
-    (let [name-too-short?          (length-not-valid @full-name)
-          valid-name?              (and (not @validation-msg) (not name-too-short?))
-          info-message             (if @validation-msg
-                                     @validation-msg
-                                     (i18n/label :t/minimum-characters
-                                                 {:min-chars min-length}))
-          info-type                (cond @validation-msg :error
-                                         name-too-short? :default
-                                         :else           :success)
-          scroll-view-height       (reagent/atom 0)
-          visible-scroll-view-height (reagent/atom 0)
-          background?              (show-button-background @keyboard-shown? @scroll-view-height @visible-scroll-view-height)]
+    (let [name-too-short? (length-not-valid @full-name)
+          valid-name?     (and (not @validation-msg) (not name-too-short?))
+          info-message    (if @validation-msg
+                            @validation-msg
+                            (i18n/label :t/minimum-characters
+                                        {:min-chars min-length}))
+          info-type       (cond @validation-msg :error
+                                name-too-short? :default
+                                :else           :success)
+          background?     (show-button-background @keyboard-shown?)]
       [rn/view {:style style/page-container}
        [navigation-bar/navigation-bar
         {:stack-id :new-to-status
          :top      navigation-bar-top}]
        [rn/scroll-view
-        {:content-container-style {:flexGrow  1
-                                   :on-layout #(reset! scroll-view-height
-                                                 (-> ^js % .-nativeEvent .-layout .-height))}}
+        {:on-layout               (fn [event]
+                                    (let [height (oops/oget event "nativeEvent.layout.height")]
+                                      (reset! scroll-view-height height)))
+         :content-container-style {:flexGrow 1}}
         [rn/view
          {:on-layout (fn [event]
-                       (let [height      (oops/oget event "nativeEvent.layout")]
-                         (js/console.log (str "view height " height ))
-                         (reset! visible-scroll-view-height height)))}
+                       (let [height (oops/oget event "nativeEvent.layout.height")]
+                         (reset! content-container-height height)))}
          [rn/view
           {:style style/content-container}
           [quo/text

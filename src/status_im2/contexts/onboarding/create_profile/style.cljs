@@ -44,8 +44,7 @@
    :margin-bottom 16})
 
 (def content-container
-  {:background-color  "green"
-   :padding-horizontal 20})
+  {:padding-horizontal 20})
 
 (def input-container
   {:align-items :flex-start})
