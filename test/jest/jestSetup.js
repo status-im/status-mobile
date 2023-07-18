@@ -76,6 +76,8 @@ jest.mock('react-native-blob-util', () => ({
   },
 }));
 
+jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+
 NativeModules.ReactLocalization = {
   language: 'en',
   locale: 'en',

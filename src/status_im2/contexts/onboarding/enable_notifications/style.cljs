@@ -6,9 +6,8 @@
 
 (defn page-container
   [insets]
-  {:flex             1
-   :padding-top      (:top insets)
-   :background-color colors/neutral-80-opa-80-blur})
+  {:flex        1
+   :padding-top (:top insets)})
 
 (def page-illustration
   {:flex              1

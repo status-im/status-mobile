@@ -1,12 +1,12 @@
 (ns quo2.components.markdown.text
   (:require [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 
 (defn text-style
-  [{:keys [size align weight style]}]
+  [{:keys [size align weight style theme]}]
   (merge (case (or weight :regular)
            :regular   typography/font-regular
            :medium    typography/font-medium
@@ -25,14 +25,23 @@
          {:text-align (or align :auto)}
          (if (:color style)
            style
-           (assoc style :color (if (= (theme/get-theme) :dark) colors/white colors/neutral-100)))))
+           (assoc style
+                  :color
+                  (if (= (or theme (quo.theme/get-theme)) :dark) colors/white colors/neutral-100)))))
+
+(defn- text-view-internal
+  [props & children]
+  (let [style (text-style props)]
+    (into [rn/text
+           (merge {:style style}
+                  (dissoc props :style :size :align :weight :color :theme))]
+          children)))
+
+(def ^:private text-view (quo.theme/with-theme text-view-internal))
 
 (defn text
   []
-  (let [this  (reagent/current-component)
-        props (reagent/props this)
-        style (text-style props)]
-    (into [rn/text
-           (merge {:style style}
-                  (dissoc props :style :size :align :weight :color))]
-          (reagent/children this))))
+  (let [this     (reagent/current-component)
+        props    (reagent/props this)
+        children (reagent/children this)]
+    (into [text-view props] children)))

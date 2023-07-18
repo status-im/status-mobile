@@ -312,6 +312,11 @@ RCT_EXPORT_METHOD(localPairingPreflightOutboundCheck:(RCTResponseSenderBlock)cal
     callback(@[result]);
 }
 
+RCT_EXPORT_METHOD(startSearchForLocalPairingPeers:(RCTResponseSenderBlock)callback) {
+    NSString *result = StatusgoStartSearchForLocalPairingPeers();
+    callback(@[result]);
+}
+
 RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)configJSON
                   callback:(RCTResponseSenderBlock)callback) {
 
@@ -633,14 +638,15 @@ RCT_EXPORT_METHOD(loginAccount:(NSString *)request) {
 
 RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
                   password:(NSString *)password
-                  chatKey:(NSString *)chatKey) {
+                  chatKey:(NSString *)chatKey
+                  nodeConfigJSON:(NSString *)nodeConfigJSON) {
 #if DEBUG
     NSLog(@"LoginWithKeycard() method called");
 #endif
     [self getExportDbFilePath];
     [self migrateKeystore:accountData password:password];
 
-    NSString *result = StatusgoLoginWithKeycard(accountData, password, chatKey);
+    NSString *result = StatusgoLoginWithKeycard(accountData, password, chatKey, nodeConfigJSON);
 
     NSLog(@"%@", result);
 }

@@ -34,17 +34,18 @@
       (or display-name primary-name alias (gfycat/generate-gfy public-key)))))
 
 (defn contact-by-identity
-  [contacts identity]
-  (or (get contacts identity)
-      (contact.db/public-key->new-contact identity)))
+  [contacts contact-identity]
+  (or (get contacts contact-identity)
+      (contact.db/public-key->new-contact contact-identity)))
 
 (defn contact-two-names-by-identity
-  [contact current-multiaccount identity]
-  (let [me? (= (:public-key current-multiaccount) identity)]
+  [contact profile contact-identity]
+  (let [me? (= (:public-key profile) contact-identity)]
     (if me?
-      [(or (:preferred-name current-multiaccount)
+      [(or (:preferred-name profile)
+           (:display-name profile)
            (:primary-name contact)
-           (gfycat/generate-gfy identity))]
+           (gfycat/generate-gfy contact-identity))]
       [(:primary-name contact) (:secondary-name contact)])))
 
 (defn displayed-photo
@@ -211,8 +212,8 @@
     (rf/merge cofx
               {:json-rpc/call [{:method     "multiaccounts_deleteIdentityImage"
                                 :params     [key-uid]
-                                ;; NOTE: In case of an error we could fallback to previous image in UI
-                                ;; with a toast error
+                                ;; NOTE: In case of an error we could fallback to previous image in
+                                ;; UI with a toast error
                                 :on-success #(log/info "[multiaccount] Delete profile image" %)}]}
               (multiaccounts.update/optimistic :images nil)
               (bottom-sheet/hide-bottom-sheet-old))))

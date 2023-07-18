@@ -46,21 +46,16 @@
 
 (defn content-container
   [new-notifications?]
-  {:position     :absolute
-   :max-width    (if new-notifications? 108 136)
-   :flex-shrink  1
-   :bottom       12
-   :margin-left  12
-   :margin-right (if new-notifications? 8 12)})
+  {:flex      1
+   :max-width (if new-notifications? 108 136)})
 
 (def notification-container
-  {:position        :absolute
+  {:margin-top      :auto
    :width           20
    :height          20
-   :bottom          12
-   :right           12
    :justify-content :center
-   :align-items     :center})
+   :align-items     :center
+   :margin-left     8})
 
 (def last-message-text
   {:color (:last-message-text-color colors-map)})
@@ -91,7 +86,22 @@
    :border-radius    4
    :background-color background-color})
 
+(def bottom-container
+  {:position        :absolute
+   :flex-direction  :row
+   :justify-content :space-between
+   :align-items     :flex-end
+   :bottom          12
+   :left            12
+   :right           12})
+
 ;; Supporting Components
+
+(def channel-card-container
+  {:flex-direction :row
+   :align-items    :center})
+
+(def channel-card-text-container {:flex 1})
 
 (def sticker
   {:width  24

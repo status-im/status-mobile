@@ -13,14 +13,39 @@
             [utils.transforms :as types]
             [quo2.foundations.colors :as colors]
             [react-native.safe-area :as safe-area]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [react-native.reanimated :as reanimated]
+            [status-im2.constants :as constants]))
+
+(defonce push-animation-fn-atom (atom nil))
+(defonce pop-animation-fn-atom (atom nil))
+
+(defn push-animation
+  [translate-x]
+  (let [window-width (:width (rn/get-window))]
+    (reanimated/animate-shared-value-with-delay translate-x
+                                                (- window-width)
+                                                constants/onboarding-modal-animation-duration
+                                                :linear
+                                                100)))
+
+(defn pop-animation
+  [translate-x]
+  (reanimated/animate-shared-value-with-delay translate-x
+                                              0
+                                              constants/onboarding-modal-animation-duration
+                                              :linear
+                                              50))
 
 (defn new-account-options
   []
   [quo/action-drawer
    [[{:icon                :i/profile
       :label               (i18n/label :t/create-new-profile)
-      :on-press            #(rf/dispatch [:navigate-to :new-to-status])
+      :on-press            (fn []
+                             (when @push-animation-fn-atom
+                               (@push-animation-fn-atom))
+                             (rf/dispatch [:open-modal :new-to-status]))
       :accessibility-label :create-new-profile}
      {:icon                :i/multi-profile
       :label               (i18n/label :t/add-existing-status-profile)
@@ -97,11 +122,18 @@
                                [:profile/profile-selected key-uid])
                               (when-not keycard-pairing (set-hide-profiles)))}]))
 
-(defn profiles-section
+(defn- f-profiles-section
   [{:keys [set-hide-profiles]}]
-  (let [profiles (vals (rf/sub [:profile/profiles-overview]))]
-    [rn/view
-     {:style style/profiles-container}
+  (let [profiles    (vals (rf/sub [:profile/profiles-overview]))
+        translate-x (reanimated/use-shared-value 0)]
+    (rn/use-effect (fn []
+                     (reset! push-animation-fn-atom #(push-animation translate-x))
+                     (reset! pop-animation-fn-atom #(pop-animation translate-x))
+                     (fn []
+                       (reset! push-animation-fn-atom nil)
+                       (reset! pop-animation-fn-atom nil))))
+    [reanimated/view
+     {:style (style/profiles-container translate-x)}
      [rn/view
       {:style style/profiles-header}
       [quo/text
@@ -111,8 +143,9 @@
        (i18n/label :t/profiles-on-device)]
       [quo/button
        {:type                :primary
+        :customization-color :blue
         :size                32
-        :icon                true
+        :icon-only?          true
         :on-press            show-new-account-options
         :accessibility-label :show-new-account-options}
        :main-icons/add]]
@@ -123,6 +156,10 @@
        :render-data             {:last-index        (- (count profiles) 1)
                                  :set-hide-profiles set-hide-profiles}
        :render-fn               profile-card}]]))
+
+(defn profiles-section
+  [props]
+  [:f> f-profiles-section props])
 
 (defn forget-password-doc
   []
@@ -193,14 +230,13 @@
       :keyboardVerticalOffset (- (safe-area/get-bottom))}
      [quo/button
       {:size                32
-       :type                :blur-bg
-       :icon                true
+       :type                :grey
+       :background          :blur
+       :icon-only?          true
        :on-press            set-show-profiles
-       :disabled            processing
-       :override-theme      :dark
-       :width               32
+       :disabled?           processing
        :accessibility-label :show-profiles
-       :style               style/multi-profile-button}
+       :container-style     style/multi-profile-button}
       :i/multi-profile]
      [rn/scroll-view
       {:keyboard-should-persist-taps :always
@@ -250,11 +286,10 @@
        :type                :primary
        :customization-color (or customization-color :primary)
        :accessibility-label :login-button
-       :override-theme      :dark
-       :before              :i/unlocked
-       :disabled            (or (not sign-in-enabled?) processing)
+       :icon-left           :i/unlocked
+       :disabled?           (or (not sign-in-enabled?) processing)
        :on-press            login-multiaccount
-       :style               {:margin-bottom (+ (safe-area/get-bottom) 12)}}
+       :container-style     {:margin-bottom (+ (safe-area/get-bottom) 12)}}
       (i18n/label :t/log-in)]]))
 
 (defn view

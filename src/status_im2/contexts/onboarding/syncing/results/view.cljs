@@ -7,7 +7,9 @@
             [utils.re-frame :as rf]
             [status-im2.contexts.onboarding.syncing.results.style :as style]
             [status-im2.contexts.syncing.device.view :as device]
-            [status-im2.contexts.onboarding.common.background.view :as background]))
+            [status-im2.contexts.onboarding.common.background.view :as background]
+            [react-native.reanimated :as reanimated]
+            [status-im2.constants :as constants]))
 
 (defn page-title
   []
@@ -44,24 +46,36 @@
        :render-fn                       device/view}]]))
 
 (defn continue-button
-  []
-  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))]
+  [on-press]
+  (let [profile-color (rf/sub [:profile/customization-color])]
     [quo/button
-     {:on-press                  #(rf/dispatch [:init-root :enable-notifications])
-      :accessibility-label       :continue-button
-      :override-background-color (colors/custom-color profile-color 60)
-      :style                     style/continue-button}
+     {:on-press            (fn []
+                             (when on-press
+                               (on-press))
+                             (rf/dispatch [:open-modal :enable-notifications]))
+      :accessibility-label :continue-button
+      :customization-color profile-color
+      :container-style     style/continue-button}
      (i18n/label :t/continue)]))
+
+(defn- f-view
+  []
+  (let [top          (safe-area/get-top)
+        translate-x  (reanimated/use-shared-value 0)
+        window-width (:width (rn/get-window))]
+    [rn/view {:style (style/page-container top)}
+     [background/view true]
+     [reanimated/view
+      {:style (style/content translate-x)}
+      [page-title]
+      [devices-list]
+      [continue-button
+       #(reanimated/animate-shared-value-with-delay translate-x
+                                                    (- window-width)
+                                                    constants/onboarding-modal-animation-duration
+                                                    :linear
+                                                    200)]]]))
 
 (defn view
   []
-  (let [top (safe-area/get-top)]
-    [rn/view {:style (style/page-container top)}
-     [background/view true]
-     [rn/view
-      {:style {:margin-top    56
-               :margin-bottom 26
-               :flex          1}}
-      [page-title]
-      [devices-list]
-      [continue-button]]]))
+  [:f> f-view])

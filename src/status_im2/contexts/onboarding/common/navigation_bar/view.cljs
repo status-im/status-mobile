@@ -4,16 +4,18 @@
             [utils.re-frame :as rf]))
 
 (defn navigation-bar
-  [{:keys [top right-section-buttons disable-back-button?]}]
-  [rn/view
-   {:style {:height     56
-            :margin-top top}}
-   [quo/page-nav
-    {:align-mid?            true
-     :mid-section           {:type :text-only :main-text ""}
-     :left-section          {:type                :blur-bg
-                             :icon                :i/arrow-left
-                             :icon-override-theme :dark
-                             :on-press            (when-not disable-back-button?
-                                                    #(rf/dispatch [:navigate-back]))}
-     :right-section-buttons right-section-buttons}]])
+  [{:keys [top right-section-buttons disable-back-button? stack-id]}]
+  (let [back-event (if stack-id [:navigate-back-within-stack stack-id] [:navigate-back])]
+    [rn/view
+     {:style {:height     56
+              :margin-top top}}
+     [quo/page-nav
+      {:align-mid?            true
+       :mid-section           {:type :text-only :main-text ""}
+       :left-section          {:type            :grey
+                               :icon-background :blur
+                               :icon            :i/arrow-left
+                               :on-press        (fn []
+                                                  (when-not disable-back-button?
+                                                    (rf/dispatch back-event)))}
+       :right-section-buttons right-section-buttons}]]))

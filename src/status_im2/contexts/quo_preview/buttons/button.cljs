@@ -3,7 +3,8 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [status-im2.common.resources :as resources]))
 
 (def descriptor
   [{:label   "Type:"
@@ -11,8 +12,8 @@
     :type    :select
     :options [{:key   :primary
                :value "Primary"}
-              {:key   :secondary
-               :value "Secondary"}
+              {:key   :positive
+               :value "Positive"}
               {:key   :grey
                :value "Grey"}
               {:key   :dark-grey
@@ -23,8 +24,8 @@
                :value "Ghost"}
               {:key   :danger
                :value "Danger"}
-              {:key   :positive
-               :value "Positive"}]}
+              {:key   :black
+               :value "Black"}]}
    {:label   "Size:"
     :key     :size
     :type    :select
@@ -36,34 +37,50 @@
                :value "32"}
               {:key   24
                :value "24"}]}
-   {:label "Icon:"
-    :key   :icon
+   {:label   "Background:"
+    :key     :background
+    :type    :select
+    :options [{:key   :blur
+               :value "Blur"}
+              {:key   :photo
+               :value "Photo"}]}
+   {:label "Icon Only?:"
+    :key   :icon-only?
     :type  :boolean}
-   {:label "Above icon:"
-    :key   :above
+   {:label "show icon-top "
+    :key   :icon-top
     :type  :boolean}
-   {:label "After icon:"
-    :key   :after
+   {:label "show icon-right"
+    :key   :icon-right
     :type  :boolean}
-   {:label "Before icon:"
-    :key   :before
+   {:label "show icon-left"
+    :key   :icon-left
     :type  :boolean}
-   {:label "Disabled:"
-    :key   :disabled
+   {:label "Disabled?:"
+    :key   :disabled?
     :type  :boolean}
    {:label "Label"
     :key   :label
-    :type  :text}])
+    :type  :text}
+   {:label   "Customization color:"
+    :key     :customization-color
+    :type    :select
+    :options (map (fn [color]
+                    (let [k (get color :name)]
+                      {:key k :value k}))
+                  (quo/picker-colors))}])
 
 (defn cool-preview
   []
-  (let [state  (reagent/atom {:label "Press Me"
-                              :size  40})
-        label  (reagent/cursor state [:label])
-        before (reagent/cursor state [:before])
-        after  (reagent/cursor state [:after])
-        above  (reagent/cursor state [:above])
-        icon   (reagent/cursor state [:icon])]
+  (let [state      (reagent/atom {:label               "Press Me"
+                                  :size                40
+                                  :type                :primary
+                                  :customization-color :blue})
+        label      (reagent/cursor state [:label])
+        icon-left  (reagent/cursor state [:icon-left])
+        icon-right (reagent/cursor state [:icon-right])
+        icon-top   (reagent/cursor state [:icon-top])
+        icon-only? (reagent/cursor state [:icon-only?])]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -73,24 +90,35 @@
          {:padding-vertical 60
           :flex-direction   :row
           :justify-content  :center}
+         (when (= :photo (:background @state))
+           [rn/image
+            {:source (resources/get-mock-image :community-cover)
+             :style  {:position :absolute
+                      :top      0
+                      :left     0
+                      :right    0
+                      :bottom   0}}])
          [quo/button
           (merge (dissoc @state
                   :theme
-                  :before
-                  :after)
-                 {:on-press #(println "Hello world!")}
-                 (when @above
-                   {:above :i/placeholder})
-                 (when @before
-                   {:before :i/placeholder})
-                 (when @after
-                   {:after :i/placeholder}))
-          (if @icon :i/placeholder @label)]]]])))
+                  :customization-color
+                  :icon-left
+                  :icon-right)
+                 {:background (:background @state)
+                  :on-press   #(println "Hello world!")}
+                 (when (= :primary (:type @state)) {:customization-color (:customization-color @state)})
+                 (when @icon-top
+                   {:icon-top :i/placeholder})
+                 (when @icon-left
+                   {:icon-left :i/placeholder})
+                 (when @icon-right
+                   {:icon-right :i/placeholder}))
+          (if @icon-only? :i/placeholder @label)]]]])))
 
 (defn preview-button
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
+   {:background-color (colors/theme-colors colors/white colors/neutral-95)
     :flex             1}
    [rn/flat-list
     {:flex                         1

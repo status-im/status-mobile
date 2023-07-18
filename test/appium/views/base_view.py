@@ -1,11 +1,11 @@
-import time
-
 import base64
 import random
 import re
 import string
-from appium.webdriver.common.touch_action import TouchAction
+import time
 from datetime import datetime
+
+from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from support.device_apps import start_web_browser
@@ -37,7 +37,8 @@ class AllowButton(Button):
 
 class UnreadMessagesCountText(Text):
     def __init__(self, driver, parent_locator: str):
-        super().__init__(driver, xpath="(%s//android.widget.TextView)[last()]" % parent_locator)
+        super().__init__(driver,
+                         xpath="%s/*[@resource-id='counter-component']/android.widget.TextView" % parent_locator)
 
 
 class TabButton(Button):
@@ -130,7 +131,7 @@ class WalletButton(TabButton):
 
 class ProfileButton(TabButton):
     def __init__(self, driver):
-        super().__init__(driver,  accessibility_id="open-profile")
+        super().__init__(driver, accessibility_id="open-profile")
 
     def navigate(self):
         from views.profile_view import ProfileView
@@ -255,7 +256,8 @@ class BaseView(object):
 
         # Floating screens (introduced by https://github.com/status-im/status-mobile/pull/16438)
         self.chat_floating_screen = BaseElement(self.driver, accessibility_id=":chat-floating-screen")
-        self.community_floating_screen = BaseElement(self.driver, accessibility_id=":community-overview-floating-screen")
+        self.community_floating_screen = BaseElement(self.driver,
+                                                     accessibility_id=":community-overview-floating-screen")
 
         self.jump_to_button = Button(self.driver, accessibility_id="jump-to")
 
@@ -291,6 +293,7 @@ class BaseView(object):
         self.share_button = Button(self.driver, accessibility_id="share-my-contact-code-button")
         self.qr_code_image = Button(self.driver, accessibility_id="qr-code-image")
         self.sign_in_phrase = SignInPhraseText(self.driver)
+        self.toast_content_element = BaseElement(self.driver, accessibility_id="toast-content")
 
         # checkboxes and toggles
         self.checkbox_button = CheckBox(self.driver, accessibility_id="checkbox-off")
@@ -302,7 +305,6 @@ class BaseView(object):
         self.status_app_icon = Button(self.driver, translation_id="status")
         self.airplane_mode_button = AirplaneModeButton(self.driver)
         self.enter_qr_edit_box = EnterQRcodeEditBox(self.driver)
-
 
         self.element_types = {
             'base': BaseElement,
@@ -782,3 +784,12 @@ class BaseView(object):
         string_source = self.driver.page_source
         source = open(full_path_to_file, "a+")
         source.write(string_source)
+
+    def wait_for_current_package_to_be(self, expected_package_name: str, timeout: int = 10):
+        start_time = time.time()
+        while time.time() - start_time <= timeout:
+            package = self.driver.current_package
+            if package == expected_package_name:
+                return
+            time.sleep(1)
+        raise TimeoutException("Driver current package is '%s' after %s seconds" % (package, timeout))

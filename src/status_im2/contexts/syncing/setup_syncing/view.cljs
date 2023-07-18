@@ -38,7 +38,8 @@
 
 (defn view
   []
-  (let [valid-for-ms  (reagent/atom code-valid-for-ms)
+  (let [profile-color (rf/sub [:profile/customization-color])
+        valid-for-ms  (reagent/atom code-valid-for-ms)
         code          (reagent/atom nil)
         delay         (reagent/atom nil)
         timestamp     (reagent/atom nil)
@@ -83,16 +84,20 @@
               :width  "100%"}])
           (when-not (sync-utils/valid-connection-string? @code)
             [quo/button
-             {:on-press (fn []
-                          ;TODO https://github.com/status-im/status-mobile/issues/15570
-                          ;remove old bottom sheet when Authentication process design is created.
-                          (rf/dispatch [:bottom-sheet/hide-old])
-                          (rf/dispatch [:bottom-sheet/show-sheet-old
-                                        {:content (fn []
-                                                    [enter-password/sheet set-code])}]))
-              :size     40
-              :style    style/generate-button
-              :before   :i/reveal} (i18n/label :t/reveal-sync-code)])
+             {:on-press            (fn []
+                                     ;TODO https://github.com/status-im/status-mobile/issues/15570
+                                     ;remove old bottom sheet when Authentication process design is
+                                     ;created.
+                                     (rf/dispatch [:bottom-sheet/hide-old])
+                                     (rf/dispatch [:bottom-sheet/show-sheet-old
+                                                   {:content (fn []
+                                                               [enter-password/sheet set-code])}]))
+              :type                :primary
+              :customization-color profile-color
+              :size                40
+              :container-style     style/generate-button
+              :icon-left           :i/reveal}
+             (i18n/label :t/reveal-sync-code)])
           (when (sync-utils/valid-connection-string? @code)
             [rn/view
              {:style style/valid-cs-container}
@@ -111,27 +116,25 @@
              [quo/input
               {:default-value  @code
                :type           :password
-               :override-theme :dark
                :default-shown? true
                :editable       false}]
              [quo/button
-              {:on-press (fn []
-                           (clipboard/set-string @code)
-                           (rf/dispatch [:toasts/upsert
-                                         {:icon       :correct
-                                          :icon-color colors/success-50
-                                          :text       (i18n/label
-                                                       :t/sharing-copied-to-clipboard)}]))
-               :type     :grey
-               :style    {:margin-top 12}
-               :before   :i/copy}
+              {:on-press        (fn []
+                                  (clipboard/set-string @code)
+                                  (rf/dispatch [:toasts/upsert
+                                                {:icon       :correct
+                                                 :icon-color colors/success-50
+                                                 :text       (i18n/label
+                                                              :t/sharing-copied-to-clipboard)}]))
+               :type            :grey
+               :container-style {:margin-top 12}
+               :icon-left       :i/copy}
               (i18n/label :t/copy-qr)]])]]
         [rn/view {:style style/sync-code}
          [quo/divider-label
           {:label                 (i18n/label :t/have-a-sync-code?)
            :increase-padding-top? true}]
          [quo/action-drawer
-          [[{:icon           :i/scan
-             :override-theme :dark
-             :on-press       #(rf/dispatch [:navigate-to :scan-sync-code-page])
-             :label          (i18n/label :t/scan-or-enter-sync-code)}]]]]]])))
+          [[{:icon     :i/scan
+             :on-press #(rf/dispatch [:navigate-to :scan-sync-code-page])
+             :label    (i18n/label :t/scan-or-enter-sync-code)}]]]]]])))

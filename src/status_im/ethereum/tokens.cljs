@@ -5,10 +5,10 @@
 
 (def default-native-currency
   (memoize
-   (fn [symbol]
+   (fn [sym]
      {:name           "Native"
       :symbol         :ETH
-      :symbol-display symbol
+      :symbol-display sym
       :decimals       18
       :icon           {:source (js/require "../resources/images/tokens/default-token.png")}})))
 
@@ -41,13 +41,13 @@
   (set (map #(-> % val :symbol) all-native-currencies)))
 
 (defn native-currency
-  [{:keys [symbol] :as current-network}]
+  [{sym :symbol :as current-network}]
   (let [chain (ethereum/network->chain-keyword current-network)]
-    (get all-native-currencies chain (default-native-currency symbol))))
+    (get all-native-currencies chain (default-native-currency sym))))
 
 (defn ethereum?
-  [symbol]
-  (native-currency-symbols symbol))
+  [sym]
+  (native-currency-symbols sym))
 
 (def token-icons
   {:mainnet (resolve-icons :mainnet)
@@ -74,17 +74,17 @@
                        (string/lower-case (:name %2))))))
 
 (defn symbol->token
-  [all-tokens symbol]
-  (some #(when (= symbol (:symbol %)) %) (vals all-tokens)))
+  [all-tokens sym]
+  (some #(when (= sym (:symbol %)) %) (vals all-tokens)))
 
 (defn address->token
   [all-tokens address]
   (get all-tokens (string/lower-case address)))
 
 (defn asset-for
-  [all-tokens current-network symbol]
+  [all-tokens current-network sym]
   (let [native-coin (native-currency current-network)]
-    (if (or (= (:symbol-display native-coin) symbol)
-            (= (:symbol native-coin) symbol))
+    (if (or (= (:symbol-display native-coin) sym)
+            (= (:symbol native-coin) sym))
       native-coin
-      (symbol->token all-tokens symbol))))
+      (symbol->token all-tokens sym))))

@@ -82,8 +82,8 @@
           :restDisplacementThreshold 0.001}})
 
 (defn set-value
-  [anim val]
-  (ocall anim "setValue" val))
+  [anim v]
+  (ocall anim "setValue" v))
 
 (def Value (oget animated "Value"))
 
@@ -178,20 +178,20 @@
   (.withOffset ^js redash (clj->js config)))
 
 (defn with-spring-transition
-  [val config]
-  (.withSpringTransition ^js redash val (clj->js config)))
+  [v config]
+  (.withSpringTransition ^js redash v (clj->js config)))
 
 (defn with-timing-transition
-  [val config]
-  (.withTimingTransition ^js redash val (clj->js config)))
+  [v config]
+  (.withTimingTransition ^js redash v (clj->js config)))
 
 (defn use-spring-transition
-  [val config]
-  (.useSpringTransition ^js redash val (clj->js config)))
+  [v config]
+  (.useSpringTransition ^js redash v (clj->js config)))
 
 (defn use-timing-transition
-  [val config]
-  (.useTimingTransition ^js redash val (clj->js config)))
+  [v config]
+  (.useTimingTransition ^js redash v (clj->js config)))
 
 (defn re-timing
   [config]
@@ -232,11 +232,11 @@
      :onGestureEvent       (.-onGestureEvent ^js gesture)}))
 
 (defn snap-point
-  [value velocity snap-points]
-  (.snapPoint ^js redash value velocity (to-array snap-points)))
+  [v velocity snap-points]
+  (.snapPoint ^js redash v velocity (to-array snap-points)))
 
 (defn with-easing
-  [{val   :value
+  [{v     :value
     :keys [snap-points velocity offset state easing duration
            animation-over]
     :or   {duration       250
@@ -257,7 +257,7 @@
              (set position offset))
       (cond* (neq state (:end gh/states))
              [(set animation-over 0)
-              (set position (add offset val))])
+              (set position (add offset v))])
       (cond* (and* (eq state (:end gh/states))
                    (not* animation-over))
              [(set position

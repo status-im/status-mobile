@@ -16,11 +16,11 @@
   [quo/button
    {:type                :grey
     :size                32
-    :width               32
-    :style               {:margin-left 20}
+    :icon-only?          true
+    :container-style     {:margin-left 20}
     :accessibility-label :back-button
     :on-press            #(rf/dispatch [:navigate-back])}
-   [quo/icon :i/arrow-left {:color (colors/theme-colors colors/neutral-100 colors/white)}]])
+   :i/arrow-left])
 
 (defn options-button
   []
@@ -28,12 +28,12 @@
     [quo/button
      {:type                :grey
       :size                32
-      :width               32
-      :style               {:margin-right 20}
+      :icon-only?          true
+      :container-style     {:margin-right 20}
       :accessibility-label :options-button
       :on-press            #(rf/dispatch [:show-bottom-sheet
                                           {:content (fn [] [actions/group-details-actions group])}])}
-     [quo/icon :i/options {:color (colors/theme-colors colors/neutral-100 colors/white)}]]))
+     :i/options]))
 
 (defn top-buttons
   []
@@ -120,7 +120,8 @@
        :render-fn                      add-member-contact-item-render}]
      [rn/view {:style (style/bottom-container 30)}
       [quo/button
-       {:style               {:flex 1}
+       {:container-style     {:flex 1}
+        :type                :primary
         :accessibility-label :save
         :on-press            (fn []
                                (rf/dispatch [:navigate-back])
@@ -129,7 +130,7 @@
                                                  [:group-chats.ui/remove-members-pressed]))
                                               500)
                                (rf/dispatch [:group-chats.ui/add-members-pressed]))
-        :disabled            (and (zero? (count selected-participants))
+        :disabled?           (and (zero? (count selected-participants))
                                   (zero? (count deselected-members)))}
        (i18n/label :t/save)]]]))
 

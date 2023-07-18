@@ -225,12 +225,12 @@
   (.verifyDatabasePassword ^js (status) key-uid hashed-password callback))
 
 (defn login-with-keycard
-  [{:keys [key-uid multiaccount-data password chat-key]}]
+  [{:keys [key-uid multiaccount-data password chat-key node-config]}]
   (log/debug "[native-module] login-with-keycard")
   (clear-web-data)
   (init-keystore
    key-uid
-   #(.loginWithKeycard ^js (status) multiaccount-data password chat-key)))
+   #(.loginWithKeycard ^js (status) multiaccount-data password chat-key (types/clj->json node-config))))
 
 (defn set-soft-input-mode
   [mode]
@@ -257,6 +257,13 @@
   [message callback]
   (log/debug "[native-module] hash-message")
   (.hashMessage ^js (status) message callback))
+
+(defn start-searching-for-local-pairing-peers
+  "starts a UDP multicast beacon that both listens for and broadcasts to LAN peers"
+  [callback]
+  (log/info "[native-module] Start Searching for Local Pairing Peers"
+            {:fn :start-searching-for-local-pairing-peers})
+  (.startSearchForLocalPairingPeers ^js (status) callback))
 
 (defn local-pairing-preflight-outbound-check
   "Checks whether the device has allows connecting to the local server"
@@ -461,19 +468,19 @@
   (.numberToHex ^js (status) (str num)))
 
 (defn sha3
-  [str]
+  [s]
   (log/debug "[native-module] sha3")
-  (.sha3 ^js (status) str))
+  (.sha3 ^js (status) s))
 
 (defn utf8-to-hex
-  [str]
+  [s]
   (log/debug "[native-module] utf8-to-hex")
-  (.utf8ToHex ^js (status) str))
+  (.utf8ToHex ^js (status) s))
 
 (defn hex-to-utf8
-  [str]
+  [s]
   (log/debug "[native-module] hex-to-utf8")
-  (.hexToUtf8 ^js (status) str))
+  (.hexToUtf8 ^js (status) s))
 
 (defn check-address-checksum
   [address]

@@ -6,7 +6,7 @@
             [react-native.masked-view :as masked-view]
             [reagent.core :as reagent]
             [utils.collection :as utils.collection]
-            [utils.number :as utils.number]
+            [utils.number]
             [react-native.gesture :as gesture]))
 
 (def default-tab-size 32)

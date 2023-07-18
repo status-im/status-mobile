@@ -26,7 +26,6 @@
 (def snoopy-enabled? (enabled? (get-config :SNOOPY 0)))
 (def dev-build? (enabled? (get-config :DEV_BUILD 0)))
 (def max-message-delivery-attempts (js/parseInt (get-config :MAX_MESSAGE_DELIVERY_ATTEMPTS "6")))
-(def max-images-batch (js/parseInt (get-config :MAX_IMAGES_BATCH "1")))
 ;; NOTE: only disabled in releases
 (def local-notifications? (enabled? (get-config :LOCAL_NOTIFICATIONS "1")))
 (def blank-preview? (enabled? (get-config :BLANK_PREVIEW "1")))
@@ -68,6 +67,9 @@
 (def verify-ens-contract-address
   (get-config :VERIFY_ENS_CONTRACT_ADDRESS
               ((ethereum/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
+
+(def fast-create-community-enabled?
+  (enabled? (get-config :FAST_CREATE_COMMUNITY_ENABLED "0")))
 
 (def default-multiaccount
   {:preview-privacy?                   blank-preview?

@@ -4,7 +4,6 @@
     [quo2.components.avatars.user-avatar.view :as user-avatar]
     [quo2.components.inputs.profile-input.style :as style]
     [quo2.components.inputs.title-input.view :as title-input]
-    [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.hole-view :as hole-view]))
 
@@ -35,16 +34,14 @@
              :status-indicator? false
              :size              :medium)]]
     [buttons/button
-     {:accessibility-label       :select-profile-picture-button
-      :type                      :grey
-      :override-background-color (colors/alpha colors/white 0.05)
-      :on-press                  on-press
-      :icon-size                 20
-      :width                     24
-      :size                      24
-      :icon                      :i/camera
-      :style                     style/button
-      :inner-style               style/button-inner} :i/camera]]
+     {:accessibility-label :select-profile-picture-button
+      :type                :grey
+      :background          :blur
+      :on-press            on-press
+      :size                24
+      :icon-only?          true
+      :container-style     style/button
+      :inner-style         style/button-inner} :i/camera]]
    [rn/view {:style style/input-container}
     [title-input/title-input
      (merge title-input-props

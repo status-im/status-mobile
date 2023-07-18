@@ -9,6 +9,8 @@
 
 (defn now [] (t/now))
 
+(def weekday-names ["su" "mo" "tu" "we" "th" "fr" "sa"])
+
 (def ^:const int->weekday
   "Maps the corresponding string representation of a weekday
    By it's numeric index as in cljs-time"
@@ -93,6 +95,12 @@
   [^js locsym]
   (nth (.-DATEFORMATS locsym) 2))
 
+(defn format-date
+  [date]
+  (if date
+    (t.format/unparse (t.format/formatter "dd/MM/yyyy") date)
+    ""))
+
 ;;;; Datetime formats
 (defn- medium-date-time-format
   [locsym]
@@ -113,6 +121,10 @@
 (def short-date-with-time-fmt (get-formatter-fn short-date-format-with-time))
 (def datetime-within-one-week-fmt (get-formatter-fn datetime-within-one-week-format))
 
+(def format-long-month
+  (memoize (fn [month]
+             (.format ^js ((get-formatter-fn (constantly "MMMM")))
+                      (t/date-time 1970 month)))))
 ;;;; Utilities
 (defn previous-years?
   [datetime]
@@ -296,35 +308,3 @@
 (def ^:const go-default-time
   "Zero value for golang's time var"
   "0001-01-01T00:00:00Z")
-
-(defn- add-leading-zero
-  [input-string]
-  (if (> 10 input-string)
-    (str "0" input-string)
-    input-string))
-
-(defn format-mute-till
-  [muted-till-string]
-  (let [parsed-time       (t.format/parse (t.format/formatters :date-time-no-ms) muted-till-string)
-        hours-and-minutes (str (add-leading-zero (t/hour (t/plus parsed-time time-zone-offset)))
-                               ":"
-                               (add-leading-zero (t/minute parsed-time)))
-        when-to-unmute    (cond (= go-default-time
-                                   muted-till-string)   (i18n/label :t/until-you-turn-it-back-on)
-                                (today? parsed-time)    (str hours-and-minutes " today")
-                                (tomorrow? parsed-time) (str hours-and-minutes " tomorrow")
-                                :else                   (str hours-and-minutes
-                                                             " "
-                                                             (i18n/label
-                                                              (keyword "t"
-                                                                       (get int->weekday
-                                                                            (t/day-of-week
-                                                                             parsed-time))))
-                                                             " "
-                                                             (t/day parsed-time)
-                                                             " "
-                                                             (i18n/label
-                                                              (keyword "t"
-                                                                       (get months
-                                                                            (t/month parsed-time))))))]
-    when-to-unmute))

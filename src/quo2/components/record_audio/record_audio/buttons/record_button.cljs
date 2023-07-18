@@ -1,7 +1,5 @@
 (ns quo2.components.record-audio.record-audio.buttons.record-button
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.record-audio.record-audio.style :as style]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.components.record-audio.record-audio.style :as style]
             [react-native.core :as rn :refer [use-effect]]
             [react-native.reanimated :as reanimated]
             [quo2.components.buttons.button.view :as button]
@@ -21,6 +19,6 @@
      [button/button
       {:type                :outline
        :size                32
-       :width               32
-       :accessibility-label :mic-button}
-      [icons/icon :i/audio {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]]]))
+       :accessibility-label :mic-button
+       :icon-only?          true}
+      :i/audio]]))

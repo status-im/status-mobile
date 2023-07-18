@@ -7,7 +7,8 @@
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.constants :as constants]
             [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]
-            [utils.debounce :as debounce]))
+            [utils.debounce :as debounce]
+            [status-im2.contexts.onboarding.common.overlay.view :as overlay]))
 
 (defn view
   []
@@ -24,7 +25,10 @@
                            :heading             (i18n/label :t/sign-in)
                            :animated-heading    (i18n/label :t/sign-in-by-syncing)
                            :accessibility-label :already-use-status-button}
-     :bottom-card         {:on-press            #(rf/dispatch [:navigate-to :new-to-status])
+     :bottom-card         {:on-press            (fn []
+                                                  (when @overlay/blur-show-fn-atom
+                                                    (@overlay/blur-show-fn-atom))
+                                                  (rf/dispatch [:open-modal :new-to-status]))
                            :heading             (i18n/label :t/new-to-status)
                            :accessibility-label :new-to-status-button}}
     [quo/text
@@ -38,4 +42,5 @@
      [quo/text
       {:on-press #(rf/dispatch [:open-modal :privacy-policy])
        :style    style/highlighted-text}
-      (i18n/label :t/terms-of-service)]]]])
+      (i18n/label :t/terms-of-service)]]]
+   [overlay/view]])

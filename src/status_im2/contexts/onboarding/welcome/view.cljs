@@ -8,8 +8,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im2.constants :as constants]
-    [status-im2.contexts.onboarding.welcome.style :as style]
-    [status-im2.contexts.onboarding.common.background.view :as background]))
+    [status-im2.contexts.onboarding.welcome.style :as style]))
 
 (defn page-title
   []
@@ -23,7 +22,6 @@
       :subtitle                     (i18n/label :t/welcome-to-web3-sub-title)
       :subtitle-accessibility-label :welcome-sub-title}]))
 
-
 (defn navigation-bar
   [root]
   [quo/page-nav
@@ -32,9 +30,13 @@
     :align-mid?              false
     :page-nav-color          :transparent
     :left-section            {:icon                  :i/arrow-left
+                              ;TODO this is wrong - page nav needs updating
+                              ;https://github.com/status-im/status-mobile/issues/16535
+                              ; should be type:grey, and page nav can use background instead.
                               :icon-background-color colors/white-opa-5
-                              :type                  :shell
-                              :on-press              #(rf/dispatch [:init-root root])}}])
+                              :type                  :grey
+                              :on-press              #(rf/dispatch [:navigate-back-within-stack
+                                                                    root])}}])
 
 (defn dispatch-visibility-status-update
   [status-type]
@@ -43,13 +45,12 @@
 
 (defn view
   []
-  (let [profile-color         (:color (rf/sub [:onboarding-2/profile]))
+  (let [profile-color         (rf/sub [:onboarding-2/customization-color])
         {:keys [status-type]} (rf/sub [:multiaccount/current-user-visibility-status])
         insets                (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      (when (nil? status-type)
        (dispatch-visibility-status-update constants/visibility-status-automatic))
-     [background/view true]
      [navigation-bar :enable-notifications]
      [page-title]
      [rn/view {:style style/page-illustration}
@@ -57,10 +58,10 @@
        "Illustration here"]]
      [rn/view {:style (style/buttons insets)}
       [quo/button
-       {:on-press                  (fn []
-                                     (rf/dispatch [:init-root :shell-stack])
-                                     (rf/dispatch [:universal-links/process-stored-event]))
-        :type                      :primary
-        :accessibility-label       :welcome-button
-        :override-background-color (colors/custom-color profile-color 60)}
+       {:on-press            (fn []
+                               (rf/dispatch [:init-root :shell-stack])
+                               (rf/dispatch [:universal-links/process-stored-event]))
+        :type                :primary
+        :accessibility-label :welcome-button
+        :customization-color profile-color}
        (i18n/label :t/start-using-status)]]]))

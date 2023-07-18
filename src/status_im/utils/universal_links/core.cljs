@@ -210,7 +210,9 @@
   (js/setTimeout #(-> (.getInitialURL ^js react/linking)
                       (.then dispatch-url))
                  200)
-  (.addEventListener ^js react/linking "url" url-event-listener))
+  (.addEventListener ^js react/linking "url" url-event-listener)
+  (native-module/start-searching-for-local-pairing-peers
+   #(log/info "[local-pairing] errors from local-pairing-preflight-outbound-check ->" %)))
 
 (defn finalize
   "Remove event listener for url"

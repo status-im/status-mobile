@@ -6,7 +6,7 @@
   [quo/button
    {:type                :primary
     :size                32
-    :icon                true
+    :icon-only?          true
     :accessibility-label (or accessibility-label :plus-button)
     :on-press            on-press
     :customization-color customization-color}

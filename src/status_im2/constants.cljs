@@ -14,7 +14,9 @@
 (def ^:const content-type-gap 10)
 (def ^:const content-type-contact-request 11) ;; TODO: temp, will be removed
 (def ^:const content-type-system-pinned-message 14)
-(def ^:const content-type-system-mutual-state-update 15)
+(def ^:const content-type-system-message-mutual-event-sent 15)
+(def ^:const content-type-system-message-mutual-event-accepted 16)
+(def ^:const content-type-system-message-mutual-event-removed 17)
 
 ;; Not implemented in status-go, only used for testing/ui work
 (def ^:const content-type-gif 100)
@@ -46,6 +48,7 @@
 (def ^:const mute-for-8-hours-type 3)
 (def ^:const mute-for-1-week 4)
 (def ^:const mute-till-unmuted 5)
+(def ^:const un-muted 0)
 
 (def ^:const activity-center-mark-all-as-read-undo-time-limit-ms 4000)
 (def ^:const activity-center-max-unread-count 99)

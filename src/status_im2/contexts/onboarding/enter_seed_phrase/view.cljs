@@ -7,7 +7,6 @@
             [reagent.core :as reagent]
             [status-im.ethereum.mnemonic :as mnemonic]
             [status-im2.constants :as constants]
-            [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
             [status-im2.contexts.onboarding.enter-seed-phrase.style :as style]
             [utils.i18n :as i18n]
@@ -74,9 +73,10 @@
         :on-change-text           on-change-seed-phrase}
        seed-phrase]]
      [quo/button
-      {:style    (style/continue-button keyboard-shown?)
-       :disabled button-disabled?
-       :on-press on-submit}
+      {:container-style (style/continue-button keyboard-shown?)
+       :type            :primary
+       :disabled?       button-disabled?
+       :on-press        on-submit}
       (i18n/label :t/continue)]]))
 
 (defn keyboard-suggestions
@@ -159,7 +159,8 @@
   []
   (let [{navigation-bar-top :top} (safe-area/get-insets)]
     [rn/view {:style style/full-layout}
-     [background/view true]
      [rn/keyboard-avoiding-view {:style style/page-container}
-      [navigation-bar/navigation-bar {:top navigation-bar-top}]
+      [navigation-bar/navigation-bar
+       {:stack-id :new-to-status
+        :top      navigation-bar-top}]
       [screen]]]))

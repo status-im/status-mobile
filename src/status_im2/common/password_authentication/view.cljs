@@ -36,6 +36,6 @@
              :style {:margin-top 8}}
             (i18n/label :t/oops-wrong-password)])
          [quo/button
-          {:style    {:margin-bottom 12 :margin-top 40}
-           :on-press #((:on-press button) (ethereum/sha3 @entered-password))}
+          {:container-style {:margin-bottom 12 :margin-top 40}
+           :on-press        #((:on-press button) (ethereum/sha3 @entered-password))}
           (:label button)]]))))

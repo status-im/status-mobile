@@ -32,16 +32,16 @@
    (get multiaccount :profile-pictures-visibility)))
 
 (defn- replace-contact-image-uri
-  [contact port identity]
+  [contact port contact-identity]
   (let [theme          (theme/get-theme)
         contact-images (:images contact)
         contact-images (reduce (fn [acc image]
                                  (let [image-name (:type image)
-                                       ; We pass the clock so that we reload the image if the image is
-                                       ; updated
+                                       ; We pass the clock so that we reload the image if the image
+                                       ; is updated
                                        clock      (:clock image)
                                        uri        (image-server/get-contact-image-uri port
-                                                                                      identity
+                                                                                      contact-identity
                                                                                       image-name
                                                                                       clock
                                                                                       theme)]
@@ -175,10 +175,10 @@
                contacts)))))
 
 (defn- enrich-contact
-  [_ identity ens-name port]
+  [_ contact-identity ens-name port]
   (let [contact (contact.db/enrich-contact
-                 (contact.db/public-key-and-ens-name->new-contact identity ens-name))]
-    (replace-contact-image-uri contact port identity)))
+                 (contact.db/public-key-and-ens-name->new-contact contact-identity ens-name))]
+    (replace-contact-image-uri contact port contact-identity)))
 
 (re-frame/reg-sub
  :contacts/current-contact
@@ -186,46 +186,46 @@
  :<- [:contacts/current-contact-identity]
  :<- [:contacts/current-contact-ens-name]
  :<- [:mediaserver/port]
- (fn [[contacts identity ens-name port]]
-   (let [contact (get contacts identity)]
+ (fn [[contacts contact-identity ens-name port]]
+   (let [contact (get contacts contact-identity)]
      (cond-> contact
        (nil? contact)
-       (enrich-contact identity ens-name port)))))
+       (enrich-contact contact-identity ens-name port)))))
 
 (re-frame/reg-sub
  :contacts/contact-by-identity
  :<- [:contacts/contacts]
- (fn [contacts [_ identity]]
-   (multiaccounts/contact-by-identity contacts identity)))
+ (fn [contacts [_ contact-identity]]
+   (multiaccounts/contact-by-identity contacts contact-identity)))
 
 (re-frame/reg-sub
  :contacts/contact-added?
- (fn [[_ identity] _]
-   [(re-frame/subscribe [:contacts/contact-by-identity identity])])
+ (fn [[_ contact-identity] _]
+   [(re-frame/subscribe [:contacts/contact-by-identity contact-identity])])
  (fn [[contact] _]
    (:added? contact)))
 
 (re-frame/reg-sub
  :contacts/contact-blocked?
- (fn [[_ identity] _]
-   [(re-frame/subscribe [:contacts/contact-by-identity identity])])
+ (fn [[_ contact-identity] _]
+   [(re-frame/subscribe [:contacts/contact-by-identity contact-identity])])
  (fn [[contact] _]
    (:blocked contact)))
 
 (re-frame/reg-sub
  :contacts/contact-two-names-by-identity
- (fn [[_ identity] _]
-   [(re-frame/subscribe [:contacts/contact-by-identity identity])
+ (fn [[_ contact-identity] _]
+   [(re-frame/subscribe [:contacts/contact-by-identity contact-identity])
     (re-frame/subscribe [:profile/profile])])
- (fn [[contact current-multiaccount] [_ identity]]
+ (fn [[contact current-multiaccount] [_ contact-identity]]
    (multiaccounts/contact-two-names-by-identity contact
                                                 current-multiaccount
-                                                identity)))
+                                                contact-identity)))
 
 (re-frame/reg-sub
  :contacts/contact-name-by-identity
- (fn [[_ identity] _]
-   [(re-frame/subscribe [:contacts/contact-two-names-by-identity identity])])
+ (fn [[_ contact-identity] _]
+   [(re-frame/subscribe [:contacts/contact-two-names-by-identity contact-identity])])
  (fn [[names] _]
    (first names)))
 
@@ -236,21 +236,21 @@
  :<- [:profile/profile]
  (fn [[messages contacts current-multiaccount] [_ message-id]]
    (when-let [message (get messages message-id)]
-     (let [identity (:from message)
-           me?      (= (:public-key current-multiaccount) identity)]
+     (let [from-identity (:from message)
+           me?           (= (:public-key current-multiaccount) from-identity)]
        (if me?
-         {:quote    {:from identity
+         {:quote    {:from from-identity
                      :text (get-in message [:content :text])}
           :ens-name (:preferred-name current-multiaccount)
-          :alias    (gfycat/generate-gfy identity)}
-         (let [contact (or (contacts identity)
-                           (contact.db/public-key->new-contact identity))]
-           {:quote    {:from identity
+          :alias    (gfycat/generate-gfy from-identity)}
+         (let [contact (or (contacts from-identity)
+                           (contact.db/public-key->new-contact from-identity))]
+           {:quote    {:from from-identity
                        :text (get-in message [:content :text])}
             :ens-name (when (:ens-verified contact)
                         (:name contact))
             :alias    (or (:alias contact)
-                          (gfycat/generate-gfy identity))}))))))
+                          (gfycat/generate-gfy from-identity))}))))))
 
 (re-frame/reg-sub
  :contacts/all-contacts-not-in-current-chat
@@ -323,5 +323,3 @@
              (seq admins)  (assoc :owner {:title (i18n/label :t/owner) :data admins})
              (seq online)  (assoc :online {:title (i18n/label :t/online) :data online})
              (seq offline) (assoc :offline {:title (i18n/label :t/offline) :data offline}))))))
-
-

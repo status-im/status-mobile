@@ -8,7 +8,6 @@
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-            [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
             [utils.re-frame :as rf]
             [oops.core :as oops]
@@ -18,7 +17,7 @@
 
 ;; NOTE - validation should match with Desktop
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
-;; 
+;;
 (def emoji-regex
   (new
    js/RegExp
@@ -99,7 +98,9 @@
                                 name-too-short? :default
                                 :else           :success)]
       [rn/view {:style style/page-container}
-       [navigation-bar/navigation-bar {:top navigation-bar-top}]
+       [navigation-bar/navigation-bar
+        {:stack-id :new-to-status
+         :top      navigation-bar-top}]
        [rn/scroll-view
         {:content-container-style {:flexGrow 1}}
         [rn/view {:style style/page-container}
@@ -122,7 +123,8 @@
                                       [:show-bottom-sheet
                                        {:content
                                         (fn []
-                                          [method-menu/view on-change-profile-pic])}]))
+                                          [method-menu/view on-change-profile-pic])
+                                        :theme :dark}]))
               :image-picker-props  {:profile-picture     (when @profile-pic {:uri @profile-pic})
                                     :full-name           (if (seq @full-name)
                                                            @full-name
@@ -160,16 +162,16 @@
          :pointer-events :box-none}
         [button-container @keyboard-shown?
          [quo/button
-          {:accessibility-label       :submit-create-profile-button
-           :type                      :primary
-           :override-background-color (colors/custom-color @custom-color 60)
-           :on-press                  (fn []
-                                        (rf/dispatch [:onboarding-2/profile-data-set
-                                                      {:image-path   @profile-pic
-                                                       :display-name @full-name
-                                                       :color        @custom-color}]))
-           :style                     style/continue-button
-           :disabled                  (or (not valid-name?) (not (seq @full-name)))}
+          {:accessibility-label :submit-create-profile-button
+           :type                :primary
+           :customization-color @custom-color
+           :on-press            (fn []
+                                  (rf/dispatch [:onboarding-2/profile-data-set
+                                                {:image-path   @profile-pic
+                                                 :display-name @full-name
+                                                 :color        @custom-color}]))
+           :container-style     style/continue-button
+           :disabled?           (or (not valid-name?) (not (seq @full-name)))}
           (i18n/label :t/continue)]]]])
     (finally
      (oops/ocall show-listener "remove")
@@ -180,7 +182,6 @@
   (let [{:keys [top]}           (safe-area/get-insets)
         onboarding-profile-data (rf/sub [:onboarding-2/profile])]
     [:<>
-     [background/view true]
      [:f> f-page
       {:navigation-bar-top      top
        :onboarding-profile-data onboarding-profile-data}]]))

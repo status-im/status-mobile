@@ -112,8 +112,8 @@
     [react/text {:style {:color colors/blue}} (i18n/label :t/set-max)]]])
 
 (defn fiat-value
-  [amount {:keys [symbol]} prices wallet-currency]
-  (when-let [price (get-in prices [(keyword symbol) (keyword (:code wallet-currency)) :price])]
+  [amount {sym :symbol} prices wallet-currency]
+  (when-let [price (get-in prices [(keyword sym) (keyword (:code wallet-currency)) :price])]
     (let [norm-amount (js/parseFloat (money/normalize amount))
           amount      (if (js/isNaN norm-amount) 0 norm-amount)]
       [react/text

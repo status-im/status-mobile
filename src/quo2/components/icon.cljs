@@ -3,6 +3,7 @@
             [quo2.components.icons.icons :as icons]
             [quo2.components.icons.svg :as icons.svg]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]))
 
 (defn- valid-color?
@@ -12,11 +13,10 @@
            (not (string/blank? color)))))
 
 (defn memo-icon-fn
-  [icon-name
-   {:keys [color color-2 no-color
-           container-style size accessibility-label]
+  [{:keys [color color-2 no-color
+           container-style size accessibility-label theme]
     :or   {accessibility-label :icon}}
-   _]
+   icon-name]
   (let [size (or size 20)]
     ^{:key icon-name}
     (if-let [svg-icon (icons.svg/get-icon icon-name size)]
@@ -34,15 +34,15 @@
                (when (not no-color)
                  {:tint-color (if (and (string? color) (not (string/blank? color)))
                                 color
-                                (colors/theme-colors colors/neutral-100 colors/white))})
+                                (colors/theme-colors colors/neutral-100 colors/white theme))})
 
                container-style)
         :accessibility-label accessibility-label
         :source (icons/icon-source (str (name icon-name) size))}])))
 
-(def themed-icon (memoize memo-icon-fn))
+(def ^:private themed-icon (memoize (quo.theme/with-theme memo-icon-fn)))
 
 (defn icon
   ([icon-name] (icon icon-name nil))
   ([icon-name params]
-   (themed-icon icon-name params (colors/dark?))))
+   (themed-icon params icon-name)))

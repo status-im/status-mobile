@@ -1,10 +1,11 @@
 import time
 
+from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import test_dapp_url
 from views.base_element import Button, Text, BaseElement, SilentButton, CheckBox, EditBox
-from views.base_view import BaseView
+from views.base_view import BaseView, UnreadMessagesCountText
 
 
 class ChatButton(Button):
@@ -72,9 +73,16 @@ class ChatElement(SilentButton):
 
     @property
     def new_messages_counter(self):
-        from views.base_view import UnreadMessagesCountText
-        desired_counter = UnreadMessagesCountText(self.driver, self.locator)
-        return desired_counter
+        if self.community:
+            return UnreadMessagesCountText(self.driver, self.locator)
+
+        class NewMessageCounterText(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(
+                    driver,
+                    xpath="%s//*[@content-desc='new-message-counter']/android.widget.TextView" % parent_locator)
+
+        return NewMessageCounterText(self.driver, self.locator)
 
     @property
     def chat_preview(self):
@@ -93,20 +101,20 @@ class ChatElement(SilentButton):
         return NoMessageText(self.driver, self.locator)
 
     @property
-    def new_messages_public_chat(self):
+    def new_messages_grey_dot(self):
         class UnreadMessagesPublicChat(BaseElement):
-            def __init__(self, driver):
-                super().__init__(driver, accessibility_id="unviewed-messages-public")
+            def __init__(self, driver, parent_locator):
+                super().__init__(driver, xpath="%s/*[@content-desc='unviewed-messages-public']" % parent_locator)
 
-        return UnreadMessagesPublicChat(self.driver)
+        return UnreadMessagesPublicChat(self.driver, self.locator)
 
-    @property
-    def new_messages_community(self):
-        class UnreadMessagesCommunity(BaseElement):
-            def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="%s/android.view.ViewGroup" % parent_locator)
-
-        return UnreadMessagesCommunity(self.driver, self.locator)
+    # @property
+    # def new_messages_community(self):
+    #     class UnreadMessagesCommunity(BaseElement):
+    #         def __init__(self, driver, parent_locator: str):
+    #             super().__init__(driver, prefix=parent_locator, xpath="%s/android.view.ViewGroup" % parent_locator)
+    #
+    #     return UnreadMessagesCommunity(self.driver, self.locator)
 
     @property
     def chat_image(self):
@@ -202,6 +210,15 @@ class ContactDetailsRow(BaseElement):
         self.username_text = Text(self.driver, xpath="(%s//android.widget.TextView)[2]" % xpath_locator)
 
 
+class MuteButton(Button):
+    def __init__(self, driver, accessibility_id):
+        super().__init__(driver=driver, accessibility_id=accessibility_id)
+
+    @property
+    def text(self):
+        return self.find_element().find_element(by=MobileBy.CLASS_NAME, value="android.widget.TextView").text
+
+
 class HomeView(BaseView):
     def __init__(self, driver):
         super().__init__(driver)
@@ -223,6 +240,7 @@ class HomeView(BaseView):
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
         self.notifications_unread_badge = BaseElement(self.driver, accessibility_id="activity-center-unread-count")
+        self.show_qr_code_button = Button(self.driver, accessibility_id="show-qr-button")
         self.open_activity_center_button = Button(self.driver, accessibility_id="open-activity-center-button")
         self.close_activity_centre = Button(self.driver, accessibility_id="close-activity-center")
 
@@ -254,6 +272,9 @@ class HomeView(BaseView):
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
         self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
         self.clear_history_button = Button(self.driver, accessibility_id="clear-history")
+        self.mute_chat_button = MuteButton(self.driver, accessibility_id="mute-chat")
+        self.mute_community_button = MuteButton(self.driver, accessibility_id="mute-community")
+        self.mute_channel_button = MuteButton(self.driver, accessibility_id="chat-toggle-muted")
         self.mark_all_messages_as_read_button = Button(self.driver, accessibility_id="mark-as-read")
 
         # Connection icons
@@ -292,6 +313,11 @@ class HomeView(BaseView):
         self.activity_unread_filter_button = Button(self.driver, accessibility_id="selector-filter")
         self.more_options_activity_button = Button(self.driver, accessibility_id="activity-center-open-more")
         self.mark_all_read_activity_button = Button(self.driver, translation_id="mark-all-notifications-as-read")
+
+        # Share tab
+        self.link_to_profile_text = Text(
+            self.driver,
+            xpath="(//*[@content-desc='link-to-profile']/preceding-sibling::*[1]/android.widget.TextView)[1]")
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing to complete')
@@ -332,6 +358,8 @@ class HomeView(BaseView):
         return chat_element
 
     def handle_contact_request(self, username: str, action='accept'):
+        if self.toast_content_element.is_element_displayed(10):
+            self.toast_content_element.wait_for_invisibility_of_element()
         if self.notifications_unread_badge.is_element_displayed(30):
             self.open_activity_center_button.click()
         chat_element = ActivityCenterElement(self.driver, username[:25])
@@ -475,6 +503,17 @@ class HomeView(BaseView):
         from views.chat_view import ChatView
         ChatView(self.driver).clear_button.click()
 
+    def mute_chat_long_press(self, chat_name, mute_period="mute-till-unmute", community=False, community_channel=False):
+        self.driver.info("Muting chat with %s" % chat_name)
+        self.get_chat(username=chat_name, community_channel=community_channel).long_press_element()
+        if community:
+            self.mute_community_button.click()
+        elif community_channel:
+            self.mute_channel_button.click()
+        else:
+            self.mute_chat_button.click()
+        self.element_by_translation_id(mute_period).click()
+
     def get_pn(self, pn_text: str):
         self.driver.info("Getting PN by '%s'" % pn_text)
         expected_element = PushNotificationElement(self.driver, pn_text)
@@ -485,3 +524,11 @@ class HomeView(BaseView):
 
     def get_contact_rows_count(self):
         return len(ContactDetailsRow(self.driver).find_elements())
+
+    def get_public_key_via_share_profile_tab(self):
+        self.driver.info("Getting public key via Share tab")
+        self.show_qr_code_button.click()
+        self.link_to_profile_text.click()
+        c_text = self.driver.get_clipboard_text()
+        self.click_system_back_button()
+        return c_text.split("/")[-1]

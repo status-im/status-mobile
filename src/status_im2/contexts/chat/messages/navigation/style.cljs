@@ -16,23 +16,24 @@
     :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)}
    position))
 
-(def background-view
+(defn background-view
+  [theme]
   {:position         :absolute
    :top              0
    :left             0
    :right            0
    :height           navigation-bar-height
-   :background-color (colors/theme-colors colors/white-opa-70 :transparent)
+   :background-color (colors/theme-colors colors/white-opa-70 colors/neutral-100-opa-70 theme)
    :display          :flex
    :flex-direction   :row
    :overflow         :hidden})
 
 (defn animated-background-view
-  [enabled? animation]
+  [enabled? animation theme]
   (reanimated/apply-animations-to-style
    (when enabled?
      {:opacity animation})
-   background-view))
+   (background-view theme)))
 
 (def blur-view
   {:position       :absolute
@@ -79,7 +80,7 @@
 (def header-content-container
   {:flex-direction :row
    :align-items    :center
-   :margin-left    8
+   :margin-left    12
    :margin-right   8
    :margin-top     -4
    :height         40})
@@ -94,6 +95,6 @@
   []
   {:color (colors/theme-colors colors/black colors/white)})
 
-(defn header-online
+(defn header-status
   []
   {:color (colors/theme-colors colors/neutral-80-opa-50 colors/white-opa-50)})

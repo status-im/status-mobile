@@ -57,6 +57,7 @@
    :community-banner     (js/require "../resources/images/mock2/community-banner.png")
    :community-logo       (js/require "../resources/images/mock2/community-logo.png")
    :community-cover      (js/require "../resources/images/mock2/community-cover.png")
+   :dark-blur-bg         (js/require "../resources/images/mock2/dark_blur_bg.png")
    :decentraland         (js/require "../resources/images/mock2/decentraland.png")
    :gif                  (js/require "../resources/images/mock2/gif.png")
    :monkey               (js/require "../resources/images/mock2/monkey.png")
@@ -75,16 +76,6 @@
    :user-picture-female2 (js/require "../resources/images/mock2/user_picture_female2.png")
    :user-picture-male4   (js/require "../resources/images/mock2/user_picture_male4.png")
    :user-picture-male5   (js/require "../resources/images/mock2/user_picture_male5.png")})
-
-(def tokens
-  {:eth  (js/require "../resources/images/tokens/mainnet/ETH.png")
-   :knc  (js/require "../resources/images/tokens/mainnet/KNC.png")
-   :mana (js/require "../resources/images/tokens/mainnet/MANA.png")
-   :rare (js/require "../resources/images/tokens/mainnet/RARE.png")
-   :dai  (js/require "../resources/images/tokens/mainnet/DAI.png")
-   :fxc  (js/require "../resources/images/tokens/mainnet/FXC.png")
-   :usdt (js/require "../resources/images/tokens/mainnet/USDT.png")
-   :snt  (js/require "../resources/images/tokens/mainnet/SNT.png")})
 
 (def parallax-video
   {:biometrics    [(js/require "../resources/videos2/biometrics_01.mp4")
@@ -106,7 +97,3 @@
 (defn get-themed-image
   [k k2]
   (get ui (if (colors/dark?) k k2)))
-
-(defn get-token
-  [k]
-  (get tokens k))

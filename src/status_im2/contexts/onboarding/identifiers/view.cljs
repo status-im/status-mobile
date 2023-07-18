@@ -4,10 +4,8 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [status-im2.contexts.onboarding.identifiers.profile-card.view :as profile-card]
             [status-im2.contexts.onboarding.identifiers.style :as style]
-            [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.common.carousel.view :as carousel]
             [status-im2.contexts.onboarding.common.carousel.animation :as carousel.animation]))
 
@@ -38,7 +36,6 @@
        (carousel.animation/cleanup-animation progress paused?))
      [])
     [:<>
-     [background/view true]
      [rn/view {:style style/page-container}
       [carousel/view
        {:animate?     true
@@ -57,10 +54,12 @@
          :customization-color color
          :progress            progress}]
        [quo/button
-        {:accessibility-label       :skip-identifiers
-         :on-press                  #(rf/dispatch [:navigate-to :enable-notifications])
-         :override-background-color colors/white-opa-5
-         :style                     style/button}
+        {:accessibility-label :skip-identifiers
+         :type                :grey
+         :background          :blur
+         :on-press            #(rf/dispatch [:navigate-to-within-stack
+                                             [:enable-notifications :new-to-status]])
+         :container-style     style/button}
         (i18n/label :t/skip)]]]]))
 
 (defn view [props] [:f> f-view props])

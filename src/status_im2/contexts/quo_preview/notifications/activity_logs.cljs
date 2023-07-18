@@ -77,11 +77,10 @@
    "did something here."])
 
 (def complex-user-action
-  (let [tag-props {:color          :purple
-                   :override-theme :dark
-                   :size           :small
-                   :style          {:background-color colors/white-opa-10}
-                   :text-style     {:color colors/white}}]
+  (let [tag-props {:color      :purple
+                   :size       :small
+                   :style      {:background-color colors/white-opa-10}
+                   :text-style {:color colors/white}}]
     [[quo2/user-avatar-tag tag-props "Alice"]
      "from"
      [quo2/user-avatar-tag tag-props "Mainnet"]

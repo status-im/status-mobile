@@ -1,7 +1,7 @@
 (ns quo2.components.community.channel-actions
   (:require [react-native.core :as rn]
             [quo2.components.icon :as icons]
-            [quo2.components.counter.counter :as counter]
+            [quo2.components.counter.counter.view :as counter]
             [quo2.components.markdown.text :as text]
             [quo2.components.community.style :as style]))
 
@@ -15,7 +15,7 @@
     [rn/view {:style style/channel-action-row}
      [icons/icon icon]
      (when counter-value
-       [counter/counter {:type :secondary} counter-value])]
+       [counter/view {:type :secondary} counter-value])]
     [text/text {:size :paragraph-1 :weight :medium :number-of-lines 2} label]]])
 
 (defn channel-actions

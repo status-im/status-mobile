@@ -44,14 +44,14 @@
           [to :to-contact :from-wallet])
         wallet (i18n/label :main-wallet)
         contact (get contacts contact-address)
-        {:keys [symbol-display symbol decimals] :as asset}
+        {:keys [symbol-display decimals] :as asset}
         (or token native-currency)
         amount-text (if value
                       (wallet.utils/format-amount value decimals)
                       "...")
         currency-text (when asset
                         (clojure.core/name (or symbol-display
-                                               symbol)))]
+                                               (:symbol asset))))]
     (cond-> transaction
       contact (assoc key-contact (:name contact))
       :always (assoc key-wallet

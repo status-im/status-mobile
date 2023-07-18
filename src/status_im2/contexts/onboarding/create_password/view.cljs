@@ -2,11 +2,9 @@
   (:require
     [oops.core :refer [ocall]]
     [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
     [status-im2.contexts.onboarding.create-password.style :as style]
     [utils.i18n :as i18n]
@@ -177,11 +175,11 @@
 
           [rn/view {:style style/button-container}
            [quo/button
-            {:disabled                  (not meet-requirements?)
-             :override-background-color (colors/custom-color user-color 60)
-             :on-press                  #(rf/dispatch
-                                          [:onboarding-2/password-set
-                                           (security/mask-data @password)])}
+            {:disabled?           (not meet-requirements?)
+             :customization-color user-color
+             :on-press            #(rf/dispatch
+                                    [:onboarding-2/password-set
+                                     (security/mask-data @password)])}
             (i18n/label :t/password-creation-confirm)]]]]))))
 
 (defn create-password-doc
@@ -211,18 +209,18 @@
                                                           {:content create-password-doc
                                                            :shell?  true}]))]
     [:<>
-     [background/view true]
      [rn/touchable-without-feedback
       {:on-press   rn/dismiss-keyboard!
        :accessible false}
       [rn/view {:style style/flex-fill}
        [rn/keyboard-avoiding-view {:style style/flex-fill}
         [navigation-bar/navigation-bar
-         {:top                   top
-          :right-section-buttons [{:type                :blur-bg
-                                   :icon                :i/info
-                                   :icon-override-theme :dark
-                                   :on-press            on-press-info}]}]
+         {:stack-id              :new-to-status
+          :top                   top
+          :right-section-buttons [{:type            :grey
+                                   :icon-background :blur
+                                   :icon            :i/info
+                                   :on-press        on-press-info}]}]
         [password-form]
         [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]]]]
     (finally

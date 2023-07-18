@@ -136,6 +136,8 @@
 ;;Solid
 (def black "#000000")
 (def black-opa-0 (alpha black 0))
+(def black-opa-30 (alpha black 0.3))
+(def black-opa-60 (alpha black 0.6))
 (def onboarding-header-black "#000716")
 
 ;;;;Primary
@@ -179,6 +181,8 @@
 ;;Solid
 (def danger-50 "#E95460")
 (def danger-60 "#BA434D")
+
+(def system-yellow "#FFD60A")
 
 ;;50 with transparency
 (def danger-50-opa-5 (alpha danger-50 0.05))
@@ -244,11 +248,13 @@
      ([color suffix]
       (custom-color color suffix nil))
      ([color suffix opacity]
-      (let [color-keyword (keyword color)
+      (let [hex?          (not (keyword? color))
+            color-keyword (keyword color)
             base-color    (get-in colors-map
-                                  [color-keyword suffix]
-                                  color)]
-        (if opacity (alpha base-color (/ opacity 100)) base-color))))))
+                                  [color-keyword suffix])]
+        (if hex?
+          color
+          (if opacity (alpha base-color (/ opacity 100)) base-color)))))))
 
 (defn custom-color-by-theme
   "(custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark)
@@ -256,11 +262,14 @@
    suffix-light  50/60
    suffix-dark   50/60
    opacity-light 0-100 (optional)
-   opacity-dark  0-100 (optional)"
+   opacity-dark  0-100 (optional)
+   theme         :light/:dark (optional)"
   ([color suffix-light suffix-dark]
-   (custom-color-by-theme color suffix-light suffix-dark nil nil))
+   (custom-color-by-theme color suffix-light suffix-dark nil nil (theme/get-theme)))
   ([color suffix-light suffix-dark opacity-light opacity-dark]
-   (if (theme/dark?)
+   (custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark (theme/get-theme)))
+  ([color suffix-light suffix-dark opacity-light opacity-dark theme]
+   (if (= theme :dark)
      (custom-color color suffix-dark opacity-dark)
      (custom-color color suffix-light opacity-light))))
 
@@ -283,3 +292,15 @@
 (defn dark?
   []
   (theme/dark?))
+
+;;;; Networks
+
+(def networks
+  {:ethereum "#758EEB"
+   :optimism "#E76E6E"
+   :arbitrum "#6BD5F0"
+   :zkSync   "#9FA0FE"
+   :hermez   "#EB8462"
+   :xDai     "#3FC0BD"
+   :polygon  "#AD71F3"
+   :unknown  "#EEF2F5"})

@@ -35,10 +35,10 @@
    :padding-vertical 12})
 
 (def empty-container
-  {:align-items      :center
-   :flex             1
-   :justify-content  :center
-   :padding-vertical 12})
+  {:align-items     :center
+   :flex            1
+   :justify-content :center
+   :padding-bottom  20})
 
 (def empty-title
   {:padding-bottom 2

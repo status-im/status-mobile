@@ -5,7 +5,8 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
-            [react-native.hole-view :as hole-view]))
+            [react-native.hole-view :as hole-view]
+            [quo2.theme :as quo.theme]))
 
 (def params
   {32 {:border-radius {:circular 16 :rounded 10}
@@ -61,13 +62,13 @@
      [avatar item type size border-radius]]))
 
 (defn get-overflow-color
-  [transparent? transparent-color light-color dark-color override-theme]
+  [transparent? transparent-color light-color dark-color theme]
   (if transparent?
     transparent-color
-    (colors/theme-colors light-color dark-color override-theme)))
+    (colors/theme-colors light-color dark-color theme)))
 
 (defn overflow-label
-  [label size transparent? border-radius margin-left override-theme more-than-99-label]
+  [{:keys [label size transparent? border-radius margin-left theme more-than-99-label]}]
   [rn/view
    {:style {:width            size
             :height           size
@@ -80,7 +81,7 @@
                                colors/white-opa-10
                                colors/neutral-20
                                colors/neutral-70
-                               override-theme)}}
+                               theme)}}
    (if (= size 16)
      [quo2.icons/icon :i/more
       {:size  12
@@ -89,7 +90,7 @@
                colors/white-opa-70
                colors/neutral-50
                colors/neutral-40
-               override-theme)}]
+               theme)}]
      [quo2.text/text
       {:size   (if (= size 32) :paragraph-2 :label)
        :weight :medium
@@ -98,7 +99,7 @@
                               colors/white-opa-70
                               colors/neutral-60
                               colors/neutral-40
-                              override-theme)
+                              theme)
                 :margin-left -2}}
       ;; If overflow label is below 100, show label as +label (ex. +30), else just show 99+
       (if (< label 100)
@@ -111,7 +112,7 @@
     (:account :collectible :photo) :rounded
     :circular))
 
-(defn preview-list
+(defn- preview-list-internal
   "[preview-list opts items]
    opts
    {:type          :user/:community/:account/:token/:collectible/:dapp
@@ -120,7 +121,7 @@
     :transparent?  overflow-label transparent?}
    items           preview list items (only 4 items is required for preview)
   "
-  [{:keys [type size list-size transparent? override-theme more-than-99-label]} items]
+  [{:keys [type size list-size transparent? theme more-than-99-label]} items]
   (let [items-arr     (into [] items)
         list-size     (or list-size (count items))
         margin-left   (get-in params [size :margin-left])
@@ -135,5 +136,13 @@
        [list-item index type size (get items-arr index) list-size
         margin-left hole-size hole-radius hole-x hole-y border-radius])
      (when (> list-size 4)
-       [overflow-label (- list-size 3) size transparent? border-radius margin-left override-theme
-        more-than-99-label])]))
+       [overflow-label
+        {:label              (- list-size 3)
+         :size               size
+         :transparent?       transparent?
+         :border-radius      border-radius
+         :margin-left        margin-left
+         :theme              theme
+         :more-than-99-label more-than-99-label}])]))
+
+(def preview-list (quo.theme/with-theme preview-list-internal))

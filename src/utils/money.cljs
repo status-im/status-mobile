@@ -155,14 +155,14 @@
 ;; to get the amount scale right.
 
 (defn formatted->internal
-  [n symbol decimals]
-  (if (= :ETH symbol)
+  [n sym decimals]
+  (if (= :ETH sym)
     (ether->wei n)
     (unit->token n decimals)))
 
 (defn internal->formatted
-  [n symbol decimals]
-  (if (= :ETH symbol)
+  [n sym decimals]
+  (if (= :ETH sym)
     (wei->ether n)
     (token->unit n decimals)))
 

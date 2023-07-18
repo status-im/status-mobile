@@ -1,8 +1,8 @@
 ---
-name: Bug Report
-about: Bug Report
+name: MVPBug Report
+about: MVPBug Report
 title: ''
-labels: bug
+labels: 'E:Mobile Bugfixes MVP'
 assignees: ''
 
 ---
@@ -22,8 +22,7 @@ assignees: ''
 
 ### Reproduction
 
-1) Open Status
-2) 
+1. 
 
 ### Additional Information
 

@@ -107,7 +107,7 @@
        [[:toasts/close :delete-message-for-everyone]
         [:toasts/upsert
          {:id                                 :delete-message-for-everyone
-          :icon                               :info
+          :icon                               :i/info
           :icon-color                         colors/danger-50-opa-40
           :message-deleted-for-everyone-count toast-count
           :message-deleted-for-everyone-undos existing-undos

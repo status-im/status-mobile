@@ -19,7 +19,12 @@
     [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
+    [status-im2.contexts.quo-preview.calendar.calendar :as calendar]
+    [status-im2.contexts.quo-preview.calendar.calendar-day :as calendar-day]
+    [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
+    [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
+    [status-im2.contexts.quo-preview.graph.wallet-graph :as wallet-graph]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
     [status-im2.contexts.quo-preview.community.community-membership-list-view :as
@@ -45,6 +50,7 @@
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
+    [status-im2.contexts.quo-preview.numbered-keyboard.keyboard-key :as keyboard-key]
     [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
     [status-im2.contexts.quo-preview.links.url-preview-list :as url-preview-list]
     [status-im2.contexts.quo-preview.links.link-preview :as link-preview]
@@ -62,6 +68,7 @@
     [status-im2.contexts.quo-preview.navigation.page-nav :as page-nav]
     [status-im2.contexts.quo-preview.navigation.top-nav :as top-nav]
     [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
+    [status-im2.contexts.quo-preview.notifications.activity-logs-photos :as activity-logs-photos]
     [status-im2.contexts.quo-preview.notifications.notification :as notification]
     [status-im2.contexts.quo-preview.notifications.toast :as toast]
     [status-im2.contexts.quo-preview.onboarding.small-option-card :as small-option-card]
@@ -78,6 +85,7 @@
     [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
     [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
+    [status-im2.contexts.quo-preview.settings.category :as category]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
@@ -91,13 +99,16 @@
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.title.title :as title]
-    [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
-    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
-    [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
-    [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
+    [status-im2.contexts.quo-preview.transaction-sheet.transaction-sheet :as
+     transaction-sheet]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
-    [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]))
+    [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
+    [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
+    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
+    [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
+    [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
+    [status-im2.contexts.quo-preview.wallet.token-input :as token-input]))
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -139,6 +150,18 @@
                        {:name      :predictive-keyboard
                         :options   {:topBar {:visible true}}
                         :component predictive-keyboard/preview-predictive-keyboard}]
+   :browser           [{:name      :browser-input
+                        :options   {:topBar {:visible false}}
+                        :component browser-input/preview-browser-input}]
+   :calendar          [{:name      :calendar
+                        :options   {:topBar {:visible true}}
+                        :component calendar/preview-calendar}
+                       {:name      :calendar-day
+                        :options   {:topBar {:visible true}}
+                        :component calendar-day/preview-calendar-day}
+                       {:name      :calendar-year
+                        :options   {:topBar {:visible true}}
+                        :component calendar-year/preview-calendar-year}]
    :code              [{:name      :snippet
                         :options   {:topBar {:visible true}}
                         :component code-snippet/preview-code-snippet}]
@@ -198,6 +221,12 @@
    :empty-state       [{:name      :empty-state
                         :options   {:topBar {:visible true}}
                         :component empty-state/preview-empty-state}]
+   :gradient          [{:name      :gradient-cover
+                        :options   {:topBar {:visible true}}
+                        :component gradient-cover/preview-gradient-cover}]
+   :graph             [{:name      :wallet-graph
+                        :options   {:topBar {:visible true}}
+                        :component wallet-graph/preview-wallet-graph}]
    :info              [{:name      :info-message
                         :options   {:topBar {:visible true}}
                         :component info-message/preview-info-message}
@@ -219,6 +248,10 @@
                        {:name      :title-input
                         :options   {:topBar {:visible true}}
                         :component title-input/preview-title-input}]
+   :numbered-keyboard [{:name      :keyboard-key
+                        :options   {:insets {:top? true}
+                                    :topBar {:visible true}}
+                        :component keyboard-key/preview-keyboard-key}]
    :links             [{:name      :url-preview
                         :options   {:insets {:top? true}
                                     :topBar {:visible true}}
@@ -277,6 +310,9 @@
    :notifications     [{:name      :activity-logs
                         :options   {:topBar {:visible true}}
                         :component activity-logs/preview-activity-logs}
+                       {:name      :activity-logs-photos
+                        :options   {:topBar {:visible true}}
+                        :component activity-logs-photos/preview-activity-logs-photos}
                        {:name      :toast
                         :options   {:topBar {:visible true}}
                         :component toast/preview-toasts}
@@ -330,7 +366,10 @@
                         :component settings-list/preview-settings-list}
                        {:name      :reorder-item
                         :options   {:topBar {:visible true}}
-                        :component reorder-item/preview-reorder-item}]
+                        :component reorder-item/preview-reorder-item}
+                       {:name      :category
+                        :options   {:topBar {:visible true}}
+                        :component category/preview}]
    :share             [{:name      :qr-code
                         :options   {:topBar {:visible true}}
                         :component qr-code/preview-qr-code}
@@ -364,18 +403,22 @@
    :text-combinations [{:name      :title
                         :options   {:topBar {:visible true}}
                         :component title/preview-title}]
-   :wallet            [{:name      :lowest-price
+   :transaction-sheet [{:name      :transaction-sheet
                         :options   {:topBar {:visible true}}
-                        :component lowest-price/preview-lowest-price}
-                       {:name      :token-overview
+                        :component transaction-sheet/preview-transaction-sheet
+                       }]
+   :wallet            [{:name      :account-card
                         :options   {:topBar {:visible true}}
-                        :component token-overview/preview-token-overview}
-                       {:name      :network-breakdown
-                        :options   {:topBar {:visible true}}
-                        :component network-breakdown/preview-network-breakdown}
+                        :component account-card/preview-account-card}
                        {:name      :network-amount
                         :options   {:topBar {:visible true}}
-                        :component network-amount/preview}]
+                        :component network-amount/preview}
+                       {:name      :network-bridge
+                        :options   {:topBar {:visible true}}
+                        :component network-bridge/preview}
+                       {:name      :token-input
+                        :options   {:topBar {:visible true}}
+                        :component token-input/preview}]
    :keycard           [{:name      :keycard-component
                         :options   {:topBar {:visible true}}
                         :component keycard/preview-keycard}]})
@@ -411,9 +454,8 @@
               (for [{:keys [name]} (val category)]
                 ^{:key name}
                 [quo/button
-                 {:test-ID  (str "quo2-" name)
-                  :style    {:margin-vertical 8}
-                  :on-press #(re-frame/dispatch [:navigate-to name])}
+                 {:container-style {:margin-vertical 8}
+                  :on-press        #(re-frame/dispatch [:navigate-to name])}
                  (clojure.core/name name)])])
            (sort screens-categories))]]))
 

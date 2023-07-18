@@ -1,8 +1,8 @@
 import pytest
 from _pytest.outcomes import Failed
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
-from tests import marks, run_in_parallel
+from tests import marks, run_in_parallel, transl
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from views.chat_view import ChatView
 from views.sign_in_view import SignInView
@@ -151,18 +151,18 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.message_before_adding = 'message before adding new user'
         self.message_to_admin = 'Hey, admin!'
         self.public_keys, self.usernames, self.chats = {}, {}, {}
-        sign_in_views = [SignInView(self.drivers[key]) for key in self.drivers]
+        self.sign_in_views = [SignInView(self.drivers[key]) for key in self.drivers]
         self.usernames = ('user admin', 'member_1', 'member_2')
         self.loop.run_until_complete(
             run_in_parallel(
                 (
-                    (sign_in_views[0].create_user, {'enable_notifications': True, 'username': self.usernames[0]}),
-                    (sign_in_views[1].create_user, {'enable_notifications': True, 'username': self.usernames[1]}),
-                    (sign_in_views[2].create_user, {'enable_notifications': True, 'username': self.usernames[2]})
+                    (self.sign_in_views[0].create_user, {'enable_notifications': True, 'username': self.usernames[0]}),
+                    (self.sign_in_views[1].create_user, {'enable_notifications': True, 'username': self.usernames[1]}),
+                    (self.sign_in_views[2].create_user, {'enable_notifications': True, 'username': self.usernames[2]})
                 )
             )
         )
-        self.homes = [sign_in.get_home_view() for sign_in in sign_in_views]
+        self.homes = [sign_in.get_home_view() for sign_in in self.sign_in_views]
         self.public_keys = self.loop.run_until_complete(
             run_in_parallel(
                 (
@@ -278,7 +278,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             if username_shown != self.usernames[2]:
                 self.errors.append(
                     "Incorrect profile is opened from the list of reactions, username is %s but expected to be %s" % (
-                    username_shown, self.usernames[2])
+                        username_shown, self.usernames[2])
                 )
         except NoSuchElementException:
             self.errors.append("User profile was not opened from the list of reactions")
@@ -338,6 +338,64 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                 self.usernames[1]).is_element_displayed() or not self.chats[0].user_list_element_by_name(
             self.usernames[2]).is_element_displayed():
             self.errors.append("Incorrect users are shown for 'laugh' reaction after relogin.")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703297)
+    def test_group_chat_send_image_save_and_share(self):
+        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+        for i in range(3):
+            self.homes[i].get_chat(self.chat_name).click()
+
+        self.chats[1].just_fyi("Member_1 sends an image")
+        image_description = "test image"
+        self.chats[1].send_images_with_description(description=image_description, indexes=[2])
+
+        self.chats[0].just_fyi("Admin checks image message")
+        self.chats[0].chat_element_by_text(image_description).wait_for_visibility_of_element(60)
+        if not self.chats[0].chat_element_by_text(
+                image_description).image_in_message.is_element_image_similar_to_template('saucelabs_sauce_chat.png'):
+            self.errors.append("Not expected image is shown to the admin.")
+
+        self.chats[2].just_fyi("Member_2 checks image message")
+        self.chats[2].chat_element_by_text(image_description).wait_for_visibility_of_element(60)
+        if not self.chats[2].chat_element_by_text(
+                image_description).image_in_message.is_element_image_similar_to_template('saucelabs_sauce_chat.png'):
+            self.errors.append("Not expected image is shown to the member_2.")
+
+        self.chats[0].just_fyi("Admin opens the image and shares it")
+        self.chats[0].chat_element_by_text(image_description).image_in_message.click()
+        self.chats[0].share_image_icon_button.click()
+        self.chats[0].element_starts_with_text("Gmail").click()
+        try:
+            self.chats[0].wait_for_current_package_to_be('com.google.android.gm')
+        except TimeoutException:
+            self.errors.append("Admin can't share an image via Gmail.")
+        self.chats[0].click_system_back_button_until_element_is_shown(element="chat")
+
+        self.chats[1].click_system_back_button_until_element_is_shown()
+
+        self.chats[2].just_fyi("Member_2 opens the image and saves it")
+        self.chats[2].chat_element_by_text(image_description).image_in_message.click()
+        self.chats[2].view_image_options_button.click()
+        self.chats[2].save_image_icon_button.click()
+        toast_element = self.chats[2].toast_content_element
+        if toast_element.is_element_displayed():
+            toast_element_text = toast_element.text
+            if toast_element_text != self.chats[2].get_translation_by_key("photo-saved"):
+                self.errors.append(
+                    "Shown message '%s' doesn't match expected '%s' after saving an image for member_2." % (
+                        toast_element_text, self.chats[2].get_translation_by_key("photo-saved")))
+        else:
+            self.errors.append("Message about saving a photo is not shown for member_2.")
+        self.chats[2].click_system_back_button_until_element_is_shown(element="chat")
+
+        self.chats[2].just_fyi("Member_2 checks that image was saved in gallery")
+        self.chats[2].show_images_button.click()
+        self.chats[2].allow_button.click_if_shown()
+        if not self.chats[2].get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
+            self.errors.append("Image is not saved to gallery for member_2.")
+        self.chats[2].click_system_back_button_until_element_is_shown(element="chat")
 
         self.errors.verify_no_errors()
 
@@ -457,5 +515,93 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                     self.errors.append(
                         "Message '%s' is missed on Pinned messages list for user %s" % (message, chat_number + 1)
                     )
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703495)
+    def test_group_chat_mute_chat(self):
+        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+
+        self.homes[1].just_fyi("Member 1 mutes the chat")
+        self.homes[1].mute_chat_long_press(self.chat_name)
+        # ToDo: should be redone to some exact period mute after issue with adb commands execution is solved with
+        # SauceLabs or an option for 1 minute mute is added for e2e apk
+        # self.homes[1].mute_chat_long_press(self.chat_name, "mute-for-1-hour")
+        # device_time = self.homes[1].driver.device_time
+
+        self.homes[0].just_fyi("Admin sends a message")
+        muted_message = "Text message in the muted chat"
+        self.homes[0].get_chat(self.chat_name).click()
+        try:
+            initial_counter = int(self.homes[1].chats_tab.counter.text)
+        except NoSuchElementException:
+            initial_counter = 0
+        self.chats[0].send_message(muted_message)
+        self.homes[1].just_fyi("Member 1 checks that chat is muted and message is received")
+        chat = self.homes[1].get_chat(self.chat_name)
+        if chat.new_messages_grey_dot.is_element_displayed(30):
+            self.errors.append("New messages counter near chat name is shown after mute")
+        try:
+            after_mute_counter = int(self.homes[1].chats_tab.counter.text)
+        except NoSuchElementException:
+            after_mute_counter = 0
+        if after_mute_counter > initial_counter:
+            self.errors.append("New messages counter near chats tab button is %s after mute, but should be %s" % (
+                after_mute_counter, initial_counter))
+        if not chat.chat_preview.text.startswith("%s: %s" % (self.usernames[0], muted_message)):
+            self.errors.append("Message text '%s' is not shown in chat preview after mute" % muted_message)
+        chat.click()
+        if not self.chats[1].chat_element_by_text(muted_message).is_element_displayed(30):
+            self.errors.append(
+                "Message '%s' is not shown in chat for %s after mute" % (muted_message, self.usernames[1]))
+        self.chats[1].click_system_back_button_until_element_is_shown()
+        chat.long_press_element()
+        if self.homes[1].mute_chat_button.text != transl["unmute-chat"]:
+            self.errors.append("Chat is not muted")
+        # expected_text = "Muted until %s today" % device_time + 1
+        expected_text = "Muted until you turn it back on"
+        if not self.homes[1].element_by_text(expected_text).is_element_displayed():
+            self.errors.append("Text '%s' is not shown for muted chat" % expected_text)
+        self.chats[1].just_fyi("Member 1 unmutes the chat")
+        # self.chats[1].just_fyi("Close app and change device time so chat will be unmuted by timer")
+        # self.homes[1].put_app_to_background()
+        # self.homes[1].driver.execute('mobile: shell', {
+        #     'command': 'date',
+        #     'args': [str(device_time + 1)]
+        # })
+        # self.homes[1].driver.launch_app()
+        # self.sign_in_views[1].sign_in()
+        # self.homes[1].chats_tab.click()
+        # chat.long_press_element()
+        # if self.homes[1].element_starts_with_text("Muted until").is_element_displayed():
+        #     self.errors.append("Chat is still muted after timeout")
+        #     self.errors.verify_no_errors()
+        # self.homes[1].click_system_back_button()
+        self.homes[1].mute_chat_button.click()  # ToDo: remove when ^ is enabled
+
+        unmuted_message = "Chat is unmuted now"
+        self.homes[2].just_fyi("Member 2 sends a message")
+        self.homes[2].get_chat(self.chat_name).click()
+        try:
+            initial_counter = int(self.homes[1].chats_tab.counter.text)
+        except NoSuchElementException:
+            initial_counter = 0
+        self.chats[2].send_message(unmuted_message)
+        self.homes[1].just_fyi("Member 1 checks that chat is unmuted and message is received")
+        if not chat.new_messages_grey_dot.is_element_displayed(30):
+            self.errors.append("New messages counter near chat name is not shown after unmute")
+        try:
+            after_mute_counter = int(self.homes[1].chats_tab.counter.text)
+        except NoSuchElementException:
+            after_mute_counter = 0
+        if after_mute_counter <= initial_counter:
+            self.errors.append("New messages counter near chats tab button is %s after unmute, but should be %s" % (
+                after_mute_counter, initial_counter + 1))
+        if not chat.chat_preview.text.startswith("%s: %s" % (self.usernames[2], unmuted_message)):
+            self.errors.append("Message text '%s' is not shown in chat preview after unmute" % unmuted_message)
+        chat.click()
+        if not self.chats[1].chat_element_by_text(unmuted_message).is_element_displayed(30):
+            self.errors.append(
+                "Message '%s' is not shown in chat for %s after unmute" % (self.usernames[1], unmuted_message))
 
         self.errors.verify_no_errors()

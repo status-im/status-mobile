@@ -8,8 +8,8 @@
             [status-im2.contexts.contacts.drawers.nickname-drawer.view :as nickname-drawer]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im2.common.mute-chat-drawer.view :as mute-chat-drawer]
-            [utils.datetime :as datetime]))
+            [status-im2.common.mute-drawer.view :as mute-drawer]
+            [status-im2.common.muting.helpers :refer [format-mute-till]]))
 
 (defn- entry
   [{:keys [icon label on-press danger? sub-label chevron? add-divider? accessibility-label]}]
@@ -53,11 +53,15 @@
                   :accessibility-label :edit-nickname}])}]))
 
 (defn mute-chat-action
-  [chat-id chat-type]
+  [chat-id chat-type muted?]
   (hide-sheet-and-dispatch [:show-bottom-sheet
                             {:content (fn []
-                                        [mute-chat-drawer/mute-chat-drawer chat-id
-                                         :mute-chat-for-duration chat-type])}]))
+                                        [mute-drawer/mute-drawer
+                                         {:id                  chat-id
+                                          :community?          false
+                                          :muted?              (not muted?)
+                                          :chat-type           chat-type
+                                          :accessibility-label :mute-community-title}])}]))
 
 (defn unmute-chat-action
   [chat-id]
@@ -131,12 +135,10 @@
                                     :unmute-chat
                                     :mute-chat))
             :sub-label           (when (and muted? (some? muted-till))
-                                   (str (i18n/label :t/muted-until)
-                                        " "
-                                        (datetime/format-mute-till muted-till)))
+                                   (i18n/label :t/muted-until {:duration (format-mute-till muted-till)}))
             :on-press            (if muted?
                                    #(unmute-chat-action chat-id)
-                                   #(mute-chat-action chat-id chat-type))
+                                   #(mute-chat-action chat-id chat-type muted?))
             :danger?             false
             :accessibility-label :mute-chat
             :chevron?            (not muted?)})))
@@ -215,7 +217,7 @@
                                  (rf/dispatch [:hide-bottom-sheet])
                                  (rf/dispatch [:toasts/upsert
                                                {:id         :remove-nickname
-                                                :icon       :correct
+                                                :icon       :i/correct
                                                 :icon-color (colors/theme-colors colors/success-60
                                                                                  colors/success-50)
                                                 :text       (i18n/label

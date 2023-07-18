@@ -346,6 +346,13 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 
 (def react-native-transparent-video #js {:default #js {}})
 
+(def react-native-gifted-charts
+  #js
+   {:BarChart         #js {}
+    :PieChart         #js {}
+    :LineChart        #js {}
+    :LineChartBicolor #js {}})
+
 (def wallet-connect-client
   #js
    {:default       #js {}
@@ -409,6 +416,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "react-native-svg"                               react-native-svg
     "react-native-transparent-video"                 react-native-transparent-video
     "react-native-orientation-locker"                react-native-orientation-locker
+    "react-native-gifted-charts"                     react-native-gifted-charts
     "../src/js/worklets/core.js"                     worklet-factory
     "../src/js/worklets/shell/bottom_tabs.js"        #js {}
     "../src/js/worklets/shell/home_stack.js"         #js {}

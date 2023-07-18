@@ -158,7 +158,7 @@
                       :on-success #(re-frame/dispatch [:navigate-back])}]}))
 
 (defn new-network
-  [random-id network-name symbol upstream-url chain-type chain-id]
+  [random-id network-name sym upstream-url chain-type chain-id]
   (let [data-dir (str "/ethereum/" (name chain-type) "_rpc")
         config   {:NetworkId      (or (when chain-id (int chain-id))
                                       (ethereum/chain-keyword->chain-id chain-type))
@@ -167,7 +167,7 @@
                                    :URL     upstream-url}}]
     {:id     random-id
      :name   network-name
-     :symbol symbol
+     :symbol sym
      :config config}))
 
 (rf/defn save

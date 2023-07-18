@@ -13,9 +13,10 @@
     status-im2.subs.home
     status-im2.subs.keycard
     status-im2.subs.mailservers
-    status-im2.subs.profile
     status-im2.subs.networks
+    status-im2.subs.onboarding
     status-im2.subs.pairing
+    status-im2.subs.profile
     status-im2.subs.search
     status-im2.subs.shell
     status-im2.subs.stickers

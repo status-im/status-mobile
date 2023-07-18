@@ -6,7 +6,6 @@
     [react-native.platform :as platform]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [quo2.components.notifications.info-count :as info-count]
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -23,7 +22,7 @@
   []
   (rf/dispatch [:toasts/upsert
                 {:id              :random-id
-                 :icon            :info
+                 :icon            :i/info
                  :icon-color      colors/danger-50-opa-40
                  :container-style {:top (when platform/ios? 20)}
                  :text            (i18n/label :t/only-6-images)}]))
@@ -44,7 +43,7 @@
       :end    {:x 0 :y 0}
       :style  (style/gradient-container (safe-area/get-bottom))}
      [quo/button
-      {:style               {:align-self        :stretch
+      {:container-style     {:align-self        :stretch
                              :margin-horizontal 20
                              :margin-top        12}
        :on-press            #(on-press-confirm-selection selected-images close)
@@ -56,11 +55,11 @@
   (when (and (not album?) (seq @selected))
     [rn/view {:style style/clear-container}
      [quo/button
-      {:type                :blurred
+      {:type                :grey
        :size                32
        :accessibility-label :clear
        :on-press            #(reset! selected [])
-       :blur-active?        blur-active?}
+       :background          (when blur-active? :photo)}
       (i18n/label :t/clear)]]))
 
 (defn remove-selected
@@ -69,7 +68,8 @@
 
 (defn render-image
   [item index _ {:keys [window-width selected]}]
-  (let [item-selected? (some #(= (:uri item) (:uri %)) @selected)]
+  (let [customization-color (rf/sub [:profile/customization-color])
+        item-selected?      (some #(= (:uri item) (:uri %)) @selected)]
     [rn/touchable-opacity
      {:on-press            (fn []
                              (if item-selected?
@@ -84,8 +84,9 @@
      (when item-selected?
        [:<>
         [rn/view {:style (style/overlay window-width)}]
-        [info-count/info-count
-         {:style               style/image-count
+        [quo/counter
+         {:container-style     style/image-count
+          :customization-color customization-color
           :accessibility-label (str "count-" index)}
          (inc (utils.collection/first-index #(= (:uri item) (:uri %)) @selected))]])]))
 

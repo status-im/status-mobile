@@ -41,7 +41,7 @@
      :border-radius dimensions}))
 
 (defn initials-avatar
-  [size draw-ring? customization-color]
+  [size draw-ring? customization-color theme]
   (let [outer-dimensions (get-in sizes [size :outer])
         inner-dimensions (get-in sizes [size (if draw-ring? :inner :outer)])]
     {:position         :absolute
@@ -52,7 +52,7 @@
      :border-radius    inner-dimensions
      :justify-content  :center
      :align-items      :center
-     :background-color (colors/custom-color-by-theme customization-color 50 60)}))
+     :background-color (colors/custom-color-by-theme customization-color 50 60 nil nil theme)}))
 
 (def initials-avatar-text
   {:color colors/white-opa-70})
@@ -67,7 +67,7 @@
      :background-color background}))
 
 (defn dot
-  [size ring?]
+  [size ring? theme]
   (let [dimensions   (get-in sizes [size :status-indicator])
         border-width (get-in sizes [size :status-indicator-border])
         right        (case size
@@ -89,5 +89,5 @@
      :height           dimensions
      :border-width     border-width
      :border-radius    dimensions
-     :background-color (colors/theme-colors colors/white colors/neutral-100)
-     :border-color     (colors/theme-colors colors/white colors/neutral-100)}))
+     :background-color (colors/theme-colors colors/white colors/neutral-100 theme)
+     :border-color     (colors/theme-colors colors/white colors/neutral-100 theme)}))

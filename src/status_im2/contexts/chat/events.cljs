@@ -17,10 +17,10 @@
             [status-im.utils.types :as types]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
-            [utils.datetime :as datetime]
             [re-frame.core :as re-frame]
             [status-im.async-storage.core :as async-storage]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+            [status-im2.common.muting.helpers :refer [format-mute-till]]))
 
 (defn- get-chat
   [cofx chat-id]
@@ -69,16 +69,15 @@
 
 (defn map-chats
   [{:keys [db] :as cofx}]
-  (fn [val]
-    (let [chat (or (get (:chats db) (:chat-id val))
-                   (create-new-chat (:chat-id val) cofx))]
-      (assoc
-       (merge
-        (cond-> chat
-          (comp not :muted) (dissoc chat :muted-till))
-        val)
-       :invitation-admin
-       (:invitation-admin val)))))
+  (fn [chat]
+    (let [base-chat (or (get (:chats db) (:chat-id chat))
+                        (create-new-chat (:chat-id chat) cofx))]
+      (assoc (merge
+              (cond-> base-chat
+                (comp not :muted) (dissoc base-chat :muted-till))
+              chat)
+             :invitation-admin
+             (:invitation-admin chat)))))
 
 (rf/defn leave-removed-chat
   [{{:keys [view-id current-chat-id chats]} :db
@@ -180,8 +179,8 @@
                (let [community-id (get-in db [:chats chat-id :community-id])]
                  ;; When navigating back from community chat to community, update switcher card
                  ;; A close chat event is also called while opening any chat.
-                 ;; That might lead to duplicate :dispatch keys in fx/merge, that's why dispatch-n is
-                 ;; used here.
+                 ;; That might lead to duplicate :dispatch keys in fx/merge, that's why dispatch-n
+                 ;; is used here.
                  (when (and community-id config/shell-navigation-disabled? (not navigate-to-shell?))
                    {:dispatch-n [[:shell/add-switcher-card
                                   :community-overview community-id]]})))
@@ -251,8 +250,8 @@
   {:events [:chat/decrease-unviewed-count]}
   [{:keys [db]} chat-id {:keys [count countWithMentions]}]
   {:db (-> db
-           ;; There might be some other requests being fired,
-           ;; so we need to make sure the count has not been set to
+           ;; There might be some other requests being fired, so we need to make sure the count has
+           ;; not been set to
            ;; 0 in the meantime
            (update-in [:chats chat-id :unviewed-messages-count]
                       #(max (- % count) 0))
@@ -293,6 +292,12 @@
             (deactivate-chat chat-id)
             (offload-messages chat-id)))
 
+(rf/defn unmute-chat-community
+  {:events [:chat/unmute-chat-community]}
+  [{:keys [db]} chat-id muted?]
+  (let [{:keys [community-id]} (get-in db [:chats chat-id])]
+    {:db (assoc-in db [:communities community-id :muted] muted?)}))
+
 (rf/defn mute-chat-failed
   {:events [:chat/mute-failed]}
   [{:keys [db]} chat-id muted? error]
@@ -303,6 +308,8 @@
   {:events [:chat/mute-successfully]}
   [{:keys [db]} chat-id muted-till mute-type muted? chat-type]
   (log/debug "muted chat successfully" chat-id " for" muted-till)
+  (when-not muted?
+    (rf/dispatch [:chat/unmute-chat-community chat-id muted?]))
   (let [time-string (fn [duration-kw unmute-time]
                       (i18n/label duration-kw {:duration unmute-time}))
         not-community-chat? #(contains? #{constants/public-chat-type
@@ -344,11 +351,11 @@
                           :t/channel-unmuted-successfully))))]
     {:db       (assoc-in db [:chats chat-id :muted-till] muted-till)
      :dispatch [:toasts/upsert
-                {:icon       :correct
+                {:icon       :i/correct
                  :icon-color (colors/theme-colors colors/success-60
                                                   colors/success-50)
                  :text       (mute-duration-text (when (some? muted-till)
-                                                   (str (datetime/format-mute-till muted-till))))}]}))
+                                                   (str (format-mute-till muted-till))))}]}))
 
 (rf/defn mute-chat
   {:events [:chat.ui/mute]}
@@ -361,7 +368,7 @@
                       :params     params
                       :on-error   #(rf/dispatch [:chat/mute-failed chat-id muted? %])
                       :on-success #(rf/dispatch [:chat/mute-successfully chat-id % mute-type
-                                                 (not muted?) chat-type])}]}))
+                                                 muted? chat-type])}]}))
 
 (rf/defn show-clear-history-confirmation
   {:events [:chat.ui/show-clear-history-confirmation]}

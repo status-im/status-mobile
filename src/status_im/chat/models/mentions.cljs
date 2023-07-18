@@ -40,10 +40,10 @@
 ; referenced function: contact-list-item
 (defn- rename-mentionable-users
   [mentionable-users]
-  (reduce (fn [acc [id val]]
+  (reduce (fn [acc [id v]]
             (assoc acc
                    id
-                   (set/rename-keys val
+                   (set/rename-keys v
                                     {:id            :public-key
                                      :primaryName   :primary-name
                                      :secondaryName :secondary-name
@@ -55,6 +55,7 @@
 
           {}
           mentionable-users))
+
 (defn- transfer-mention-result
   [result]
   (let [{:keys [input-segments mentionable-users state chat-id new-text]}

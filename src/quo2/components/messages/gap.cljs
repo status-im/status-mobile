@@ -82,11 +82,12 @@
     :border-radius 50}])
 
 (defn timestamp
-  [str]
+  [s]
   [text/text
    {:size  :label
     :style {:text-transform :none
-            :color          (get-color :time)}} str])
+            :color          (get-color :time)}}
+   s])
 
 (defn info-button
   [on-press]

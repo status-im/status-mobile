@@ -14,6 +14,7 @@ from appium.webdriver.common.mobileby import MobileBy
 from sauceclient import SauceException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from urllib3.exceptions import MaxRetryError, ProtocolError
 
@@ -312,7 +313,7 @@ def create_shared_drivers(quantity):
                 test_suite_data.current_test.testruns[-1].error = "Not all %s drivers are created" % quantity
             return drivers, loop
         except (MaxRetryError, AttributeError) as e:
-            test_suite_data.current_test.testruns[-1].error += "%s" % e.reason
+            test_suite_data.current_test.testruns[-1].error += str(e)
             raise e
 
 
@@ -418,7 +419,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                                         test.testruns[-1].first_commands[session_id] = commands.index(command) + 1
                         except KeyError:
                             continue
-                except (RemoteDisconnected, requests.exceptions.ConnectionError):
+                except (RemoteDisconnected, requests.exceptions.ConnectionError, TimeoutException):
                     pass
         except AttributeError:
             pass
