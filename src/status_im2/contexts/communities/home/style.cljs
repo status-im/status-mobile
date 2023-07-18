@@ -1,6 +1,7 @@
 (ns status-im2.contexts.communities.home.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
+            [react-native.safe-area :as safe-area]
             [react-native.reanimated :as reanimated]))
 
 (def header-height 245)
@@ -18,8 +19,8 @@
    :bottom   0})
 
 (defn empty-state-container
-  [top]
-  {:margin-top      (+ header-height top)
+  []
+  {:margin-top      (+ header-height (safe-area/get-top))
    :margin-bottom   44
    :flex            1
    :justify-content :center})
@@ -30,27 +31,46 @@
    :background-color colors/danger-50})
 
 (defn header-spacing
-  [top]
-  {:height (+ header-height top)})
+  []
+  {:height (+ header-height (safe-area/get-top))})
 
-(defn blur-container
-  [top]
-  {:overflow    (if platform/ios? :visible :hidden)
+(defn blur-banner-layer
+  [animated-translation-y]
+  (let [fixed-height (+ (safe-area/get-top) 244)]
+    (reanimated/apply-animations-to-style
+     {:transform [{:translate-y animated-translation-y}]}
+     {:overflow (if platform/ios? :visible :hidden)
+      :z-index  1
+      :position :absolute
+      :top      0
+      :right    0
+      :left     0
+      :height   fixed-height})))
+
+(defn hiding-banner-layer
+  []
+  {:z-index     2
    :position    :absolute
-   :z-index     1
    :top         0
    :right       0
    :left        0
-   :padding-top top})
+   :padding-top (safe-area/get-top)})
 
-(def card-bottom-override {:margin-bottom 16}) ; Original 8 + 8 from tabs top padding
+(defn tabs-banner-layer
+  [animated-translation-y]
+  (let [top-offset (+ (safe-area/get-top) 192)]
+    (reanimated/apply-animations-to-style
+     {:transform [{:translate-y animated-translation-y}]}
+     {:z-index  3
+      :position :absolute
+      :top      top-offset
+      :right    0
+      :left     0})))
 
-(defn animated-card-container
-  [height opacity]
-  (reanimated/apply-animations-to-style {:height height :opacity opacity}
-                                        {:overflow :hidden}))
+(def animated-card-container {:overflow :hidden})
 
-(defn animated-card-translation
-  [translate-y]
-  (reanimated/apply-animations-to-style {:transform [{:translate-y translate-y}]}
+(defn animated-card
+  [opacity translate-y]
+  (reanimated/apply-animations-to-style {:opacity   opacity
+                                         :transform [{:translate-y translate-y}]}
                                         {}))
