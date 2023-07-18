@@ -106,22 +106,33 @@
          :accessibility-label :communities-home-discover-card}]]]]))
 
 (defn- tabs-banner-layer
-  [animated-translation-y selected-tab]
-  [reanimated/view {:style (style/tabs-banner-layer animated-translation-y)}
-   ^{:key (str "tabs-" selected-tab)}
-   [quo/tabs
-    {:size           32
-     :style          style/tabs
-     :on-change      (fn [tab] (rf/dispatch [:communities/select-tab tab]))
-     :default-active selected-tab
-     :data           tabs-data}]])
+  [animated-translation-y animated-opacity selected-tab flat-list-ref]
+  (let [on-tab-change (fn [tab]
+                        (if (empty? (get (rf/sub [:communities/grouped-by-status]) tab))
+                          (do
+                            (reanimated/animate-shared-value-with-timing animated-opacity 1 200 :easing3)
+                            (reanimated/animate-shared-value-with-timing animated-translation-y
+                                                                         0
+                                                                         200
+                                                                         :easing3))
+                          (some-> @flat-list-ref
+                                  (.scrollToOffset #js {:offset 0 :animated? true})))
+                        (rf/dispatch [:communities/select-tab tab]))]
+    [reanimated/view {:style (style/tabs-banner-layer animated-translation-y)}
+     ^{:key (str "tabs-" selected-tab)}
+     [quo/tabs
+      {:size           32
+       :style          style/tabs
+       :on-change      on-tab-change
+       :default-active selected-tab
+       :data           tabs-data}]]))
 
 (defn- animated-banner
-  [{:keys [selected-tab animated-translation-y animated-opacity]}]
+  [{:keys [selected-tab animated-translation-y animated-opacity flat-list-ref]}]
   [:<>
    [:f> blur-banner-layer animated-translation-y]
    [:f> hiding-banner-layer animated-translation-y animated-opacity]
-   [:f> tabs-banner-layer animated-translation-y selected-tab]])
+   [:f> tabs-banner-layer animated-translation-y animated-opacity selected-tab flat-list-ref]])
 
 (def ^:private card-height (+ 56 16)) ; Card height + its vertical margins
 (def ^:private card-opacity-factor (/ 100 card-height 100))
@@ -138,30 +149,36 @@
 
 (defn home
   []
-  (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
-        {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
-        selected-items                  (case selected-tab
-                                          :joined  joined
-                                          :pending pending
-                                          :opened  opened)
-        animated-opacity                (reanimated/use-shared-value 1)
-        animated-translation-y          (reanimated/use-shared-value 0)]
-    [:<>
-     (if (empty? selected-items)
-       [empty-state
-        {:style        (style/empty-state-container)
-         :selected-tab selected-tab}]
-       [rn/flat-list
-        {:key-fn                            :id
-         :content-inset-adjustment-behavior :never
-         :header                            [rn/view {:style (style/header-spacing)}]
-         :render-fn                         item-render
-         :data                              selected-items
-         :on-scroll                         #(set-animated-banner-values
-                                              {:scroll-offset (oops/oget % "nativeEvent.contentOffset.y")
-                                               :translation-y animated-translation-y
-                                               :opacity       animated-opacity})}])
-     [:f> animated-banner
-      {:selected-tab           selected-tab
-       :animated-translation-y animated-translation-y
-       :animated-opacity       animated-opacity}]]))
+  (let [flat-list-ref (atom nil)]
+    (fn []
+      (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
+            {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
+            selected-items                  (case selected-tab
+                                              :joined  joined
+                                              :pending pending
+                                              :opened  opened)
+            animated-opacity                (reanimated/use-shared-value 1)
+            animated-translation-y          (reanimated/use-shared-value 0)]
+        [:<>
+         (if (empty? selected-items)
+           [empty-state
+            {:style        (style/empty-state-container)
+             :selected-tab selected-tab}]
+           [rn/flat-list
+            {:ref                               #(reset! flat-list-ref %)
+             :key-fn                            :id
+             :content-inset-adjustment-behavior :never
+             :header                            [rn/view {:style (style/header-spacing)}]
+             :render-fn                         item-render
+             :data                              selected-items
+             :on-scroll                         #(set-animated-banner-values
+                                                  {:scroll-offset (oops/oget
+                                                                   %
+                                                                   "nativeEvent.contentOffset.y")
+                                                   :translation-y animated-translation-y
+                                                   :opacity       animated-opacity})}])
+         [:f> animated-banner
+          {:selected-tab           selected-tab
+           :animated-translation-y animated-translation-y
+           :animated-opacity       animated-opacity
+           :flat-list-ref          flat-list-ref}]]))))
