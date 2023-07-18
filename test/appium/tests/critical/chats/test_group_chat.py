@@ -2,7 +2,7 @@ import pytest
 from _pytest.outcomes import Failed
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
-from tests import marks, run_in_parallel
+from tests import marks, run_in_parallel, transl
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from views.chat_view import ChatView
 from views.sign_in_view import SignInView
@@ -151,18 +151,18 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.message_before_adding = 'message before adding new user'
         self.message_to_admin = 'Hey, admin!'
         self.public_keys, self.usernames, self.chats = {}, {}, {}
-        sign_in_views = [SignInView(self.drivers[key]) for key in self.drivers]
+        self.sign_in_views = [SignInView(self.drivers[key]) for key in self.drivers]
         self.usernames = ('user admin', 'member_1', 'member_2')
         self.loop.run_until_complete(
             run_in_parallel(
                 (
-                    (sign_in_views[0].create_user, {'enable_notifications': True, 'username': self.usernames[0]}),
-                    (sign_in_views[1].create_user, {'enable_notifications': True, 'username': self.usernames[1]}),
-                    (sign_in_views[2].create_user, {'enable_notifications': True, 'username': self.usernames[2]})
+                    (self.sign_in_views[0].create_user, {'enable_notifications': True, 'username': self.usernames[0]}),
+                    (self.sign_in_views[1].create_user, {'enable_notifications': True, 'username': self.usernames[1]}),
+                    (self.sign_in_views[2].create_user, {'enable_notifications': True, 'username': self.usernames[2]})
                 )
             )
         )
-        self.homes = [sign_in.get_home_view() for sign_in in sign_in_views]
+        self.homes = [sign_in.get_home_view() for sign_in in self.sign_in_views]
         self.public_keys = self.loop.run_until_complete(
             run_in_parallel(
                 (
@@ -515,5 +515,94 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                     self.errors.append(
                         "Message '%s' is missed on Pinned messages list for user %s" % (message, chat_number + 1)
                     )
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703495)
+    def test_group_chat_mute_chat(self):
+        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+
+        self.homes[1].just_fyi("Member 1 mutes the chat")
+        self.homes[1].mute_chat_long_press(self.chat_name)
+        # ToDo: should be redone to some exact period mute after issue with adb commands execution is solved with
+        # SauceLabs or an option for 1 minute mute is added for e2e apk
+        # self.homes[1].mute_chat_long_press(self.chat_name, "mute-for-1-hour")
+        # device_time = self.homes[1].driver.device_time
+
+        self.homes[0].just_fyi("Admin sends a message")
+        muted_message = "Text message in the muted chat"
+        self.homes[0].get_chat(self.chat_name).click()
+        try:
+            initial_counter = int(self.homes[1].chats_tab.counter.text)
+        except NoSuchElementException:
+            initial_counter = 0
+        self.chats[0].send_message(muted_message)
+        self.homes[1].just_fyi("Member 1 checks that chat is muted and message is received")
+        chat = self.homes[1].get_chat(self.chat_name)
+        if chat.new_messages_counter.is_element_displayed(30):
+            self.errors.append("New messages counter near chat name is shown after mute")
+        try:
+            after_mute_counter = int(self.homes[1].chats_tab.counter.text)
+        except NoSuchElementException:
+            after_mute_counter = 0
+        if after_mute_counter > initial_counter:
+            self.errors.append("New messages counter near chats tab button is %s after mute, but should be %s" % (
+                after_mute_counter, initial_counter))
+        if not chat.chat_preview.text.startswith("%s: %s" % (self.usernames[0], muted_message)):
+            self.errors.append("Message text '%s' is not shown in chat preview after mute" % muted_message)
+        chat.click()
+        if not self.chats[1].chat_element_by_text(muted_message).is_element_displayed(30):
+            self.errors.append(
+                "Message '%s' is not shown in chat for %s after mute" % (muted_message, self.usernames[1]))
+        self.chats[1].click_system_back_button_until_element_is_shown()
+        chat.long_press_element()
+        if self.homes[1].mute_chat_button.text != transl["unmute-chat"]:
+            self.errors.append("Chat is not muted")
+        # ToDo: enable the next check when https://github.com/status-im/status-mobile/issues/16768 is fixed
+        # # expected_text = "Muted until %s today" % device_time + 1
+        # expected_text = "%s %s" % (transl["muted-until"], transl["until-you-turn-it-back-on"])
+        # if not self.homes[1].element_by_text(expected_text).is_element_displayed():
+        #     self.errors.append("Text '%s' is not shown for muted chat" % expected_text)
+        self.chats[1].just_fyi("Member 1 unmutes the chat")
+        # self.chats[1].just_fyi("Close app and change device time so chat will be unmuted by timer")
+        # self.homes[1].put_app_to_background()
+        # self.homes[1].driver.execute('mobile: shell', {
+        #     'command': 'date',
+        #     'args': [str(device_time + 1)]
+        # })
+        # self.homes[1].driver.launch_app()
+        # self.sign_in_views[1].sign_in()
+        # self.homes[1].chats_tab.click()
+        # chat.long_press_element()
+        # if self.homes[1].element_starts_with_text("Muted until").is_element_displayed():
+        #     self.errors.append("Chat is still muted after timeout")
+        #     self.errors.verify_no_errors()
+        # self.homes[1].click_system_back_button()
+        self.homes[1].mute_chat_button.click()  # ToDo: remove when ^ is enabled
+
+        unmuted_message = "Chat is unmuted now"
+        self.homes[2].just_fyi("Member 2 sends a message")
+        self.homes[2].get_chat(self.chat_name).click()
+        try:
+            initial_counter = int(self.homes[1].chats_tab.counter.text)
+        except NoSuchElementException:
+            initial_counter = 0
+        self.chats[2].send_message(unmuted_message)
+        self.homes[1].just_fyi("Member 1 checks that chat is unmuted and message is received")
+        if not chat.new_messages_counter.is_element_displayed(30):
+            self.errors.append("New messages counter near chat name is not shown after unmute")
+        try:
+            after_mute_counter = int(self.homes[1].chats_tab.counter.text)
+        except NoSuchElementException:
+            after_mute_counter = 0
+        if after_mute_counter <= initial_counter:
+            self.errors.append("New messages counter near chats tab button is %s after unmute, but should be %s" % (
+                after_mute_counter, initial_counter + 1))
+        if not chat.chat_preview.text.startswith("%s: %s" % (self.usernames[2], unmuted_message)):
+            self.errors.append("Message text '%s' is not shown in chat preview after unmute" % unmuted_message)
+        chat.click()
+        if not self.chats[1].chat_element_by_text(unmuted_message).is_element_displayed(30):
+            self.errors.append(
+                "Message '%s' is not shown in chat for %s after unmute" % (self.usernames[1], unmuted_message))
 
         self.errors.verify_no_errors()

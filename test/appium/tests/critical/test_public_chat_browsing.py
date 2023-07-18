@@ -1,3 +1,4 @@
+import datetime
 import random
 from datetime import timedelta
 
@@ -7,7 +8,7 @@ from _pytest.outcomes import Failed
 from dateutil import parser
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
-from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel, pytest_config_global
+from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel, pytest_config_global, transl
 from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from views.chat_view import CommunityView
 from views.dbs.waku_backup import user as waku_user
@@ -316,8 +317,8 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.community = self.home.create_community(name=self.community_name, description='test description')
 
         self.home.get_chat(self.community_name, community=True).click()
-        community_view = self.home.get_community_view()
-        self.channel = community_view.get_channel(self.channel_name).click()
+        self.community_view = self.home.get_community_view()
+        self.channel = self.community_view.get_channel(self.channel_name).click()
 
     @marks.testrail_id(702846)
     def test_community_navigate_to_channel_when_relaunch(self):
@@ -345,6 +346,58 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             if actual_copied_text != message:
                 self.errors.append(
                     'Message %s text was not copied in community channel, text in clipboard %s' % actual_copied_text)
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703382)
+    def test_community_mute_community_and_channel(self):
+        self.home.jump_to_communities_home()
+        self.home.just_fyi("Mute community and check that channels are also muted")
+        self.home.mute_chat_long_press(chat_name=self.community_name, mute_period="mute-for-1-hour", community=True)
+        device_time = self.home.driver.device_time
+        current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
+        expected_time = current_time + datetime.timedelta(hours=1)
+        expected_text = "Muted until %s %s" % (
+            expected_time.strftime('%H:%M'),
+            "today" if current_time.hour < 23 else "tomorrow"
+        )
+        self.home.get_chat(self.community_name).long_press_element()
+        if not self.home.element_by_text(expected_text).is_element_displayed():
+            self.errors.append("Text '%s' is not shown for muted community" % expected_text)
+        self.home.click_system_back_button()
+
+        self.home.get_chat(self.community_name, community=True).click()
+        self.community_view.get_channel(self.channel_name).long_press_element()
+        if not self.home.element_by_text(expected_text).is_element_displayed():
+            self.errors.append("Text '%s' is not shown for a channel in muted community" % expected_text)
+
+        self.home.just_fyi("Unmute channel and check that the community is also unmuted")
+        self.home.mute_channel_button.click()
+        self.home.jump_to_communities_home()
+        self.home.get_chat(self.community_name).long_press_element()
+        if not self.home.element_by_text("Mute community").is_element_displayed():
+            self.errors.append("Community is not unmuted when channel is unmuted")
+        self.home.click_system_back_button()
+
+        self.home.just_fyi("Mute channel and check that community is not muted")
+        self.home.get_chat(self.community_name, community=True).click()
+        self.home.mute_chat_long_press(chat_name=self.channel_name, mute_period="mute-for-1-week",
+                                       community_channel=True)
+        device_time = self.home.driver.device_time
+        current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
+        expected_time = current_time + datetime.timedelta(days=7)
+        expected_text = "Muted until %s" % expected_time.strftime('%H:%M %a %d %b')
+        self.community_view.get_channel(self.channel_name).long_press_element()
+        if not self.home.element_by_text(expected_text).is_element_displayed():
+            self.errors.append("Text '%s' is not shown for a muted community channel" % expected_text)
+        self.home.click_system_back_button()
+
+        self.home.jump_to_communities_home()
+        self.home.get_chat(self.community_name).long_press_element()
+        if self.home.element_by_text(expected_text).is_element_displayed() or self.home.mute_community_button.text != \
+                transl["mute-community"]:
+            self.errors.append("Community is muted when channel is muted")
+        self.home.click_system_back_button()
 
         self.errors.verify_no_errors()
 

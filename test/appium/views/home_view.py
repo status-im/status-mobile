@@ -1,10 +1,11 @@
 import time
 
+from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import test_dapp_url
 from views.base_element import Button, Text, BaseElement, SilentButton, CheckBox, EditBox
-from views.base_view import BaseView
+from views.base_view import BaseView, UnreadMessagesCountText
 
 
 class ChatButton(Button):
@@ -72,9 +73,16 @@ class ChatElement(SilentButton):
 
     @property
     def new_messages_counter(self):
-        from views.base_view import UnreadMessagesCountText
-        desired_counter = UnreadMessagesCountText(self.driver, self.locator)
-        return desired_counter
+        if self.community:
+            return UnreadMessagesCountText(self.driver, self.locator)
+
+        class NewMessageCounterText(Text):
+            def __init__(self, driver, parent_locator: str):
+                super().__init__(
+                    driver,
+                    xpath="%s//*[@content-desc='new-message-counter']/android.widget.TextView" % parent_locator)
+
+        return NewMessageCounterText(self.driver, self.locator)
 
     @property
     def chat_preview(self):
@@ -202,6 +210,15 @@ class ContactDetailsRow(BaseElement):
         self.username_text = Text(self.driver, xpath="(%s//android.widget.TextView)[2]" % xpath_locator)
 
 
+class MuteButton(Button):
+    def __init__(self, driver, accessibility_id):
+        super().__init__(driver=driver, accessibility_id=accessibility_id)
+
+    @property
+    def text(self):
+        return self.find_element().find_element(by=MobileBy.CLASS_NAME, value="android.widget.TextView").text
+
+
 class HomeView(BaseView):
     def __init__(self, driver):
         super().__init__(driver)
@@ -254,6 +271,9 @@ class HomeView(BaseView):
         self.chats_menu_invite_friends_button = Button(self.driver, accessibility_id="chats-menu-invite-friends-button")
         self.delete_chat_button = Button(self.driver, translation_id="delete-chat")
         self.clear_history_button = Button(self.driver, accessibility_id="clear-history")
+        self.mute_chat_button = MuteButton(self.driver, accessibility_id="mute-chat")
+        self.mute_community_button = MuteButton(self.driver, accessibility_id="mute-community")
+        self.mute_channel_button = MuteButton(self.driver, accessibility_id="chat-toggle-muted")
         self.mark_all_messages_as_read_button = Button(self.driver, accessibility_id="mark-as-read")
 
         # Connection icons
@@ -476,6 +496,17 @@ class HomeView(BaseView):
         self.clear_history_button.click()
         from views.chat_view import ChatView
         ChatView(self.driver).clear_button.click()
+
+    def mute_chat_long_press(self, chat_name, mute_period="mute-till-unmute", community=False, community_channel=False):
+        self.driver.info("Muting chat with %s" % chat_name)
+        self.get_chat(username=chat_name, community_channel=community_channel).long_press_element()
+        if community:
+            self.mute_community_button.click()
+        elif community_channel:
+            self.mute_channel_button.click()
+        else:
+            self.mute_chat_button.click()
+        self.element_by_translation_id(mute_period).click()
 
     def get_pn(self, pn_text: str):
         self.driver.info("Getting PN by '%s'" % pn_text)
