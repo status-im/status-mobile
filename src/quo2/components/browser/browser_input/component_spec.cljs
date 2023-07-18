@@ -18,23 +18,24 @@
       (h/was-called on-change-text)))
 
   (h/describe "Input Label"
-    (h/test "Doesn't render when not specified"
-      (h/render [browser-input/browser-input])
+    (h/test "Doesn't render label text when input is focused"
+      (h/render [browser-input/browser-input
+                 {:auto-focus true}])
       (h/is-null (h/query-by-label-text :browser-input-label)))
 
-    (h/test "Renders label text when specified"
+    (h/test "Renders label text when input has a value and input is not focused"
       (h/render [browser-input/browser-input
-                 {:label "mock-label"}])
+                 {:default-value "mock default"}])
       (h/is-truthy (h/query-by-label-text :browser-input-label)))
 
-    (h/test "Renders label favicon when specified alongside label text"
+    (h/test "Renders site favicon when specified"
       (h/render [browser-input/browser-input
-                 {:label "mock-label" :favicon :i/verified}])
+                 {:default-value "mock default" :favicon :i/verified}])
       (h/is-truthy (h/query-by-label-text :browser-input-favicon)))
 
-    (h/test "Renders lock icon when using ssl alongside label text"
+    (h/test "Renders lock icon when lock is enabled"
       (h/render [browser-input/browser-input
-                 {:label "mock-label" :use-ssl? true}])
+                 {:default-value "mock default" :locked? true}])
       (h/is-truthy (h/query-by-label-text :browser-input-locked-icon))))
 
   (h/describe "Clear button"
