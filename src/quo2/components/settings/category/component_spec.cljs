@@ -2,7 +2,7 @@
   (:require [test-helpers.component :as h]
             [quo2.components.settings.category.view :as category]))
 
-(h/describe "button tests"
+(h/describe "category tests"
   (h/test "category label renders"
     (h/render [category/category
                {:label "label"
