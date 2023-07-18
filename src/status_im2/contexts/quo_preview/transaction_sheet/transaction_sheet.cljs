@@ -6,8 +6,7 @@
             [status-im2.contexts.quo-preview.tabs.segmented-tab]
             [quo2.components.tabs.segmented-tab :as quo2]
             [status-im2.contexts.shell.jump-to.utils :as utils]
-            [quo2.components.inputs.locked-input.view :as locked-input]
-            [status-im.ui.components.icons.icons :as icons]))
+            [quo2.components.inputs.locked-input.view :as locked-input]))
 
 (let [{:keys [width]} (utils/dimensions)]
   (def screen-width width))
