@@ -7,13 +7,13 @@
 
 (defn category
   [{:keys [label data]}]
-  [rn/view {:style style/container}
+  [rn/view {:style (style/container)}
    [quo/text
     {:weight :medium
      :size   :paragraph-2
      :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}} label]
    [rn/flat-list
     {:data      data
-     :style     style/items
+     :style     (style/items)
      :render-fn (fn [item] [quo/settings-list item])
-     :separator [rn/view {:style style/separator}]}]])
+     :separator [rn/view {:style (style/separator)}]}]])
