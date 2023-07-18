@@ -1,19 +1,23 @@
 (ns quo2.components.settings.category.view
   (:require
-    [quo2.core :as quo]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.settings.settings-list.view :as settings-list]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
-    [quo2.components.settings.category.style :as style]))
+    [quo2.components.settings.category.style :as style]
+    [quo2.theme :as quo.theme]))
 
-(defn category
-  [{:keys [label data]}]
-  [rn/view {:style (style/container)}
-   [quo/text
+(defn- category-internal
+  [{:keys [label data theme]}]
+  [rn/view {:style (style/container theme)}
+   [text/text
     {:weight :medium
      :size   :paragraph-2
-     :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}} label]
+     :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}} label]
    [rn/flat-list
     {:data      data
-     :style     (style/items)
-     :render-fn (fn [item] [quo/settings-list item])
-     :separator [rn/view {:style (style/separator)}]}]])
+     :style     (style/items theme)
+     :render-fn (fn [item] [settings-list/settings-list item])
+     :separator [rn/view {:style (style/separator theme)}]}]])
+
+(def category (quo.theme/with-theme category-internal))

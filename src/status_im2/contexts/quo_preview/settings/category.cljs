@@ -1,8 +1,8 @@
 (ns status-im2.contexts.quo-preview.settings.category
   (:require
+    [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [quo2.components.settings.category.view :as category]))
+    [react-native.core :as rn]))
 
 (def data
   [{:title     "Item 1"
@@ -28,4 +28,4 @@
   [rn/view
    {:style {:background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)
             :flex             1}}
-   [category/category {:label label :data data}]])
+   [quo/category {:label label :data data}]])
