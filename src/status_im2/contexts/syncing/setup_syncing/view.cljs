@@ -115,7 +115,6 @@
              [quo/input
               {:default-value  @code
                :type           :password
-               :override-theme :dark
                :default-shown? true
                :editable       false}]
              [quo/button

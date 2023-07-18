@@ -54,7 +54,6 @@
          :type                :blur-bg
          :size                32
          :accessibility-label :close-sign-in-by-syncing
-         :override-theme      :dark
          :on-press            (fn []
                                 (if (and animated? reset-animations-fn)
                                   (reset-animations-fn)
@@ -70,7 +69,6 @@
          :type                :blur-bg
          :size                32
          :accessibility-label :find-sync-code
-         :override-theme      :dark
          :on-press            #(rf/dispatch [:open-modal :find-sync-code])}
         (i18n/label :t/find-sync-code)]]]
      [reanimated/view
@@ -101,7 +99,6 @@
                style/tabs-container)}
       [quo/segmented-control
        {:size           32
-        :override-theme :dark
         :blur?          true
         :default-active @active-tab
         :data           [{:id 1 :label (i18n/label :t/scan-sync-qr-code)}
@@ -151,7 +148,6 @@
        :type                :primary
        :size                32
        :accessibility-label accessibility-label
-       :override-theme      :dark
        :customization-color :blue
        :on-press            on-press}
       (i18n/label button-label)]]))

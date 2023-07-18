@@ -2,8 +2,8 @@
   (:require [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo2.theme]
-            [react-native.core :as rn]))
+            [react-native.core :as rn]
+            [quo2.theme :as quo.theme]))
 
 (def default-container-style
   {:border-radius 20
@@ -81,7 +81,7 @@
     :border-color        colors/danger-50-opa-20
     :label               label
     ;; The negative tag uses the same color for `dark` and `dark blur` variant
-    :text-color          (if (= theme :light) colors/danger-50 colors/danger-60)}])
+    :text-color          (colors/theme-colors colors/danger-50 colors/danger-60 theme)}])
 
 (defn- pending
   [size theme label blur? no-icon?]
@@ -104,8 +104,8 @@
                            colors/white-opa-70
                            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}])
 
-(defn status-tag
-  [{:keys [status size override-theme label blur? no-icon?]}]
+(defn- status-tag-internal
+  [{:keys [status size theme label blur? no-icon?]}]
   (when status
     (when-let [status-component (case (:type status)
                                   :positive positive
@@ -114,7 +114,9 @@
                                   nil)]
       [status-component
        size
-       (or override-theme (quo2.theme/get-theme))
+       theme
        label
        blur?
        no-icon?])))
+
+(def status-tag (quo.theme/with-theme status-tag-internal))

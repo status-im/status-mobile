@@ -3,19 +3,19 @@
             [quo2.components.inputs.recovery-phrase.style :as style]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [quo2.theme :as theme]))
+            [quo2.theme :as quo.theme]))
 
 (def ^:private custom-props
   [:customization-color :override-theme :blur? :cursor-color :multiline :on-focus :on-blur
    :placeholder-text-color :mark-errors? :error-pred :word-limit])
 
 (defn- error-word
-  [text]
-  [rn/text {:style (style/error-word)}
+  [text theme]
+  [rn/text {:style (style/error-word theme)}
    text])
 
 (defn- mark-error-words
-  [pred-last-word pred-previous-words text word-limit]
+  [{:keys [pred-last-word pred-previous-words text word-limit theme]}]
   (let [last-index (dec (count (string/split text #"\s+")))
         words      (map #(apply str %)
                         (partition-by #(= " " %) text))]
@@ -31,18 +31,18 @@
                        :always           (update :result
                                                  conj
                                                  (if invalid-word?
-                                                   [error-word word]
+                                                   [error-word word theme]
                                                    word)))))
                  {:result [:<>]
                   :idx    0})
          :result)))
 
-(defn recovery-phrase-input
+(defn recovery-phrase-input-internal
   [_ _]
   (let [state       (reagent/atom :default)
         set-focused #(reset! state :focused)
         set-default #(reset! state :default)]
-    (fn [{:keys [customization-color override-theme blur? on-focus on-blur mark-errors?
+    (fn [{:keys [customization-color theme blur? on-focus on-blur mark-errors?
                  error-pred-current-word error-pred-written-words word-limit]
           :or   {customization-color      :blue
                  word-limit               ##Inf
@@ -55,9 +55,9 @@
          [rn/text-input
           (merge {:accessibility-label    :recovery-phrase-input
                   :style                  (style/input)
-                  :placeholder-text-color (style/placeholder-color @state override-theme blur?)
-                  :cursor-color           (style/cursor-color customization-color override-theme)
-                  :keyboard-appearance    (theme/theme-value :light :dark override-theme)
+                  :placeholder-text-color (style/placeholder-color @state theme blur?)
+                  :cursor-color           (style/cursor-color customization-color theme)
+                  :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
                   :multiline              true
                   :on-focus               (fn []
                                             (set-focused)
@@ -67,5 +67,11 @@
                                             (when on-blur (on-blur)))}
                  extra-props)
           (if mark-errors?
-            (mark-error-words error-pred-current-word error-pred-written-words text word-limit)
+            (mark-error-words {:error-pred-current-word  error-pred-current-word
+                               :error-pred-written-words error-pred-written-words
+                               :text                     text
+                               :word-limit               word-limit
+                               :theme                    theme})
             text)]]))))
+
+(def recovery-phrase-input (quo.theme/with-theme recovery-phrase-input-internal))

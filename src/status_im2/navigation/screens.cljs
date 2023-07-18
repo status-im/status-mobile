@@ -88,13 +88,11 @@
      :component add-new-contact/new-contact}
 
     {:name      :how-to-pair
-     :options   {:theme  :dark
-                 :sheet? true}
+     :options   (assoc options/dark-screen :sheet? true)
      :component how-to-pair/view}
 
     {:name      :find-sync-code
-     :options   {:theme  :dark
-                 :sheet? true}
+     :options   (assoc options/dark-screen :sheet? true)
      :component find-sync-code/view}
 
     {:name      :discover-communities

@@ -38,15 +38,13 @@
      shell.constants/community-card
      (case (:type community-info)
        :pending             [quo/status-tag
-                             {:status         {:type :pending}
-                              :label          (i18n/label :t/pending)
-                              :size           :small
-                              :override-theme :dark}]
+                             {:status {:type :pending}
+                              :label  (i18n/label :t/pending)
+                              :size   :small}]
        :kicked              [quo/status-tag
-                             {:status         {:type :negative}
-                              :size           :small
-                              :override-theme :dark
-                              :label          (i18n/label :t/kicked)}]
+                             {:status {:type :negative}
+                              :size   :small
+                              :label  (i18n/label :t/kicked)}]
        (:count :permission) [:<>] ;; Add components for these cases
        nil)
 
@@ -69,8 +67,8 @@
        [quo/preview-list
         {:type               :photo
          :more-than-99-label (i18n/label :counter-99-plus)
-         :size               24
-         :override-theme     :dark} data]
+         :size               24}
+        data]
 
        constants/content-type-sticker
        [fast-image/fast-image
@@ -262,12 +260,11 @@
             [rn/view {:style style/avatar-container}
              [avatar avatar-params type customization-color]])
           [quo/button
-           {:size           24
-            :type           :grey
-            :icon           true
-            :on-press       #(rf/dispatch [:shell/close-switcher-card id])
-            :override-theme :dark
-            :style          style/close-button}
+           {:size     24
+            :type     :grey
+            :icon     true
+            :on-press #(rf/dispatch [:shell/close-switcher-card id])
+            :style    style/close-button}
            :i/close]]]))))
 
 ;; browser Card
