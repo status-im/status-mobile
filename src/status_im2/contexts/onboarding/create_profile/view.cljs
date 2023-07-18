@@ -122,7 +122,8 @@
                                       [:show-bottom-sheet
                                        {:content
                                         (fn []
-                                          [method-menu/view on-change-profile-pic])}]))
+                                          [method-menu/view on-change-profile-pic])
+                                        :theme :dark}]))
               :image-picker-props  {:profile-picture     (when @profile-pic {:uri @profile-pic})
                                     :full-name           (if (seq @full-name)
                                                            @full-name
