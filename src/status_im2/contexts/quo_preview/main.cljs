@@ -91,6 +91,8 @@
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.title.title :as title]
+    [status-im2.contexts.quo-preview.transaction-sheet.transaction-sheet :as
+     transaction-sheet]
     [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
@@ -364,6 +366,10 @@
    :text-combinations [{:name      :title
                         :options   {:topBar {:visible true}}
                         :component title/preview-title}]
+   :transaction-sheet [{:name      :transaction-sheet
+                        :options   {:topBar {:visible true}}
+                        :component transaction-sheet/preview-transaction-sheet
+                        }]
    :wallet            [{:name      :lowest-price
                         :options   {:topBar {:visible true}}
                         :component lowest-price/preview-lowest-price}

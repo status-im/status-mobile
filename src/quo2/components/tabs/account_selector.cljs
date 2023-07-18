@@ -33,7 +33,7 @@
 
 (def account-emoji-container
   {:background-color (colors/custom-color :purple 50)
-   :padding          8
+   :padding          6
    :justify-content  :center
    :align-items      :center
    :border-radius    10
@@ -54,9 +54,9 @@
     :account-text      \"My Savings\"        ;; content in place of account name
    }"
   [{:keys [show-label? account-text account-emoji transparent? label-text style]}]
-  (let [background-color   (get-color-by-type (if transparent? :transparent :default) :bg)
+  (let [background-color (get-color-by-type (if transparent? :transparent :default) :bg)
         account-text-color (get-color-by-type (if transparent? :transparent :default) :account-text)
-        label-text-color   (get-color-by-type (if transparent? :transparent :default) :label-text)]
+        label-text-color (get-color-by-type (if transparent? :transparent :default) :label-text)]
     [rn/view {:style style}
      (when show-label?
        [quo2/text
@@ -67,9 +67,10 @@
         label-text])
      [rn/view {:style (account-container-row background-color)}
       [rn/view {:style account-emoji-container}
-       [quo2/text account-emoji]]
+       [quo2/text {:style {:font-size 14}} account-emoji]]
       [quo2/text
        {:weight :medium
         :size   :paragraph-1
-        :style  {:color account-text-color}}
+        :style  {:color account-text-color
+                 :margin-left 1}}
        account-text]]]))
