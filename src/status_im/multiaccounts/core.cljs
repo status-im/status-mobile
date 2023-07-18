@@ -39,10 +39,11 @@
       (contact.db/public-key->new-contact identity)))
 
 (defn contact-two-names-by-identity
-  [contact current-multiaccount identity]
-  (let [me? (= (:public-key current-multiaccount) identity)]
+  [contact profile identity]
+  (let [me? (= (:public-key profile) identity)]
     (if me?
-      [(or (:preferred-name current-multiaccount)
+      [(or (:preferred-name profile)
+           (:display-name profile)
            (:primary-name contact)
            (gfycat/generate-gfy identity))]
       [(:primary-name contact) (:secondary-name contact)])))
