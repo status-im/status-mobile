@@ -51,7 +51,10 @@
        (assoc @state
               :customization-color :blue
               :favicon             (when (:favicon? @state) :i/verified))]
-      [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]]))
+      [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]]
+    (finally
+     (.remove keyboard-show-listener)
+     (.remove keyboard-hide-listener))))
 
 (defn preview-browser-input
   []
