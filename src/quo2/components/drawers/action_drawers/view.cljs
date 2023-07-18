@@ -4,7 +4,7 @@
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]))
+            [quo2.theme :as quo.theme]))
 
 (defn- get-icon-color
   [danger? theme]
@@ -88,7 +88,7 @@
             {:color (get-icon-color danger? theme)
              :size  20}]])])]]])
 
-(def ^:private action (theme/with-theme action-internal))
+(def ^:private action (quo.theme/with-theme action-internal))
 
 (defn action-drawer
   [sections]
