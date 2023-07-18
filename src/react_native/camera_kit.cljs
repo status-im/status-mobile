@@ -10,7 +10,7 @@
 (def camera-type-back (.-Back CameraType))
 
 (defn capture
-  [^js camera-ref callback]
+  [^js camera-ref on-success]
   (-> (.capture camera-ref)
-      (.then #(callback (oops/oget % :uri)))
+      (.then #(on-success (oops/oget % :uri)))
       (.catch #(log/warn "couldn't capture photo" {:error %}))))

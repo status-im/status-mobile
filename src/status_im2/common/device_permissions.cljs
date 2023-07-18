@@ -5,11 +5,11 @@
     [utils.re-frame :as rf]))
 
 (defn camera
-  [callback]
+  [on-allowed]
   (rf/dispatch
    [:request-permissions
     {:permissions [:camera]
-     :on-allowed  callback
+     :on-allowed  on-allowed
      :on-denied   #(rf/dispatch
                     [:toasts/upsert
                      {:icon           :i/info

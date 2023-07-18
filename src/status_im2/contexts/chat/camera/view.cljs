@@ -14,20 +14,20 @@
 
 (defn- f-zoom-button
   [{:keys [value current-zoom]}]
-  (let [selected (= @current-zoom value)
-        size     (reanimated/use-shared-value (if selected 37 25))]
-    (rn/use-effect #(reanimated/animate size (if selected 37 25)) [@current-zoom])
+  (let [selected? (= @current-zoom value)
+        size     (reanimated/use-shared-value (if selected? 37 25))]
+    (rn/use-effect #(reanimated/animate size (if selected? 37 25)) [@current-zoom])
     [rn/touchable-opacity
      {:on-press #(reset! current-zoom value)
       :style    style/zoom-button-container}
      [reanimated/view {:style (style/zoom-button size)}
       [quo/text
-       {:size   (if selected :paragraph-2 :label)
+       {:size   (if selected? :paragraph-2 :label)
         :weight :semi-bold
-        :style  {:color (if selected
+        :style  {:color (if selected?
                           colors/system-yellow
                           colors/white)}}
-       (str value (when selected "x"))]]]))
+       (str value (when selected? "x"))]]]))
 
 (defn zoom-button
   [args]
