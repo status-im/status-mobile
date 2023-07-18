@@ -54,7 +54,6 @@
         [user-avatar/user-avatar
          {:full-name           name
           :profile-picture     profile-picture
-          :override-theme      :dark
           :size                :medium
           :status-indicator?   false
           :customization-color customization-color
@@ -66,7 +65,7 @@
              :size                32
              :blurred?            true
              :labelled?           true
-             :resource            :main-icons2/check
+             :resource            :i/check
              :accessibility-label :logged-in-tag
              :icon-color          colors/success-50
              :override-theme      :dark
@@ -76,7 +75,6 @@
             {:size                32
              :type                :blur-bg
              :icon                true
-             :override-theme      :dark
              :style               style/option-button
              :on-press            on-options-press
              :accessibility-label :profile-card-options}

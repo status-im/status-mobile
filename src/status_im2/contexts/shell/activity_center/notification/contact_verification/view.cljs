@@ -83,8 +83,8 @@
 (defn- prepare-challenge-reply
   [props]
   (rf/dispatch [:show-bottom-sheet
-                {:content        view
-                 :override-theme :dark}
+                {:content view
+                 :theme   :dark}
                 (assoc props :replying? true)]))
 
 (defn- send-challenge-reply

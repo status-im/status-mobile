@@ -2,9 +2,9 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn divider
-  []
+  [theme]
   {:border-top-width 1
-   :border-top-color (colors/theme-colors colors/neutral-10 colors/neutral-90)
+   :border-top-color (colors/theme-colors colors/neutral-10 colors/neutral-90 theme)
    :margin-top       8
    :margin-bottom    7
    :align-items      :center
@@ -45,6 +45,6 @@
    :width         20})
 
 (defn right-text
-  [override-theme]
-  {:color        (colors/theme-colors colors/neutral-50 colors/neutral-40 override-theme)
+  [theme]
+  {:color        (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
    :margin-right 12})
