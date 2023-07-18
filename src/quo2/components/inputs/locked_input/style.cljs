@@ -6,7 +6,8 @@
   {:flex-direction     :row
    :border-radius      12
    :align-items        :center
-   :background-color   (colors/theme-colors colors/neutral-80-opa-80 colors/neutral-10 theme)
+   :background-color   (colors/theme-colors colors/neutral-10
+                                            colors/neutral-80-opa-80 theme)
    :width              :100%
    :height             40
    :padding-horizontal 12

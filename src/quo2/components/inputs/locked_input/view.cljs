@@ -13,14 +13,14 @@
    [icons/icon icon {:width  20
                      :height 20
                      :color  (colors/theme-colors colors/white-opa-0
-                                                  colors/neutral-50)}]
+                                                  colors/neutral-50 theme)}]
    [rn/text
     {:style (style/info-box-label {:theme theme})} label-text]])
 
 (defn- locked-input-internal
-  [{:keys [label-text label-style value-text icon style]}]
+  [{:keys [label-text label-style value-text icon style theme]}]
   [rn/view {:style style}
    [rn/text {:style label-style} label-text]
-   [info-box icon value-text]])
+   [info-box {:theme theme} icon value-text]])
 
 (def locked-input (theme/with-theme locked-input-internal))
