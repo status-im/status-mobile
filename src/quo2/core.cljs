@@ -43,6 +43,7 @@
     quo2.components.inputs.recovery-phrase.view
     quo2.components.inputs.search-input.view
     quo2.components.inputs.title-input.view
+    quo2.components.inputs.locked-input.view
     quo2.components.keycard.view
     quo2.components.links.link-preview.view
     quo2.components.links.url-preview-list.view
@@ -187,6 +188,7 @@
 (def recovery-phrase-input quo2.components.inputs.recovery-phrase.view/recovery-phrase-input)
 (def search-input quo2.components.inputs.search-input.view/search-input)
 (def title-input quo2.components.inputs.title-input.view/title-input)
+(def locked-input quo2.components.inputs.locked-input.view/locked-input)
 
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)

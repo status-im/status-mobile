@@ -16,6 +16,7 @@
     [quo2.components.drawers.permission-context.component-spec]
     [quo2.components.inputs.input.component-spec]
     [quo2.components.inputs.profile-input.component-spec]
+    [quo2.components.inputs.locked-input.component-spec]
     [quo2.components.inputs.recovery-phrase.component-spec]
     [quo2.components.inputs.title-input.component-spec]
     [quo2.components.keycard.component-spec]
