@@ -1,11 +1,12 @@
 (ns quo2.components.inputs.locked-input.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def info-box-container
+(defn info-box-container
+  [theme]
   {:flex-direction     :row
    :border-radius      12
    :align-items        :center
-   :background-color   (colors/theme-colors colors/neutral-80-opa-80 colors/neutral-10)
+   :background-color   (colors/theme-colors colors/neutral-80-opa-80 colors/neutral-10 theme)
    :width              :100%
    :height             40
    :padding-horizontal 12
@@ -13,7 +14,8 @@
    :gap                8
    :margin-top         5})
 
-(def info-box-label
+(defn info-box-label
+  [theme]
   {:font-size   15
-   :color       (colors/theme-colors colors/white colors/black)
+   :color       (colors/theme-colors colors/black colors/white theme)
    :margin-left 5})
