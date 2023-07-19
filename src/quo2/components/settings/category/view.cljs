@@ -3,21 +3,25 @@
     [quo2.components.markdown.text :as text]
     [quo2.components.settings.settings-list.view :as settings-list]
     [quo2.foundations.colors :as colors]
+    [react-native.blur :as blur]
     [react-native.core :as rn]
     [quo2.components.settings.category.style :as style]
     [quo2.theme :as quo.theme]))
 
 (defn- category-internal
-  [{:keys [label data theme]}]
-  [rn/view {:style (style/container theme)}
+  [{:keys [label data blur? theme]}]
+  [rn/view {:style style/container}
+   (when blur?
+     [rn/view (style/blur-container) [blur/view (style/blur-view)]])
    [text/text
     {:weight :medium
      :size   :paragraph-2
-     :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}} label]
+     :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+    label]
    [rn/flat-list
     {:data      data
-     :style     (style/items theme)
+     :style     (style/items theme blur?)
      :render-fn (fn [item] [settings-list/settings-list item])
-     :separator [rn/view {:style (style/separator theme)}]}]])
+     :separator [rn/view {:style (style/separator theme blur?)}]}]])
 
 (def category (quo.theme/with-theme category-internal))
