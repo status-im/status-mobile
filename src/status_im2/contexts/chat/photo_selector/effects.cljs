@@ -15,7 +15,7 @@
 (rf/reg-fx :effects.camera-roll/request-permissions-and-get-photos
  (fn [[num end-cursor album]]
    (permissions/request-permissions
-    {:permissions [:read-external-storage]
+    {:permissions [(if platform/is-below-android-13? :read-external-storage :read-media-images)]
      :on-allowed
      (fn []
        (cameraroll/get-photos
