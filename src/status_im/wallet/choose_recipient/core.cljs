@@ -1,21 +1,19 @@
 (ns status-im.wallet.choose-recipient.core
-  (:require
-    [re-frame.core :as re-frame]
-    [status-im.bottom-sheet.events :as bottom-sheet]
-    [status-im.contact.db :as contact.db]
-    [status-im.ethereum.eip681 :as eip681]
-    [status-im.ethereum.ens :as ens]
-    [status-im.qr-scanner.core :as qr-scaner]
-    [status-im.router.core :as router]
-    [status-im.utils.universal-links.utils :as links]
-    [status-im.utils.wallet-connect :as wallet-connect]
-    [status-im.wallet.utils :as wallet.utils]
-    [status-im2.navigation.events :as navigation]
-    [utils.ethereum.chain :as chain]
-    [utils.i18n :as i18n]
-    [utils.money :as money]
-    [utils.re-frame :as rf]
-    [utils.url :as url]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.bottom-sheet.events :as bottom-sheet]
+            [status-im.contact.db :as contact.db]
+            [status-im.ethereum.core :as ethereum]
+            [status-im.ethereum.eip681 :as eip681]
+            [status-im.ethereum.ens :as ens]
+            [utils.i18n :as i18n]
+            [status-im.qr-scanner.core :as qr-scaner]
+            [status-im.router.core :as router]
+            [utils.re-frame :as rf]
+            [utils.url :as url]
+            [utils.money :as money]
+            [status-im.utils.universal-links.utils :as links]
+            [status-im2.navigation.events :as navigation]
+            [clojure.string :as string]))
 
 ;; FIXME(Ferossgp): Should be part of QR scanner not wallet
 (rf/defn toggle-flashlight
@@ -68,7 +66,7 @@
          :wallet-legacy/prepare-transaction
          (cond-> {:to      address
                   :to-name (or name (find-address-name db address))
-                  :from    (wallet.utils/get-default-account
+                  :from    (ethereum/get-default-account
                             (get db :profile/wallet-accounts))}
            gas       (assoc :gas (money/bignumber gas))
            gas-limit (assoc :gas (money/bignumber gas-limit))
@@ -132,7 +130,7 @@
       ;; if there are no ens-names, we dispatch request-uri-parsed immediately
       (request-uri-parsed cofx message uri)
       {::resolve-addresses
-       {:chain-id (chain/chain-id db)
+       {:chain-id (ethereum/chain-id db)
         :ens-names ens-names
         :callback
         (fn [addresses]
@@ -147,7 +145,7 @@
       (if (links/universal-link? uri)
         {:dispatch [:universal-links/handle-url uri]}
         {:browser/show-browser-selection uri})
-      (if (wallet-connect/url? uri)
+      (if (string/starts-with? uri "wc:")
         {:ui/show-error "Wallet Connect not implemented"}
         ;; Re-enable with https://github.com/status-im/status-mobile/issues/13429
         ;; {:dispatch [::qr-scaner/handle-wallet-connect-uri {:data uri}]}

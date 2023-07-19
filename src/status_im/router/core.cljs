@@ -252,9 +252,6 @@
       (url/url? uri)
       (cb (match-browser-string uri))
 
-      (wallet-connect/url? uri)
-      (cb {:type :wallet-connect :data uri})
-
       (string/starts-with? uri constants/local-pairing-connection-string-identifier)
       (cb {:type :localpairing :data uri})
 

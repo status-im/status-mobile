@@ -38,27 +38,35 @@
                                (reanimated/with-delay
                                 first-transition-delay-ms
                                 (reanimated/with-timing 0
-                                                        (js-obj "duration" transition-duration-ms
-                                                                "easing"   (:linear
-                                                                            reanimated/easings)))))
+                                                        (js-obj
+                                                         "duration"
+                                                         transition-duration-ms
+                                                         "easing"
+                                                         (:linear reanimated/easings)))))
   (reanimated/set-shared-value
    saving-keys-opacity
    (reanimated/with-sequence
     (reanimated/with-delay 2000
                            (reanimated/with-timing 1
-                                                   (js-obj "duration" transition-duration-ms
-                                                           "easing"   (:linear reanimated/easings))))
+                                                   (js-obj "duration"
+                                                           transition-duration-ms
+                                                           "easing"
+                                                           (:linear reanimated/easings))))
     (reanimated/with-delay 1000
                            (reanimated/with-timing 0
-                                                   (js-obj "duration" transition-duration-ms
-                                                           "easing"   (:linear reanimated/easings))))))
+                                                   (js-obj "duration"
+                                                           transition-duration-ms
+                                                           "easing"
+                                                           (:linear reanimated/easings))))))
   (reanimated/set-shared-value keys-saved-opacity
                                (reanimated/with-delay
                                 4600
                                 (reanimated/with-timing 1
-                                                        (js-obj "duration" transition-duration-ms
-                                                                "easing"   (:linear
-                                                                            reanimated/easings))))))
+                                                        (js-obj
+                                                         "duration"
+                                                         transition-duration-ms
+                                                         "easing"
+                                                         (:linear reanimated/easings))))))
 
 (defn f-title
   [insets generate-keys-opacity saving-keys-opacity keys-saved-opacity]
