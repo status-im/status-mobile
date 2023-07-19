@@ -1041,7 +1041,6 @@
     "remote-notifications": "Remote notifications",
     "remote-notifications-subtitle": "Enable google push notifications",
     "show-notifications": "Show notifications",
-    "notification-settings": "Notifications",
     "notification-settings": "Notification settings",
     "notifications-servers": "Notification servers",
     "notifications-preferences": "Notification preferences",
@@ -2209,11 +2208,9 @@
     "read-more": "Read more",
     "token-gated-communities-info": "Here will be something relevant about this topic. This will help the user get more context and therefore have a better understanding of it.",
     "dont-yell-at-me": "Don’t yell at me",
-    "view-channel-members-and-details": "View channel members and details",
     "unmute-channel": "Unmute channel",
-    "share-channel": "Share channel",
     "all-messages": "All messages",
-    "muted-until": "Muted until",
+    "muted-until": "Muted until {{duration}}",
     "until-you-turn-it-back-on": "you turn it back on",
     "mon": "Mon",
     "tue": "Tue",
@@ -2247,5 +2244,6 @@
     "until": "until",
     "chat-unmuted-successfully": "Chat unmuted successfully! ",
     "channel-unmuted-successfully": "Channel unmuted successfully! ",
-    "photo-saved": "Photo saved to your device"
+    "photo-saved": "Photo saved to your device",
+    "community-unmuted": "Community unmuted"
 }

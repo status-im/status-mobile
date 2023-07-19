@@ -48,6 +48,7 @@
 (def ^:const mute-for-8-hours-type 3)
 (def ^:const mute-for-1-week 4)
 (def ^:const mute-till-unmuted 5)
+(def ^:const un-muted 0)
 
 (def ^:const activity-center-mark-all-as-read-undo-time-limit-ms 4000)
 (def ^:const activity-center-max-unread-count 99)

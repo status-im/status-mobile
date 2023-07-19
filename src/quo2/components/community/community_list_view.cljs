@@ -3,6 +3,7 @@
             [quo2.components.community.style :as style]
             [quo2.components.counter.counter :as counter]
             [quo2.components.icon :as icons]
+            [quo2.theme :as theme]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo2.components.community.icon :as community-icon]
@@ -21,18 +22,65 @@
       :resize-mode     :center
       :size            20
       :color           (colors/theme-colors
-                        colors/neutral-40
-                        colors/neutral-50)}]
+                        colors/neutral-50
+                        colors/neutral-40)}]
     (pos? unread-mentions-count)
     [counter/counter {:type :default} unread-mentions-count]
 
     unread-messages?
     [unread-grey-dot :unviewed-messages-public]))
 
-(defn communities-membership-list-item
+(defn communities-list-view-item
   [props
    {:keys [name
-           muted?
+           locked?
+           status
+           muted
+           unread-messages?
+           unread-mentions-count
+           community-icon
+           tokens]}]
+  [rn/view
+   {:style (merge (style/community-card 16)
+                  {:margin-bottom 12})}
+   [rn/touchable-highlight
+    (merge {:style {:height        56
+                    :border-radius 16}}
+           props)
+    [rn/view {:style style/detail-container}
+     [rn/view (style/list-info-container)
+      [community-icon/community-icon
+       {:images community-icon} 32]
+      [rn/view
+       {:flex              1
+        :margin-horizontal 12}
+       [text/text
+        {:weight              :semi-bold
+         :size                :paragraph-1
+         :accessibility-label :community-name-text
+         :number-of-lines     1
+         :ellipsize-mode      :tail
+         :style               {:color (when muted
+                                        (colors/theme-colors
+                                         colors/neutral-40
+                                         colors/neutral-60))}}
+        name]
+       [community-view/community-stats-column
+        {:type :list-view}]]
+      (if (= status :gated)
+        [community-view/permission-tag-container
+         {:locked? locked?
+          :tokens  tokens}]
+        [notification-view
+         {:muted?                muted
+          :unread-mentions-count unread-mentions-count
+          :unread-messages?      unread-messages?}])]]]])
+
+(defn communities-membership-list-item
+  [props
+   bottom-sheet?
+   {:keys [name
+           muted
            unviewed-messages-count
            unviewed-mentions-count
            status
@@ -59,17 +107,22 @@
        :number-of-lines     1
        :ellipsize-mode      :tail
        :weight              :semi-bold
-       :size                :paragraph-1}
+       :size                :paragraph-1
+       :style               (when muted
+                              {:color (if (theme/dark?)
+                                        colors/neutral-60
+                                        colors/neutral-40)})}
       name]]
 
     [rn/view
      {:justify-content :center
-      :margin-right    16}
+      :margin-right    (when bottom-sheet?
+                         16)}
      (if (= status :gated)
        [community-view/permission-tag-container
         {:locked? locked?
          :tokens  tokens}]
        [notification-view
-        {:muted?                muted?
+        {:muted?                muted
          :unread-mentions-count unviewed-mentions-count
          :unread-messages?      (pos? unviewed-messages-count)}])]]])

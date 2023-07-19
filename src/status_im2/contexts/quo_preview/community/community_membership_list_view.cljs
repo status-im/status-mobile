@@ -46,6 +46,7 @@
          {:padding-vertical 60
           :justify-content  :center}
          [community-list-view/communities-membership-list-item {}
+          false
           (cond-> (merge @state data/community)
             (= :muted (:notifications @state))
             (assoc :muted? true)

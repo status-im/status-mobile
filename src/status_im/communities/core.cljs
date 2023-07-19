@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [clojure.walk :as walk]
             [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
             [status-im.utils.types :as types]
             [status-im.async-storage.core :as async-storage]
@@ -16,6 +17,7 @@
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
+            [status-im2.common.muting.helpers :refer [format-mute-till]]
             [status-im2.contexts.chat.events :as chat.events]))
 
 (def crop-size 1000)
@@ -72,7 +74,8 @@
                         :isMember                    :is-member?
                         :adminSettings               :admin-settings
                         :tokenPermissions            :token-permissions
-                        :communityTokensMetadata     :tokens-metadata})
+                        :communityTokensMetadata     :tokens-metadata
+                        :muteTill                    :muted-till})
       (update :admin-settings
               set/rename-keys
               {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
@@ -938,3 +941,58 @@
                                    {:error %
                                     :event
                                     :communities/check-and-delete-pending-request-to-join-community})}]})
+
+(rf/defn mute-community-chats
+  {:events [:community/mute-community-chats]}
+  [{:keys [db]} chat-id muted? muted-till]
+  (log/debug "muted community chat successfully" chat-id muted?)
+  {:db (update-in db [:chats chat-id] merge {:muted muted? :muted-till muted-till})})
+
+(rf/defn mute-and-unmute-community-chats
+  {:events [:community/update-community-chats-mute-status]}
+  [{:keys [db]} community-id muted? mute-till]
+  (let [channels (get-in db [:communities community-id :chats])
+        chats    (mapv vector (keys channels) (vals channels))]
+    (doseq [x chats]
+      (doseq [{:keys [id]} x]
+        (let [chat-id (str community-id id)]
+          (rf/dispatch [:community/mute-community-chats chat-id muted? mute-till]))))))
+
+(rf/defn mute-chat-failed
+  {:events [:community/mute-community-failed]}
+  [{:keys [db]} community-id muted? error]
+  (log/error "mute community failed" community-id error)
+  {:db (update-in db [:communities community-id :muted] (not muted?))}
+  (rf/dispatch [:community/update-community-chats-mute-status community-id muted? error]))
+
+(rf/defn mute-community-successfully
+  {:events [:community/mute-community-successful]}
+  [{:keys [db]} community-id muted? muted-till]
+  (log/debug "muted community successfully" community-id muted-till)
+  (rf/dispatch [:community/update-community-chats-mute-status community-id muted? muted-till])
+  (let [time-string (fn [mute-title mute-duration]
+                      (i18n/label mute-title {:duration mute-duration}))]
+    {:db       (assoc-in db [:communities community-id :muted-till] muted-till)
+     :dispatch [:toasts/upsert
+                {:icon       :correct
+                 :icon-color (quo2.colors/theme-colors
+                              quo2.colors/success-60
+                              quo2.colors/success-50)
+                 :text       (if muted?
+                               (when (some? muted-till)
+                                 (time-string :t/muted-until (format-mute-till muted-till)))
+                               (i18n/label :t/community-unmuted))}]}))
+
+
+(rf/defn set-community-muted
+  {:events [:community/set-muted]}
+  [{:keys [db]} community-id muted? muted-type]
+  (let [params (if muted? [{:communityId community-id :mutedType muted-type}] [community-id])
+        method (if muted? "wakuext_muteCommunityChats" "wakuext_unMuteCommunityChats")]
+    {:db            (assoc-in db [:communities community-id :muted] muted?)
+     :json-rpc/call [{:method     method
+                      :params     params
+                      :on-error   #(rf/dispatch [:community/mute-community-failed community-id
+                                                 muted? %])
+                      :on-success #(rf/dispatch [:community/mute-community-successful
+                                                 community-id muted? %])}]}))

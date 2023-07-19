@@ -27,7 +27,8 @@
                         {:content       (fn []
                                           [options/community-options-bottom-sheet id])
                          :selected-item (fn []
-                                          [quo/communities-membership-list-item {} item])}])}
+                                          [quo/communities-membership-list-item {} true item])}])}
+     false
      item]))
 
 (def tabs-data
