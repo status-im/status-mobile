@@ -7,7 +7,7 @@
 (defn themes
   [type]
   (case type
-    :main        {:icon-color (theme-colors colors/neutral-50 colors/neutral-10)
+    :main        {:icon-color (theme-colors colors/neutral-50 colors/neutral-40)
                   :background (theme-colors colors/white colors/neutral-95)
                   :text-color (theme-colors colors/neutral-100 colors/white)}
     :danger      {:icon-color (theme-colors colors/danger-50 colors/danger-60)
