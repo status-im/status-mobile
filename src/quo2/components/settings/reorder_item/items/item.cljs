@@ -13,10 +13,11 @@
      image-size
      right-text
      right-icon
-     on-press]}]
+     on-press]}
+   blur?]
   [rn/touchable-opacity
    {:on-press on-press
-    :style    (merge (style/item-container) (when subtitle style/item-container-extended))}
+    :style    (merge (style/item-container blur?) (when subtitle style/item-container-extended))}
    [icon/icon :main-icons/drag
     {:color (colors/theme-colors
              colors/neutral-50

@@ -80,6 +80,7 @@
     [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
     [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
+    [status-im2.contexts.quo-preview.settings.reorder-category :as reorder-category]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
@@ -340,9 +341,15 @@
                        {:name      :reorder-item
                         :options   {:topBar {:visible true}}
                         :component reorder-item/preview-reorder-item}
+<<<<<<< HEAD
                        {:name      :category
                         :options   {:topBar {:visible true}}
                         :component category/preview}]
+=======
+                       {:name      :reorder-category
+                        :options   {:topBar {:visible true}}
+                        :component reorder-category/preview}]
+>>>>>>> e6784db03 (feat: reorder comp)
    :share             [{:name      :qr-code
                         :options   {:topBar {:visible true}}
                         :component qr-code/preview-qr-code}

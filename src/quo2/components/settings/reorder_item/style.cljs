@@ -2,16 +2,17 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn item-container
-  []
+  [blur?]
   {:flex-direction     :row
    :align-items        :center
-   :padding-horizontal 10
-   :border-radius      14
-   :margin-bottom      23
-   :height             45
-   :background-color   (colors/theme-colors
-                        colors/white
-                        colors/neutral-90)})
+   :border-radius      16
+   :padding-horizontal 12
+   :padding-vertical   12
+   :background-color   (if blur?
+                         colors/white-opa-5
+                         (colors/theme-colors
+                          colors/white
+                          colors/neutral-90))})
 
 (def item-container-extended
   {:height 52})
