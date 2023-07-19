@@ -35,6 +35,7 @@
    :bottom   0
    :top      0
    :overflow :hidden})
+
 (defn blur-view
   []
   {:style       {:flex 1}
