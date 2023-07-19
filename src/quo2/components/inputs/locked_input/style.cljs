@@ -13,7 +13,7 @@
    :padding-horizontal 12
    :padding-vertical   9
    :gap                8
-   :margin-top         5})
+   :margin-top         2})
 
 (defn info-box-label
   [theme]

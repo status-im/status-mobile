@@ -6,7 +6,8 @@
             [status-im2.contexts.quo-preview.tabs.segmented-tab]
             [quo2.components.tabs.segmented-tab :as quo2]
             [status-im2.contexts.shell.jump-to.utils :as utils]
-            [quo2.components.inputs.locked-input.view :as locked-input]))
+            [quo2.components.inputs.locked-input.view :as locked-input]
+            [quo2.components.markdown.text :as text]))
 
 (let [{:keys [width]} (utils/dimensions)]
   (def screen-width width))
@@ -25,8 +26,9 @@
        unique-selector-list-data))
 
 (def label-style
-  {:font-size 12
-   :color     colors/neutral-50})
+  {:color       colors/neutral-50
+   :font-weight :normal
+   :font-size   13})
 
 (defn- render-account-selectors
   [item]
@@ -41,13 +43,13 @@
     :flex-direction   :column
     :padding-top      20
     :padding-left     15}
-   [rn/text
+   [text/text
     {:style {:font-size   20
              :font-weight :bold
              :color       (colors/theme-colors
-                           colors/black
-                           colors/white)
-            }} "Sign transactions with Rarible"]
+                            colors/black
+                            colors/white)
+             }} "Sign transactions with Rarible"]
    [quo2/segmented-control
     {:size            28
      :blur?           false
@@ -59,7 +61,7 @@
                        {:id    2
                         :label (i18n/label :t/advanced)}]}]
    [rn/view {:style {:margin-top 21}}
-    [rn/text {:style label-style} (i18n/label :t/select-account)]
+    [text/text {:style label-style} (i18n/label :t/select-account)]
     [rn/flat-list
      {:data                              selector-list-data
       :render-fn                         render-account-selectors
