@@ -50,7 +50,8 @@
    :no-notifications-dark         (js/require "../resources/images/ui2/no-notifications-dark.png")})
 
 (def mock-images
-  {:diamond              (js/require "../resources/images/mock2/diamond.png")
+  {:blur-background      (js/require "../resources/images/mock2/blur-background.png")
+   :diamond              (js/require "../resources/images/mock2/diamond.png")
    :coinbase             (js/require "../resources/images/mock2/coinbase.png")
    :collectible          (js/require "../resources/images/mock2/collectible.png")
    :contact              (js/require "../resources/images/mock2/contact.png")

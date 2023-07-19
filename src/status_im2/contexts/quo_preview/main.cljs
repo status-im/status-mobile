@@ -37,6 +37,7 @@
     [status-im2.contexts.quo-preview.drawers.drawer-buttons :as drawer-buttons]
     [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
     [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
+    [status-im2.contexts.quo-preview.foundations.blur :as blur]
     [status-im2.contexts.quo-preview.foundations.shadows :as shadows]
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
@@ -100,7 +101,10 @@
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]))
 
 (def screens-categories
-  {:foundations       [{:name      :shadows
+  {:foundations       [{:name      :blur
+                        :options   {:topBar {:visible true}}
+                        :component blur/preview-blur}
+                       {:name      :shadows
                         :options   {:topBar {:visible true}}
                         :component shadows/preview-shadows}]
    :animated-list     [{:name      :animated-header-list
