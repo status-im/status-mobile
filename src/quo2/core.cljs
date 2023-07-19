@@ -74,6 +74,7 @@
     quo2.components.notifications.notification-dot
     quo2.components.notifications.notification.view
     quo2.components.notifications.toast.view
+    quo2.components.numbered-keyboard.keyboard-key.view
     quo2.components.onboarding.small-option-card.view
     quo2.components.password.tips.view
     quo2.components.profile.profile-card.view
@@ -199,6 +200,9 @@
 (def recovery-phrase-input quo2.components.inputs.recovery-phrase.view/recovery-phrase-input)
 (def search-input quo2.components.inputs.search-input.view/search-input)
 (def title-input quo2.components.inputs.title-input.view/title-input)
+
+;;;; NUMBERED KEYBOARD
+(def keyboard-key quo2.components.numbered-keyboard.keyboard-key.view/keyboard-key)
 
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)
