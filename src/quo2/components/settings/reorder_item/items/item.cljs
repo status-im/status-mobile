@@ -14,9 +14,11 @@
      right-text
      right-icon
      on-press]}
-   blur?]
+   blur?
+   drag]
   [rn/touchable-opacity
    {:on-press on-press
+    :on-long-press drag
     :style    (merge (style/item-container blur?) (when subtitle style/item-container-extended))}
    [icon/icon :main-icons/drag
     {:color (colors/theme-colors

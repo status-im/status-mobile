@@ -7,9 +7,9 @@
     [quo2.components.settings.reorder-item.types :as types]))
 
 (defn reorder-item
-  [item type blur?]
+  [item type blur? drag]
   (case type
-    types/item        [item/view item blur?]
+    types/item        [item/view item blur? drag]
     types/placeholder [placeholder/view item]
     types/skeleton    [skeleton/view]
     types/tab         [tab/view item]
