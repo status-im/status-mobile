@@ -62,10 +62,8 @@
    [[{:icon                :i/camera
       :accessibility-label :take-photo-button
       :label               (i18n/label :t/profile-pic-take)
-      :override-theme      :dark
       :on-press            #(take-pic update-profile-pic-callback)}
      {:icon                :i/image
-      :override-theme      :dark
       :accessibility-label :select-from-gallery-button
       :label               (i18n/label :t/profile-pic-pick)
       :on-press            #(pick-pic update-profile-pic-callback)}]]])

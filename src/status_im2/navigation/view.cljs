@@ -75,10 +75,11 @@
 (def bottom-sheet
   (reagent/reactify-component
    (fn []
-     (let [{:keys [sheets hide? theme]} (rf/sub [:bottom-sheet])
-           sheet                        (last sheets)
-           insets                       (safe-area/get-insets)
-           user-theme                   (theme/get-theme)]
+     (let [{:keys [sheets hide?]} (rf/sub [:bottom-sheet])
+           sheet                  (last sheets)
+           {:keys [theme]}        sheet
+           insets                 (safe-area/get-insets)
+           user-theme             (theme/get-theme)]
        ^{:key (str "sheet" @reloader/cnt)}
        [theme/provider {:theme (or theme user-theme)}
         [inactive]
@@ -86,7 +87,7 @@
          {:style                    {:position :relative :flex 1}
           :keyboard-vertical-offset (- (max 20 (:bottom insets)))}
          (when sheet
-           [:f> bottom-sheet/f-view {:insets insets :hide? hide?}
+           [bottom-sheet/view {:insets insets :hide? hide?}
             sheet])]]))))
 
 (def toasts (reagent/reactify-component toasts/toasts))

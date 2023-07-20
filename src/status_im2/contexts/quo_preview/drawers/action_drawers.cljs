@@ -16,58 +16,47 @@
    {:label "Show red options?"
     :key   :show-red-options?
     :type  :boolean}
-   {:label   "Override theme"
-    :key     :override-theme
+   {:label   "Drawer theme"
+    :key     :theme
     :type    :select
     :options [{:key :dark :value "Dark"}
               {:key :light :value "Light"}
               {:key nil :value "System"}]}])
 
-(defn options-with-consequences
-  [override-theme]
-  [{:icon           :i/delete
-    :danger?        true
-    :label          "Clear history"
-    :override-theme override-theme
-    :add-divider?   true
-    :on-press       #(js/alert "clear history")}])
+(def options-with-consequences
+  [{:icon         :i/delete
+    :danger?      true
+    :label        "Clear history"
+    :add-divider? true
+    :on-press     #(js/alert "clear history")}])
 
 (defn render-action-sheet
   [state]
-  (let [override-theme (:override-theme @state)]
-    [rn/view
-     {:height           300
-      :background-color (colors/theme-colors colors/white colors/neutral-95)}
-     [quo/action-drawer
-      (cond->
-        [[{:icon           :i/friend
-           :label          "View channel members and details"
-           :override-theme override-theme
-           :on-press       #(js/alert "View channel members and details")}
-          {:icon           :i/communities
-           :label          "Mark as read"
-           :override-theme override-theme
-           :disabled?      (:mark-as-read-disabled? @state)
-           :on-press       #(js/alert "Mark as read")}
-          {:icon           :i/muted
-           :label          (if (:muted? @state) "Unmute channel" "Mute channel")
-           :override-theme override-theme
-           :on-press       #(js/alert (if (:muted? @state) "Unmute channel" "Mute channel"))
-           :right-icon     :i/chevron-right
-           :sub-label      (when (:muted? @state) "Muted for 15 min")}
-          {:icon           :i/scan
-           :on-press       #(js/alert "Fetch messages")
-           :override-theme override-theme
-           :right-icon     :i/chevron-right
-           :right-text     "3"
-           :label          "Fetch messages"}
-          {:icon           :i/add-user
-           :override-theme override-theme
-           :on-press       #(js/alert "Share link to the channel")
-           :label          "Share link to the channel"}]]
+  [quo/action-drawer
+   (cond->
+     [[{:icon     :i/friend
+        :label    "View channel members and details"
+        :on-press #(js/alert "View channel members and details")}
+       {:icon      :i/communities
+        :label     "Mark as read"
+        :disabled? (:mark-as-read-disabled? @state)
+        :on-press  #(js/alert "Mark as read")}
+       {:icon       :i/muted
+        :label      (if (:muted? @state) "Unmute channel" "Mute channel")
+        :on-press   #(js/alert (if (:muted? @state) "Unmute channel" "Mute channel"))
+        :right-icon :i/chevron-right
+        :sub-label  (when (:muted? @state) "Muted for 15 min")}
+       {:icon       :i/scan
+        :on-press   #(js/alert "Fetch messages")
+        :right-icon :i/chevron-right
+        :right-text "3"
+        :label      "Fetch messages"}
+       {:icon     :i/add-user
+        :on-press #(js/alert "Share link to the channel")
+        :label    "Share link to the channel"}]]
 
-        (:show-red-options? @state)
-        (conj (options-with-consequences override-theme)))]]))
+     (:show-red-options? @state)
+     (conj options-with-consequences))])
 
 (defn cool-preview
   []
@@ -80,7 +69,8 @@
         [quo/button
          {:style    {:margin-horizontal 40}
           :on-press #(rf/dispatch [:show-bottom-sheet
-                                   {:content (fn [] [render-action-sheet state])}])}
+                                   {:content (fn [] [render-action-sheet state])
+                                    :theme   (:theme @state)}])}
          "See in bottom sheet"]
         [rn/view {:padding-vertical 60}
          [render-action-sheet state]]]])))

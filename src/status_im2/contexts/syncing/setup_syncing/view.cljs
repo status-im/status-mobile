@@ -131,7 +131,6 @@
           {:label                 (i18n/label :t/have-a-sync-code?)
            :increase-padding-top? true}]
          [quo/action-drawer
-          [[{:icon           :i/scan
-             :override-theme :dark
-             :on-press       #(rf/dispatch [:navigate-to :scan-sync-code-page])
-             :label          (i18n/label :t/scan-or-enter-sync-code)}]]]]]])))
+          [[{:icon     :i/scan
+             :on-press #(rf/dispatch [:navigate-to :scan-sync-code-page])
+             :label    (i18n/label :t/scan-or-enter-sync-code)}]]]]]])))
