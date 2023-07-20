@@ -1,7 +1,7 @@
 (ns quo2.components.notifications.count-down-circle
   (:require [goog.string :as gstring]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.svg :as svg]
             [reagent.core :as reagent]))
@@ -48,8 +48,8 @@
   {:color {:dark  colors/neutral-80-opa-40
            :light colors/white-opa-40}})
 
-(defn circle-timer
-  [{:keys [color duration size stroke-width trail-color rotation initial-remaining-time]}]
+(defn- circle-timer-internal
+  [{:keys [color duration size stroke-width trail-color rotation initial-remaining-time theme]}]
   (let [rotation                     (or rotation :clockwise)
         duration                     (or duration 4)
         stroke-width                 (or stroke-width 1)
@@ -98,8 +98,10 @@
             [svg/path
              {:d                 path
               :fill              :none
-              :stroke            (or color (get-in themes [:color (theme/get-theme)]))
+              :stroke            (or color (get-in themes [:color theme]))
               :stroke-linecap    :square
               :stroke-width      stroke-width
               :stroke-dasharray  path-length
               :stroke-dashoffset (linear-ease @display-time 0 path-length duration)}])]])})))
+
+(def circle-timer (quo.theme/with-theme circle-timer-internal))
