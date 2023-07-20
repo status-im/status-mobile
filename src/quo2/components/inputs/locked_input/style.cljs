@@ -19,4 +19,4 @@
   [theme]
   {:font-size   15
    :color       (colors/theme-colors colors/black colors/white theme)
-   :margin-left 5})
+   :margin-left 7})

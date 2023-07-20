@@ -11,13 +11,14 @@
 
 (let [{:keys [width]} (utils/dimensions)]
   (def screen-width width))
-(def account-selector-width (* 0.91 screen-width))
+(def account-selector-width (* 0.895 screen-width))
 (def shared-selector-list-data
   {:show-label?  false
    :transparent? false
-   :style        {:width account-selector-width}})
+   :style        {:width  account-selector-width
+                  :height 40}})
 (def unique-selector-list-data
-  [{:account-text  "Drakarys account"
+  [{:account-text  "Drakaris account"
     :account-emoji "🔥"}
    {:account-text  "Daenerys account"
     :account-emoji "👸"}])
@@ -26,9 +27,11 @@
        unique-selector-list-data))
 
 (def label-style
-  {:color       colors/neutral-50
-   :font-weight :normal
-   :font-size   13})
+  {:color          colors/neutral-50
+   :letter-spacing -0.039
+   :line-height    18.2
+   :font-weight    :normal
+   :font-size      13})
 
 (defn- render-account-selectors
   [item]
@@ -42,25 +45,26 @@
     :flex             1
     :flex-direction   :column
     :padding-top      20
-    :padding-left     15}
+    :padding-left     20}
    [text/text
-    {:style {:font-size   20
-             :font-weight :bold
-             :color       (colors/theme-colors
-                            colors/black
-                            colors/white)
-             }} "Sign transactions with Rarible"]
+    {:style {:font-size      19
+             :letter-spacing -0.304
+             :font-weight    :600
+             :color          (colors/theme-colors
+                               colors/black
+                               colors/white)
+             }} "Sign transaction with Rarible"]
    [quo2/segmented-control
     {:size            28
      :blur?           false
      :default-active  1
-     :container-style {:margin-top   19
+     :container-style {:margin-top   20
                        :margin-right 20}
      :data            [{:id    1
                         :label (i18n/label :t/simple)}
                        {:id    2
                         :label (i18n/label :t/advanced)}]}]
-   [rn/view {:style {:margin-top 21}}
+   [rn/view {:style {:margin-top 19}}
     [text/text {:style label-style} (i18n/label :t/select-account)]
     [rn/flat-list
      {:data                              selector-list-data
@@ -69,18 +73,19 @@
       :shows-horizontal-scroll-indicator false
       :style                             {:margin-top 4}}]
     [rn/view
-     {:style {:margin-top     11
-              :flex-direction :row}}
+     {:style {:margin-top      11
+              :flex-direction  :row}}
      [locked-input/locked-input
       {:value-text  "$1,648.34"
        :icon        :i/gas
        :label-text  (i18n/label :t/network-fee)
        :label-style label-style
-       :style       {:padding-right 15
-                     :width         (/ account-selector-width 2)}}]
+       :style       {:margin-right 16
+                     :width        160}}]
      [locked-input/locked-input
       {:value-text  "~3 min"
        :icon        :i/duration
        :label-text  (i18n/label :t/duration-estimate)
        :label-style label-style
-       :style       {:width (/ account-selector-width 2)}}]]]])
+       :style       {:margin-right 18
+                     :width        160}}]]]])
