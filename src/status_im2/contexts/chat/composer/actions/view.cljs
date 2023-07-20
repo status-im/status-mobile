@@ -18,7 +18,7 @@
   [{:keys [sending-images? sending-links?]}
    {:keys [text-value focused? maximized?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]}
-   window-height]
+   window-height edit]
   (reanimated/animate height comp-constants/input-height)
   (reanimated/set-shared-value saved-height comp-constants/input-height)
   (reanimated/set-shared-value last-height comp-constants/input-height)
@@ -36,12 +36,13 @@
   (reset! text-value "")
   (reset! sending-links? false)
   (reset! sending-images? false)
-  (messages.list/scroll-to-bottom))
+  (when-not (some? edit)
+    (messages.list/scroll-to-bottom)))
 
 (defn f-send-button
   [props {:keys [text-value] :as state}
    animations window-height images?
-   btn-opacity z-index]
+   btn-opacity z-index edit]
   (rn/use-effect (fn []
                    (if (or (seq @text-value) images?)
                      (when (or (not= @z-index 1) (not= (reanimated/get-shared-value btn-opacity) 1))
@@ -58,14 +59,14 @@
     {:icon                true
      :size                32
      :accessibility-label :send-message-button
-     :on-press            #(send-message props state animations window-height)}
+     :on-press            #(send-message props state animations window-height edit)}
     :i/arrow-up]])
 
 (defn send-button
-  [props {:keys [text-value] :as state} animations window-height images?]
+  [props {:keys [text-value] :as state} animations window-height images? edit]
   (let [btn-opacity (reanimated/use-shared-value 0)
         z-index     (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
-    [:f> f-send-button props state animations window-height images? btn-opacity z-index]))
+    [:f> f-send-button props state animations window-height images? btn-opacity z-index edit]))
 
 (defn disabled-audio-button
   []
@@ -215,7 +216,7 @@
     [image-button props animations insets]
     [reaction-button]
     [format-button]]
-   [:f> send-button props state animations window-height images]
+   [:f> send-button props state animations window-height images edit]
    (when (and (not edit) (not images))
      ;; TODO(alwx): needs to be replaced with an `audio-button` later.
      ;; See https://github.com/status-im/status-mobile/issues/16084 for more details.
