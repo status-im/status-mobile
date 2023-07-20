@@ -1,7 +1,7 @@
 (ns quo.animated
   (:refer-clojure :exclude [abs set delay divide])
   (:require ["react-native-reanimated" :default animated :refer (clockRunning EasingNode)]
-            ["react-native-redash/lib/module/v1" :as redash]
+            ["react-native-redash" :as redash]
             [oops.core :refer [ocall oget]]
             [quo.gesture-handler :as gh]
             quo.react

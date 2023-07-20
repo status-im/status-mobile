@@ -384,7 +384,7 @@
                                                                :getBottomSpace     (fn [])})
     "react-native-screens"                           (clj->js {})
     "react-native-reanimated"                        react-native-reanimated
-    "react-native-redash/lib/module/v1"              react-native-redash
+    "react-native-redash/"                           react-native-redash
     "react-native-redash"                            react-native-redash
     "react-native-fetch-polyfill"                    fetch
     "react-native-status-keycard"                    status-keycard
