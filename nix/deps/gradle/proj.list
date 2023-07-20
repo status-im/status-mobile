@@ -12,6 +12,7 @@ react-native-community_netinfo
 react-native-community_slider
 react-native-config
 react-native-dialogs
+react-native-exception-handler
 react-native-fast-image
 react-native-fs
 react-native-gesture-handler

@@ -7,6 +7,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.shake :as react-native-shake]
+    [react-native.exception-handler :as exception-handler]
     [reagent.impl.batching :as batching]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]
     [status-im2.contexts.shell.jump-to.state :as shell.state]
@@ -42,6 +43,11 @@
   (i18n-resources/load-language "en")
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
   (utils.universal-links/initialize)
+
+  (exception-handler/set-native-exception-handler
+   ^js (clj->js #(re-frame/dispatch [:logging.ui/send-logs-pressed :email]))
+   false
+   true)
 
   ;; Shell
   (async-storage/get-item :selected-stack-id #(shell.utils/change-selected-stack-id % nil nil))

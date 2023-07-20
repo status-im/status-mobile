@@ -348,6 +348,8 @@ PODS:
     - React
   - ReactNativeCameraKit (13.0.0):
     - React-Core
+  - ReactNativeExceptionHandler (2.10.10):
+    - React-Core
   - ReactNativeNavigation (7.27.1):
     - HMSegmentedControl
     - React-Core
@@ -501,6 +503,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "ReactNativeAudioToolkit (from `../node_modules/@react-native-community/audio-toolkit`)"
   - ReactNativeCameraKit (from `../node_modules/react-native-camera-kit`)
+  - ReactNativeExceptionHandler (from `../node_modules/react-native-exception-handler`)
   - ReactNativeNavigation (from `../node_modules/react-native-navigation`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
@@ -646,6 +649,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/audio-toolkit"
   ReactNativeCameraKit:
     :path: "../node_modules/react-native-camera-kit"
+  ReactNativeExceptionHandler:
+    :path: "../node_modules/react-native-exception-handler"
   ReactNativeNavigation:
     :path: "../node_modules/react-native-navigation"
   RNCAsyncStorage:
@@ -707,7 +712,7 @@ SPEC CHECKSUMS:
   FBLazyVector: a8af91c2b5a0029d12ff6b32e428863d63c48991
   FBReactNativeSpec: 1b2309b096448a1dc9d0c43999216f8fda809ae8
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: d93527a855523adb8c113837db4be68fb00e230d
+  glog: 166d178815c300e8126de9a7900101814eb16253
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
@@ -758,6 +763,7 @@ SPEC CHECKSUMS:
   ReactCommon: 65754b8932ea80272714988268bbfb9f303264a5
   ReactNativeAudioToolkit: de9610f323e855ac6574be8c99621f3d57c5df06
   ReactNativeCameraKit: 9d46a5d7dd544ca64aa9c03c150d2348faf437eb
+  ReactNativeExceptionHandler: b11ff67c78802b2f62eed0e10e75cb1ef7947c60
   ReactNativeNavigation: 94979dd1572a3f093fc85d4599360530a1bed8c8
   RNCAsyncStorage: b2489b49e38c85e10ed45a888d13a2a4c7b32ea1
   RNCClipboard: 8148e21ac347c51fd6cd4b683389094c216bb543
@@ -772,7 +778,7 @@ SPEC CHECKSUMS:
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
-  RNReanimated: 43adb0307a62c1ce9694f36f124ca3b51a15272a
+  RNReanimated: 3e375fc41870cc66c5152a38514c450f7adbc3e1
   RNShare: d82e10f6b7677f4b0048c23709bd04098d5aee6c
   RNStaticSafeAreaInsets: 055ddbf5e476321720457cdaeec0ff2ba40ec1b8
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
@@ -785,6 +791,6 @@ SPEC CHECKSUMS:
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: d24d6184b6b85f742536bd93bd07d69d7b9bb4c1
 
-PODFILE CHECKSUM: a7c3cb360cf217ab90667d67deeab588677d540a
+PODFILE CHECKSUM: 1b60eee24bff3a6287f8b33e57657289b2966342
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.12.0
