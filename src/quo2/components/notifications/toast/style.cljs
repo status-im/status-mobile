@@ -1,7 +1,6 @@
 (ns quo2.components.notifications.toast.style
   (:require
-    [quo2.foundations.colors :as colors]
-    [quo2.foundations.shadows :as shadows]))
+    [quo2.foundations.colors :as colors]))
 
 (def box-container
   {:margin-horizontal 12
@@ -14,41 +13,34 @@
    :position         :absolute
    :padding-vertical 8
    :padding-left     10
-   :padding-right    8
-   :background-color :transparent})
+   :padding-right    8})
 
-(defn content-container
-  [theme]
-  (merge
-   (shadows/get 1 theme)
-   {:background-color (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
-    :flex-direction   :row
-    :justify-content  :space-between
-    :padding-vertical 8
-    :padding-left     10
-    :padding-right    8
-    :border-radius    12}))
+(def content-container
+  {:flex-direction   :row
+   :justify-content  :space-between
+   :padding-vertical 8
+   :padding-left     10
+   :padding-right    8
+   :border-radius    12})
 
 (defn title
-  [override-theme]
-  {:color (colors/theme-colors colors/white colors/neutral-100 override-theme)})
+  [theme]
+  {:color (colors/theme-colors colors/white colors/neutral-100 theme)})
 
 (defn text
-  [override-theme]
-  {:color (colors/theme-colors colors/white colors/neutral-100 override-theme)})
+  [theme]
+  {:color (colors/theme-colors colors/white colors/neutral-100 theme)})
 
 (defn icon
-  [override-theme]
-  {:color           (colors/theme-colors colors/white colors/neutral-100 override-theme)
+  [theme]
+  {:color           (colors/theme-colors colors/white colors/neutral-100 theme)
    :container-style {:width 20 :height 20}})
 
 (def left-side-container {:padding 2})
 (def right-side-container {:padding 4 :flex 1})
 
-(defn action-container
-  [override-theme]
-  {:background-color   (colors/theme-colors colors/white-opa-5 colors/neutral-80-opa-5 override-theme)
-   :flex-direction     :row
+(def action-container
+  {:flex-direction     :row
    :padding-vertical   3
    :padding-horizontal 8
    :align-items        :center

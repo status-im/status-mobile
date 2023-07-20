@@ -43,21 +43,24 @@
                      :opacity  0.9}}]
    [blur/view
     {:blur-type       :blur-over-blur-back
-     :container-style {:top           10
+     :container-style {:position      :absolute
+                       :top           10
                        :left          40
                        :right         40
                        :bottom        30
                        :border-radius 20}}]
    [blur/view
     {:blur-type       :blur-over-blur-middle
-     :container-style {:top           20
+     :container-style {:position      :absolute
+                       :top           20
                        :left          50
                        :right         30
                        :bottom        20
                        :border-radius 20}}]
    [blur/view
     {:blur-type       :blur-over-blur-front
-     :container-style {:top           30
+     :container-style {:position      :absolute
+                       :top           30
                        :left          60
                        :right         20
                        :bottom        10
@@ -83,7 +86,8 @@
           [blur-over-blur-example]
           [blur/view
            {:blur-type       (:type @state)
-            :container-style {:top           20
+            :container-style {:position      :absolute
+                              :top           20
                               :left          40
                               :right         40
                               :bottom        20
