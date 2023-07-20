@@ -36,7 +36,10 @@
                accessibility-label icon style inner-style]
         :or   {type                :primary
                size                40
-               customization-color (when (= type :primary) :blue)}}
+               customization-color (cond (= type :primary)  :blue
+                                         (= type :positive) :success
+                                         (= type :danger)   :danger
+                                         :else              nil)}}
        children]
       (let [icon-only? icon ;; TODO Update external api to icon-only? -
                             ;; https://github.com/status-im/status-mobile/issues/16535

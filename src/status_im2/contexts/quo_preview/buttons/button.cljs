@@ -71,13 +71,15 @@
 
 (defn cool-preview
   []
-  (let [state  (reagent/atom {:label "Press Me"
-                              :size  40})
-        label  (reagent/cursor state [:label])
-        before (reagent/cursor state [:before])
-        after  (reagent/cursor state [:after])
-        above  (reagent/cursor state [:above])
-        icon   (reagent/cursor state [:icon])]
+  (let [state               (reagent/atom {:label "Press Me"
+                                           :size  40})
+        label               (reagent/cursor state [:label])
+        before              (reagent/cursor state [:before])
+        after               (reagent/cursor state [:after])
+        above               (reagent/cursor state [:above])
+        icon                (reagent/cursor state [:icon])
+        type                (reagent/cursor state [:type])
+        customization-color (reagent/cursor state [:customization-color])]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -89,12 +91,14 @@
           :justify-content  :center}
          [quo/button
           (merge (dissoc @state
+                  :customization-color
                   :theme
                   :before
                   :after)
-                 {:customization-color (:customization-color @state)
-                  :background          (:background @state)
-                  :on-press            #(println "Hello world!")}
+                 {:background (:background @state)
+                  :on-press   #(println "Hello world!")}
+                 (when (and (= type :primary) customization-color)
+                   (:customization-color customization-color))
                  (when @above
                    {:above :i/placeholder})
                  (when @before

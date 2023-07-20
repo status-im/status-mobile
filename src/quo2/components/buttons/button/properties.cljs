@@ -87,8 +87,8 @@
   [{:keys [customization-color theme type background pressed? icon-only?]}]
   (cond
     (= type :primary)                              (custom-color-type customization-color icon-only?)
-    (= type :positive)                             (custom-color-type :success icon-only?)
-    (= type :danger)                               (custom-color-type :danger icon-only?)
+    (= type :positive)                             (custom-color-type customization-color icon-only?)
+    (= type :danger)                               (custom-color-type customization-color icon-only?)
     ;; TODO Remove type blurred - https://github.com/status-im/status-mobile/issues/16535
     (and (= :photo background) (= type :grey))     (grey-photo theme pressed?)
     ;; TODO Remove type blur-bg - https://github.com/status-im/status-mobile/issues/16535
