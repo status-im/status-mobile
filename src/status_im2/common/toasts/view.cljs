@@ -40,9 +40,10 @@
 
         [gesture/gesture-detector {:gesture pan-gesture}
          [reanimated/view
-          {:entering animation/slide-in-up-animation
-           :exiting  animation/slide-out-up-animation
-           :layout   animation/linear-transition
+          {
+           ;; :entering animation/slide-in-up-animation
+           ;; :exiting  animation/slide-out-up-animation
+           ;; :layout   animation/linear-transition
            :style    (reanimated/apply-animations-to-style
                       {:transform [{:translateY translate-y}]}
                       style/each-toast-container)}
