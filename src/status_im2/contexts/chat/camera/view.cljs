@@ -41,7 +41,7 @@
     :accessibility-label :snap}
    [rn/touchable-opacity
     {:on-press (fn []
-                 (camera-kit/capture @camera-ref (fn [param] (println "qqq" param) (reset! uri param))))
+                 (camera-kit/capture @camera-ref #(reset! uri %)))
      :style    style/inner-circle}]])
 
 (defn camera-screen
