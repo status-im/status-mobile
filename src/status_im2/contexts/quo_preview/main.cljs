@@ -95,6 +95,7 @@
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
     [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
+    [status-im2.contexts.quo-preview.settings.category :as category]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]))
@@ -330,7 +331,10 @@
                         :component settings-list/preview-settings-list}
                        {:name      :reorder-item
                         :options   {:topBar {:visible true}}
-                        :component reorder-item/preview-reorder-item}]
+                        :component reorder-item/preview-reorder-item}
+                       {:name      :category
+                        :options   {:topBar {:visible true}}
+                        :component category/preview}]
    :share             [{:name      :qr-code
                         :options   {:topBar {:visible true}}
                         :component qr-code/preview-qr-code}
