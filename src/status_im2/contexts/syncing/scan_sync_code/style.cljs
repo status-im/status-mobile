@@ -89,7 +89,7 @@
 (def white-border
   (let [base-tip {:background-color colors/white
                   :position         :absolute
-                  :height           1.9
+                  :height           1.9 ; 1.9 instead of 2 to fix the tips protruding
                   :width            1.9
                   :border-radius    1}]
     {:top-left
