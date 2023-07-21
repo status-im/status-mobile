@@ -11,7 +11,7 @@
                 :data      [{:title     "Item 1"
                              :left-icon :i/browser
                              :chevron?  true}]}])
-    (h/is-truthy (h/get-by-text "label")))
+    (h/is-truthy (h/get-by-text "Label")))
 
   (h/test "category item renders"
     (h/render [category/category
@@ -31,7 +31,7 @@
                 :data      [{:title     "Item 1"
                              :left-icon :i/browser
                              :chevron?  true}]}])
-    (h/is-truthy (h/get-by-text "label")))
+    (h/is-truthy (h/get-by-text "Label")))
 
   (h/test "category item renders"
     (h/render [category/category
