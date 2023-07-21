@@ -225,7 +225,8 @@ class SignInView(BaseView):
             self.generate_keys_button.click_until_presence_of_element(self.profile_your_name_edit_box)
         self.set_profile(username)
         self.set_password(password)
-        self.enable_biometric_maybe_later_button.wait_and_click(30)
+        if self.enable_biometric_maybe_later_button.is_element_displayed(30):
+            self.enable_biometric_maybe_later_button.click()
         # self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
         # if keycard:
         #     keycard_flow = self.keycard_storage_button.click()
