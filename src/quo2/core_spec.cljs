@@ -5,6 +5,7 @@
     [quo2.components.buttons.button.component-spec]
     [quo2.components.buttons.predictive-keyboard.component-spec]
     [quo2.components.buttons.slide-button.component-spec]
+    [quo2.components.calendar.calendar-day.component-spec]
     [quo2.components.browser.browser-input.component-spec]
     [quo2.components.colors.color-picker.component-spec]
     [quo2.components.counter.--tests--.counter-component-spec]
