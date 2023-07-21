@@ -30,7 +30,7 @@
      [draggable-flatlist/draggable-flatlist
       {:data           @atom-data
        :key-fn         (fn [item index] (str (:title item) index))
-       :style          (style/reorder-items theme blur?)
+       :style          style/reorder-items
        :render-fn      (fn [item _ _ _ _ drag] [reorder-item/reorder-item item types/item blur? drag])
        :on-drag-end-fn (fn [_ _ data]
                          (on-drag-end-fn data atom-data))
