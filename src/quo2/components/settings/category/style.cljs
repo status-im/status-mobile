@@ -8,7 +8,7 @@
    :padding-top        12
    :padding-bottom     8})
 
-(defn items
+(defn settings-items
   [theme blur?]
   {:margin-top       12
    :border-radius    16
@@ -20,12 +20,23 @@
                        colors/white-opa-5
                        (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
 
-(defn separator
+(def reorder-items
+  {:margin-top 12})
+
+(defn settings-separator
   [theme blur?]
   {:height           1
    :background-color (if blur?
                        colors/white-opa-5
                        (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
+
+(defn reorder-separator
+  [blur?]
+  {:height           4
+   :background-color (if blur?
+                       :transparent
+                       (colors/theme-colors colors/neutral-5
+                                            colors/neutral-95))})
 
 (defn blur-container
   []

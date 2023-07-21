@@ -84,11 +84,7 @@
     quo2.components.settings.privacy-option
     quo2.components.settings.reorder-item.view
     quo2.components.settings.settings-list.view
-<<<<<<< HEAD
     quo2.components.settings.category.view
-=======
-    quo2.components.settings.reorder-category.view
->>>>>>> e6784db03 (feat: reorder comp)
     quo2.components.share.qr-code.view
     quo2.components.share.share-qr-code.view
     quo2.components.tabs.account-selector
@@ -241,7 +237,6 @@
 (def privacy-option quo2.components.settings.privacy-option/card)
 (def account quo2.components.settings.accounts.view/account)
 (def settings-list quo2.components.settings.settings-list.view/settings-list)
-(def reorder-category quo2.components.settings.reorder-category.view/reorder-category)
 (def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
 (def category quo2.components.settings.category.view/category)
 

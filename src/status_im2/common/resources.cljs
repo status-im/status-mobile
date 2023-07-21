@@ -57,6 +57,7 @@
    :community-banner     (js/require "../resources/images/mock2/community-banner.png")
    :community-logo       (js/require "../resources/images/mock2/community-logo.png")
    :community-cover      (js/require "../resources/images/mock2/community-cover.png")
+   :dark-blur-bg         (js/require "../resources/images/mock2/dark_blur_bg.png")
    :decentraland         (js/require "../resources/images/mock2/decentraland.png")
    :gif                  (js/require "../resources/images/mock2/gif.png")
    :monkey               (js/require "../resources/images/mock2/monkey.png")

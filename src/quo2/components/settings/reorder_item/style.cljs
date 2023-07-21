@@ -41,7 +41,7 @@
    :width  14})
 
 (def item-subtitle
-  {:color     colors/neutral-50})
+  {:color colors/neutral-50})
 
 (def right-text
   {:font-size 15

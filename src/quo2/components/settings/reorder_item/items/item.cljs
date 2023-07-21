@@ -18,9 +18,9 @@
    blur?
    drag]
   [rn/touchable-opacity
-   {:on-press on-press
+   {:on-press      on-press
     :on-long-press drag
-    :style    (merge (style/item-container blur?) (when subtitle style/item-container-extended))}
+    :style         (merge (style/item-container blur?) (when subtitle style/item-container-extended))}
    [icon/icon :main-icons/drag
     {:color (colors/theme-colors
              colors/neutral-50
@@ -40,8 +40,8 @@
        title]
       (when subtitle
         [text/text
-         {:style  style/item-subtitle
-          :size :paragraph-2}
+         {:style style/item-subtitle
+          :size  :paragraph-2}
          subtitle])]
      (when right-text
        [text/text {:style style/right-text} right-text])
