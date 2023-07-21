@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const { NativeModules, FlatList } = require('react-native');
+const { NativeModules } = require('react-native');
 
 require('@react-native-async-storage/async-storage/jest/async-storage-mock');
 require('react-native-gesture-handler/jestSetup');
