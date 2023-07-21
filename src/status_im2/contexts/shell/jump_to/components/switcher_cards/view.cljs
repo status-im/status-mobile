@@ -13,10 +13,25 @@
             [status-im2.contexts.shell.jump-to.components.switcher-cards.style :as style]
             [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]))
 
+(defn- channel-card
+  [{:keys [emoji channel-name customization-color] :as _community-channel}]
+  [rn/view style/channel-card-container
+   [quo/channel-avatar
+    {:emoji               emoji
+     :customization-color customization-color}]
+   [rn/view style/channel-card-text-container
+    [quo/text
+     {:size            :paragraph-2
+      :weight          :medium
+      :number-of-lines 1
+      :ellipsize-mode  :tail
+      :style           style/community-channel}
+     channel-name]]])
+
 (defn content-container
   [type
-   {:keys                             [content-type data new-notifications? color-50 community-info
-                                       community-channel]
+   {:keys                             [content-type data new-notifications? color-50
+                                       community-info community-channel]
     {:keys [text parsed-text source]} :data}]
   [rn/view {:style (style/content-container new-notifications?)}
    (case type
@@ -33,23 +48,10 @@
                               :override-theme :dark
                               :label          (i18n/label :t/kicked)}]
        (:count :permission) [:<>] ;; Add components for these cases
-
        nil)
 
      shell.constants/community-channel-card
-     [rn/view
-      {:style {:flex-direction :row
-               :align-items    :center}}
-      [quo/channel-avatar
-       {:emoji               (:emoji community-channel)
-        :customization-color color-50}]
-      [quo/text
-       {:size            :paragraph-2
-        :weight          :medium
-        :number-of-lines 1
-        :ellipsize-mode  :tail
-        :style           style/community-channel}
-       (:channel-name community-channel)]]
+     [channel-card (assoc community-channel :customization-color color-50)]
 
      (case content-type
        constants/content-type-text
@@ -102,12 +104,13 @@
      [quo/counter
       {:outline             false
        :override-text-color colors/white
-       :override-bg-color   color-60} counter-label]
+       :override-bg-color   color-60}
+      counter-label]
      [rn/view {:style (style/unread-dot color-60)}])])
 
 (defn bottom-container
   [type {:keys [new-notifications?] :as content}]
-  [:<>
+  [rn/view {:style style/bottom-container}
    [content-container type content]
    (when new-notifications?
      [notification-container content])])
