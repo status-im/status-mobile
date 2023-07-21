@@ -15,11 +15,12 @@
 (defn- f-zoom-button
   [{:keys [value current-zoom]}]
   (let [selected? (= @current-zoom value)
-        size     (reanimated/use-shared-value (if selected? 37 25))]
+        size      (reanimated/use-shared-value (if selected? 37 25))]
     (rn/use-effect #(reanimated/animate size (if selected? 37 25)) [@current-zoom])
     [rn/touchable-opacity
-     {:on-press #(reset! current-zoom value)
-      :style    style/zoom-button-container}
+     {:on-press            #(reset! current-zoom value)
+      :style               style/zoom-button-container
+      :accessibility-label (str "zoom-" value)}
      [reanimated/view {:style (style/zoom-button size)}
       [quo/text
        {:size   (if selected? :paragraph-2 :label)
@@ -35,9 +36,12 @@
 
 (defn snap-button
   [camera-ref uri]
-  [rn/view {:style style/outer-circle}
+  [rn/view
+   {:style               style/outer-circle
+    :accessibility-label :snap}
    [rn/touchable-opacity
-    {:on-press (fn [] (camera-kit/capture @camera-ref #(reset! uri %)))
+    {:on-press (fn []
+                 (camera-kit/capture @camera-ref (fn [param] (println "qqq" param) (reset! uri param))))
      :style    style/inner-circle}]])
 
 (defn camera-screen
@@ -52,10 +56,11 @@
             insets                 (safe-area/get-insets)
             top                    (/ (- height camera-window-height (:bottom insets)) 2)]
         [rn/view {:style style/screen-container}
-         [rn/view {:style style/flash-container}
-          [quo/icon :i/flash-camera
-           {:color colors/white
-            :size  24}]]
+         (when-not @uri
+           [rn/view {:style style/flash-container}
+            [quo/icon :i/flash-camera
+             {:color colors/white
+              :size  24}]])
          (if @uri
            [fast-image/fast-image
             {:style  (style/camera-window width camera-window-height top)
@@ -63,11 +68,12 @@
            [camera-kit/camera
             {:ref   #(reset! camera-ref %)
              :style (style/camera-window width camera-window-height top)}])
-         [rn/view {:style (style/zoom-container top insets)}
-          [zoom-button {:value "0.5" :current-zoom current-zoom}]
-          [zoom-button {:value "1" :current-zoom current-zoom}]
-          [zoom-button {:value "2" :current-zoom current-zoom}]
-          [zoom-button {:value "3" :current-zoom current-zoom}]]
+         (when-not @uri
+           [rn/view {:style (style/zoom-container top insets)}
+            [zoom-button {:value "0.5" :current-zoom current-zoom}]
+            [zoom-button {:value "1" :current-zoom current-zoom}]
+            [zoom-button {:value "2" :current-zoom current-zoom}]
+            [zoom-button {:value "3" :current-zoom current-zoom}]])
          (if @uri
            [rn/view {:style (style/confirmation-container insets)}
             [quo/text
@@ -86,9 +92,11 @@
             [quo/text {:style style/photo-text} (i18n/label :t/PHOTO)]
             [rn/view {:style style/actions-container}
              [quo/text
-              {:on-press #(rf/dispatch [:navigate-back])
-               :style    {:font-size 17
-                          :color     colors/white}}
+              {:on-press            #(rf/dispatch [:navigate-back])
+               :style               {:font-size 17
+                                     :color     colors/white}
+               :accessibility-label :cancel}
               (i18n/label :t/cancel)]
              [snap-button camera-ref uri]
-             [quo/icon :i/rotate-camera {:size 48 :color colors/white}]]])]))))
+             [quo/icon :i/rotate-camera
+              {:size 48 :color colors/white :accessibility-label :flip-camera}]]])]))))

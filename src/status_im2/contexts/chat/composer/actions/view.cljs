@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.composer.actions.view
   (:require
     [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
@@ -149,15 +150,32 @@
                                                   50)}]))
        :max-duration-ms                    constants/audio-max-duration-ms}]]))
 
+(defn images-limit-toast
+  []
+  (rf/dispatch [:toasts/upsert
+                {:id              :random-id
+                 :icon            :info
+                 :icon-color      colors/danger-50-opa-40
+                 :container-style {:top (when platform/ios? 20)}
+                 :text            (i18n/label :t/only-6-images)}]))
+
+
+(defn go-to-camera
+  [images-count]
+  (device-permissions/camera #(if (>= images-count constants/max-album-photos)
+                                (images-limit-toast)
+                                (rf/dispatch [:navigate-to :camera-screen]))))
+
 (defn camera-button
   []
-  [quo/button
-   {:on-press (fn [] (device-permissions/camera #(rf/dispatch [:navigate-to :camera-screen])))
-    :icon     true
-    :type     :outline
-    :size     32
-    :style    {:margin-right 12}}
-   :i/camera])
+  (let [images-count (count (vals (rf/sub [:chats/sending-image])))]
+    [quo/button
+     {:on-press #(go-to-camera images-count)
+      :icon     true
+      :type     :outline
+      :size     32
+      :style    {:margin-right 12}}
+     :i/camera]))
 
 (defn open-photo-selector
   [{:keys [input-ref]}
