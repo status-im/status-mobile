@@ -111,6 +111,7 @@
        (i18n/label :t/profiles-on-device)]
       [quo/button
        {:type                :primary
+        :customization-color :blue
         :size                32
         :icon                true
         :on-press            show-new-account-options
@@ -193,12 +194,11 @@
       :keyboardVerticalOffset (- (safe-area/get-bottom))}
      [quo/button
       {:size                32
-       :type                :blur-bg
+       :type                :grey
+       :background          :blur
        :icon                true
        :on-press            set-show-profiles
        :disabled            processing
-       :override-theme      :dark
-       :width               32
        :accessibility-label :show-profiles
        :style               style/multi-profile-button}
       :i/multi-profile]
@@ -250,7 +250,6 @@
        :type                :primary
        :customization-color (or customization-color :primary)
        :accessibility-label :login-button
-       :override-theme      :dark
        :before              :i/unlocked
        :disabled            (or (not sign-in-enabled?) processing)
        :on-press            login-multiaccount

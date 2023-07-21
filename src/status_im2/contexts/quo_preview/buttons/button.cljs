@@ -11,8 +11,8 @@
     :type    :select
     :options [{:key   :primary
                :value "Primary"}
-              {:key   :secondary
-               :value "Secondary"}
+              {:key   :positive
+               :value "Positive"}
               {:key   :grey
                :value "Grey"}
               {:key   :dark-grey
@@ -23,8 +23,8 @@
                :value "Ghost"}
               {:key   :danger
                :value "Danger"}
-              {:key   :positive
-               :value "Positive"}]}
+              {:key   :black
+               :value "Black"}]}
    {:label   "Size:"
     :key     :size
     :type    :select
@@ -36,6 +36,13 @@
                :value "32"}
               {:key   24
                :value "24"}]}
+   {:label   "Background:"
+    :key     :background
+    :type    :select
+    :options [{:key   :blur
+               :value "Blur"}
+              {:key   :photo
+               :value "Photo"}]}
    {:label "Icon:"
     :key   :icon
     :type  :boolean}
@@ -53,17 +60,26 @@
     :type  :boolean}
    {:label "Label"
     :key   :label
-    :type  :text}])
+    :type  :text}
+   {:label   "Customization color:"
+    :key     :customization-color
+    :type    :select
+    :options (map (fn [color]
+                    (let [k (get color :name)]
+                      {:key k :value k}))
+                  (quo/picker-colors))}])
 
 (defn cool-preview
   []
-  (let [state  (reagent/atom {:label "Press Me"
-                              :size  40})
-        label  (reagent/cursor state [:label])
-        before (reagent/cursor state [:before])
-        after  (reagent/cursor state [:after])
-        above  (reagent/cursor state [:above])
-        icon   (reagent/cursor state [:icon])]
+  (let [state               (reagent/atom {:label "Press Me"
+                                           :size  40})
+        label               (reagent/cursor state [:label])
+        before              (reagent/cursor state [:before])
+        after               (reagent/cursor state [:after])
+        above               (reagent/cursor state [:above])
+        icon                (reagent/cursor state [:icon])
+        type                (reagent/cursor state [:type])
+        customization-color (reagent/cursor state [:customization-color])]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -75,10 +91,14 @@
           :justify-content  :center}
          [quo/button
           (merge (dissoc @state
+                  :customization-color
                   :theme
                   :before
                   :after)
-                 {:on-press #(println "Hello world!")}
+                 {:background (:background @state)
+                  :on-press   #(println "Hello world!")}
+                 (when (and (= type :primary) customization-color)
+                   (:customization-color customization-color))
                  (when @above
                    {:above :i/placeholder})
                  (when @before
@@ -90,7 +110,7 @@
 (defn preview-button
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
+   {:background-color (colors/theme-colors colors/white colors/neutral-95)
     :flex             1}
    [rn/flat-list
     {:flex                         1

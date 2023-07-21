@@ -38,7 +38,8 @@
 
 (defn view
   []
-  (let [valid-for-ms  (reagent/atom code-valid-for-ms)
+  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))
+        valid-for-ms  (reagent/atom code-valid-for-ms)
         code          (reagent/atom nil)
         delay         (reagent/atom nil)
         timestamp     (reagent/atom nil)
@@ -83,16 +84,19 @@
               :width  "100%"}])
           (when-not (sync-utils/valid-connection-string? @code)
             [quo/button
-             {:on-press (fn []
-                          ;TODO https://github.com/status-im/status-mobile/issues/15570
-                          ;remove old bottom sheet when Authentication process design is created.
-                          (rf/dispatch [:bottom-sheet/hide-old])
-                          (rf/dispatch [:bottom-sheet/show-sheet-old
-                                        {:content (fn []
-                                                    [enter-password/sheet set-code])}]))
-              :size     40
-              :style    style/generate-button
-              :before   :i/reveal} (i18n/label :t/reveal-sync-code)])
+             {:on-press            (fn []
+                                     ;TODO https://github.com/status-im/status-mobile/issues/15570
+                                     ;remove old bottom sheet when Authentication process design is
+                                     ;created.
+                                     (rf/dispatch [:bottom-sheet/hide-old])
+                                     (rf/dispatch [:bottom-sheet/show-sheet-old
+                                                   {:content (fn []
+                                                               [enter-password/sheet set-code])}]))
+              :type                :primary
+              :customization-color profile-color
+              :size                40
+              :style               style/generate-button
+              :before              :i/reveal} (i18n/label :t/reveal-sync-code)])
           (when (sync-utils/valid-connection-string? @code)
             [rn/view
              {:style style/valid-cs-container}

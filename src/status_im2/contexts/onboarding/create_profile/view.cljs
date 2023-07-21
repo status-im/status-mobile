@@ -161,16 +161,16 @@
          :pointer-events :box-none}
         [button-container @keyboard-shown?
          [quo/button
-          {:accessibility-label       :submit-create-profile-button
-           :type                      :primary
-           :override-background-color (colors/custom-color @custom-color 60)
-           :on-press                  (fn []
-                                        (rf/dispatch [:onboarding-2/profile-data-set
-                                                      {:image-path   @profile-pic
-                                                       :display-name @full-name
-                                                       :color        @custom-color}]))
-           :style                     style/continue-button
-           :disabled                  (or (not valid-name?) (not (seq @full-name)))}
+          {:accessibility-label :submit-create-profile-button
+           :type                :primary
+           :customization-color @custom-color
+           :on-press            (fn []
+                                  (rf/dispatch [:onboarding-2/profile-data-set
+                                                {:image-path   @profile-pic
+                                                 :display-name @full-name
+                                                 :color        @custom-color}]))
+           :style               style/continue-button
+           :disabled            (or (not valid-name?) (not (seq @full-name)))}
           (i18n/label :t/continue)]]]])
     (finally
      (oops/ocall show-listener "remove")

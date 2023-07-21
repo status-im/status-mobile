@@ -2,7 +2,6 @@
   (:require
     [oops.core :refer [ocall]]
     [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -177,11 +176,11 @@
 
           [rn/view {:style style/button-container}
            [quo/button
-            {:disabled                  (not meet-requirements?)
-             :override-background-color (colors/custom-color user-color 60)
-             :on-press                  #(rf/dispatch
-                                          [:onboarding-2/password-set
-                                           (security/mask-data @password)])}
+            {:disabled            (not meet-requirements?)
+             :customization-color user-color
+             :on-press            #(rf/dispatch
+                                    [:onboarding-2/password-set
+                                     (security/mask-data @password)])}
             (i18n/label :t/password-creation-confirm)]]]]))))
 
 (defn create-password-doc

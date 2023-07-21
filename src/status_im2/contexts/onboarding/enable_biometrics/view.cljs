@@ -1,6 +1,5 @@
 (ns status-im2.contexts.onboarding.enable-biometrics.view
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im2.contexts.onboarding.enable-biometrics.style :as style]
@@ -29,16 +28,17 @@
         profile-color            (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view {:style (style/buttons insets)}
      [quo/button
-      {:accessibility-label       :enable-biometrics-button
-       :on-press                  #(rf/dispatch [:onboarding-2/enable-biometrics])
-       :before                    :i/face-id
-       :override-background-color (colors/custom-color profile-color 50)}
+      {:accessibility-label :enable-biometrics-button
+       :on-press            #(rf/dispatch [:onboarding-2/enable-biometrics])
+       :before              :i/face-id
+       :customization-color profile-color}
       (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
      [quo/button
-      {:accessibility-label       :maybe-later-button
-       :on-press                  #(rf/dispatch [:onboarding-2/create-account-and-login])
-       :override-background-color colors/white-opa-5
-       :style                     {:margin-top 12}}
+      {:accessibility-label :maybe-later-button
+       :background          :blur
+       :type                :grey
+       :on-press            #(rf/dispatch [:onboarding-2/create-account-and-login])
+       :style               {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
 (defn enable-biometrics-parallax

@@ -244,11 +244,13 @@
      ([color suffix]
       (custom-color color suffix nil))
      ([color suffix opacity]
-      (let [color-keyword (keyword color)
+      (let [hex?          (not (keyword? color))
+            color-keyword (keyword color)
             base-color    (get-in colors-map
-                                  [color-keyword suffix]
-                                  color)]
-        (if opacity (alpha base-color (/ opacity 100)) base-color))))))
+                                  [color-keyword suffix])]
+        (if hex?
+          color
+          (if opacity (alpha base-color (/ opacity 100)) base-color)))))))
 
 (defn custom-color-by-theme
   "(custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark)
