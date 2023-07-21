@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const { NativeModules } = require('react-native');
+const { NativeModules, FlatList } = require('react-native');
 
 require('@react-native-async-storage/async-storage/jest/async-storage-mock');
 require('react-native-gesture-handler/jestSetup');
@@ -75,6 +75,8 @@ jest.mock('react-native-blob-util', () => ({
     }),
   },
 }));
+
+jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
 
 NativeModules.ReactLocalization = {
   language: 'en',
