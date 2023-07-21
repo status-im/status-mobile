@@ -32,9 +32,6 @@
   {:width  size
    :height size})
 
-(def item-text
-  {:font-size 14})
-
 (defn chevron
   []
   {:color  (colors/theme-colors
@@ -44,8 +41,7 @@
    :width  14})
 
 (def item-subtitle
-  {:color     colors/neutral-50
-   :font-size 13})
+  {:color     colors/neutral-50})
 
 (def right-text
   {:font-size 15

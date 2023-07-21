@@ -3,7 +3,8 @@
             [quo2.components.settings.reorder-item.style :as style]
             [quo2.components.markdown.text :as text]
             [quo2.components.icon :as icon]
-            [quo2.foundations.colors :as colors]))
+            [quo2.foundations.colors :as colors]
+            [react-native.fast-image :as fast-image]))
 
 (defn view
   [{:keys
@@ -28,20 +29,19 @@
     {:style style/body-container}
     [rn/view
      {:style style/image-container}
-     [rn/image
+     [fast-image/fast-image
       {:source image
        :style  (style/image image-size)}]]
     [rn/view
      {:style style/text-container}
      [rn/view
       [text/text
-       {:style  style/item-text
-        :weight :medium}
+       {:weight :medium}
        title]
       (when subtitle
         [text/text
          {:style  style/item-subtitle
-          :weight :regular}
+          :size :paragraph-2}
          subtitle])]
      (when right-text
        [text/text {:style style/right-text} right-text])

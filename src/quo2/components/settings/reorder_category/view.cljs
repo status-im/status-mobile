@@ -33,8 +33,6 @@
      :key-fn    (fn [item index] (str (:title item) index))
      :style     (style/items theme blur?)
      :render-fn (fn [item _ _ _ _ drag] [reorder-item/reorder-item item types/item blur? drag])
-     :autoscroll-threshold            (if platform/android? 150 250)
-     :autoscroll-speed                (if platform/android? 10 150)
      :on-drag-end-fn                  (fn [_ _ data]
                                         (on-drag-end-fn data atom-data))
      :separator [rn/view
