@@ -14,6 +14,7 @@
     quo2.components.buttons.slide-button.view
     quo2.components.browser.browser-input.view
     quo2.components.calendar.calendar-day.view
+    quo2.components.calendar.calendar-year.view
     quo2.components.code.snippet
     quo2.components.colors.color-picker.view
     quo2.components.common.separator.view
@@ -146,6 +147,7 @@
 
 ;;;; CALENDAR
 (def calendar-day quo2.components.calendar.calendar-day.view/calendar-day)
+(def calendar-year quo2.components.calendar.calendar-year.view/calendar-year)
 
 ;;;; CODE
 (def snippet quo2.components.code.snippet/snippet)
