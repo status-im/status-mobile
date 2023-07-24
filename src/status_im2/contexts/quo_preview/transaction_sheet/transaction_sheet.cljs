@@ -72,7 +72,7 @@
      [locked-input/locked-input
       {:icon       :i/gas
        :label-text (i18n/label :t/network-fee)
-       :style      {:margin-right 16
+       :style      {:margin-right 15
                     :width        160}} "$1,648.34"]
      [locked-input/locked-input
       {:icon       :i/duration
