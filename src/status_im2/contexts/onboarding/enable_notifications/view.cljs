@@ -7,7 +7,6 @@
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]
     [status-im.notifications.core :as notifications]
-    [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
     [status-im2.contexts.onboarding.enable-notifications.style :as style]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]))
@@ -29,7 +28,8 @@
       {:on-press            (fn []
                               (shell.utils/change-selected-stack-id :communities-stack true nil)
                               (rf/dispatch [::notifications/switch true platform/ios?])
-                              (rf/dispatch [:init-root :welcome]))
+                              (rf/dispatch [:navigate-to-within-stack
+                                            [:welcome :enable-notifications]]))
        :type                :primary
        :before              :i/notifications
        :accessibility-label :enable-notifications-button
@@ -38,7 +38,8 @@
      [quo/button
       {:on-press            (fn []
                               (shell.utils/change-selected-stack-id :communities-stack true nil)
-                              (rf/dispatch [:init-root :welcome]))
+                              (rf/dispatch [:navigate-to-within-stack
+                                            [:welcome :enable-notifications]]))
        :accessibility-label :enable-notifications-later-button
        :type                :grey
        :background          :blur
@@ -49,8 +50,9 @@
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
-     [background/view true]
-     [navigation-bar/navigation-bar {:disable-back-button? true}]
+     [navigation-bar/navigation-bar
+      {:stack-id             :enable-notifications
+       :disable-back-button? true}]
      [page-title]
      [rn/view {:style style/page-illustration}
       [quo/text

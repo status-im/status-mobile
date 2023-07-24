@@ -1,5 +1,6 @@
 (ns status-im2.contexts.profile.profiles.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.reanimated :as reanimated]))
 
 ;; Profiles Section
 
@@ -13,12 +14,15 @@
   {:padding-horizontal 20
    :margin-bottom      (when-not last-item? -24)})
 
-(def profiles-container
-  {:position :absolute
-   :left     0
-   :top      0
-   :bottom   0
-   :right    0})
+(defn profiles-container
+  [translate-x]
+  (reanimated/apply-animations-to-style
+   {:transform [{:translate-x translate-x}]}
+   {:position :absolute
+    :left     0
+    :top      0
+    :bottom   0
+    :right    0}))
 
 (def profiles-header
   {:flex-direction     :row

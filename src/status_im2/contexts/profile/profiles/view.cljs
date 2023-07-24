@@ -13,14 +13,39 @@
             [utils.transforms :as types]
             [quo2.foundations.colors :as colors]
             [react-native.safe-area :as safe-area]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [react-native.reanimated :as reanimated]
+            [status-im2.constants :as constants]))
+
+(defonce push-animation-fn-atom (atom nil))
+(defonce pop-animation-fn-atom (atom nil))
+
+(defn push-animation
+  [translate-x]
+  (let [window-width (:width (rn/get-window))]
+    (reanimated/animate-shared-value-with-delay translate-x
+                                                (- window-width)
+                                                constants/onboarding-modal-animation-duration
+                                                :linear
+                                                100)))
+
+(defn pop-animation
+  [translate-x]
+  (reanimated/animate-shared-value-with-delay translate-x
+                                              0
+                                              constants/onboarding-modal-animation-duration
+                                              :linear
+                                              50))
 
 (defn new-account-options
   []
   [quo/action-drawer
    [[{:icon                :i/profile
       :label               (i18n/label :t/create-new-profile)
-      :on-press            #(rf/dispatch [:navigate-to :new-to-status])
+      :on-press            (fn []
+                             (when @push-animation-fn-atom
+                               (@push-animation-fn-atom))
+                             (rf/dispatch [:open-modal :new-to-status]))
       :accessibility-label :create-new-profile}
      {:icon                :i/multi-profile
       :label               (i18n/label :t/add-existing-status-profile)
@@ -97,11 +122,18 @@
                                [:profile/profile-selected key-uid])
                               (when-not keycard-pairing (set-hide-profiles)))}]))
 
-(defn profiles-section
+(defn- f-profiles-section
   [{:keys [set-hide-profiles]}]
-  (let [profiles (vals (rf/sub [:profile/profiles-overview]))]
-    [rn/view
-     {:style style/profiles-container}
+  (let [profiles    (vals (rf/sub [:profile/profiles-overview]))
+        translate-x (reanimated/use-shared-value 0)]
+    (rn/use-effect (fn []
+                     (reset! push-animation-fn-atom #(push-animation translate-x))
+                     (reset! pop-animation-fn-atom #(pop-animation translate-x))
+                     (fn []
+                       (reset! push-animation-fn-atom nil)
+                       (reset! pop-animation-fn-atom nil))))
+    [reanimated/view
+     {:style (style/profiles-container translate-x)}
      [rn/view
       {:style style/profiles-header}
       [quo/text
@@ -124,6 +156,10 @@
        :render-data             {:last-index        (- (count profiles) 1)
                                  :set-hide-profiles set-hide-profiles}
        :render-fn               profile-card}]]))
+
+(defn profiles-section
+  [props]
+  [:f> f-profiles-section props])
 
 (defn forget-password-doc
   []
