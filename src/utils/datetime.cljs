@@ -36,6 +36,22 @@
    11 "nov"
    12 "dec"})
 
+(def ^:const full-months
+  "Maps the corresponding string representation of a month
+   By it's numeric index as in cljs-time"
+  {1  "January"
+   2  "February"
+   3  "March"
+   4  "April"
+   5  "May"
+   6  "June"
+   7  "July"
+   8  "August"
+   9  "September"
+   10 "October"
+   11 "November"
+   12 "December"})
+
 (def one-second 1000)
 (def minute (* 60 one-second))
 (defn minutes [m] (* m minute))
