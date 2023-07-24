@@ -1,17 +1,13 @@
 ---
-name: MVPBug Report
-about: MVPBug Report
+name: Wont fix Report 
+about: to facilitate future handling, identify and address non-urgent issues that won't be prioritized in the near future
 title: ''
-labels: E:MobileBugfixesMVP
+labels: likely_wont_fix
 assignees: ''
 
 ---
 
-# Bug Report
-
-
-## Problem 
-[comment]: # (A problem description)
+## Problem
 
 
 #### Expected behavior
@@ -26,7 +22,7 @@ assignees: ''
 
 ### Additional Information
 
-- Status version: nightly 
+- Status version: release 
 - Operating System: Android, iOS
 
 
