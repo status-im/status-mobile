@@ -3,18 +3,19 @@
 
 (defn base-container
   [background-color]
-  {:width            160
-   :height           160
-   :border-radius    16
-   :background-color (colors/alpha background-color 0.4)})
+  {:width              160
+   :height             160
+   :border-radius      16
+   :background-color   (colors/alpha background-color 0.4)})
 
 (def thumb-card
-  {:width            160
-   :height           120
-   :border-radius    16
-   :bottom           0
-   :position         :absolute
-   :background-color colors/neutral-95})
+  {:width              160
+   :height             120
+   :border-radius      16
+   :bottom             0
+   :position           :absolute
+   :background-color   colors/neutral-95
+   :padding-horizontal 12})
 
 (def close-button
   {:position :absolute

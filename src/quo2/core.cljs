@@ -112,6 +112,8 @@
    quo2.components.settings.section-label.view
    quo2.components.share.qr-code.view
    quo2.components.share.share-qr-code.view
+   quo2.components.switchers.base-card.view
+   quo2.components.switchers.screen-card.view
    quo2.components.tabs.account-selector
    quo2.components.tabs.segmented-tab
    quo2.components.tabs.tabs.view
@@ -327,6 +329,11 @@
 ;;;; Share
 (def qr-code quo2.components.share.qr-code.view/qr-code)
 (def share-qr-code quo2.components.share.share-qr-code.view/view)
+
+;;;; SWITCHER
+(def switcher-base-card quo2.components.switchers.base-card.view/base-card)
+(def group-messaging-card quo2.components.switchers.group-messaging-card.view/view)
+(def switcher-screen-card quo2.components.switchers.screen-card.view/screen-card)
 
 ;;;; Tabs
 (def tabs quo2.components.tabs.tabs.view/view)

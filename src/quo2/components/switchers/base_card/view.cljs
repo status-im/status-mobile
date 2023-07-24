@@ -17,7 +17,6 @@
         [rn/image
          {:source (:source banner)
           :style  {:width 160}}])
-      (into [rn/view {:style style/thumb-card}] children)
       [button/button
        {:size                      24
         :type                      :photo-bg
@@ -25,4 +24,5 @@
         :on-press                  on-close
         :override-background-color colors/neutral-80-opa-40
         :style                     style/close-button}
-       :i/close]]]))
+       :i/close]
+      (into [rn/view {:style style/thumb-card}] children)]]))
