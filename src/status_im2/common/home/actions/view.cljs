@@ -135,9 +135,7 @@
                                     :unmute-chat
                                     :mute-chat))
             :sub-label           (when (and muted? (some? muted-till))
-                                   (str (i18n/label :t/muted-until)
-                                        " "
-                                        (format-mute-till muted-till)))
+                                   (i18n/label :t/muted-until {:duration (format-mute-till muted-till)}))
             :on-press            (if muted?
                                    #(unmute-chat-action chat-id)
                                    #(mute-chat-action chat-id chat-type muted?))
