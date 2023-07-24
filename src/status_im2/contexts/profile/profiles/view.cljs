@@ -145,7 +145,7 @@
        {:type                :primary
         :customization-color :blue
         :size                32
-        :icon                true
+        :icon-only?          true
         :on-press            show-new-account-options
         :accessibility-label :show-new-account-options}
        :main-icons/add]]
@@ -232,11 +232,11 @@
       {:size                32
        :type                :grey
        :background          :blur
-       :icon                true
+       :icon-only?          true
        :on-press            set-show-profiles
-       :disabled            processing
+       :disabled?           processing
        :accessibility-label :show-profiles
-       :style               style/multi-profile-button}
+       :container-style     style/multi-profile-button}
       :i/multi-profile]
      [rn/scroll-view
       {:keyboard-should-persist-taps :always
@@ -286,10 +286,10 @@
        :type                :primary
        :customization-color (or customization-color :primary)
        :accessibility-label :login-button
-       :before              :i/unlocked
-       :disabled            (or (not sign-in-enabled?) processing)
+       :icon-left           :i/unlocked
+       :disabled?           (or (not sign-in-enabled?) processing)
        :on-press            login-multiaccount
-       :style               {:margin-bottom (+ (safe-area/get-bottom) 12)}}
+       :container-style     {:margin-bottom (+ (safe-area/get-bottom) 12)}}
       (i18n/label :t/log-in)]]))
 
 (defn view

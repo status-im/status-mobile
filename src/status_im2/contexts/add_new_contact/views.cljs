@@ -60,7 +60,7 @@
            [rn/view style/container-inner
             [quo/button
              {:type :grey
-              :icon true
+              :icon-only? true
               :accessibility-label :new-contact-close-button
               :size 32
               :on-press
@@ -92,7 +92,7 @@
                 [quo/button
                  {:type :outline
                   :size 24
-                  :style {:margin-top 6}
+                  :container-style {:margin-top 6}
                   :on-press
                   (fn []
                     (reset! default-value @clipboard)
@@ -100,10 +100,12 @@
                      [:contacts/set-new-identity @clipboard nil]))}
                  (i18n/label :t/paste)])]
              [quo/button
-              (merge style/button-qr
-                     {:on-press #(rf/dispatch
-                                  [::qr-scanner/scan-code
-                                   {:handler :contacts/qr-code-scanned}])})
+              {:type       :outline
+               :icon-only? true
+               :size       40
+               :on-press   #(rf/dispatch
+                             [::qr-scanner/scan-code
+                              {:handler :contacts/qr-code-scanned}])}
               :i/scan]]
             (when invalid?
               [rn/view style/container-invalid
@@ -113,12 +115,18 @@
             (when (= state :valid)
               [found-contact public-key])]
            [quo/button
-            (merge (style/button-view-profile state customization-color)
-                   {:on-press
-                    (fn []
-                      (reset! clipboard nil)
-                      (reset! default-value nil)
-                      (rf/dispatch [:contacts/clear-new-identity])
-                      (rf/dispatch [:navigate-back])
-                      (rf/dispatch [:chat.ui/show-profile public-key ens]))})
+            {:type :primary
+             :customization-color customization-color
+             :size 40
+             :container-style style/button-view-profile
+             :accessibility-label :new-contact-button
+             :icon-left :i/profile
+             :disabled? (not= state :valid)
+             :on-press
+             (fn []
+               (reset! clipboard nil)
+               (reset! default-value nil)
+               (rf/dispatch [:contacts/clear-new-identity])
+               (rf/dispatch [:navigate-back])
+               (rf/dispatch [:chat.ui/show-profile public-key ens]))}
             (i18n/label :t/view-profile)]]]]))))

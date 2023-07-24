@@ -44,7 +44,7 @@
       :end    {:x 0 :y 0}
       :style  (style/gradient-container (safe-area/get-bottom))}
      [quo/button
-      {:style               {:align-self        :stretch
+      {:container-style     {:align-self        :stretch
                              :margin-horizontal 20
                              :margin-top        12}
        :on-press            #(on-press-confirm-selection selected-images close)

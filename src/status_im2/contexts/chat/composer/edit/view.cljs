@@ -27,16 +27,14 @@
        :size   :paragraph-2}
       (i18n/label :t/editing-message)]]]
    [quo/button
-    {:width               24
-     :size                24
+    {:size                24
+     :icon-only?          true
      :accessibility-label :edit-cancel-button
      :on-press            (fn []
                             (utils/cancel-edit-message state)
                             (rf/dispatch [:chat.ui/cancel-message-edit]))
      :type                :outline}
-    [quo/icon :i/close
-     {:size  16
-      :color (colors/theme-colors colors/neutral-100 colors/neutral-40)}]]])
+    :i/close]])
 
 (defn- f-view
   [state]

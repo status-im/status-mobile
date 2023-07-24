@@ -54,8 +54,8 @@
                                (on-press))
                              (rf/dispatch [:open-modal :enable-notifications]))
       :accessibility-label :continue-button
-      :customization0color profile-color
-      :style               style/continue-button}
+      :customization-color profile-color
+      :container-style     style/continue-button}
      (i18n/label :t/continue)]))
 
 (defn- f-view

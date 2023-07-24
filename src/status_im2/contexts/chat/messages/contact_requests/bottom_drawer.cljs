@@ -11,9 +11,9 @@
   (let [names (rf/sub [:contacts/contact-two-names-by-identity contact-id])]
     [permission-context/view
      [quo/button
-      {:type     :ghost
-       :on-press #(rf/dispatch [:chat.ui/show-profile contact-id])
-       :before   :i/communities}
+      {:type      :ghost
+       :on-press  #(rf/dispatch [:chat.ui/show-profile contact-id])
+       :icon-left :i/communities}
       (cond
         group-chat
         (i18n/label :t/group-chat-not-member)

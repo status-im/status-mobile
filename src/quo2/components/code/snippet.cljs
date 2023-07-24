@@ -87,7 +87,7 @@
         :line-number-width line-number-width}]]
      [rn/view {:style style/copy-button}
       [button/button
-       {:icon       true
+       {:icon-only? true
         :type       :grey
         :background :blur
         :size       24

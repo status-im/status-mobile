@@ -175,7 +175,7 @@
 
           [rn/view {:style style/button-container}
            [quo/button
-            {:disabled            (not meet-requirements?)
+            {:disabled?           (not meet-requirements?)
              :customization-color user-color
              :on-press            #(rf/dispatch
                                     [:onboarding-2/password-set

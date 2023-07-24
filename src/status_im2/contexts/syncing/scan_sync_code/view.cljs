@@ -50,8 +50,9 @@
                  :transform [{:translate-y controls-translate-y}]}
                 {})}
        [quo/button
-        {:icon                true
-         :type                :blur-bg
+        {:icon-only?          true
+         :type                :grey
+         :background          :blur
          :size                32
          :accessibility-label :close-sign-in-by-syncing
          :on-press            (fn []
@@ -65,8 +66,9 @@
                  :transform [{:translate-y controls-translate-y}]}
                 {})}
        [quo/button
-        {:before              :i/info
-         :type                :blur-bg
+        {:icon-left           :i/info
+         :type                :grey
+         :background          :blur
          :size                32
          :accessibility-label :find-sync-code
          :on-press            #(rf/dispatch [:open-modal :find-sync-code])}
@@ -144,7 +146,7 @@
        :style  style/enable-camera-access-sub-text}
       (i18n/label description-label-key)]
      [quo/button
-      {:before              button-icon
+      {:icon-left           button-icon
        :type                :primary
        :size                32
        :accessibility-label accessibility-label
@@ -391,12 +393,12 @@
           (when show-bottom-view? [bottom-view insets bottom-view-translate-y])
           (when (and (or (not animated?) @render-camera?) show-camera?)
             [quo/button
-             {:icon                true
+             {:icon-only?          true
               :type                :grey
               :background          :blur
               :size                style/flash-button-size
               :accessibility-label :camera-flash
-              :style               (style/camera-flash-button @qr-view-finder)
+              :contanier-style     (style/camera-flash-button @qr-view-finder)
               :on-press            #(swap! torch? not)}
              flashlight-icon])]]))))
 

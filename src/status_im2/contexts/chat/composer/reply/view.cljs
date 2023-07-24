@@ -129,8 +129,7 @@
         ])]
      (when (and in-chat-input? (not recording-audio?))
        [quo/button
-        {:width               24
-         :size                24
+        {:size                24
          :accessibility-label :reply-cancel-button
          :on-press            #(rf/dispatch [:chat.ui/cancel-message-reply])
          :type                :outline}

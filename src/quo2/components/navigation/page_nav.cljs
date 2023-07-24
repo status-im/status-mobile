@@ -37,7 +37,7 @@
   [rn/view {:style (when put-middle-section-on-left? {:margin-right 5})}
    [button/button
     {:on-press            on-press
-     :icon                true
+     :icon-only?          true
      :type                type
      :size                32
      :accessibility-label accessibility-label
@@ -164,9 +164,9 @@
                                                   :accessible          true))
                      [button/button
                       {:on-press   on-press
-                       :icon       (not label)
+                       :icon-only? (not label)
                        :type       type
-                       :before     (when label icon)
+                       :icon-left  (when label icon)
                        :size       32
                        :background icon-background}
                       (if label label icon)]])

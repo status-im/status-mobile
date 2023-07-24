@@ -165,9 +165,9 @@
         {:on-press            #(join-gated-community id)
          :accessibility-label :join-community-button
          :customization-color color
-         :style               {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
-         :disabled            (not can-request-access?)
-         :before              (if can-request-access? :i/unlocked :i/locked)}
+         :container-style     {:margin-horizontal 12 :margin-top 12 :margin-bottom 12}
+         :disabled?           (not can-request-access?)
+         :icon-left           (if can-request-access? :i/unlocked :i/locked)}
         (i18n/label :t/join-open-community)]])))
 
 (defn join-community
@@ -186,7 +186,7 @@
           {:on-press            #(rf/dispatch [:open-modal :community-requests-to-join community])
            :accessibility-label :show-request-to-join-screen-button
            :customization-color color
-           :before              :i/communities}
+           :icon-left           :i/communities}
           (request-to-join-text is-open?)]))
 
      (when (and (not (or joined pending? token-permissions)) (not (or is-open? node-offline?)))

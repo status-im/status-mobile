@@ -43,7 +43,7 @@
        :accessibility-label :enable-notifications-later-button
        :type                :grey
        :background          :blur
-       :style               {:margin-top 12}}
+       :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
 (defn enable-notifications

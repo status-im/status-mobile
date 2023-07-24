@@ -41,7 +41,7 @@
         {:size                32
          :type                :primary
          :customization-color profile-color
-         :icon                true
+         :icon-only?          true
          :on-press            #(rf/dispatch [:navigate-to :settings-setup-syncing])}
         :i/add]]
       [device/view (merge user-device {:this-device? true})]

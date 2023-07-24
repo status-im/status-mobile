@@ -17,11 +17,11 @@
   []
   [:<>
    [quo/button
-    {:icon                true
+    {:icon-only?          true
      :type                :blur-bg
      :size                32
      :accessibility-label :close-shell-share-tab
-     :style               style/header-button
+     :container-style     style/header-button
      :on-press            #(rf/dispatch [:navigate-back])}
     :i/close]
    [quo/text
@@ -79,8 +79,9 @@
           abbreviated-url]]]
        [rn/view {:style style/share-button-container}
         [quo/button
-         {:icon                true
-          :type                :blur-bg
+         {:icon-only?          true
+          :type                :grey
+          :background          :blur
           :size                32
           :accessibility-label :link-to-profile
           :on-press            #(list-selection/open-share {:message profile-url})}
@@ -107,11 +108,12 @@
          [rn/text {:style style/emoji-hash-content} emoji-hash-string]]]]
       [rn/view {:style style/emoji-share-button-container}
        [quo/button
-        {:icon                true
-         :type                :blur-bg
+        {:icon-only?          true
+         :type                :grey
+         :background          :blur
          :size                32
          :accessibility-label :link-to-profile
-         :style               {:margin-right 12}
+         :container-style     {:margin-right 12}
          :on-press            #(rf/dispatch [:share/copy-text-and-show-toast
                                              {:text-to-copy      emoji-hash-string
                                               :post-copy-message (i18n/label :t/emoji-hash-copied)}])
