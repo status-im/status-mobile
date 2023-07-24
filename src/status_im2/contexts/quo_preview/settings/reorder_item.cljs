@@ -3,6 +3,7 @@
     [quo2.core :as quo]
     [react-native.core :as rn]
     [status-im2.common.resources :as resources]
+    [quo2.foundations.resources :as quo2.resources]
     [quo2.foundations.colors :as colors]
     [quo2.components.settings.reorder-item.types :as types]))
 
@@ -22,7 +23,7 @@
            :title      "Status"}}
    {:id   3
     :type types/item
-    :data {:image      (resources/tokens :eth)
+    :data {:image      (quo2.resources/tokens :eth)
            :image-size 21
            :right-icon :i/world
            :title      "Ethereum"}}

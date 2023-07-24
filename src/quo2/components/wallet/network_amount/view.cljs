@@ -2,13 +2,13 @@
   (:require
     [clojure.string :as str]
     [quo2.components.markdown.text :as text]
-    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
     [react-native.core :as rn]
-    [status-im2.common.resources :as resources]
-    [quo2.components.wallet.network-amount.style :as style]))
+    [quo2.components.wallet.network-amount.style :as style]
+    [quo2.foundations.resources :as resources]))
 
-(defn network-amount
-  [{:keys [amount token]}]
+(defn- network-amount-internal
+  [{:keys [amount token theme]}]
   [rn/view {:style style/container}
    [rn/image
     {:source (resources/tokens token)
@@ -19,6 +19,6 @@
      :style style/text}
     (str amount " " (str/upper-case (clj->js token)))]
    [rn/view
-    {:style {:width            1
-             :height           8
-             :background-color (colors/theme-colors colors/neutral-40 colors/neutral-50)}}]])
+    {:style (style/divider theme)}]])
+
+(def network-amount (quo.theme/with-theme network-amount-internal))
