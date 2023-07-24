@@ -4,7 +4,6 @@
     [quo2.foundations.colors :as colors]
     [react-native.camera-kit :as camera-kit]
     [react-native.core :as rn]
-    [react-native.fast-image :as fast-image]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -62,7 +61,7 @@
              {:color colors/white
               :size  24}]])
          (if @uri
-           [fast-image/fast-image
+           [rn/image
             {:style  (style/camera-window width camera-window-height top)
              :source {:uri @uri}}]
            [camera-kit/camera
