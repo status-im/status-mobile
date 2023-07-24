@@ -16,13 +16,13 @@
     :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)}
    position))
 
-(def background-view
+(defn background-view []
   {:position         :absolute
    :top              0
    :left             0
    :right            0
    :height           navigation-bar-height
-   :background-color (colors/theme-colors colors/white-opa-70 :transparent)
+   :background-color (colors/theme-colors colors/white-opa-70 colors/neutral-100-opa-70)
    :display          :flex
    :flex-direction   :row
    :overflow         :hidden})
@@ -32,7 +32,7 @@
   (reanimated/apply-animations-to-style
    (when enabled?
      {:opacity animation})
-   background-view))
+   (background-view)))
 
 (def blur-view
   {:position       :absolute
