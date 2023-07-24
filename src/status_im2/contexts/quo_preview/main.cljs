@@ -97,14 +97,22 @@
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.title.title :as title]
+<<<<<<< HEAD
     [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
     [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
+=======
+    [status-im2.contexts.quo-preview.settings.category :as category]
+>>>>>>> 7d2e95c55 (feat: network amount comp)
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
+<<<<<<< HEAD
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]))
+=======
+    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]))
+>>>>>>> 0cde849f5 (feat: network amount comp)
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -392,16 +400,7 @@
    :text-combinations [{:name      :title
                         :options   {:topBar {:visible true}}
                         :component title/preview-title}]
-   :wallet            [{:name      :lowest-price
-                        :options   {:topBar {:visible true}}
-                        :component lowest-price/preview-lowest-price}
-                       {:name      :token-overview
-                        :options   {:topBar {:visible true}}
-                        :component token-overview/preview-token-overview}
-                       {:name      :network-breakdown
-                        :options   {:topBar {:visible true}}
-                        :component network-breakdown/preview-network-breakdown}
-                       {:name      :network-amount
+   :wallet            [{:name      :network-amount
                         :options   {:topBar {:visible true}}
                         :component network-amount/preview}]
    :keycard           [{:name      :keycard-component
