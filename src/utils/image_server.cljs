@@ -2,6 +2,7 @@
   (:require
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
+    status-im.utils.pixel-ratio
     [status-im2.constants :as constants]
     [utils.datetime :as datetime]))
 
@@ -81,7 +82,7 @@
        "&imageName="
        image-name
        "&size="
-       size
+       (Math/round (* size status-im.utils.pixel-ratio/ratio))
        "&theme="
        (current-theme-index theme)
        "&clock="
@@ -89,9 +90,9 @@
        "&indicatorColor="
        (js/encodeURIComponent indicator-color)
        "&indicatorSize="
-       indicator-size
+       (* indicator-size status-im.utils.pixel-ratio/ratio)
        "&indicatorBorder="
-       indicator-border
+       (* indicator-border status-im.utils.pixel-ratio/ratio)
        "&addRing="
        (if ring? 1 0)))
 
@@ -146,13 +147,13 @@
    "&length="
    length
    "&size="
-   size
+   (Math/round (* size status-im.utils.pixel-ratio/ratio))
    "&bgColor="
    (js/encodeURIComponent background-color)
    "&color="
    (js/encodeURIComponent color)
    "&fontSize="
-   font-size
+   (* font-size status-im.utils.pixel-ratio/ratio)
    "&fontFile="
    (js/encodeURIComponent font-file)
    "&uppercaseRatio="
@@ -166,9 +167,9 @@
    "&indicatorColor="
    (js/encodeURIComponent indicator-color)
    "&indicatorSize="
-   indicator-size
+   (* indicator-size status-im.utils.pixel-ratio/ratio)
    "&indicatorBorder="
-   indicator-border
+   (* indicator-border status-im.utils.pixel-ratio/ratio)
    "&addRing="
    (if ring? 1 0)))
 
@@ -212,7 +213,7 @@
        "&imageName="
        image-name
        "&size="
-       size
+       (Math/round (* size status-im.utils.pixel-ratio/ratio))
        "&theme="
        (current-theme-index theme)
        "&clock="
@@ -220,9 +221,9 @@
        "&indicatorColor="
        (js/encodeURIComponent indicator-color)
        "&indicatorSize="
-       indicator-size
+       (* indicator-size status-im.utils.pixel-ratio/ratio)
        "&indicatorBorder="
-       indicator-border
+       (* indicator-border status-im.utils.pixel-ratio/ratio)
        "&addRing="
        (if ring? 1 0)))
 
