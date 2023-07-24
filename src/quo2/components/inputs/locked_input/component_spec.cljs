@@ -8,9 +8,22 @@
                                {:label-text "Label"
                                 :value-text "Value"
                                 :icon       "🔫"}])
-                    (-> (js/expect (h/get-by-text "Label"))
-                        (.toBeTruthy))
-                    (-> (js/expect (h/get-by-text "Value"))
-                        (.toBeTruthy))
-                    (-> (js/expect (h/get-by-text "🔫"))
-                        (.toBeTruthy))))
+                    (h/is-truthy (h/get-by-text "Label"))
+                    (h/is-truthy (h/get-by-text "Value"))
+                    (h/is-truthy (h/get-by-text "🔫")))
+
+            (h/test "no value"
+                    (h/render [locked-input/locked-input
+                               {:label-text "Label"
+                                :icon       "🔫"}])
+                    (h/is-falsy (h/get-by-text "Value"))
+                    (h/is-truthy (h/get-by-text "Label"))
+                    (h/is-truthy (h/get-by-text "🔫")))
+
+            (h/test "no emoji"
+                    (h/render [locked-input/locked-input
+                               {:label-text "Label"
+                                :value-text "Value"}])
+                    (h/is-falsy (h/get-by-text "🔫"))
+                    (h/is-truthy (h/get-by-text "Label"))
+                    (h/is-truthy (h/get-by-text "Value"))))

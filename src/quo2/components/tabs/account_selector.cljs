@@ -67,10 +67,9 @@
         label-text])
      [rn/view {:style (account-container-row background-color)}
       [rn/view {:style account-emoji-container}
-       [quo2/text {:style {:font-size 14}} account-emoji]]
+       [quo2/text account-emoji]]
       [quo2/text
        {:weight :medium
         :size   :paragraph-1
-        :style  {:color account-text-color
-                 :margin-left 1}}
+        :style  {:color account-text-color}}
        account-text]]]))
