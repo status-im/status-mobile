@@ -63,6 +63,7 @@
     [status-im2.contexts.quo-preview.navigation.page-nav :as page-nav]
     [status-im2.contexts.quo-preview.navigation.top-nav :as top-nav]
     [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
+    [status-im2.contexts.quo-preview.notifications.activity-logs-photos :as activity-logs-photos]
     [status-im2.contexts.quo-preview.notifications.notification :as notification]
     [status-im2.contexts.quo-preview.notifications.toast :as toast]
     [status-im2.contexts.quo-preview.onboarding.small-option-card :as small-option-card]
@@ -282,6 +283,9 @@
    :notifications     [{:name      :activity-logs
                         :options   {:topBar {:visible true}}
                         :component activity-logs/preview-activity-logs}
+                       {:name      :activity-logs-photos
+                        :options   {:topBar {:visible true}}
+                        :component activity-logs-photos/preview-activity-logs-photos}
                        {:name      :toast
                         :options   {:topBar {:visible true}}
                         :component toast/preview-toasts}
