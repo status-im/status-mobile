@@ -93,9 +93,9 @@
   [{:source (resources/get-mock-image :photo1)}
    {:source (resources/get-mock-image :photo2)}
    {:source (resources/get-mock-image :photo3)}
-   {:source (resources/get-mock-image :photo4)}
-   {:source (resources/get-mock-image :photo5)}
-   {:source (resources/get-mock-image :photo6)}])
+   {:source (resources/get-mock-image :photo1)}
+   {:source (resources/get-mock-image :photo2)}
+   {:source (resources/get-mock-image :photo3)}])
 
 (defn get-mock-content
   [data]
