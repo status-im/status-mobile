@@ -1,4 +1,4 @@
-(ns status-im2.contexts.quo-preview.settings.category-reorder
+(ns status-im2.contexts.quo-preview.settings.category
   (:require
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
