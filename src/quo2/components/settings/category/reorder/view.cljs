@@ -31,7 +31,8 @@
       {:data           @atom-data
        :key-fn         (fn [item index] (str (:title item) index))
        :style          style/reorder-items
-       :render-fn      (fn [item _ _ _ _ drag] [reorder-item/reorder-item item types/item blur? drag])
+       :render-fn      (fn [item _ _ _ _ drag] [reorder-item/reorder-item item types/item
+                                                {:blur? blur? :drag drag}])
        :on-drag-end-fn (fn [_ _ data]
                          (on-drag-end-fn data atom-data))
        :separator      [rn/view
