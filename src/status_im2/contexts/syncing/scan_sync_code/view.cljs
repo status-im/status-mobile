@@ -12,6 +12,7 @@
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
+            [status-im2.common.device-permissions :as device-permissions]
             [status-im2.constants :as constants]
             [status-im2.contexts.syncing.scan-sync-code.style :as style]
             [status-im2.contexts.syncing.utils :as sync-utils]
@@ -26,19 +27,6 @@
 (defonce camera-permission-granted? (reagent/atom false))
 (defonce dismiss-animations (atom nil))
 (defonce navigate-back-fn (atom nil))
-
-(defn request-camera-permission
-  []
-  (rf/dispatch
-   [:request-permissions
-    {:permissions [:camera]
-     :on-allowed  #(reset! camera-permission-granted? true)
-     :on-denied   #(rf/dispatch
-                    [:toasts/upsert
-                     {:icon           :i/info
-                      :icon-color     colors/danger-50
-                      :override-theme :light
-                      :text           (i18n/label :t/camera-permission-denied)}])}]))
 
 (defn perform-preflight-check
   "Performing the check for the first time
@@ -140,7 +128,8 @@
      :button-icon           :i/camera
      :button-label          :t/enable-camera
      :accessibility-label   :request-camera-permission
-     :on-press              request-camera-permission}))
+     :on-press              (fn []
+                              (device-permissions/camera #(reset! camera-permission-granted? true)))}))
 
 (defn- camera-and-local-network-access-permission-view
   []

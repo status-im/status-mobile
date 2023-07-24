@@ -4,8 +4,8 @@
             [react-native.share :as share]
             [react-native.cameraroll :as cameraroll]
             [status-im.ui.components.react :as react]
-            [status-im2.config :as config]
             [react-native.fs :as fs]
+            [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]))
@@ -48,7 +48,7 @@
   [{:keys [db]} chat-id uri]
   (let [current-chat-id (or chat-id (:current-chat-id db))
         images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
-    (when (and (< (count images) config/max-images-batch)
+    (when (and (< (count images) constants/max-album-photos)
                (not (get images uri)))
       {::image-selected [uri current-chat-id]})))
 
@@ -68,5 +68,5 @@
   [{:keys [db]} chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))
         images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
-    (when (< (count images) config/max-images-batch)
+    (when (< (count images) constants/max-album-photos)
       {::chat-open-image-picker-camera current-chat-id})))
