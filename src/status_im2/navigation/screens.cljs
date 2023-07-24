@@ -6,6 +6,7 @@
     [status-im2.contexts.chat.lightbox.view :as lightbox]
     [status-im2.contexts.chat.messages.view :as chat]
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
+    [status-im2.contexts.chat.camera.view :as camera-screen]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
     [status-im2.contexts.onboarding.intro.view :as intro]
@@ -106,6 +107,10 @@
     {:name      :photo-selector
      :options   {:sheet? true}
      :component photo-selector/photo-selector}
+
+    {:name      :camera-screen
+     :options   options/camera-screen
+     :component camera-screen/camera-screen}
 
     {:name      :new-contact
      :options   {:sheet? true}
