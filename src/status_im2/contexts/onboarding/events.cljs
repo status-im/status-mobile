@@ -74,10 +74,13 @@
 (rf/defn password-set
   {:events [:onboarding-2/password-set]}
   [{:keys [db]} password]
-  {:db       (-> db
-                 (assoc-in [:onboarding-2/profile :password] password)
-                 (assoc-in [:onboarding-2/profile :auth-method] constants/auth-method-password))
-   :dispatch [:navigate-to :enable-biometrics]})
+  (let [supported-type (:biometric/supported-type db)]
+    {:db       (-> db
+                   (assoc-in [:onboarding-2/profile :password] password)
+                   (assoc-in [:onboarding-2/profile :auth-method] constants/auth-method-password))
+     :dispatch (if supported-type
+                 [:navigate-to :enable-biometrics]
+                 [:onboarding-2/create-account-and-login])}))
 
 (rf/defn seed-phrase-entered
   {:events [:onboarding-2/seed-phrase-entered]}
