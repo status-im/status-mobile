@@ -1,12 +1,14 @@
 (ns quo2.components.settings.reorder-item.items.item
-  (:require [react-native.core :as rn]
-            [quo2.components.settings.reorder-item.style :as style]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.icon :as icon]
-            [quo2.foundations.colors :as colors]
-            [react-native.fast-image :as fast-image]))
+  (:require
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [quo2.components.settings.reorder-item.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.icon :as icon]
+    [quo2.foundations.colors :as colors]
+    [react-native.fast-image :as fast-image]))
 
-(defn view
+(defn- view-internal
   [{:keys
     [title
      subtitle
@@ -14,7 +16,8 @@
      image-size
      right-text
      right-icon
-     on-press]}
+     on-press
+     theme]}
    blur?
    drag]
   [rn/touchable-opacity
@@ -47,4 +50,7 @@
        [text/text {:style style/right-text} right-text])
      (when right-icon
        [rn/view {:style style/right-icon-container} [icon/icon right-icon (style/right-icon)]])]]
-   [icon/icon :tiny-icons/chevron-right (style/chevron)]])
+   [icon/icon :tiny-icons/chevron-right (style/chevron theme)]])
+
+
+(def view (quo.theme/with-theme view-internal))

@@ -33,10 +33,11 @@
    :height size})
 
 (defn chevron
-  []
+  [theme]
   {:color  (colors/theme-colors
             colors/neutral-50
-            colors/neutral-40)
+            colors/neutral-40
+            theme)
    :height 14
    :width  14})
 

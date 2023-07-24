@@ -31,12 +31,11 @@
                        (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
 
 (defn reorder-separator
-  [blur?]
+  [blur? theme]
   {:height           4
    :background-color (if blur?
                        :transparent
-                       (colors/theme-colors colors/neutral-5
-                                            colors/neutral-95))})
+                       (colors/theme-colors colors/neutral-5 colors/neutral-95 theme))})
 
 (defn blur-container
   []

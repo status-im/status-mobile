@@ -16,10 +16,11 @@
           :subtitle   "subtitle"
           :chevron?   true
           :right-icon (when right-icon? :i/globe)
+          :left-icon  :i/browser
           :image-size (if image? 32 0)
           :image      (when image? (resources/get-mock-image :diamond))})))
 
-(def descriptor
+(def reorder-descriptor
   [{:label "Right icon:"
     :key   :right-icon?
     :type  :boolean}
@@ -28,7 +29,20 @@
     :type  :boolean}
    {:label "Blur:"
     :key   :blur?
-    :type  :boolean}])
+    :type  :boolean}
+   {:label   "List type:"
+    :key     :list-type
+    :type    :select
+    :options [{:key :settings :value :settings} {:key :reorder :value :reorder}]}])
+
+(def settings-descriptor
+  [{:label "Blur:"
+    :key   :blur?
+    :type  :boolean}
+   {:label   "List type:"
+    :key     :list-type
+    :type    :select
+    :options [{:key :settings :value :settings} {:key :reorder :value :reorder}]}])
 
 (defn preview
   []
@@ -36,7 +50,8 @@
                                               :size        "5"
                                               :blur?       false
                                               :right-icon? true
-                                              :image?      true})
+                                              :image?      true
+                                              :list-type   :settings})
         {:keys [width height]} (rn/get-window)]
     (fn []
       (let [data (reagent/atom (create-item-array (max (js/parseInt (:size @state)) 1) @state))]
@@ -57,7 +72,9 @@
                       :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}}
              [rn/view
               {:style {:min-height 180
-                       :z-index    1}} [preview/customizer state descriptor]]
+                       :z-index    1}}
+              [preview/customizer state
+               (if (= (:list-type @state) :settings) settings-descriptor reorder-descriptor)]]
              (when (:blur? @state)
                [fast-image/fast-image
                 {:source (resources/get-mock-image :dark-blur-bg)
@@ -69,4 +86,7 @@
                                            colors/neutral-80-opa-80
                                            (colors/theme-colors colors/neutral-5 colors/neutral-95))}}
               [quo/category
-               {:list-type :reorder :label (:label @state) :data @data :blur? (:blur? @state)}]]]])]))))
+               {:list-type (:list-type @state)
+                :label     (:label @state)
+                :data      @data
+                :blur?     (:blur? @state)}]]]])]))))

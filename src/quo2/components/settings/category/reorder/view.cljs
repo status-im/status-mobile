@@ -35,6 +35,6 @@
        :on-drag-end-fn (fn [_ _ data]
                          (on-drag-end-fn data atom-data))
        :separator      [rn/view
-                        {:style (style/reorder-separator blur?)}]}]]))
+                        {:style (style/reorder-separator blur? theme)}]}]]))
 
 (def reorder-category (quo.theme/with-theme reorder-category-internal))
