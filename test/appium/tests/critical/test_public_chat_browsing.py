@@ -937,8 +937,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703086)
     def test_community_mark_all_messages_as_read(self):
-        self.channel_1.click_system_back_button_until_element_is_shown()
-        self.home_1.communities_tab.click()
+        self.home_1.jump_to_communities_home()
         self.channel_2.click_system_back_button_until_element_is_shown()
         self.home_2.communities_tab.click()
         self.home_2.get_chat(self.community_name, community=True).click()
