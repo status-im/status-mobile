@@ -91,7 +91,7 @@
          (when (and (seq @value) (= @state :default))
            [rn/touchable-opacity
             {:style    style/default-container
-             :on-press (fn [] (focus-input))}
+             :on-press focus-input}
             (when favicon
               [icon/icon favicon
                {:accessibility-label :browser-input-favicon
@@ -140,6 +140,5 @@
                           (clear-input)
                           (when on-clear (on-clear)))
               :theme    theme}])]]))))
-
 
 (def browser-input (quo2.theme/with-theme browser-input-internal))

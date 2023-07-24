@@ -7,7 +7,7 @@
    :height          20
    :justify-content :center
    :margin-left     8
-   :top             3.5
+   :top             4
    :width           20})
 
 (def favicon-icon-container
@@ -30,8 +30,7 @@
   {:align-items     :center
    :flex-direction  :row
    :justify-content :center
-   :opacity         (if display? 1 0)
-   :width           "100%"})
+   :opacity         (if display? 1 0)})
 
 (def default-container
   {:align-items        :center
