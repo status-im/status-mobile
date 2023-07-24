@@ -253,7 +253,8 @@
     encryption-pass
     #(let [{:keys [error]} (types/json->clj %)]
        (if (string/blank? error)
-         (native-module/login-with-keycard login-params)
+         (native-module/login-with-keycard
+          (assoc login-params :node-config {:ProcessBackedupMessages true}))
          (throw
           (js/Error.
            "Please shake the phone to report this error and restart the app. Migration failed unexpectedly.")))))))

@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.162.5",
-    "commit-sha1": "cf2d72bfa83f094719a93b7b7fd5a68e3a68ab47",
-    "src-sha256": "0x79nm1n6gbgz2lzsky29laap7m0r0hggrb2fsn07bf0xw0364qn"
+    "version": "fix/discard-backedup-messages-if-not-acc-recover-flow",
+    "commit-sha1": "9cbbc5c078525dbc4c14e6228396910ef472d32d",
+    "src-sha256": "1b705s4hakd3ahp7arrakqa0kz7vkg3r55d0mzynygax4dpgmlsm"
 }
