@@ -32,7 +32,7 @@
   (let [pressed? (reagent/atom false)]
     (fn
       [{:keys [on-press on-long-press disabled type background size before after above
-               width customization-color theme override-background-color
+               width customization-color theme
                accessibility-label icon style inner-style]
         :or   {type                :primary
                size                40
@@ -71,17 +71,16 @@
                    container-style)}
           [rn/view
            {:style (merge
-                    (style/style-container {:size size
-                                            :disabled disabled
-                                            :border-radius border-radius
-                                            :background-color
-                                            (or override-background-color background-color)
-                                            :border-color border-color
-                                            :icon-only? icon-only?
-                                            :icon-above icon-above
-                                            :width width
-                                            :icon-left icon-left
-                                            :icon-right icon-right})
+                    (style/style-container {:size             size
+                                            :disabled         disabled
+                                            :border-radius    border-radius
+                                            :background-color background-color
+                                            :border-color     border-color
+                                            :icon-only?       icon-only?
+                                            :icon-above       icon-above
+                                            :width            width
+                                            :icon-left        icon-left
+                                            :icon-right       icon-right})
                     inner-style)}
            (when customization-color
              [customization-colors/overlay

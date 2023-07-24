@@ -59,13 +59,16 @@
           [rn/view (style/container-outer)
            [rn/view style/container-inner
             [quo/button
-             (merge (style/button-close)
-                    {:on-press
-                     (fn []
-                       (reset! clipboard nil)
-                       (reset! default-value nil)
-                       (rf/dispatch [:contacts/clear-new-identity])
-                       (rf/dispatch [:navigate-back]))}) :i/close]
+             {:type :grey
+              :icon true
+              :accessibility-label :new-contact-close-button
+              :size 32
+              :on-press
+              (fn []
+                (reset! clipboard nil)
+                (reset! default-value nil)
+                (rf/dispatch [:contacts/clear-new-identity])
+                (rf/dispatch [:navigate-back]))} :i/close]
             [quo/text (style/text-title)
              (i18n/label :t/add-a-contact)]
             [quo/text (style/text-subtitle)
@@ -87,12 +90,14 @@
                        :return-key-type :done})]
               (when show-paste-button?
                 [quo/button
-                 (merge style/button-paste
-                        {:on-press
-                         (fn []
-                           (reset! default-value @clipboard)
-                           (rf/dispatch
-                            [:contacts/set-new-identity @clipboard nil]))})
+                 {:type :outline
+                  :size 24
+                  :style {:margin-top 6}
+                  :on-press
+                  (fn []
+                    (reset! default-value @clipboard)
+                    (rf/dispatch
+                     [:contacts/set-new-identity @clipboard nil]))}
                  (i18n/label :t/paste)])]
              [quo/button
               (merge style/button-qr

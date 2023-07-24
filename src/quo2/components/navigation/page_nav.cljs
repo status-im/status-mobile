@@ -31,17 +31,17 @@
            {:no-color true})))
 
 (defn left-section-view
-  [{:keys [on-press icon accessibility-label type icon-background-color]
+  [{:keys [on-press icon accessibility-label type icon-background]
     :or   {type :grey}}
    put-middle-section-on-left?]
   [rn/view {:style (when put-middle-section-on-left? {:margin-right 5})}
    [button/button
-    {:on-press                  on-press
-     :icon                      true
-     :type                      type
-     :size                      32
-     :accessibility-label       accessibility-label
-     :override-background-color icon-background-color}
+    {:on-press            on-press
+     :icon                true
+     :type                type
+     :size                32
+     :accessibility-label accessibility-label
+     :background          icon-background}
     icon]])
 
 (defn- mid-section-comp
@@ -152,7 +152,7 @@
                   :justify-content :flex-end)}
    (let [last-icon-index (-> right-section-buttons count dec)]
      (map-indexed (fn [index
-                       {:keys [icon on-press type style icon-background-color
+                       {:keys [icon on-press type style icon-background
                                accessibility-label label]
                         :or   {type :grey}}]
                     ^{:key index}
@@ -163,12 +163,12 @@
                        accessibility-label (assoc :accessibility-label accessibility-label
                                                   :accessible          true))
                      [button/button
-                      {:on-press                  on-press
-                       :icon                      (not label)
-                       :type                      type
-                       :before                    (when label icon)
-                       :size                      32
-                       :override-background-color icon-background-color}
+                      {:on-press   on-press
+                       :icon       (not label)
+                       :type       type
+                       :before     (when label icon)
+                       :size       32
+                       :background icon-background}
                       (if label label icon)]])
                   right-section-buttons))])
 

@@ -25,14 +25,13 @@
   [type]
   (let [default? (= type :default)
         dark?    (colors/dark?)]
-    {:icon                      true
-     :size                      32
-     :style                     {:margin-left 12}
-     :type                      (if default?
-                                  (if dark? :grey :dark-grey)
-                                  type)
-     :override-background-color (when (and dark? default?)
-                                  colors/neutral-90)}))
+    {:icon  true
+     :size  32
+     :style {:margin-left 12}
+     :type  (if default?
+              (if dark? :grey :dark-grey)
+              type)
+    }))
 
 (defn- unread-indicator
   []

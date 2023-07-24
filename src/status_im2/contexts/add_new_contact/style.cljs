@@ -110,16 +110,6 @@
    :size  24
    :style {:margin-top 6}})
 
-(defn button-close
-  []
-  {:type                      :grey
-   :icon                      true
-   :accessibility-label       :new-contact-close-button
-   :size                      32
-   :override-background-color (colors/theme-colors
-                               colors/neutral-10
-                               colors/neutral-90)})
-
 (def button-qr
   {:type :outline
    :icon true

@@ -302,13 +302,14 @@
 
 (defn page-nav-right-section-buttons
   [id]
-  [{:icon                  :i/options
-    :icon-background-color (scroll-page/icon-color)
-    :accessibility-label   :community-options-for-community
-    :on-press              #(rf/dispatch
-                             [:show-bottom-sheet
-                              {:content (fn []
-                                          [options/community-options-bottom-sheet id])}])}])
+  [{:icon                :i/options
+    :type                :grey
+    :icon-background     :photo
+    :accessibility-label :community-options-for-community
+    :on-press            #(rf/dispatch
+                           [:show-bottom-sheet
+                            {:content (fn []
+                                        [options/community-options-bottom-sheet id])}])}])
 
 (defn pick-first-category-by-height
   [scroll-height first-channel-height categories-heights]
