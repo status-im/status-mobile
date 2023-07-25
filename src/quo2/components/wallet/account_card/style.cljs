@@ -4,14 +4,14 @@
 
 (defn text-color
   [watch-only? theme]
-  (if (and watch-only? (= :dark theme))
+  (if (and watch-only? (= :light theme))
     colors/neutral-100
     colors/white))
 
 (defn card
-  [customization-color watch-only? theme]
+  [customization-color watch-only? metrics? theme]
   {:width              161
-   :height             88
+   :height             (if metrics? 88 68)
    :background-color   (if watch-only?
                          (colors/theme-colors colors/neutral-80-opa-5 colors/neutral-95 theme)
                          (colors/custom-color-by-theme customization-color 50 60))
@@ -19,7 +19,7 @@
    :border-width       1
    :border-color       (if watch-only?
                          (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
-                         (colors/custom-color-by-theme customization-color 50 60))
+                         colors/neutral-80-opa-10)
    :padding-horizontal 12
    :padding-top        6
    :padding-bottom     10})
@@ -48,25 +48,26 @@
   {:color (text-color watch-only? theme)})
 
 (defn metrics
-  [watch-only?]
-  {:color (if (and watch-only? (not (colors/dark?)))
+  [watch-only? theme]
+  {:color (if (and watch-only? (= :light theme))
             colors/neutral-80-opa-60
             colors/white-opa-70)})
 
 (defn separator
-  [watch-only?]
-  {:width             1
-   :height            8
-   :background-color  (if watch-only?
+  [watch-only? theme]
+  {:width             2
+   :height            2
+   :border-radius     20
+   :background-color  (if (and watch-only? (= :light theme))
                         colors/neutral-80-opa-20
                         colors/white-opa-40)
    :margin-horizontal 4})
 
 (defn add-account-container
-  []
+  [theme]
   {:width              161
    :height             88
-   :border-color       (colors/theme-colors colors/neutral-20 colors/white-opa-5)
+   :border-color       (colors/theme-colors colors/neutral-20 colors/white-opa-5 theme)
    :border-width       1
    :border-style       :dashed
    :align-items        :center
@@ -78,3 +79,10 @@
 (def emoji
   {:font-size   10
    :line-height 20})
+
+(defn loader-view
+  [width height watch-only? theme]
+  {:width            width
+   :height           height
+   :background-color (if (and watch-only? (= :light theme)) colors/neutral-80-opa-5 colors/white-opa-10)
+   :border-radius    6})

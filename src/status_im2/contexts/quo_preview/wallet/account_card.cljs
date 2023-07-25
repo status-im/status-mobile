@@ -17,7 +17,10 @@
               {:key   :watch-only
                :value "Watch Only"}
               {:key   :add-account
-               :value "Add Account"}]}
+               :value "Add Account"}
+              {:key   :empty
+               :value "Empty"}
+             ]}
    {:label   "Customization color:"
     :key     :customization-color
     :type    :select
@@ -31,20 +34,64 @@
    {:label "Balance:"
     :key   :balance
     :type  :text}
+   {:label "Percentage value:"
+    :key   :percentage-value
+    :type  :text}
+   {:label "Amount:"
+    :key   :amount
+    :type  :text}
+   {:label "Metrics:"
+    :key   :metrics?
+    :type  :boolean}
+   {:label "Loading:"
+    :key   :loading?
+    :type  :boolean}
    {:label "Emoji:"
     :key   :emoji
     :type  :text}])
 
+
+(defn initial-state
+  [type]
+  (cond
+    (= type :default)
+    {:name                "Alisher account"
+     :balance             "€2,269.12"
+     :percentage-value    "16.9%"
+     :amount              "€570.24"
+     :customization-color :purple
+     :type                :default
+     :emoji               "💎"}
+
+    (= type :empty)
+    {:name                "Account 1"
+     :balance             "€0.00"
+     :percentage-value    "0.00"
+     :amount              "0.00"
+     :customization-color :blue
+     :type                :empty
+     :emoji               "🔎"}
+
+    (= type :watch-only)
+    {:name                "Wach-only"
+     :balance             "€2,269.12"
+     :percentage-value    "0.00"
+     :amount              "0.00"
+     :customization-color :blue
+     :type                :watch-only
+     :emoji               "🔎"}
+
+    (= type :add-account)
+    {:customization-color :blue
+     :type                :add-account}))
+
+
 (defn cool-preview
   []
-  (let [state (reagent/atom {:name                "Alisher account"
-                             :balance             "€2,269.12"
-                             :percentage-value    "16.9%"
-                             :amount              "€570.24"
-                             :customization-color :blue
-                             :type                :default
-                             :emoji               "💎"})]
+  (let [state (reagent/atom (initial-state :default))]
     (fn []
+      (let [type (or (:type @state) :default)]
+        (swap! state merge (initial-state type)))
       [rn/view
        {:style {:flex 1}}
        [rn/view
