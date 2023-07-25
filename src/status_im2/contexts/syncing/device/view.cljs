@@ -2,22 +2,25 @@
   [:require
    [quo2.core :as quo]
    [utils.i18n :as i18n]
-   [status-im2.contexts.syncing.device.style :as style]])
+   [status-im2.contexts.syncing.device.style :as style]
+   [clojure.string :as string]])
 
 (defn view
   [{:keys [name
            this-device?
            device-type
            enabled?
-           show-button?]}]
+           show-button?
+           installation-id]}]
   (let [paired?   (and (not this-device?) enabled?)
         unpaired? (not enabled?)]
     [quo/settings-list
      (cond->
-       {:container-style style/device-container
-        :title           name
-        :override-theme  :dark
-        :left-icon       (if (= device-type :mobile) :i/mobile :i/desktop)}
+      {:container-style style/device-container
+       :title           (string/join " " [name (when (or this-device? (string/blank? name))
+                                                 (subs installation-id 0 4))])
+       :override-theme  :dark
+       :left-icon       (if (= device-type :mobile) :i/mobile :i/desktop)}
        (and show-button? unpaired?) (assoc :button-props
                                            {:title    (i18n/label :t/pair)
                                             :on-press #(js/alert "feature not added yet")})
