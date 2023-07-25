@@ -3,10 +3,12 @@
     [quo2.foundations.colors :as colors]
     [quo2.foundations.shadows :as shadows]))
 
-(def box-container
-  {:margin-horizontal 12
-   :border-radius     12
-   :overflow          :hidden})
+(defn box-container
+  [theme]
+  (merge (shadows/get 1 theme)
+         {:margin-horizontal 12
+          :border-radius     12
+          :overflow          :hidden}))
 
 (def blur-container
   {:height           "100%"
@@ -19,15 +21,13 @@
 
 (defn content-container
   [theme]
-  (merge
-   (shadows/get 1 theme)
-   {:background-color (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
-    :flex-direction   :row
-    :justify-content  :space-between
-    :padding-vertical 8
-    :padding-left     10
-    :padding-right    8
-    :border-radius    12}))
+  {:background-color (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
+   :flex-direction   :row
+   :justify-content  :space-between
+   :padding-vertical 8
+   :padding-left     10
+   :padding-right    8
+   :border-radius    12})
 
 (defn title
   [theme]

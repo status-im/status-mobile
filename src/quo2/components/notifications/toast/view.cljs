@@ -37,7 +37,7 @@
 
 (defn- toast-container-internal
   [{:keys [left title text right container-style theme]}]
-  [rn/view {:style (merge style/box-container container-style)}
+  [rn/view {:style (merge (style/box-container theme) container-style)}
    [blur/view
     {:style         style/blur-container
      :blur-amount   13
