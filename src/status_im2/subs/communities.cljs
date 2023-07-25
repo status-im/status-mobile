@@ -288,12 +288,12 @@
                                   (let [check-criteria (get-in token-permissions-check
                                                                [:permissions perm-key :criteria])]
                                     (map
-                                     (fn [{:keys [symbol amount]} sufficient?]
-                                       {:symbol      symbol
+                                     (fn [{sym :symbol amount :amount} sufficient?]
+                                       {:symbol      sym
                                         :sufficient? (when (seq check-criteria) sufficient?)
                                         :loading?    checking-permissions?
                                         :amount      amount
-                                        :img-src     (get token-images symbol)})
+                                        :img-src     (get token-images sym)})
                                      token_criteria
                                      (or check-criteria token_criteria))))
                                 token-permissions)}))

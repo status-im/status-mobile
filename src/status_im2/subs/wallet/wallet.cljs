@@ -61,10 +61,10 @@
 
 (defn get-balance-total-value
   [balance prices currency token->decimals]
-  (reduce-kv (fn [acc symbol value]
-               (if-let [price (get-in prices [symbol currency])]
+  (reduce-kv (fn [acc sym value]
+               (if-let [price (get-in prices [sym currency])]
                  (+ acc
-                    (or (some-> (money/internal->formatted value symbol (token->decimals symbol))
+                    (or (some-> (money/internal->formatted value sym (token->decimals sym))
                                 ^js (money/crypto->fiat price)
                                 .toNumber)
                         0))
@@ -193,13 +193,14 @@
 
 (defn update-value
   [prices currency]
-  (fn [{:keys [symbol decimals amount] :as token}]
-    (let [currency-kw (-> currency :code keyword)
-          price       (get-in prices [symbol currency-kw])]
+  (fn [{:keys [decimals amount] :as token}]
+    (let [sym         (:symbol token)
+          currency-kw (-> currency :code keyword)
+          price       (get-in prices [sym currency-kw])]
       (assoc token
              :price price
              :value (when (and amount price)
-                      (-> (money/internal->formatted amount symbol decimals)
+                      (-> (money/internal->formatted amount sym decimals)
                           (money/crypto->fiat price)
                           (money/with-precision 2)
                           str

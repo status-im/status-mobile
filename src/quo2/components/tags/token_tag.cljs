@@ -105,10 +105,11 @@
     :loading? true/false
     }"
   [_ _]
-  (fn [{:keys [symbol value size img-src border-color purchasable? sufficient? loading?]
-        :or
-        {size :small}}]
-    (let [sufficient?  (when-not loading? sufficient?)
+  (fn [{:keys [value size img-src border-color purchasable? sufficient? loading?]
+        :or   {size :small}
+        :as   props}]
+    (let [sym          (:symbol props)
+          sufficient?  (when-not loading? sufficient?)
           border-color (if sufficient? colors/success-50 border-color)]
       [tag
        {:size size
@@ -119,4 +120,4 @@
           [loading-icon]
           (when (or purchasable? sufficient?)
             [icon size border-color sufficient?]))}
-       (str value " " symbol)])))
+       (str value " " sym)])))

@@ -53,8 +53,14 @@
 
 (defn- fill-prepare-transaction-details
   [db
-   {:keys [address name value symbol gas gasPrice gasLimit]
-    :or   {symbol :ETH}}
+   {address   :address
+    name      :name
+    value     :value
+    sym       :symbol
+    gas       :gas
+    gas-price :gasPrice
+    gas-limit :gasLimit
+    :or       {sym :ETH}}
    all-tokens]
   (assoc db
          :wallet/prepare-transaction
@@ -62,14 +68,14 @@
                   :to-name (or name (find-address-name db address))
                   :from    (ethereum/get-default-account
                             (get db :profile/wallet-accounts))}
-           gas      (assoc :gas (money/bignumber gas))
-           gasLimit (assoc :gas (money/bignumber gasLimit))
-           gasPrice (assoc :gasPrice (money/bignumber gasPrice))
-           value    (assoc :amount-text
-                           (if (= :ETH symbol)
-                             (str (money/internal->formatted value symbol (get all-tokens symbol)))
-                             (str value)))
-           symbol   (assoc :symbol symbol))))
+           gas       (assoc :gas (money/bignumber gas))
+           gas-limit (assoc :gas (money/bignumber gas-limit))
+           gas-price (assoc :gasPrice (money/bignumber gas-price))
+           value     (assoc :amount-text
+                            (if (= :ETH sym)
+                              (str (money/internal->formatted value sym (get all-tokens sym)))
+                              (str value)))
+           sym       (assoc :symbol sym))))
 
 (rf/defn request-uri-parsed
   {:events [:wallet/request-uri-parsed]}
