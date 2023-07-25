@@ -72,15 +72,15 @@
 
 (defn cool-preview
   []
-  (let [state               (reagent/atom {:label "Press Me"
-                                           :size  40})
-        label               (reagent/cursor state [:label])
-        icon-left           (reagent/cursor state [:icon-left])
-        icon-right          (reagent/cursor state [:icon-right])
-        icon-top            (reagent/cursor state [:icon-top])
-        icon-only?          (reagent/cursor state [:icon-only?])
-        type                (reagent/cursor state [:type])
-        customization-color (reagent/cursor state [:customization-color])]
+  (let [state      (reagent/atom {:label               "Press Me"
+                                  :size                40
+                                  :type                :primary
+                                  :customization-color :blue})
+        label      (reagent/cursor state [:label])
+        icon-left  (reagent/cursor state [:icon-left])
+        icon-right (reagent/cursor state [:icon-right])
+        icon-top   (reagent/cursor state [:icon-top])
+        icon-only? (reagent/cursor state [:icon-only?])]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -100,14 +100,13 @@
                       :bottom   0}}])
          [quo/button
           (merge (dissoc @state
-                  :customization-color
                   :theme
+                  :customization-color
                   :icon-left
                   :icon-right)
                  {:background (:background @state)
                   :on-press   #(println "Hello world!")}
-                 (when (and (= type :primary) customization-color)
-                   (:customization-color customization-color))
+                 (when (= :primary (:type @state)) {:customization-color (:customization-color @state)})
                  (when @icon-top
                    {:icon-top :i/placeholder})
                  (when @icon-left
