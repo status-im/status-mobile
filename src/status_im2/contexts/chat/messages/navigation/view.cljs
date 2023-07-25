@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.messages.navigation.view
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
             [re-frame.db]
             [react-native.blur :as blur]
             [react-native.core :as rn]
@@ -14,7 +15,7 @@
             [utils.i18n :as i18n]
             [status-im2.common.home.actions.view :as actions]))
 
-(defn f-navigation-view
+(defn f-view
   [{:keys [scroll-y]}]
   (let [{:keys [group-chat chat-id chat-name emoji
                 chat-type]
@@ -55,7 +56,7 @@
                                                           :extrapolateRight "clamp"})]
     [rn/view {:style style/navigation-view}
      [reanimated/view
-      {:style (style/animated-background-view all-loaded? opacity-animation)}]
+      {:style (style/animated-background-view all-loaded? opacity-animation nil)}]
 
      [reanimated/view {:style (style/animated-blur-view all-loaded? opacity-animation)}
       [blur/view
@@ -114,3 +115,9 @@
        :opacity-animation banner-opacity-animation
        :all-loaded?       all-loaded?
        :top-offset        style/navigation-bar-height}]]))
+
+(defn- internal-navigation-view
+  [params]
+  [:f> f-view params])
+
+(def navigation-view (theme/with-theme internal-navigation-view))
