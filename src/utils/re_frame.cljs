@@ -39,8 +39,8 @@
 (def ^:private mergeable-keys (atom nil))
 
 (defn set-mergeable-keys
-  [val]
-  (reset! mergeable-keys val))
+  [v]
+  (reset! mergeable-keys v))
 
 (defn- safe-merge
   [fx new-fx]

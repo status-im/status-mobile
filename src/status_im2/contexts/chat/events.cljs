@@ -69,16 +69,15 @@
 
 (defn map-chats
   [{:keys [db] :as cofx}]
-  (fn [val]
-    (let [chat (or (get (:chats db) (:chat-id val))
-                   (create-new-chat (:chat-id val) cofx))]
-      (assoc
-       (merge
-        (cond-> chat
-          (comp not :muted) (dissoc chat :muted-till))
-        val)
-       :invitation-admin
-       (:invitation-admin val)))))
+  (fn [chat]
+    (let [base-chat (or (get (:chats db) (:chat-id chat))
+                        (create-new-chat (:chat-id chat) cofx))]
+      (assoc (merge
+              (cond-> base-chat
+                (comp not :muted) (dissoc base-chat :muted-till))
+              chat)
+             :invitation-admin
+             (:invitation-admin chat)))))
 
 (rf/defn leave-removed-chat
   [{{:keys [view-id current-chat-id chats]} :db
@@ -180,8 +179,8 @@
                (let [community-id (get-in db [:chats chat-id :community-id])]
                  ;; When navigating back from community chat to community, update switcher card
                  ;; A close chat event is also called while opening any chat.
-                 ;; That might lead to duplicate :dispatch keys in fx/merge, that's why dispatch-n is
-                 ;; used here.
+                 ;; That might lead to duplicate :dispatch keys in fx/merge, that's why dispatch-n
+                 ;; is used here.
                  (when (and community-id config/shell-navigation-disabled? (not navigate-to-shell?))
                    {:dispatch-n [[:shell/add-switcher-card
                                   :community-overview community-id]]})))
@@ -251,8 +250,8 @@
   {:events [:chat/decrease-unviewed-count]}
   [{:keys [db]} chat-id {:keys [count countWithMentions]}]
   {:db (-> db
-           ;; There might be some other requests being fired,
-           ;; so we need to make sure the count has not been set to
+           ;; There might be some other requests being fired, so we need to make sure the count has
+           ;; not been set to
            ;; 0 in the meantime
            (update-in [:chats chat-id :unviewed-messages-count]
                       #(max (- % count) 0))

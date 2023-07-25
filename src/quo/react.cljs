@@ -12,9 +12,9 @@
 
 ;; Inspired from UIX, Rum and Rumext
 (defn set-ref-val!
-  [ref val]
-  (oset! ref "current" val)
-  val)
+  [ref v]
+  (oset! ref "current" v)
+  v)
 
 (defn set-native-props
   [^js ref ^js props]
@@ -54,8 +54,8 @@
                    #js [value set-value])))
 
 (defn use-ref
-  [val]
-  (let [ref (react/useRef val)]
+  [v]
+  (let [ref (react/useRef v)]
     (reify
      cljs.core/IHash
        (-hash [_] (goog/getUid ref))

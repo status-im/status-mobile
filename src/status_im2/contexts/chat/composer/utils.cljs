@@ -11,8 +11,8 @@
     [utils.re-frame :as rf]))
 
 (defn bounded-val
-  [val min-val max-val]
-  (max min-val (min val max-val)))
+  [v min-v max-v]
+  (max min-v (min v max-v)))
 
 (defn update-height?
   [content-size height max-height maximized?]
