@@ -75,7 +75,7 @@
                  (assoc :recovered-account? true))
              :keycard/check-nfc-enabled nil}
             (bottom-sheet/hide-bottom-sheet-old)
-            (navigation/navigate-to :keycard-recovery-intro nil)))
+            (navigation/navigate-to-within-stack [:keycard-recovery-intro :new-to-status])))
 
 (rf/defn access-key-pressed
   {:events [:multiaccounts.recover.ui/recover-multiaccount-button-pressed]}
@@ -253,7 +253,8 @@
     encryption-pass
     #(let [{:keys [error]} (types/json->clj %)]
        (if (string/blank? error)
-         (native-module/login-with-keycard login-params)
+         (native-module/login-with-keycard
+          (assoc login-params :node-config {:ProcessBackedupMessages true}))
          (throw
           (js/Error.
            "Please shake the phone to report this error and restart the app. Migration failed unexpectedly.")))))))

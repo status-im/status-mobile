@@ -5,11 +5,19 @@
     [react-native.safe-area :as safe-area]
     [status-im.keycard.recovery :as keycard]
     [status-im2.common.resources :as resources]
-    [status-im2.contexts.onboarding.common.background.view :as background]
-    [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
     [status-im2.contexts.onboarding.new-to-status.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im2.contexts.onboarding.common.overlay.view :as overlay]
+    [status-im2.contexts.profile.profiles.view :as profiles]))
+
+(defn navigate-back
+  []
+  (when @overlay/blur-dismiss-fn-atom
+    (@overlay/blur-dismiss-fn-atom))
+  (when @profiles/pop-animation-fn-atom
+    (@profiles/pop-animation-fn-atom))
+  (rf/dispatch [:dismiss-modal :new-to-status]))
 
 (defn sign-in-options
   []
@@ -42,7 +50,7 @@
         :title    (i18n/label :t/use-recovery-phrase)
         :subtitle (i18n/label :t/use-recovery-phrase-subtitle)
         :image    (resources/get-image :ethereum-address)
-        :on-press #(rf/dispatch [:navigate-to :enter-seed-phrase])}]
+        :on-press #(rf/dispatch [:navigate-to-within-stack [:enter-seed-phrase :new-to-status]])}]
       [rn/view {:style style/space-between-suboptions}]
       [quo/small-option-card
        {:variant  :icon
@@ -89,19 +97,30 @@
       :style style/doc-content}
      (i18n/label :t/getting-started-generate-keys-on-keycard-description)]]])
 
+(defn navigation-bar
+  [top]
+  [rn/view
+   {:style {:height     56
+            :margin-top top}}
+   [quo/page-nav
+    {:align-mid?            true
+     :mid-section           {:type :text-only :main-text ""}
+     :left-section          {:type                :blur-bg
+                             :icon                :i/arrow-left
+                             :icon-override-theme :dark
+                             :on-press            navigate-back}
+     :right-section-buttons [{:type                :blur-bg
+                              :icon                :i/info
+                              :icon-override-theme :dark
+                              :on-press            #(rf/dispatch
+                                                     [:show-bottom-sheet
+                                                      {:content getting-started-doc
+                                                       :shell?  true}])}]}]])
+
 (defn new-to-status
   []
   (let [{:keys [top]} (safe-area/get-insets)]
     [:<>
-     [background/view true]
      [rn/view {:style style/content-container}
-      [navigation-bar/navigation-bar
-       {:top                   top
-        :right-section-buttons [{:type                :blur-bg
-                                 :icon                :i/info
-                                 :icon-override-theme :dark
-                                 :on-press            #(rf/dispatch
-                                                        [:show-bottom-sheet
-                                                         {:content getting-started-doc
-                                                          :shell?  true}])}]}]
+      [navigation-bar top]
       [sign-in-options]]]))

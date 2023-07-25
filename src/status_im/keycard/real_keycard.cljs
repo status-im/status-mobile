@@ -307,7 +307,7 @@
 
 (defn login
   [args]
-  (native-module/login-with-keycard args))
+  (native-module/login-with-keycard (assoc args :node-config {:ProcessBackedupMessages false})))
 
 (defn send-transaction-with-signature
   [{:keys [transaction signature on-completed]}]

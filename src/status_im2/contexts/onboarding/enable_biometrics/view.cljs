@@ -8,7 +8,6 @@
             [utils.re-frame :as rf]
             [status-im2.common.resources :as resources]
             [status-im2.common.parallax.view :as parallax]
-            [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.common.parallax.whitelist :as whitelist]
             [status-im2.common.biometric.events :as biometric]))
 
@@ -69,7 +68,6 @@
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
-     [background/view true]
      (if whitelist/whitelisted?
        [enable-biometrics-parallax]
        [enable-biometrics-simple])

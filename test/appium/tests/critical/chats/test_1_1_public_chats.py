@@ -6,7 +6,7 @@ import pytest
 from _pytest.outcomes import Failed
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
-from tests import marks, common_password, run_in_parallel
+from tests import marks, common_password, run_in_parallel, transl
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_message_sender
 from views.sign_in_view import SignInView
@@ -1376,6 +1376,48 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.chat_2.chat_element_by_text(message_1).wait_for_status_to_be(expected_status='Delivered', timeout=120)
         except TimeoutException as e:
             self.errors.append('%s after back up online!' % e.msg)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703496)
+    def test_1_1_chat_mute_chat(self):
+        self.home_1.click_system_back_button_until_element_is_shown()
+        self.home_1.chats_tab.click()
+        self.home_1.just_fyi("Mute chat")
+        self.home_1.mute_chat_long_press(self.username_2)
+
+        muted_message = "should be muted"
+        self.chat_2.send_message(muted_message)
+        chat = self.home_1.get_chat(self.username_2)
+        if chat.new_messages_counter.is_element_displayed(30) or self.home_1.chats_tab.counter.is_element_displayed(10):
+            self.errors.append("New messages counter is shown after mute")
+        if not chat.chat_preview.text.startswith(muted_message):
+            self.errors.append("Message text '%s' is not shown in chat preview after mute" % muted_message)
+        chat.click()
+        if not self.chat_1.chat_element_by_text(muted_message).is_element_displayed(30):
+            self.errors.append("Message '%s' is not shown in chat for receiver after mute" % muted_message)
+
+        self.chat_1.just_fyi("Unmute chat")
+        self.chat_1.click_system_back_button_until_element_is_shown()
+        chat.long_press_element()
+        if self.home_1.mute_chat_button.text != transl["unmute-chat"]:
+            self.errors.append("Chat is not muted")
+        # ToDo: enable the next check when https://github.com/status-im/status-mobile/issues/16768 is fixed
+        # expected_text = "%s %s" % (transl["muted-until"], transl["until-you-turn-it-back-on"])
+        # if not self.home_1.element_by_text(expected_text).is_element_displayed():
+        #     self.errors.append("Text '%s' is not shown for muted chat" %expected_text)
+        self.home_1.mute_chat_button.click()
+
+        unmuted_message = "after unmute"
+        self.chat_2.send_message(unmuted_message)
+        if not chat.new_messages_counter.is_element_displayed(
+                30) or not self.home_1.chats_tab.counter.is_element_displayed(10):
+            self.errors.append("New messages counter is not shown after unmute")
+        if not chat.chat_preview.text.startswith(unmuted_message):
+            self.errors.append("Message text '%s' is not shown in chat preview after unmute" % unmuted_message)
+        chat.click()
+        if not self.chat_1.chat_element_by_text(unmuted_message).is_element_displayed(30):
+            self.errors.append("Message '%s' is not shown in chat for receiver after unmute" % unmuted_message)
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702784)

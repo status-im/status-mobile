@@ -1,10 +1,13 @@
-from selenium.common.exceptions import NoSuchElementException
+import base64
 import os
+
+from selenium.common.exceptions import NoSuchElementException
+
 from tests import common_password, appium_root_project_path
+from tests.base_test_case import AbstractTestCase
 from views.base_element import Button, EditBox, Text
 from views.base_view import BaseView
-import base64
-from tests.base_test_case import AbstractTestCase
+
 
 class MultiAccountButton(Button):
     class Username(Text):
@@ -122,7 +125,8 @@ class TermsOfUseLink(Button):
 class UserProfileElement(Button):
     def __init__(self, driver, username):
         self.username = username
-        super().__init__(driver, xpath="//*[@text='%s']//ancestor::android.view.ViewGroup[@content-desc='profile-card']" % username)
+        super().__init__(driver,
+                         xpath="//*[@text='%s']//ancestor::android.view.ViewGroup[@content-desc='profile-card']" % username)
 
     def open_user_options(self):
         Button(self.driver, xpath='%s//*[@content-desc="profile-card-options"]' % self.locator).click()
@@ -197,9 +201,9 @@ class SignInView(BaseView):
         self.start_button = Button(self.driver, accessibility_id="welcome-button")
         self.use_recovery_phrase_button = Button(self.driver, translation_id="use-recovery-phrase")
         self.passphrase_edit_box = EditBox(self.driver, accessibility_id="passphrase-input")
-        self.show_profiles_button = Button(self.driver,  accessibility_id="show-profiles")
-        self.plus_profiles_button = Button(self.driver,  accessibility_id="show-new-account-options")
-        self.create_new_profile_button = Button(self.driver,  accessibility_id="create-new-profile")
+        self.show_profiles_button = Button(self.driver, accessibility_id="show-profiles")
+        self.plus_profiles_button = Button(self.driver, accessibility_id="show-new-account-options")
+        self.create_new_profile_button = Button(self.driver, accessibility_id="create-new-profile")
         self.remove_profile_button = Button(self.driver, accessibility_id="remove-profile")
 
     def set_password(self, password: str):
@@ -225,7 +229,7 @@ class SignInView(BaseView):
             self.generate_keys_button.click_until_presence_of_element(self.profile_your_name_edit_box)
         self.set_profile(username)
         self.set_password(password)
-        if self.enable_biometric_maybe_later_button.is_element_displayed(30):
+        if self.enable_biometric_maybe_later_button.is_element_displayed(10):
             self.enable_biometric_maybe_later_button.click()
         # self.next_button.click_until_absense_of_element(self.element_by_translation_id("intro-wizard-title2"))
         # if keycard:
@@ -262,7 +266,8 @@ class SignInView(BaseView):
         self.continue_button.click_until_presence_of_element(self.profile_your_name_edit_box)
         self.set_profile(username, set_image)
         self.set_password(password)
-        self.enable_biometric_maybe_later_button.wait_and_click(30)
+        if self.enable_biometric_maybe_later_button.is_element_displayed(10):
+            self.enable_biometric_maybe_later_button.click()
         self.identifiers_button.wait_and_click(30)
         if enable_notifications:
             self.enable_notifications_button.click_until_presence_of_element(self.start_button)
@@ -347,5 +352,3 @@ class SignInView(BaseView):
         self.driver.info("Getting username card by '%s'" % username)
         expected_element = UserProfileElement(self.driver, username)
         return expected_element if expected_element.is_element_displayed(10) else self.driver.fail("User is not found!")
-
-
