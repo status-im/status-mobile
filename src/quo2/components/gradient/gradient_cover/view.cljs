@@ -9,9 +9,10 @@
   (let [color-top    (colors/custom-color-by-theme color 50 50 20 20)
         color-bottom (colors/custom-color-by-theme color 50 50 0 0)]
     [linear-gradient/linear-gradient
-     {:colors [color-top color-bottom]
-      :start  {:x 0 :y 0}
-      :end    {:x 0 :y 1}
-      :style  style/root-container}]))
+     {:accessibility-label :gradient-cover
+      :colors              [color-top color-bottom]
+      :start               {:x 0 :y 0}
+      :end                 {:x 0 :y 1}
+      :style               style/root-container}]))
 
 (def view (quo.theme/with-theme view-internal))
