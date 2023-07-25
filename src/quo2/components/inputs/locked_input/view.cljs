@@ -13,7 +13,7 @@
    {:style (style/info-box-container theme)}
    [rn/view
     [icons/icon icon {:color (colors/theme-colors colors/neutral-50
-                                                  colors/neutral-10 theme)}]]
+                                                  colors/neutral-40 theme)}]]
    [text/text
     {:size  :paragraph-1
      :style (style/info-box-label theme)} value-text]])
@@ -23,7 +23,7 @@
   [rn/view {:style style}
    [text/text {:size   :paragraph-2
                :weight :regular
-               :style  {:color colors/neutral-50}} label-text]
+               :style  {:color colors/neutral-40}} label-text]
    [info-box {:theme      theme
               :icon       icon
               :value-text value}]])

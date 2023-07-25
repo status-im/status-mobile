@@ -32,7 +32,9 @@
    :width  16})
 
 (def account-emoji-container
-  {:background-color (colors/custom-color :purple 50)
+  {:background-color (colors/theme-colors (colors/custom-color :purple 50)
+                                          (colors/custom-color :purple 60)
+                                          (theme/get-theme))
    :padding          6
    :justify-content  :center
    :align-items      :center
