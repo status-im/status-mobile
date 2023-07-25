@@ -30,12 +30,13 @@
 (def delivery-state-showing-time-ms 3000)
 
 (defn avatar-container
-  [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions?]
+  [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions? show-user-info?]
   (if (or (and (seq (:response-to content))
                quoted-message)
           last-in-group?
           pinned-by
-          (not show-reactions?))
+          (not show-reactions?)
+          show-user-info?)
     [avatar/avatar from :small]
     [rn/view {:padding-top 2 :width 32}]))
 
@@ -47,8 +48,13 @@
            quoted-message
            from
            timestamp]}
-   show-reactions?]
-  (when (or (and (seq response-to) quoted-message) last-in-group? pinned-by (not show-reactions?))
+   show-reactions?
+   show-user-info?]
+  (when (or (and (seq response-to) quoted-message)
+            last-in-group?
+            pinned-by
+            (not show-reactions?)
+            show-user-info?)
     (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
       [quo/author
@@ -84,7 +90,7 @@
 (defn user-message-content
   []
   (let [show-delivery-state? (reagent/atom false)]
-    (fn [{:keys [message-data context keyboard-shown? show-reactions?]}]
+    (fn [{:keys [message-data context keyboard-shown? show-reactions? show-user-info?]}]
       (let [{:keys [content-type quoted-message content
                     outgoing outgoing-status pinned-by]} message-data
             first-image                                  (first (:album message-data))
@@ -129,7 +135,7 @@
           [rn/view
            {:style {:padding-horizontal 4
                     :flex-direction     :row}}
-           [avatar-container message-data show-reactions?]
+           [avatar-container message-data show-reactions? show-user-info?]
            (into
             (if show-reactions?
               [rn/view]
@@ -138,7 +144,7 @@
                       :flex        1
                       :max-height  (when-not show-reactions?
                                      (* 0.4 height))}}
-             [author message-data show-reactions?]
+             [author message-data show-reactions? show-user-info?]
              (case content-type
 
                constants/content-type-text
@@ -184,7 +190,8 @@
                                     {:message-data    message-data
                                      :context         context
                                      :keyboard-shown? keyboard-shown?
-                                     :show-reactions? true}]])}]))
+                                     :show-reactions? true
+                                     :show-user-info? true}]])}]))
 
 (defn message
   [{:keys [pinned-by mentioned content-type last-in-group? deleted? deleted-for-me?]
