@@ -148,6 +148,7 @@
 
 (defn subtitle
   [type {:keys [content-type data]}]
+  (println "content-type" content-type)
   (case type
     shell.constants/community-card
     (i18n/label :t/community)
@@ -180,6 +181,9 @@
 
       constants/content-type-link
       (i18n/label :t/external-link)
+
+      constants/content-type-contact-request
+      (i18n/label :t/contact-request)
 
       "")))
 
