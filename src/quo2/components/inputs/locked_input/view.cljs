@@ -21,7 +21,6 @@
 (defn- locked-input-internal
   [{:keys [label-text icon style theme]} value]
   [rn/view {:style style}
-   (js/console.log (str theme))
    [text/text {:size   :paragraph-2
                :weight :regular
                :style  {:color colors/neutral-50}} label-text]
