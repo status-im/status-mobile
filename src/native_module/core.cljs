@@ -225,12 +225,12 @@
   (.verifyDatabasePassword ^js (status) key-uid hashed-password callback))
 
 (defn login-with-keycard
-  [{:keys [key-uid multiaccount-data password chat-key]}]
+  [{:keys [key-uid multiaccount-data password chat-key node-config]}]
   (log/debug "[native-module] login-with-keycard")
   (clear-web-data)
   (init-keystore
    key-uid
-   #(.loginWithKeycard ^js (status) multiaccount-data password chat-key)))
+   #(.loginWithKeycard ^js (status) multiaccount-data password chat-key (types/clj->json node-config))))
 
 (defn set-soft-input-mode
   [mode]
