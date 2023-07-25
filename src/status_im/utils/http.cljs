@@ -132,9 +132,9 @@
     (catch :default _ nil)))
 
 (defn url?
-  [str]
+  [s]
   (try
-    (when-let [host (.getDomain ^js (goog.Uri. str))]
+    (when-let [host (.getDomain ^js (goog.Uri. s))]
       (not (string/blank? host)))
     (catch :default _ nil)))
 
