@@ -4,8 +4,7 @@
             [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
-            utils.string
-            [quo2.theme :as quo.theme]))
+            utils.string))
 
 (defn initials-avatar
   [{:keys [full-name size draw-ring? customization-color theme]}]

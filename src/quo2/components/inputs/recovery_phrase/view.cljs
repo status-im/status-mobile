@@ -6,7 +6,7 @@
             [quo2.theme :as quo.theme]))
 
 (def ^:private custom-props
-  [:customization-color :override-theme :blur? :cursor-color :multiline :on-focus :on-blur
+  [:customization-color :theme :blur? :cursor-color :multiline :on-focus :on-blur
    :placeholder-text-color :mark-errors? :error-pred :word-limit])
 
 (defn- error-word
@@ -67,11 +67,11 @@
                                             (when on-blur (on-blur)))}
                  extra-props)
           (if mark-errors?
-            (mark-error-words {:error-pred-current-word  error-pred-current-word
-                               :error-pred-written-words error-pred-written-words
-                               :text                     text
-                               :word-limit               word-limit
-                               :theme                    theme})
+            (mark-error-words {:pred-last-word      error-pred-current-word
+                               :pred-previous-words error-pred-written-words
+                               :text                text
+                               :word-limit          word-limit
+                               :theme               theme})
             text)]]))))
 
 (def recovery-phrase-input (quo.theme/with-theme recovery-phrase-input-internal))

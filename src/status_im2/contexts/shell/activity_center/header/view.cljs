@@ -11,13 +11,12 @@
   []
   (let [unread-filter-enabled? (rf/sub [:activity-center/filter-status-unread-enabled?])]
     [quo/filter
-     {:pressed?       unread-filter-enabled?
-      :blur?          true
-      :override-theme :dark
-      :on-press-out   #(rf/dispatch [:activity-center.notifications/fetch-first-page
-                                     {:filter-status (if unread-filter-enabled?
-                                                       :all
-                                                       :unread)}])}]))
+     {:pressed?     unread-filter-enabled?
+      :blur?        true
+      :on-press-out #(rf/dispatch [:activity-center.notifications/fetch-first-page
+                                   {:filter-status (if unread-filter-enabled?
+                                                     :all
+                                                     :unread)}])}]))
 
 (defn header
   []
