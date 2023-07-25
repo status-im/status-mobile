@@ -22,7 +22,7 @@
      :or   {customization-color :blue}
      :as   props}
     amount]
-   (when (pos? 0)
+   (when (pos? amount)
      [rn/view (assoc props :style (counter-style customization-color style))
       [rn/text
        {:style (merge typography/font-medium
