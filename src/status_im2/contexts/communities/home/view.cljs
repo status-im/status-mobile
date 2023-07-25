@@ -105,18 +105,19 @@
          :banner              (resources/get-image :discover)
          :accessibility-label :communities-home-discover-card}]]]]))
 
+(defn- reset-banner-animation [animated-opacity animated-translation-y]
+  (reanimated/animate-shared-value-with-timing animated-opacity 1 200 :easing3)
+  (reanimated/animate-shared-value-with-timing animated-translation-y 0 200 :easing3))
+
+(defn- reset-scroll [flat-list-ref]
+  (some-> flat-list-ref (.scrollToOffset #js {:offset 0 :animated? true})))
+
 (defn- tabs-banner-layer
   [animated-translation-y animated-opacity selected-tab flat-list-ref]
   (let [on-tab-change (fn [tab]
                         (if (empty? (get (rf/sub [:communities/grouped-by-status]) tab))
-                          (do
-                            (reanimated/animate-shared-value-with-timing animated-opacity 1 200 :easing3)
-                            (reanimated/animate-shared-value-with-timing animated-translation-y
-                                                                         0
-                                                                         200
-                                                                         :easing3))
-                          (some-> @flat-list-ref
-                                  (.scrollToOffset #js {:offset 0 :animated? true})))
+                          (reset-banner-animation animated-opacity animated-translation-y)
+                          (reset-scroll @flat-list-ref))
                         (rf/dispatch [:communities/select-tab tab]))]
     [reanimated/view {:style (style/tabs-banner-layer animated-translation-y)}
      ^{:key (str "tabs-" selected-tab)}
@@ -157,6 +158,9 @@
                                               :joined  joined
                                               :pending pending
                                               :opened  opened)
+            selected-items                  (if (= selected-tab :opened)
+                                              (repeat 20 (last selected-items))
+                                              selected-items)
             animated-opacity                (reanimated/use-shared-value 1)
             animated-translation-y          (reanimated/use-shared-value 0)]
         [:<>
