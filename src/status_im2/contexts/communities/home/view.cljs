@@ -105,12 +105,15 @@
          :banner              (resources/get-image :discover)
          :accessibility-label :communities-home-discover-card}]]]]))
 
-(defn- reset-banner-animation [animated-opacity animated-translation-y]
+(defn- reset-banner-animation
+  [animated-opacity animated-translation-y]
   (reanimated/animate-shared-value-with-timing animated-opacity 1 200 :easing3)
   (reanimated/animate-shared-value-with-timing animated-translation-y 0 200 :easing3))
 
-(defn- reset-scroll [flat-list-ref]
-  (some-> flat-list-ref (.scrollToOffset #js {:offset 0 :animated? true})))
+(defn- reset-scroll
+  [flat-list-ref]
+  (some-> flat-list-ref
+          (.scrollToOffset #js {:offset 0 :animated? true})))
 
 (defn- tabs-banner-layer
   [animated-translation-y animated-opacity selected-tab flat-list-ref]
@@ -158,9 +161,6 @@
                                               :joined  joined
                                               :pending pending
                                               :opened  opened)
-            selected-items                  (if (= selected-tab :opened)
-                                              (repeat 20 (last selected-items))
-                                              selected-items)
             animated-opacity                (reanimated/use-shared-value 1)
             animated-translation-y          (reanimated/use-shared-value 0)]
         [:<>
