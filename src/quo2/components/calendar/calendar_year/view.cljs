@@ -15,5 +15,4 @@
     {:style (style/text {:selected? selected?})}
     year]])
 
-
 (def calendar-year (theme/with-theme calendar-year-internal))

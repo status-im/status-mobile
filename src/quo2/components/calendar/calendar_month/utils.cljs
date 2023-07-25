@@ -2,7 +2,6 @@
   (:require [utils.i18n :as i18n]
             [utils.datetime :as dt]))
 
-
 (defn format-month-year
   [year month]
   (let [month (cond
@@ -10,7 +9,6 @@
                 (> month 12)                    12
                 :else                           month)]
     (str (i18n/label (get dt/full-months month)) " " year)))
-
 
 (defn next-month
   [year month]

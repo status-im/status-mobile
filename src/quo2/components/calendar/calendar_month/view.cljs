@@ -6,7 +6,6 @@
             [utils.number :as number-utils]
             [quo2.components.calendar.calendar-month.utils :as utils]))
 
-
 (defn- calendar-month-internal
   [{:keys [year month on-change]}]
   (let [year  (number-utils/parse-int year)

@@ -13,6 +13,7 @@
     quo2.components.buttons.predictive-keyboard.view
     quo2.components.buttons.slide-button.view
     quo2.components.browser.browser-input.view
+    quo2.components.calendar.calendar.view
     quo2.components.calendar.calendar-day.view
     quo2.components.calendar.calendar-month.view
     quo2.components.calendar.calendar-year.view
@@ -147,6 +148,7 @@
 (def browser-input quo2.components.browser.browser-input.view/browser-input)
 
 ;;;; CALENDAR
+(def calendar quo2.components.calendar.calendar.view/calendar)
 (def calendar-day quo2.components.calendar.calendar-day.view/calendar-day)
 (def calendar-month quo2.components.calendar.calendar-month.view/calendar-month)
 (def calendar-year quo2.components.calendar.calendar-year.view/calendar-year)

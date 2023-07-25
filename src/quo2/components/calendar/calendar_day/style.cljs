@@ -3,6 +3,12 @@
     [quo2.foundations.colors :as colors]
     [quo2.foundations.typography :as typography]))
 
+(def wrapper
+  {:flex            1
+   :margin-vertical 2
+   :justify-content :center
+   :align-items     :center})
+
 (def container-base
   {:align-items     :center
    :justify-content :center
@@ -14,7 +20,29 @@
   []
   (-> typography/paragraph-2
       (merge typography/font-medium)
-      (merge {:color (colors/theme-colors colors/neutral-100 colors/white)})))
+      (merge
+       {:color      (colors/theme-colors colors/neutral-100 colors/white)
+        :text-align :center})))
+
+(defn in-range-background
+  [{:keys [in-range]}]
+  (cond-> {:position :absolute
+           :top      0
+           :right    0
+           :left     0
+           :bottom   0}
+    (= in-range :start)
+    (assoc :background-color
+           (colors/theme-colors colors/neutral-5 colors/neutral-80)
+           :left 20)
+
+    (= in-range :middle)
+    (assoc :background-color (colors/theme-colors colors/neutral-5 colors/neutral-80))
+
+    (= in-range :end)
+    (assoc :background-color
+           (colors/theme-colors colors/neutral-5 colors/neutral-80)
+           :right 20)))
 
 (defn container
   [{:keys [state]}]

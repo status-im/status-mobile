@@ -9,6 +9,8 @@
 
 (defn now [] (t/now))
 
+(def weekday-names ["su" "mo" "tu" "we" "th" "fr" "sa"])
+
 (def ^:const int->weekday
   "Maps the corresponding string representation of a weekday
    By it's numeric index as in cljs-time"
@@ -39,18 +41,18 @@
 (def ^:const full-months
   "Maps the corresponding string representation of a month
    By it's numeric index as in cljs-time"
-  {1  "January"
-   2  "February"
-   3  "March"
-   4  "April"
-   5  "May"
-   6  "June"
-   7  "July"
-   8  "August"
-   9  "September"
-   10 "October"
-   11 "November"
-   12 "December"})
+  {1  "january"
+   2  "february"
+   3  "march"
+   4  "april"
+   5  "may"
+   6  "june"
+   7  "july"
+   8  "august"
+   9  "september"
+   10 "october"
+   11 "november"
+   12 "december"})
 
 (def one-second 1000)
 (def minute (* 60 one-second))
@@ -108,6 +110,12 @@
   "Get medium format from current locale symbols."
   [^js locsym]
   (nth (.-DATEFORMATS locsym) 2))
+
+(defn- format-date
+  [date]
+  (if (not (nil? date))
+    (t.format/unparse (t.format/formatter "dd/MM/yyyy") date)
+    ""))
 
 ;;;; Datetime formats
 (defn- medium-date-time-format
