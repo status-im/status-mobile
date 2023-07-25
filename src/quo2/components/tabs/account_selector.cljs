@@ -31,10 +31,11 @@
   {:height 16
    :width  16})
 
-(def account-emoji-container
+(defn account-emoji-container
+  [theme]
   {:background-color (colors/theme-colors (colors/custom-color :purple 50)
                                           (colors/custom-color :purple 60)
-                                          (theme/get-theme))
+                                          theme)
    :padding          6
    :justify-content  :center
    :align-items      :center
@@ -68,7 +69,7 @@
                   :margin-bottom 8}}
         label-text])
      [rn/view {:style (account-container-row background-color)}
-      [rn/view {:style account-emoji-container}
+      [rn/view {:style (account-emoji-container (theme/get-theme))}
        [quo2/text account-emoji]]
       [quo2/text
        {:weight :medium
