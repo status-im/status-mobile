@@ -230,20 +230,25 @@
   [{:keys [event on-success-scan on-failed-scan]}]
   (let [connection-string        (string/trim (oops/oget event "nativeEvent.codeStringValue"))
         valid-connection-string? (sync-utils/valid-connection-string? connection-string)]
+    ;; debounce-and-dispatch used because the QR code scanner performs callbacks too fast
     (if valid-connection-string?
       (do
-        (set-qr-code-succeeded)
-        (debounce/debounce-and-dispatch [:syncing/input-connection-string-for-bootstrapping
-                                         connection-string]
-                                        300))
-      (rf/dispatch [:toasts/upsert
-                    {:icon       :i/info
-                     :icon-color colors/danger-50
-                     :theme      :dark
-                     :text       (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
+        (on-success-scan)
+        (debounce/debounce-and-dispatch
+         [:syncing/input-connection-string-for-bootstrapping connection-string]
+         300))
+      (do
+        (on-failed-scan)
+        (debounce/debounce-and-dispatch
+         [:toasts/upsert
+          {:icon       :i/info
+           :icon-color colors/danger-50
+           :theme      :dark
+           :text       (i18n/label :t/error-this-is-not-a-sync-qr-code)}]
+         300)))))
 
 (defn- render-camera
-  [{:keys [torch-mode qr-view-finder set-qr-code-succeeded]}]
+  [{:keys [torch-mode qr-view-finder scan-code? set-qr-code-succeeded set-rescan-timeout]}]
   [:<>
    [rn/view {:style style/camera-container}
     [camera-kit/camera
@@ -252,7 +257,10 @@
       :zoom-mode    :off
       :torch-mode   torch-mode
       :scan-barcode true
-      :on-read-code #(check-qr-code-and-navigate % set-qr-code-succeeded)}]]
+      :on-read-code #(when scan-code?
+                       (check-qr-code-and-navigate {:event           %
+                                                    :on-success-scan set-qr-code-succeeded
+                                                    :on-failed-scan  set-rescan-timeout}))}]]
    [hole-view/hole-view
     {:style style/hole
      :holes [(assoc qr-view-finder :borderRadius 16)]}
@@ -281,11 +289,15 @@
 
 (defn f-view
   [_]
-  (let [insets         (safe-area/get-insets)
-        active-tab     (reagent/atom 1)
-        qr-view-finder (reagent/atom {})
-        render-camera? (reagent/atom false)
-        torch?         (reagent/atom false)]
+  (let [insets             (safe-area/get-insets)
+        active-tab         (reagent/atom 1)
+        qr-view-finder     (reagent/atom {})
+        render-camera?     (reagent/atom false)
+        torch?             (reagent/atom false)
+        scan-code?         (reagent/atom true)
+        set-rescan-timeout (fn []
+                             (reset! scan-code? false)
+                             (js/setTimeout #(reset! scan-code? true) 3000))]
     (fn [{:keys [title show-bottom-view? background animated? qr-code-succeed?
                  set-qr-code-succeeded]}]
       (let [torch-mode              (if @torch? :on :off)
@@ -337,7 +349,9 @@
            [render-camera
             {:torch-mode            torch-mode
              :qr-view-finder        @qr-view-finder
-             :set-qr-code-succeeded set-qr-code-succeeded}])
+             :scan-code?            @scan-code?
+             :set-qr-code-succeeded set-qr-code-succeeded
+             :set-rescan-timeout    set-rescan-timeout}])
          [rn/view {:style (style/root-container (:top insets))}
           [:f> header
            {:active-tab          active-tab
