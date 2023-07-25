@@ -74,8 +74,8 @@
            context))))
 
 (defn- activity-message
-  [{:keys [title body title-number-of-lines body-number-of-lines]}]
-  [rn/view {:style style/message-container}
+  [{:keys [title body title-number-of-lines body-number-of-lines attachment]}]
+  [rn/view {:style (style/message-container attachment)}
    (when title
      [text/text
       {:size                :paragraph-2

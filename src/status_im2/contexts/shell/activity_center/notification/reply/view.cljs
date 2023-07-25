@@ -10,7 +10,7 @@
             [utils.datetime :as datetime]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im2.contexts.chat.messages.content.image.view :as image]))
+            [status-im.utils.http :as http]))
 
 ;; NOTE: Replies support text, image and stickers only.
 (defn- get-message-content
@@ -19,7 +19,11 @@
     constants/content-type-text [quo/text {:style style/tag-text}
                                  (get-in message [:content :text])]
 
-    constants/content-type-image [image/image-message 0 message nil]
+    constants/content-type-image
+    (let [image           (get-in message [:content :image])
+          image-local-url (http/replace-port image (rf/sub [:mediaserver/port]))
+          photos          (when image-local-url [{:uri image-local-url}])]
+      [quo/activity-logs-photos {:photos photos}])
 
     constants/content-type-sticker [old-message/sticker message]
 
@@ -72,4 +76,19 @@
                       [quo/context-tag common/tag-params community-image community-name chat-name]
                       [quo/group-avatar-tag chat-name common/tag-params])]
         :message   {:body-number-of-lines 1
+                    :attachment           (cond
+                                            (= (:content-type message) constants/content-type-text)
+                                            :text
+
+                                            (= (:content-type message) constants/content-type-image)
+                                            :photo
+
+                                            (= (:content-type message) constants/content-type-sticker)
+                                            :sticker
+
+                                            (= (:content-type message) constants/content-type-gif)
+                                            :gif
+
+                                            :else
+                                            nil)
                     :body                 (get-message-content message)}}]]]))
