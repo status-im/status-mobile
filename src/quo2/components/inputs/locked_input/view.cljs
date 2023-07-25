@@ -21,6 +21,7 @@
 (defn- locked-input-internal
   [{:keys [label-text icon style theme]} value]
   [rn/view {:style style}
+   (js/console.log (str theme))
    [text/text {:size   :paragraph-2
                :weight :regular
                :style  {:color colors/neutral-50}} label-text]
@@ -28,4 +29,13 @@
               :icon       icon
               :value-text value}]])
 
-(def locked-input (quo.theme/with-theme locked-input-internal))
+(def locked-input
+  "Options:
+
+  :label-text - string (default nil) - Text to display above the input
+  :icon - keyword (default nil) - Icon to display in the info box
+  :style - style map (default nil) - Override style for the container
+  :theme - :light/:dark
+
+  :value - string (default nil) - value to display in the info box"
+  (quo.theme/with-theme locked-input-internal))
