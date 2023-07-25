@@ -28,7 +28,6 @@
       :type                :blur-bg
       :size                32
       :accessibility-label :close-activity-center
-      :override-theme      :dark
       :on-press            #(rf/dispatch [:navigate-back])}
      :i/close]
     [quo/button
@@ -36,10 +35,9 @@
       :type                :blur-bg
       :size                32
       :accessibility-label :activity-center-open-more
-      :override-theme      :dark
       :on-press            #(rf/dispatch [:show-bottom-sheet
-                                          {:content        drawer/options
-                                           :override-theme :dark}])}
+                                          {:content drawer/options
+                                           :theme   :dark}])}
      :i/options]]
    [quo/text
     {:size   :heading-1

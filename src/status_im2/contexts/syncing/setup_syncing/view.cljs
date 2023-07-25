@@ -122,7 +122,7 @@
               {:on-press (fn []
                            (clipboard/set-string @code)
                            (rf/dispatch [:toasts/upsert
-                                         {:icon       :correct
+                                         {:icon       :i/correct
                                           :icon-color colors/success-50
                                           :text       (i18n/label
                                                        :t/sharing-copied-to-clipboard)}]))

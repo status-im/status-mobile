@@ -57,7 +57,7 @@
                                 uri
                                 #(rf/dispatch [:toasts/upsert
                                                {:id              :random-id
-                                                :icon            :correct
+                                                :icon            :i/correct
                                                 :icon-color      colors/success-50
                                                 :container-style {:bottom (when platform/android? 20)}
                                                 :text            (i18n/label :t/photo-saved)}])))}]]]))
