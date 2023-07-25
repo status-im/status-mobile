@@ -78,13 +78,13 @@
    :right    (+ screen-padding flash-button-spacing)})
 
 (defn- get-border
-  [border-vertical border-horizontal corner-radius]
-  {:border-color     colors/white
-   :width            78
-   :height           78
-   border-vertical   2
-   border-horizontal 2
-   corner-radius     16})
+  [border-vertical-width border-horizontal-width corner-radius]
+  {:border-color           colors/white
+   :width                  78
+   :height                 78
+   border-vertical-width   2
+   border-horizontal-width 2
+   corner-radius           16})
 
 (def white-border
   (let [base-tip {:background-color colors/white
