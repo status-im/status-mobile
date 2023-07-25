@@ -227,7 +227,7 @@
   [:f> f-bottom-view insets translate-y])
 
 (defn- check-qr-code-and-navigate
-  [event set-qr-code-succeeded]
+  [{:keys [event on-success-scan on-failed-scan]}]
   (let [connection-string        (string/trim (oops/oget event "nativeEvent.codeStringValue"))
         valid-connection-string? (sync-utils/valid-connection-string? connection-string)]
     (if valid-connection-string?
@@ -375,10 +375,10 @@
              flashlight-icon])]]))))
 
 (defn view
-  [_props]
+  [{:keys [screen-name] :as _props}]
   (let [qr-code-succeed? (reagent/atom false)]
     (navigation.util/create-class-and-bind
-     "sign-in-intro"
+     screen-name
      {:component-did-appear (fn set-qr-code-failed [_this]
                               (reset! qr-code-succeed? false))}
      (fn [props]
