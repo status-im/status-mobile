@@ -58,7 +58,7 @@
                         :label (i18n/label :t/advanced)}]}]
    [rn/view {:style {:margin-top 19}}
     [text/text {:size   :paragraph-2
-                :weight :regular
+                :weight :medium
                 :style  {:color colors/neutral-40}} (i18n/label
                                                       :t/select-account)]
     [rn/flat-list

@@ -22,7 +22,7 @@
   [{:keys [label-text icon style theme]} value]
   [rn/view {:style style}
    [text/text {:size   :paragraph-2
-               :weight :regular
+               :weight :medium
                :style  {:color colors/neutral-40}} label-text]
    [info-box {:theme      theme
               :icon       icon
