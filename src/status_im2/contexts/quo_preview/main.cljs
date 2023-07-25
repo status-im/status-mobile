@@ -19,6 +19,7 @@
     [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
+    [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
@@ -62,6 +63,7 @@
     [status-im2.contexts.quo-preview.navigation.page-nav :as page-nav]
     [status-im2.contexts.quo-preview.navigation.top-nav :as top-nav]
     [status-im2.contexts.quo-preview.notifications.activity-logs :as activity-logs]
+    [status-im2.contexts.quo-preview.notifications.activity-logs-photos :as activity-logs-photos]
     [status-im2.contexts.quo-preview.notifications.notification :as notification]
     [status-im2.contexts.quo-preview.notifications.toast :as toast]
     [status-im2.contexts.quo-preview.onboarding.small-option-card :as small-option-card]
@@ -140,6 +142,9 @@
                        {:name      :predictive-keyboard
                         :options   {:topBar {:visible true}}
                         :component predictive-keyboard/preview-predictive-keyboard}]
+   :browser           [{:name      :browser-input
+                        :options   {:topBar {:visible false}}
+                        :component browser-input/preview-browser-input}]
    :code              [{:name      :snippet
                         :options   {:topBar {:visible true}}
                         :component code-snippet/preview-code-snippet}]
@@ -278,6 +283,9 @@
    :notifications     [{:name      :activity-logs
                         :options   {:topBar {:visible true}}
                         :component activity-logs/preview-activity-logs}
+                       {:name      :activity-logs-photos
+                        :options   {:topBar {:visible true}}
+                        :component activity-logs-photos/preview-activity-logs-photos}
                        {:name      :toast
                         :options   {:topBar {:visible true}}
                         :component toast/preview-toasts}

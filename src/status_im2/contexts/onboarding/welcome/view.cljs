@@ -8,8 +8,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im2.constants :as constants]
-    [status-im2.contexts.onboarding.welcome.style :as style]
-    [status-im2.contexts.onboarding.common.background.view :as background]))
+    [status-im2.contexts.onboarding.welcome.style :as style]))
 
 (defn page-title
   []
@@ -36,7 +35,8 @@
                               ; should be type:grey, and page nav can use background instead.
                               :icon-background-color colors/white-opa-5
                               :type                  :grey
-                              :on-press              #(rf/dispatch [:init-root root])}}])
+                              :on-press              #(rf/dispatch [:navigate-back-within-stack
+                                                                    root])}}])
 
 (defn dispatch-visibility-status-update
   [status-type]
@@ -51,7 +51,6 @@
     [rn/view {:style (style/page-container insets)}
      (when (nil? status-type)
        (dispatch-visibility-status-update constants/visibility-status-automatic))
-     [background/view true]
      [navigation-bar :enable-notifications]
      [page-title]
      [rn/view {:style style/page-illustration}

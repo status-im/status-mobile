@@ -1,7 +1,8 @@
 (ns status-im2.contexts.onboarding.identifiers.style)
 
 (def page-container
-  {:flex 1})
+  {:flex     1
+   :overflow :hidden})
 
 (def content-container
   {:position :absolute

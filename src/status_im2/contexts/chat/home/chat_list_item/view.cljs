@@ -235,8 +235,9 @@
      (if-not muted
        (when show-unread-badge?
          [quo/info-count
-          {:style {:top   16
-                   :right 16}}
+          {:style               {:top   16
+                                 :right 16}
+           :accessibility-label :new-message-counter}
           unviewed-messages-count])
        [icons/icon :i/muted
         {:color           colors/neutral-40

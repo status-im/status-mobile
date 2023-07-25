@@ -26,7 +26,7 @@
   {:events [:onboarding-2/profile-data-set]}
   [{:keys [db]} onboarding-data]
   {:db       (update db :onboarding-2/profile merge onboarding-data)
-   :dispatch [:navigate-to :create-profile-password]})
+   :dispatch [:navigate-to-within-stack [:create-profile-password :new-to-status]]})
 
 (rf/defn enable-biometrics
   {:events [:onboarding-2/enable-biometrics]}
@@ -51,7 +51,7 @@
   (let [{:keys [display-name seed-phrase password image-path color] :as profile}
         (:onboarding-2/profile db)]
     (rf/merge cofx
-              {:dispatch       [:navigate-to :generating-keys]
+              {:dispatch       [:navigate-to-within-stack [:generating-keys :new-to-status]]
                :dispatch-later [{:ms       constants/onboarding-generating-keys-animation-duration-ms
                                  :dispatch [:onboarding-2/navigate-to-identifiers]}]
                :db             (-> db
@@ -74,10 +74,13 @@
 (rf/defn password-set
   {:events [:onboarding-2/password-set]}
   [{:keys [db]} password]
-  {:db       (-> db
-                 (assoc-in [:onboarding-2/profile :password] password)
-                 (assoc-in [:onboarding-2/profile :auth-method] constants/auth-method-password))
-   :dispatch [:navigate-to :enable-biometrics]})
+  (let [supported-type (:biometric/supported-type db)]
+    {:db       (-> db
+                   (assoc-in [:onboarding-2/profile :password] password)
+                   (assoc-in [:onboarding-2/profile :auth-method] constants/auth-method-password))
+     :dispatch (if supported-type
+                 [:navigate-to-within-stack [:enable-biometrics :new-to-status]]
+                 [:onboarding-2/create-account-and-login])}))
 
 (rf/defn seed-phrase-entered
   {:events [:onboarding-2/seed-phrase-entered]}
@@ -102,14 +105,14 @@
                               [:profile/profile-selected key-uid]))
       :on-cancel           #(re-frame/dispatch [:pop-to-root :multiaccounts])}}
     {:db       (assoc-in db [:onboarding-2/profile :seed-phrase] seed-phrase)
-     :dispatch [:navigate-to :create-profile]}))
+     :dispatch [:navigate-to-within-stack [:create-profile :new-to-status]]}))
 
 (rf/defn navigate-to-create-profile
   {:events [:onboarding-2/navigate-to-create-profile]}
   [{:keys [db]}]
   ;; Restart the flow
   {:db       (dissoc db :onboarding-2/profile)
-   :dispatch [:navigate-to :create-profile]})
+   :dispatch [:navigate-to-within-stack [:create-profile :new-to-status]]})
 
 (rf/defn onboarding-new-account-finalize-setup
   {:events [:onboarding-2/finalize-setup]}
@@ -132,6 +135,6 @@
   {:events [:onboarding-2/navigate-to-identifiers]}
   [{:keys [db]}]
   (if (:onboarding-2/generated-keys? db)
-    {:dispatch [:navigate-to :identifiers]}
+    {:dispatch [:navigate-to-within-stack [:identifiers :new-to-status]]}
     {:dispatch-later [{:ms       constants/onboarding-generating-keys-navigation-retry-ms
                        :dispatch [:onboarding-2/navigate-to-identifiers]}]}))

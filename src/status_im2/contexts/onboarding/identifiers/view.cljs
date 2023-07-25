@@ -6,7 +6,6 @@
             [quo2.core :as quo]
             [status-im2.contexts.onboarding.identifiers.profile-card.view :as profile-card]
             [status-im2.contexts.onboarding.identifiers.style :as style]
-            [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.onboarding.common.carousel.view :as carousel]
             [status-im2.contexts.onboarding.common.carousel.animation :as carousel.animation]))
 
@@ -37,7 +36,6 @@
        (carousel.animation/cleanup-animation progress paused?))
      [])
     [:<>
-     [background/view true]
      [rn/view {:style style/page-container}
       [carousel/view
        {:animate?     true
@@ -59,7 +57,8 @@
         {:accessibility-label :skip-identifiers
          :type                :grey
          :background          :blur
-         :on-press            #(rf/dispatch [:navigate-to :enable-notifications])
+         :on-press            #(rf/dispatch [:navigate-to-within-stack
+                                             [:enable-notifications :new-to-status]])
          :style               style/button}
         (i18n/label :t/skip)]]]]))
 

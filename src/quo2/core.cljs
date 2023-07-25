@@ -12,6 +12,7 @@
     quo2.components.buttons.dynamic-button
     quo2.components.buttons.predictive-keyboard.view
     quo2.components.buttons.slide-button.view
+    quo2.components.browser.browser-input.view
     quo2.components.code.snippet
     quo2.components.colors.color-picker.view
     quo2.components.common.separator.view
@@ -62,6 +63,7 @@
     quo2.components.navigation.floating-shell-button
     quo2.components.navigation.page-nav
     quo2.components.notifications.activity-log.view
+    quo2.components.notifications.activity-logs-photos.view
     quo2.components.notifications.count-down-circle
     quo2.components.notifications.info-count
     quo2.components.notifications.notification-dot
@@ -138,6 +140,9 @@
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo2.components.buttons.slide-button.view/view)
 
+;;;; BROWSER
+(def browser-input quo2.components.browser.browser-input.view/browser-input)
+
 ;;;; CODE
 (def snippet quo2.components.code.snippet/snippet)
 
@@ -210,6 +215,7 @@
 
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)
+(def activity-logs-photos quo2.components.notifications.activity-logs-photos.view/view)
 (def info-count quo2.components.notifications.info-count/info-count)
 (def notification-dot quo2.components.notifications.notification-dot/notification-dot)
 (def count-down-circle quo2.components.notifications.count-down-circle/circle-timer)

@@ -1,5 +1,6 @@
 (ns status-im2.contexts.onboarding.syncing.results.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.reanimated :as reanimated]))
 
 (defn page-container
   [top]
@@ -12,6 +13,14 @@
    :padding-top      top
    :padding-bottom   20
    :background-color colors/neutral-80-opa-80-blur})
+
+(defn content
+  [translate-x]
+  (reanimated/apply-animations-to-style
+   {:transform [{:translate-x translate-x}]}
+   {:margin-top    56
+    :margin-bottom 26
+    :flex          1}))
 
 (def current-device
   {:margin-bottom 19})

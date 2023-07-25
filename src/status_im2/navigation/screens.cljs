@@ -6,6 +6,7 @@
     [status-im2.contexts.chat.lightbox.view :as lightbox]
     [status-im2.contexts.chat.messages.view :as chat]
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
+    [status-im2.contexts.chat.camera.view :as camera-screen]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
     [status-im2.contexts.onboarding.intro.view :as intro]
@@ -35,36 +36,7 @@
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
     [status-im2.contexts.chat.new-chat.view :as new-chat]
-    [react-native.core :as rn]
-    [status-im2.constants :as constants]))
-
-(def sign-in-modal-animations
-  {:showModal    {:translationY {:from     (:height (rn/get-window))
-                                 :to       0
-                                 :duration constants/onboarding-modal-animation-duration}
-                  :alpha        {:from     1
-                                 :to       1
-                                 :duration 0}}
-   :dismissModal {:translationY {:from     0
-                                 :to       (:height (rn/get-window))
-                                 :duration constants/onboarding-modal-animation-duration}
-                  :alpha        {:from     1
-                                 :to       0
-                                 :duration constants/onboarding-modal-animation-duration}}})
-
-(def push-animations-for-transparent-background
-  {:push {:content {:enter {:translationX {:from     (:width (rn/get-window))
-                                           :to       0
-                                           :duration constants/onboarding-modal-animation-duration}}
-                    :exit  {:translationX {:from     0
-                                           :to       (- (:width (rn/get-window)))
-                                           :duration constants/onboarding-modal-animation-duration}}}}
-   :pop  {:content {:exit  {:translationX {:from     0
-                                           :to       (:width (rn/get-window))
-                                           :duration constants/onboarding-modal-animation-duration}}
-                    :enter {:translationX {:from     (- (:width (rn/get-window)))
-                                           :to       0
-                                           :duration constants/onboarding-modal-animation-duration}}}}})
+    [status-im2.navigation.transitions :as transitions]))
 
 (defn screens
   []
@@ -107,6 +79,10 @@
      :options   {:sheet? true}
      :component photo-selector/photo-selector}
 
+    {:name      :camera-screen
+     :options   options/camera-screen
+     :component camera-screen/camera-screen}
+
     {:name      :new-contact
      :options   {:sheet? true}
      :component add-new-contact/new-contact}
@@ -145,52 +121,73 @@
                  :layout options/onboarding-layout}
      :component profiles/view}
 
-    {:name      :new-to-status
-     :options   {:theme  :dark
-                 :layout options/onboarding-layout}
-     :component new-to-status/new-to-status}
+    {:name                         :new-to-status
+     :options                      {:theme :dark
+                                    :layout options/onboarding-transparent-layout
+                                    :animations (merge
+                                                 transitions/new-to-status-modal-animations
+                                                 transitions/push-animations-for-transparent-background)
+                                    :popGesture false
+                                    :modalPresentationStyle :overCurrentContext
+                                    :hardwareBackButton {:dismissModalOnPress false
+                                                         :popStackOnPress     false}}
+     :hardware-back-button-handler new-to-status/navigate-back
+     :component                    new-to-status/new-to-status}
 
     {:name      :create-profile
-     :options   {:theme  :dark
-                 :layout options/onboarding-layout}
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
      :component create-profile/create-profile}
 
     {:name      :create-profile-password
-     :options   {:theme  :dark
-                 :insets {:top false}
-                 :layout options/onboarding-layout}
+     :options   {:theme      :dark
+                 :insets     {:top false}
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
      :component create-password/create-password}
 
     {:name      :enable-biometrics
-     :options   {:theme  :dark
-                 :layout options/onboarding-layout}
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
      :component enable-biometrics/enable-biometrics}
 
     {:name      :generating-keys
      :options   {:theme              :dark
-                 :layout             options/onboarding-layout
+                 :layout             options/onboarding-transparent-layout
+                 :animations         transitions/push-animations-for-transparent-background
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
      :component generating-keys/generating-keys}
 
     {:name      :enter-seed-phrase
-     :options   {:theme  :dark
-                 :layout options/onboarding-layout}
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
-     :options   {:theme              :dark
-                 :layout             options/onboarding-layout
-                 :popGesture         false
-                 :hardwareBackButton {:dismissModalOnPress false
-                                      :popStackOnPress     false}}
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge transitions/new-to-status-modal-animations
+                                                transitions/push-animations-for-transparent-background)
+                 :modalPresentationStyle :overCurrentContext
+                 :popGesture             false
+                 :hardwareBackButton     {:dismissModalOnPress false
+                                          :popStackOnPress     false}}
      :component enable-notifications/enable-notifications}
 
     {:name      :identifiers
      :component identifiers/view
      :options   {:theme              :dark
-                 :layout             options/onboarding-layout
+                 :layout             options/onboarding-transparent-layout
+                 :animations         transitions/push-animations-for-transparent-background
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
@@ -200,13 +197,13 @@
      :component scan-sync-code-page/view}
 
     {:name                         :sign-in-intro
-     :options                      {:layout                 options/onboarding-transparent-layout
-                                    :animations             (merge
-                                                             sign-in-modal-animations
-                                                             push-animations-for-transparent-background)
+     :options                      {:layout options/onboarding-transparent-layout
+                                    :animations (merge
+                                                 transitions/sign-in-modal-animations
+                                                 transitions/push-animations-for-transparent-background)
                                     :modalPresentationStyle :overCurrentContext
-                                    :hardwareBackButton     {:dismissModalOnPress false
-                                                             :popStackOnPress     false}}
+                                    :hardwareBackButton {:dismissModalOnPress false
+                                                         :popStackOnPress     false}}
      :hardware-back-button-handler sign-in/navigate-back
      :component                    sign-in/animated-view}
 
@@ -225,7 +222,7 @@
     {:name      :syncing-progress-intro
      :options   {:theme      :dark
                  :layout     options/onboarding-transparent-layout
-                 :animations push-animations-for-transparent-background
+                 :animations transitions/push-animations-for-transparent-background
                  :popGesture false}
      :component syncing-devices/view-onboarding}
 
@@ -234,8 +231,9 @@
      :component syncing-results/view}
 
     {:name      :welcome
-     :options   {:theme  :dark
-                 :layout options/onboarding-layout}
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background}
      :component welcome/view}]
 
    (when config/quo-preview-enabled?
