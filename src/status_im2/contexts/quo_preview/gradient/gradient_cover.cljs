@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.gradient.gradient-cover
-  (:require [quo2.components.gradient.gradient-cover.view :as gradient-cover]
-            [quo2.core :as quo]
+  (:require [quo2.components.colors.color-picker.view :as color-picker]
+            [quo2.components.gradient.gradient-cover.view :as gradient-cover]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as quo.theme]
             [react-native.core :as rn]
@@ -12,10 +12,9 @@
   [{:label   "Color:"
     :key     :color
     :type    :select
-    :options (map (fn [color]
-                    (let [k (get color :name)]
-                      {:key k :value k}))
-                  (quo/picker-colors))}
+    :options (mapv (fn [color]
+                     {:key color :value color})
+                   color-picker/color-list)}
    {:label "Blur (dark only)?"
     :key   :blur?
     :type  :boolean}])
@@ -57,7 +56,7 @@
         [rn/view
          {:style {:padding-vertical   20
                   :padding-horizontal 16}}
-         [quo/color-picker
+         [color-picker/view
           {:blur?     @blur?
            :selected  @color
            :on-change #(reset! color %)}]]])]))
