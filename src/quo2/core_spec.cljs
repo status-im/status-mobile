@@ -5,7 +5,7 @@
     [quo2.components.buttons.button.component-spec]
     [quo2.components.buttons.predictive-keyboard.component-spec]
     [quo2.components.buttons.slide-button.component-spec]
-    [quo2.components.calendar.--tests--.calendar-component-spec]
+    [quo2.components.calendar.calendar.component-spec]
     [quo2.components.calendar.calendar-day.component-spec]
     [quo2.components.calendar.calendar-month.component-spec]
     [quo2.components.calendar.calendar-year.component-spec]

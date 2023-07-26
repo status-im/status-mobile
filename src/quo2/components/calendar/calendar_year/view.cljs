@@ -1,18 +1,24 @@
 (ns quo2.components.calendar.calendar-year.view
   (:require [react-native.core :as rn]
             [quo2.theme :as theme]
+            [quo2.components.markdown.text :as text]
             [quo2.components.calendar.calendar-year.style :as style]))
 
 (defn- calendar-year-internal
-  [{:keys [selected? disabled? on-press]} year]
+  [{:keys [selected? disabled? on-press theme]} year]
   [rn/touchable-opacity
    {:on-press on-press
     :style    (style/container
                {:selected? selected?
-                :disabled? disabled?})
+                :disabled? disabled?
+                :theme     theme})
     :disabled disabled?}
-   [rn/text
-    {:style (style/text {:selected? selected?})}
+   [text/text
+    {:weight :medium
+     :size   :paragraph-2
+     :style  (style/text
+              {:selected? selected?
+               :theme     theme})}
     year]])
 
 (def calendar-year (theme/with-theme calendar-year-internal))

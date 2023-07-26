@@ -4,10 +4,11 @@
             [quo2.components.calendar.calendar-month.style :as style]
             [quo2.components.buttons.button.view :as button]
             [utils.number :as number-utils]
+            [quo2.components.markdown.text :as text]
             [quo2.components.calendar.calendar-month.utils :as utils]))
 
 (defn- calendar-month-internal
-  [{:keys [year month on-change]}]
+  [{:keys [year month on-change theme]}]
   (let [year  (number-utils/parse-int year)
         month (number-utils/parse-int month)]
     [rn/view
@@ -19,7 +20,11 @@
        :size                24
        :on-press            #(on-change (utils/previous-month year month))}
       :i/chevron-left]
-     [rn/text {:style (style/text)} (utils/format-month-year year month)]
+     [text/text
+      {:weight :semi-bold
+       :size   :paragraph-1
+       :style  (style/text theme)}
+      (utils/format-month-year year month)]
      [button/button
       {:icon                true
        :accessibility-label :next-month-button

@@ -18,9 +18,9 @@
         on-change-month (fn [new-date]
                           (reset! selected-year (number-utils/parse-int (:year new-date)))
                           (reset! selected-month (number-utils/parse-int (:month new-date))))]
-    (fn [{:keys [on-change start-date end-date]}]
+    (fn [{:keys [on-change start-date end-date theme]}]
       [rn/view
-       {:style (style/container)}
+       {:style (style/container theme)}
        [years-list/years-list-view
         {:on-change-year on-change-year
          :year           @selected-year}]
@@ -32,10 +32,11 @@
           :on-change on-change-month}]
         [weekdays-header/weekdays-header]
         [days-grid/days-grid
-         {:year       @selected-year
-          :month      @selected-month
-          :start-date start-date
-          :end-date   end-date
-          :on-change  on-change}]]])))
+         {:year                @selected-year
+          :month               @selected-month
+          :start-date          start-date
+          :end-date            end-date
+          :on-change           on-change
+          :customization-color :blue}]]])))
 
 (def calendar (theme/with-theme calendar-internal))

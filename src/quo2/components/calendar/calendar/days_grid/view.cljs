@@ -7,7 +7,7 @@
             [quo2.components.calendar.calendar.days-grid.style :as style]))
 
 (defn render-day
-  [{:keys [year month day selection-range on-press]}]
+  [{:keys [year month day selection-range on-press customization-color]}]
   (let [today      (t/now)
         start-date (:start-date selection-range)
         end-date   (:end-date selection-range)
@@ -15,13 +15,14 @@
         in-range   (utils/get-in-range-pos day start-date end-date)
         on-press   #(on-press (t/date-time day))]
     [calendar-day/calendar-day
-     {:state    state
-      :in-range in-range
-      :on-press on-press}
+     {:customization-color customization-color
+      :state               state
+      :in-range            in-range
+      :on-press            on-press}
      (str (t/day day))]))
 
-(defn- days-grid-internal
-  [{:keys [year month on-change start-date end-date]}]
+(defn days-grid
+  [{:keys [year month on-change start-date end-date customization-color]}]
   (let [on-day-press (fn [day]
                        (let [new-selection (utils/update-range day start-date end-date)]
                          (on-change new-selection)))]
@@ -34,10 +35,10 @@
        :content-container-style {:margin-horizontal -2}
        :render-fn               (fn [item]
                                   (render-day
-                                   {:year            year
-                                    :month           month
-                                    :day             item
-                                    :on-press        on-day-press
-                                    :selection-range {:start-date start-date :end-date end-date}}))}]]))
-
-(def days-grid (theme/with-theme days-grid-internal))
+                                   {:customization-color customization-color
+                                    :year                year
+                                    :month               month
+                                    :day                 item
+                                    :on-press            on-day-press
+                                    :selection-range     {:start-date start-date
+                                                          :end-date   end-date}}))}]]))

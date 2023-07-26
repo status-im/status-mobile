@@ -150,7 +150,6 @@
 ;;;; CALENDAR
 (def calendar quo2.components.calendar.calendar.view/calendar)
 (def calendar-day quo2.components.calendar.calendar-day.view/calendar-day)
-(def calendar-month quo2.components.calendar.calendar-month.view/calendar-month)
 (def calendar-year quo2.components.calendar.calendar-year.view/calendar-year)
 
 ;;;; CODE
