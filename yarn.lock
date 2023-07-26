@@ -8813,10 +8813,12 @@ react-native-dialogs@^1.0.4:
   resolved "https://registry.yarnpkg.com/react-native-dialogs/-/react-native-dialogs-1.1.0.tgz#8f7ee7f9d96574fc878fb7c1be101611fb4af517"
   integrity sha512-clnxO0nMyML/6+G5dja3Yt34gPxegLY2OHTwb8BwYTEvQ2UhRKR49Uq91XqU0q6g7Ur9DiYxC0tqV3rcZWUrjQ==
 
-react-native-draggable-flatlist@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/react-native-draggable-flatlist/-/react-native-draggable-flatlist-3.0.3.tgz#e85503585253be01ad251f78d5b341ac22f9d952"
-  integrity sha512-bDro6aqQMvvTm/CuHre9dAjSBKosAfZRLDx3nmrjOz799kxcn0bq+uCB6yF6m+g1Xd/gVPl7E3Ss4uX+oPUlHg==
+react-native-draggable-flatlist@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-draggable-flatlist/-/react-native-draggable-flatlist-4.0.1.tgz#2f027d387ba4b8f3eb0907340e32cb85e6460df2"
+  integrity sha512-ZO1QUTNx64KZfXGXeXcBfql67l38X7kBcJ3rxUVZzPHt5r035GnGzIC0F8rqSXp6zgnwgUYMfB6zQc5PKmPL9Q==
+  dependencies:
+    "@babel/preset-typescript" "^7.17.12"
 
 react-native-fast-image@^8.5.11:
   version "8.5.11"

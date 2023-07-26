@@ -62,7 +62,7 @@
        :dispatch-n           [[:toasts/close :delete-message-for-me]
                               [:toasts/upsert
                                {:id :delete-message-for-me
-                                :icon :info
+                                :icon :i/info
                                 :icon-color colors/danger-50-opa-40
                                 :message-deleted-for-me-count toast-count
                                 :message-deleted-for-me-undos existing-undos

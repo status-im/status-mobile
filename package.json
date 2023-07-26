@@ -44,7 +44,7 @@
     "react-native-camera-kit": "^13.0.0",
     "react-native-config": "^1.5.0",
     "react-native-dialogs": "^1.0.4",
-    "react-native-draggable-flatlist": "^3.0.3",
+    "react-native-draggable-flatlist": "^4.0.1",
     "react-native-fast-image": "^8.5.11",
     "react-native-fetch-polyfill": "^1.1.2",
     "react-native-fs": "^2.14.1",

@@ -262,11 +262,14 @@
    suffix-light  50/60
    suffix-dark   50/60
    opacity-light 0-100 (optional)
-   opacity-dark  0-100 (optional)"
+   opacity-dark  0-100 (optional)
+   theme         :light/:dark (optional)"
   ([color suffix-light suffix-dark]
-   (custom-color-by-theme color suffix-light suffix-dark nil nil))
+   (custom-color-by-theme color suffix-light suffix-dark nil nil (theme/get-theme)))
   ([color suffix-light suffix-dark opacity-light opacity-dark]
-   (if (theme/dark?)
+   (custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark (theme/get-theme)))
+  ([color suffix-light suffix-dark opacity-light opacity-dark theme]
+   (if (= theme :dark)
      (custom-color color suffix-dark opacity-dark)
      (custom-color color suffix-light opacity-light))))
 
