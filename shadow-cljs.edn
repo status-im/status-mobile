@@ -65,9 +65,11 @@
           status-im2.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
           status-im2.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
           status-im2.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"}
-         :compiler-options {:closure-defines {re-frame.trace/trace-enabled? true}
-                            :source-map      false
-                            :infer-externs   true}
+         :compiler-options {:output-feature-set :es5
+                            :closure-defines
+                            {re-frame.trace/trace-enabled? true}
+                            :source-map false
+                            :infer-externs true}
          ;; if you want to use a real device, set your local ip
          ;; in the SHADOW_HOST env variable to make sure that
          ;; it will use the right interface
