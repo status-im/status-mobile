@@ -16,21 +16,22 @@
 
 (defn- f-zoom-button
   [{:keys [value current-zoom rotate]}]
-  (let [selected (= @current-zoom value)
-        size     (reanimated/use-shared-value (if selected 37 25))]
-    (rn/use-effect #(reanimated/animate size (if selected 37 25)) [@current-zoom])
+  (let [selected? (= @current-zoom value)
+        size      (reanimated/use-shared-value (if selected? 37 25))]
+    (rn/use-effect #(reanimated/animate size (if selected? 37 25)) [@current-zoom])
     [rn/touchable-opacity
-     {:on-press #(reset! current-zoom value)
-      :style    style/zoom-button-container}
+     {:on-press            #(reset! current-zoom value)
+      :style               style/zoom-button-container
+      :accessibility-label (str "zoom-" value)}
      [reanimated/view {:style (style/zoom-button size rotate)}
       [quo/text
-       {:size            (if selected :paragraph-2 :label)
+       {:size            (if selected? :paragraph-2 :label)
         :weight          :semi-bold
         :number-of-lines 1
-        :style           {:color (if selected
+        :style           {:color (if selected?
                                    colors/system-yellow
                                    colors/white)}}
-       (str value (when selected "x"))]]]))
+       (str value (when selected? "x"))]]]))
 
 (defn zoom-button
   [args]
@@ -38,7 +39,9 @@
 
 (defn snap-button
   [camera-ref uri]
-  [rn/view {:style style/outer-circle}
+  [rn/view
+   {:style               style/outer-circle
+    :accessibility-label :snap}
    [rn/touchable-opacity
     {:on-press (fn []
                  (camera-kit/capture @camera-ref #(reset! uri %)))
@@ -120,9 +123,10 @@
            [quo/text {:style style/photo-text} (i18n/label :t/PHOTO)]
            [rn/view {:style style/actions-container}
             [quo/text
-             {:on-press #(rf/dispatch [:navigate-back])
-              :style    {:font-size 17
-                         :color     colors/white}}
+             {:on-press            #(rf/dispatch [:navigate-back])
+              :style               {:font-size 17
+                                    :color     colors/white}
+              :accessibility-label :cancel}
              (i18n/label :t/cancel)]
             [snap-button camera-ref uri]
             [reanimated/touchable-opacity
@@ -132,4 +136,5 @@
                           (reset! camera-type (if (= @camera-type camera-kit/camera-type-back)
                                                 camera-kit/camera-type-front
                                                 camera-kit/camera-type-back)))}
-             [quo/icon :i/rotate-camera {:size 48 :color colors/white}]]]]]))]))
+             [quo/icon :i/rotate-camera
+              {:size 48 :color colors/white :accessibility-label :flip-camera}]]]]]))]))
