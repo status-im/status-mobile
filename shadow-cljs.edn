@@ -6,20 +6,24 @@
                 [binaryage/oops "0.7.2"]
                 [com.andrewmcveigh/cljs-time "0.5.2"]
                 [status-im/timbre "4.10.0-2-status"]
-                [com.taoensso/encore "2.105.0"]
                 [hickory "0.7.1"]
                 [cljs-bean "1.3.0"]
                 [com.cognitect/transit-cljs "0.8.248"]
                 [mvxcvi/alphabase "1.0.0"]
                 [camel-snake-kebab "0.4.3"]
-                ;; dev dependencies
+                ;; Dev dependencies
                 [refactor-nrepl "2.5.0"]
                 [cider/cider-nrepl "0.25.3"]
                 [cider/piggieback "0.4.1"]
                 [re-frisk-remote "1.6.0"]
-                ;; routing
+                ;; We don't use the encore library, but re-frisk requires re-frisk/sente (fork of
+                ;; com.taoensso/sente), which in turn requires encore. We need to bump encore to
+                ;; 3.21.0+ to remove a warning displayed while shadow-cljs starts (commit
+                ;; https://github.com/ptaoussanis/encore/commit/f7a21567b9611a63999609ca183c7fb175034bd6).
+                [com.taoensso/encore "3.21.0"]
+                ;; Routing
                 [bidi "2.1.6"]
-                ;; test dependencies
+                ;; Test dependencies
                 [day8.re-frame/test "0.1.5"]
                 [com.taoensso/tufte "2.1.0"]]
 
