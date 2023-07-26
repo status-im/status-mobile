@@ -57,12 +57,12 @@
 
 (defn camera-screen
   []
-  (let [camera-ref       (atom nil)
-        uri              (reagent/atom nil)
-        current-zoom     (reagent/atom "1")
-        camera-type      (reagent/atom camera-kit/camera-type-back)
-        flash            (reagent/atom false)
-        curr-orientation (atom orientation/portrait)]
+  (let [camera-ref          (atom nil)
+        uri                 (reagent/atom nil)
+        current-zoom        (reagent/atom "1")
+        camera-type         (reagent/atom camera-kit/camera-type-back)
+        flash               (reagent/atom false)
+        current-orientation (atom orientation/portrait)]
     [:f>
      (fn []
        (let [window                 (rn/get-window)
@@ -71,10 +71,10 @@
              insets                 (safe-area/get-insets)
              top                    (/ (- height camera-window-height (:bottom insets)) 2)
              top-landscape          (/ (- height (* width 0.75) (:bottom insets)) 2)
-             portrait?              (= @curr-orientation orientation/portrait)
+             portrait?              (= @current-orientation orientation/portrait)
              rotate                 (reanimated/use-shared-value "0deg")]
          (orientation/use-device-orientation-change (fn [result]
-                                                      (reset! curr-orientation result)
+                                                      (reset! current-orientation result)
                                                       (case result
                                                         orientation/landscape-left
                                                         (reanimated/animate rotate "90deg")
