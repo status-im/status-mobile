@@ -1,4 +1,4 @@
-(ns quo2.components.record-audio.record-audio.--tests--.record-audio-component-spec
+(ns quo2.components.record-audio.record-audio.component-spec
   (:require [quo2.components.record-audio.record-audio.view :as record-audio]
             [react-native.audio-toolkit :as audio]
             [test-helpers.component :as h]
@@ -252,5 +252,3 @@
           (h/advance-timers-by-time 250)
           (-> (js/expect event)
               (.toHaveBeenCalledTimes 1)))))))
-
-

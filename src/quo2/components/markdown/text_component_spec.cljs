@@ -1,4 +1,4 @@
-(ns quo2.components.markdown.--tests--.text-component-spec
+(ns quo2.components.markdown.text-component-spec
   (:require ["@testing-library/react-native" :as rtl]
             [quo2.components.markdown.text :as text]
             [reagent.core :as reagent]))
