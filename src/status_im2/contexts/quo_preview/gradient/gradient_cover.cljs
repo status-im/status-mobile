@@ -6,7 +6,8 @@
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [status-im2.common.resources :as resources]))
 
 (def descriptor
   [{:label   "Customization color:"
@@ -39,10 +40,8 @@
                   :border-radius 12}}
          (when @blur?
            [rn/image
-            {:style {:height 332}
-             :source
-             {:uri
-              "https://4kwallpapers.com/images/wallpapers/giau-pass-mountain-pass-italy-dolomites-landscape-mountain-750x1334-4282.jpg"}}])
+            {:style  {:height 332}
+             :source {:uri (resources/get-mock-image :dark-blur-bg)}}])
          [(if @blur? blur/view rn/view)
           {:style     {:height           332
                        :position         :absolute
