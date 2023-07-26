@@ -181,7 +181,7 @@
 
 (defn get-transfer-token
   [db to data]
-  (let [{:keys [symbol decimals] :as token} (tokens/address->token (:wallet/all-tokens db) to)]
+  (let [{:keys [decimals] :as token} (tokens/address->token (:wallet/all-tokens db) to)]
     (when (and token data (string? data))
       (when-let [type (get-method-type data)]
         (let [[address value _] (native-module/decode-parameters
@@ -197,7 +197,7 @@
              :value    value
              :amount   (money/to-fixed (money/token->unit value decimals))
              :token    token
-             :symbol   symbol}))))))
+             :symbol   (:symbol token)}))))))
 
 (defn parse-tx-obj
   [db {:keys [from to value data cancel? hash]}]

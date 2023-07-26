@@ -83,7 +83,8 @@
       (update :chats <-chats-rpc)
       (update :categories <-categories-rpc)
       (assoc :token-images
-             (reduce (fn [acc {:keys [symbol image]}] (assoc acc symbol image))
+             (reduce (fn [acc {sym :symbol image :image}]
+                       (assoc acc sym image))
                      {}
                      (:communityTokensMetadata c)))))
 

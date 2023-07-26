@@ -461,19 +461,19 @@
   (.numberToHex ^js (status) (str num)))
 
 (defn sha3
-  [str]
+  [s]
   (log/debug "[native-module] sha3")
-  (.sha3 ^js (status) str))
+  (.sha3 ^js (status) s))
 
 (defn utf8-to-hex
-  [str]
+  [s]
   (log/debug "[native-module] utf8-to-hex")
-  (.utf8ToHex ^js (status) str))
+  (.utf8ToHex ^js (status) s))
 
 (defn hex-to-utf8
-  [str]
+  [s]
   (log/debug "[native-module] hex-to-utf8")
-  (.hexToUtf8 ^js (status) str))
+  (.hexToUtf8 ^js (status) s))
 
 (defn check-address-checksum
   [address]

@@ -51,7 +51,12 @@
     (fn [_ [_ old-token] [_ new-token]]
       (not= (:checked? old-token) (:checked? new-token)))
     :reagent-render
-    (fn [{:keys [symbol name icon color checked?] :as token}]
+    (fn [{sym      :symbol
+          title    :name
+          icon     :icon
+          color    :color
+          checked? :checked?
+          :as      token}]
       [quo/list-item
        {:active              checked?
         :accessory           :checkbox
@@ -59,14 +64,13 @@
         :animated            false
         :icon                (if icon
                                [wallet.components/token-icon icon]
-                               [chat-icon/custom-icon-view-list name color])
-        :title               name
-        :subtitle            (clojure.core/name symbol)
-        :on-press            #(re-frame/dispatch
-                               [:wallet.settings/toggle-visible-token (keyword symbol) (not checked?)])
-        :on-long-press       #(re-frame/dispatch
-                               [:bottom-sheet/show-sheet-old
-                                {:content (custom-token-actions-view token)}])}])}))
+                               [chat-icon/custom-icon-view-list title color])
+        :title               title
+        :subtitle            (name sym)
+        :on-press            #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword sym)
+                                                  (not checked?)])
+        :on-long-press       #(re-frame/dispatch [:bottom-sheet/show-sheet-old
+                                                  {:content (custom-token-actions-view token)}])}])}))
 
 (defn- render-token-wrapper
   [token]

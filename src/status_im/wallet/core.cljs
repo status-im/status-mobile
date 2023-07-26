@@ -987,15 +987,15 @@
   {::get-pending-transactions nil})
 
 (defn normalize-transaction
-  [db {:keys [symbol gasPrice gasLimit value from to] :as transaction}]
-  (let [symbol (keyword symbol)
-        token  (tokens/symbol->token (:wallet/all-tokens db) symbol)]
+  [db {:keys [gasPrice gasLimit value from to] :as transaction}]
+  (let [sym   (-> transaction :symbol keyword)
+        token (tokens/symbol->token (:wallet/all-tokens db) sym)]
     (-> transaction
         (select-keys [:timestamp :hash :data])
         (assoc :from      (eip55/address->checksum from)
                :to        (eip55/address->checksum to)
                :type      :pending
-               :symbol    symbol
+               :symbol    sym
                :token     token
                :value     (money/bignumber value)
                :gas-price (money/bignumber gasPrice)

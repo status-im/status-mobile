@@ -54,10 +54,10 @@
  :<- [:prices]
  :<- [:wallet/currency]
  :<- [:ethereum/native-currency]
- (fn [[prices {:keys [code]} {:keys [symbol]}]]
-   [(name symbol)
+ (fn [[prices {:keys [code]} {sym :symbol}]]
+   [(name sym)
     code
-    (get-in prices [symbol (keyword code)])]))
+    (get-in prices [sym (keyword code)])]))
 
 (re-frame/reg-sub
  :signing/priority-fee-suggestions-range
@@ -131,8 +131,8 @@
         :else nil))))
 
 (defn get-sufficient-funds-error
-  [balance symbol amount]
-  (when-not (money/sufficient-funds? amount (get balance symbol))
+  [balance sym amount]
+  (when-not (money/sufficient-funds? amount (get balance sym))
     {:amount-error (i18n/label :t/wallet-insufficient-funds)}))
 
 (defn gas-required-exceeds-allowance?
@@ -143,11 +143,11 @@
         "gas required exceeds allowance")))
 
 (defn get-sufficient-gas-error
-  [gas-error-message balance symbol amount ^js gas ^js gasPrice]
+  [gas-error-message balance sym amount ^js gas ^js gasPrice]
   (if (and gas gasPrice)
     (let [^js fee               (.times gas gasPrice)
           ^js available-ether   (money/bignumber (get balance :ETH 0))
-          ^js available-for-gas (if (= :ETH symbol)
+          ^js available-for-gas (if (= :ETH sym)
                                   (.minus available-ether (money/bignumber amount))
                                   available-ether)]
       (merge {:gas-error-state (when gas-error-message :gas-is-set)}
@@ -186,17 +186,18 @@
  :<- [:offline?]
  :<- [:wallet/all-tokens]
  :<- [:current-network]
- (fn [[{:keys [symbol from to amount-text] :as transaction}
+ (fn [[{:keys [from to amount-text] :as transaction}
        wallet offline? all-tokens current-network]]
-   (let [balance (get-in wallet [:accounts (:address from) :balance])
-         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network symbol)
+   (let [sym (:symbol transaction)
+         balance (get-in wallet [:accounts (:address from) :balance])
+         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network sym)
          {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
-         amount (money/formatted->internal value symbol decimals)
+         amount (money/formatted->internal value sym decimals)
          {:keys [amount-error] :as transaction-new}
          (merge transaction
                 {:amount-error error}
                 (when amount
-                  (get-sufficient-funds-error balance symbol amount)))]
+                  (get-sufficient-funds-error balance sym amount)))]
      (assoc transaction-new
             :amount        amount
             :balance       balance
@@ -213,12 +214,13 @@
  :<- [:offline?]
  :<- [:wallet/all-tokens]
  :<- [:current-network]
- (fn [[{:keys [symbol from to amount-text] :as transaction}
+ (fn [[{:keys [from to amount-text] :as transaction}
        wallet offline? all-tokens current-network]]
-   (let [balance (get-in wallet [:accounts (:address from) :balance])
-         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network symbol)
+   (let [sym (:symbol transaction)
+         balance (get-in wallet [:accounts (:address from) :balance])
+         {:keys [decimals] :as token} (tokens/asset-for all-tokens current-network sym)
          {:keys [value error]} (wallet.db/parse-amount amount-text decimals)
-         amount (money/formatted->internal value symbol decimals)
+         amount (money/formatted->internal value sym decimals)
          {:keys [amount-error] :as transaction-new}
          (assoc transaction :amount-error error)]
      (assoc transaction-new

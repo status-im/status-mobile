@@ -56,14 +56,15 @@
          members      (re-frame/subscribe [:communities/community-members community-id])]
      [contacts multiaccount members]))
  (fn [[contacts multiaccount members] _]
-   (let [names (reduce (fn [acc identity]
-                         (let [me?     (= (:public-key multiaccount) identity)
+   (let [names (reduce (fn [acc contact-identity]
+                         (let [me?     (= (:public-key multiaccount) contact-identity)
                                contact (when-not me?
-                                         (multiaccounts/contact-by-identity contacts identity))
-                               name    (first (multiaccounts/contact-two-names-by-identity contact
-                                                                                           multiaccount
-                                                                                           identity))]
-                           (assoc acc identity name)))
+                                         (multiaccounts/contact-by-identity contacts contact-identity))
+                               name    (first (multiaccounts/contact-two-names-by-identity
+                                               contact
+                                               multiaccount
+                                               contact-identity))]
+                           (assoc acc contact-identity name)))
                        {}
                        (keys members))]
      (->> members
@@ -95,10 +96,9 @@
  :<- [:view-id]
  :<- [:communities]
  :<- [:communities/my-pending-requests-to-join]
- ;; Return communities splitted by level of user participation. Some communities user
- ;; already joined, to some of them join request sent and others were opened one day
- ;; and their data remained in app-db.
- ;; Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
+ ;; Return communities splitted by level of user participation. Some communities user already
+ ;; joined, to some of them join request sent and others were opened one day and their data remained
+ ;; in app-db. Result map has form: {:joined [id1, id2] :pending [id3, id5] :opened [id4]}"
  (fn [[view-id communities requests]]
    (if (or (empty? @memo-communities-stack-items) (= view-id :communities-stack))
      (let [grouped-communities (reduce (fn [acc community]
@@ -128,9 +128,9 @@
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities])
     (re-frame/subscribe [:communities/unviewed-counts community-id])])
- (fn [[communities counts] [_ identity]]
+ (fn [[communities counts] [_ community-identity]]
    (community->home-item
-    (get communities identity)
+    (get communities community-identity)
     counts)))
 
 (re-frame/reg-sub
@@ -288,12 +288,12 @@
                                   (let [check-criteria (get-in token-permissions-check
                                                                [:permissions perm-key :criteria])]
                                     (map
-                                     (fn [{:keys [symbol amount]} sufficient?]
-                                       {:symbol      symbol
+                                     (fn [{sym :symbol amount :amount} sufficient?]
+                                       {:symbol      sym
                                         :sufficient? (when (seq check-criteria) sufficient?)
                                         :loading?    checking-permissions?
                                         :amount      amount
-                                        :img-src     (get token-images symbol)})
+                                        :img-src     (get token-images sym)})
                                      token_criteria
                                      (or check-criteria token_criteria))))
                                 token-permissions)}))

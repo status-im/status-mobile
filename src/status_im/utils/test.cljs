@@ -120,7 +120,7 @@
     (fn [address] (.checkAddressChecksum native-status address))
 
     :sha3
-    (fn [str] (.sha3 native-status str))
+    (fn [s] (.sha3 native-status s))
 
     :toChecksumAddress
     (fn [address] (.toChecksumAddress native-status address))

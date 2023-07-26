@@ -298,8 +298,10 @@
        (i18n/label :t/save)]]]))
 
 (defn gwei
-  [val]
-  (str (money/to-fixed val 2) " " (i18n/label :t/gwei)))
+  [amount]
+  (str (money/to-fixed amount 2)
+       " "
+       (i18n/label :t/gwei)))
 
 (defn fees-warning
   []
