@@ -63,7 +63,9 @@
                           :MentionSuggestions :mentionable-users
                           :MentionState       :state
                           :ChatID             :chat-id
-                          :NewText            :new-text})]
+                          :NewText            :new-text
+                          :CallID             :call-id
+                          :LatestCallID       :latest-call-id})]
     {:chat-id           chat-id
      :input-segments    (transfer-input-segments input-segments)
      :mentionable-users (rename-mentionable-users mentionable-users)
@@ -98,11 +100,13 @@
              (assoc-in [:chats/mentions chat-id :mentions] state)
              (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
 
+(defonce current-call-id (atom 0))
+
 (rf/defn on-change-text
   {:events [:mention/on-change-text]}
   [{:keys [db]} text]
   (let [chat-id (:current-chat-id db)
-        params  [chat-id text]
+        params  [chat-id text (swap! current-call-id inc)]
         method  "wakuext_chatMentionOnChangeText"]
     (log/debug "[mentions] on-change-text" {:params params})
     {:json-rpc/call [{:method     method
@@ -116,11 +120,13 @@
   {:events [:mention/on-change-text-success]}
   [{:keys [db]} result]
   (log/debug "[mentions] on-change-text-success" {:result result})
-  (let [{:keys [state chat-id mentionable-users input-segments]} (transfer-mention-result result)]
-    {:db (-> db
-             (assoc-in [:chats/mention-suggestions chat-id] mentionable-users)
-             (assoc-in [:chats/mentions chat-id :mentions] state)
-             (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))}))
+  (let [{:keys [state chat-id mentionable-users
+                input-segments call-id]} (transfer-mention-result result)]
+    (when (= call-id @current-call-id)
+      {:db (-> db
+               (assoc-in [:chats/mention-suggestions chat-id] mentionable-users)
+               (assoc-in [:chats/mentions chat-id :mentions] state)
+               (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))})))
 
 (rf/defn on-select-mention-success
   {:events [:mention/on-select-mention-success]}
