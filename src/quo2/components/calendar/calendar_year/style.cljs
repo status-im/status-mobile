@@ -11,18 +11,17 @@
    :width           48})
 
 (defn text-base
-  []
-  (-> typography/paragraph-2
-      (merge typography/font-medium)
-      (merge {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})))
+  [theme]
+  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
 
 (defn container
-  [{:keys [selected? disabled?]}]
+  [{:keys [selected? disabled? theme]}]
   (cond-> container-base
     disabled? (assoc :opacity 0.3)
-    selected? (assoc :background-color (colors/theme-colors colors/neutral-10 colors/neutral-70))))
+    selected? (assoc :background-color
+                     (colors/theme-colors colors/neutral-10 colors/neutral-70 theme))))
 
 (defn text
-  [{:keys [selected?]}]
-  (cond-> (text-base)
-    selected? (assoc :color (colors/theme-colors colors/neutral-100 colors/white))))
+  [{:keys [selected? theme]}]
+  (cond-> (text-base theme)
+    selected? (assoc :color (colors/theme-colors colors/neutral-100 colors/white theme))))

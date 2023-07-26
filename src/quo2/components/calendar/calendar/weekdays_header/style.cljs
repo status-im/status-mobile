@@ -15,8 +15,6 @@
    :align-items     :center})
 
 (defn text-weekdays
-  []
-  (-> typography/paragraph-2
-      (merge typography/font-medium)
-      (merge {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)})))
+  [theme]
+  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
 

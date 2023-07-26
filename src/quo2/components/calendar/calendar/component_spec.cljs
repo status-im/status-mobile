@@ -1,4 +1,4 @@
-(ns quo2.components.calendar.--tests--.calendar-component-spec
+(ns quo2.components.calendar.calendar.component-spec
   (:require [quo2.components.calendar.calendar.view :as calendar]
             [test-helpers.component :as h]
             [cljs-time.core :as t]))

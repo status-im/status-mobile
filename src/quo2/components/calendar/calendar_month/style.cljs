@@ -12,7 +12,5 @@
    :justify-content    :space-between})
 
 (defn text
-  []
-  (-> typography/paragraph-1
-      (merge typography/font-semi-bold)
-      (merge {:color (colors/theme-colors colors/neutral-100 colors/white)})))
+  [theme]
+  {:color (colors/theme-colors colors/neutral-100 colors/white theme)})

@@ -30,10 +30,10 @@
   [rn/view {:style {:height 32}}])
 
 (defn years-list-view-internal
-  [{:keys [on-change-year year]}]
+  [{:keys [on-change-year year theme]}]
   (let [selected-year (reagent/atom year)]
     [rn/view
-     {:style (style/container-years)}
+     {:style (style/container-years theme)}
      [rn/flat-list
       {:data                            (utils/generate-years (utils/current-year))
        :key-fn                          str
@@ -47,7 +47,7 @@
                                                        @selected-year
                                                        #(on-year-press on-change-year item)))}]
      [linear-gradient/linear-gradient
-      {:colors [(style/gradient-start-color) (style/gradient-end-color)]
+      {:colors [(style/gradient-start-color theme) (style/gradient-end-color theme)]
        :style  style/gradient-view
        :start  {:x 0 :y 0}
        :end    {:x 0 :y 1}}]]))
