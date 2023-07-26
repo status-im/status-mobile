@@ -25,11 +25,12 @@
 (def message-body
   {:color colors/white})
 
-(def message-container
+(defn message-container
+  [attachment]
   {:border-radius      12
    :margin-top         12
    :padding-horizontal 12
-   :padding-vertical   8
+   :padding-vertical   (if (#{:photo :gif} attachment) 12 8)
    :background-color   colors/white-opa-5})
 
 (def footer-container
