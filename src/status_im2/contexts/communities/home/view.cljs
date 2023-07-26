@@ -148,8 +148,8 @@
                               (utils.number/value-in-range 0 1))
         new-translation-y (-> (- scroll-offset)
                               (utils.number/value-in-range max-scroll 0))]
-    (reanimated/set-shared-value opacity new-opacity)
-    (reanimated/set-shared-value translation-y new-translation-y)))
+    (reanimated/animate-shared-value-with-timing opacity new-opacity 80 :easing4)
+    (reanimated/animate-shared-value-with-timing translation-y new-translation-y 80 :easing4)))
 
 (defn home
   []
