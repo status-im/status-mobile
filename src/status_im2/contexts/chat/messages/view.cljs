@@ -17,9 +17,7 @@
      {:cover-bg-color :turquoise
       :chat           chat
       :header-comp    (fn [{:keys [scroll-y]}]
-                        [:f>
-                         messages.navigation/f-navigation-view
-                         {:scroll-y scroll-y}])
+                        [messages.navigation/navigation-view {:scroll-y scroll-y}])
       :footer-comp    (fn [{:keys [insets]}]
                         (if-not able-to-send-message?
                           [contact-requests.bottom-drawer/view chat-id contact-request-state
