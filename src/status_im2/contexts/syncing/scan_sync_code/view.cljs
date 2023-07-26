@@ -36,7 +36,7 @@
   []
   (rf/dispatch [:syncing/preflight-outbound-check #(reset! preflight-check-passed? %)]))
 
-(defn- f-header
+(defn- header
   [{:keys [active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn animated?]}]
   (let [subtitle-translate-x (reanimated/interpolate subtitle-opacity [0 1] [-13 0])
         subtitle-translate-y (reanimated/interpolate subtitle-opacity [0 1] [-85 0])
@@ -110,10 +110,6 @@
                           (reset! active-tab id)
                           (reset! read-qr-once? false))}]]]))
 
-(defn- header
-  [props]
-  [:f> f-header props])
-
 (defn get-labels-and-on-press-method
   []
   (if @camera-permission-granted?
@@ -169,55 +165,42 @@
                        view-finder (assoc layout :height (:width layout))]
                    (reset! qr-view-finder view-finder)))}])
 
-(defn- border
-  [border1 border2 corner]
-  [rn/view {:style (style/border border1 border2 corner)}])
+(defn- white-border
+  [corner]
+  (let [border-styles (style/white-border corner)]
+    [rn/view
+     [rn/view {:style (border-styles :border)}]
+     [rn/view {:style (border-styles :tip-1)}]
+     [rn/view {:style (border-styles :tip-2)}]]))
 
-(defn- border-tip
-  [{:keys [top bottom left right]}]
-  [rn/view
-   {:style (style/border-tip top bottom right left)}])
+(defn- white-square
+  [layout-size]
+  [rn/view {:style (style/qr-view-finder-container layout-size)}
+   [rn/view {:style style/view-finder-border-container}
+    [white-border :top-left]
+    [white-border :top-right]]
+   [rn/view {:style style/view-finder-border-container}
+    [white-border :bottom-left]
+    [white-border :bottom-right]]])
 
 (defn- viewfinder
   [qr-view-finder]
-  (let [size (+ (:width qr-view-finder) 2)]
-    [:<>
-     [rn/view {:style (style/viewfinder-container qr-view-finder)}
-      [rn/view
-       {:style (style/qr-view-finder-container size)}
-       [rn/view
-        {:style style/view-finder-border-container}
-        [rn/view
-         [border :border-top-width :border-left-width :border-top-left-radius]
-         [border-tip {:right -1 :top 0}]
-         [border-tip {:left 0 :bottom -1}]]
-        [rn/view
-         [border :border-top-width :border-right-width :border-top-right-radius]
-         [border-tip {:right 0 :bottom -1}]
-         [border-tip {:left -1 :top 0}]]]
-       [rn/view {:flex-direction :row :justify-content :space-between}
-        [rn/view
-         [border :border-bottom-width :border-left-width :border-bottom-left-radius]
-         [border-tip {:right -1 :bottom 0}]
-         [border-tip {:left 0 :top -1}]]
-        [rn/view
-         [border :border-bottom-width :border-right-width :border-bottom-right-radius]
-         [border-tip {:right 0 :top -1}]
-         [border-tip {:left -1 :bottom 0}]]]]
-      [quo/text
-       {:size   :paragraph-2
-        :weight :regular
-        :style  style/viewfinder-text}
-       (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)]]]))
+  (let [layout-size (+ (:width qr-view-finder) 2)]
+    [rn/view {:style (style/viewfinder-container qr-view-finder)}
+     [white-square layout-size]
+     [quo/text
+      {:size   :paragraph-2
+       :weight :regular
+       :style  style/viewfinder-text}
+      (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)]]))
 
 (defn- scan-qr-code-tab
   [qr-view-finder]
-  [:<>
-   (if (and @preflight-check-passed?
-            @camera-permission-granted?
-            (boolean (not-empty @qr-view-finder)))
-     [viewfinder @qr-view-finder]
-     [camera-and-local-network-access-permission-view])])
+  (if (and @preflight-check-passed?
+           @camera-permission-granted?
+           (boolean (not-empty qr-view-finder)))
+    [viewfinder qr-view-finder]
+    [camera-and-local-network-access-permission-view]))
 
 (defn- enter-sync-code-tab
   []
@@ -273,8 +256,7 @@
         :on-read-code on-read-code}]]
      [hole-view/hole-view
       {:style style/hole
-       :holes [(merge qr-view-finder
-                      {:borderRadius 16})]}
+       :holes [(assoc qr-view-finder :borderRadius 16)]}
       [blur/view
        {:style            style/absolute-fill
         :blur-amount      10
@@ -388,7 +370,7 @@
          (when (or (not animated?) @render-camera?)
            [render-camera show-camera? torch-mode @qr-view-finder camera-ref on-read-code])
          [rn/view {:style (style/root-container (:top insets))}
-          [header
+          [:f> header
            {:active-tab          active-tab
             :read-qr-once?       read-qr-once?
             :title               title
@@ -406,7 +388,7 @@
                      :transform [{:translate-y content-translate-y}]}
                     {})}
            (case @active-tab
-             1 [scan-qr-code-tab qr-view-finder]
+             1 [scan-qr-code-tab @qr-view-finder]
              2 [enter-sync-code-tab]
              nil)]
           [rn/view {:style style/flex-spacer}]
