@@ -8,6 +8,7 @@
    :border-radius      16
    :padding-horizontal 12
    :padding-vertical   12
+   :height             48
    :background-color   (if blur?
                          colors/white-opa-5
                          (colors/theme-colors
@@ -15,7 +16,7 @@
                           colors/neutral-90))})
 
 (def item-container-extended
-  {:height 52})
+  {:height 56})
 
 (def body-container
   {:flex           1

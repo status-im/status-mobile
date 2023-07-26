@@ -10,10 +10,10 @@
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defn create-item-array
-  [n {:keys [right-icon? image?]}]
+  [n {:keys [right-icon? image? subtitle?]}]
   (vec (for [i (range n)]
          {:title      (str "Item " i)
-          :subtitle   "subtitle"
+          :subtitle   (when subtitle? "subtitle")
           :chevron?   true
           :right-icon (when right-icon? :i/globe)
           :left-icon  :i/browser
@@ -26,6 +26,9 @@
     :type  :boolean}
    {:label "Image:"
     :key   :image?
+    :type  :boolean}
+   {:label "Subtitle:"
+    :key   :subtitle?
     :type  :boolean}
    {:label "Blur:"
     :key   :blur?
@@ -51,6 +54,7 @@
                                               :blur?       false
                                               :right-icon? true
                                               :image?      true
+                                              :subtitle?   true
                                               :list-type   :settings})
         {:keys [width height]} (rn/get-window)]
     (fn []
@@ -63,7 +67,7 @@
                               (theme/set-theme :light))
                             (reset! data (create-item-array (max (js/parseInt (:size @state)) 1)
                                                             @state)))
-                          [(:blur? @state) (:right-icon? @state) (:image? @state)])
+                          [(:blur? @state) (:right-icon? @state) (:image? @state) (:subtitle? @state)])
            [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
             [rn/view
              {:style {:flex             1
@@ -71,7 +75,7 @@
                       :margin-bottom    50
                       :background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)}}
              [rn/view
-              {:style {:min-height 180
+              {:style {:min-height 200
                        :z-index    1}}
               [preview/customizer state
                (if (= (:list-type @state) :settings) settings-descriptor reorder-descriptor)]]
