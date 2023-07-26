@@ -65,15 +65,9 @@
           status-im2.config/ALCHEMY_OPTIMISM_GOERLI_TOKEN  #shadow/env "ALCHEMY_OPTIMISM_GOERLI_TOKEN"
           status-im2.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
           status-im2.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"}
-         :compiler-options {;; Do not change the feature set to es5, otherwise
-                            ;; $jscomp (Clojure Compiler) won't be defined.
-                            ;; Going for :es6 is a must for upgrading to
-                            ;; ShadowCLJS 2.15.13+.
-                            :output-feature-set :es6
-                            :closure-defines
-                            {re-frame.trace/trace-enabled? true}
-                            :source-map false
-                            :infer-externs true}
+         :compiler-options {:closure-defines {re-frame.trace/trace-enabled? true}
+                            :source-map      false
+                            :infer-externs   true}
          ;; if you want to use a real device, set your local ip
          ;; in the SHADOW_HOST env variable to make sure that
          ;; it will use the right interface
