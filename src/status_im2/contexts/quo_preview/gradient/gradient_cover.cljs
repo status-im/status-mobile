@@ -6,8 +6,8 @@
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.common.resources :as resources]))
+            [status-im2.common.resources :as resources]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Customization color:"
@@ -41,7 +41,7 @@
          (when @blur?
            [rn/image
             {:style  {:height 332}
-             :source {:uri (resources/get-mock-image :dark-blur-bg)}}])
+             :source (resources/get-mock-image :dark-blur-bg)}])
          [(if @blur? blur/view rn/view)
           {:style     {:height           332
                        :position         :absolute
