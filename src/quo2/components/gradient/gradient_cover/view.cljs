@@ -5,9 +5,9 @@
             [react-native.linear-gradient :as linear-gradient]))
 
 (defn- view-internal
-  [{:keys [color] :or {color :blue}}]
-  (let [color-top    (colors/custom-color-by-theme color 50 50 20 20)
-        color-bottom (colors/custom-color-by-theme color 50 50 0 0)]
+  [{:keys [customization-color] :or {customization-color :blue}}]
+  (let [color-top    (colors/custom-color customization-color 50 20)
+        color-bottom (colors/custom-color customization-color 50 0)]
     [linear-gradient/linear-gradient
      {:accessibility-label :gradient-cover
       :colors              [color-top color-bottom]

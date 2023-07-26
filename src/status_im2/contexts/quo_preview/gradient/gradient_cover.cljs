@@ -3,14 +3,14 @@
             [quo2.components.gradient.gradient-cover.view :as gradient-cover]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
             [react-native.blur :as blur]
+            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Color:"
-    :key     :color
+  [{:label   "Customization color:"
+    :key     :customization-color
     :type    :select
     :options (mapv (fn [color]
                      {:key color :value color})
@@ -21,9 +21,9 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:color :blue :blur? false})
-        blur? (reagent/cursor state [:blur?])
-        color (reagent/cursor state [:color])]
+  (let [state               (reagent/atom {:customization-color :blue :blur? false})
+        blur?               (reagent/cursor state [:blur?])
+        customization-color (reagent/cursor state [:customization-color])]
     [:f>
      (fn []
        (rn/use-effect (fn []
@@ -58,8 +58,8 @@
                   :padding-horizontal 16}}
          [color-picker/view
           {:blur?     @blur?
-           :selected  @color
-           :on-change #(reset! color %)}]]])]))
+           :selected  @customization-color
+           :on-change #(reset! customization-color %)}]]])]))
 
 (defn preview-gradient-cover
   []
