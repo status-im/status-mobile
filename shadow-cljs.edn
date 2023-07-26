@@ -3,7 +3,7 @@
 
  :dependencies [[reagent "1.2.0"]
                 [re-frame "1.3.0"]
-                [binaryage/oops "0.7.0"]
+                [binaryage/oops "0.7.2"]
                 [com.andrewmcveigh/cljs-time "0.5.2"]
                 [status-im/timbre "4.10.0-2-status"]
                 [com.taoensso/encore "2.105.0"]
@@ -48,10 +48,9 @@
                     :after-load-async  status-im2.setup.hot-reload/reload
                     :build-notify      status-im2.setup.hot-reload/build-notify
                     :preloads          [re-frisk-remote.preload
-                                        ;; In order to use component test helpers in
-                                        ;; the REPL we need to preload namespaces
-                                        ;; that are not normally required by
-                                        ;; production code, such as
+                                        ;; In order to use component test helpers in the REPL we
+                                        ;; need to preload namespaces that are not normally required
+                                        ;; by production code, such as
                                         ;; @testing-library/react-native.
                                         test-helpers.component]}
          :closure-defines
@@ -99,8 +98,8 @@
    :output-dir "target/test"
    :optimizations :simple
    :target :node-test
-   ;; When running tests without a REPL you can uncomment below line to `make test-watch` a specific file
-   ;; :ns-regexp        "status-im2.subs.chat.messages-test$"
+   ;; Uncomment line below to `make test-watch` a specific file
+   ;; :ns-regexp "status-im2.subs.chat.messages-test$"
    :main
    status-im.test-runner/main
    ;; set :ui-driven to true to let shadow-cljs inject node-repl
