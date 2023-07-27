@@ -5,21 +5,21 @@
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]
             [quo.design-system.colors :as colors]
-            ))
+  ))
 
 (def descriptor
   [{:label "Title:"
     :key   :title
     :type  :text}
-   {:label "Network Type:"
-    :key   :networkType
+   {:label   "Network Type:"
+    :key     :networkType
     :type    :select
     :options [{:key   "mainnet"
                :value "Mainnet"}
               {:key   "optimism,arbitrum"
                :value "Optimism / Arbitrum"}]}
-   {:label "Network State:"
-    :key   :networkState
+   {:label   "Network State:"
+    :key     :networkState
     :type    :select
     :options [{:key   "pending"
                :value "Pending"}
@@ -33,7 +33,7 @@
                :value "Finalised"}
               {:key   "error"
                :value "Error"}]}
-    ])
+  ])
 
 (defn get-props
   [data]
@@ -62,9 +62,10 @@
   []
   (let [state (reagent/atom {:title               "Title"
                              :accessibility-label :transaction-progress-item
-                             :networkState         "pending"
-                             :networkType          "mainnet"
-                             :on-press            (fn [] (js/alert "Transaction progress item pressed"))})]
+                             :networkState        "pending"
+                             :networkType         "mainnet"
+                             :on-press            (fn []
+                                                    (js/alert "Transaction progress item pressed"))})]
     (fn []
       [rn/view
        {:margin-bottom 50

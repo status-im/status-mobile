@@ -2,100 +2,89 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def title-container
-  {
-    :flex 1
+  {:flex 1
   })
 
 
 (defn title
   [override-theme]
-  {
-
-    :line-height    18.2})
+  {:line-height 18.2})
 
 (def icon
   {:margin-right 6
-  ;; :padding-top 2
-  ;;  :align-self   :flex-start
-   })
+   ;; :padding-top 2
+   ;;  :align-self   :flex-start
+  })
 
 (def main-container
-  {
-    ;; :flex 1
-  ;; :margin-horizontal 20
-  })   
+  {;; :flex 1
+   ;; :margin-horizontal 20
+  })
 
 (def box-style
   {:border-radius 16
-  :border-width 1
-  :border-color colors/neutral-10
-  ;; :flex 1
-  })     
+   :border-width  1
+   :border-color  colors/neutral-10
+   ;; :flex 1
+  })
 
 (def item-container
-  {
-    ;; :align-content    :center
+  {;; :align-content    :center
    :align-items        :center
    :padding-horizontal 12
-   :flex-direction :row
-  ;;  :align-items    :center
+   :flex-direction     :row
+   ;;  :align-items    :center
    :padding-vertical   13
-   
-   })
+
+  })
 
 (def progress-box-container
-  {
-    ;; :justify-content    :space-between
+  {;; :justify-content    :space-between
    :align-items        :center
    :padding-horizontal 12
-   :flex-direction :row
-  ;;  :align-items    :center
-   :padding-bottom   13
-  ;;  :flex 1
-   :flex-wrap "wrap"
-   
-   })
+   :flex-direction     :row
+   ;;  :align-items    :center
+   :padding-bottom     13
+   ;;  :flex 1
+   :flex-wrap          "wrap"
+
+  })
 
 (def top-border
-  {
-    :border-top-width 1
-    :border-color colors/neutral-5
-    :padding-top 12
-   })
+  {:border-top-width 1
+   :border-color     colors/neutral-5
+   :padding-top      12
+  })
 (def inner-container
-  {
-    :flex-direction :row
-    
-  ;;  :align-items    :center
-   })
+  {:flex-direction :row
+
+   ;;  :align-items    :center
+  })
 
 (def padding-row
-  {
-    :padding-horizontal 12
-    :flex-direction :row
-  ;;  :align-items    :center
-   })
+  {:padding-horizontal 12
+   :flex-direction     :row
+   ;;  :align-items    :center
+  })
 
 (def doodle-container
-  {
-    :flex-direction :row
-    :background-color colors/neutral-10
-    :padding 2
-    :padding-right 8
-    :border-radius 8
-  ;;  :align-items    :center
-   })
+  {:flex-direction   :row
+   :background-color colors/neutral-10
+   :padding          2
+   :padding-right    8
+   :border-radius    8
+   ;;  :align-items    :center
+  })
 (def progress-box
-  {
-    :width 8
-    :height 12
-    :border-width 1
-    :border-radius 3
-    :border-color colors/neutral-80-opa-5
-    :background-color colors/neutral-5
-    :margin-horizontal 2
-    :margin-vertical 2
-   })
+  {:width             8
+   :height            12
+   :border-width      1
+   :border-radius     3
+   :border-color      colors/neutral-80-opa-5
+   :background-color  colors/neutral-5
+   :margin-horizontal 2
+   :margin-vertical   2
+  })
 
 (defn dot
   [override-theme]

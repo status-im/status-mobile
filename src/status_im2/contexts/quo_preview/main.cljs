@@ -356,7 +356,7 @@
    :text-combinations     [{:name      :title
                             :options   {:topBar {:visible true}}
                             :component title/preview-title}]
-   :aawallet                [{:name      :transaction-progress
+   :aawallet              [{:name      :transaction-progress
                             :options   {:topBar {:visible true}}
                             :component transaction-progress/preview}
                            {:name      :lowest-price
