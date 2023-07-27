@@ -7,7 +7,30 @@
             [quo2.components.tags.status-tags :as status-tag]
             [quo2.foundations.colors :as colors]
             [status-im2.common.resources :as resources]
+            [quo2.theme :as theme]
             [react-native.core :as rn]))
+
+(defn get-colors
+  [color]
+  (let [current-theme (theme/get-theme)]
+    (cond
+      (= current-theme :dark)
+      (cond
+        (= color "neutral-5")  colors/neutral-40
+        (= color "neutral-10")  colors/neutral-80
+        (= color "neutral-40")  colors/neutral-50
+        (= color "neutral-50")  colors/neutral-60
+        (= color "danger-50")   colors/danger-60
+        (= color "success-50")  colors/success-60)
+
+      :else
+      (cond
+        (= color "neutral-5")  colors/neutral-5
+        (= color "neutral-10")  colors/neutral-10
+        (= color "neutral-40")  colors/neutral-40
+        (= color "neutral-50")  colors/neutral-50
+        (= color "danger-50")   colors/danger-50
+        (= color "success-50")  colors/success-50))))
 
 (defn load-icon
   [icon color]
@@ -27,18 +50,19 @@
         (assoc (let [box-style (cond
                                  (<= n green) (assoc {:style style/progress-box}
                                                      :background-color
-                                                     colors/success-50)
+                                                     (get-colors "success-50"))
                                  (<= n blue)  (assoc {:style style/progress-box}
                                                      :background-color
                                                      (colors/custom-color-by-theme :blue 50 60))
                                  (<= n red)   (assoc {:style style/progress-box}
                                                      :background-color
-                                                     colors/danger-50)
+                                                     (get-colors "danger-50"))
                                  :else        (assoc {:style style/progress-box}
                                                      :background-color
-                                                     colors/neutral-5))]
+                                                     (get-colors "neutral-5")))]
                  box-style)
-               :key n)]))])
+               :key n
+               :border-color (get-colors "neutral-10"))]))])
 
 (defn render-text
   [title override-theme &
@@ -93,13 +117,14 @@
   (cond
     (and (= networkType "mainnet")
          (or (= networkState "pending") (= networkState "sending")))      ["pending-state"
-                                                                           colors/neutral-50]
+                                                                           (get-colors "neutral-50")]
     (and (= networkType "mainnet")
          (or (= networkState "confirmed") (= networkState "finalising"))) ["positive-state"
-                                                                           colors/success-50]
-    (and (= networkType "mainnet") (= networkState "finalised"))          ["diamond" colors/success-50]
+                                                                           (get-colors "success-50")]
+    (and (= networkType "mainnet") (= networkState "finalised"))          ["diamond" (get-colors "success-50")]
     (and (= networkType "mainnet") (= networkState "error"))              ["negative-state"
-                                                                           colors/danger-50]))
+                                                                           (get-colors "danger-50")]))
+
 (defn transaction-progress
   [{:keys [title
            on-press
@@ -109,7 +134,6 @@
            container-style
            override-theme]}]
   [rn/view
-   {:style style/main-container}
    [rn/touchable-without-feedback
     {:on-press            on-press
      :accessibility-label accessibility-label}
@@ -119,7 +143,7 @@
       {:style style/item-container}
       [rn/view
        {:style style/inner-container}
-       [load-icon "placeholder"]
+        [load-icon "placeholder" (get-colors "neutral-40")]
        [rn/view
         {:style style/title-container}
         [render-text title override-theme]]]]
@@ -131,7 +155,7 @@
      [rn/view
       {:style style/item-container}
       [rn/view
-       {:style (merge style/top-border style/inner-container)}
+       {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
        (let [[status-icon color] (get-status-icon networkType networkState)]
          [load-icon status-icon color])
        [rn/view
@@ -140,6 +164,6 @@
          :typography/font-regular :weight :regular :size :paragraph-2]]
        [rn/view
         [render-text (steps-text networkType networkState) override-theme :typography
-         :typography/font-regular :weight :regular :size :paragraph-2 :style {:color colors/neutral-50}]]]]
+         :typography/font-regular :weight :regular :size :paragraph-2 :style {:color (get-colors "neutral-50")}]]]]
      (let [[green blue red] (get-status-count networkType networkState)]
        [progress-boxes green blue red])]]])
