@@ -19,6 +19,14 @@
                 :type      :key} :i/delete])
     (h/is-truthy (h/query-by-label-text :icon-label)))
 
+  (h/test "render derivation path type"
+    (h/render [component/keyboard-key
+               {:disabled? false
+                :on-press  #(js/alert "pressed")
+                :blur?     false
+                :type      :derivation-path}])
+    (h/is-truthy (h/query-by-label-text :derivation-path-label)))
+
   (h/test "Is pressable when disabled is false"
     (let [on-press (h/mock-fn)]
       (h/render [component/keyboard-key
