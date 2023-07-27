@@ -1,4 +1,4 @@
-(ns quo2.components.calendar.calendar-month.utils
+(ns quo2.components.calendar.calendar.month-picker.utils
   (:require [utils.i18n :as i18n]))
 
 (def ^:const months-with-year

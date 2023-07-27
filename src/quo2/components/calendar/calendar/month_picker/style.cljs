@@ -1,4 +1,4 @@
-(ns quo2.components.calendar.calendar-month.style
+(ns quo2.components.calendar.calendar.month-picker.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def container

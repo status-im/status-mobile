@@ -15,7 +15,6 @@
     quo2.components.browser.browser-input.view
     quo2.components.calendar.calendar.view
     quo2.components.calendar.calendar-day.view
-    quo2.components.calendar.calendar-month.view
     quo2.components.calendar.calendar-year.view
     quo2.components.code.snippet
     quo2.components.colors.color-picker.view

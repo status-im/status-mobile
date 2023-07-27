@@ -4,7 +4,7 @@
             [cljs-time.core :as time]
             [utils.number :as number-utils]))
 
-(deftest calendar-utils-test
+(deftest calendar-days-grid-utils-test
   (testing "day-grid"
     (let [day-grid-result (utils/day-grid "2023" "7")]
       (testing "it returns correct days grid"

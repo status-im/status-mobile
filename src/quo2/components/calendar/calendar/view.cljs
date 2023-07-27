@@ -8,7 +8,7 @@
             [quo2.components.calendar.calendar.years-list.view :as years-list]
             [quo2.components.calendar.calendar.days-grid.view :as days-grid]
             [quo2.components.calendar.calendar.weekdays-header.view :as weekdays-header]
-            [quo2.components.calendar.calendar-month.view :as calendar-month]))
+            [quo2.components.calendar.calendar.month-picker.view :as month-picker]))
 
 (defn- view-internal
   []
@@ -26,7 +26,7 @@
          :year           @selected-year}]
        [rn/view
         {:style style/container-main}
-        [calendar-month/view
+        [month-picker/view
          {:year      @selected-year
           :month     @selected-month
           :on-change on-change-month}]

@@ -7,7 +7,7 @@
     [quo2.components.buttons.slide-button.component-spec]
     [quo2.components.calendar.calendar.component-spec]
     [quo2.components.calendar.calendar-day.component-spec]
-    [quo2.components.calendar.calendar-month.component-spec]
+    [quo2.components.calendar.calendar.month-picker.component-spec]
     [quo2.components.calendar.calendar-year.component-spec]
     [quo2.components.browser.browser-input.component-spec]
     [quo2.components.colors.color-picker.component-spec]
