@@ -23,6 +23,14 @@
   []
   [rn/view {:style {:height 32}}])
 
+(defn- gradiant-overview
+  [theme]
+  [linear-gradient/linear-gradient
+   {:colors [(style/gradient-start-color theme) (style/gradient-end-color theme)]
+    :style  style/gradient-view
+    :start  {:x 0 :y 0}
+    :end    {:x 0 :y 1}}])
+
 (defn view-internal
   [{:keys [on-change-year year theme]}]
   [rn/view
@@ -39,10 +47,6 @@
                                         (render-year item
                                                      year
                                                      #(on-change-year %)))}]
-   [linear-gradient/linear-gradient
-    {:colors [(style/gradient-start-color theme) (style/gradient-end-color theme)]
-     :style  style/gradient-view
-     :start  {:x 0 :y 0}
-     :end    {:x 0 :y 1}}]])
+   [gradiant-overview theme]])
 
 (def view (theme/with-theme view-internal))
