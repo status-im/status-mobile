@@ -707,7 +707,7 @@ SPEC CHECKSUMS:
   FBLazyVector: a8af91c2b5a0029d12ff6b32e428863d63c48991
   FBReactNativeSpec: 1b2309b096448a1dc9d0c43999216f8fda809ae8
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 166d178815c300e8126de9a7900101814eb16253
+  glog: d93527a855523adb8c113837db4be68fb00e230d
   HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
   Keycard: ac6df4d91525c3c82635ac24d4ddd9a80aca5fc8
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
@@ -772,7 +772,7 @@ SPEC CHECKSUMS:
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNPermissions: ad71dd4f767ec254f2cd57592fbee02afee75467
   RNReactNativeHapticFeedback: 2566b468cc8d0e7bb2f84b23adc0f4614594d071
-  RNReanimated: 3e375fc41870cc66c5152a38514c450f7adbc3e1
+  RNReanimated: d0db0ee059c33381bca787a2193c27e52750ccaf
   RNShare: d82e10f6b7677f4b0048c23709bd04098d5aee6c
   RNStaticSafeAreaInsets: 055ddbf5e476321720457cdaeec0ff2ba40ec1b8
   RNSVG: 80584470ff1ffc7994923ea135a3e5ad825546b9

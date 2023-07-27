@@ -16,11 +16,13 @@
    :align-self    :flex-end
    :height        64})
 
-(def view-button-container
-  (merge button-container {:margin-bottom 34}))
+(defn view-button-container [keyboard-shown?]
+  (merge button-container 
+         (when-not keyboard-shown? {:margin-bottom 34})))
 
 (def blur-button-container
-  (merge button-container (when platform/android? {:padding-bottom 12})))
+  (merge button-container 
+         (when platform/android? {:padding-bottom 12})))
 
 (def page-container
   {:position :absolute

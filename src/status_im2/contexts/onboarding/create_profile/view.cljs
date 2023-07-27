@@ -50,38 +50,34 @@
     :else                        nil))
 
 (defn button-container
-  [keyboard-shown? background? children]
+  [keyboard-shown background? children]
   [rn/view {:style {:margin-top :auto}}
-   (if keyboard-shown?
-     (if background?
-       [blur/ios-view
-        (merge
-         {:blur-amount      34
-          :blur-type        :transparent
-          :overlay-color    :transparent
-          :background-color (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)
-          :style            style/blur-button-container})
-        children]
-       [rn/view
-        (merge
-         {:style style/blur-button-container})
-        children])
-     [rn/view {:style style/view-button-container}
+   (when keyboard-shown)
+   (if background?
+     [blur/ios-view
+      (merge
+       {:blur-amount      34
+        :blur-type        :transparent
+        :overlay-color    :transparent
+        :background-color (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)
+        :style            style/blur-button-container})
+      children]
+     [rn/view {:style (style/view-button-container keyboard-shown)}
       children])])
 
+
 (defn show-button-background
-  [keyboard-shown?]
-  (let [{:keys [keyboard-height]} (hooks/use-keyboard)
-        button-container-height   64
+  [keyboard-height keyboard-shown]
+  (let [button-container-height   64
         keyboard-view-height      (+ keyboard-height button-container-height)]
-    (when keyboard-shown?
+    (when keyboard-shown
       (cond
         platform/android?
         (< (- @scroll-view-height button-container-height) @content-container-height)
-
+      
         platform/ios?
         (< (- @scroll-view-height keyboard-view-height) @content-container-height)
-
+      
         :else
         false))))
 
@@ -122,7 +118,8 @@
           info-type       (cond @validation-msg :error
                                 name-too-short? :default
                                 :else           :success)
-          background?     (show-button-background @keyboard-shown?)]
+          {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
+          background?     (show-button-background keyboard-height keyboard-shown)]
       [rn/view {:style style/page-container}
        [navigation-bar/navigation-bar
         {:stack-id :new-to-status
@@ -192,7 +189,7 @@
                           :left     0
                           :right    0}
          :pointer-events :box-none}
-        [button-container @keyboard-shown? background?
+        [button-container keyboard-shown background?
          [quo/button
           {:accessibility-label :submit-create-profile-button
            :type                :primary
@@ -206,8 +203,8 @@
            :disabled?           (or (not valid-name?) (not (seq @full-name)))}
           (i18n/label :t/continue)]]]])
     (finally
-     (oops/ocall show-listener "remove")
-     (oops/ocall hide-listener "remove"))))
+      (oops/ocall show-listener "remove")
+      (oops/ocall hide-listener "remove"))))
 
 (defn create-profile
   []
@@ -216,4 +213,4 @@
     [:<>
      [:f> f-page
       {:navigation-bar-top      top
-       :onboarding-profile-data onboarding-profile-data}]]))
+       :onboarding-profile-data  onboarding-profile-data}]]))
