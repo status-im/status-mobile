@@ -146,7 +146,14 @@
         [load-icon "placeholder" (get-colors "neutral-40")]
        [rn/view
         {:style style/title-container}
-        [render-text title override-theme]]]]
+        [render-text title override-theme]]
+        [button/button
+          {
+            :size     32
+            :before :i/refresh
+            :type :primary
+            }
+          "Retry"]]]
      [rn/view
       {:style style/padding-row}
       [quo2/context-tag {:blur? [false]}
