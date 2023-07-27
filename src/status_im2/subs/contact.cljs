@@ -33,7 +33,7 @@
 
 (defn- replace-contact-image-uri
   [contact port public-key font-file]
-  (let [theme                     (theme/get-theme)
+  (let [theme (theme/get-theme)
         {:keys [images ens-name]} contact
         images
         (reduce (fn [acc image]
@@ -43,8 +43,8 @@
                                     {:port           port
                                      :public-key     public-key
                                      :image-name     image-name
-                                        ; We pass the clock so that we reload the
-                                        ; image if the image is updated
+                                     ; We pass the clock so that we reload the
+                                     ; image if the image is updated
                                      :clock          clock
                                      :theme          theme
                                      :override-ring? (when ens-name false)})]

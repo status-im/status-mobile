@@ -2,9 +2,9 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.communities.core :as communities]
+            [status-im.contact.core :as contact]
             [status-im.group-chats.core :as group-chat]
             [status-im.group-chats.db :as group-chats.db]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.composer.constants :as composer.constants]
             [status-im2.contexts.chat.events :as chat.events]))
@@ -300,7 +300,7 @@
  :<- [:profile/multiaccount]
  (fn [[contacts {:keys [public-key] :as multiaccount}] [_ id]]
    (let [contact (or (when (= id public-key) multiaccount) (get contacts id))]
-     (multiaccounts/displayed-photo contact))))
+     (contact/displayed-photo contact))))
 
 (re-frame/reg-sub
  :chats/unread-messages-number
