@@ -1,6 +1,5 @@
 (ns quo2.components.calendar.calendar-month.utils
-  (:require [utils.i18n :as i18n]
-            [utils.datetime :as dt]))
+  (:require [utils.i18n :as i18n]))
 
 (def ^:const months-with-year
   "Maps the corresponding string representation of a month

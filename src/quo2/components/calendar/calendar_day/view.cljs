@@ -4,12 +4,11 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.calendar.calendar-day.style :as style]))
 
-(defn- calendar-day-internal
+(defn- view-internal
   [{:keys [state in-range on-press customization-color theme]
     :or   {state :default}}
    day]
-  [rn/view
-   {:style style/wrapper}
+  [rn/view {:style style/wrapper}
    [rn/view {:style (style/in-range-background {:in-range in-range :theme theme})}]
    [rn/touchable-opacity
     {:on-press on-press
@@ -29,4 +28,4 @@
                :theme               theme
                :customization-color customization-color})}]]])
 
-(def calendar-day (theme/with-theme calendar-day-internal))
+(def view (theme/with-theme view-internal))

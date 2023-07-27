@@ -1,6 +1,5 @@
 (ns quo2.components.calendar.calendar.years-list.style
-  (:require
-    [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (defn gradient-start-color
   [theme]
@@ -32,4 +31,3 @@
    :border-top-left-radius    12
    :border-bottom-left-radius 12
    :border-color              (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)})
-

@@ -97,7 +97,7 @@
 
 (defn- format-date
   [date]
-  (if (not (nil? date))
+  (if date
     (t.format/unparse (t.format/formatter "dd/MM/yyyy") date)
     ""))
 

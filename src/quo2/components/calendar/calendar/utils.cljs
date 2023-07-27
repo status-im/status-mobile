@@ -1,5 +1,5 @@
 (ns quo2.components.calendar.calendar.utils
-  (:require [utils.datetime :as dt]
+  (:require [utils.datetime :as datetime]
             [utils.number :as number-utils]
             [clojure.string :as string]))
 
@@ -10,16 +10,16 @@
 
 (defn current-year
   []
-  (-> (dt/now)
-      dt/timestamp->year-month-day-date
+  (-> (datetime/now)
+      datetime/timestamp->year-month-day-date
       (string/split #"-")
       first
       number-utils/parse-int))
 
 (defn current-month
   []
-  (-> (dt/now)
-      dt/timestamp->year-month-day-date
+  (-> (datetime/now)
+      datetime/timestamp->year-month-day-date
       (string/split #"-")
       second
       number-utils/parse-int))

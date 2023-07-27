@@ -4,7 +4,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.calendar.calendar-year.style :as style]))
 
-(defn- calendar-year-internal
+(defn- view-internal
   [{:keys [selected? disabled? on-press theme]} year]
   [rn/touchable-opacity
    {:on-press on-press
@@ -21,4 +21,4 @@
                :theme     theme})}
     year]])
 
-(def calendar-year (theme/with-theme calendar-year-internal))
+(def view (theme/with-theme view-internal))

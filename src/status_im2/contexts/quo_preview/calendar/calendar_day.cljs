@@ -31,7 +31,7 @@
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
-         [quo/calendar-day @state "12"]]]])))
+         [quo/calendar-day (assoc @state :customization-color :blue) 12]]]])))
 
 (defn preview-calendar-day
   []

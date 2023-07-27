@@ -7,7 +7,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.calendar.calendar-month.utils :as utils]))
 
-(defn- calendar-month-internal
+(defn- view-internal
   [{:keys [year month on-change theme]}]
   (let [year  (number-utils/parse-int year)
         month (number-utils/parse-int month)]
@@ -33,4 +33,4 @@
        :on-press            #(on-change (utils/next-month year month))}
       :i/chevron-right]]))
 
-(def calendar-month (theme/with-theme calendar-month-internal))
+(def view (theme/with-theme view-internal))

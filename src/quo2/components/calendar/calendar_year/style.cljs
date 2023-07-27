@@ -1,7 +1,5 @@
 (ns quo2.components.calendar.calendar-year.style
-  (:require
-    [quo2.foundations.colors :as colors]
-    [quo2.foundations.typography :as typography]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def container-base
   {:align-items     :center

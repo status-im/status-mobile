@@ -10,7 +10,7 @@
             [quo2.components.calendar.calendar.weekdays-header.view :as weekdays-header]
             [quo2.components.calendar.calendar-month.view :as calendar-month]))
 
-(defn- calendar-internal
+(defn- view-internal
   []
   (let [selected-year   (reagent/atom (utils/current-year))
         selected-month  (reagent/atom (utils/current-month))
@@ -21,17 +21,17 @@
     (fn [{:keys [on-change start-date end-date theme]}]
       [rn/view
        {:style (style/container theme)}
-       [years-list/years-list-view
+       [years-list/view
         {:on-change-year on-change-year
          :year           @selected-year}]
        [rn/view
         {:style style/container-main}
-        [calendar-month/calendar-month
+        [calendar-month/view
          {:year      @selected-year
           :month     @selected-month
           :on-change on-change-month}]
-        [weekdays-header/weekdays-header]
-        [days-grid/days-grid
+        [weekdays-header/view]
+        [days-grid/view
          {:year                @selected-year
           :month               @selected-month
           :start-date          start-date
@@ -39,4 +39,4 @@
           :on-change           on-change
           :customization-color :blue}]]])))
 
-(def calendar (theme/with-theme calendar-internal))
+(def view (theme/with-theme view-internal))

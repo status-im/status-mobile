@@ -17,4 +17,3 @@
 (defn text-weekdays
   [theme]
   {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
-

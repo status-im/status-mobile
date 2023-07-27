@@ -16,20 +16,15 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom
-               {:start-date nil :end-date nil})
-        range (reagent/atom
-               {:start-date nil :end-date nil})]
+  (let [state (reagent/atom {:start-date nil :end-date nil})
+        range (reagent/atom {:start-date nil :end-date nil})]
     (fn
       []
       [rn/touchable-without-feedback
        {:on-press rn/dismiss-keyboard!}
-       [rn/view
-        {:style {:flex 1}}
+       [rn/view {:style {:flex 1}}
         [preview/customizer state descriptor]
-        [rn/view
-         {:padding   19
-          :flex-grow 2}
+        [rn/view {:style {:padding 19 :flex-grow 2}}
          [quo/calendar
           {:start-date (:start-date @range)
            :end-date   (:end-date @range)
