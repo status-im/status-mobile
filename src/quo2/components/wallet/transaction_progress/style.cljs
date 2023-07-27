@@ -40,6 +40,19 @@
    
    })
 
+(def progress-box-container
+  {
+    ;; :justify-content    :space-between
+   :align-items        :center
+   :padding-horizontal 12
+   :flex-direction :row
+  ;;  :align-items    :center
+   :padding-bottom   13
+  ;;  :flex 1
+   :flex-wrap "wrap"
+   
+   })
+
 (def top-border
   {
     :border-top-width 1
@@ -60,10 +73,13 @@
   ;;  :align-items    :center
    })
 
-(def inner-containers
+(def doodle-container
   {
     :flex-direction :row
     :background-color colors/neutral-10
+    :padding 2
+    :padding-right 8
+    :border-radius 8
   ;;  :align-items    :center
    })
 (def progress-box
@@ -72,10 +88,10 @@
     :height 20
     :border-width 1
     :border-radius 3
-    :border-color colors/neutral-5
-    :background-color "#F5F6F8"
+    :border-color colors/neutral-80-opa-5
+    :background-color colors/neutral-5
     :margin-horizontal 2
-  ;;  :align-items    :center
+    :margin-vertical 2
    })
 
 (defn dot

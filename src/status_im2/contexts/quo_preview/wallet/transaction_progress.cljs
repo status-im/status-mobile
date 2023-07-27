@@ -14,17 +14,28 @@
    {:label "Chevron:"
     :key   :chevron?
     :type  :boolean}
-   {:label "StatusIcon:"
-    :key   :statusIcon
+   {:label "Network Type:"
+    :key   :networkType
     :type    :select
-    :options [{:key   "pending-state"
-               :value "Pending-State"}
-              {:key   "positive-State"
-               :value "Positive-State"}
-              {:key   "negative-State"
-               :value "Negative-State"}
-              {:key   "finalised-State"
-               :value "Finalised-State"}]}
+    :options [{:key   "mainnet"
+               :value "Mainnet"}
+              {:key   "optimism,arbitrum"
+               :value "Optimism / Arbitrum"}]}
+   {:label "Network State:"
+    :key   :networkState
+    :type    :select
+    :options [{:key   "pending"
+               :value "Pending"}
+              {:key   "sending"
+               :value "Sending"}
+              {:key   "confirmed"
+               :value "Confirmed"}
+              {:key   "finalising"
+               :value "Finalising"}
+              {:key   "finalised"
+               :value "Finalised"}
+              {:key   "error"
+               :value "Error"}]}
     ])
 
 (defn get-props
@@ -56,7 +67,8 @@
                              :accessibility-label :transaction-progress-item
                              :left-icon           :browser-context
                              :chevron?            true
-                             :statusIcon          "pending-state"
+                             :networkState         "pending"
+                             :networkType          "mainnet"
                              :on-press            (fn [] (js/alert "Transaction title item pressed"))})]
     (fn []
       [rn/view
