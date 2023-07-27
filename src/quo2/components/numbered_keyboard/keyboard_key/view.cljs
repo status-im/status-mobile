@@ -20,13 +20,15 @@
           :on-press-out        #(reset! pressed? false)
           :style               (style/container background-color)}
          (condp = type
-           :key   [icons/icon label
+           :key   [icons/icon
+                   label
                    {:color               label-color
                     :accessibility-label :icon-label}]
            :digit [text/text
                    {:accessibility-label :text-label
                     :weight              :regular
                     :size                :heading-1
-                    :style               {:color label-color}} label])]))))
+                    :style               {:color label-color}}
+                   label])]))))
 
 (def keyboard-key (quo.theme/with-theme keyboard-key-internal))

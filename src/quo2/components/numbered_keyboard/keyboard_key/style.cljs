@@ -3,13 +3,11 @@
 
 (defn get-label-color
   [disabled? theme blur?]
-  (if disabled?
-    (if (or (= :dark theme) blur?)
-      colors/white-opa-30
-      colors/neutral-30)
-    (if (or (= :dark theme) blur?)
-      colors/white
-      colors/neutral-100)))
+  (cond
+    (and disabled? (or (= :dark theme) blur?))  colors/white-opa-30
+    (and disabled? (or (= :light theme) blur?)) colors/neutral-30
+    (or (= :dark theme) blur?)                  colors/white
+    :else                                       colors/neutral-100))
 
 (defn toggle-background-color
   [pressed-in? blur? theme]
