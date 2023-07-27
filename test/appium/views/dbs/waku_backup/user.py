@@ -7,5 +7,6 @@ communities = {
     'member_closed': 'test_comm_enc',
     'member_pending': 'RC1 testing community'
 }
-contacts = ['Chu_QA', 'my-custom-nickname']
+# contacts = ['Test_contact', 'MyCustomNickname'] # enable back when https://github.com/status-im/status-mobile/issues/15500 is fixed
+contacts = ['Used Bulky Wirehair', 'Vengeful Healthy Arcticseal']
 blocked_user = 'Clear Flat Milkweedbug'

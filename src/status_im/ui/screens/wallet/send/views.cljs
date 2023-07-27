@@ -18,7 +18,7 @@
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.ui.screens.wallet.send.sheets :as sheets]
             [status-im.ui.screens.wallet.send.styles :as styles]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im.utils.utils :as utils]
             [status-im.wallet.utils :as wallet.utils]))
 
@@ -112,8 +112,8 @@
     [react/text {:style {:color colors/blue}} (i18n/label :t/set-max)]]])
 
 (defn fiat-value
-  [amount {:keys [symbol]} prices wallet-currency]
-  (when-let [price (get-in prices [(keyword symbol) (keyword (:code wallet-currency)) :price])]
+  [amount {sym :symbol} prices wallet-currency]
+  (when-let [price (get-in prices [(keyword sym) (keyword (:code wallet-currency)) :price])]
     (let [norm-amount (js/parseFloat (money/normalize amount))
           amount      (if (js/isNaN norm-amount) 0 norm-amount)]
       [react/text

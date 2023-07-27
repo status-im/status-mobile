@@ -5,6 +5,7 @@ set -eo pipefail
 
 GIT_ROOT=$(cd "${BASH_SOURCE%/*}" && git rev-parse --show-toplevel)
 source "${GIT_ROOT}/scripts/colors.sh"
+source "${GIT_ROOT}/nix/scripts/lib.sh"
 source "${GIT_ROOT}/nix/scripts/source.sh"
 source "${GIT_ROOT}/nix/scripts/version.sh"
 
@@ -12,15 +13,7 @@ nix_upgrade() {
     echo -e "Upgrading Nix interpreter to: ${GRN}${NIX_VERSION}${RST}" >&2
     nix-channel --update
     nix-env --install --attr "nixpkgs.${NIX_PACKAGE}" "nixpkgs.cacert"
-    if [[ "$(uname -s)" == "Darwin" ]]; then
-        echo "Restarting Nix daemon Launchd service" >&2
-        launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist
-        launchctl load   /Library/LaunchDaemons/org.nixos.nix-daemon.plist
-    elif [[ "$(uname -s)" == "Linux" ]] && [[ "$(nix_install_type)" == "multi" ]]; then
-        echo "Restarting Nix daemon Systemd service" >&2
-        systemctl daemon-reload
-        systemctl restart nix-daemon
-    fi
+    nix_daemon_restart
 }
 
 # Allow for sourcing the script

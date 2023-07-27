@@ -1,7 +1,10 @@
 (ns status-im2.contexts.syncing.scan-sync-code.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]
+            [react-native.reanimated :as reanimated]))
 
 (def screen-padding 20)
+(def flash-button-size 32)
+(def flash-button-spacing 12)
 
 (def flex-spacer {:flex 1})
 
@@ -62,40 +65,49 @@
   [viewfinder]
   {:position :absolute
    :left     (:x viewfinder)
-   :top      (:y viewfinder)})
+   :top      19})
 
 (def view-finder-border-container
   {:flex-direction  :row
    :justify-content :space-between})
 
-(def camera-flash-button
+(defn camera-flash-button
+  [viewfinder]
   {:position :absolute
-   :right    20
-   :bottom   20})
+   :top      (- (+ (:y viewfinder) (:height viewfinder)) flash-button-size flash-button-spacing)
+   :right    (+ screen-padding flash-button-spacing)})
 
-(defn border
-  [border1 border2 corner]
-  (assoc {:border-color colors/white
-          :width        78
-          :height       78}
-         border1
-         2
-         border2
-         2
-         corner
-         16))
+(defn- get-border
+  [border-vertical-width border-horizontal-width corner-radius]
+  {:border-color           colors/white
+   :width                  78
+   :height                 78
+   border-vertical-width   2
+   border-horizontal-width 2
+   corner-radius           16})
 
-(defn border-tip
-  [top bottom right left]
-  {:background-color colors/white
-   :position         :absolute
-   :top              top
-   :bottom           bottom
-   :right            right
-   :left             left
-   :height           2
-   :width            2
-   :border-radius    2})
+(def white-border
+  (let [base-tip {:background-color colors/white
+                  :position         :absolute
+                  :height           1.9 ; 1.9 instead of 2 to fix the tips protruding
+                  :width            1.9
+                  :border-radius    1}]
+    {:top-left
+     {:border (get-border :border-top-width :border-left-width :border-top-left-radius)
+      :tip-1  (assoc base-tip :right -1 :top 0)
+      :tip-2  (assoc base-tip :left 0 :bottom -1)}
+     :top-right
+     {:border (get-border :border-top-width :border-right-width :border-top-right-radius)
+      :tip-1  (assoc base-tip :right 0 :bottom -1)
+      :tip-2  (assoc base-tip :left -1 :top 0)}
+     :bottom-left
+     {:border (get-border :border-bottom-width :border-left-width :border-bottom-left-radius)
+      :tip-1  (assoc base-tip :right -1 :bottom 0)
+      :tip-2  (assoc base-tip :left 0 :top -1)}
+     :bottom-right
+     {:border (get-border :border-bottom-width :border-right-width :border-bottom-right-radius)
+      :tip-1  (assoc base-tip :right 0 :top -1)
+      :tip-2  (assoc base-tip :left -1 :bottom 0)}}))
 
 (def viewfinder-text
   {:color       colors/white-opa-70
@@ -104,6 +116,7 @@
 
 (def camera-permission-container
   {:height            335
+   :margin-top        19
    :margin-horizontal screen-padding
    :background-color  colors/white-opa-5
    :border-color      colors/white-opa-10
@@ -126,15 +139,17 @@
    :align-items     :center})
 
 (defn bottom-container
-  [padding-bottom]
-  {:z-index                 6
-   :padding-top             12
-   :padding-bottom          padding-bottom
-   :background-color        colors/white-opa-5
-   :border-top-left-radius  20
-   :border-top-right-radius 20
-   :align-items             :center
-   :justify-content         :center})
+  [translate-y padding-bottom]
+  (reanimated/apply-animations-to-style
+   {:transform [{:translate-y translate-y}]}
+   {:z-index                 6
+    :padding-top             12
+    :padding-bottom          padding-bottom
+    :background-color        colors/white-opa-5
+    :border-top-left-radius  20
+    :border-top-right-radius 20
+    :align-items             :center
+    :justify-content         :center}))
 
 (def bottom-text
   {:color          colors/white

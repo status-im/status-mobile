@@ -1,41 +1,36 @@
 (ns status-im2.contexts.chat.messages.content.text.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def spacing-between-blocks 10)
-
-(def parsed-text-block
-  {:margin-top -4})
-
-(def paragraph
-  {:margin-top spacing-between-blocks})
+(def spacing-between-blocks 0)
 
 (def block
-  {:margin-top         spacing-between-blocks
-   :border-radius      6
+  {:border-radius      6
    :padding-horizontal 3})
 
 (def quote
-  {:margin-top        spacing-between-blocks
-   :border-left-width 1
+  {:border-left-width 1
    :padding-left      10
    :border-left-color colors/neutral-40})
 
 (defn mention-tag-wrapper
   []
   {:flex-direction :row
-   :align-items    :center})
+   :align-items    :center
+   :height         22})
 
 (def mention-tag
   {:background-color   colors/primary-50-opa-10
    :padding-horizontal 3
    :border-radius      6
-   :margin-bottom      -3})
+   :margin-bottom      -3
+   :height             22})
 
 (def mention-tag-text
   {:color                 (colors/theme-colors colors/primary-50
                                                colors/primary-60)
    :selection-color       :transparent
-   :suppress-highlighting true})
+   :suppress-highlighting true
+   :line-height           21})
 
 (defn code
   []

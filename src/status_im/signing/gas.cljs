@@ -7,7 +7,7 @@
             [status-im.popover.core :as popover]
             [status-im.signing.eip1559 :as eip1559]
             [utils.re-frame :as rf]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im2.common.json-rpc.events :as json-rpc]
             [taoensso.timbre :as log]))
 
@@ -53,19 +53,19 @@
   "Takes the previous edit, either :gas or :gas-price and a value as string.
   Wei for gas, and gwei for gas price.
   Validates them and sets max fee"
-  [edit-value key value]
+  [edit-value k value]
   (let [^js bn-value    (money/bignumber value)
-        error-label-key (get-error-label-key key bn-value)
+        error-label-key (get-error-label-key k bn-value)
         data            (if error-label-key
                           {:value   value
                            :max-fee 0
                            :error   (i18n/label error-label-key)}
                           {:value        value
-                           :value-number (if (= :gasPrice key)
+                           :value-number (if (= :gasPrice k)
                                            (money/->wei :gwei bn-value)
                                            bn-value)})]
     (-> edit-value
-        (assoc key data)
+        (assoc k data)
         edit-max-fee)))
 
 ;; TODO(rasom): this number is almost arbitrary, I was able to sent txs with
@@ -336,7 +336,7 @@
   (let [sorted-v (sort-by
                   identity
                   (fn [a b]
-                    (status-im.utils.money/greater-than b a))
+                    (utils.money/greater-than b a))
                   v)]
     (reduce
      (fn [acc p]

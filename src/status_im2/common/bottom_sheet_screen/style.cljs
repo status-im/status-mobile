@@ -15,10 +15,10 @@
     :right            0}))
 
 (defn main-view
-  [translate-y override-theme]
+  [translate-y theme]
   (reanimated/apply-animations-to-style
    {:transform [{:translate-y translate-y}]}
-   {:background-color        (colors/theme-colors colors/white colors/neutral-95 override-theme)
+   {:background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
     :border-top-left-radius  20
     :border-top-right-radius 20
     :flex                    1
@@ -30,15 +30,15 @@
    :right           0
    :top             0
    :height          20
-   :z-index         1
+   :z-index         2
    :position        :absolute
    :justify-content :center
    :align-items     :center})
 
 (defn handle
-  [override-theme]
+  [theme]
   {:width            32
    :height           4
    :border-radius    100
-   :background-color (colors/theme-colors colors/neutral-100 colors/white override-theme)
+   :background-color (colors/theme-colors colors/neutral-100 colors/white theme)
    :opacity          (theme/theme-value 0.05 0.1)})

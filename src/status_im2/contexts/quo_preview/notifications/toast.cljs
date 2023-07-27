@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.notifications.toast
-  (:require [quo2.components.buttons.button :as button]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -13,7 +13,7 @@
          toast!     #(rf/dispatch [:toasts/upsert (assoc opts :id id)])
          dismissed? (not toast-opts)]
      [rn/view {:style {:margin-bottom 10}}
-      [button/button
+      [quo/button
        {:size     32
         :on-press #(if dismissed? (toast!) (dismiss!))}
        (if dismissed? text (str "DISMISS " text))]])))
@@ -35,7 +35,7 @@
     :undo-duration 4
     :undo-on-press #(do
                       (rf/dispatch [:toasts/upsert
-                                    {:icon       :correct
+                                    {:icon       :i/correct
                                      :icon-color colors/success-50-opa-40
                                      :text       "Undo pressed"}])
                       (rf/dispatch [:toasts/close
@@ -54,7 +54,7 @@
     #(do
        (rf/dispatch
         [:toasts/upsert
-         {:icon :correct :icon-color colors/success-50-opa-40 :text "Undo pressed"}])
+         {:icon :i/correct :icon-color colors/success-50-opa-40 :text "Undo pressed"}])
        (rf/dispatch [:toasts/close "Toast: with undo action"]))}])
 
 (defn toast-button-30s-duration
@@ -73,13 +73,13 @@
       (let [toast-opts (rf/sub [:toasts/toast "Toast: 30s duration"])]
         (when toast-opts
           [rn/view {:style {:margin-bottom 10}}
-           [button/button
+           [quo/button
             {:size 32
              :on-press
              #(rf/dispatch
                [:toasts/upsert
                 {:id         "Toast: 30s duration"
-                 :icon       :info
+                 :icon       :i/info
                  :icon-color colors/danger-50-opa-40
                  :text       (str "This is an updated example toast" " - " (swap! suffix inc))
                  :duration   3000}])}

@@ -1,6 +1,6 @@
 (ns quo2.components.settings.accounts.view
   (:require [quo2.components.avatars.account-avatar :as account-avatar]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [quo2.components.markdown.text :as text]
             [quo2.components.settings.accounts.style :as style]
             [react-native.core :as rn]))

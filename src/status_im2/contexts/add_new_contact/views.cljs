@@ -7,9 +7,9 @@
     [reagent.core :as reagent]
     [status-im.multiaccounts.core :as multiaccounts]
     [status-im.qr-scanner.core :as qr-scanner]
-    [status-im.utils.utils :as utils]
     [status-im2.contexts.add-new-contact.style :as style]
     [utils.debounce :as debounce]
+    [utils.address :as address]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -37,7 +37,7 @@
           {:weight :regular
            :size   :paragraph-2
            :style  (style/found-user-key)}
-          (utils/get-shortened-address compressed-key)]]]])))
+          (address/get-shortened-compressed-key compressed-key)]]]])))
 
 (defn new-contact
   []
@@ -47,6 +47,7 @@
       (clipboard/get-string #(reset! clipboard %))
       (let [{:keys [input scanned public-key ens state msg]}
             (rf/sub [:contacts/new-identity])
+            customization-color (rf/sub [:profile/customization-color])
             invalid? (= state :invalid)
             show-paste-button? (and (not (string/blank? @clipboard))
                                     (string/blank? @default-value)
@@ -107,7 +108,7 @@
             (when (= state :valid)
               [found-contact public-key])]
            [quo/button
-            (merge (style/button-view-profile state)
+            (merge (style/button-view-profile state customization-color)
                    {:on-press
                     (fn []
                       (reset! clipboard nil)

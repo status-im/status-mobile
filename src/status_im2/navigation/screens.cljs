@@ -1,11 +1,12 @@
 (ns status-im2.navigation.screens
   (:require
     [status-im2.config :as config]
-    [status-im2.contexts.activity-center.view :as activity-center]
+    [status-im2.contexts.shell.activity-center.view :as activity-center]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
     [status-im2.contexts.chat.lightbox.view :as lightbox]
     [status-im2.contexts.chat.messages.view :as chat]
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
+    [status-im2.contexts.chat.camera.view :as camera-screen]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
     [status-im2.contexts.onboarding.intro.view :as intro]
@@ -19,21 +20,23 @@
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
     [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
-    [status-im2.contexts.onboarding.profiles.view :as profiles]
+    [status-im2.contexts.profile.profiles.view :as profiles]
     [status-im2.contexts.quo-preview.main :as quo.preview]
-    [status-im2.contexts.shell.view :as shell]
+    [status-im2.contexts.shell.jump-to.view :as shell]
     [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
     [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
+    [status-im2.contexts.syncing.find-sync-code.view :as find-sync-code]
     [status-im2.navigation.options :as options]
     [status-im2.contexts.chat.group-details.view :as group-details]
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
-    [status-im2.contexts.share.view :as share]
+    [status-im2.contexts.shell.share.view :as share]
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
-    [status-im2.contexts.chat.new-chat.view :as new-chat]))
+    [status-im2.contexts.chat.new-chat.view :as new-chat]
+    [status-im2.navigation.transitions :as transitions]))
 
 (defn screens
   []
@@ -76,13 +79,23 @@
      :options   {:sheet? true}
      :component photo-selector/photo-selector}
 
+    {:name      :camera-screen
+     :options   options/camera-screen
+     :component camera-screen/camera-screen}
+
     {:name      :new-contact
      :options   {:sheet? true}
      :component add-new-contact/new-contact}
 
     {:name      :how-to-pair
-     :options   {:sheet? true}
-     :component how-to-pair/instructions}
+     :options   {:theme  :dark
+                 :sheet? true}
+     :component how-to-pair/view}
+
+    {:name      :find-sync-code
+     :options   {:theme  :dark
+                 :sheet? true}
+     :component find-sync-code/view}
 
     {:name      :discover-communities
      :component communities.discover/discover}
@@ -100,70 +113,127 @@
 
     ;; Onboarding
     {:name      :intro
+     :options   {:theme :dark}
      :component intro/view}
 
     {:name      :profiles
-     :options   {:layout options/onboarding-layout}
-     :component profiles/views}
+     :options   {:theme  :dark
+                 :layout options/onboarding-layout}
+     :component profiles/view}
 
-    {:name      :new-to-status
-     :options   {:layout options/onboarding-layout}
-     :component new-to-status/new-to-status}
+    {:name                         :new-to-status
+     :options                      {:theme :dark
+                                    :layout options/onboarding-transparent-layout
+                                    :animations (merge
+                                                 transitions/new-to-status-modal-animations
+                                                 transitions/push-animations-for-transparent-background)
+                                    :popGesture false
+                                    :modalPresentationStyle :overCurrentContext
+                                    :hardwareBackButton {:dismissModalOnPress false
+                                                         :popStackOnPress     false}}
+     :hardware-back-button-handler new-to-status/navigate-back
+     :component                    new-to-status/new-to-status}
 
     {:name      :create-profile
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
      :component create-profile/create-profile}
 
     {:name      :create-profile-password
-     :options   {:insets {:top false}
-                 :layout options/onboarding-layout}
+     :options   {:theme      :dark
+                 :insets     {:top false}
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
      :component create-password/create-password}
 
     {:name      :enable-biometrics
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
      :component enable-biometrics/enable-biometrics}
 
     {:name      :generating-keys
-     :options   {:layout             options/onboarding-layout
+     :options   {:theme              :dark
+                 :layout             options/onboarding-transparent-layout
+                 :animations         transitions/push-animations-for-transparent-background
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}
      :component generating-keys/generating-keys}
 
     {:name      :enter-seed-phrase
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
      :component enter-seed-phrase/enter-seed-phrase}
 
     {:name      :enable-notifications
-     :options   {:layout             options/onboarding-layout
-                 :popGesture         false
-                 :hardwareBackButton {:dismissModalOnPress false
-                                      :popStackOnPress     false}}
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge transitions/new-to-status-modal-animations
+                                                transitions/push-animations-for-transparent-background)
+                 :modalPresentationStyle :overCurrentContext
+                 :popGesture             false
+                 :hardwareBackButton     {:dismissModalOnPress false
+                                          :popStackOnPress     false}}
      :component enable-notifications/enable-notifications}
 
     {:name      :identifiers
      :component identifiers/view
-     :options   {:layout             options/onboarding-layout
+     :options   {:theme              :dark
+                 :layout             options/onboarding-transparent-layout
+                 :animations         transitions/push-animations-for-transparent-background
                  :popGesture         false
                  :hardwareBackButton {:dismissModalOnPress false
                                       :popStackOnPress     false}}}
+
     {:name      :scan-sync-code-page
+     :options   options/dark-screen
      :component scan-sync-code-page/view}
 
+    {:name                         :sign-in-intro
+     :options                      {:layout options/onboarding-transparent-layout
+                                    :animations (merge
+                                                 transitions/sign-in-modal-animations
+                                                 transitions/push-animations-for-transparent-background)
+                                    :modalPresentationStyle :overCurrentContext
+                                    :hardwareBackButton {:dismissModalOnPress false
+                                                         :popStackOnPress     false}}
+     :hardware-back-button-handler sign-in/navigate-back
+     :component                    sign-in/animated-view}
+
     {:name      :sign-in
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme                  :dark
+                 :modalPresentationStyle :overCurrentContext
+                 :layout                 options/onboarding-layout}
      :component sign-in/view}
 
     {:name      :syncing-progress
-     :options   {:layout     options/onboarding-layout
+     :options   {:theme      :dark
+                 :layout     options/onboarding-layout
                  :popGesture false}
      :component syncing-devices/view}
 
+    {:name      :syncing-progress-intro
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
+     :component syncing-devices/view-onboarding}
+
     {:name      :syncing-results
+     :options   {:theme :dark}
      :component syncing-results/view}
 
     {:name      :welcome
-     :options   {:layout options/onboarding-layout}
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background}
      :component welcome/view}]
 
    (when config/quo-preview-enabled?

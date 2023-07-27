@@ -14,7 +14,9 @@
 (def ^:const content-type-gap 10)
 (def ^:const content-type-contact-request 11) ;; TODO: temp, will be removed
 (def ^:const content-type-system-pinned-message 14)
-(def ^:const content-type-system-mutual-state-update 15)
+(def ^:const content-type-system-message-mutual-event-sent 15)
+(def ^:const content-type-system-message-mutual-event-accepted 16)
+(def ^:const content-type-system-message-mutual-event-removed 17)
 
 ;; Not implemented in status-go, only used for testing/ui work
 (def ^:const content-type-gif 100)
@@ -46,6 +48,7 @@
 (def ^:const mute-for-8-hours-type 3)
 (def ^:const mute-for-1-week 4)
 (def ^:const mute-till-unmuted 5)
+(def ^:const un-muted 0)
 
 (def ^:const activity-center-mark-all-as-read-undo-time-limit-ms 4000)
 (def ^:const activity-center-max-unread-count 99)
@@ -333,30 +336,12 @@
 (def ^:const auth-method-biometric-prepare "biometric-prepare")
 (def ^:const auth-method-none "none")
 
-(def ^:const image-description-in-lightbox? false)
-(def ^:const int->weekday
-  "Maps the corresponding string representation of a weekday
-   By it's numeric index as in cljs-time"
-  {1 "mon"
-   2 "tue"
-   3 "wed"
-   4 "thu"
-   5 "fri"
-   6 "sat"
-   7 "sun"})
+(def ^:const onboarding-generating-keys-animation-duration-ms 7000)
+(def ^:const onboarding-generating-keys-navigation-retry-ms 3000)
 
-(def ^:const months
-  "Maps the corresponding string representation of a weekday
-   By it's numeric index as in cljs-time"
-  {1  "jan"
-   2  "feb"
-   3  "mar"
-   4  "apr"
-   5  "may"
-   6  "jun"
-   7  "jul"
-   8  "aug"
-   9  "sep"
-   10 "oct"
-   11 "nov"
-   12 "dec"})
+(def ^:const image-description-in-lightbox? false)
+
+(def ^:const audio-max-duration-ms 120000)
+
+(def ^:const onboarding-modal-animation-duration 300)
+(def ^:const onboarding-modal-animation-delay 400)

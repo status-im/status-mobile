@@ -115,7 +115,7 @@
 
 (views/defview advanced-settings
   []
-  (views/letsubs [{:keys [webview-debug]}          [:multiaccount]
+  (views/letsubs [{:keys [webview-debug]}          [:profile/profile]
                   network-name                     [:network-name]
                   waku-bloom-filter-mode           [:waku/bloom-filter-mode]
                   wakuv2-flag                      [:waku/v2-flag]

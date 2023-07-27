@@ -12,11 +12,11 @@
    {:style (style/token-row padding?)}
    (doall
     (map-indexed (fn [token-index token]
-                   (let [{:keys [img-src symbol amount sufficient? purchasable? loading?]} token]
+                   (let [{:keys [img-src amount sufficient? purchasable? loading?]} token]
                      ^{:key token-index}
                      [rn/view {:style style/token-tag-spacing}
                       [token-tag/token-tag
-                       {:symbol      symbol
+                       {:symbol      (:symbol token)
                         :value       amount
                         :size        24
                         :sufficient? sufficient?

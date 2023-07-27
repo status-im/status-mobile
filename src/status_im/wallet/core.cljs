@@ -21,8 +21,7 @@
     [status-im.utils.core :as utils.core]
     [utils.re-frame :as rf]
     [utils.datetime :as datetime]
-    [status-im.utils.mobile-sync :as mobile-network-utils]
-    [status-im.utils.money :as money]
+    [utils.money :as money]
     [status-im.utils.utils :as utils.utils]
     [status-im.wallet.db :as wallet.db]
     [status-im.wallet.prices :as prices]
@@ -30,7 +29,9 @@
     [status-im.wallet.utils :as wallet.utils]
     [status-im2.common.json-rpc.events :as json-rpc]
     [status-im2.navigation.events :as navigation]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [status-im.utils.mobile-sync :as utils.mobile-sync]
+    [native-module.core :as native-module]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -66,7 +67,7 @@
 (rf/defn get-cached-balances
   [{:keys [db]} scan-all-tokens?]
   (let [addresses (map (comp string/lower-case :address)
-                       (get db :multiaccount/accounts))]
+                       (get db :profile/wallet-accounts))]
     {:wallet/get-cached-balances
      {:addresses  addresses
       :on-success #(re-frame/dispatch [::set-cached-balances addresses % scan-all-tokens?])
@@ -155,11 +156,11 @@
   {:events [::fetch-collectibles-collection]}
   [{:keys [db]}]
   (let [addresses (map (comp string/lower-case :address)
-                       (get db :multiaccount/accounts))
+                       (get db :profile/wallet-accounts))
         chain-id  (-> db
                       ethereum/current-network
                       ethereum/network->chain-id)]
-    (when (get-in db [:multiaccount :opensea-enabled?])
+    (when (get-in db [:profile/profile :opensea-enabled?])
       {:json-rpc/call (map
                        (fn [address]
                          {:method     "wallet_getOpenseaCollectionsByOwner"
@@ -230,22 +231,24 @@
 
 (rf/defn update-balances
   {:events [:wallet/update-balances]}
-  [{{:keys [network-status :wallet/all-tokens
-            multiaccount :multiaccount/accounts]
-     :as   db}
+  [{{:keys         [network-status]
+     :wallet/keys  [all-tokens]
+     :profile/keys [profile wallet-accounts]
+     :as           db}
     :db
     :as cofx} addresses scan-all-tokens?]
   (log/debug "update-balances"
              "accounts"         addresses
              "scan-all-tokens?" scan-all-tokens?)
-  (let [addresses                        (or addresses (map (comp string/lower-case :address) accounts))
-        {:keys [:wallet/visible-tokens]} multiaccount
+  (let [addresses                        (or addresses
+                                             (map (comp string/lower-case :address) wallet-accounts))
+        {:keys [:wallet/visible-tokens]} profile
         chain                            (ethereum/chain-keyword db)
         assets                           (get visible-tokens chain)
         tokens                           (->> (vals all-tokens)
                                               (remove #(or (:hidden? %)
-                                                           ;;if not scan-all-tokens? remove not visible
-                                                           ;;tokens
+                                                           ;;if not scan-all-tokens? remove not
+                                                           ;;visible tokens
                                                            (and (not scan-all-tokens?)
                                                                 (not (get assets (:symbol %))))))
                                               (reduce (fn [acc {:keys [address symbol]}]
@@ -306,9 +309,9 @@
         (get-in db [:wallet :accounts])))
 
 (rf/defn update-toggle-in-settings
-  [{{:keys [multiaccount] :as db} :db :as cofx} symbol checked?]
+  [{{:profile/keys [profile] :as db} :db :as cofx} symbol checked?]
   (let [chain          (ethereum/chain-keyword db)
-        visible-tokens (get multiaccount :wallet/visible-tokens)]
+        visible-tokens (get profile :wallet/visible-tokens)]
     (rf/merge cofx
               (multiaccounts.update/multiaccount-update
                :wallet/visible-tokens
@@ -353,7 +356,7 @@
   {:events [::tokens-found]}
   [{:keys [db] :as cofx} balances]
   (let [chain                (ethereum/chain-keyword db)
-        visible-tokens       (get-in db [:multiaccount :wallet/visible-tokens])
+        visible-tokens       (get-in db [:profile/profile :wallet/visible-tokens])
         chain-visible-tokens (into (or (config/default-visible-tokens chain)
                                        #{})
                                    (flatten (map keys (vals balances))))]
@@ -460,7 +463,7 @@
         amount-text (str (money/internal->formatted value symbol decimals))]
     {:db       (assoc db
                       :wallet/prepare-transaction
-                      {:from               (ethereum/get-default-account (:multiaccount/accounts db))
+                      {:from               (ethereum/get-default-account (:profile/wallet-accounts db))
                        :to                 (or (get-in db [:contacts/contacts identity])
                                                (-> identity
                                                    contact.db/public-key->new-contact
@@ -515,7 +518,7 @@
     (cond-> {:db       (assoc db
                               :wallet/prepare-transaction
                               {:from       (ethereum/get-default-account
-                                            (:multiaccount/accounts db))
+                                            (:profile/wallet-accounts db))
                                :to         contact
                                :symbol     :ETH
                                :from-chat? true})
@@ -535,7 +538,7 @@
   (let [identity (:current-chat-id db)]
     {:db       (assoc db
                       :wallet/prepare-transaction
-                      {:from             (ethereum/get-default-account (:multiaccount/accounts db))
+                      {:from             (ethereum/get-default-account (:profile/wallet-accounts db))
                        :to               (or (get-in db [:contacts/contacts identity])
                                              (-> identity
                                                  contact.db/public-key->new-contact
@@ -709,7 +712,7 @@
 (rf/defn check-recent-history
   [{:keys [db] :as cofx}
    {:keys [on-recent-history-fetching force-restart?]}]
-  (let [addresses   (map :address (get db :multiaccount/accounts))
+  (let [addresses   (map :address (get db :profile/wallet-accounts))
         old-timeout (get db :wallet-service/restart-timeout)
         timeout     (if force-restart?
                       old-timeout
@@ -729,8 +732,8 @@
   [{:keys [db] :as cofx}
    {:keys [force-restart? on-recent-history-fetching]
     :as   params}]
-  (when (:multiaccount db)
-    (let [syncing-allowed? (mobile-network-utils/syncing-allowed? cofx)
+  (when (:profile/profile db)
+    (let [syncing-allowed? (utils.mobile-sync/syncing-allowed? cofx)
           binance-chain?   (ethereum/binance-chain? db)]
       (log/info "restart-wallet-service"
                 "force-restart?"   force-restart?
@@ -832,7 +835,7 @@
 (rf/defn wallet-will-focus
   {:events [::wallet-stack]}
   [{:keys [db]}]
-  (let [wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])
+  (let [wallet-set-up-passed? (get-in db [:profile/profile :wallet-set-up-passed?])
         sign-phrase-showed?   (get db :wallet/sign-phrase-showed?)]
     {:dispatch-n [[:wallet.ui/pull-to-refresh]] ;TODO temporary simple fix for v1
      ;;[:show-popover {:view [signing-phrase/signing-phrase]}]]
@@ -927,6 +930,7 @@
      :on-error          #(log/info "Initial blocks range was not set")})))
 
 (rf/defn set-initial-blocks-range
+  {:events [:wallet/set-initial-blocks-range]}
   [{:keys [db]}]
   {:db                (assoc db :wallet/new-account true)
    ::set-inital-range nil})
@@ -983,15 +987,15 @@
   {::get-pending-transactions nil})
 
 (defn normalize-transaction
-  [db {:keys [symbol gasPrice gasLimit value from to] :as transaction}]
-  (let [symbol (keyword symbol)
-        token  (tokens/symbol->token (:wallet/all-tokens db) symbol)]
+  [db {:keys [gasPrice gasLimit value from to] :as transaction}]
+  (let [sym   (-> transaction :symbol keyword)
+        token (tokens/symbol->token (:wallet/all-tokens db) sym)]
     (-> transaction
         (select-keys [:timestamp :hash :data])
         (assoc :from      (eip55/address->checksum from)
                :to        (eip55/address->checksum to)
                :type      :pending
-               :symbol    symbol
+               :symbol    sym
                :token     token
                :value     (money/bignumber value)
                :gas-price (money/bignumber gasPrice)
@@ -1027,6 +1031,12 @@
   {::async-storage/set! {:transactions-management-enabled? enabled?}
    :db                  (assoc db :wallet/transactions-management-enabled? enabled?)})
 
+(re-frame/reg-fx
+ :wallet/initialize-transactions-management-enabled
+ (fn []
+   (let [callback #(re-frame/dispatch [:multiaccounts.ui/switch-transactions-management-enabled %])]
+     (async-storage/get-item :transactions-management-enabled? callback))))
+
 (rf/defn update-current-block
   {:events [::update-current-block]}
   [{:keys [db]} block]
@@ -1043,3 +1053,178 @@
 (rf/defn request-current-block-update
   [_]
   {::request-current-block-update nil})
+
+
+(defn normalize-tokens
+  [network-id tokens]
+  (mapv #(-> %
+             (update :symbol keyword)
+             ((partial tokens/update-icon (ethereum/chain-id->chain-keyword (int network-id)))))
+        tokens))
+
+(re-frame/reg-fx
+ :wallet/get-tokens
+ (fn [[network-id accounts recovered-account?]]
+   (utils.utils/set-timeout
+    (fn []
+      (json-rpc/call {:method     "wallet_getTokens"
+                      :params     [(int network-id)]
+                      :on-success #(re-frame/dispatch [:wallet/initialize-wallet
+                                                       accounts
+                                                       (normalize-tokens network-id %)
+                                                       nil nil
+                                                       recovered-account?
+                                                       true])}))
+    2000)))
+
+(re-frame/reg-fx
+ ;;TODO: this could be replaced by a single API call on status-go side
+ :wallet/initialize-wallet
+ (fn [[network-id network callback]]
+   (-> (js/Promise.all
+        (clj->js
+         [(js/Promise.
+           (fn [resolve reject]
+             (json-rpc/call {:method     "accounts_getAccounts"
+                             :on-success resolve
+                             :on-error   reject})))
+          (js/Promise.
+           (fn [resolve _]
+             (json-rpc/call
+              {:method "wallet_addEthereumChain"
+               :params
+               [{:isTest                 false
+                 :tokenOverrides         []
+                 :rpcUrl                 (get-in network [:config :UpstreamConfig :URL])
+                 :chainColor             "green"
+                 :chainName              (:name network)
+                 :nativeCurrencyDecimals 10
+                 :shortName              "erc20"
+                 :layer                  1
+                 :chainId                (int network-id)
+                 :enabled                false
+                 :fallbackURL            (get-in network [:config :UpstreamConfig :URL])}]
+               :on-success resolve
+               :on-error (fn [_] (resolve nil))})))
+          (js/Promise.
+           (fn [resolve _]
+             (json-rpc/call {:method     "wallet_getTokens"
+                             :params     [(int network-id)]
+                             :on-success resolve
+                             :on-error   (fn [_]
+                                           (resolve nil))})))
+          (js/Promise.
+           (fn [resolve reject]
+             (json-rpc/call {:method     "wallet_getCustomTokens"
+                             :on-success resolve
+                             :on-error   reject})))
+          (js/Promise.
+           (fn [resolve reject]
+             (json-rpc/call {:method     "wallet_getSavedAddresses"
+                             :on-success resolve
+                             :on-error   reject})))]))
+       (.then (fn [[accounts _ tokens custom-tokens favourites]]
+                (callback accounts
+                          (normalize-tokens network-id tokens)
+                          (mapv #(update % :symbol keyword) custom-tokens)
+                          (filter :favourite favourites))))
+       (.catch (fn [_]
+                 (log/error "Failed to initialize wallet"))))))
+
+(defn rpc->accounts
+  [accounts]
+  (reduce (fn [acc {:keys [chat type wallet] :as account}]
+            (if chat
+              acc
+              (let [account (cond-> (update account
+                                            :address
+                                            eip55/address->checksum)
+                              type
+                              (update :type keyword))]
+                ;; if the account is the default wallet we put it first in the list
+                (if wallet
+                  (into [account] acc)
+                  (conj acc account)))))
+          []
+          accounts))
+
+;;TODO remove this code after all invalid names will be fixed (ask chu or flexsurfer)
+(def invalid-addrr
+  #{"0x9575cf381f71368a54e09b8138ebe046a1ef31ce93e6c37661513b21faaf741e"
+    "0x56fa5de8cd4f2a3cbc122e7c51ac8690c6fc739b7c3724add97d0c55cc783d45"
+    "0xf0e49d178fa34ac3ade4625e144f51e5f982434f0912bcbe23b6467343f48305"
+    "0x60d1bf67e9d0d34368a6422c55f034230cc0997b186dd921fd18e89b7f0df5f2"
+    "0x5fe69d562990616a02f4a5f934aa973b27bf02c4fc774f9ad82f105379f16789"
+    "0xf1cabf2d74576ef76dfcb1182fd59a734a26c95ea6e68fc8f91ca4bfa1ea0594"
+    "0x21d8ce6c0e32481506f98218920bee88f03d9c1b45dab3546948ccc34b1aadea"
+    "0xbf7a74b39090fb5b1366f61fb4ac3ecc4b7f99f0fd3cb326dc5c18c58d58d7b6"
+    "0xeeb570494d442795235589284100812e4176e9c29d151a81df43b6286ef66c49"
+    "0x86a12d91c813f69a53349ff640e32af97d5f5c1f8d42d54cf4c8aa8dea231955"
+    "0x0011a30f5b2023bc228f6dd5608b3e7149646fa83f33350926ceb1925af78f08"})
+
+(rf/defn check-invalid-ens
+  [{:keys [db]}]
+  (async-storage/get-item
+   :invalid-ens-name-seen
+   (fn [already-seen]
+     (when (and (not already-seen)
+                (boolean (get invalid-addrr
+                              (ethereum/sha3 (string/lower-case (ethereum/default-address db))))))
+       (utils.utils/show-popup
+        (i18n/label :t/warning)
+        (i18n/label :t/ens-username-invalid-name-warning)
+        #(async-storage/set-item! :invalid-ens-name-seen true)))))
+  nil)
+
+(re-frame/reg-fx
+ ::enable-local-notifications
+ (fn []
+   (native-module/start-local-notifications)))
+
+(rf/defn initialize-wallet
+  {:events [:wallet/initialize-wallet]}
+  [{:keys [db] :as cofx} accounts tokens custom-tokens
+   favourites scan-all-tokens? new-account?]
+  (rf/merge
+   cofx
+   {:db                          (assoc db
+                                        :profile/wallet-accounts
+                                        (rpc->accounts accounts))
+    ;; NOTE: Local notifications should be enabled only after wallet was started
+    ::enable-local-notifications nil
+    :dispatch-n                  [(when (or (not (utils.mobile-sync/syncing-allowed? cofx))
+                                            (ethereum/binance-chain? db))
+                                    [:transaction/get-fetched-transfers])]}
+   (check-invalid-ens)
+   (initialize-tokens tokens custom-tokens)
+   (initialize-favourites favourites)
+   (get-pending-transactions)
+   (fetch-collectibles-collection)
+   (cond
+     (and new-account?
+          (not scan-all-tokens?))
+     (set-zero-balances (first accounts))
+
+     (and new-account?
+          scan-all-tokens?
+          (not (utils.mobile-sync/cellular? (:network/type db))))
+     (set-max-block (get (first accounts) :address) 0)
+
+     :else
+     (get-cached-balances scan-all-tokens?))
+   (when-not (get db :wallet/new-account)
+     (restart-wallet-service nil))
+   (when (ethereum/binance-chain? db)
+     (request-current-block-update))
+   (prices/update-prices)))
+
+(rf/defn update-wallet-accounts
+  [{:keys [db]} accounts]
+  (let [existing-accounts (into {} (map #(vector (:address %1) %1) (:profile/wallet-accounts db)))
+        reduce-fn         (fn [existing-accs new-acc]
+                            (let [address (:address new-acc)]
+                              (if (:removed new-acc)
+                                (dissoc existing-accs address)
+                                (assoc existing-accs address new-acc))))
+        new-accounts      (reduce reduce-fn existing-accounts (rpc->accounts accounts))]
+    {:db (assoc db :profile/wallet-accounts (vals new-accounts))}))

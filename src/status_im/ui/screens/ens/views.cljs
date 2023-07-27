@@ -611,7 +611,7 @@
 
 (defn- welcome
   []
-  (let [name (:name @(re-frame/subscribe [:multiaccount]))]
+  (let [name (:name @(re-frame/subscribe [:profile/profile]))]
     [react/view {:style {:flex 1}}
      [react/scroll-view {:content-container-style {:align-items :center}}
       [react/image
@@ -761,8 +761,8 @@
 
 (views/defview main
   []
-  (views/letsubs [{:keys [names multiaccount show? registrations]} [:ens.main/screen]]
+  (views/letsubs [{:keys [names profile/profile show? registrations]} [:ens.main/screen]]
     [react/keyboard-avoiding-view {:style {:flex 1}}
      (if (or (seq names) registrations)
-       [registered names multiaccount show? registrations]
+       [registered names profile show? registrations]
        [welcome])]))

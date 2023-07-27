@@ -14,8 +14,8 @@
            :error   colors/danger-60}})
 
 (defn get-color
-  [key]
-  (get-in themes [(theme/get-theme) key]))
+  [k]
+  (get-in themes [(theme/get-theme) k]))
 
 (defn info-message
   "[info-message opts \"message\"]

@@ -42,7 +42,7 @@
 (defn cool-preview
   []
   (let [state (reagent/atom {:primary-name   "Alisher Yakupov"
-                             :short-chat-key (address/get-shortened-key
+                             :short-chat-key (address/get-shortened-compressed-key
                                               "zQ3ssgRy5TtB47MMiMKMKaGyaawkCgMqqbrnAUYrZJ1sgt5N")
                              :ens-verified   true
                              :contact?       false

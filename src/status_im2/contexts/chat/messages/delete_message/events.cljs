@@ -52,19 +52,20 @@
   1. if the to-be deleted message is pinned
   2. if user has the permission to unpin message in current chat"
   [db {:keys [chat-id message-id]}]
-  (let [{:keys [group-chat chat-id public? community-id admins]} (get-in db [:chats chat-id])
-        community                                                (get-in db [:communities community-id])
-        community-admin?                                         (get community :admin false)
-        pub-key                                                  (get-in db [:multiaccount :public-key])
-        group-admin?                                             (get admins pub-key)
-        message-pin-enabled                                      (and (not public?)
-                                                                      (or (not group-chat)
-                                                                          (and group-chat
-                                                                               (or group-admin?
-                                                                                   community-admin?))))
-        pinned                                                   (get-in db
-                                                                         [:pin-messages chat-id
-                                                                          message-id])]
+  (let [{:keys [group-chat chat-id public? community-id
+                admins]}    (get-in db [:chats chat-id])
+        community           (get-in db [:communities community-id])
+        community-admin?    (get community :admin false)
+        pub-key             (get-in db [:profile/profile :public-key])
+        group-admin?        (get admins pub-key)
+        message-pin-enabled (and (not public?)
+                                 (or (not group-chat)
+                                     (and group-chat
+                                          (or group-admin?
+                                              community-admin?))))
+        pinned              (get-in db
+                                    [:pin-messages chat-id
+                                     message-id])]
     (and pinned message-pin-enabled)))
 
 (rf/defn delete
@@ -80,7 +81,7 @@
                   db
                   {:chat-id chat-id :message-id message-id})
 
-          pub-key (get-in db [:multiaccount :public-key])
+          pub-key (get-in db [:profile/profile :public-key])
 
           ;; compute deleted by
           message-from (get message :from)
@@ -106,7 +107,7 @@
        [[:toasts/close :delete-message-for-everyone]
         [:toasts/upsert
          {:id                                 :delete-message-for-everyone
-          :icon                               :info
+          :icon                               :i/info
           :icon-color                         colors/danger-50-opa-40
           :message-deleted-for-everyone-count toast-count
           :message-deleted-for-everyone-undos existing-undos

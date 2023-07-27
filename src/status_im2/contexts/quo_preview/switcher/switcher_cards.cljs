@@ -5,8 +5,8 @@
             [status-im2.constants :as constants]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.contexts.shell.components.switcher-cards.view :as switcher-cards]
-            [status-im2.contexts.shell.constants :as shell.constants]))
+            [status-im2.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 (def descriptor
   [{:label   "Type"
@@ -83,7 +83,7 @@
 
 ;; Mocked Data
 
-(def banner {:source (resources/get-mock-image :community-banner)})
+(def banner (resources/get-mock-image :community-banner))
 (def sticker {:source (resources/get-mock-image :sticker)})
 (def community-avatar {:source (resources/get-mock-image :community-logo)})
 (def gif {:source (resources/get-mock-image :gif)})
@@ -93,9 +93,9 @@
   [{:source (resources/get-mock-image :photo1)}
    {:source (resources/get-mock-image :photo2)}
    {:source (resources/get-mock-image :photo3)}
-   {:source (resources/get-mock-image :photo4)}
-   {:source (resources/get-mock-image :photo5)}
-   {:source (resources/get-mock-image :photo6)}])
+   {:source (resources/get-mock-image :photo1)}
+   {:source (resources/get-mock-image :photo2)}
+   {:source (resources/get-mock-image :photo3)}])
 
 (defn get-mock-content
   [data]

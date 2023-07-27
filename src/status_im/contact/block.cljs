@@ -6,7 +6,7 @@
             [status-im2.contexts.contacts.events :as contacts-store]
             [utils.re-frame :as rf]
             [status-im.utils.types :as types]
-            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.contexts.shell.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]))
 
 (rf/defn clean-up-chat
@@ -49,7 +49,7 @@
                     (assoc-in [:contacts/contacts public-key :added?] false))
             :dispatch [:shell/close-switcher-card public-key]
             :clear-message-notifications
-            [[public-key] (get-in db [:multiaccount :remote-push-notifications-enabled?])]}
+            [[public-key] (get-in db [:profile/profile :remote-push-notifications-enabled?])]}
            (activity-center/notifications-fetch-unread-count)
            fxs)))
 

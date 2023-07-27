@@ -61,9 +61,9 @@
 (def label (memoize label-fn))
 
 (defn label-pluralize
-  [count path & options]
+  [amount path & options]
   (if (exists? (.t i18n))
-    (.p i18n count (name path) (clj->js options))
+    (.p i18n amount (name path) (clj->js options))
     (name path)))
 
 (def locale

@@ -40,7 +40,7 @@
   (if (zero? value) (slide-animation value 0) (slide-animation value)))
 
 (defn animate-progress
-  [progress paused next-progress]
+  [progress paused? next-progress]
   (let [q (quot next-progress 25)]
     (reanimated/set-shared-value
      progress
@@ -53,7 +53,7 @@
         (animate-progress-value (animation-value q 4))
         (animate-progress-value (calculate-remainder next-progress drag-limit)))
        -1)
-      paused))))
+      paused?))))
 
 (defn get-next-progress
   [progress]
@@ -74,44 +74,87 @@
           (* progress-threshold)))))
 
 (defn use-initialize-animation
-  [progress paused animate?]
+  [progress paused? animate? is-dragging? drag-amount]
   (reset! progress (reanimated/use-shared-value 0))
-  (reset! paused (reanimated/use-shared-value false))
+  (reset! paused? (reanimated/use-shared-value false))
+  (reset! is-dragging? (reanimated/use-shared-value false))
+  (reset! drag-amount (reanimated/use-shared-value 0))
   (rn/use-effect
    (fn []
-     (animate-progress @progress @paused 0))
+     (animate-progress @progress @paused? 0))
    [animate?]))
 
 (defn cleanup-animation
-  [progress paused]
+  [progress paused?]
   (fn []
     (reanimated/cancel-animation @progress)
-    (reanimated/cancel-animation @paused)))
+    (reanimated/cancel-animation @paused?)))
 
 (defn update-progress
-  [progress paused new-progress]
+  [progress paused? new-progress]
   (reanimated/set-shared-value @progress new-progress)
-  (animate-progress @progress @paused new-progress))
+  (animate-progress @progress @paused? new-progress))
+
+(defn handle-drag
+  [event paused? is-dragging? drag-amount]
+  (let [translation-x (oops/oget event "translationX")]
+    (reanimated/set-shared-value @paused? true)
+    (reanimated/set-shared-value @is-dragging? true)
+    (reanimated/set-shared-value @drag-amount translation-x)))
 
 (defn drag-gesture
-  [progress paused]
+  [progress paused? is-dragging? drag-amount]
+  (-> (gesture/gesture-pan)
+      (gesture/max-pointers 1)
+      (gesture/on-start
+       (fn [event]
+         (handle-drag event paused? is-dragging? drag-amount)))
+      (gesture/on-update
+       (fn [event]
+         (handle-drag event paused? is-dragging? drag-amount)))
+      (gesture/on-end
+       (fn []
+         (reanimated/set-shared-value @is-dragging? false)
+         (reanimated/set-shared-value @paused? false)))
+      (gesture/on-finalize
+       (fn [event]
+         (let [next?     (< (oops/oget event "translationX") (- drag-limit))
+               previous? (> (oops/oget event "translationX") drag-limit)]
+           (when next?
+             (update-progress progress paused? (get-next-progress progress)))
+           (when previous?
+             (update-progress progress paused? (get-previous-progress progress))))))))
+
+(defn long-press-gesture
+  [paused?]
   (->
-    (gesture/gesture-pan)
+    (gesture/gesture-long-press)
     (gesture/enabled true)
-    (gesture/max-pointers 1)
+    (gesture/on-start
+     (fn []
+       (reanimated/set-shared-value @paused? true)))
     (gesture/on-finalize
-     (fn [event]
-       (let [next?     (< (oops/oget event "translationX") (- drag-limit))
-             previous? (> (oops/oget event "translationX") drag-limit)]
-         (when next?
-           (update-progress progress paused (get-next-progress progress)))
-         (when previous?
-           (update-progress progress paused (get-previous-progress progress))))))))
+     (fn []
+       (reanimated/set-shared-value @paused? false)))))
+
+(defn composed-gestures
+  [progress paused? is-dragging? drag-amount]
+  (let [long-press (long-press-gesture paused?)
+        drag       (drag-gesture progress paused? is-dragging? drag-amount)]
+    (gesture/simultaneous long-press drag)))
+
+(defn tap-gesture
+  [progress paused]
+  (-> (gesture/gesture-tap)
+      (gesture/on-end #(update-progress progress paused (get-next-progress progress)))))
 
 (defn carousel-left-position
-  [window-width animate? progress]
+  [window-width animate? progress is-dragging? drag-amount]
   (if animate?
-    (worklets.onboarding-carousel/carousel-left-position window-width @progress)
+    (worklets.onboarding-carousel/carousel-left-position window-width
+                                                         @progress
+                                                         @is-dragging?
+                                                         @drag-amount)
     (-> (or (reanimated/get-shared-value @progress) 0)
         (quot -25)
         (* window-width))))

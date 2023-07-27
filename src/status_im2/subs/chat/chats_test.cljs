@@ -37,14 +37,14 @@
   (testing "private group chat, user is a member"
     (let [chats {chat-id private-group-chat}]
       (swap! rf-db/app-db assoc
-        :multiaccount    multiaccount
+        :profile/profile multiaccount
         :current-chat-id chat-id
         :chats           chats)
       (is (true? (:able-to-send-message? (rf/sub [sub-name]))))))
   (testing "private group chat, user is not member"
     (let [chats {chat-id (dissoc private-group-chat :members)}]
       (swap! rf-db/app-db assoc
-        :multiaccount    multiaccount
+        :profile/profile multiaccount
         :current-chat-id chat-id
         :chats           chats)
       (is (not (:able-to-send-message? (rf/sub [sub-name]))))))
@@ -52,7 +52,7 @@
     (let [chats {chat-id one-to-one-chat}]
       (swap! rf-db/app-db assoc
         :contacts/contacts {chat-id {:contact-request-state constants/contact-request-state-mutual}}
-        :multiaccount      multiaccount
+        :profile/profile   multiaccount
         :current-chat-id   chat-id
         :chats             chats)
       (is (:able-to-send-message? (rf/sub [sub-name])))))
@@ -60,7 +60,7 @@
     (let [chats {chat-id one-to-one-chat}]
       (swap! rf-db/app-db assoc
         :contacts/contacts {chat-id {:contact-request-state constants/contact-request-state-sent}}
-        :multiaccount      multiaccount
+        :profile/profile   multiaccount
         :current-chat-id   chat-id
         :chats             chats)
       (is (not (:able-to-send-message? (rf/sub [sub-name])))))))
@@ -90,7 +90,7 @@
       (is (false? (:community? (rf/sub [sub-name]))))
       (swap! rf-db/app-db assoc
         :communities/enabled? true
-        :multiaccount         multiaccount
+        :profile/profile      multiaccount
         :current-chat-id      chat-id
         :chats                chats
         :communities          communities)
@@ -112,7 +112,7 @@
       (is (false? (:community? (rf/sub [sub-name]))))
       (swap! rf-db/app-db assoc
         :communities/enabled? true
-        :multiaccount         multiaccount
+        :profile/profile      multiaccount
         :current-chat-id      chat-id
         :chats                chats
         :communities          communities)
@@ -130,7 +130,7 @@
                                 #{public-key})}]
       (swap! rf-db/app-db assoc
         :communities/enabled? true
-        :multiaccount         multiaccount
+        :profile/profile      multiaccount
         :current-chat-id      chat-id
         :chats                chats)
       (is (= chat-id (:chat-id (rf/sub [sub-name]))))
@@ -148,7 +148,7 @@
                                 #{})}]
       (swap! rf-db/app-db assoc
         :communities/enabled? true
-        :multiaccount         multiaccount
+        :profile/profile      multiaccount
         :current-chat-id      chat-id
         :chats                chats)
       (is (= chat-id (:chat-id (rf/sub [sub-name]))))

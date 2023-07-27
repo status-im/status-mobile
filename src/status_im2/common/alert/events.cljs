@@ -5,17 +5,25 @@
 
 (defn show-popup
   ([title content]
-   (show-popup title content nil))
+   (show-popup title content nil nil))
   ([title content on-dismiss]
-   (rn/alert
-    title
-    content
-    (vector (merge {:text                "OK"
-                    :style               "cancel"
-                    :accessibility-label :cancel-button}
-                   (when on-dismiss {:onPress on-dismiss})))
-    (when on-dismiss
-      {:cancelable false}))))
+   (show-popup title content on-dismiss nil))
+  ([title content on-dismiss action-button]
+   (let [dismiss-button
+         (merge {:text                "OK"
+                 :style               "cancel"
+                 :accessibility-label :cancel-button}
+                (when on-dismiss {:onPress on-dismiss}))]
+     (rn/alert
+      title
+      content
+      (if action-button
+        (vector
+         action-button
+         dismiss-button)
+        dismiss-button)
+      (when on-dismiss
+        {:cancelable false})))))
 
 (re-frame/reg-fx
  :utils/show-popup

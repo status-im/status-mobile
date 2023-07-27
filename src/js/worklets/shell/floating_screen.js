@@ -1,4 +1,4 @@
-import { useDerivedValue, withTiming, withSequence, withDelay, Easing } from 'react-native-reanimated';
+import { useDerivedValue, withTiming, withSequence, withDelay, Easing, runOnJS } from 'react-native-reanimated';
 import * as constants from './constants';
 
 // Derived Values
@@ -87,4 +87,62 @@ export function screenZIndex(screenState) {
         return 1;
     }
   });
+}
+
+export function screenBorderRadius(screenState) {
+  return useDerivedValue(function () {
+    'worklet';
+    switch (screenState.value) {
+      case constants.OPEN_SCREEN_WITH_SHELL_ANIMATION:
+        return withDelay(constants.SHELL_ANIMATION_TIME, withTiming(0, { duration: 0 }));
+      case constants.OPEN_SCREEN_WITH_SLIDE_ANIMATION:
+      case constants.OPEN_SCREEN_WITHOUT_ANIMATION:
+        return 0;
+      case constants.CLOSE_SCREEN_WITH_SLIDE_ANIMATION:
+        return withDelay(constants.SHELL_ANIMATION_TIME, withTiming(20, { duration: 0 }));
+      case constants.CLOSE_SCREEN_WITHOUT_ANIMATION:
+      case constants.CLOSE_SCREEN_WITH_SHELL_ANIMATION:
+        return 20;
+    }
+  });
+}
+
+export function screenGestureOnUpdate(screenLeft) {
+  return function (event) {
+    'worklet';
+    const absoluteX = event.absoluteX;
+    if (absoluteX !== null) {
+      screenLeft.value = event.absoluteX;
+    }
+  };
+}
+
+export function screenGestureOnEnd(data) {
+  return function (event) {
+    'worklet';
+
+    const { screenLeft, screenState, screenWidth, leftVelocity, rightVelocity, screenClosedCallback } = data;
+    const absoluteX = event.absoluteX ?? 0;
+    const velocityX = event.velocityX ?? 0;
+    const closeScreen = velocityX > rightVelocity || (velocityX > leftVelocity && absoluteX >= screenWidth / 2);
+
+    // Velocity (points/sec) = Distance/time
+    var animationVelocity = (screenWidth * 1000) / constants.SHELL_ANIMATION_TIME;
+
+    if (Math.abs(velocityX) > animationVelocity) {
+      animationVelocity = velocityX; // Faster fling
+    }
+
+    const newDistance = closeScreen ? screenWidth - absoluteX : absoluteX;
+    const animationTime = (newDistance * 1000) / animationVelocity;
+
+    screenLeft.value = withTiming(closeScreen ? screenWidth : 0, {
+      duration: animationTime,
+      easing: Easing.bezier(0, 0, 0.58, 1),
+    });
+
+    if (closeScreen) {
+      runOnJS(screenClosedCallback)(animationTime);
+    }
+  };
 }

@@ -2,11 +2,12 @@
   (:require
     [quo2.components.counter.step.style :as style]
     [quo2.components.markdown.text :as text]
+    [quo2.theme :as theme]
     [react-native.core :as rn]
     [utils.number]))
 
-(defn step
-  [{:keys [type accessibility-label override-theme in-blur-view?]} value]
+(defn step-internal
+  [{:keys [type accessibility-label theme in-blur-view? customization-color]} value]
   (let [type  (or type :neutral)
         value (utils.number/parse-int value)
         label (str value)
@@ -14,8 +15,14 @@
     [rn/view
      {:accessible          true
       :accessibility-label (or accessibility-label :step-counter)
-      :style               (style/container size type in-blur-view? override-theme)}
+      :style               (style/container {:size                size
+                                             :type                type
+                                             :in-blur-view?       in-blur-view?
+                                             :theme               theme
+                                             :customization-color customization-color})}
      [text/text
       {:weight :medium
        :size   :label
-       :style  {:color (style/text-color type override-theme)}} label]]))
+       :style  {:color (style/text-color type theme)}} label]]))
+
+(def step (theme/with-theme step-internal))

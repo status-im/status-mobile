@@ -75,7 +75,7 @@
 (rf/defn save
   {:events [:fleet.ui/save-fleet-confirmed]}
   [{:keys [db now] :as cofx} fleet]
-  (let [old-fleet (get-in db [:multiaccount :fleet])]
+  (let [old-fleet (get-in db [:profile/profile :fleet])]
     (when (not= fleet old-fleet)
       (rf/merge
        cofx

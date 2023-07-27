@@ -82,7 +82,7 @@
 
 (re-frame/reg-sub
  :mailserver/preferred-id
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (get-in multiaccount
            [:pinned-mailservers (fleet/current-fleet-sub multiaccount)])))

@@ -42,43 +42,6 @@
    (assoc cofx :signing-phrase (signing-phrase/generate))))
 
 (re-frame/reg-fx
- ::store-multiaccount
- (fn [[id key-uid hashed-password callback]]
-   (native-module/multiaccount-store-derived
-    id
-    key-uid
-    [constants/path-wallet-root
-     constants/path-eip1581
-     constants/path-whisper
-     constants/path-default-wallet]
-    hashed-password
-    callback)))
-
-(rf/defn create-multiaccount
-  {:events [:create-multiaccount]}
-  [{:keys [db]} key-code]
-  (let [{:keys [selected-id]} (:intro-wizard db)]
-    {::store-multiaccount
-     [selected-id
-      (some
-       (fn [{:keys [id key-uid]}]
-         (when (= id selected-id)
-           key-uid))
-       (get-in db [:intro-wizard :multiaccounts]))
-      (ethereum/sha3 (security/safe-unmask-data key-code))
-      (fn [result]
-        (let [derived-data (normalize-derived-data-keys (types/json->clj result))
-              public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
-          (native-module/gfycat-identicon-async
-           public-key
-           (fn [name _]
-             (let [derived-whisper       (derived-data constants/path-whisper-keyword)
-                   derived-data-extended (assoc-in derived-data
-                                          [constants/path-whisper-keyword]
-                                          (assoc derived-whisper :name name))]
-               (re-frame/dispatch [::store-multiaccount-success key-code derived-data-extended]))))))]}))
-
-(re-frame/reg-fx
  :multiaccount-generate-and-derive-addresses
  (fn []
    (native-module/multiaccount-generate-and-derive-addresses
@@ -115,10 +78,6 @@
                                                                 (dissoc :recovering?)))
                                                    (dissoc :recovered-account?))
    :multiaccount-generate-and-derive-addresses nil})
-
-(rf/defn prepare-intro-wizard
-  [{:keys [db]}]
-  {:db (assoc db :intro-wizard {})})
 
 (rf/defn save-multiaccount-and-login-with-keycard
   [_ args]
@@ -225,13 +184,13 @@
                  :keycard-pairing      keycard-pairing
                  :keycard-paired-on    keycard-paired-on))
         db (assoc db
-                  :multiaccounts/login      {:key-uid    key-uid
+                  :profile/login            {:key-uid    key-uid
                                              :name       name
                                              :password   password
                                              :creating?  true
                                              :processing true}
-                  :multiaccount             new-multiaccount
-                  :multiaccount/accounts    [wallet-account]
+                  :profile/profile          new-multiaccount
+                  :profile/wallet-accounts  [wallet-account]
                   :networks/current-network config/default-network
                   :networks/networks        (data-store.settings/rpc->networks config/default-networks))
         settings (assoc new-multiaccount
@@ -255,27 +214,3 @@
                  settings
                  (node/get-new-config db)
                  accounts-data)))))
-
-(rf/defn store-multiaccount-success
-  {:events       [::store-multiaccount-success]
-   :interceptors [(re-frame/inject-cofx :random-guid-generator)
-                  (re-frame/inject-cofx ::get-signing-phrase)]}
-  [{:keys [db] :as cofx} password derived]
-  (rf/merge cofx
-            {:db (dissoc db :intro-wizard)}
-            (on-multiaccount-created (assoc (let [{:keys [selected-id multiaccounts]} (:intro-wizard db)]
-                                              (some #(when (= selected-id (:id %)) %) multiaccounts))
-                                            :derived   derived
-                                            :recovered (get-in db [:intro-wizard :recovering?]))
-                                     password
-                                     {:save-mnemonic? true})))
-
-(rf/defn on-key-selected
-  {:events [:intro-wizard/on-key-selected]}
-  [{:keys [db]} id]
-  {:db (assoc-in db [:intro-wizard :selected-id] id)})
-
-(rf/defn on-key-storage-selected
-  {:events [:intro-wizard/on-key-storage-selected]}
-  [{:keys [db]} storage-type]
-  {:db (assoc-in db [:intro-wizard :selected-storage-type] storage-type)})

@@ -403,11 +403,11 @@ class Button(BaseElement):
         self.wait_for_visibility_of_element(sec)
         self.click()
 
-    def click_until_absense_of_element(self, desired_element, attempts=3):
+    def click_until_absense_of_element(self, desired_element, attempts=3, timeout=1):
         counter = 0
         self.driver.info("Click until `%s` by `%s`: `%s` is NOT presented" % (
             desired_element.name, desired_element.by, desired_element.locator))
-        while desired_element.is_element_displayed(1) and counter <= attempts:
+        while desired_element.is_element_displayed(timeout) and counter <= attempts:
             try:
                 self.find_element().click()
                 counter += 1

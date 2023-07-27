@@ -30,7 +30,7 @@
 
 (defn manage
   []
-  (let [accounts (rf/sub [:multiaccount/accounts])]
+  (let [accounts (rf/sub [:profile/wallet-accounts])]
     [list/flat-list
      {:key-fn    :address
       :data      accounts

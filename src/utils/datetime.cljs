@@ -5,10 +5,36 @@
             [cljs-time.format :as t.format]
             [clojure.string :as string]
             [utils.i18n :as i18n]
-            [utils.i18n-goog :as i18n-goog]
-            [status-im2.constants :as constants]))
+            [utils.i18n-goog :as i18n-goog]))
 
 (defn now [] (t/now))
+
+(def ^:const int->weekday
+  "Maps the corresponding string representation of a weekday
+   By it's numeric index as in cljs-time"
+  {1 "mon"
+   2 "tue"
+   3 "wed"
+   4 "thu"
+   5 "fri"
+   6 "sat"
+   7 "sun"})
+
+(def ^:const months
+  "Maps the corresponding string representation of a weekday
+   By it's numeric index as in cljs-time"
+  {1  "jan"
+   2  "feb"
+   3  "mar"
+   4  "apr"
+   5  "may"
+   6  "jun"
+   7  "jul"
+   8  "aug"
+   9  "sep"
+   10 "oct"
+   11 "nov"
+   12 "dec"})
 
 (def one-second 1000)
 (def minute (* 60 one-second))
@@ -122,9 +148,8 @@
 (defn- to-str
   [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
   (let [date      (t.coerce/from-long ms)
-        local     (t/plus date time-zone-offset) ; NOTE(edge-case): this is wrong, it uses the current
-                                                 ; timezone offset,
-                                                 ; regardless of DST
+        ;; NOTE(edge-case): this is wrong, it uses the current timezone offset, regardless of DST.
+        local     (t/plus date time-zone-offset)
         today     (t/minus (t/today-at-midnight) time-zone-offset)
         yesterday (t/plus today (t/days -1))]
     (cond
@@ -209,15 +234,15 @@
                    :number         diff
                    :time-intervals name}))))
 (defn seconds-ago
-  [time]
+  [date-time]
   (let [now (t/now)]
-    (if (<= (.getTime ^js time) (.getTime ^js now))
-      (t/in-seconds (t/interval time now))
+    (if (<= (.getTime ^js date-time) (.getTime ^js now))
+      (t/in-seconds (t/interval date-time now))
       0)))
 
 (defn time-ago
-  [time]
-  (let [diff (seconds-ago time)
+  [date-time]
+  (let [diff (seconds-ago date-time)
         unit (first (drop-while #(and (>= diff (:limit %))
                                       (:limit %))
                                 units))]
@@ -227,8 +252,8 @@
         (format-time-ago unit))))
 
 (defn time-ago-long
-  [time]
-  (let [seconds-ago (seconds-ago time)
+  [date-time]
+  (let [seconds-ago (seconds-ago date-time)
         unit        (first (drop-while #(and (>= seconds-ago (:limit %))
                                              (:limit %))
                                        units))
@@ -271,35 +296,3 @@
 (def ^:const go-default-time
   "Zero value for golang's time var"
   "0001-01-01T00:00:00Z")
-
-(defn- add-leading-zero
-  [input-string]
-  (if (> 10 input-string)
-    (str "0" input-string)
-    input-string))
-
-(defn format-mute-till
-  [muted-till-string]
-  (let [parsed-time       (t.format/parse (t.format/formatters :date-time-no-ms) muted-till-string)
-        hours-and-minutes (str (add-leading-zero (t/hour (t/plus parsed-time time-zone-offset)))
-                               ":"
-                               (add-leading-zero (t/minute parsed-time)))
-        when-to-unmute    (cond (= go-default-time
-                                   muted-till-string)   (i18n/label :t/until-you-turn-it-back-on)
-                                (today? parsed-time)    (str hours-and-minutes " today")
-                                (tomorrow? parsed-time) (str hours-and-minutes " tomorrow")
-                                :else                   (str hours-and-minutes
-                                                             " "
-                                                             (i18n/label
-                                                              (keyword "t"
-                                                                       (get constants/int->weekday
-                                                                            (t/day-of-week
-                                                                             parsed-time))))
-                                                             " "
-                                                             (t/day parsed-time)
-                                                             " "
-                                                             (i18n/label
-                                                              (keyword "t"
-                                                                       (get constants/months
-                                                                            (t/month parsed-time))))))]
-    when-to-unmute))

@@ -15,17 +15,17 @@
     {:width (min width max-width) :height (min height max-height)}))
 
 (defn image-message
-  [index {:keys [content image-width image-height message-id] :as message} on-long-press]
+  [index {:keys [content image-width image-height message-id] :as message} {:keys [on-long-press]}]
   (let [insets            (safe-area/get-insets)
         dimensions        (calculate-dimensions (or image-width 1000) (or image-height 1000))
         shared-element-id (rf/sub [:shared-element-id])
         image-local-url   (http/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     [:<>
      (when (= index 0)
-       [rn/view {:style {:margin-bottom 10}} [text/text-content message]])
+       [text/text-content message])
      [rn/touchable-opacity
       {:active-opacity 1
-       :style          {:margin-top (when (pos? index) 10)}
+       :style          {:margin-top 4}
        :on-long-press  on-long-press
        :on-press       #(rf/dispatch [:chat.ui/navigate-to-lightbox
                                       message-id

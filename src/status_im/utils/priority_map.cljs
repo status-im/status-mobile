@@ -191,12 +191,14 @@
   (PersistentPriorityMap. (sorted-map) {} {} identity nil))
 
 (defn- pm-empty-by
-  [comparator]
-  (PersistentPriorityMap. (sorted-map-by comparator) {} {} identity nil))
+  [f-comparator]
+  (PersistentPriorityMap. (sorted-map-by f-comparator) {} {} identity nil))
 
 (defn- pm-empty-keyfn
-  ([keyfn] (PersistentPriorityMap. (sorted-map) {} {} keyfn nil))
-  ([keyfn comparator] (PersistentPriorityMap. (sorted-map-by comparator) {} {} keyfn nil)))
+  ([keyfn]
+   (PersistentPriorityMap. (sorted-map) {} {} keyfn nil))
+  ([keyfn f-comparator]
+   (PersistentPriorityMap. (sorted-map-by f-comparator) {} {} keyfn nil)))
 
 (defn- read-priority-map
   [elems]
@@ -221,9 +223,9 @@
   "keyval => key val
   Returns a new priority map with supplied
   mappings, using the supplied comparator."
-  ([comparator & keyvals]
+  ([f-comparator & keyvals]
    (loop [in  (seq keyvals)
-          out (pm-empty-by comparator)]
+          out (pm-empty-by f-comparator)]
      (if in
        (recur (nnext in) (assoc out (first in) (second in)))
        out))))
@@ -243,9 +245,9 @@
   "keyval => key val
   Returns a new priority map with supplied
   mappings, using the supplied keyfn and comparator."
-  ([keyfn comparator & keyvals]
+  ([keyfn f-comparator & keyvals]
    (loop [in  (seq keyvals)
-          out (pm-empty-keyfn keyfn comparator)]
+          out (pm-empty-keyfn keyfn f-comparator)]
      (if in
        (recur (nnext in) (assoc out (first in) (second in)))
        out))))

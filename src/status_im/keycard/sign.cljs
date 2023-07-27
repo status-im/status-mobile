@@ -4,7 +4,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.common :as common]
             [utils.re-frame :as rf]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 
@@ -12,7 +12,7 @@
   {:events [:keycard/sign]}
   [{:keys [db] :as cofx} hash on-success]
   (let [card-connected?     (get-in db [:keycard :card-connected?])
-        key-uid             (get-in db [:multiaccount :key-uid])
+        key-uid             (get-in db [:profile/profile :key-uid])
         keycard-key-uid     (get-in db [:keycard :application-info :key-uid])
         keycard-pin-retries (get-in db [:keycard :application-info :pin-retry-counter])
         keycard-match?      (= key-uid keycard-key-uid)
@@ -28,7 +28,7 @@
                                (when (ethereum/address= from address)
                                  (reduced path)))
                              nil
-                             (:multiaccount/accounts db))]
+                             (:profile/wallet-accounts db))]
     (cond
       (not keycard-match?)
       (common/show-wrong-keycard-alert cofx)
@@ -38,8 +38,8 @@
                 {:db (assoc-in db [:signing/sign :keycard-step] :signing)}
                 (common/set-on-card-connected :keycard/sign))
 
-      (pos? keycard-pin-retries) ; if 0, get-application-info will have already closed the connection
-                                 ; sheet and opened the frozen card popup
+      (pos? keycard-pin-retries) ; if 0, get-application-info will have already closed the
+                                 ; connection sheet and opened the frozen card popup
       {:db           (-> db
                          (assoc-in [:keycard :card-read-in-progress?] true)
                          (assoc-in [:keycard :pin :status] :verifying))

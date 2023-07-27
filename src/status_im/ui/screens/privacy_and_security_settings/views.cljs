@@ -3,8 +3,6 @@
             [re-frame.core :as re-frame]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
-            [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.multiaccounts.key-storage.core :as key-storage]
             [status-im.multiaccounts.reset-password.core :as reset-password]
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im.ui.components.common.common :as components.common]
@@ -33,11 +31,9 @@
                           webview-allow-permission-requests?
                           opensea-enabled?
                           profile-pictures-visibility]}
-                  [:multiaccount]
+                  [:profile/profile]
                   has-picture [:profile/has-picture]
-                  supported-biometric-auth [:supported-biometric-auth]
                   keycard? [:keycard-multiaccount?]
-                  auth-method [:auth-method]
                   profile-pictures-show-to [:multiaccount/profile-pictures-show-to]]
     [react/scroll-view {:padding-vertical 8}
      [quo/list-header (i18n/label :t/security)]
@@ -49,18 +45,6 @@
        :chevron             (boolean mnemonic)
        :accessory           (when mnemonic [components.common/counter {:size 22} 1])
        :on-press            #(re-frame/dispatch [:navigate-to :backup-seed])}]
-     (when supported-biometric-auth
-       [quo/list-item
-        {:size                :small
-         :title               (str (i18n/label :t/lock-app-with)
-                                   " "
-                                   (biometric/get-label supported-biometric-auth))
-         :active              (= auth-method "biometric")
-         :accessibility-label :biometric-auth-settings-switch
-         :accessory           :switch
-         :on-press            #(re-frame/dispatch [:multiaccounts.ui/biometric-auth-switched
-                                                   ((complement boolean)
-                                                    (= auth-method "biometric"))])}])
      [separator]
      [quo/list-header (i18n/label :t/privacy)]
      [quo/list-item
@@ -127,14 +111,6 @@
          :on-press           #(re-frame/dispatch
                                [:multiaccounts.ui/webview-permission-requests-switched
                                 ((complement boolean) webview-allow-permission-requests?)])}])
-     (when (not keycard?)
-       [quo/list-item
-        {:size                :small
-         :title               (i18n/label :t/manage-keys-and-storage)
-         :chevron             true
-         :on-press            #(re-frame/dispatch [::key-storage/logout-and-goto-key-storage])
-         :accessibility-label :key-managment}])
-
      [separator]
      [quo/list-header (i18n/label :t/privacy-photos)]
      [quo/list-item
@@ -174,7 +150,7 @@
 
 (views/defview profile-pic-show-to
   []
-  (views/letsubs [{:keys [profile-pictures-show-to]} [:multiaccount]]
+  (views/letsubs [{:keys [profile-pictures-show-to]} [:profile/profile]]
     [react/view {:margin-top 8}
      [ppst-radio-item constants/profile-pictures-show-to-everyone profile-pictures-show-to]
      [ppst-radio-item constants/profile-pictures-show-to-contacts-only profile-pictures-show-to]
@@ -194,7 +170,7 @@
 
 (views/defview profile-pic
   []
-  (views/letsubs [{:keys [profile-pictures-visibility]} [:multiaccount]]
+  (views/letsubs [{:keys [profile-pictures-visibility]} [:profile/profile]]
     [react/view {:margin-top 8}
      [ppvf-radio-item constants/profile-pictures-visibility-everyone profile-pictures-visibility]
      [ppvf-radio-item constants/profile-pictures-visibility-contacts-only profile-pictures-visibility]

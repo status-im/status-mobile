@@ -33,10 +33,14 @@
       (let [{:keys [group-chat chat-id public-key color
                     profile-picture name]} context
             id                             (or chat-id public-key)
-            display-name                   (or
-                                            name
-                                            (when-not group-chat
-                                              (rf/sub [:contacts/contact-name-by-identity id])))
+            contact-name-by-identity       (when-not group-chat
+                                             (rf/sub [:contacts/contact-name-by-identity id]))
+            display-name                   (cond
+                                             (= contact-name-by-identity
+                                                "Unknown") name
+                                             (= contact-name-by-identity
+                                                nil)       name
+                                             :else         contact-name-by-identity)
             contact                        (when-not group-chat
                                              (rf/sub [:contacts/contact-by-address
                                                       id]))

@@ -4,6 +4,9 @@
             [quo2.core :as quo]
             [status-im2.contexts.communities.actions.see-rules.view :as see-rules]
             [status-im2.contexts.communities.actions.leave.view :as leave-menu]
+            [status-im2.common.mute-drawer.view :as mute-options]
+            [status-im2.constants :as constants]
+            [status-im2.common.muting.helpers :refer [format-mute-till]]
             [status-im2.contexts.communities.actions.token-gating.view :as token-gating]))
 
 (defn hide-sheet-and-dispatch
@@ -45,12 +48,26 @@
    :on-press            #(hide-sheet-and-dispatch [:chat.ui/mark-all-read-in-community-pressed id])})
 
 (defn mute-community
-  [_ muted?]
-  {:icon                (if muted? :i/muted :i/activity-center)
-   :accessibility-label (if muted? :unmute-community :mute-community)
-   :label               (i18n/label (if muted? :t/unmute-community :t/mute-community))
-   :sub-label           (when muted? (str "muted for 15 minutes"))
-   :right-icon          :i/chevron-right})
+  [id muted? muted-till]
+  (let [time-string (fn [mute-title mute-duration]
+                      (i18n/label mute-title {:duration mute-duration}))]
+    {:icon                (if muted? :i/muted :i/activity-center)
+     :accessibility-label (if muted? :unmute-community :mute-community)
+     :label               (i18n/label (if muted? :t/unmute-community :t/mute-community))
+     :sub-label           (when (and muted? (some? muted-till))
+                            (time-string :t/muted-until (format-mute-till muted-till)))
+     :right-icon          :i/chevron-right
+     :on-press            (if muted?
+                            #(hide-sheet-and-dispatch [:community/set-muted id (not muted?)
+                                                       constants/un-muted])
+                            #(hide-sheet-and-dispatch
+                              [:show-bottom-sheet
+                               {:content (fn []
+                                           [mute-options/mute-drawer
+                                            {:id                  id
+                                             :community?          true
+                                             :muted?              (not muted?)
+                                             :accessibility-label :mute-community-title}])}]))}))
 
 (defn community-notification-settings
   [id]
@@ -119,12 +136,12 @@
   (not-joined-options id token-gated?))
 
 (defn joined-options
-  [id token-gated? muted?]
+  [id token-gated? muted? muted-till]
   [[(view-members id)
     (view-rules id)
     (when token-gated? (view-token-gating id))
     (mark-as-read id)
-    (mute-community id muted?)
+    (mute-community id muted? muted-till)
     (community-notification-settings id)
     (invite-contacts id)
     (show-qr id)
@@ -132,12 +149,12 @@
    [(assoc (leave-community id) :add-divider? true)]])
 
 (defn owner-options
-  [id token-gated? muted?]
+  [id token-gated? muted? muted-till]
   [[(view-members id)
     (view-rules id)
     (when token-gated? (view-token-gating id))
     (mark-as-read id)
-    (mute-community id muted?)
+    (mute-community id muted? muted-till)
     (community-notification-settings id)
     (invite-contacts id)
     (show-qr id)
@@ -146,11 +163,11 @@
 (defn get-context-drawers
   [{:keys [id]}]
   (let [{:keys [token-permissions admin joined
-                muted banList]} (rf/sub [:communities/community id])
-        request-id              (rf/sub [:communities/my-pending-request-to-join id])]
+                muted banList muted-till]} (rf/sub [:communities/community id])
+        request-id                         (rf/sub [:communities/my-pending-request-to-join id])]
     (cond
-      admin      (owner-options id token-permissions muted)
-      joined     (joined-options id token-permissions muted)
+      admin      (owner-options id token-permissions muted muted-till)
+      joined     (joined-options id token-permissions muted muted-till)
       request-id (join-request-sent-options id token-permissions request-id)
       banList    (banned-options id token-permissions)
       :else      (not-joined-options id token-permissions))))

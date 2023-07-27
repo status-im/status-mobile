@@ -1,7 +1,7 @@
 (ns quo2.components.code.snippet
   (:require [cljs-bean.core :as bean]
             [clojure.string :as string]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [quo2.components.code.code.style :as style]
             [quo2.components.markdown.text :as text]
             [react-native.core :as rn]

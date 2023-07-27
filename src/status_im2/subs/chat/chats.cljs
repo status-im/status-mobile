@@ -6,6 +6,7 @@
             [status-im.group-chats.db :as group-chats.db]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im2.constants :as constants]
+            [status-im2.contexts.chat.composer.constants :as composer.constants]
             [status-im2.contexts.chat.events :as chat.events]))
 
 (re-frame/reg-sub
@@ -139,6 +140,24 @@
  :<- [:chat/inputs]
  (fn [[chat-id inputs]]
    (get inputs chat-id)))
+
+(re-frame/reg-sub
+ :chats/composer-height
+ :<- [:chats/current-chat-input]
+ :<- [:chats/link-previews-unfurled]
+ (fn [[{:keys [input-content-height metadata]} link-previews]]
+   (let [{:keys [responding-to-message editing-message sending-image]} metadata]
+     (+ (max composer.constants/input-height input-content-height)
+        (when responding-to-message
+          composer.constants/reply-container-height)
+        (when editing-message
+          composer.constants/edit-container-height)
+        (when (seq sending-image)
+          composer.constants/images-container-height)
+        (when (seq link-previews)
+          composer.constants/links-container-height)
+        composer.constants/bar-container-height
+        composer.constants/actions-container-height))))
 
 (re-frame/reg-sub
  :chats/sending-image
@@ -283,12 +302,6 @@
  (fn [[contacts {:keys [public-key] :as multiaccount}] [_ id]]
    (multiaccounts/displayed-photo (or (when (= id public-key) multiaccount)
                                       (get contacts id)))))
-
-(re-frame/reg-sub
- :profile/customization-color
- :<- [:multiaccounts/multiaccounts]
- (fn [multiaccounts [_ id]]
-   (or (:customization-color (get multiaccounts id)) constants/profile-default-color)))
 
 (re-frame/reg-sub
  :chats/unread-messages-number

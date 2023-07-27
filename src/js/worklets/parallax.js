@@ -13,6 +13,7 @@ which is explained in better detail in this video
 https://www.youtube.com/watch?v=iEBoZDHCN5Y&t=2205s
 there is a bug with the pitch and roll calculations provided directly from the sensor data so the calculation had to
 be done using the quaternions directly.
+This link is useful to understand this: https://engineering.stackexchange.com/questions/3348/calculating-pitch-yaw-and-roll-from-mag-acc-and-gyro-data
 */
 export function sensorAnimatedImage(zIndex, offset, stretch) {
   'worklet';

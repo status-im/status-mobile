@@ -34,7 +34,7 @@
 (rf/defn generate-new-keycard-account
   {:events [:wallet.accounts/generate-new-keycard-account]}
   [{:keys [db]}]
-  (let [path-num (inc (get-in db [:multiaccount :latest-derived-path]))
+  (let [path-num (inc (get-in db [:profile/profile :latest-derived-path]))
         path     (str constants/path-wallet-root "/" path-num)
         pin      (common/vector->string (get-in db [:keycard :pin :export-key]))]
     {:db

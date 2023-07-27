@@ -3,15 +3,21 @@
 
 (def ui
   {:add-new-contact               (js/require "../resources/images/ui2/add-contact.png")
+   :biometrics                    (js/require "../resources/images/ui2/biometrics.png")
    :desktop-how-to-pair-sign-in   (js/require "../resources/images/ui2/desktop-how-to-pair-sign-in.png")
    :desktop-how-to-pair-logged-in (js/require
                                    "../resources/images/ui2/desktop-how-to-pair-logged-in.png")
    :mobile-how-to-pair-sign-in    (js/require "../resources/images/ui2/mobile-how-to-pair-sign-in.png")
    :mobile-how-to-pair-logged-in  (js/require "../resources/images/ui2/mobile-how-to-pair-logged-in.png")
+   :find-sync-code-desktop        (js/require "../resources/images/ui2/find-sync-code-desktop.png")
+   :find-sync-code-mobile         (js/require "../resources/images/ui2/find-sync-code-mobile.png")
    :lifestyle                     (js/require "../resources/images/ui2/lifestyle.png")
    :music                         (js/require "../resources/images/ui2/music.png")
    :podcasts                      (js/require "../resources/images/ui2/podcasts.png")
    :generate-keys                 (js/require "../resources/images/ui2/generate-keys.png")
+   :generate-keys1                (js/require "../resources/images/ui2/generating-keys-1.png")
+   :generate-keys2                (js/require "../resources/images/ui2/generating-keys-2.png")
+   :generate-keys3                (js/require "../resources/images/ui2/generating-keys-3.png")
    :ethereum-address              (js/require "../resources/images/ui2/ethereum-address.png")
    :use-keycard                   (js/require "../resources/images/ui2/keycard.png")
    :onboarding-illustration       (js/require "../resources/images/ui2/onboarding_illustration.png")
@@ -51,6 +57,7 @@
    :community-banner     (js/require "../resources/images/mock2/community-banner.png")
    :community-logo       (js/require "../resources/images/mock2/community-logo.png")
    :community-cover      (js/require "../resources/images/mock2/community-cover.png")
+   :dark-blur-bg         (js/require "../resources/images/mock2/dark_blur_bg.png")
    :decentraland         (js/require "../resources/images/mock2/decentraland.png")
    :gif                  (js/require "../resources/images/mock2/gif.png")
    :monkey               (js/require "../resources/images/mock2/monkey.png")
@@ -79,6 +86,15 @@
    :fxc  (js/require "../resources/images/tokens/mainnet/FXC.png")
    :usdt (js/require "../resources/images/tokens/mainnet/USDT.png")
    :snt  (js/require "../resources/images/tokens/mainnet/SNT.png")})
+
+(def parallax-video
+  {:biometrics    [(js/require "../resources/videos2/biometrics_01.mp4")
+                   (js/require "../resources/videos2/biometrics_02.mp4")
+                   (js/require "../resources/videos2/biometrics_03.mp4")
+                   (js/require "../resources/videos2/biometrics_04.mp4")]
+   :generate-keys [(js/require "../resources/videos2/generating_keys_01.mp4")
+                   (js/require "../resources/videos2/generating_keys_02.mp4")
+                   (js/require "../resources/videos2/generating_keys_03.mp4")]})
 
 (defn get-mock-image
   [k]

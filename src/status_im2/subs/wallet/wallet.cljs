@@ -4,7 +4,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
             [status-im.utils.currency :as currency]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im2.config :as config]
             [utils.i18n :as i18n]))
 
@@ -17,7 +17,7 @@
 (re-frame/reg-sub
  :balance-default
  :<- [:wallet]
- :<- [:multiaccount/accounts]
+ :<- [:profile/wallet-accounts]
  (fn [[wallet accounts]]
    (get-in wallet [:accounts (:address (ethereum/get-default-account accounts)) :balance])))
 
@@ -55,16 +55,16 @@
 
 (re-frame/reg-sub
  :wallet.settings/currency
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [settings]
    (or (get settings :currency) :usd)))
 
 (defn get-balance-total-value
   [balance prices currency token->decimals]
-  (reduce-kv (fn [acc symbol value]
-               (if-let [price (get-in prices [symbol currency])]
+  (reduce-kv (fn [acc sym value]
+               (if-let [price (get-in prices [sym currency])]
                  (+ acc
-                    (or (some-> (money/internal->formatted value symbol (token->decimals symbol))
+                    (or (some-> (money/internal->formatted value sym (token->decimals sym))
                                 ^js (money/crypto->fiat price)
                                 .toNumber)
                         0))
@@ -170,7 +170,7 @@
 (re-frame/reg-sub
  :wallet/visible-tokens-symbols
  :<- [:ethereum/chain-keyword]
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [[chain current-multiaccount]]
    (get-in current-multiaccount [:wallet/visible-tokens chain])))
 
@@ -193,13 +193,14 @@
 
 (defn update-value
   [prices currency]
-  (fn [{:keys [symbol decimals amount] :as token}]
-    (let [currency-kw (-> currency :code keyword)
-          price       (get-in prices [symbol currency-kw])]
+  (fn [{:keys [decimals amount] :as token}]
+    (let [sym         (:symbol token)
+          currency-kw (-> currency :code keyword)
+          price       (get-in prices [sym currency-kw])]
       (assoc token
              :price price
              :value (when (and amount price)
-                      (-> (money/internal->formatted amount symbol decimals)
+                      (-> (money/internal->formatted amount sym decimals)
                           (money/crypto->fiat price)
                           (money/with-precision 2)
                           str

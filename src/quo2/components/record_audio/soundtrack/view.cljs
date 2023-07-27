@@ -10,8 +10,8 @@
 (def ^:private thumb-dark (js/require "../resources/images/icons2/12x12/thumb-dark.png"))
 
 (defn f-soundtrack
-  [{:keys [audio-current-time-ms player-ref style seeking-audio?]}]
-  (let [audio-duration-ms (audio/get-player-duration player-ref)]
+  [{:keys [audio-current-time-ms player-ref style seeking-audio? max-audio-duration-ms]}]
+  (let [audio-duration-ms (min max-audio-duration-ms (audio/get-player-duration player-ref))]
     [:<>
      [slider/slider
       {:test-ID                  "soundtrack"

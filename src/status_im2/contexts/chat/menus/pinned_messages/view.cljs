@@ -14,10 +14,9 @@
 
 (defn message-render-fn
   [{:keys [deleted? deleted-for-me?] :as message} _ _ context]
-  ;; TODO (flexsurfer) probably we don't want reactions here
   (if (or deleted? deleted-for-me?)
     [content.deleted/deleted-message message context]
-    [message/message-with-reactions message context (atom false)]))
+    [message/message message context (atom false)]))
 
 (defn pinned-messages
   [chat-id]
@@ -52,7 +51,7 @@
          :render-fn   message-render-fn
          :footer      [rn/view {:style (style/list-footer bottom-inset)}]
          :key-fn      list-key-fn
-         :separator   quo/separator}]
+         :separator   [quo/separator {:style {:margin-vertical 8}}]}]
        [rn/view {:style (style/no-pinned-messages-container bottom-inset)}
         [rn/view {:style style/no-pinned-messages-icon}
          [quo/icon :i/placeholder]]

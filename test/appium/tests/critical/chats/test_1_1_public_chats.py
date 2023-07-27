@@ -3,9 +3,10 @@ import time
 
 import emoji
 import pytest
+from _pytest.outcomes import Failed
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
-from tests import marks, common_password, run_in_parallel
+from tests import marks, common_password, run_in_parallel, transl
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_message_sender
 from views.sign_in_view import SignInView
@@ -862,7 +863,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702730)
     def test_1_1_chat_message_reaction(self):
         message_from_sender = "Message sender"
-        self.device_1.just_fyi("Sender start 1-1 chat, set emoji and check counter")
+        self.device_1.just_fyi("Sender start 1-1 chat, set 'thumbs-up' emoji and check counter")
         self.chat_1.send_message(message_from_sender)
         self.chat_1.chat_element_by_text(message_from_sender).wait_for_sent_state(120)
         self.chat_1.set_reaction(message_from_sender)
@@ -870,21 +871,57 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         message_sender = self.chat_1.chat_element_by_text(message_from_sender)
         message_sender.emojis_below_message().wait_for_element_text(1)
 
-        self.device_2.just_fyi("Receiver sets own emoji and verifies counter on received message in 1-1 chat")
+        self.device_2.just_fyi(
+            "Receiver also sets 'thumbs-up' emoji and verifies counter on received message in 1-1 chat")
         message_receiver = self.chat_2.chat_element_by_text(message_from_sender)
-        message_receiver.emojis_below_message().wait_for_element_text(1, 90)
+        message_receiver.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1, 90)
         self.chat_2.add_remove_same_reaction(message_from_sender)
-        message_receiver.emojis_below_message().wait_for_element_text(2)
-        message_sender.emojis_below_message().wait_for_element_text(2, 90)
+        message_receiver.emojis_below_message(emoji="thumbs-up").wait_for_element_text(2)
+        message_sender.emojis_below_message(emoji="thumbs-up").wait_for_element_text(2, 90)
 
-        self.device_2.just_fyi("Receiver pick the same emoji and verify that counter will decrease for both users")
+        self.device_2.just_fyi(
+            "Receiver removes 'thumbs-up' emoji and verify that counter will decrease for both users")
         self.chat_2.add_remove_same_reaction(message_from_sender)
-        message_receiver.emojis_below_message().wait_for_element_text(1)
-        message_sender.emojis_below_message().wait_for_element_text(1, 90)
+        message_receiver.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
+        message_sender.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1, 90)
+
+        self.device_2.just_fyi("Receiver sets another reaction ('love'). Check it's shown for both sender and receiver")
+        self.chat_2.set_reaction(message_from_sender, emoji="love")
+        message_receiver.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
+        message_sender.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1, 90)
+        message_receiver.emojis_below_message(emoji="love").wait_for_element_text(1)
+        message_sender.emojis_below_message(emoji="love").wait_for_element_text(1, 90)
+
+        self.device_1.just_fyi("Sender votes for 'love' reaction. Check reactions counters")
+        self.chat_1.add_remove_same_reaction(message_from_sender, emoji="love")
+        message_receiver.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
+        message_sender.emojis_below_message(emoji="thumbs-up").wait_for_element_text(1)
+        message_receiver.emojis_below_message(emoji="love").wait_for_element_text(2, 90)
+        message_sender.emojis_below_message(emoji="love").wait_for_element_text(2)
+
+        self.device_1.just_fyi("Check emojis info")
+        message_sender.emojis_below_message(emoji="love").long_press_until_element_is_shown(
+            self.chat_1.authors_for_reaction(emoji="love"))
+        if not self.chat_1.user_list_element_by_name(
+                self.username_1).is_element_displayed() or not self.chat_1.user_list_element_by_name(
+            self.username_2).is_element_displayed():
+            self.errors.append("Incorrect users are shown for 'love' reaction.")
+
+        self.chat_1.authors_for_reaction(emoji="thumbs-up").click()
+        if not self.chat_1.user_list_element_by_name(
+                self.username_1).is_element_displayed() or self.chat_1.user_list_element_by_name(
+            self.username_2).is_element_displayed():
+            self.errors.append("Incorrect users are shown for 'thumbs-up' reaction.")
+        self.chat_1.driver.press_keycode(4)
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702782)
     def test_1_1_chat_emoji_send_reply_and_open_link(self):
+        for chat in self.chat_1, self.chat_2:
+            element = chat.chat_message_input
+            if not element.is_element_displayed():
+                chat.click_system_back_button_until_element_is_shown(element)
         self.home_1.just_fyi("Check that can send emoji in 1-1 chat")
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
@@ -911,6 +948,14 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_1.just_fyi("Receiver verifies received reply...")
         if self.chat_2.chat_element_by_text(reply_to_message_from_sender).replied_message_text != emoji_unicode:
             self.errors.append("No reply received in 1-1 chat")
+        else:
+            self.chat_2.just_fyi("Device 2 sets a reaction on the message reply. Device 1 checks the reaction")
+            self.chat_1.set_reaction(reply_to_message_from_sender)
+            try:
+                self.chat_1.chat_element_by_text(
+                    reply_to_message_from_sender).emojis_below_message().wait_for_element_text(1)
+            except Failed:
+                self.errors.append("Reply message reaction is not shown for the sender")
 
         self.home_1.just_fyi("Check that link can be opened and replied from 1-1 chat")
         reply = 'reply to link'
@@ -923,12 +968,20 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if replied_message.replied_message_text != url_message:
             self.errors.append("Reply for '%s' not present in message received in public chat" % url_message)
 
+        self.chat_2.just_fyi("Device 2 sets a reaction on the message with a link. Device 1 checks the reaction")
+        self.chat_2.set_reaction(url_message)
+        try:
+            self.chat_1.chat_element_by_text(url_message).emojis_below_message().wait_for_element_text(1)
+        except Failed:
+            self.errors.append("Link message reaction is not shown for the sender")
+
         self.home_2.just_fyi("Check 'Open in Status' option")
         url_message = 'http://status.im'
         self.chat_1.send_message(url_message)
         try:
-            self.chat_2.element_starts_with_text(url_message, 'button').wait_for_visibility_of_element(120)
-            self.chat_2.element_starts_with_text(url_message, 'button').click_inside_element_by_coordinate(0.2, 0.5)
+            element = self.chat_2.chat_view_element_starts_with_text(url_message)
+            element.wait_for_visibility_of_element(120)
+            element.click_inside_element_by_coordinate(0.2, 0.5)
             web_view = self.chat_2.open_in_status_button.click()
             if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
                 self.errors.append('URL was not opened from 1-1 chat')
@@ -1030,7 +1083,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702745)
     def test_1_1_chat_non_latin_messages_stack_update_profile_photo(self):
-        self.home_1.click_system_back_button_until_element_is_shown()
+        self.home_1.jump_to_messages_home()
         self.home_1.profile_button.click()
         self.profile_1.edit_profile_picture('sauce_logo.png')
         self.profile_1.click_system_back_button_until_element_is_shown()
@@ -1045,7 +1098,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
         [self.chat_2.send_message(message) for message in messages]
         for message in messages:
-            if not self.chat_1.chat_element_by_text(message).is_element_displayed():
+            if not self.chat_1.chat_element_by_text(message).is_element_displayed(10):
                 self.errors.append("Message with text '%s' was not received" % message)
 
         self.chat_2.just_fyi("Checking updated member photo, timestamp and username on message")
@@ -1071,7 +1124,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if not self.chat_2.chat_message_input.is_element_displayed():
             self.home_2.get_chat(self.username_1).click()
         if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member3.png",
-                                                                                                   diff=5):
+                                                                                                   diff=6):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()
 
@@ -1127,8 +1180,6 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.errors.append("PN are keep staying after message was seen by user")
         self.errors.verify_no_errors()
 
-    @marks.xfail(reason="Message is being in status 'Sending' for a long time: " \
-                        "https://github.com/status-im/status-mobile/issues/15385")
     @marks.testrail_id(702855)
     def test_1_1_chat_edit_message(self):
         [home.click_system_back_button_until_element_is_shown() for home in self.homes]
@@ -1136,18 +1187,86 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.chat_1.jump_to_card_by_text(self.username_2)
 
         self.device_2.just_fyi(
-            "Device 1 sends text message and edits it in 1-1 chat. Device2 checks edited message is shown")
+            "Device 2 sends text message and edits it in 1-1 chat. Device 2 checks edited message is shown")
         message_before_edit_1_1, message_after_edit_1_1 = "Message before edit 1-1", "AFTER"
         self.chat_2.send_message(message_before_edit_1_1)
         self.chat_2.chat_element_by_text(message_before_edit_1_1).wait_for_status_to_be("Delivered")
         self.chat_2.edit_message_in_chat(message_before_edit_1_1, message_after_edit_1_1)
-        chat_element = self.chat_1.chat_element_by_text('%s (Edited)' % message_after_edit_1_1)
+        message_text_after_edit = message_after_edit_1_1 + ' (Edited)'
+        chat_element = self.chat_1.chat_element_by_text(message_text_after_edit)
         if not chat_element.is_element_displayed(30):
             self.errors.append('No edited message in 1-1 chat displayed')
+        else:
+            self.device_1.just_fyi("Device 1 sets a reaction on the edited message. Device 2 checks the reaction")
+            self.chat_1.set_reaction(message_text_after_edit)
+            try:
+                self.chat_1.chat_element_by_text(
+                    message_text_after_edit).emojis_below_message().wait_for_element_text(1)
+            except Failed:
+                self.errors.append("Message reaction is not shown for the sender")
         self.errors.verify_no_errors()
 
-    @marks.xfail(reason="Message is being in status 'Sending' for a long time: " \
-                        "https://github.com/status-im/status-mobile/issues/15385")
+    @marks.testrail_id(703391)
+    def test_1_1_chat_send_image_save_and_share(self):
+        if not self.chat_2.chat_message_input.is_element_displayed():
+            self.chat_2.jump_to_card_by_text(self.username_1)
+        if not self.chat_1.chat_message_input.is_element_displayed():
+            self.chat_1.jump_to_card_by_text(self.username_2)
+
+        self.chat_1.just_fyi("Device 1 sends an image")
+        image_description = "test image"
+        self.chat_1.send_images_with_description(description=image_description, indexes=[2])
+
+        self.chat_2.just_fyi("Device 2 checks image message")
+        if not self.chat_2.chat_element_by_text(image_description).is_element_displayed(30):
+            self.chat_2.hide_keyboard_if_shown()
+        self.chat_2.chat_element_by_text(image_description).wait_for_visibility_of_element(30)
+        if not self.chat_2.chat_element_by_text(
+                image_description).image_in_message.is_element_image_similar_to_template('saucelabs_sauce_chat.png'):
+            self.errors.append("Not expected image is shown to the receiver.")
+
+        for chat in self.chat_1, self.chat_2:
+            chat.just_fyi("Open the image and share it")
+            if not chat.chat_element_by_text(image_description).image_in_message.is_element_displayed():
+                chat.hide_keyboard_if_shown()
+            chat.chat_element_by_text(image_description).image_in_message.click()
+            chat.share_image_icon_button.click()
+            chat.element_starts_with_text("Gmail").click()
+            try:
+                chat.wait_for_current_package_to_be('com.google.android.gm')
+            except TimeoutException:
+                self.errors.append(
+                    "%s can't share an image via Gmail." % ("Sender" if chat is self.chat_1 else "Receiver"))
+            chat.click_system_back_button_until_element_is_shown(element="chat")
+
+        for chat in self.chat_1, self.chat_2:
+            chat.just_fyi("Open the image and save it")
+            device_name = "sender" if chat is self.chat_1 else "receiver"
+            chat.chat_element_by_text(image_description).image_in_message.click()
+            chat.view_image_options_button.click()
+            chat.save_image_icon_button.click()
+            toast_element = chat.toast_content_element
+            if toast_element.is_element_displayed():
+                toast_element_text = toast_element.text
+                if toast_element_text != chat.get_translation_by_key("photo-saved"):
+                    self.errors.append(
+                        "Shown message '%s' doesn't match expected '%s' after saving an image for %s." % (
+                            toast_element_text, chat.get_translation_by_key("photo-saved"), device_name))
+            else:
+                self.errors.append("Message about saving a photo is not shown for %s." % device_name)
+            chat.click_system_back_button_until_element_is_shown(element="chat")
+
+        for chat in self.chat_1, self.chat_2:
+            chat.just_fyi("Check that image is saved in gallery")
+            chat.show_images_button.click()
+            chat.allow_button.click_if_shown()
+            if not chat.get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
+                self.errors.append(
+                    "Image is not saved to gallery for %s." % ("sender" if chat is self.chat_1 else "receiver"))
+            chat.click_system_back_button()
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702733)
     def test_1_1_chat_text_message_delete_push_disappear(self):
         if not self.chat_2.chat_message_input.is_element_displayed():
@@ -1209,13 +1328,16 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         [device.click_system_back_button_until_element_is_shown() for device in (self.device_1, self.device_2)]
         self.errors.verify_no_errors()
 
-    @marks.xfail(reason="Issue with messages not being sent for a long time")
     @marks.testrail_id(702783)
     def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
         self.chat_2.jump_to_card_by_text(self.username_1)
         self.chat_1.jump_to_card_by_text(self.username_2)
         self.home_1.just_fyi('Turn on airplane mode and check that offline status is shown on home view')
-        [home.toggle_airplane_mode() for home in self.homes]
+        for home in self.homes:
+            home.toggle_airplane_mode()
+            if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
+                home.driver.launch_app()
+                SignInView(home.driver).sign_in()
 
         # Not implemented yet
         # self.home_1.connection_offline_icon.wait_and_click(20)
@@ -1228,28 +1350,73 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         message_1 = 'test message'
 
         self.home_2.just_fyi('Device2 checks "Sending" status when sending message from offline')
+        if not self.chat_2.chat_message_input.is_element_displayed():
+            self.home_2.chats_tab.click()
+            self.home_2.get_chat(self.username_1).click()
         self.chat_2.send_message(message_1)
-        chat_element = self.chat_2.chat_element_by_text(message_1)
-        status = chat_element.status
+        status = self.chat_2.chat_element_by_text(message_1).status
         if not (status == 'Sending' or status == 'Sent'):
             self.errors.append('Message status is not "Sending", it is "%s"!' % status)
 
         self.home_2.just_fyi('Device2 goes back online and checks that status of the message is changed to "delivered"')
         for i, home in enumerate(self.homes):
             home.toggle_airplane_mode()
-            if "im.status.ethereum" not in home.driver.current_activity:
-                home.click_system_back_button_until_element_is_shown()
+            if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
+                home.driver.launch_app()
+                SignInView(home.driver).sign_in()
                 home.chats_tab.click()
                 home.get_chat(self.username_2 if i == 0 else self.username_1).click()
-        try:
-            chat_element.wait_for_status_to_be(expected_status='Delivered', timeout=120)
-        except TimeoutException:
-            self.errors.append(
-                'Message status was not delivered after back up online, it is "%s"!' % status)
 
         self.home_1.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
-        if not self.chat_1.chat_element_by_text(message_1).is_element_displayed(60):
+        if not self.chat_1.chat_element_by_text(message_1).is_element_displayed(120):
             self.errors.append("Message was not delivered after resending from offline")
+
+        self.home_2.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
+        try:
+            self.chat_2.chat_element_by_text(message_1).wait_for_status_to_be(expected_status='Delivered', timeout=120)
+        except TimeoutException as e:
+            self.errors.append('%s after back up online!' % e.msg)
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703496)
+    def test_1_1_chat_mute_chat(self):
+        self.home_1.click_system_back_button_until_element_is_shown()
+        self.home_1.chats_tab.click()
+        self.home_1.just_fyi("Mute chat")
+        self.home_1.mute_chat_long_press(self.username_2)
+
+        muted_message = "should be muted"
+        self.chat_2.send_message(muted_message)
+        chat = self.home_1.get_chat(self.username_2)
+        if chat.new_messages_counter.is_element_displayed(30) or self.home_1.chats_tab.counter.is_element_displayed(10):
+            self.errors.append("New messages counter is shown after mute")
+        if not chat.chat_preview.text.startswith(muted_message):
+            self.errors.append("Message text '%s' is not shown in chat preview after mute" % muted_message)
+        chat.click()
+        if not self.chat_1.chat_element_by_text(muted_message).is_element_displayed(30):
+            self.errors.append("Message '%s' is not shown in chat for receiver after mute" % muted_message)
+
+        self.chat_1.just_fyi("Unmute chat")
+        self.chat_1.click_system_back_button_until_element_is_shown()
+        chat.long_press_element()
+        if self.home_1.mute_chat_button.text != transl["unmute-chat"]:
+            self.errors.append("Chat is not muted")
+        expected_text = "Muted until you turn it back on"
+        if not self.home_1.element_by_text(expected_text).is_element_displayed():
+            self.errors.append("Text '%s' is not shown for muted chat" %expected_text)
+        self.home_1.mute_chat_button.click()
+
+        unmuted_message = "after unmute"
+        self.chat_2.send_message(unmuted_message)
+        if not chat.new_messages_counter.is_element_displayed(
+                30) or not self.home_1.chats_tab.counter.is_element_displayed(10):
+            self.errors.append("New messages counter is not shown after unmute")
+        if not chat.chat_preview.text.startswith(unmuted_message):
+            self.errors.append("Message text '%s' is not shown in chat preview after unmute" % unmuted_message)
+        chat.click()
+        if not self.chat_1.chat_element_by_text(unmuted_message).is_element_displayed(30):
+            self.errors.append("Message '%s' is not shown in chat for receiver after unmute" % unmuted_message)
+
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702784)

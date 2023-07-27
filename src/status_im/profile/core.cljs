@@ -57,7 +57,7 @@
 (rf/defn enter-two-random-words
   {:events [:my-profile/enter-two-random-words]}
   [{:keys [db]}]
-  (let [{:keys [mnemonic]} (:multiaccount db)
+  (let [{:keys [mnemonic]} (:profile/profile db)
         shuffled-mnemonic  (shuffle (map-indexed vector (string/split mnemonic #" ")))]
     {:db (assoc db
                 :my-profile/seed
@@ -88,7 +88,7 @@
 (rf/defn show-profile
   {:events [:chat.ui/show-profile]}
   [{:keys [db]} identity ens-name]
-  (let [my-public-key (get-in db [:multiaccount :public-key])]
+  (let [my-public-key (get-in db [:profile/profile :public-key])]
     (if (not= my-public-key identity)
       {:db       (-> db
                      (assoc :contacts/identity identity)

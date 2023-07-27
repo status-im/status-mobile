@@ -1,7 +1,8 @@
 (ns status-im2.navigation.events
   (:require [utils.re-frame :as rf]
-            [status-im2.contexts.shell.utils :as shell.utils]
-            [status-im2.contexts.shell.events :as shell.events]))
+            [status-im2.contexts.shell.jump-to.state :as shell.state]
+            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+            [status-im2.contexts.shell.jump-to.events :as shell.events]))
 
 (defn- all-screens-params
   [db view screen-params]
@@ -21,6 +22,11 @@
     :dispatch-n [[:hide-bottom-sheet]]}
    (shell.events/shell-navigate-to go-to-view-id screen-params nil nil)))
 
+(rf/defn navigate-to-within-stack
+  {:events [:navigate-to-within-stack]}
+  [_ comp-id]
+  {:navigate-to-within-stack comp-id})
+
 (rf/defn open-modal
   {:events [:open-modal]}
   [{:keys [db]} comp screen-params]
@@ -29,16 +35,34 @@
    :dispatch      [:hide-bottom-sheet]
    :open-modal-fx comp})
 
+(rf/defn dismiss-modal
+  {:events [:dismiss-modal]}
+  [_ comp-id]
+  {:dismiss-modal comp-id})
+
 (rf/defn navigate-back
   {:events [:navigate-back]}
   [cofx]
-  (shell.events/shell-navigate-back cofx))
+  (shell.events/shell-navigate-back cofx nil))
+
+(rf/defn navigate-back-within-stack
+  {:events [:navigate-back-within-stack]}
+  [_ comp-id]
+  {:navigate-back-within-stack comp-id})
+
+(rf/defn navigate-back-to
+  {:events [:navigate-back-to]}
+  [_ comp-id]
+  {:navigate-back-to comp-id})
 
 (rf/defn pop-to-root
   {:events [:pop-to-root]}
   [{:keys [db]} tab]
   {:pop-to-root-fx       tab
-   :db                   (dissoc db :shell/floating-screens)
+   :db                   (-> db
+                             (dissoc :shell/floating-screens)
+                             (dissoc :shell/loaded-screens)
+                             (assoc :view-id (or @shell.state/selected-stack-id :shell)))
    :shell/pop-to-root-fx nil})
 
 (rf/defn init-root
@@ -133,9 +157,9 @@
 (rf/defn set-multiaccount-root
   {:events [:set-multiaccount-root]}
   [{:keys [db]}]
-  (let [key-uid          (get-in db [:multiaccounts/login :key-uid])
+  (let [key-uid          (get-in db [:profile/login :key-uid])
         keycard-account? (boolean (get-in db
-                                          [:multiaccounts/multiaccounts
+                                          [:profile/profiles-overview
                                            key-uid
                                            :keycard-pairing]))]
     {:set-root (if keycard-account? :multiaccounts-keycard :multiaccounts)}))

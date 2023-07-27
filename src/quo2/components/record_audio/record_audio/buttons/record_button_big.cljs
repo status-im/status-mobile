@@ -29,7 +29,7 @@
 
 (defn f-record-button-big
   [recording? ready-to-send? ready-to-lock? ready-to-delete? record-button-is-animating?
-   record-button-at-initial-position? locked? reviewing-audio? recording-timer recording-length-ms
+   record-button-at-initial-position? locked? reviewing-audio? recording-length-ms
    clear-timeout touch-active? recorder-ref reload-recorder-fn idle? on-send on-cancel]
   (let [scale (reanimated/use-shared-value 1)
         opacity (reanimated/use-shared-value 0)
@@ -82,7 +82,6 @@
                (reset! ready-to-lock? false)
                (reset! idle? true)
                (js/setTimeout #(reset! idle? false) 1000)
-               (js/clearInterval @recording-timer)
                (reset! recording-length-ms 0)
                (log/debug "[record-audio] stop recording - success"))
              #(log/error "[record-audio] stop recording - error: " %))))

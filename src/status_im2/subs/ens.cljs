@@ -3,17 +3,17 @@
             [re-frame.core :as re-frame]
             [status-im.ens.core :as ens]
             [status-im.ethereum.core :as ethereum]
-            [status-im.utils.money :as money]))
+            [utils.money :as money]))
 
 (re-frame/reg-sub
  :multiaccount/usernames
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (:usernames multiaccount)))
 
 (re-frame/reg-sub
  :ens/preferred-name
- :<- [:multiaccount]
+ :<- [:profile/profile]
  (fn [multiaccount]
    (:preferred-name multiaccount)))
 
@@ -84,11 +84,11 @@
 (re-frame/reg-sub
  :ens.main/screen
  :<- [:multiaccount/usernames]
- :<- [:multiaccount]
+ :<- [:profile/profile]
  :<- [:ens/preferred-name]
  :<- [:ens/registrations]
  (fn [[names multiaccount preferred-name registrations]]
-   {:names          names
-    :multiaccount   multiaccount
-    :preferred-name preferred-name
-    :registrations  registrations}))
+   {:names           names
+    :profile/profile multiaccount
+    :preferred-name  preferred-name
+    :registrations   registrations}))

@@ -26,7 +26,7 @@
   []
   (views/letsubs [{:keys [default-sync-period]
                    :or   {default-sync-period constants/one-day}}
-                  [:multiaccount]]
+                  [:profile/profile]]
     [react/view {:margin-top 8}
      (when config/two-minutes-syncing?
        [radio-item constants/two-mins default-sync-period])

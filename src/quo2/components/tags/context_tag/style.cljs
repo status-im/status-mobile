@@ -42,7 +42,14 @@
   (colors/theme-colors colors/neutral-100 colors/white override-theme))
 
 (def community-tag
-  {:padding-vertical 2})
+  {:padding-vertical 2
+   :padding-left     2})
+
+(def community-tag-text-container
+  {:margin-left    4
+   :flex           1
+   :flex-direction :row
+   :align-items    :center})
 
 (defn community-tag-text
   [override-theme]

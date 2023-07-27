@@ -2,9 +2,10 @@
   (:require
     [quo2.components.avatars.user-avatar.component-spec]
     [quo2.components.banners.banner.component-spec]
-    [quo2.components.buttons.--tests--.buttons-component-spec]
+    [quo2.components.buttons.button.component-spec]
     [quo2.components.buttons.predictive-keyboard.component-spec]
     [quo2.components.buttons.slide-button.component-spec]
+    [quo2.components.browser.browser-input.component-spec]
     [quo2.components.colors.color-picker.component-spec]
     [quo2.components.counter.--tests--.counter-component-spec]
     [quo2.components.counter.step.component-spec]
@@ -22,7 +23,9 @@
     [quo2.components.links.link-preview.component-spec]
     [quo2.components.links.url-preview-list.component-spec]
     [quo2.components.links.url-preview.component-spec]
+    [quo2.components.list-items.community.component-spec]
     [quo2.components.markdown.--tests--.text-component-spec]
+    [quo2.components.markdown.list.component-spec]
     [quo2.components.notifications.notification.component-spec]
     [quo2.components.onboarding.small-option-card.component-spec]
     [quo2.components.password.tips.component-spec]
@@ -35,5 +38,6 @@
     [quo2.components.selectors.selectors.component-spec]
     [quo2.components.settings.reorder-item.component-spec]
     [quo2.components.settings.settings-list.component-spec]
+    [quo2.components.settings.category.component-spec]
     [quo2.components.share.share-qr-code.component-spec]
     [quo2.components.tags.--tests--.status-tags-component-spec]))

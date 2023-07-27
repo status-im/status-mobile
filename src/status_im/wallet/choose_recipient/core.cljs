@@ -10,7 +10,7 @@
             [status-im.router.core :as router]
             [utils.re-frame :as rf]
             [status-im.utils.http :as http]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im.utils.universal-links.utils :as links]
             [status-im.utils.wallet-connect :as wallet-connect]
             [status-im2.navigation.events :as navigation]))
@@ -53,23 +53,29 @@
 
 (defn- fill-prepare-transaction-details
   [db
-   {:keys [address name value symbol gas gasPrice gasLimit]
-    :or   {symbol :ETH}}
+   {address   :address
+    name      :name
+    value     :value
+    sym       :symbol
+    gas       :gas
+    gas-price :gasPrice
+    gas-limit :gasLimit
+    :or       {sym :ETH}}
    all-tokens]
   (assoc db
          :wallet/prepare-transaction
          (cond-> {:to      address
                   :to-name (or name (find-address-name db address))
                   :from    (ethereum/get-default-account
-                            (get db :multiaccount/accounts))}
-           gas      (assoc :gas (money/bignumber gas))
-           gasLimit (assoc :gas (money/bignumber gasLimit))
-           gasPrice (assoc :gasPrice (money/bignumber gasPrice))
-           value    (assoc :amount-text
-                           (if (= :ETH symbol)
-                             (str (money/internal->formatted value symbol (get all-tokens symbol)))
-                             (str value)))
-           symbol   (assoc :symbol symbol))))
+                            (get db :profile/wallet-accounts))}
+           gas       (assoc :gas (money/bignumber gas))
+           gas-limit (assoc :gas (money/bignumber gas-limit))
+           gas-price (assoc :gasPrice (money/bignumber gas-price))
+           value     (assoc :amount-text
+                            (if (= :ETH sym)
+                              (str (money/internal->formatted value sym (get all-tokens sym)))
+                              (str value)))
+           sym       (assoc :symbol sym))))
 
 (rf/defn request-uri-parsed
   {:events [:wallet/request-uri-parsed]}
@@ -118,8 +124,7 @@
   {:events [:wallet/parse-eip681-uri-and-resolve-ens]}
   [{db :db :as cofx} {:keys [message uri paths ens-names error]} ignore-url]
   (if-not error
-    ;; first we get a vector of ens-names to resolve and a vector of paths of
-    ;; these names
+    ;; first we get a vector of ens-names to resolve and a vector of paths of these names
     (if (empty? ens-names)
       ;; if there are no ens-names, we dispatch request-uri-parsed immediately
       (request-uri-parsed cofx message uri)
@@ -130,8 +135,7 @@
         (fn [addresses]
           (re-frame/dispatch
            [:wallet/request-uri-parsed
-            ;; we replace ens-names at their path in the message by their
-            ;; actual address
+            ;; we replace ens-names at their path in the message by their actual address
             (reduce (fn [message [path address]]
                       (assoc-in message path address))
                     message

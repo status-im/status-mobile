@@ -3,7 +3,6 @@
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.navigation :as navigation]
-            [status-im.multiaccounts.login.core :as login-core]
             [status-im2.navigation.roots :as roots]
             [status-im2.navigation.state :as state]
             [status-im2.navigation.view :as views]
@@ -12,9 +11,9 @@
             [status-im2.navigation.options :as options]))
 
 (navigation/set-lazy-component-registrator
- (fn [key]
-   (let [screen (views/screen key)]
-     (navigation/register-component key
+ (fn [screen-key]
+   (let [screen (views/screen screen-key)]
+     (navigation/register-component screen-key
                                     (fn [] (gesture/gesture-handler-root-hoc screen))
                                     (fn [] screen)))))
 
@@ -30,7 +29,7 @@
      (when @state/root-id
        (reset! theme/device-theme (rn/get-color-scheme))
        (re-frame/dispatch [:init-root @state/root-id])
-       (re-frame/dispatch [::login-core/check-last-chat])))
+       (re-frame/dispatch [:chat/check-last-chat])))
    (rn/hide-splash-screen)))
 
 (defn set-view-id
@@ -54,9 +53,10 @@
        (reset! state/pushed-screen-id view-id)))))
 
 (defn dissmissModal
-  []
-  (reset! state/dissmissing true)
-  (navigation/dismiss-modal (name (last @state/modals))))
+  ([] (dissmissModal nil))
+  ([comp-id]
+   (reset! state/dissmissing true)
+   (navigation/dismiss-modal (name (or comp-id (last @state/modals))))))
 
 (defn dismiss-all-modals
   []
@@ -88,6 +88,21 @@
      (name @state/root-id)
      {:component {:id      comp
                   :name    comp
+                  :options (merge (options/default-root)
+                                  (options/statusbar-and-navbar)
+                                  options
+                                  (if (:topBar options)
+                                    (options/merge-top-bar (options/topbar-options) options)
+                                    {:topBar {:visible false}}))}})))
+
+;; NAVIGATE-TO-WITHIN-STACK
+(defn navigate-to-within-stack
+  [[comp comp-id]]
+  (let [{:keys [options]} (get views/screens comp)]
+    (navigation/push
+     (name comp-id)
+     {:component {:id      comp
+                  :name    comp
                   :options (merge (options/statusbar-and-navbar)
                                   options
                                   (if (:topBar options)
@@ -95,6 +110,8 @@
                                     {:topBar {:visible false}}))}})))
 
 (re-frame/reg-fx :navigate-to navigate)
+
+(re-frame/reg-fx :navigate-to-within-stack navigate-to-within-stack)
 
 (re-frame/reg-fx :navigate-replace-fx
                  (fn [view-id]
@@ -106,6 +123,18 @@
                    (if @state/curr-modal
                      (dissmissModal)
                      (navigation/pop (name @state/root-id)))))
+
+(re-frame/reg-fx :navigate-back-within-stack
+                 (fn [comp-id]
+                   (navigation/pop (name comp-id))))
+
+(re-frame/reg-fx :navigate-back-to
+                 (fn [comp-id]
+                   (navigation/pop-to (name comp-id))))
+
+(re-frame/reg-fx :dismiss-modal
+                 (fn [comp-id]
+                   (dissmissModal (name comp-id))))
 
 (defn pop-to-root
   [root-id]
@@ -125,24 +154,31 @@
         (reset! state/curr-modal true)
         (swap! state/modals conj comp)
         (navigation/show-modal
-         {:component
-          {:name    comp
-           :id      comp
-           :options (merge (options/default-root)
-                           (options/statusbar-and-navbar)
-                           options
-                           (when sheet?
-                             options/sheet-options))}})))))
+         {:stack {:children [{:component
+                              {:name    comp
+                               :id      comp
+                               :options (merge (options/default-root)
+                                               (options/statusbar-and-navbar)
+                                               options
+                                               (when sheet?
+                                                 options/sheet-options))}}]}})))))
 
 (re-frame/reg-fx :open-modal-fx open-modal)
 
 (navigation/reg-button-pressed-listener
  (fn [id]
-   (if (= "dismiss-modal" id)
+   (cond
+     (= "dismiss-modal" id)
      (do
        (when-let [event (get-in views/screens [(last @state/modals) :on-dissmiss])]
          (re-frame/dispatch event))
        (dissmissModal))
+     (= "RNN.hardwareBackButton" id)
+     (when-let [handler (get-in views/screens
+                                [(or (last @state/modals) @state/pushed-screen-id)
+                                 :hardware-back-button-handler])]
+       (handler))
+     :else
      (when-let [handler (get-in views/screens [(keyword id) :right-handler])]
        (handler)))))
 
@@ -179,7 +215,15 @@
                                  opts)}})))
 
 ;; toast
-(navigation/register-component "toasts" (fn [] views/toasts) js/undefined)
+(navigation/register-component "toasts"
+                               ; `:flex 0` is the same as `flex: 0 0 auto` in CSS.
+                               ; We need this to override the HOC default layout which is
+                               ; flex 1. If we don't override this property, this HOC
+                               ; will catch all touches/gestures while the toast is shown,
+                               ; preventing the user doing any action in the app
+                               #(gesture/gesture-handler-root-hoc views/toasts
+                                                                  #js {:flex 0})
+                               (fn [] views/toasts))
 
 (re-frame/reg-fx :show-toasts
                  (fn []
@@ -216,10 +260,9 @@
 (re-frame/reg-fx
  :set-stack-root-fx
  (fn [[stack comp]]
-   ;; We don't have bottom tabs as separate stacks anymore,
-   ;; So the old way of pushing screens in specific tabs will not work.
-   ;; Disabled set-stack-root for :shell-stack as it is not working and
-   ;; currently only being used for browser and some rare keycard flows after login
+   ;; We don't have bottom tabs as separate stacks anymore,. So the old way of pushing screens in
+   ;; specific tabs will not work. Disabled set-stack-root for :shell-stack as it is not working
+   ;; and currently only being used for browser and some rare keycard flows after login
    (when-not (= @state/root-id :shell-stack)
      (log/debug :set-stack-root-fx stack comp)
      (navigation/set-stack-root
