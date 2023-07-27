@@ -15,7 +15,7 @@
    [quo2/icon icon
     {:color color}]])
 
-(def total-box 70)
+(def total-box 69)
 
 (defn progress-boxes
   [green blue red]
