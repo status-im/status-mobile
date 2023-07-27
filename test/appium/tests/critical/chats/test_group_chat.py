@@ -558,11 +558,10 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         chat.long_press_element()
         if self.homes[1].mute_chat_button.text != transl["unmute-chat"]:
             self.errors.append("Chat is not muted")
-        # ToDo: enable the next check when https://github.com/status-im/status-mobile/issues/16768 is fixed
-        # # expected_text = "Muted until %s today" % device_time + 1
-        # expected_text = "%s %s" % (transl["muted-until"], transl["until-you-turn-it-back-on"])
-        # if not self.homes[1].element_by_text(expected_text).is_element_displayed():
-        #     self.errors.append("Text '%s' is not shown for muted chat" % expected_text)
+        # expected_text = "Muted until %s today" % device_time + 1
+        expected_text = "Muted until you turn it back on"
+        if not self.homes[1].element_by_text(expected_text).is_element_displayed():
+            self.errors.append("Text '%s' is not shown for muted chat" % expected_text)
         self.chats[1].just_fyi("Member 1 unmutes the chat")
         # self.chats[1].just_fyi("Close app and change device time so chat will be unmuted by timer")
         # self.homes[1].put_app_to_background()

@@ -1401,10 +1401,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         chat.long_press_element()
         if self.home_1.mute_chat_button.text != transl["unmute-chat"]:
             self.errors.append("Chat is not muted")
-        # ToDo: enable the next check when https://github.com/status-im/status-mobile/issues/16768 is fixed
-        # expected_text = "%s %s" % (transl["muted-until"], transl["until-you-turn-it-back-on"])
-        # if not self.home_1.element_by_text(expected_text).is_element_displayed():
-        #     self.errors.append("Text '%s' is not shown for muted chat" %expected_text)
+        expected_text = "Muted until you turn it back on"
+        if not self.home_1.element_by_text(expected_text).is_element_displayed():
+            self.errors.append("Text '%s' is not shown for muted chat" %expected_text)
         self.home_1.mute_chat_button.click()
 
         unmuted_message = "after unmute"

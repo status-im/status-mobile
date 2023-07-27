@@ -240,6 +240,7 @@ class HomeView(BaseView):
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
         self.notifications_unread_badge = BaseElement(self.driver, accessibility_id="activity-center-unread-count")
+        self.show_qr_code_button = Button(self.driver, accessibility_id="show-qr-button")
         self.open_activity_center_button = Button(self.driver, accessibility_id="open-activity-center-button")
         self.close_activity_centre = Button(self.driver, accessibility_id="close-activity-center")
 
@@ -312,6 +313,11 @@ class HomeView(BaseView):
         self.activity_unread_filter_button = Button(self.driver, accessibility_id="selector-filter")
         self.more_options_activity_button = Button(self.driver, accessibility_id="activity-center-open-more")
         self.mark_all_read_activity_button = Button(self.driver, translation_id="mark-all-notifications-as-read")
+
+        # Share tab
+        self.link_to_profile_text = Text(
+            self.driver,
+            xpath="(//*[@content-desc='link-to-profile']/preceding-sibling::*[1]/android.widget.TextView)[1]")
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing to complete')
@@ -518,3 +524,11 @@ class HomeView(BaseView):
 
     def get_contact_rows_count(self):
         return len(ContactDetailsRow(self.driver).find_elements())
+
+    def get_public_key_via_share_profile_tab(self):
+        self.driver.info("Getting public key via Share tab")
+        self.show_qr_code_button.click()
+        self.link_to_profile_text.click()
+        c_text = self.driver.get_clipboard_text()
+        self.click_system_back_button()
+        return c_text.split("/")[-1]
