@@ -1,7 +1,7 @@
 (ns quo2.core
   (:refer-clojure :exclude [filter])
   (:require
-    quo2.components.avatars.account-avatar
+    quo2.components.avatars.account-avatar.view
     quo2.components.avatars.channel-avatar.view
     quo2.components.avatars.group-avatar
     quo2.components.avatars.icon-avatar
@@ -106,7 +106,7 @@
 (def separator quo2.components.common.separator.view/separator)
 
 ;;;; AVATAR
-(def account-avatar quo2.components.avatars.account-avatar/account-avatar)
+(def account-avatar quo2.components.avatars.account-avatar.view/view)
 (def channel-avatar quo2.components.avatars.channel-avatar.view/view)
 (def group-avatar quo2.components.avatars.group-avatar/group-avatar)
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)

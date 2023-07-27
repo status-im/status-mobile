@@ -1,5 +1,6 @@
 (ns quo2.core-spec
   (:require
+    [quo2.components.avatars.account-avatar.component-spec]
     [quo2.components.avatars.user-avatar.component-spec]
     [quo2.components.banners.banner.component-spec]
     [quo2.components.buttons.button.component-spec]
