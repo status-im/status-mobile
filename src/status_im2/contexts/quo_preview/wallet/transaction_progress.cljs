@@ -4,8 +4,7 @@
             [status-im2.common.resources :as resources]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]
-            [quo.design-system.colors :as colors]
-  ))
+            [quo.design-system.colors :as colors]))
 
 (def descriptor
   [{:label "Title:"
@@ -32,8 +31,7 @@
               {:key   "finalised"
                :value "Finalised"}
               {:key   "error"
-               :value "Error"}]}
-  ])
+               :value "Error"}]}])
 
 (defn get-props
   [data]
