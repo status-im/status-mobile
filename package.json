@@ -11,11 +11,13 @@
     "app:watch": "shadow-cljs watch android",
     "app:packager": "react-native start --host 0.0.0.0 --port 8081",
     "app:android": "react-native run-android",
-    "prettier": "node_modules/.bin/prettier --write ."
+    "prettier": "node_modules/.bin/prettier --write .",
+    "storybook-generate": "sb-rn-get-stories",
+    "storybook-watch": "sb-rn-watcher"
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.17.12",
-    "@react-native-async-storage/async-storage": "^1.17.9",
+    "@react-native-async-storage/async-storage": "^1.19.1",
     "@react-native-community/audio-toolkit": "git+https://github.com/tbenr/react-native-audio-toolkit.git#refs/tags/v2.0.3-status-v6",
     "@react-native-community/blur": "git+https://github.com/status-im/react-native-blur#refs/tags/v4.3.3-status",
     "@react-native-community/cameraroll": "git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.0",
@@ -24,7 +26,7 @@
     "@react-native-community/masked-view": "^0.1.6",
     "@react-native-community/netinfo": "^4.4.0",
     "@react-native-community/push-notification-ios": "^1.4.1",
-    "@react-native-community/slider": "^3.0.0",
+    "@react-native-community/slider": "^4.4.2",
     "@walletconnect/client": "^2.0.0-beta.23",
     "base-64": "^1.0.0",
     "bignumber.js": "git+https://github.com/status-im/bignumber.js.git#refs/tags/v4.0.2-status",
@@ -78,6 +80,7 @@
     "tdigest": "^0.1.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.22.9",
     "@babel/generator": "7.0.0",
     "@babel/helper-builder-react-jsx": "7.0.0",
     "@babel/plugin-transform-block-scoping": "7.0.0",
@@ -86,9 +89,16 @@
     "@babel/register": "7.0.0",
     "@jest/globals": "^25.1.0",
     "@mapbox/node-pre-gyp": "^1.0.9",
+    "@react-native-community/datetimepicker": "^7.4.1",
+    "@storybook/addon-actions": "^6.5.16",
+    "@storybook/addon-controls": "^6.5.16",
+    "@storybook/addon-ondevice-actions": "^6.5.4",
+    "@storybook/addon-ondevice-controls": "^6.5.4",
+    "@storybook/react-native": "^6.5.4",
     "@testing-library/jest-native": "^5.0.0",
     "@testing-library/react-native": "^11.2.0",
     "@types/jest": "^28.1.6",
+    "babel-loader": "^8.3.0",
     "concurrently": "^7.6.0",
     "jest": "^26.6.3",
     "jest-circus": "^26.0.0",
@@ -97,6 +107,7 @@
     "nyc": "^14.1.1",
     "prettier": "^2.8.8",
     "process": "0.11.10",
+    "react-native-safe-area-context": "^4.7.1",
     "react-test-renderer": "18.0.0",
     "rn-snoopy": "git+https://github.com/status-im/rn-snoopy.git#refs/tags/v2.0.2-status",
     "shadow-cljs": "2.11.16"
