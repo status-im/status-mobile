@@ -37,7 +37,7 @@
                   :flex            1}}
          [quo/keyboard-key (assoc @state :type :digit) 1]
          [quo/keyboard-key (assoc @state :type :key) :i/delete]
-         [quo/keyboard-key (assoc @state :type :digit) "‘/"]]]])))
+         [quo/keyboard-key (assoc @state :type :derivation-path)]]]])))
 
 (defn preview-keyboard-key
   []

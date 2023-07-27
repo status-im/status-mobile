@@ -29,6 +29,11 @@
                     :weight              :regular
                     :size                :heading-1
                     :style               {:color label-color}}
-                   label])]))))
+                   label]
+           :derivation-path [icons/icon
+                             :i/derivation-path
+                             {:color               label-color
+                              :size 32
+                              :accessibility-label :derivation-path-label}])]))))
 
 (def keyboard-key (quo.theme/with-theme keyboard-key-internal))
