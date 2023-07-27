@@ -40,6 +40,45 @@
 
 (def total-box 68)
 
+(defn progress-boxes-arbitrum
+  [networkState]
+  [rn/view
+   {:style style/progress-box-container}
+   [rn/view
+        (assoc (let [box-style (cond
+                (or (= networkState "confirmed") (= networkState "finalising") (= networkState "finalised")) (assoc {:style style/progress-box}
+                                                     :background-color
+                                                     (get-colors "success-50"))
+                (= networkState "error") (assoc {:style style/progress-box}
+                                                     :background-color
+                                                     (get-colors "danger-50"))       
+                                 :else        (assoc {:style style/progress-box}
+                                                     :background-color
+                                                     (get-colors "neutral-5")))]
+                 box-style)
+               :border-color (get-colors "neutral-10"))]
+  [rn/view
+  {:style style/progress-box-arbitrum
+  :border-color (get-colors "neutral-10")}
+        [rn/view
+        (assoc (let [box-style (cond
+                (= networkState "finalising") (assoc {:style style/progress-box-arbitrum-abs}
+                                                      :right    "70%"
+                                                     :background-color
+                                                     (colors/custom-color-by-theme :blue 50 60))  
+                (= networkState "finalised") (assoc {:style style/progress-box-arbitrum-abs}
+                                                      :right    0
+                                                     :background-color
+                                                     (colors/custom-color-by-theme :blue 50 60))   
+                                 :else        (assoc {:style style/progress-box-arbitrum-abs}
+                                                     :background-color
+                                                     (get-colors "neutral-5"))) ]
+                 box-style)
+                 :border-color (get-colors "neutral-10"))
+        ]
+        ]           
+   ])
+
 (defn progress-boxes
   [green blue red]
   [rn/view
@@ -188,7 +227,7 @@
          :typography/font-regular :weight :regular :size :paragraph-2 :style {:color (get-colors "neutral-50")}]]]]
       )
       (if (= networkType "optimism/arbitrum")
-         [progress-boxes 2 0 0])
+         [progress-boxes-arbitrum networkState])
          (if (= networkType "optimism/arbitrum")
         [rn/view
       {:style style/item-container}
@@ -205,7 +244,7 @@
          :typography/font-regular :weight :regular :size :paragraph-2 :style {:color (get-colors "neutral-50")}]]]]
       )
       (if (= networkType "optimism/arbitrum")
-         [progress-boxes 2 0 0])
+         [progress-boxes-arbitrum networkState])
 
          (if (= networkType "mainnet")
          (let [[green blue red] (get-status-count networkType networkState)]
