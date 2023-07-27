@@ -2,7 +2,7 @@
   (:require [quo2.components.wallet.transaction-progress.style :as style]
             [quo2.core :as quo2]
             [quo2.components.selectors.selectors.view :as selectors]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.status-tags :as status-tag]
             [quo2.foundations.colors :as colors]
