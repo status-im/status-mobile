@@ -14,21 +14,18 @@
    {:label "Chevron:"
     :key   :chevron?
     :type  :boolean}
-   {:label "Badge:"
-    :key   :badge?
-    :type  :boolean}
-   {:label "Toggle:"
-    :key   :toggle-props
-    :type  :boolean}
-   {:label "Communities"
-    :key   :communities-props
-    :type  :boolean}
-   {:label "Button"
-    :key   :button-props
-    :type  :boolean}
-   {:label "Status Tag"
-    :key   :status-tag-props
-    :type  :boolean}])
+   {:label "StatusIcon:"
+    :key   :statusIcon
+    :type    :select
+    :options [{:key   "pending-state"
+               :value "Pending-State"}
+              {:key   "positive-State"
+               :value "Positive-State"}
+              {:key   "negative-State"
+               :value "Negative-State"}
+              {:key   "finalised-State"
+               :value "Finalised-State"}]}
+    ])
 
 (defn get-props
   [data]
@@ -59,6 +56,7 @@
                              :accessibility-label :transaction-progress-item
                              :left-icon           :browser-context
                              :chevron?            true
+                             :statusIcon          "pending-state"
                              :on-press            (fn [] (js/alert "Transaction title item pressed"))})]
     (fn []
       [rn/view

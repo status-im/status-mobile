@@ -21,11 +21,7 @@
        :number-of-lines     1
        :weight              :medium
        :size                :paragraph-1}
-      title])
-   (when status-tag-props
-     [rn/view {:style style/tag-container}
-      [status-tag/status-tag
-       status-tag-props]])])
+      title])])
 
 (defn left-icon-comp
   [icon]
@@ -42,98 +38,111 @@
              colors/neutral-50
              colors/neutral-40)}]])
 
-(defn toggle-button
-  [{:keys [checked?
-           on-change]}]
-  [selectors/toggle
-   {:checked?  checked?
-    :on-change (fn [new-value] (on-change new-value))}])
+(def numbers [1 2 3 4 5 6 7 8 9 10])
 
-(defn badge-icon
-  [override-theme]
+(defn progress-boxes [numbers]
   [rn/view
-   {:accessible          :true
-    :accessibility-label :setting-list-badge
-    :style               (style/dot override-theme)}])
-
-(defn right-button
-  [{:keys [title
-           on-press]}
-   override-theme]
-  [button/button
-   {:type           :outline
-    :override-theme override-theme
-    :on-press       on-press
-    :size           24}
-   title])
-
-(defn communities-icons
-  [{:keys [data
-           icon-style]}
-   override-theme]
-  (let [communities-count (dec (count data))]
-    [rn/view
-     {:style style/communities-container}
-     (map-indexed
-      (fn [index {:keys [source accessibility-label]}]
-        [rn/image
-         {:key                 source
-          :source              (if (string? source)
-                                 {:uri source}
-                                 source)
-          :accessibility-label accessibility-label
-          :style               (merge (style/community-icon (- communities-count index) override-theme)
-                                      icon-style)}])
-      data)]))
+  {:style style/item-container}
+   (for [n numbers]
+     [rn/view
+      {:style style/progress-box}
+      ])])
 
 (defn transaction-progress
-  "Options
-   - `title` String to show in the center of the component, right to the icon and left to optional gadgets.
-   - `on-press` Callback called when the component is pressed.
-   - `accessibility-label` String to use as accessibility-label for VoiceOver.
-   - `left-icon` icon keyword for icon on left.
-   - `chevron?` Boolean to show/hide chevron at the right border of the component.
-   - `toggle-prop` Map with the following keys:
-       `checked?` Boolean value to set check or unchecked toggle.
-       `on-change` Callback called when user toggles toggle. Will pass the new toggle value to the callback
-   - `badge?` Boolean to show/hide badge.
-   - `button-props` Map with the following keys:
-       `title` String to show as button text.
-       `on-press` Callback called when button is pressed.
-   - `communities-props` Map with the following keys:
-       `data` Array of maps containg source of the community asset.
-   - `style` Styles map to be merge with default container styles.
-   - `overide-theme` :dark or :light
-   - `status-tag-props see the spec for status-tag component
-   "
 
   [{:keys [title
            on-press
            accessibility-label
            left-icon
            chevron?
-           toggle-props
-           badge?
-           button-props
-           communities-props
+           statusIcon
            container-style
            override-theme
            status-tag-props]}]
+[rn/view
+{:style style/main-container}
   [rn/touchable-without-feedback
    {:on-press            on-press
     :accessibility-label accessibility-label}
+   
    [rn/view
-    {:style (merge style/item-container container-style)}
-    [rn/view {:style style/inner-container}
-     (when left-icon
-       [left-icon-comp left-icon])
-     [transaction-progress-title title status-tag-props override-theme]
-     (when toggle-props
-       [toggle-button toggle-props])
-     (when badge? [badge-icon override-theme])
-     (when button-props
-       [right-button button-props override-theme])
-     (when communities-props (communities-icons communities-props override-theme))
-     (when chevron? chevron-icon)]]
+   {:style style/box-style}
+    [rn/view
+      {:style style/item-container}
+      [rn/view
+      {:style style/inner-container}
+      [left-icon-comp "placeholder"]
+      [rn/view
+        {:style style/title-container}
+          [text/text
+            {
+            :typography          :main-semibold
+            :accessibility-label :title-name-text
+            :ellipsize-mode      :tail
+            :style               (style/title override-theme)
+            :override-theme      override-theme
+            :number-of-lines     1
+            :weight              :semi-bold
+            :size                :paragraph-1}
+            title]]
+      ]
+      ]
+      [rn/view
+      {:style style/padding-row}
+      [rn/view
+        {:style style/inner-containers}
+          [left-icon-comp "dark"]
+          [text/text
+            {
+            :typography          :main-semibold
+            :accessibility-label :title-name-text
+            :ellipsize-mode      :tail
+            :style               (style/title override-theme)
+            :override-theme      override-theme
+            :number-of-lines     1
+            :weight              :semi-bold
+            :size                :paragraph-1}
+            "Doodle #120"]]]
+      [rn/view
+      {:style style/item-container}
+      [rn/view
+      
+      {:style (merge style/top-border style/inner-container)}
+      (when statusIcon
+        [left-icon-comp statusIcon])
+        [rn/view
+        {:style style/title-container}
+          [text/text
+            {
+            :typography          :typography/font-regular
+            :accessibility-label :subtitle-name-text
+            :ellipsize-mode      :tail
+            :style               (style/title override-theme)
+            :override-theme      override-theme
+            :number-of-lines     1
+            :size                :paragraph-2}
+            "Pending on Mainnet"]]
+      
+            [rn/view
+            [text/text
+              {
+              :typography          :typography/font-regular
+              :accessibility-label :status-text
+              :ellipsize-mode      :tail
+              :style               {:color                colors/neutral-50}
+              :override-theme      override-theme
+              :number-of-lines     1
+              :weight              :regular
+              :size                :paragraph-2
+              }
+              "0/4"]
+              ]
+      ]]
+
+      [progress-boxes numbers]
+   
+   ]
+   ]
      
-     ])
+]
+     )
