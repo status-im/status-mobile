@@ -13,16 +13,20 @@
       (let [label-color      (style/get-label-color disabled? theme blur?)
             background-color (style/toggle-background-color @pressed? blur? theme)]
         [rn/pressable
-         {:disabled     disabled?
-          :on-press     on-press
-          :on-press-in  #(reset! pressed? true)
-          :on-press-out #(reset! pressed? false)
-          :style        (style/container background-color)}
+         {:accessibility-label :keyboard-key
+          :disabled            disabled?
+          :on-press            on-press
+          :on-press-in         #(reset! pressed? true)
+          :on-press-out        #(reset! pressed? false)
+          :style               (style/container background-color)}
          (condp = type
-           :key   [icons/icon label {:color label-color}]
+           :key   [icons/icon label
+                   {:color               label-color
+                    :accessibility-label :icon-label}]
            :digit [text/text
-                   {:weight :regular
-                    :size   :heading-1
-                    :style  {:color label-color}} label])]))))
+                   {:accessibility-label :text-label
+                    :weight              :regular
+                    :size                :heading-1
+                    :style               {:color label-color}} label])]))))
 
 (def keyboard-key (quo.theme/with-theme keyboard-key-internal))

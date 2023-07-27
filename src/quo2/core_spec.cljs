@@ -34,6 +34,7 @@
     [quo2.components.markdown.text-component-spec]
     [quo2.components.markdown.list.component-spec]
     [quo2.components.notifications.notification.component-spec]
+    [quo2.components.numbered-keyboard.keyboard-key.component-spec]
     [quo2.components.onboarding.small-option-card.component-spec]
     [quo2.components.password.tips.component-spec]
     [quo2.components.profile.select-profile.component-spec]
