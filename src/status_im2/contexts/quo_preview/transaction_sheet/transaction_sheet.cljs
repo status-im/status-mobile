@@ -43,9 +43,9 @@
     {:size   :heading-2
      :weight :semi-bold
      :style  {:color (colors/theme-colors
-                       colors/black
-                       colors/white)
-              }} "Sign transaction with Rarible"]
+                      colors/black
+                      colors/white)
+             }} "Sign transaction with Rarible"]
    [quo2/segmented-control
     {:size            28
      :blur?           false
@@ -57,10 +57,12 @@
                        {:id    2
                         :label (i18n/label :t/advanced)}]}]
    [rn/view {:style {:margin-top 19}}
-    [text/text {:size   :paragraph-2
-                :weight :medium
-                :style  {:color colors/neutral-40}} (i18n/label
-                                                      :t/select-account)]
+    [text/text
+     {:size   :paragraph-2
+      :weight :medium
+      :style  {:color colors/neutral-40}}
+     (i18n/label
+      :t/select-account)]
     [rn/flat-list
      {:data                              selector-list-data
       :render-fn                         render-account-selectors

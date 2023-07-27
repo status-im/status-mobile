@@ -7,7 +7,8 @@
    :border-radius      12
    :align-items        :center
    :background-color   (colors/theme-colors colors/neutral-10
-                                            colors/neutral-80-opa-80 theme)
+                                            colors/neutral-80-opa-80
+                                            theme)
    :height             40
    :padding-horizontal 12
    :padding-vertical   9

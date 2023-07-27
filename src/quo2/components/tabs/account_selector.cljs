@@ -57,9 +57,9 @@
     :account-text      \"My Savings\"        ;; content in place of account name
    }"
   [{:keys [show-label? account-text account-emoji transparent? label-text style]}]
-  (let [background-color (get-color-by-type (if transparent? :transparent :default) :bg)
+  (let [background-color   (get-color-by-type (if transparent? :transparent :default) :bg)
         account-text-color (get-color-by-type (if transparent? :transparent :default) :account-text)
-        label-text-color (get-color-by-type (if transparent? :transparent :default) :label-text)]
+        label-text-color   (get-color-by-type (if transparent? :transparent :default) :label-text)]
     [rn/view {:style style}
      (when show-label?
        [quo2/text

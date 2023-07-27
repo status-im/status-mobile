@@ -369,7 +369,7 @@
    :transaction-sheet [{:name      :transaction-sheet
                         :options   {:topBar {:visible true}}
                         :component transaction-sheet/preview-transaction-sheet
-                        }]
+                       }]
    :wallet            [{:name      :lowest-price
                         :options   {:topBar {:visible true}}
                         :component lowest-price/preview-lowest-price}
