@@ -7,6 +7,7 @@ react-native-camera-kit
 react-native-community_audio-toolkit
 react-native-community_cameraroll
 react-native-community_clipboard
+react-native-community_datetimepicker
 react-native-community_masked-view
 react-native-community_netinfo
 react-native-community_slider
@@ -30,6 +31,7 @@ react-native-orientation-locker
 react-native-permissions
 react-native-randombytes
 react-native-reanimated
+react-native-safe-area-context
 react-native-shake
 react-native-share
 react-native-static-safe-area-insets
