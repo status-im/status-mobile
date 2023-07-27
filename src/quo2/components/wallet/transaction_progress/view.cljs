@@ -1,6 +1,6 @@
 (ns quo2.components.wallet.transaction-progress.view
   (:require [quo2.components.wallet.transaction-progress.style :as style]
-            [quo2.components.icon :as icons]
+            [quo2.core :as quo2]
             [quo2.components.selectors.selectors.view :as selectors]
             [quo2.components.buttons.button :as button]
             [quo2.components.markdown.text :as text]
@@ -11,7 +11,7 @@
 (defn load-icon
   [icon]
   [rn/view {:style style/icon}
-   [icons/icon icon
+   [quo2/icon icon
     {:color (colors/theme-colors
              colors/neutral-50
              colors/neutral-40)}]])
@@ -108,7 +108,7 @@
       {:style style/padding-row}
       [rn/view
         {:style style/doodle-container}
-          [icons/icon "doodle"]
+          [quo2/icon :i/doodle]
           [render-text "Doodle #120" override-theme]
           ]]
       [rn/view
