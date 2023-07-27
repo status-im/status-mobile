@@ -11,9 +11,6 @@
   [{:label "Title:"
     :key   :title
     :type  :text}
-   {:label "Chevron:"
-    :key   :chevron?
-    :type  :boolean}
    {:label "Network Type:"
     :key   :networkType
     :type    :select
@@ -65,11 +62,9 @@
   []
   (let [state (reagent/atom {:title               "Title"
                              :accessibility-label :transaction-progress-item
-                             :left-icon           :browser-context
-                             :chevron?            true
                              :networkState         "pending"
                              :networkType          "mainnet"
-                             :on-press            (fn [] (js/alert "Transaction title item pressed"))})]
+                             :on-press            (fn [] (js/alert "Transaction progress item pressed"))})]
     (fn []
       [rn/view
        {:margin-bottom 50

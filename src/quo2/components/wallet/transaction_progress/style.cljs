@@ -2,19 +2,22 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def title-container
-  {:flex 1})
+  {
+    :flex 1
+  })
 
 
 (defn title
   [override-theme]
-  {:color (colors/theme-colors
-           colors/neutral-100
-           colors/white
-           override-theme)})
+  {
+
+    :line-height    18.2})
 
 (def icon
   {:margin-right 6
-   :align-self   :flex-start})
+  ;; :padding-top 2
+  ;;  :align-self   :flex-start
+   })
 
 (def main-container
   {
@@ -31,7 +34,7 @@
 
 (def item-container
   {
-    ;; :justify-content    :space-between
+    ;; :align-content    :center
    :align-items        :center
    :padding-horizontal 12
    :flex-direction :row
@@ -84,8 +87,8 @@
    })
 (def progress-box
   {
-    :width 12
-    :height 20
+    :width 8
+    :height 12
     :border-width 1
     :border-radius 3
     :border-color colors/neutral-80-opa-5

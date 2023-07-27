@@ -8,7 +8,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]))
 
-(defn left-icon-comp
+(defn load-icon
   [icon]
   [rn/view {:style style/icon}
    [icons/icon icon
@@ -16,18 +16,12 @@
              colors/neutral-50
              colors/neutral-40)}]])
 
-(def chevron-icon
-  [rn/view
-   [icons/icon :chevron-right
-    {:color (colors/theme-colors
-             colors/neutral-50
-             colors/neutral-40)}]])
-
+(def total-box 69)
 
 (defn progress-boxes [green blue red]
   [rn/view
   {:style style/progress-box-container}
-  (let [numbers (range 1 52)] ; Numbers from 1 to 30 (inclusive)
+  (let [numbers (range 1 total-box)] ; Numbers from 1 to 30 (inclusive)
    (for [n numbers]
      [rn/view
      (assoc (let [box-style (cond
@@ -80,20 +74,17 @@
     (and (= networkType "mainnet") (= networkState "sending")) [2 0 0]
     (and (= networkType "mainnet") (= networkState "confirmed")) [4 0 0]
     (and (= networkType "mainnet") (= networkState "finalising")) [4 10 0]
-    (and (= networkType "mainnet") (= networkState "finalised")) [4 52 0]
+    (and (= networkType "mainnet") (= networkState "finalised")) [4 total-box 0]
     (and (= networkType "mainnet") (= networkState "error")) [0 0 1]))
     
 (defn transaction-progress
   [{:keys [title
            on-press
            accessibility-label
-           left-icon
-           chevron?
            networkType
            networkState
            container-style
-           override-theme
-           status-tag-props]}]
+           override-theme]}]
 [rn/view
 {:style style/main-container}
   [rn/touchable-without-feedback
@@ -106,7 +97,7 @@
       {:style style/item-container}
       [rn/view
       {:style style/inner-container}
-      [left-icon-comp "placeholder"]
+      [load-icon "placeholder"]
       
       [rn/view
         {:style style/title-container}
@@ -117,7 +108,7 @@
       {:style style/padding-row}
       [rn/view
         {:style style/doodle-container}
-          [left-icon-comp "dark"]
+          [icons/icon "doodle"]
           [render-text "Doodle #120" override-theme]
           ]]
       [rn/view
@@ -125,7 +116,7 @@
       [rn/view
       
       {:style (merge style/top-border style/inner-container)}
-      [left-icon-comp "dark"]
+      [load-icon "placeholder"]
         [rn/view
         {:style style/title-container}
           [render-text (network-type-text networkType networkState) override-theme :typography :typography/font-regular :weight :regular :size :paragraph-2]
