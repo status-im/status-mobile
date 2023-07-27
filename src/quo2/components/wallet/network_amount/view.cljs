@@ -1,6 +1,6 @@
 (ns quo2.components.wallet.network-amount.view
   (:require
-    [clojure.string :as str]
+    [clojure.string :as string]
     [quo2.components.markdown.text :as text]
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
@@ -17,7 +17,7 @@
     {:width :medium
      :size  :paragraph-2
      :style style/text}
-    (str amount " " (str/upper-case (clj->js token)))]
+    (str amount " " (string/upper-case (clj->js token)))]
    [rn/view
     {:style (style/divider theme)}]])
 

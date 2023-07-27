@@ -47,8 +47,7 @@
    :no-contacts-to-invite-light   (js/require "../resources/images/ui2/no-contacts-to-invite-light.png")
    :no-contacts-to-invite-dark    (js/require "../resources/images/ui2/no-contacts-to-invite-dark.png")
    :no-notifications-light        (js/require "../resources/images/ui2/no-notifications-light.png")
-   :no-notifications-dark         (js/require "../resources/images/ui2/no-notifications-dark.png")
-   :div                           (js/require "../resources/images/ui2/div.png")})
+   :no-notifications-dark         (js/require "../resources/images/ui2/no-notifications-dark.png")})
 
 (def mock-images
   {:diamond              (js/require "../resources/images/mock2/diamond.png")
@@ -98,7 +97,3 @@
 (defn get-themed-image
   [k k2]
   (get ui (if (colors/dark?) k k2)))
-
-(defn get-token
-  [k]
-  (get tokens k))
