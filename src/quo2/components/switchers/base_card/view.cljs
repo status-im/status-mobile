@@ -18,11 +18,11 @@
          {:source (:source banner)
           :style  {:width 160}}])
       [button/button
-       {:size                      24
-        :type                      :photo-bg
-        :icon                      true
-        :on-press                  on-close
-        :override-background-color colors/neutral-80-opa-40
-        :style                     style/close-button}
+       {:size       24
+        :type       :grey
+        :icon       true
+        :on-press   on-close
+        :background :photo
+        :style      style/close-button}
        :i/close]
       (into [rn/view {:style style/thumb-card}] children)]]))

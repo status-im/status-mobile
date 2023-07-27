@@ -3,10 +3,10 @@
 
 (defn base-container
   [background-color]
-  {:width              160
-   :height             160
-   :border-radius      16
-   :background-color   (colors/alpha background-color 0.4)})
+  {:width            160
+   :height           160
+   :border-radius    16
+   :background-color (colors/alpha background-color 0.4)})
 
 (def thumb-card
   {:width              160
