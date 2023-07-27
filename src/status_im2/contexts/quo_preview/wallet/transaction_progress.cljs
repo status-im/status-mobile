@@ -16,7 +16,7 @@
     :type    :select
     :options [{:key   "mainnet"
                :value "Mainnet"}
-              {:key   "optimism,arbitrum"
+              {:key   "optimism/arbitrum"
                :value "Optimism / Arbitrum"}]}
    {:label   "Network State:"
     :key     :networkState

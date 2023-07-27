@@ -85,12 +85,10 @@
 (defn network-type-text
   [networkType networkState]
   (cond
-    (and (= networkType "mainnet")
-         (or (= networkState "sending") (= networkState "pending")))      "Pending on Mainnet"
-    (and (= networkType "mainnet")
-         (or (= networkState "confirmed") (= networkState "finalising"))) "Confirmed on Mainnet"
-    (and (= networkType "mainnet") (= networkState "finalised"))          "Finalised on Mainnet"
-    (and (= networkType "mainnet") (= networkState "error"))              "Failed on Mainnet"))
+    (or (= networkState "sending") (= networkState "pending"))      "Pending on"
+    (or (= networkState "confirmed") (= networkState "finalising")) "Confirmed on"
+    (= networkState "finalised")          "Finalised on"
+    (= networkState "error")              "Failed on"))
 
 (defn steps-text
   [networkType networkState]
@@ -99,8 +97,10 @@
     (and (= networkType "mainnet") (= networkState "sending"))            "2/4"
     (and (= networkType "mainnet")
          (or (= networkState "confirmed") (= networkState "finalising"))) "4/4"
-    (and (= networkType "mainnet") (= networkState "finalised"))          "Epoch 181,329"
-    (and (= networkType "mainnet") (= networkState "error"))              "0/4"))
+    (= networkState "finalised")          "Epoch 181,329"
+    (and (= networkType "mainnet") (= networkState "error"))              "0/4")
+    (and (= networkType "optimism/arbitrum") (= networkState "finalising"))              "1/1"
+    (= networkType "optimism/arbitrum") "0/1")
 
 (defn get-status-count
   [networkType networkState]
@@ -115,15 +115,12 @@
 (defn get-status-icon
   [networkType networkState]
   (cond
-    (and (= networkType "mainnet")
-         (or (= networkState "pending") (= networkState "sending")))      ["pending-state"
+    (or (= networkState "pending") (= networkState "sending"))      ["pending-state"
                                                                            (get-colors "neutral-50")]
-    (and (= networkType "mainnet")
-         (or (= networkState "confirmed") (= networkState "finalising"))) ["positive-state"
+    (or (= networkState "confirmed") (= networkState "finalising")) ["positive-state"
                                                                            (get-colors "success-50")]
-    (and (= networkType "mainnet") (= networkState "finalised"))          ["diamond" (get-colors "success-50")]
-    (and (= networkType "mainnet") (= networkState "error"))              ["negative-state"
-                                                                           (get-colors "danger-50")]))
+    (= networkState "finalised")          ["diamond" (get-colors "success-50")]
+    (= networkState "error")              ["negative-state" (get-colors "danger-50")]))
 
 (defn transaction-progress
   [{:keys [title
@@ -147,19 +144,21 @@
        [rn/view
         {:style style/title-container}
         [render-text title override-theme]]
-        [button/button
+        (if (= networkState "error")
+            [button/button
           {
             :size     32
             :before :i/refresh
             :type :primary
             }
-          "Retry"]]]
+          "Retry"]) ]]
      [rn/view
       {:style style/padding-row}
       [quo2/context-tag {:blur? [false]}
        (resources/get-mock-image :collectible)
        "Doodle #120"]]
-     [rn/view
+     (if (= networkType "mainnet")
+            [rn/view
       {:style style/item-container}
       [rn/view
        {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
@@ -167,10 +166,52 @@
          [load-icon status-icon color])
        [rn/view
         {:style style/title-container}
-        [render-text (network-type-text networkType networkState) override-theme :typography
+        [render-text (str (network-type-text networkType networkState) " Mainnet") override-theme :typography
+         :typography/font-regular :weight :regular :size :paragraph-2]]
+       [rn/view
+        [render-text (steps-text networkType networkState) override-theme :typography
+         :typography/font-regular :weight :regular :size :paragraph-2 :style {:color (get-colors "neutral-50")}]]]])
+
+      (if (= networkType "optimism/arbitrum")
+        [rn/view
+      {:style style/item-container}
+      [rn/view
+       {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
+       (let [[status-icon color] (get-status-icon networkType networkState)]
+         [load-icon status-icon color])
+       [rn/view
+        {:style style/title-container}
+        [render-text (str (network-type-text networkType networkState) " Arbitrum") override-theme :typography
          :typography/font-regular :weight :regular :size :paragraph-2]]
        [rn/view
         [render-text (steps-text networkType networkState) override-theme :typography
          :typography/font-regular :weight :regular :size :paragraph-2 :style {:color (get-colors "neutral-50")}]]]]
-     (let [[green blue red] (get-status-count networkType networkState)]
-       [progress-boxes green blue red])]]])
+      )
+      (if (= networkType "optimism/arbitrum")
+         [progress-boxes 2 0 0])
+         (if (= networkType "optimism/arbitrum")
+        [rn/view
+      {:style style/item-container}
+      [rn/view
+       {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
+       (let [[status-icon color] (get-status-icon networkType networkState)]
+         [load-icon status-icon color])
+       [rn/view
+        {:style style/title-container}
+        [render-text (str (network-type-text networkType networkState) " Optimism") override-theme :typography
+         :typography/font-regular :weight :regular :size :paragraph-2]]
+       [rn/view
+        [render-text (steps-text networkType networkState) override-theme :typography
+         :typography/font-regular :weight :regular :size :paragraph-2 :style {:color (get-colors "neutral-50")}]]]]
+      )
+      (if (= networkType "optimism/arbitrum")
+         [progress-boxes 2 0 0])
+
+         (if (= networkType "mainnet")
+         (let [[green blue red] (get-status-count networkType networkState)]
+       [progress-boxes green blue red]))
+
+       
+       
+        ;;  )
+      ]]])
