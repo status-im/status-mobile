@@ -224,7 +224,11 @@ class SignInView(BaseView):
                     username="test user"):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s', enable_notification: '%s')" %
                          (password, str(keycard), str(enable_notifications)), device=False)
-        if not second_user:
+        if second_user:
+            self.show_profiles_button.wait_and_click(20)
+            self.plus_profiles_button.click()
+            self.create_new_profile_button.click()
+        else:
             self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_keys_button)
             self.generate_keys_button.click_until_presence_of_element(self.profile_your_name_edit_box)
         self.set_profile(username)

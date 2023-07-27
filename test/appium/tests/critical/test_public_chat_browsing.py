@@ -349,6 +349,22 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(702869)
+    def test_community_undo_delete_message(self):
+        if not self.channel.chat_message_input.is_element_displayed():
+            self.home.click_system_back_button_until_element_is_shown()
+            self.home.get_to_community_channel_from_home(self.community_name)
+        message_to_delete = "message to delete and undo"
+        self.channel.send_message(message_to_delete)
+        self.channel.delete_message_in_chat(message_to_delete)
+        self.channel.element_by_text("Undo").click()
+        try:
+            self.channel.chat_element_by_text(message_to_delete).wait_for_visibility_of_element()
+        except TimeoutException:
+            pytest.fail("Message was not restored by clicking 'Undo' button")
+        if self.channel.element_starts_with_text("Message deleted").is_element_displayed():
+            pytest.fail("Text about deleted message is shown in the chat")
+
     @marks.testrail_id(703382)
     def test_community_mute_community_and_channel(self):
         self.home.jump_to_communities_home()
@@ -386,7 +402,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         device_time = self.home.driver.device_time
         current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
         expected_time = current_time + datetime.timedelta(days=7)
-        expected_text = "Muted until %s" % expected_time.strftime('%H:%M %a %d %b')
+        expected_text = "Muted until %s" % expected_time.strftime('%H:%M %a %-d %b')
         self.community_view.get_channel(self.channel_name).long_press_element()
         if not self.home.element_by_text(expected_text).is_element_displayed():
             self.errors.append("Text '%s' is not shown for a muted community channel" % expected_text)
@@ -402,21 +418,17 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703133)
+    @marks.xfail(reason="Restoring communities issue: 16787; "
+                        "restoring contacts issue: 15500",
+                 run=False)
     def test_restore_multiaccount_with_waku_backup_remove_switch(self):
         self.home.jump_to_communities_home()
         profile = self.home.profile_button.click()
         profile.logout()
+        self.home.just_fyi("Restore user with predefined communities and contacts")
         self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True)
 
-        self.home.just_fyi("Restore user with predefined communities, check communities")
-        self.home.communities_tab.click()
-        for key in ['admin_open', 'member_open', 'admin_closed', 'member_closed']:
-            if not self.home.element_by_text(waku_user.communities[key]).is_element_displayed(30):
-                self.errors.append("%s was not restored from waku-backup!!" % key)
-        # TODO: there is a bug when pending community sometimes restored as joined; needs investigation
-        # self.home.opened_communities_tab.click()
-        # if not self.home.element_by_text(waku_user.communities['member_pending']).is_element_displayed(30):
-        #     self.errors.append("Pending community %s was not restored from waku-backup!" % waku_user.communities['member_pending'])
+        self.home.just_fyi("Restore user with predefined communities and contacts")
 
         self.home.just_fyi("Check contacts/blocked users")
         self.home.chats_tab.click()
@@ -433,22 +445,32 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                 if shown_name_text in waku_user.contacts:
                     waku_user.contacts.remove(shown_name_text)
                     continue
-                else:
-                    contact_row.click()
-                    shown_name_text = profile.default_username_text.text
-                    if shown_name_text in waku_user.contacts:
-                        waku_user.contacts.remove(shown_name_text)
-                        continue
-                    else:
-                        chat = self.home.get_chat_view()
-                        chat.profile_send_message_button.click()
-                        for name in waku_user.contacts:
-                            if chat.element_starts_with_text(name).is_element_displayed(sec=20):
-                                waku_user.contacts.remove(name)
-                                continue
+                # else:
+                #     contact_row.click()
+                #     shown_name_text = profile.default_username_text.text
+                #     if shown_name_text in waku_user.contacts:
+                #         waku_user.contacts.remove(shown_name_text)
+                #         continue
+                #     else:
+                #         chat = self.home.get_chat_view()
+                #         chat.profile_send_message_button.click()
+                #         for name in waku_user.contacts:
+                #             if chat.element_starts_with_text(name).is_element_displayed(sec=20):
+                #                 waku_user.contacts.remove(name)
+                #                 continue
         if waku_user.contacts:
             self.errors.append(
                 "Contact(s) was (were) not restored from backup: %s!" % ", ".join(waku_user.contacts))
+
+        self.home.just_fyi("Check restored communities")
+        self.home.communities_tab.click()
+        for key in ['admin_open', 'member_open', 'admin_closed', 'member_closed']:
+            if not self.home.element_by_text(waku_user.communities[key]).is_element_displayed(30):
+                self.errors.append("%s was not restored from waku-backup!!" % key)
+        # TODO: there is a bug when pending community sometimes restored as joined; needs investigation
+        # self.home.opened_communities_tab.click()
+        # if not self.home.element_by_text(waku_user.communities['member_pending']).is_element_displayed(30):
+        #     self.errors.append("Pending community %s was not restored from waku-backup!" % waku_user.communities['member_pending'])
 
         if not pytest_config_global['pr_number']:
             self.home.just_fyi("Perform back up")
@@ -498,7 +520,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                                                                                    'username': self.username_1}),
                                                       (self.device_2.create_user, {'username': self.username_2}))))
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
-        self.public_key_2 = self.home_2.get_public_key()
+        self.public_key_2 = self.home_2.get_public_key_via_share_profile_tab()
         self.profile_1 = self.home_1.get_profile_view()
         [home.click_system_back_button_until_element_is_shown() for home in self.homes]
         [home.chats_tab.click() for home in self.homes]

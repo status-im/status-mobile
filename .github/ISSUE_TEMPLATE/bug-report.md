@@ -2,7 +2,7 @@
 name: MVPBug Report
 about: MVPBug Report
 title: ''
-labels: E:MobileBugfixesMVP
+labels: 'E:MobileBugfixesMVP'
 assignees: ''
 
 ---
