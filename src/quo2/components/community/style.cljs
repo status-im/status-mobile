@@ -1,13 +1,6 @@
 (ns quo2.components.community.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def category-item
-  {:flex           1
-   :flex-direction :row
-   :align-items    :center
-   :height         52
-   :padding-left   18})
-
 (defn community-card
   [radius]
   {:shadow-offset    {:width  0
@@ -126,11 +119,6 @@
    (when padding?
      {:padding-horizontal 12})))
 
-(def token-row-container
-  {:flex-direction :row
-   :align-items    :center
-   :margin-bottom  12})
-
 (defn token-row-or-text
   [padding?]
   (merge
@@ -148,3 +136,21 @@
                       colors/neutral-20
                       colors/neutral-80)})
 
+(defn channel-action-touch
+  [big?]
+  {:flex      1
+   :max-width (if big? 216 104)})
+
+(defn channel-action
+  [color]
+  {:padding          12
+   :height           102
+   :flex             1
+   :border-radius    16
+   :background-color (colors/custom-color color 50 10)
+   :justify-content  :space-between})
+
+(def channel-action-row
+  {:flex-direction  :row
+   :justify-content :space-between
+   :align-items     :center})

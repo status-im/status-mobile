@@ -1,10 +1,9 @@
 (ns quo2.components.drawers.documentation-drawers.view
-  (:require [quo2.components.markdown.text :as text]
+  (:require [quo2.components.buttons.button.view :as button]
             [quo2.components.drawers.documentation-drawers.style :as style]
+            [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [quo2.components.buttons.button :as button]
-            [quo2.foundations.colors :as colors]))
+            [react-native.gesture :as gesture]))
 
 (defn view
   "Options
@@ -14,18 +13,18 @@
    - `button-icon` button icon
    - `on-press-button` On press handler for the button
    - `shell?` use shell theme
-
    `content` Content of the drawer
    "
   [{:keys [title show-button? on-press-button button-label button-icon shell?]} content]
   [gesture/scroll-view
+   {:style                             style/outer-container
+    :always-bounce-vertical            false
+    :content-inset-adjustment-behavior :never}
    [rn/view {:style style/container}
     [text/text
      {:size                :heading-2
       :accessibility-label :documentation-drawer-title
-      :style               {:color (colors/theme-colors colors/neutral-100
-                                                        colors/white
-                                                        (when shell? :dark))}
+      :style               (style/title shell?)
       :weight              :semi-bold}
      title]
     [rn/view {:style style/content :accessibility-label :documentation-drawer-content}

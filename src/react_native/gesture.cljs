@@ -19,6 +19,8 @@
 
 (defn gesture-pan [] (.Pan ^js Gesture))
 
+(defn gesture-long-press [] (.LongPress ^js Gesture))
+
 (defn gesture-pinch [] (.Pinch ^js Gesture))
 
 (defn on-begin [gesture handler] (.onBegin ^js gesture handler))
@@ -31,11 +33,15 @@
 
 (defn on-finalize [gesture handler] (.onFinalize ^js gesture handler))
 
-(defn max-pointers [gesture count] (.maxPointers ^js gesture count))
+(defn max-pointers [gesture amount] (.maxPointers ^js gesture amount))
 
 (defn min-distance [gesture dist] (.minDistance ^js gesture dist))
 
-(defn number-of-taps [gesture count] (.numberOfTaps ^js gesture count))
+(defn fail-offset-x [gesture offset] (.failOffsetX ^js gesture offset))
+
+(defn hit-slop [gesture settings] (.hitSlop ^js gesture settings))
+
+(defn number-of-taps [gesture amount] (.numberOfTaps ^js gesture amount))
 
 (defn enabled [gesture enabled?] (.enabled ^js gesture enabled?))
 

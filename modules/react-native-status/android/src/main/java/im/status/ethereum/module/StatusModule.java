@@ -626,10 +626,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void loginWithKeycard(final String accountData, final String password, final String chatKey) {
+    public void loginWithKeycard(final String accountData, final String password, final String chatKey, final String nodeConfigJSON) {
         Log.d(TAG, "loginWithKeycard");
         this.migrateKeyStoreDir(accountData, password);
-        String result = Statusgo.loginWithKeycard(accountData, password, chatKey);
+        String result = Statusgo.loginWithKeycard(accountData, password, chatKey, nodeConfigJSON);
         if (result.startsWith("{\"error\":\"\"")) {
             Log.d(TAG, "LoginWithKeycard result: " + result);
         } else {

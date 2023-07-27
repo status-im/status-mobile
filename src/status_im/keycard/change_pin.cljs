@@ -152,7 +152,7 @@
               (if puk-restore?
                 (navigation/navigate-to :multiaccounts nil)
                 (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings]))
-              (when (:multiaccounts/login db)
+              (when (:profile/login db)
                 (common/get-keys-from-keycard)))))
 
 (rf/defn on-change-puk-success

@@ -11,7 +11,8 @@
             [status-im.utils.random :as random]
             [status-im.utils.utils :as utils]
             [status-im2.common.json-rpc.events :as json-rpc]
-            [status-im2.navigation.events :as navigation]))
+            [status-im2.navigation.events :as navigation]
+            [utils.string :as utils.string]))
 
 ;;NOTE we want to handle only last resolve
 (def resolve-last-id (atom nil))
@@ -37,7 +38,7 @@
   [{:keys [db] :as cofx} raw-recipient id]
   (when (or (not id) (= id @resolve-last-id))
     (reset! resolve-last-id nil)
-    (let [recipient (utils/safe-trim raw-recipient)]
+    (let [recipient (utils.string/safe-trim raw-recipient)]
       (cond
         (ethereum/address? recipient)
         (let [checksum (eip55/address->checksum recipient)]

@@ -2,11 +2,11 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
+            [utils.debounce :as debounce]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
-            [status-im.multiaccounts.core :as multiaccounts]
             [status-im2.common.home.view :as common.home]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.communities.actions.community-options.view :as options]
@@ -21,13 +21,14 @@
         item            (merge item unviewed-counts)]
     [quo/communities-membership-list-item
      {:style         {:padding-horizontal 18}
-      :on-press      #(rf/dispatch [:navigate-to :community-overview id])
+      :on-press      #(debounce/dispatch-and-chill [:navigate-to :community-overview id] 500)
       :on-long-press #(rf/dispatch
                        [:show-bottom-sheet
                         {:content       (fn []
                                           [options/community-options-bottom-sheet id])
                          :selected-item (fn []
-                                          [quo/communities-membership-list-item {} item])}])}
+                                          [quo/communities-membership-list-item {} true item])}])}
+     false
      item]))
 
 (def tabs-data
@@ -73,10 +74,7 @@
   []
   (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
         {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
-        {:keys [key-uid]}               (rf/sub [:multiaccount])
-        account                         (rf/sub [:profile/multiaccount])
-        customization-color             (or (:color (rf/sub [:onboarding-2/profile]))
-                                            (rf/sub [:profile/customization-color key-uid]))
+        customization-color             (rf/sub [:profile/customization-color])
         selected-items                  (case selected-tab
                                           :joined  joined
                                           :pending pending
@@ -96,15 +94,16 @@
          :data                              selected-items}])
 
      [rn/view {:style (style/blur-container top)}
-      [blur/view
-       {:blur-amount (if platform/ios? 20 10)
-        :blur-type   (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-        :style       style/blur}]
-      [common.home/top-nav
-       {:type   :grey
-        :avatar {:customization-color customization-color
-                 :full-name           (multiaccounts/displayed-name account)
-                 :profile-picture     (multiaccounts/displayed-photo account)}}]
+      (let [{:keys [sheets]} (rf/sub [:bottom-sheet])]
+        [blur/view
+         {:blur-amount   (if platform/ios? 20 10)
+          :blur-type     (if (colors/dark?) :dark (if platform/ios? :light :xlight))
+          :style         style/blur
+          :overlay-color (if (seq sheets)
+                           (theme/theme-value colors/white colors/neutral-95-opa-70)
+                           (when (colors/dark?)
+                             colors/neutral-95-opa-70))}])
+      [common.home/top-nav {:type :grey}]
       [common.home/title-column
        {:label               (i18n/label :t/communities)
         :handler             #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}])

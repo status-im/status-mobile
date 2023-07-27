@@ -14,6 +14,21 @@
                                               clojure.set     set
                                               clojure.walk    walk
                                               taoensso.timbre log}}
+                :shadowed-var      {:level   :error
+                                    ;; We temporarily use :include to define an
+                                    ;; allowlist of core Clojure vars. In the
+                                    ;; future, as we progressively fix shadowed
+                                    ;; vars, we should be able to delete this
+                                    ;; option and lint all vars.
+                                    :include [comparator
+                                              count
+                                              identity
+                                              iter
+                                              key
+                                              str
+                                              symbol
+                                              time
+                                              val]}
                 :invalid-arity     {:skip-args [status-im.utils.fx/defn utils.re-frame/defn]}
                 ;; TODO remove number when this is fixed
                 ;; https://github.com/borkdude/clj-kondo/issues/867

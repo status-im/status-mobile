@@ -52,8 +52,7 @@
 
 (defn extract-token-attributes
   [token]
-  (let [{:keys [symbol name]} token]
-    [symbol name]))
+  [(:symbol token) (:name token)])
 
 (re-frame/reg-sub
  :wallet/filtered-grouped-chain-tokens

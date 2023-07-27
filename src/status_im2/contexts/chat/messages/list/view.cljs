@@ -11,21 +11,21 @@
             [react-native.reanimated :as reanimated]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as message.gap]
-            [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
             [status-im2.contexts.chat.messages.list.style :as style]
             [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
             [status-im2.contexts.chat.composer.constants :as composer.constants]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [utils.i18n :as i18n]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
 (defonce ^:const scroll-animation-input-range [50 125])
 (defonce ^:const spacing-between-composer-and-content 64)
+(defonce ^:const min-message-height 32)
 
 (defonce messages-list-ref (atom nil))
 (defonce messages-view-height (reagent/atom 0))
@@ -65,9 +65,8 @@
                                             (dec (oops/oget e "viewableItems.length")))]
         (let [index             (oops/oget last-visible-element "index")
               ;; Get first not visible element, if it's a datemark/gap
-              ;; we might unnecessarely add messages on receiving as
-              ;; they do not have a clock value, but most of the times
-              ;; it will be a message
+              ;; we might add messages on receiving as they do not have
+              ;; a clock value, but usually it will be a message
               first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
           (when (and first-not-visible
                      (= :message (:type first-not-visible)))
@@ -110,13 +109,13 @@
    :extrapolateRight "clamp"})
 
 (defn loading-view
-  [chat-id shell-animation-complete?]
+  [chat-id]
   (let [loading-messages?   (rf/sub [:chats/loading-messages? chat-id])
         all-loaded?         (rf/sub [:chats/all-loaded? chat-id])
         messages            (rf/sub [:chats/raw-chat-messages-stream chat-id])
         loading-first-page? (= (count messages) 0)
         top-spacing         (if loading-first-page? 0 navigation.style/navigation-bar-height)]
-    (when (or (not shell-animation-complete?) loading-messages? (not all-loaded?))
+    (when (or loading-messages? (not all-loaded?))
       [rn/view {:padding-top top-spacing}
        [quo/skeleton
         (if loading-first-page?
@@ -139,7 +138,7 @@
                          (when platform/ios? style/overscroll-cover-height))}])
 
 (defn f-list-footer-avatar
-  [{:keys [scroll-y display-name online? photo-path]}]
+  [{:keys [scroll-y display-name online? profile-picture]}]
   (let [image-scale-animation       (reanimated/interpolate scroll-y
                                                             scroll-animation-input-range
                                                             [1 0.5]
@@ -159,7 +158,7 @@
      [quo/user-avatar
       {:full-name       display-name
        :online?         online?
-       :profile-picture photo-path
+       :profile-picture profile-picture
        :size            :big}]]))
 
 (defn list-footer-avatar
@@ -173,8 +172,25 @@
     platform/android?
     (assoc :scale-y -1)))
 
+(defn actions
+  [chat-id cover-bg-color]
+  (let [latest-pin-text (rf/sub [:chats/last-pinned-message-text chat-id])
+        pins-count      (rf/sub [:chats/pin-messages-count chat-id])]
+    [quo/channel-actions
+     {:style   {:margin-top 16}
+      :actions [{:accessibility-label :action-button-pinned
+                 :big?                true
+                 :label               (or latest-pin-text (i18n/label :t/no-pinned-messages))
+                 :color               cover-bg-color
+                 :icon                :i/pin
+                 :counter-value       pins-count
+                 :on-press            (fn []
+                                        (rf/dispatch [:dismiss-keyboard])
+                                        (rf/dispatch [:pin-message/show-pins-bottom-sheet
+                                                      chat-id]))}]}]))
+
 (defn f-list-footer
-  [{:keys [chat scroll-y cover-bg-color on-layout shell-animation-complete?]}]
+  [{:keys [chat scroll-y cover-bg-color on-layout]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]} chat
         all-loaded?          (rf/sub [:chats/all-loaded? chat-id])
@@ -215,8 +231,9 @@
           [contact-icon contact]]]
         (when bio
           [quo/text {:style style/bio}
-           bio])]]]
-     [loading-view chat-id shell-animation-complete?]]))
+           bio])
+        [actions chat-id cover-bg-color]]]]
+     [loading-view chat-id]]))
 
 (defn list-footer
   [props]
@@ -226,7 +243,6 @@
   [{:keys [chat-id invitation-admin]}]
   [rn/view
    [chat.group/group-chat-footer chat-id invitation-admin]])
-
 (defn footer-on-layout
   [e]
   (let [height (oops/oget e "nativeEvent.layout.height")
@@ -234,21 +250,24 @@
     (reset! messages-view-header-height (+ height y))))
 
 (defn render-fn
-  [{:keys [type value deleted? deleted-for-me? content-type] :as message-data} _ _
+  [{:keys [type value content-type] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
   ;;TODO temporary hide mutual-state-updates https://github.com/status-im/status-mobile/issues/16254
-  (when (not= content-type constants/content-type-system-mutual-state-update)
+  (when-not (#{constants/content-type-system-message-mutual-event-sent
+               constants/content-type-system-message-mutual-event-accepted
+               constants/content-type-system-message-mutual-event-removed}
+             content-type)
     [rn/view
      (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
-     (if (= type :datemark)
+     (cond
+       (= type :datemark)
        [quo/divider-date value]
-       (if (= content-type constants/content-type-gap)
-         [not-implemented/not-implemented
-          [message.gap/gap message-data]]
-         [rn/view {:padding-horizontal 8}
-          (if (or deleted? deleted-for-me?)
-            [content.deleted/deleted-message message-data context]
-            [message/message-with-reactions message-data context keyboard-shown?])]))]))
+
+       (= content-type constants/content-type-gap)
+       [message.gap/gap message-data]
+
+       :else
+       [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
   [event scroll-y]
@@ -258,46 +277,55 @@
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn f-messages-list-content
-  [{:keys [chat insets scroll-y cover-bg-color keyboard-shown? shared-all-loaded?]}]
-  (let [shell-animation-complete? (rf/sub [:shell/animation-complete? (:chat-type chat)])
-        context                   (when shell-animation-complete?
-                                    (rf/sub [:chats/current-chat-message-list-view-context]))
-        messages                  (when shell-animation-complete?
-                                    (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)]))
-        recording?                (when shell-animation-complete?
-                                    (rf/sub [:chats/recording?]))
-        all-loaded?               (when shell-animation-complete?
-                                    (rf/sub [:chats/all-loaded? (:chat-id chat)]))]
-    ;; NOTE(rasom): Top bar needs to react on `all-loaded?` only after messages
-    ;; rendering, otherwise animation flickers
-    (rn/use-effect (fn []
-                     (reset! shared-all-loaded? all-loaded?))
-                   [all-loaded?])
+  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown?]}]
+  (let [{window-height :height}   (rn/get-window)
+        {:keys [keyboard-height]} (hooks/use-keyboard)
+        context                   (rf/sub [:chats/current-chat-message-list-view-context])
+        messages                  (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        recording?                (rf/sub [:chats/recording?])
+        all-loaded?               (rf/sub [:chats/all-loaded? (:chat-id chat)])]
     [rn/view {:style {:flex 1}}
      [rn/flat-list
       {:key-fn                       list-key-fn
        :ref                          list-ref
        :header                       [:<>
+                                      [list-header insets]
                                       (when (= (:chat-type chat) constants/private-group-chat-type)
-                                        [list-group-chat-header chat])
-                                      [list-header insets]]
+                                        [list-group-chat-header chat])]
        :footer                       [list-footer
-                                      {:chat                      chat
-                                       :scroll-y                  scroll-y
-                                       :cover-bg-color            cover-bg-color
-                                       :on-layout                 footer-on-layout
-                                       :shell-animation-complete? shell-animation-complete?}]
+                                      {:chat           chat
+                                       :scroll-y       scroll-y
+                                       :cover-bg-color cover-bg-color
+                                       :on-layout      footer-on-layout}]
        :data                         messages
        :render-data                  {:context         context
-                                      :keyboard-shown? keyboard-shown?}
+                                      :keyboard-shown? keyboard-shown?
+                                      :insets          insets}
        :render-fn                    render-fn
        :on-viewable-items-changed    on-viewable-items-changed
+       :on-content-size-change       (fn [_ y]
+                                       ;; NOTE(alwx): here we set the initial value of `scroll-y`
+                                       ;; which is needed because by default the chat is scrolled to the
+                                       ;; bottom
+                                       ;; and no initial `on-scroll` event is getting triggered
+                                       (let [scroll-y-shared       (reanimated/get-shared-value scroll-y)
+                                             content-height-shared (reanimated/get-shared-value
+                                                                    content-height)]
+                                         (when (or (= scroll-y-shared 0)
+                                                   (> (Math/abs (- content-height-shared y))
+                                                      min-message-height))
+                                           (reanimated/set-shared-value scroll-y
+                                                                        (- y
+                                                                           window-height
+                                                                           (- (when keyboard-shown?
+                                                                                keyboard-height))))
+                                           (reanimated/set-shared-value content-height y))))
        :on-end-reached               #(list-on-end-reached scroll-y)
        :on-scroll-to-index-failed    identity
-       :content-container-style      {:padding-bottom style/messages-list-bottom-offset}
        :scroll-indicator-insets      {:top (- composer.constants/composer-default-height 16)}
        :keyboard-dismiss-mode        :interactive
-       :keyboard-should-persist-taps :handled
+       :keyboard-should-persist-taps :always
+       :on-scroll-begin-drag         rn/dismiss-keyboard!
        :on-momentum-scroll-begin     state/start-scrolling
        :on-momentum-scroll-end       state/stop-scrolling
        :scroll-event-throttle        16
@@ -307,51 +335,64 @@
                                          (on-scroll event)))
        :style                        (add-inverted-y-android
                                       {:background-color (if all-loaded?
-                                                           (colors/theme-colors (:light cover-bg-color)
-                                                                                (:dark cover-bg-color))
+                                                           (colors/theme-colors
+                                                            (colors/custom-color cover-bg-color 50 20)
+                                                            (colors/custom-color cover-bg-color 50 40))
                                                            (colors/theme-colors
                                                             colors/white
                                                             colors/neutral-95))})
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
        :inverted                     (when platform/ios? true)
        :on-layout                    (fn [e]
-                                       ;; FIXME: this is due to Android not triggering the initial
-                                       ;; scrollTo event
-                                       (scroll-to-offset 1)
                                        (let [layout-height (oops/oget e "nativeEvent.layout.height")]
                                          (reset! messages-view-height layout-height)))
        :scroll-enabled               (not recording?)}]]))
+
+(defn message-list-content-view
+  [props]
+  (let [chat-screen-loaded? (rf/sub [:shell/chat-screen-loaded?])
+        window-height       (:height (rn/get-window))
+        content-height      (- window-height composer.constants/composer-default-height)]
+    (if chat-screen-loaded?
+      [:f> f-messages-list-content props]
+      [rn/view {:style {:flex 1}}
+       [quo/static-skeleton
+        {:content       :messages
+         :parent-height content-height}]])))
 
 (defn f-messages-list
   [{:keys [chat cover-bg-color header-comp footer-comp]}]
   (let [insets                                   (safe-area/get-insets)
         scroll-y                                 (reanimated/use-shared-value 0)
-        all-loaded?                              (reagent/atom false)
+        content-height                           (reanimated/use-shared-value 0)
         {:keys [keyboard-height keyboard-shown]} (hooks/use-keyboard)]
     (rn/use-effect
      (fn []
-       (when keyboard-shown
+       (if keyboard-shown
          (reanimated/set-shared-value scroll-y
                                       (+ (reanimated/get-shared-value scroll-y)
+                                         keyboard-height))
+         (reanimated/set-shared-value scroll-y
+                                      (- (reanimated/get-shared-value scroll-y)
                                          keyboard-height))))
      [keyboard-shown keyboard-height])
+    ;; Note - Don't pass `behavior :height` to keyboard avoiding view,
+    ;; It breaks composer - https://github.com/status-im/status-mobile/issues/16595
     [rn/keyboard-avoiding-view
      {:style                    (style/keyboard-avoiding-container insets)
       :keyboard-vertical-offset (- (:bottom insets))}
 
      (when header-comp
        [header-comp
-        {:scroll-y           scroll-y
-         :shared-all-loaded? all-loaded?}])
+        {:scroll-y scroll-y}])
 
-     [:f>
-      f-messages-list-content
-      {:chat               chat
-       :insets             insets
-       :scroll-y           scroll-y
-       :cover-bg-color     cover-bg-color
-       :keyboard-shown?    keyboard-shown
-       :shared-all-loaded? all-loaded?}]
+     [message-list-content-view
+      {:chat            chat
+       :insets          insets
+       :scroll-y        scroll-y
+       :content-height  content-height
+       :cover-bg-color  cover-bg-color
+       :keyboard-shown? keyboard-shown}]
 
      (when footer-comp
        [footer-comp {:insets insets}])]))

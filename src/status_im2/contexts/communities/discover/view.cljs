@@ -28,12 +28,12 @@
         cover {:uri (get-in (:images item) [:banner :uri])}]
     (if (= view-type :card-view)
       [quo/community-card-view-item (assoc item :width width :cover cover)
-       #(rf/dispatch [:navigate-to :community-overview (:id item)])]
-      [quo/communities-list-view-item
+       #(rf/dispatch [:communities/navigate-to-community (:id item)])]
+      [quo/community-list-item
        {:on-press      (fn []
                          (rf/dispatch [:communities/load-category-states (:id item)])
                          (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch [:navigate-to :community-overview (:id item)]))
+                         (rf/dispatch [:communities/navigate-to-community (:id item)]))
         :on-long-press #(rf/dispatch
                          [:show-bottom-sheet
                           {:content (fn []
@@ -141,12 +141,12 @@
             (merge community
                    (get mock-community-item-data :data)
                    {:cover cover})
-            #(rf/dispatch [:navigate-to :community-overview (:id community)])]
-           [quo/communities-list-view-item
+            #(rf/dispatch [:communities/navigate-to-community (:id community)])]
+           [quo/community-list-item
             {:on-press      (fn []
                               (rf/dispatch [:communities/load-category-states (:id community)])
                               (rf/dispatch [:dismiss-keyboard])
-                              (rf/dispatch [:navigate-to :community-overview (:id community)]))
+                              (rf/dispatch [:communities/navigate-to-community (:id community)]))
              :on-long-press #(js/alert "TODO: to be implemented")}
             (merge community
                    (get mock-community-item-data :data))])]))

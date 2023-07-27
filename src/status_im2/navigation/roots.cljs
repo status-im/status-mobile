@@ -66,21 +66,12 @@
                                            :options (options/statusbar-and-navbar-root)}}]
                    :options  (merge (options/default-root)
                                     (options/statusbar-and-navbar-root)
-                                    {:topBar (assoc (options/topbar-options) :visible false)})}}}
-
-   ;; TERMS OF SERVICE
-   :tos
-   {:root {:stack {:children [{:component {:name    :force-accept-tos
-                                           :id      :force-accept-tos
-                                           :options (get-screen-options :force-accept-tos)}}]
-                   :options  (merge (options/default-root)
-                                    (options/statusbar-and-navbar-root)
                                     {:topBar (assoc (options/topbar-options) :visible false)})}}}})
 
 ;; Theme Order for navigation roots
 ;; 1. Themes hardcoded in below map
 ;; 2. If nil or no entry in map, then theme stored in
-;;    [:db :multiaccount :appearance] will be used (for mulitaccounts)
+;;    [:db :profile/profile :appearance] will be used (for mulitaccounts)
 ;; 3). Fallback theme - Dark
 (def themes
   {:intro       constants/theme-type-dark

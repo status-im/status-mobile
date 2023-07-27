@@ -41,8 +41,8 @@
    :margin-right     8})
 
 (defn get-color-by-type
-  [type key]
-  (get-in themes [(theme/get-theme) type key]))
+  [type k]
+  (get-in themes [(theme/get-theme) type k]))
 
 (defn account-selector
   "[account-selector opts]
@@ -73,4 +73,3 @@
         :size   :paragraph-1
         :style  {:color account-text-color}}
        account-text]]]))
-

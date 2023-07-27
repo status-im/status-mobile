@@ -29,12 +29,12 @@ function gen_proj_list() {
     echo -e "Found ${GRN}$(wc -l < "${PROJ_LIST}")${RST} sub-projects..."
 }
 
-# Check each sub-project in parallel, the ":" is for local deps.
+# Check each sub-project in parallel, the "" is for local deps.
 function gen_deps_list() {
     PROJECTS=$(cat "${PROJ_LIST}")
     # WARNING: The ${PROJECTS[@]} needs to remain unquoted to expand correctly.
     # shellcheck disable=SC2068
-    "${CUR_DIR}/get_deps.sh" ":" ${PROJECTS[@]} | sort -uV -o "${DEPS_LIST}"
+    "${CUR_DIR}/get_deps.sh" "" ${PROJECTS[@]} | sort -uV -o "${DEPS_LIST}"
     echo -e "${CLR}Found ${GRN}$(wc -l < "${DEPS_LIST}")${RST} direct dependencies..."
 }
 
@@ -52,9 +52,8 @@ function gen_deps_json() {
     # Format URLs into a Nix consumable file.
     URLS=$(cat "${DEPS_URLS}")
     # Avoid rate limiting by using 4 of the available threads.
-    parallel --will-cite --keep-order --jobs 4 \
+    echo "${URLS}" | parallel --will-cite --keep-order --jobs 4 \
         "${CUR_DIR}/url2json.sh" \
-        ::: "${URLS}" \
         >> "${DEPS_JSON}"
 
     # Drop tailing comma on last object, stupid JSON

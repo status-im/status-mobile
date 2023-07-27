@@ -75,7 +75,7 @@
 ;;; event handler tests (no callbacks)
 
 (def db
-  {:multiaccount             {:public-key user-ukey}
+  {:profile/profile          {:public-key user-ukey}
    :networks/current-network "mainnet_rpc"
    :networks/networks        {"mainnet_rpc"
                               {:id     "mainnet_rpc"

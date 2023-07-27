@@ -1,4 +1,5 @@
 import pytest
+from selenium.common.exceptions import TimeoutException
 
 from tests import marks, run_in_parallel
 from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
@@ -18,7 +19,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
                                                       (self.device_2.create_user, {'username': self.username_2}))))
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
-        self.public_key_1, self.public_key_2 = (home.get_public_key() for home in self.homes)
+        self.public_key_1 = self.home_1.get_public_key()
+        self.public_key_2 = self.home_2.get_public_key_via_share_profile_tab()
         [home.click_system_back_button_until_element_is_shown() for home in self.homes]
         [home.chats_tab.click() for home in self.homes]
 
@@ -67,23 +69,32 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_2.jump_to_messages_home()
         self.home_2.open_activity_center_button.click()
         self.home_2.activity_unread_filter_button.click()
-        activity_center_element = self.home_2.get_element_from_activity_center_view(self.username_1)
-        message_element = activity_center_element.message_body
-        message_element.wait_for_element(30)
-        message_text = message_element.text
-        if message_text != self.home_2.get_translation_by_key("add-me-to-your-contacts"):
+        if not self.home_2.element_by_text_part(
+                self.home_2.get_translation_by_key("add-me-to-your-contacts")).is_element_displayed(30):
             self.errors.append(
-                "Pending contact request is not shown on unread notification element on Activity center!,"
-                " actual is '%s'" % message_text)
+                "Pending contact request is not shown on unread notification element on Activity center!")
         self.home_2.close_activity_centre.click()
 
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702851)
     def test_activity_center_contact_request_accept_swipe_mark_all_as_read(self):
-        self.device_2.just_fyi('Device2 re-sends a contact request to Device1')
-        self.home_2.click_system_back_button_until_element_is_shown()
-        self.home_2.add_contact(self.public_key_1, remove_from_contacts=True)
+        self.device_2.just_fyi('Creating a new user on Device2')
+        self.home_2.jump_to_messages_home()
+        self.home_2.profile_button.click()
+        self.profile_2.logout()
+        new_username = "new user"
+        self.device_2.create_user(second_user=True, username=new_username)
+
+        self.device_2.just_fyi('Device2 sends a contact request to Device1 via Paste button and check user details')
+        self.home_2.driver.set_clipboard_text(self.public_key_1)
+        self.home_2.new_chat_button.click_until_presence_of_element(self.home_2.add_a_contact_chat_bottom_sheet_button)
+        self.home_2.add_a_contact_chat_bottom_sheet_button.click()
+        self.home_2.element_by_translation_id("paste").click()
+        self.home_2.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
+        chat = self.home_2.get_chat_view()
+        chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact_button)
+        chat.profile_add_to_contacts_button.click()
 
         self.device_1.just_fyi('Device1 accepts pending contact request by swiping')
         self.home_1.chats_tab.click()
@@ -91,7 +102,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_1.open_activity_center_button.click()
 
         self.home_1.just_fyi("Mark all as read")
-        cr_element = self.home_1.get_element_from_activity_center_view(self.username_2)
+        cr_element = self.home_1.get_element_from_activity_center_view(new_username)
         self.home_1.more_options_activity_button.click()
         self.home_1.mark_all_read_activity_button.click()
         if cr_element.is_element_displayed():
@@ -100,22 +111,22 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_1.just_fyi("Check that can accept contact request from read notifications")
         self.home_1.activity_unread_filter_button.click()
         cr_element.swipe_right_on_element()
-        self.home_1.activity_notification_swipe_button.click()
+        self.home_1.activity_notification_swipe_button.click_inside_element_by_coordinate(rel_x=0.5, rel_y=0.5)
         self.home_1.close_activity_centre.click()
         self.home_1.contacts_tab.click()
-        if not self.home_1.contact_details(username=self.username_2).is_element_displayed(20):
+        if not self.home_1.contact_details_row(username=new_username).is_element_displayed(20):
             self.errors.append("Contact was not added to contact list after accepting contact request (as receiver)")
 
         self.device_2.just_fyi('Device1 check that contact appeared in contact list mutually')
         self.home_2.chats_tab.click()
         self.home_2.contacts_tab.click()
-        if not self.home_2.contact_details(username=self.username_1).is_element_displayed(20):
+        if not self.home_2.contact_details_row(username=self.username_1).is_element_displayed(20):
             self.errors.append("Contact was not added to contact list after accepting contact request (as sender)")
 
         self.errors.verify_no_errors()
 
 
-@pytest.mark.xdist_group(name="new_one_3")
+@pytest.mark.xdist_group(name="new_four_2")
 @marks.new_ui_critical
 class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
@@ -260,10 +271,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702957)
     def test_activity_center_mentions(self):
         if not self.channel_2.chat_message_input.is_element_displayed():
-            self.home_2.click_system_back_button_until_element_is_shown()
-            self.home_2.communities_tab.click()
-            self.home_2.get_chat(self.community_name, community=True).click()
-            self.community_2.get_channel(self.channel_name).click()
+            self.channel_2.jump_to_card_by_text('# %s' % self.channel_name)
         self.home_1.jump_to_communities_home()
 
         self.device_2.just_fyi("Invited member sends a message with a mention")
@@ -299,8 +307,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702958)
     def test_activity_center_admin_notification_accept_swipe(self):
         self.home_2.just_fyi("Clearing history")
-        self.home_2.click_system_back_button_until_element_is_shown()
-        self.home_2.chats_tab.click()
+        self.home_2.jump_to_messages_home()
         self.home_2.clear_chat_long_press(self.username_1)
 
         [home.jump_to_communities_home() for home in (self.home_1, self.home_2)]
@@ -316,12 +323,15 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Request access to community")
         self.home_2.jump_to_messages_home()
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.chat_2.element_by_text_part('View').click()
+        self.chat_2.element_by_text_part('View').wait_and_click(sec=60)
         self.community_2.join_community()
         [home.jump_to_communities_home() for home in (self.home_1, self.home_2)]
 
         self.home_1.just_fyi("Checking unread indicators")
-        self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
+        try:
+            self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
+        except TimeoutException:
+            self.errors.append("Unread indicator is not shown in notifications")
         self.home_1.open_activity_center_button.click()
         reply_element = self.home_1.get_element_from_activity_center_view(self.username_2)
         if reply_element.title.text != 'Join request':
@@ -332,7 +342,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.activity_notification_swipe_button.click()
         self.home_1.close_activity_centre.click()
 
-        self.home_2.just_fyi("Checking that community appeared on thr list")
+        self.home_2.just_fyi("Checking that community appeared on the list")
         if not self.home_2.element_by_text_part(community_name).is_element_displayed(30):
             self.errors.append(
                 "Community is not appeared in the list after accepting admin request from activity centre")

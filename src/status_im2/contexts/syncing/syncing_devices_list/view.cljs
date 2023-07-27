@@ -13,10 +13,10 @@
    [quo/page-nav
     {:align-mid?   true
      :mid-section  {:type :text-only :main-text ""}
-     :left-section {:type                :grey
-                    :icon                :i/arrow-left
-                    :icon-override-theme :dark
-                    :on-press            #(rf/dispatch [:navigate-back])}}]])
+     :left-section {:type     :blur-bg
+
+                    :icon     :i/arrow-left
+                    :on-press #(rf/dispatch [:navigate-back])}}]])
 
 (defn view
   []
@@ -24,7 +24,7 @@
         devices-with-button                       (map #(assoc % :show-button? true) devices)
         user-device                               (first devices-with-button)
         other-devices                             (rest devices-with-button)
-
+        profile-color                             (:color (rf/sub [:onboarding-2/profile]))
         {:keys [paired-devices unpaired-devices]} (group-by
                                                    #(if (:enabled? %) :paired-devices :unpaired-devices)
                                                    other-devices)]
@@ -38,9 +38,11 @@
          :style  {:color colors/white}}
         (i18n/label :t/syncing)]
        [quo/button
-        {:size     32
-         :icon     true
-         :on-press #(rf/dispatch [:navigate-to :settings-setup-syncing])}
+        {:size                32
+         :type                :primary
+         :customization-color profile-color
+         :icon                true
+         :on-press            #(rf/dispatch [:navigate-to :settings-setup-syncing])}
         :i/add]]
       [device/view (merge user-device {:this-device? true})]
       (when (seq paired-devices)

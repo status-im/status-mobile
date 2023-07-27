@@ -24,7 +24,3 @@
     {:color colors/white}))
 
 (def button-container {:margin-top 20})
-
-(defn upper-button-color
-  [customization-color]
-  (colors/custom-color-by-theme customization-color 50 60))

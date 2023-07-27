@@ -12,7 +12,7 @@
 
 (rf/defn sheet-defaults
   [{:keys [db]}]
-  (let [remember-choice? (get-in db [:multiaccount :remember-syncing-choice?])]
+  (let [remember-choice? (get-in db [:profile/profile :remember-syncing-choice?])]
     {:db (assoc db
                 :mobile-network/remember-choice?
                 (or (nil? remember-choice?)
@@ -22,7 +22,7 @@
   [{:keys [db] :as cofx}]
   (let [initialized?                       (get db :network-status/initialized?)
         logged-in?                         (multiaccounts.model/logged-in? db)
-        {:keys [remember-syncing-choice?]} (:multiaccount db)]
+        {:keys [remember-syncing-choice?]} (:profile/profile db)]
     (apply
      rf/merge
      cofx
@@ -91,13 +91,13 @@
 (rf/defn mobile-network-set-syncing
   {:events [:mobile-network/set-syncing]}
   [{:keys [db] :as cofx} syncing?]
-  (let [{:keys [remember-syncing-choice?]} (:multiaccount db)]
+  (let [{:keys [remember-syncing-choice?]} (:profile/profile db)]
     ((apply-settings syncing? remember-syncing-choice?) cofx)))
 
 (rf/defn mobile-network-ask-on-mobile-network?
   {:events [:mobile-network/ask-on-mobile-network?]}
   [{:keys [db] :as cofx} ask?]
-  (let [{:keys [syncing-on-mobile-network?]} (:multiaccount db)]
+  (let [{:keys [syncing-on-mobile-network?]} (:profile/profile db)]
     ((apply-settings syncing-on-mobile-network? (not ask?)) cofx)))
 
 (rf/defn mobile-network-restore-defaults

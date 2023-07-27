@@ -14,7 +14,7 @@
             [status-im.signing.keycard :as signing.keycard]
             [utils.re-frame :as rf]
             [status-im.utils.hex :as utils.hex]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.wallet.core :as wallet]
@@ -181,7 +181,7 @@
 
 (defn get-transfer-token
   [db to data]
-  (let [{:keys [symbol decimals] :as token} (tokens/address->token (:wallet/all-tokens db) to)]
+  (let [{:keys [decimals] :as token} (tokens/address->token (:wallet/all-tokens db) to)]
     (when (and token data (string? data))
       (when-let [type (get-method-type data)]
         (let [[address value _] (native-module/decode-parameters
@@ -197,7 +197,7 @@
              :value    value
              :amount   (money/to-fixed (money/token->unit value decimals))
              :token    token
-             :symbol   symbol}))))))
+             :symbol   (:symbol token)}))))))
 
 (defn parse-tx-obj
   [db {:keys [from to value data cancel? hash]}]
@@ -245,8 +245,8 @@
          {:keys [data typed? pinless?] :as message}     :message
          :as                                            tx}
         (last queue)
-        keycard-multiaccount? (boolean (get-in db [:multiaccount :keycard-pairing]))
-        wallet-set-up-passed? (get-in db [:multiaccount :wallet-set-up-passed?])]
+        keycard-multiaccount? (boolean (get-in db [:profile/profile :keycard-pairing]))
+        wallet-set-up-passed? (get-in db [:profile/profile :wallet-set-up-passed?])]
     (if message
       (rf/merge
        cofx
@@ -313,8 +313,8 @@
   {:events [:sign/send-transaction-message]}
   [cofx chat-id value contract transaction-hash signature]
   {:json-rpc/call [{:method "wakuext_sendTransaction"
-                    ;; We make sure `value` is serialized as string, and not
-                    ;; as an integer or big-int
+                    ;; We make sure `value` is serialized as string, and not as an integer or
+                    ;; big-int
                     :params [chat-id (str value) contract transaction-hash
                              (or (:result (types/json->clj signature))
                                  (ethereum/normalized-hex signature))]
@@ -349,7 +349,7 @@
   [{:keys [db] :as cofx} transaction-hash hashed-password
    {:keys [message-id chat-id from] :as tx-obj}]
   (let [{:keys [on-result symbol amount contract value]} (get db :signing/tx)
-        data                                             (str (get-in db [:multiaccount :public-key])
+        data                                             (str (get-in db [:profile/profile :public-key])
                                                               (subs transaction-hash 2))]
     (rf/merge
      cofx

@@ -6,7 +6,6 @@
             [reagent.core :as reagent]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.biometric.views :as biometric]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
             [status-im.ui.screens.keycard.views :as keycard.views]
             [status-im.ui.screens.profile.user.views :as profile.user]
@@ -141,15 +140,6 @@
 
                   (= :share-chat-key view)
                   [profile.user/share-chat-key]
-
-                  (= :enable-biometric view)
-                  [biometric/enable-biometric-popover]
-
-                  (= :secure-with-biometric view)
-                  [biometric/secure-with-biometric-popover]
-
-                  (= :disable-password-saving view)
-                  [biometric/disable-password-saving-popover]
 
                   (= :transaction-data view)
                   [signing/transaction-data]

@@ -91,7 +91,7 @@
   "Set the name of the device"
   {:events [:pairing.ui/set-name-pressed]}
   [{:keys [db]} installation-name]
-  (let [our-installation-id (get-in db [:multiaccount :installation-id])]
+  (let [our-installation-id (get-in db [:profile/profile :installation-id])]
     {:pairing/set-installation-metadata [our-installation-id
                                          {:name       installation-name
                                           :deviceType utils.platform/os}]}))
@@ -195,7 +195,7 @@
 (rf/defn send-installation-messages
   {:events [:pairing.ui/synchronize-installation-pressed]}
   [{:keys [db]}]
-  (let [multiaccount                  (:multiaccount db)
+  (let [multiaccount                  (:profile/profile db)
         {:keys [name preferred-name]} multiaccount]
     {:json-rpc/call [{:method     "wakuext_syncDevices"
                       :params     [(or preferred-name name)]

@@ -52,10 +52,8 @@
 
 (defn- parse-token-transfer
   [chain-tokens contract]
-  (let [{:keys [symbol] :as token} (get chain-tokens
-                                        contract
-                                        default-erc20-token)]
-    {:symbol   symbol
+  (let [token (get chain-tokens contract default-erc20-token)]
+    {:symbol   (:symbol token)
      :token    token
      ;; NOTE(goranjovic) - just a flag we need when we merge this entry
      ;; with the existing entry in the app, e.g. transaction info with
@@ -387,11 +385,10 @@
        :addresses         [address]
        :before-block      min-known-block
        :fetch-more?       (utils.mobile-sync/syncing-allowed? cofx)
-       ;; Transfers are requested before and including `min-known-block` because
-       ;; there is no guarantee that all transfers from that block are shown
-       ;; already. To make sure that we fetch the whole `default-transfers-limit`
-       ;; of transfers the number of transfers already received for
-       ;; `min-known-block` is added to the page size.
+       ;; Transfers are requested before and including `min-known-block` because there is no
+       ;; guarantee that all transfers from that block are shown already. To make sure that we fetch
+       ;; the whole `default-transfers-limit` of transfers the number of transfers already received
+       ;; for `min-known-block` is added to the page size.
        :limit-per-address {address (+ default-transfers-limit
                                       min-block-transfers-count)}}}
      (tx-fetching-in-progress [address]))))
@@ -401,5 +398,5 @@
   [{:keys [db]}]
   {:transactions/get-transfers
    {:chain-tokens (:wallet/all-tokens db)
-    :addresses    (map :address (get db :multiaccount/accounts))
+    :addresses    (map :address (get db :profile/wallet-accounts))
     :fetch-more?  false}})

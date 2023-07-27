@@ -1,7 +1,7 @@
 (ns quo2.components.notifications.activity-log.view
   (:require [clojure.string :as string]
             [quo.core :as quo]
-            [quo2.components.buttons.button :as button]
+            [quo2.components.buttons.button.view :as button]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
             [quo2.components.notifications.activity-log.style :as style]
@@ -74,8 +74,8 @@
            context))))
 
 (defn- activity-message
-  [{:keys [title body title-number-of-lines body-number-of-lines]}]
-  [rn/view {:style style/message-container}
+  [{:keys [title body title-number-of-lines body-number-of-lines attachment]}]
+  [rn/view {:style (style/message-container attachment)}
    (when title
      [text/text
       {:size                :paragraph-2
@@ -150,8 +150,8 @@
          [activity-reply-text-input props reply-input])
        (when items
          [rn/view style/footer-container
-          (for [{:keys [key] :as item} items]
-            ^{:key key}
+          (for [item items]
+            ^{:key (:key item)}
             [footer-item-view item replying? reply-input])])])))
 
 (defn view

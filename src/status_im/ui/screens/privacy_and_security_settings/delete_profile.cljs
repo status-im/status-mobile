@@ -32,7 +32,7 @@
         text-input-ref (atom nil)]
     (fn []
       (let [keycard?              @(re-frame/subscribe [:keycard-multiaccount?])
-            multiaccount          @(re-frame/subscribe [:multiaccount])
+            multiaccount          @(re-frame/subscribe [:profile/profile])
             error                 @(re-frame/subscribe [:delete-profile/error])
             keep-keys-on-keycard? @(re-frame/subscribe [:delete-profile/keep-keys-on-keycard?])]
         (when (and @text-input-ref error (not @password))

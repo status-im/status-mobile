@@ -24,7 +24,7 @@
   (views/letsubs
     [{:keys [syncing-on-mobile-network?
              remember-syncing-choice?]}
-     [:multiaccount]]
+     [:profile/profile]]
     [:<>
      [react/view
       {:style               styles/switch-container

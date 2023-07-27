@@ -5,7 +5,6 @@
             [native-module.core :as native-module]
             [status-im.popover.core :as popover]
             [utils.re-frame :as rf]
-            [status-im.utils.keychain.core :as keychain]
             [status-im.utils.types :as types]
             [utils.security.core :as security]))
 
@@ -35,19 +34,13 @@
 (rf/defn password-reset-success
   {:events [::password-reset-success]}
   [{:keys [db] :as cofx}]
-  (let [{:keys [key-uid]} (:multiaccount db)
-        auth-method       (get db :auth-method keychain/auth-method-none)
-        new-password      (get-in db [:multiaccount/reset-password-form-vals :new-password])]
-    (rf/merge cofx
-              {:db (dissoc
-                    db
-                    :multiaccount/reset-password-form-vals
-                    :multiaccount/reset-password-errors
-                    :multiaccount/reset-password-next-enabled?
-                    :multiaccount/resetting-password?)}
-              ;; update password in keychain if biometrics are enabled
-              (when (= auth-method keychain/auth-method-biometric)
-                (keychain/save-user-password key-uid new-password)))))
+  (rf/merge cofx
+            {:db (dissoc
+                  db
+                  :multiaccount/reset-password-form-vals
+                  :multiaccount/reset-password-errors
+                  :multiaccount/reset-password-next-enabled?
+                  :multiaccount/resetting-password?)}))
 
 (defn change-db-password-cb
   [res]
@@ -68,7 +61,7 @@
 (rf/defn handle-verification-success
   {:events [::handle-verification-success]}
   [{:keys [db] :as cofx} form-vals]
-  (let [{:keys [key-uid name]} (:multiaccount db)]
+  (let [{:keys [key-uid name]} (:profile/profile db)]
     (rf/merge cofx
               {::change-db-password [key-uid form-vals]
                :db                  (assoc db
@@ -98,4 +91,4 @@
   {::validate-current-password-and-reset
    (assoc form-vals
           :address
-          (get-in db [:multiaccount :wallet-root-address]))})
+          (get-in db [:profile/profile :wallet-root-address]))})

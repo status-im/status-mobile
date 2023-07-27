@@ -65,7 +65,6 @@
            flat-list-ref
            number-of-items
            on-change
-           override-theme
            scroll-on-press?
            size
            style]}
@@ -80,7 +79,6 @@
      :notification-dot?   notification-dot?
      :accessibility-label accessibility-label
      :size                size
-     :override-theme      override-theme
      :blur?               blur?
      :active              (= id @active-tab-id)
      :on-press            (fn [id]
@@ -101,7 +99,6 @@
   - `blur?` Boolean passed down to `quo2.components.tabs.tab/tab`.
   - `data` Vector of tab items.
   - `on-change` Callback called after a tab is selected.
-  - `override-theme` Passed down to `quo2.components.tabs.tab/tab`.
   - `size` 32/24
   - `style` Style map passed to View wrapping tabs or to the FlatList when tabs
     are scrollable.
@@ -132,7 +129,6 @@
                style
                size
                blur?
-               override-theme
                in-scroll-view?]
         :or   {fade-end-percentage fade-end-percentage
                fade-end?           false
@@ -183,7 +179,6 @@
                                                           :flat-list-ref    flat-list-ref
                                                           :number-of-items  (count data)
                                                           :on-change        on-change
-                                                          :override-theme   override-theme
                                                           :scroll-on-press? scroll-on-press?
                                                           :size             size
                                                           :style            style})})]]]
@@ -195,7 +190,6 @@
                           :blur?           blur?
                           :number-of-items (count data)
                           :on-change       on-change
-                          :override-theme  override-theme
                           :size            size
                           :style           style}
                          item

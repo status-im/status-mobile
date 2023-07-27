@@ -17,8 +17,8 @@
            :background colors/neutral-95}})
 
 (defn get-color
-  [key]
-  (get-in themes [(theme/get-theme) key]))
+  [k]
+  (get-in themes [(theme/get-theme) k]))
 
 (def ui-images
   {:light {:horizontal (js/require "../resources/images/ui/message-gap-hborder-light.png")
@@ -28,8 +28,8 @@
            :circles    (js/require "../resources/images/ui/message-gap-circle-bg-dark.png")}})
 
 (defn get-image
-  [key]
-  (get-in ui-images [(theme/get-theme) key]))
+  [k]
+  (get-in ui-images [(theme/get-theme) k]))
 
 ;;; components
 ;;;; borders
@@ -82,11 +82,12 @@
     :border-radius 50}])
 
 (defn timestamp
-  [str]
+  [s]
   [text/text
    {:size  :label
     :style {:text-transform :none
-            :color          (get-color :time)}} str])
+            :color          (get-color :time)}}
+   s])
 
 (defn info-button
   [on-press]

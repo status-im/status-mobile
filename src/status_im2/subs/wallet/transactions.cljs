@@ -4,7 +4,7 @@
             [utils.i18n :as i18n]
             [status-im.notifications.core :as notifications]
             [utils.datetime :as datetime]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im.wallet.db :as wallet.db]
             [status-im.wallet.utils :as wallet.utils]))
 
@@ -44,14 +44,14 @@
           [to :to-contact :from-wallet])
         wallet (i18n/label :main-wallet)
         contact (get contacts contact-address)
-        {:keys [symbol-display symbol decimals] :as asset}
+        {:keys [symbol-display decimals] :as asset}
         (or token native-currency)
         amount-text (if value
                       (wallet.utils/format-amount value decimals)
                       "...")
         currency-text (when asset
                         (clojure.core/name (or symbol-display
-                                               symbol)))]
+                                               (:symbol asset))))]
     (cond-> transaction
       contact (assoc key-contact (:name contact))
       :always (assoc key-wallet
@@ -69,11 +69,12 @@
    (reduce (fn [acc [hash transaction]]
              (assoc acc
                     hash
-                    (enrich-transaction transaction contacts native-currency))) ;;TODO this doesn't look
-                                                                                ;;good for performance,
-                                                                                ;;we need to calculate
-                                                                                ;;this only once for each
-                                                                                ;;transaction
+                    (enrich-transaction transaction contacts native-currency))) ;;TODO this doesn't
+                                                                                ;;look good for
+                                                                                ;;performance, we
+                                                                                ;;need to calculate
+                                                                                ;;this only once for
+                                                                                ;;each transaction
            {}
            transactions)))
 

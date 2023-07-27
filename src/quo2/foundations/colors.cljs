@@ -88,6 +88,7 @@
 (def neutral-100-opa-5 (alpha neutral-100 0.05))
 (def neutral-100-opa-10 (alpha neutral-100 0.1))
 (def neutral-100-opa-30 (alpha neutral-100 0.3))
+(def neutral-100-opa-50 (alpha neutral-100 0.5))
 (def neutral-100-opa-60 (alpha neutral-100 0.6))
 (def neutral-100-opa-70 (alpha neutral-100 0.7))
 (def neutral-100-opa-80 (alpha neutral-100 0.8))
@@ -121,7 +122,11 @@
 (def white-70-blur (alpha white 0.7))
 (def neutral-80-opa-1-blur (alpha "#192438" 0.1))
 (def neutral-5-opa-70-blur (alpha neutral-5 0.7))
+(def neutral-10-opa-10-blur (alpha neutral-10 0.1))
+(def neutral-10-opa-40-blur (alpha neutral-10 0.4))
 (def neutral-80-opa-80-blur (alpha "#192438" 0.8))
+(def neutral-90-opa-10-blur (alpha neutral-90 0.1))
+(def neutral-90-opa-40-blur (alpha neutral-90 0.4))
 (def neutral-90-opa-70-blur (alpha neutral-90 0.7))
 (def neutral-95-opa-70-blur neutral-95-opa-70)
 (def neutral-100-opa-70-blur neutral-100-opa-70)
@@ -131,6 +136,8 @@
 ;;Solid
 (def black "#000000")
 (def black-opa-0 (alpha black 0))
+(def black-opa-30 (alpha black 0.3))
+(def black-opa-60 (alpha black 0.6))
 (def onboarding-header-black "#000716")
 
 ;;;;Primary
@@ -175,6 +182,8 @@
 (def danger-50 "#E95460")
 (def danger-60 "#BA434D")
 
+(def system-yellow "#FFD60A")
+
 ;;50 with transparency
 (def danger-50-opa-5 (alpha danger-50 0.05))
 (def danger-50-opa-10 (alpha danger-50 0.1))
@@ -182,51 +191,48 @@
 (def danger-50-opa-30 (alpha danger-50 0.3))
 (def danger-50-opa-40 (alpha danger-50 0.4))
 
-;;;; Customization
 
-;; Colors for customizing profiles and communities themes
+;; Colors for customizing users account
 (def customization
-  {:primary   {50 primary-50 ;; User can also use primary color as customisation color
-               60 primary-60}
-   :purple    {50 "#7140FD"
-               60 "#5A33CA"}
-   :indigo    {50 "#496289"
-               60 "#3D5273"}
-   :turquoise {50 "#2A799B"
-               60 "#22617C"}
-   :blue      {50 "#2A4AF5"
+  {:blue      {50 "#2A4AF5"
                60 "#223BC4"}
-   :green     {50 "#5BCC95"
-               60 "#4CAB7D"}
    :yellow    {50 "#F6B03C"
                60 "#C58D30"}
-   :orange    {50 "#FF7D46"
-               60 "#CC6438"}
-   :red       {50 "#F46666"
-               60 "#CD5656"}
-   :pink      {50 "#F66F8F"
-               60 "#C55972"}
-   :brown     {50 "#99604D"
-               60 "#805141"}
-   :sky       {50 "#1992D7"
-               60 "#1475AC"}
-   :army      {50 "#216266"
-               60 "#1A4E52"}
-   :magenta   {50 "#EC266C"
-               60 "#BD1E56"}
+   :turquoise {50 "#2A799B"
+               60 "#22617C"}
    :copper    {50 "#CB6256"
                60 "#A24E45"}
+   :sky       {50 "#1992D7"
+               60 "#1475AC"}
    :camel     {50 "#C78F67"
                60 "#9F7252"}
-   :yin       {50 "#09101C"
-               60 "#1D232E"}
-   :yang      {50 "#FFFFFF"
-               60 "#EBEBEB"}
-   :beige     {50 "#CAAE93"
-               60 "#AA927C"}})
+   :orange    {50 "#FF7D46"
+               60 "#CC6438"}
+   :army      {50 "#216266"
+               60 "#1A4E52"}
+   :pink      {50 "#F66F8F"
+               60 "#C55972"}
+   :purple    {50 "#7140FD"
+               60 "#5A33CA"}
+   :magenta   {50 "#EC266C"
+               60 "#BD1E56"}})
 
 (def colors-map
-  (merge {:danger  {50 danger-50
+  (merge {:primary {50 primary-50 ;; User can also use primary color as customisation color
+                    60 primary-60}
+          :beige   {50 "#CAAE93"
+                    60 "#AA927C"}
+          :green   {50 "#5BCC95"
+                    60 "#4CAB7D"}
+          :brown   {50 "#99604D"
+                    60 "#805141"}
+          :red     {50 "#F46666"
+                    60 "#CD5656"}
+          :magenta {50 "#EC266C"
+                    60 "#BD1E56"}
+          :indigo  {50 "#496289"
+                    60 "#3D5273"}
+          :danger  {50 danger-50
                     60 danger-60}
           :success {50 success-50
                     60 success-60}}
@@ -242,12 +248,13 @@
      ([color suffix]
       (custom-color color suffix nil))
      ([color suffix opacity]
-      (let [color-keyword (keyword color)
+      (let [hex?          (not (keyword? color))
+            color-keyword (keyword color)
             base-color    (get-in colors-map
-                                  [(if (= color-keyword :yinyang)
-                                     (if (theme/dark?) :yang :yin)
-                                     (keyword color)) suffix])]
-        (if opacity (alpha base-color (/ opacity 100)) base-color))))))
+                                  [color-keyword suffix])]
+        (if hex?
+          color
+          (if opacity (alpha base-color (/ opacity 100)) base-color)))))))
 
 (defn custom-color-by-theme
   "(custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark)
@@ -255,11 +262,14 @@
    suffix-light  50/60
    suffix-dark   50/60
    opacity-light 0-100 (optional)
-   opacity-dark  0-100 (optional)"
+   opacity-dark  0-100 (optional)
+   theme         :light/:dark (optional)"
   ([color suffix-light suffix-dark]
-   (custom-color-by-theme color suffix-light suffix-dark nil nil))
+   (custom-color-by-theme color suffix-light suffix-dark nil nil (theme/get-theme)))
   ([color suffix-light suffix-dark opacity-light opacity-dark]
-   (if (theme/dark?)
+   (custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark (theme/get-theme)))
+  ([color suffix-light suffix-dark opacity-light opacity-dark theme]
+   (if (= theme :dark)
      (custom-color color suffix-dark opacity-dark)
      (custom-color color suffix-light opacity-light))))
 

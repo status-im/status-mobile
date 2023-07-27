@@ -1,7 +1,7 @@
 (ns status-im.wallet.db-test
   (:require [cljs.test :refer-macros [deftest is testing]]
             [utils.i18n :as i18n]
-            [status-im.utils.money :as money]
+            [utils.money :as money]
             [status-im.wallet.db :as wallet.db]))
 
 (deftest test-too-precise-amount?

@@ -1,7 +1,8 @@
 (ns status-im2.contexts.onboarding.syncing.progress.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def page-container
+(defn page-container
+  [in-onboarding?]
   {:flex             1
    :position         :absolute
    :top              0
@@ -9,7 +10,7 @@
    :left             0
    :right            0
    :padding-bottom   20
-   :background-color colors/neutral-80-opa-80-blur})
+   :background-color (when-not in-onboarding? colors/neutral-80-opa-80-blur)})
 
 (def page-illustration
   {:flex              1

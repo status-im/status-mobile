@@ -2,10 +2,13 @@
   (:require-macros utils.re-frame)
   (:require [re-frame.core :as re-frame]
             [re-frame.interceptor :as interceptor]
-            [taoensso.timbre :as log])
+            [taoensso.timbre :as log]
+            [utils.datetime :as datetime])
   (:refer-clojure :exclude [merge reduce]))
 
 (def handler-nesting-level (atom 0))
+
+(re-frame/reg-cofx :now (fn [coeffects _] (assoc coeffects :now (datetime/timestamp))))
 
 (def debug-handlers-names
   "Interceptor which logs debug information to js/console for each event."
@@ -36,8 +39,8 @@
 (def ^:private mergeable-keys (atom nil))
 
 (defn set-mergeable-keys
-  [val]
-  (reset! mergeable-keys val))
+  [v]
+  (reset! mergeable-keys v))
 
 (defn- safe-merge
   [fx new-fx]

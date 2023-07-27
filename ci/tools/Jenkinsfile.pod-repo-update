@@ -1,3 +1,4 @@
+#!/usr/bin/env groovy
 /**
  * This job runs daily and executes `pod repo update` on MacOS
  * This is done to avoid issues with out of date repo causing errors like:

@@ -1,7 +1,7 @@
 (ns status-im.ethereum.eip681-test
   (:require [cljs.test :refer-macros [deftest is] :as test]
             [status-im.ethereum.eip681 :as eip681]
-            [status-im.utils.money :as money]))
+            [utils.money :as money]))
 
 (deftest parse-uri
   (is (= nil (eip681/parse-uri nil)))
@@ -190,18 +190,23 @@
   (is (.equals (money/bignumber "111122223333441239") (eip681/parse-eth-value "111122223333441239"))))
 
 (deftest extract-request-details
-  (let [{:keys [value symbol address]} (eip681/extract-request-details
-                                        {:address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"
-                                         :value   "1ETH"}
-                                        {})]
+  (let [{value   :value
+         sym     :symbol
+         address :address}
+        (eip681/extract-request-details
+         {:address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"
+          :value   "1ETH"}
+         {})]
     (is (.equals (money/ether->wei (money/bignumber 1)) value))
-    (is (= :ETH symbol))
+    (is (= :ETH sym))
     (is (= "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" address)))
   (is (= (eip681/extract-request-details
           {:address "0x744d70fdbe2ba4cf95131626614a1763df805b9e" :chain-id 1 :function-name "unknown"}
           {})
          {:address "0x744d70fdbe2ba4cf95131626614a1763df805b9e" :chain-id 1 :function-name "unknown"}))
-  (let [{:keys [value symbol address]}
+  (let [{value   :value
+         sym     :symbol
+         address :address}
         (eip681/extract-request-details
          {:address            "0x744d70fdbe2ba4cf95131626614a1763df805b9e"
           :chain-id           1
@@ -213,5 +218,5 @@
                                                         :symbol :SNT
                                                         :decimals 18}})]
     (is (.equals (money/bignumber 1000) value))
-    (is (= :SNT symbol))
+    (is (= :SNT sym))
     (is (= "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7" address))))

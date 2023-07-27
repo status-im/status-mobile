@@ -1,11 +1,12 @@
 (ns quo2.components.empty-state.empty-state.view
-  (:require [quo2.components.buttons.button :as button]
+  (:require [quo2.components.buttons.button.view :as button]
             [quo2.components.empty-state.empty-state.styles :as styles]
             [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]))
+            [react-native.fast-image :as fast-image]
+            [quo2.theme :as theme]))
 
-(defn empty-state
+(defn- empty-state-internal
   [{:keys        [customization-color image title description blur?]
     upper-button :upper-button
     lower-button :lower-button
@@ -32,19 +33,18 @@
                upper-button-on-press :on-press} upper-button]
      [rn/view {:style styles/button-container}
       [button/button
-       (cond-> {:type                      :primary
-                :size                      32
-                :override-background-color (styles/upper-button-color customization-color)
-                :on-press                  upper-button-on-press}
-         blur? (assoc :override-theme :dark))
+       {:type                :primary
+        :size                32
+        :customization-color customization-color
+        :on-press            upper-button-on-press}
        upper-button-text]
-
       (when-let [{lower-button-text     :text
                   lower-button-on-press :on-press} lower-button]
         [button/button
-         (cond-> {:style    {:margin-top 12}
-                  :size     32
-                  :type     :blur-bg
-                  :on-press lower-button-on-press}
-           blur? (assoc :override-theme :dark))
+         {:style    {:margin-top 12}
+          :size     32
+          :type     :blur-bg
+          :on-press lower-button-on-press}
          lower-button-text])])])
+
+(def empty-state (theme/with-theme empty-state-internal))

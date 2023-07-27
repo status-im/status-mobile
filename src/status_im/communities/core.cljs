@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [clojure.walk :as walk]
             [quo.design-system.colors :as colors]
+            [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
             [status-im.utils.types :as types]
             [status-im.async-storage.core :as async-storage]
@@ -11,11 +12,12 @@
             [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im2.common.toasts.events :as toasts]
             [status-im2.constants :as constants]
-            [status-im2.contexts.activity-center.events :as activity-center]
+            [status-im2.contexts.shell.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
+            [status-im2.common.muting.helpers :refer [format-mute-till]]
             [status-im2.contexts.chat.events :as chat.events]))
 
 (def crop-size 1000)
@@ -72,7 +74,8 @@
                         :isMember                    :is-member?
                         :adminSettings               :admin-settings
                         :tokenPermissions            :token-permissions
-                        :communityTokensMetadata     :tokens-metadata})
+                        :communityTokensMetadata     :tokens-metadata
+                        :muteTill                    :muted-till})
       (update :admin-settings
               set/rename-keys
               {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
@@ -80,7 +83,8 @@
       (update :chats <-chats-rpc)
       (update :categories <-categories-rpc)
       (assoc :token-images
-             (reduce (fn [acc {:keys [symbol image]}] (assoc acc symbol image))
+             (reduce (fn [acc {sym :symbol image :image}]
+                       (assoc acc sym image))
                      {}
                      (:communityTokensMetadata c)))))
 
@@ -102,7 +106,7 @@
 
 (rf/defn handle-requests-to-join
   [{:keys [db]} requests]
-  (let [my-public-key (get-in db [:multiaccount :public-key])]
+  (let [my-public-key (get-in db [:profile/profile :public-key])]
     {:db (reduce (fn [db {:keys [public-key] :as request}]
                    (let [my-request? (= my-public-key public-key)]
                      (if my-request?
@@ -278,15 +282,16 @@
   (let [community-chat-ids (map #(str community-id %)
                                 (keys (get-in db [:communities community-id :chats])))]
     {:clear-message-notifications [community-chat-ids
-                                   (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+                                   (get-in db [:profile/profile :remote-push-notifications-enabled?])]
      :dispatch                    [:shell/close-switcher-card community-id]
      :json-rpc/call               [{:method      "wakuext_leaveCommunity"
                                     :params      [community-id]
                                     :js-response true
                                     :on-success  #(re-frame/dispatch [::left %])
-                                    :on-error    (fn []
+                                    :on-error    (fn [response]
                                                    (log/error "failed to leave community"
-                                                              community-id)
+                                                              community-id
+                                                              response)
                                                    (re-frame/dispatch [::failed-to-leave]))}]}))
 
 (rf/defn status-tag-pressed
@@ -795,14 +800,14 @@
 (rf/defn store-category-state
   {:events [::store-category-state]}
   [{:keys [db]} community-id category-id state-open?]
-  (let [public-key (get-in db [:multiaccount :public-key])
+  (let [public-key (get-in db [:profile/profile :public-key])
         hash       (category-hash public-key community-id category-id)]
     {::async-storage/set! {hash state-open?}}))
 
 (rf/defn update-category-states-in-db
   {:events [::category-states-loaded]}
   [{:keys [db]} community-id hashes states]
-  (let [public-key     (get-in db [:multiaccount :public-key])
+  (let [public-key     (get-in db [:profile/profile :public-key])
         categories-old (get-in db [:communities community-id :categories])
         categories     (reduce (fn [acc [category-id category]]
                                  (let [hash             (get hashes category-id)
@@ -816,7 +821,7 @@
 (rf/defn load-category-states
   {:events [:communities/load-category-states]}
   [{:keys [db]} community-id]
-  (let [public-key            (get-in db [:multiaccount :public-key])
+  (let [public-key            (get-in db [:profile/profile :public-key])
         categories            (get-in db [:communities community-id :categories])
         {:keys [keys hashes]} (reduce (fn [acc category]
                                         (let [category-id (get category 0)
@@ -833,12 +838,17 @@
                           :cb   #(re-frame/dispatch
                                   [::category-states-loaded community-id hashes %])}}))
 
+;; Note - dispatch is used to make sure we are opening community once `pop-to-root` is processed.
+;; Don't directly merge effects using `navigation/navigate-to`, because it will work in debug and
+;; release, but for e2e `pop-to-root` closes even currently opened community
+;; https://github.com/status-im/status-mobile/pull/16438#issuecomment-1623954774
 (rf/defn navigate-to-community
   {:events [:communities/navigate-to-community]}
   [cofx community-id]
-  (rf/merge cofx
-            (navigation/pop-to-root :shell-stack)
-            (navigation/navigate-to :community-overview community-id)))
+  (rf/merge
+   cofx
+   {:dispatch [:navigate-to :community-overview community-id]}
+   (navigation/pop-to-root :shell-stack)))
 
 (rf/defn member-role-updated
   {:events [:community.member/role-updated]}
@@ -932,3 +942,58 @@
                                    {:error %
                                     :event
                                     :communities/check-and-delete-pending-request-to-join-community})}]})
+
+(rf/defn mute-community-chats
+  {:events [:community/mute-community-chats]}
+  [{:keys [db]} chat-id muted? muted-till]
+  (log/debug "muted community chat successfully" chat-id muted?)
+  {:db (update-in db [:chats chat-id] merge {:muted muted? :muted-till muted-till})})
+
+(rf/defn mute-and-unmute-community-chats
+  {:events [:community/update-community-chats-mute-status]}
+  [{:keys [db]} community-id muted? mute-till]
+  (let [channels (get-in db [:communities community-id :chats])
+        chats    (mapv vector (keys channels) (vals channels))]
+    (doseq [x chats]
+      (doseq [{:keys [id]} x]
+        (let [chat-id (str community-id id)]
+          (rf/dispatch [:community/mute-community-chats chat-id muted? mute-till]))))))
+
+(rf/defn mute-chat-failed
+  {:events [:community/mute-community-failed]}
+  [{:keys [db]} community-id muted? error]
+  (log/error "mute community failed" community-id error)
+  {:db (update-in db [:communities community-id :muted] (not muted?))}
+  (rf/dispatch [:community/update-community-chats-mute-status community-id muted? error]))
+
+(rf/defn mute-community-successfully
+  {:events [:community/mute-community-successful]}
+  [{:keys [db]} community-id muted? muted-till]
+  (log/debug "muted community successfully" community-id muted-till)
+  (rf/dispatch [:community/update-community-chats-mute-status community-id muted? muted-till])
+  (let [time-string (fn [mute-title mute-duration]
+                      (i18n/label mute-title {:duration mute-duration}))]
+    {:db       (assoc-in db [:communities community-id :muted-till] muted-till)
+     :dispatch [:toasts/upsert
+                {:icon       :correct
+                 :icon-color (quo2.colors/theme-colors
+                              quo2.colors/success-60
+                              quo2.colors/success-50)
+                 :text       (if muted?
+                               (when (some? muted-till)
+                                 (time-string :t/muted-until (format-mute-till muted-till)))
+                               (i18n/label :t/community-unmuted))}]}))
+
+
+(rf/defn set-community-muted
+  {:events [:community/set-muted]}
+  [{:keys [db]} community-id muted? muted-type]
+  (let [params (if muted? [{:communityId community-id :mutedType muted-type}] [community-id])
+        method (if muted? "wakuext_muteCommunityChats" "wakuext_unMuteCommunityChats")]
+    {:db            (assoc-in db [:communities community-id :muted] muted?)
+     :json-rpc/call [{:method     method
+                      :params     params
+                      :on-error   #(rf/dispatch [:community/mute-community-failed community-id
+                                                 muted? %])
+                      :on-success #(rf/dispatch [:community/mute-community-successful
+                                                 community-id muted? %])}]}))

@@ -1,10 +1,10 @@
 (ns quo2.components.tags.context-tag.view
-  (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.components.avatars.group-avatar :as group-avatar]
+  (:require [quo2.components.avatars.group-avatar :as group-avatar]
+            [quo2.components.avatars.user-avatar.style :as user-avatar-style]
+            [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.context-tag.style :as style]
-            [quo2.components.avatars.user-avatar.style :as user-avatar-style]
             [react-native.core :as rn]))
 
 (defn trim-public-key
@@ -40,31 +40,39 @@
     (trim-public-key public-key)]])
 
 (defn context-tag
-  [{:keys [text-style blur? no-avatar-placeholder?] :as params} photo name channel-name]
-  (let [text-params       {:weight :medium
-                           :size   :paragraph-2
-                           :style  (assoc text-style :justify-content :center)}
+  [{:keys [text-style blur? no-avatar-placeholder? text-container-style ellipsize-text?]
+    :as   props}
+   photo
+   name
+   channel-name]
+  (let [text-props        {:weight          :medium
+                           :size            :paragraph-2
+                           :style           (assoc text-style :justify-content :center)
+                           :number-of-lines 1
+                           :ellipsize-mode  :tail}
         empty-photo?      (nil? photo)
         avatar-size       :xxs
         avatar-outer-size (get-in user-avatar-style/sizes [avatar-size :outer])]
-    [rn/view {:flex-direction :row}
-     [base-tag (assoc-in params [:style :padding-left] 3)
-      (if (and empty-photo? no-avatar-placeholder?)
-        [rn/view {:style {:width avatar-outer-size}}]
-        [user-avatar/user-avatar
-         {:full-name         name
-          :profile-picture   photo
-          :size              avatar-size
-          :status-indicator? false}])
-      [rn/view {:style style/context-tag-text-container}
-       [text/text text-params (str " " name)]
-       (when channel-name
-         [:<>
-          [icons/icon
-           :i/chevron-right
-           {:color (style/context-tag-icon-color blur?)
-            :size  16}]
-          [text/text text-params (str "# " channel-name)]])]]]))
+    [base-tag (update-in props [:style :padding-left] #(or % 3))
+     (if (and empty-photo? no-avatar-placeholder?)
+       [rn/view {:style {:width avatar-outer-size}}]
+       [user-avatar/user-avatar
+        {:full-name         name
+         :profile-picture   photo
+         :size              avatar-size
+         :status-indicator? false}])
+     [rn/view {:style (or text-container-style style/context-tag-text-container)}
+      (if ellipsize-text?
+        [rn/view {:style {:flex 1}}
+         [text/text text-props name]]
+        [text/text text-props (str " " name)])
+      (when channel-name
+        [:<>
+         [icons/icon
+          :i/chevron-right
+          {:color (style/context-tag-icon-color blur?)
+           :size  16}]
+         [text/text text-props (str "# " channel-name)]])]]))
 
 (defn user-avatar-tag
   [params username photo]
@@ -88,8 +96,10 @@
 (defn community-tag
   [avatar community-name {:keys [override-theme] :as params}]
   [context-tag
-   (merge {:style      style/community-tag
-           :text-style (style/community-tag-text override-theme)}
+   (merge {:style                style/community-tag
+           :text-style           (style/community-tag-text override-theme)
+           :text-container-style style/community-tag-text-container
+           :ellipsize-text?      true}
           params)
    avatar
    community-name])

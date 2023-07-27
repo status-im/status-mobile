@@ -3,13 +3,14 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [utils.datetime :as datetime]
+            [utils.debounce :as debounce]
             [status-im2.common.home.actions.view :as actions]
             [status-im2.contexts.chat.home.chat-list-item.style :as style]
             [utils.re-frame :as rf]
             [status-im2.constants :as constants]
             [clojure.string :as string]
             [utils.i18n :as i18n]
-            [quo2.components.icon :as quo2.icons]))
+            [quo2.components.icon :as icons]))
 
 (def max-subheader-length 50)
 
@@ -17,7 +18,7 @@
   [chat-id]
   (fn []
     (rf/dispatch [:dismiss-keyboard])
-    (rf/dispatch [:chat/navigate-to-chat chat-id])))
+    (debounce/dispatch-and-chill [:chat/navigate-to-chat chat-id] 500)))
 
 (defn parsed-text-to-one-line
   [parsed-text]
@@ -234,10 +235,10 @@
      (if-not muted
        (when show-unread-badge?
          [quo/info-count
-          {:style {:top   16
-                   :right 16}}
+          {:style               {:top   16
+                                 :right 16}
+           :accessibility-label :new-message-counter}
           unviewed-messages-count])
-       [quo2.icons/icon :i/muted
-        {:size            20
-         :color           colors/neutral-40
+       [icons/icon :i/muted
+        {:color           colors/neutral-40
          :container-style style/muted-icon}])]))

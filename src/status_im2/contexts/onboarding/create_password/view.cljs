@@ -2,11 +2,9 @@
   (:require
     [oops.core :refer [ocall]]
     [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
     [status-im2.contexts.onboarding.create-password.style :as style]
     [utils.i18n :as i18n]
@@ -177,64 +175,54 @@
 
           [rn/view {:style style/button-container}
            [quo/button
-            {:disabled                  (not meet-requirements?)
-             :override-background-color (colors/custom-color user-color 60)
-             :on-press                  #(rf/dispatch
-                                          [:onboarding-2/password-set
-                                           (security/mask-data @password)])}
+            {:disabled            (not meet-requirements?)
+             :customization-color user-color
+             :on-press            #(rf/dispatch
+                                    [:onboarding-2/password-set
+                                     (security/mask-data @password)])}
             (i18n/label :t/password-creation-confirm)]]]]))))
 
 (defn create-password-doc
   []
   [quo/documentation-drawers
-   {:title  (i18n/label
-             :t/create-profile-password-info-box-title)
+   {:title  (i18n/label :t/create-profile-password-info-box-title)
     :shell? true}
    [rn/view
-    [quo/text
-     {:size :paragraph-2}
-     (i18n/label
-      :t/create-profile-password-info-box-description)]]])
-
-(defn- f-create-password
-  []
-  (let [keyboard-shown?      (reagent/atom false)
-        {:keys [top bottom]} (safe-area/get-insets)]
-    (fn []
-      (rn/use-effect
-       (let [will-show-listener (ocall rn/keyboard
-                                       "addListener"
-                                       "keyboardWillShow"
-                                       #(reset! keyboard-shown? true))
-             will-hide-listener (ocall rn/keyboard
-                                       "addListener"
-                                       "keyboardWillHide"
-                                       #(reset! keyboard-shown? false))]
-         (fn []
-           (fn []
-             (ocall will-show-listener "remove")
-             (ocall will-hide-listener "remove"))))
-       [])
-      [rn/touchable-without-feedback
-       {:on-press   rn/dismiss-keyboard!
-        :accessible false}
-       [rn/view {:style style/flex-fill}
-        [rn/keyboard-avoiding-view {:style style/flex-fill}
-         [navigation-bar/navigation-bar
-          {:top                   top
-           :right-section-buttons [{:type                :blur-bg
-                                    :icon                :i/info
-                                    :icon-override-theme :dark
-                                    :on-press            (fn []
-                                                           (rn/dismiss-keyboard!)
-                                                           (rf/dispatch [:show-bottom-sheet
-                                                                         {:content create-password-doc
-                                                                          :shell?  true}]))}]}]
-         [password-form]
-         [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]]])))
+    [quo/text {:size :paragraph-2}
+     (i18n/label :t/create-profile-password-info-box-description)]]])
 
 (defn create-password
   []
-  [:<>
-   [background/view true]
-   [:f> f-create-password]])
+  (reagent/with-let [keyboard-shown?      (reagent/atom false)
+                     {:keys [top bottom]} (safe-area/get-insets)
+                     will-show-listener   (ocall rn/keyboard
+                                                 "addListener"
+                                                 "keyboardWillShow"
+                                                 #(reset! keyboard-shown? true))
+                     will-hide-listener   (ocall rn/keyboard
+                                                 "addListener"
+                                                 "keyboardWillHide"
+                                                 #(reset! keyboard-shown? false))
+                     on-press-info        (fn []
+                                            (rn/dismiss-keyboard!)
+                                            (rf/dispatch [:show-bottom-sheet
+                                                          {:content create-password-doc
+                                                           :shell?  true}]))]
+    [:<>
+     [rn/touchable-without-feedback
+      {:on-press   rn/dismiss-keyboard!
+       :accessible false}
+      [rn/view {:style style/flex-fill}
+       [rn/keyboard-avoiding-view {:style style/flex-fill}
+        [navigation-bar/navigation-bar
+         {:stack-id              :new-to-status
+          :top                   top
+          :right-section-buttons [{:type                :blur-bg
+                                   :icon                :i/info
+                                   :icon-override-theme :dark
+                                   :on-press            on-press-info}]}]
+        [password-form]
+        [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]]]]
+    (finally
+     (ocall will-show-listener "remove")
+     (ocall will-hide-listener "remove"))))

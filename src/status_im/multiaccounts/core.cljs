@@ -12,7 +12,7 @@
             [status-im2.setup.hot-reload :as hot-reload]
             [status-im2.common.theme.core :as theme]
             [taoensso.timbre :as log]
-            [status-im2.contexts.shell.utils :as shell.utils]
+            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
             [status-im.contact.db :as contact.db]))
 
 ;; validate that the given mnemonic was generated from Status Dictionary
@@ -34,17 +34,18 @@
       (or display-name primary-name alias (gfycat/generate-gfy public-key)))))
 
 (defn contact-by-identity
-  [contacts identity]
-  (or (get contacts identity)
-      (contact.db/public-key->new-contact identity)))
+  [contacts contact-identity]
+  (or (get contacts contact-identity)
+      (contact.db/public-key->new-contact contact-identity)))
 
 (defn contact-two-names-by-identity
-  [contact current-multiaccount identity]
-  (let [me? (= (:public-key current-multiaccount) identity)]
+  [contact profile contact-identity]
+  (let [me? (= (:public-key profile) contact-identity)]
     (if me?
-      [(or (:preferred-name current-multiaccount)
+      [(or (:preferred-name profile)
+           (:display-name profile)
            (:primary-name contact)
-           (gfycat/generate-gfy identity))]
+           (gfycat/generate-gfy contact-identity))]
       [(:primary-name contact) (:secondary-name contact)])))
 
 (defn displayed-photo
@@ -120,7 +121,7 @@
 
 (rf/defn switch-preview-privacy-mode-flag
   [{:keys [db]}]
-  (let [private? (get-in db [:multiaccount :preview-privacy?])]
+  (let [private? (get-in db [:profile/profile :preview-privacy?])]
     {::blank-preview-flag-changed private?}))
 
 (re-frame/reg-fx
@@ -153,7 +154,7 @@
   {:events [:multiaccounts.ui/switch-theme]}
   [cofx theme view-id]
   (let [theme (or theme
-                  (get-in cofx [:db :multiaccount :appearance])
+                  (get-in cofx [:db :profile/profile :appearance])
                   constants/theme-type-dark)]
     {:multiaccounts.ui/switch-theme-fx [theme view-id false]}))
 
@@ -180,7 +181,7 @@
 (rf/defn save-profile-picture
   {:events [::save-profile-picture]}
   [cofx path ax ay bx by]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
     (rf/merge cofx
               {:json-rpc/call [{:method     "multiaccounts_storeIdentityImage"
                                 :params     [key-uid (clean-path path) ax ay bx by]
@@ -191,7 +192,7 @@
 (rf/defn save-profile-picture-from-url
   {:events [::save-profile-picture-from-url]}
   [cofx url]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
     (rf/merge cofx
               {:json-rpc/call [{:method     "multiaccounts_storeIdentityImageFromURL"
                                 :params     [key-uid url]
@@ -207,19 +208,19 @@
 (rf/defn delete-profile-picture
   {:events [::delete-profile-picture]}
   [cofx name]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
     (rf/merge cofx
               {:json-rpc/call [{:method     "multiaccounts_deleteIdentityImage"
                                 :params     [key-uid]
-                                ;; NOTE: In case of an error we could fallback to previous image in UI
-                                ;; with a toast error
+                                ;; NOTE: In case of an error we could fallback to previous image in
+                                ;; UI with a toast error
                                 :on-success #(log/info "[multiaccount] Delete profile image" %)}]}
               (multiaccounts.update/optimistic :images nil)
               (bottom-sheet/hide-bottom-sheet-old))))
 
 (rf/defn get-profile-picture
   [cofx]
-  (let [key-uid (get-in cofx [:db :multiaccount :key-uid])]
+  (let [key-uid (get-in cofx [:db :profile/profile :key-uid])]
     {:json-rpc/call [{:method     "multiaccounts_getIdentityImages"
                       :params     [key-uid]
                       :on-success #(re-frame/dispatch [::update-local-picture %])}]}))

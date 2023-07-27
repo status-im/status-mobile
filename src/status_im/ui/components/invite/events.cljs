@@ -13,7 +13,7 @@
 (rf/defn share-link
   {:events [:invite.events/share-link]}
   [{:keys [db]}]
-  (let [{:keys [public-key preferred-name]} (get db :multiaccount)
+  (let [{:keys [public-key preferred-name]} (get db :profile/profile)
         profile-link                        (universal-links/generate-link :user
                                                                            :external
                                                                            (or preferred-name

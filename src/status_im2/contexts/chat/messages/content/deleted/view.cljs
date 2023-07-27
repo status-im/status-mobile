@@ -7,21 +7,20 @@
 
 (defn user-xxx-deleted-this-message
   [{:keys [display-name profile-picture]}]
-  [rn/view
-   {:style {:flex-direction :row
-            :align-items    :center
-            :flex           1
-            :flex-wrap      :wrap}}
-   [rn/view {:style {:margin-right 4}}
+  [:<>
+   [rn/view
+    {:style {:margin-right 4
+             :align-self   :center}}
     [quo/user-avatar
      {:full-name         display-name
       :profile-picture   profile-picture
       :status-indicator? false
       :size              :xxxs}]]
-   [quo/author {:primary-name display-name}]
+   [quo/author
+    {:primary-name display-name
+     :style        {:margin-right 4}}]
    [quo/text
-    {:style           {:margin-left 4}
-     :size            :paragraph-2
+    {:size            :paragraph-2
      :number-of-lines 1}
     (i18n/label :t/deleted-this-message)]])
 

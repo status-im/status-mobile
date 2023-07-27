@@ -633,14 +633,15 @@ RCT_EXPORT_METHOD(loginAccount:(NSString *)request) {
 
 RCT_EXPORT_METHOD(loginWithKeycard:(NSString *)accountData
                   password:(NSString *)password
-                  chatKey:(NSString *)chatKey) {
+                  chatKey:(NSString *)chatKey
+                  nodeConfigJSON:(NSString *)nodeConfigJSON) {
 #if DEBUG
     NSLog(@"LoginWithKeycard() method called");
 #endif
     [self getExportDbFilePath];
     [self migrateKeystore:accountData password:password];
 
-    NSString *result = StatusgoLoginWithKeycard(accountData, password, chatKey);
+    NSString *result = StatusgoLoginWithKeycard(accountData, password, chatKey, nodeConfigJSON);
 
     NSLog(@"%@", result);
 }
@@ -1156,23 +1157,7 @@ RCT_EXPORT_METHOD(deactivateKeepAwake)
 
 - (NSString*) deviceName
 {
-
-    NSString* deviceName = nil;
-
-    if ([self.deviceId rangeOfString:@"iPod"].location != NSNotFound) {
-        deviceName = @"iPod Touch";
-    }
-    else if([self.deviceId rangeOfString:@"iPad"].location != NSNotFound) {
-        deviceName = @"iPad";
-    }
-    else if([self.deviceId rangeOfString:@"iPhone"].location != NSNotFound){
-        deviceName = @"iPhone";
-    }
-    else if([self.deviceId rangeOfString:@"AppleTV"].location != NSNotFound){
-        deviceName = @"Apple TV";
-    }
-
-    return deviceName;
+    return [[UIDevice currentDevice] name];;
 }
 
 - (NSDictionary *)constantsToExport

@@ -8,7 +8,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.tokens :as tokens]
-            [status-im.utils.money :as money]))
+            [utils.money :as money]))
 
 (def scheme "ethereum")
 (def scheme-separator ":")
@@ -143,8 +143,8 @@
 
 (defn generate-erc20-uri
   "Generate a EIP 681 URI encapsulating ERC20 token transfer"
-  [address {:keys [symbol value] :as m} all-tokens]
-  (when-let [token (tokens/symbol->token all-tokens symbol)]
+  [address {sym :symbol value :value :as m} all-tokens]
+  (when-let [token (tokens/symbol->token all-tokens sym)]
     (generate-uri (:address token)
                   (merge (dissoc m :value :symbol)
                          {:function-name      "transfer"

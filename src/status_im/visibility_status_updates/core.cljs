@@ -66,10 +66,10 @@
   (let [visibility-status-updates-old (get db :visibility-status-updates {})
         my-public-key (get-in
                        db
-                       [:multiaccount :public-key])
+                       [:profile/profile :public-key])
         my-current-status (get-in
                            db
-                           [:multiaccount :current-user-visibility-status])
+                           [:profile/profile :current-user-visibility-status])
         {:keys [visibility-status-updates current-user-visibility-status dispatch]}
         (reduce (fn [acc visibility-status-update-received]
                   (let [{:keys [public-key clock] :as visibility-status-update}
@@ -93,7 +93,7 @@
                     (update-in [:visibility-status-updates]
                                merge
                                visibility-status-updates)
-                    (update-in [:multiaccount :current-user-visibility-status]
+                    (update-in [:profile/profile :current-user-visibility-status]
                                merge
                                current-user-visibility-status))}
            (when dispatch {:dispatch dispatch}))))
@@ -102,7 +102,7 @@
   {:events [:visibility-status-updates/update-visibility-status]}
   [{:keys [db] :as cofx} status-type]
   {:db            (update-in db
-                             [:multiaccount :current-user-visibility-status]
+                             [:profile/profile :current-user-visibility-status]
                              merge
                              {:status-type status-type
                               :clock       (datetime/timestamp-sec)})
@@ -150,9 +150,9 @@
 (rf/defn peers-summary-change
   [{:keys [db] :as cofx} peers-count]
   (let [send-visibility-status-updates?
-        (get-in db [:multiaccount :send-status-updates?])
+        (get-in db [:profile/profile :send-status-updates?])
         status-type
-        (get-in db [:multiaccount :current-user-visibility-status :status-type])]
+        (get-in db [:profile/profile :current-user-visibility-status :status-type])]
     (when (and
            (> peers-count 0)
            send-visibility-status-updates?
@@ -161,12 +161,12 @@
                 {:dispatch-later [{:ms 1000
                                    :dispatch
                                    [:visibility-status-updates/send-visibility-status-updates? false]}]
-                 :db             (assoc-in db [:multiaccount :send-status-updates?] false)}
+                 :db             (assoc-in db [:profile/profile :send-status-updates?] false)}
                 (update-visibility-status status-type)))))
 
 (rf/defn sync-visibility-status-update
   [{:keys [db] :as cofx} visibility-status-update-received]
-  (let [my-current-status           (get-in db [:multiaccount :current-user-visibility-status])
+  (let [my-current-status           (get-in db [:profile/profile :current-user-visibility-status])
         {:keys [status-type clock]} (visibility-status-updates-store/<-rpc
                                      visibility-status-update-received)]
     (when (and (valid-status-type? status-type)
@@ -175,7 +175,7 @@
                 (> clock (:clock my-current-status))))
       (rf/merge cofx
                 {:db (update-in db
-                                [:multiaccount :current-user-visibility-status]
+                                [:profile/profile :current-user-visibility-status]
                                 merge
                                 {:clock clock :status-type status-type})}
                 (send-visibility-status-updates?

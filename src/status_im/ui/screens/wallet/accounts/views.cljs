@@ -2,7 +2,7 @@
   (:require [quo.animated :as reanimated]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
-            [quo2.components.buttons.button :as quo2.button]
+            [quo2.core :as quo2]
             [quo2.components.markdown.text :as quo2.text]
             [quo2.components.tabs.tabs :as quo2.tabs]
             [quo2.foundations.colors :as quo2.colors]
@@ -146,7 +146,7 @@
                   portfolio-value    [:portfolio-value]
                   empty-balances?    [:empty-balances?]
                   frozen-card?       [:keycard/frozen-card?]
-                  {:keys [mnemonic]} [:multiaccount]]
+                  {:keys [mnemonic]} [:profile/profile]]
     [reanimated/view {:style (styles/container {:minimized minimized})}
      (when (or
             (and frozen-card? minimized)
@@ -287,7 +287,7 @@
            {:default-active (:address (first accounts))
             :on-change      #(reset! selected-account-atom %)
             :data           accounts-data}]
-          [quo2.button/button
+          [quo2/button
            {:type     :grey
             :size     32
             :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
@@ -307,7 +307,7 @@
                                                             quo2.colors/neutral-95)}}
        [react/view {:padding-horizontal 20}
         [react/view {:flex-direction :row :height 56 :align-items :center :justify-content :flex-end}
-         [quo2.button/button
+         [quo2/button
           {:icon                true
            :size                32
            :type                :grey
@@ -317,7 +317,7 @@
                                    {:handler :wallet.send/qr-scanner-result}])}
           :i/placeholder]
          [react/view {:width 12}]
-         [quo2.button/button
+         [quo2/button
           {:icon                true
            :size                32
            :type                :grey

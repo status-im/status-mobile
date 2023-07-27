@@ -9,7 +9,7 @@
             [status-im.signing.gas :as gas]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.utils.money :as money]))
+            [utils.money :as money]))
 
 (views/defview fee-bottom-sheet
   [fee-display-symbol]
@@ -298,8 +298,10 @@
        (i18n/label :t/save)]]]))
 
 (defn gwei
-  [val]
-  (str (money/to-fixed val 2) " " (i18n/label :t/gwei)))
+  [amount]
+  (str (money/to-fixed amount 2)
+       " "
+       (i18n/label :t/gwei)))
 
 (defn fees-warning
   []

@@ -2,9 +2,9 @@
   (:require [react-native.cameraroll :as cameraroll]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [react-native.permissions :as permissions]
-            [status-im2.config :as config]
             [utils.re-frame :as rf]
             [status-im.utils.image-processing :as image-processing]
             [taoensso.timbre :as log]
@@ -141,6 +141,6 @@
   [{:keys [db]} image chat-id]
   (let [current-chat-id (or chat-id (:current-chat-id db))
         images          (get-in db [:chat/inputs current-chat-id :metadata :sending-image])]
-    (when (and (< (count images) config/max-images-batch)
+    (when (and (< (count images) constants/max-album-photos)
                (not (some #(= (:uri image) (:uri %)) images)))
       {:camera-roll-image-selected [image current-chat-id]})))

@@ -83,7 +83,7 @@
   [{db :db} chat-id]
   {:db                          (mark-chat-all-read db chat-id)
    :clear-message-notifications [[chat-id]
-                                 (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+                                 (get-in db [:profile/profile :remote-push-notifications-enabled?])]
    :json-rpc/call               [{:method     "wakuext_markAllRead"
                                   :params     [chat-id]
                                   :on-success #(re-frame/dispatch [::mark-all-read-successful])}]})
@@ -94,7 +94,7 @@
   (let [community-chat-ids (map #(str community-id %)
                                 (keys (get-in db [:communities community-id :chats])))]
     {:clear-message-notifications [community-chat-ids
-                                   (get-in db [:multiaccount :remote-push-notifications-enabled?])]
+                                   (get-in db [:profile/profile :remote-push-notifications-enabled?])]
      :json-rpc/call               [{:method     "wakuext_markAllReadInCommunity"
                                     :params     [community-id]
                                     :on-success #(re-frame/dispatch

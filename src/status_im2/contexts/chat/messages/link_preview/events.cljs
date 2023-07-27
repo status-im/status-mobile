@@ -13,8 +13,8 @@
 
 (rf/defn cache-link-preview-data
   {:events [:chat.ui/cache-link-preview-data]}
-  [{{:keys [multiaccount]} :db :as cofx} site data]
-  (let [link-previews-cache (get multiaccount :link-previews-cache {})]
+  [{{:profile/keys [profile]} :db :as cofx} site data]
+  (let [link-previews-cache (get profile :link-previews-cache {})]
     (multiaccounts.update/optimistic
      cofx
      :link-previews-cache
@@ -22,8 +22,8 @@
 
 (rf/defn load-link-preview-data
   {:events [:chat.ui/load-link-preview-data]}
-  [{{:keys [multiaccount] :as db} :db} link]
-  (let [{:keys [error] :as cache-data} (get-in multiaccount [:link-previews-cache link])]
+  [{{:profile/keys [profile] :as db} :db} link]
+  (let [{:keys [error] :as cache-data} (get-in profile [:link-previews-cache link])]
     (if (or (not cache-data) error)
       {:json-rpc/call [{:method     "wakuext_getLinkPreviewData"
                         :params     [link]
@@ -86,18 +86,18 @@
 
 (rf/defn enable
   {:events [:chat.ui/enable-link-previews]}
-  [{{:keys [multiaccount]} :db :as cofx} site enabled?]
+  [{{:profile/keys [profile]} :db :as cofx} site enabled?]
   (multiaccounts.update/multiaccount-update
    cofx
    :link-previews-enabled-sites
    (if enabled?
-     (conj (get multiaccount :link-previews-enabled-sites #{}) site)
-     (disj (get multiaccount :link-previews-enabled-sites #{}) site))
+     (conj (get profile :link-previews-enabled-sites #{}) site)
+     (disj (get profile :link-previews-enabled-sites #{}) site))
    {}))
 
 (rf/defn enable-all
   {:events [:chat.ui/enable-all-link-previews]}
-  [{{:keys [multiaccount]} :db :as cofx} link-previews-whitelist enabled?]
+  [cofx link-previews-whitelist enabled?]
   (multiaccounts.update/multiaccount-update
    cofx
    :link-previews-enabled-sites

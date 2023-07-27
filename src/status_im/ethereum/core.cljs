@@ -82,7 +82,7 @@
 
 (defn current-address
   [db]
-  (-> (get-in db [:multiaccount :address])
+  (-> (get-in db [:profile/profile :address])
       normalized-hex))
 
 (defn get-default-account
@@ -91,7 +91,7 @@
 
 (defn default-address
   [db]
-  (-> (get db :multiaccount/accounts)
+  (-> (get db :profile/wallet-accounts)
       get-default-account
       :address))
 
@@ -99,7 +99,7 @@
   [db]
   (into #{}
         (remove #(= (:type %) :watch)
-                (map #(eip55/address->checksum (:address %)) (get db :multiaccount/accounts)))))
+                (map #(eip55/address->checksum (:address %)) (get db :profile/wallet-accounts)))))
 
 (defn naked-address
   [s]

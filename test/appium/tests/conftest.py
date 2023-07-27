@@ -1,6 +1,8 @@
 import os
 import re
+import signal
 import urllib.request
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from http.client import RemoteDisconnected
@@ -203,21 +205,50 @@ def pytest_configure(config):
                                                     description='e2e tests are running')
             if config.getoption('env') == 'sauce':
                 if not is_uploaded():
-                    if 'http' in config.getoption('apk'):
-                        apk_name = config.getoption('apk').split("/")[-1]
-                        # it works with just a file_name, but I've added full path because not sure how it'll behave on the remote run (Jenkins)
-                        file_path = os.path.join(os.path.dirname(__file__), apk_name)
-                        for _ in range(3):
+                    def _upload_and_check_response(apk_file_path):
+                        @contextmanager
+                        def _upload_time_limit(seconds):
+                            def signal_handler(signum, frame):
+                                raise TimeoutError("Apk upload took more than %s seconds" % seconds)
+
+                            signal.signal(signal.SIGALRM, signal_handler)
+                            signal.alarm(seconds)
                             try:
-                                urllib.request.urlretrieve(config.getoption('apk'),
-                                                           filename=file_path)  # if url is not valid it raises an error
-                                sauce.storage.upload(file_path)
-                                os.remove(file_path)
-                                break
-                            except (ConnectionError, RemoteDisconnected):
-                                sleep(10)
+                                yield
+                            finally:
+                                signal.alarm(0)
+
+                        with _upload_time_limit(600):
+                            class UploadApkException(Exception):
+                                pass
+
+                            with open(apk_file_path, 'rb') as f:
+                                resp = sauce.storage._session.request('post', '/v1/storage/upload',
+                                                                      files={'payload': f})
+                                try:
+                                    if resp['item']['name'] != test_suite_data.apk_name:
+                                        raise UploadApkException(
+                                            "Incorrect apk was uploaded to Sauce storage, response:\n%s" % resp)
+                                except KeyError:
+                                    raise UploadApkException(
+                                        "Error when uploading apk to Sauce storage, response:\n%s" % resp)
+
+                    if 'http' in config.getoption('apk'):
+                        # it works with just a file_name, but I've added full path because not sure how it'll behave on the remote run (Jenkins)
+                        file_path, to_remove = os.path.join(os.path.dirname(__file__), test_suite_data.apk_name), True
+                        urllib.request.urlretrieve(config.getoption('apk'),
+                                                   filename=file_path)  # if url is not valid it raises an error
                     else:
-                        sauce.storage.upload(config.getoption('apk'))
+                        file_path, to_remove = config.getoption('apk'), False
+
+                    for _ in range(3):
+                        try:
+                            _upload_and_check_response(apk_file_path=file_path)
+                            break
+                        except (ConnectionError, RemoteDisconnected):
+                            sleep(10)
+                    if to_remove:
+                        os.remove(file_path)
 
 
 def pytest_unconfigure(config):

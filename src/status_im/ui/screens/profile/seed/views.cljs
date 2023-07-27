@@ -153,7 +153,7 @@
 
 (defview backup-seed
   []
-  (letsubs [current-multiaccount                             [:multiaccount]
+  (letsubs [current-multiaccount                             [:profile/profile]
             {:keys [step first-word second-word error word]} [:my-profile/recovery]]
     [react/keyboard-avoiding-view
      {:style         {:flex 1}

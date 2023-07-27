@@ -7,5 +7,5 @@
   (.dynamicProgressBarWidth ^js worklets static-progress-bar-width progress))
 
 (defn carousel-left-position
-  [window-width progress]
-  (.carouselLeftPosition ^js worklets window-width progress))
+  [window-width progress is-dragging? drag-amount]
+  (.carouselLeftPosition ^js worklets window-width progress is-dragging? drag-amount))

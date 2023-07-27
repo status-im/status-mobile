@@ -238,7 +238,7 @@
 (rf/defn wallet-connect-send-async
   [cofx {:keys [method params id] :as payload} message-id topic]
   (let [message?      (browser/web3-sign-message? method)
-        dapps-address (get-in cofx [:db :multiaccount :dapps-address])
+        dapps-address (get-in cofx [:db :profile/profile :dapps-address])
         accounts      (get-in cofx [:db :multiaccount/visible-accounts])
         typed?        (and (not= constants/web3-personal-sign method)
                            (not= constants/web3-eth-sign method))]

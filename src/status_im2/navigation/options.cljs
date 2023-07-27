@@ -37,6 +37,11 @@
    :orientation              ["portrait"]
    :backgroundColor          colors/neutral-80-opa-80-blur})
 
+(def onboarding-transparent-layout
+  {:componentBackgroundColor :transparent
+   :orientation              ["portrait"]
+   :backgroundColor          :transparent})
+
 (defn navbar
   ([dark?]
    {:navigationBar {:backgroundColor (if (or dark? (colors/dark?)) colors/neutral-100 colors/white)}})
@@ -73,6 +78,7 @@
 (def transparent-screen-options
   (merge
    {:modalPresentationStyle :overCurrentContext
+    :theme                  :dark
     :layout                 {:componentBackgroundColor :transparent
                              :orientation              ["portrait"]
                              :backgroundColor          :transparent}}
@@ -96,7 +102,8 @@
 
 (def dark-screen
   (merge (statusbar true)
-         {:layout {:componentBackgroundColor colors/neutral-95
+         {:theme  :dark
+          :layout {:componentBackgroundColor colors/neutral-95
                    :orientation              ["portrait"]
                    :backgroundColor          colors/neutral-95}}))
 
@@ -107,7 +114,7 @@
                    :animate         true
                    :drawBehind      true
                    :translucent     true}
-   :navigationBar {:backgroundColor colors/black}
+   :navigationBar {:backgroundColor colors/neutral-100}
    :layout        {:componentBackgroundColor :transparent
                    :backgroundColor          :transparent
                    ;; issue: https://github.com/wix/react-native-navigation/issues/7726
@@ -121,6 +128,9 @@
                                                       :interpolation {:type
                                                                       :decelerate
                                                                       :factor 1.5}}]}}})
+
+(def camera-screen
+  {:navigationBar {:backgroundColor colors/black}})
 
 (defn merge-top-bar
   [root-options options]

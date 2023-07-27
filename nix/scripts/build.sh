@@ -25,7 +25,7 @@ cleanup() {
 
 # If you want to clean after every build set _NIX_CLEAN=true
 if [[ -n "${_NIX_CLEAN}" ]]; then
-    trap cleanup EXIT ERR INT QUIT
+  trap cleanup EXIT ERR INT QUIT
 fi
 
 # build output will end up under /nix, we have to extract it
@@ -42,6 +42,12 @@ shift
 if [[ -z "${TARGET}" ]]; then
   echo -e "${RED}First argument is mandatory and has to specify the Nix attribute!${RST}"
   exit 1
+fi
+
+# Hack fix for missing Android SDK for aarch64 on Darwin. See systemOverride in `nix/pkgs.nix`.
+if [[ "${TARGET}" =~ ^(targets.status-go.mobile.android|targets.mobile.android.release)$ ]]; then
+  os=$(uname -s | tr '[:upper:]' '[:lower:]')
+  export NIXPKGS_SYSTEM_OVERRIDE="x86_64-${os}"
 fi
 
 # Some defaults flags, --pure could be optional in the future.

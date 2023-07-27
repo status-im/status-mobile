@@ -186,8 +186,8 @@
                        text))})))))
 
 (defn i18n-text
-  [{:keys [style key]}]
-  [text {:style style} (i18n/label key)])
+  [{style :style k :key}]
+  [text {:style style} (i18n/label k)])
 
 (defn touchable-opacity
   [props content]
