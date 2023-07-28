@@ -1,7 +1,27 @@
 ### Setting up status-mobile on Windows
 
-At a high level, `WSL2` is basically running as a `VM` on `Windows OS` with it’s own networking stack that is 
-connected to a private (virtual) network where `Windows OS` acts as the gateway.
+Note: It is far easier to dual boot your Windows OS with any linux Distro.
+(Preferably `Ubuntu` if you're new to Linux)
+However if you still wish to get status-mobile repository set up on a Windows OS,
+below are the instructions: 
+
+#### Step 1: WSL2 (Windows SubSystem for Linux)
+At a high level, `WSL2` is basically running as a `VM` on `Windows OS` with its own 
+networking stack that is connected to a private (virtual) network where `Windows OS` 
+acts as the gateway.
+
+To check your installed version of WSL execute this command in powershell:
+
+`wsl -l -v`
+
+If you see something any linux distro as an output with version 2 you are good to 
+skip this step. Else you will have to install `WSL2`, use the following command
+in powershell which was "Run as Administrator" :
+
+`wsl --install`
+
+reference : https://learn.microsoft.com/de-de/windows/wsl/install#install-wsl-command
+
 There are several different apps in the development stack that need to be coordinated. 
 Namely, `ADB`, `Shadow-CLJS`, and `React Metro`.
 This guide is going to combine tips from 
