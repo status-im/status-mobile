@@ -114,8 +114,6 @@
     goog.i18n.CompactNumberFormatSymbols_zh_TW
     goog.i18n.CompactNumberFormatSymbols_zu
     goog.i18n.currency
-    goog.i18n.currency.CurrencyInfo
-    goog.i18n.currency.CurrencyInfoTier2
     goog.i18n.DateTimeFormat
     goog.i18n.DateTimeFormat.Format
     goog.i18n.DateTimeSymbols

@@ -1,4 +1,4 @@
-(ns quo2.components.tags.--tests--.status-tags-component-spec
+(ns quo2.components.tags.status-tags-component-spec
   (:require [quo2.components.tags.status-tags :as quo2]
             [test-helpers.component :as h]))
 

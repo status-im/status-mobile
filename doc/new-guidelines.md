@@ -782,9 +782,9 @@ Clojure (JVM) codebases which mirror the sources in a top-level test directory.
 └── models_test.cljs
 ```
 
-Component tests should be created in a separate directory `__tests__`, colocated
-with the source. When the entire component implementation is isolated under a
-single directory, create a test file named `component_spec.cljs` instead.
+Component tests should be created in the same directory as the source component,
+and named as `component_spec.cljs`.
+
 
 ```
 └── filter
