@@ -204,6 +204,10 @@
   [mock]
   (.toHaveBeenCalled (js/expect mock)))
 
+(defn was-called-with
+  [mock expected-arg]
+  (.toHaveBeenCalledWith (js/expect mock) expected-arg))
+
 (defn was-called-times
   [^js mock number-of-times]
   (.toHaveBeenCalledTimes (js/expect mock) number-of-times))
