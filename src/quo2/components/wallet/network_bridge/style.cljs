@@ -12,6 +12,15 @@
    :border-color       (get colors/networks network)
    :opacity            (when (= state :disabled) 0.3)})
 
+(defn add-container
+  []
+  {:border-style       :dashed
+   :border-color       (colors/theme-colors colors/neutral-30 colors/neutral-70)
+   :justify-content    :center
+   :align-items        :center
+   :padding-vertical   0
+   :padding-horizontal 0})
+
 (defn loading-skeleton
   [theme]
   {:width            32

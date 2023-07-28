@@ -9,37 +9,45 @@
     [react-native.core :as rn]
     [quo2.components.wallet.network-bridge.style :as style]))
 
+
+(defn network-bridge-add
+  [{:keys [network state]}]
+  [rn/view {:style (merge (style/container network state) (style/add-container))}
+   [icon/icon :i/add-circle {:size 12}]])
+
 (defn network-bridge-internal
-  [{:keys [theme network state amount]}]
+  [{:keys [theme network status amount] :as args}]
   (let [network-text (if (= network :ethereum) "Mainnet" (string/capitalize (name network)))]
-    [rn/view
-     {:style               (style/container network state)
-      :accessibility-label :container}
-     (if (= state :loading)
+    (if (= status :add)
+      [network-bridge-add args]
+      [rn/view
+       {:style               (style/container network status)
+        :accessibility-label :container}
+       (if (= status :loading)
+         [rn/view
+          {:style               (style/loading-skeleton theme)
+           :accessibility-label :loading}]
+         [rn/view
+          {:style {:flex-direction  :row
+                   :justify-content :space-between}}
+          [text/text
+           {:size   :paragraph-2
+            :weight :medium} amount]
+          (when (= status :locked)
+            [icon/icon :i/locked
+             {:size                12
+              :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+              :accessibility-label :lock}])])
        [rn/view
-        {:style               (style/loading-skeleton theme)
-         :accessibility-label :loading}]
-       [rn/view
-        {:style {:flex-direction  :row
-                 :justify-content :space-between}}
+        {:style {:flex-direction :row
+                 :align-items    :center}}
+        [rn/image
+         {:source (resources/networks network)
+          :style  style/network-icon}]
         [text/text
-         {:size   :paragraph-2
-          :weight :medium} amount]
-        (when (= state :locked)
-          [icon/icon :i/locked
-           {:size                12
-            :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-            :accessibility-label :lock}])])
-     [rn/view
-      {:style {:flex-direction :row
-               :align-items    :center}}
-      [rn/image
-       {:source (resources/networks network)
-        :style  style/network-icon}]
-      [text/text
-       {:size   :label
-        :weight :medium
-        :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
-       network-text]]]))
+         {:size   :label
+          :weight :medium
+          :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+         network-text]]])))
 
 (def network-bridge (quo.theme/with-theme network-bridge-internal))

@@ -16,18 +16,19 @@
                :value "Optimism"}
               {:key   :arbitrum
                :value "Arbitrum"}]}
-   {:label   "State:"
-    :key     :state
+   {:label   "Status:"
+    :key     :status
     :type    :select
     :options [{:key :default :value :default}
               {:key :locked :value :locked}
               {:key :loading :value :loading}
-              {:key :disabled :value :disabled}]}])
+              {:key :disabled :value :disabled}
+              {:key :add :value :add}]}])
 
 (defn preview
   []
   (let [state (reagent/atom {:network :ethereum
-                             :state   :default
+                             :status  :default
                              :amount  "50 SNT"})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
