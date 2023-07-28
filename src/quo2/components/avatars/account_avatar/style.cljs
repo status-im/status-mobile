@@ -2,6 +2,8 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def default-size 80)
+(def default-border-radius 16)
+(def default-emoji-size 36)
 
 (defn get-border-radius
   [size]
@@ -12,7 +14,8 @@
     28 8
     24 8
     20 6
-    16 4))
+    16 4
+    default-border-radius))
 
 (defn get-emoji-size
   [size]
@@ -23,7 +26,8 @@
     28 12
     24 11
     20 11
-    16 11))
+    16 11
+    default-emoji-size))
 
 (defn get-border-width
   [watch-only? size]
