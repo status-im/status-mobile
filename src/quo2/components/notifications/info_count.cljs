@@ -3,22 +3,27 @@
             [quo2.foundations.typography :as typography]
             [react-native.core :as rn]))
 
+(defn- counter-style
+  [customization-color overwritten-styles]
+  (merge {:width            16
+          :height           16
+          :position         :absolute
+          :right            22
+          :border-radius    6
+          :justify-content  :center
+          :align-items      :center
+          :background-color (colors/custom-color-by-theme customization-color 50 60)}
+         overwritten-styles))
+
 (defn info-count
   ([amount]
    (info-count {} amount))
-  ([props amount]
-   (when (> amount 0)
-     [rn/view
-      (merge props
-             {:style (merge {:width            16
-                             :height           16
-                             :position         :absolute
-                             :right            22
-                             :border-radius    6
-                             :justify-content  :center
-                             :align-items      :center
-                             :background-color (colors/theme-colors colors/primary-50 colors/primary-60)}
-                            (:style props))})
+  ([{:keys [customization-color style]
+     :or   {customization-color :blue}
+     :as   props}
+    amount]
+   (when (pos? amount)
+     [rn/view (assoc props :style (counter-style customization-color style))
       [rn/text
        {:style (merge typography/font-medium
                       typography/label

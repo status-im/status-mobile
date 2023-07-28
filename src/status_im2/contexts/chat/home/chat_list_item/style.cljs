@@ -21,15 +21,31 @@
    :top              16
    :background-color (colors/theme-colors colors/neutral-40 colors/neutral-60)})
 
-(def muted-icon
-  {:position :absolute
-   :right    19
-   :top      16})
-
 (defn timestamp
   [muted?]
-  {:color       (or (when muted?
-                      colors/neutral-50)
-                    (colors/theme-colors colors/neutral-50 colors/neutral-40))
+  {:color       (if muted?
+                  colors/neutral-50
+                  (colors/theme-colors colors/neutral-50 colors/neutral-40))
    :margin-top  3
    :margin-left 8})
+
+(def chat-data-container
+  {:flex         1
+   :margin-left  8
+   :margin-right 16})
+
+(def notification-container
+  {:margin-left     :auto
+   :height          20
+   :width           20
+   :justify-content :center
+   :align-items     :center})
+
+;; TODO: duplicate of `quo2.components.common.unread-grey-dot.style`
+;; Replace it when this component is defined as part of `quo2.components`
+(defn grey-dot
+  []
+  {:width            8
+   :height           8
+   :border-radius    4
+   :background-color (colors/theme-colors colors/neutral-40 colors/neutral-60)})
