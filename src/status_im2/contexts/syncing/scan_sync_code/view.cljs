@@ -398,7 +398,7 @@
               :background          :blur
               :size                style/flash-button-size
               :accessibility-label :camera-flash
-              :contanier-style     (style/camera-flash-button @qr-view-finder)
+              :container-style     (style/camera-flash-button @qr-view-finder)
               :on-press            #(swap! torch? not)}
              flashlight-icon])]]))))
 

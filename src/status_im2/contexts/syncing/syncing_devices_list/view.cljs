@@ -13,10 +13,10 @@
    [quo/page-nav
     {:align-mid?   true
      :mid-section  {:type :text-only :main-text ""}
-     :left-section {:type     :blur-bg
-
-                    :icon     :i/arrow-left
-                    :on-press #(rf/dispatch [:navigate-back])}}]])
+     :left-section {:type            :photo
+                    :icon-background :blur
+                    :icon            :i/arrow-left
+                    :on-press        #(rf/dispatch [:navigate-back])}}]])
 
 (defn view
   []
@@ -24,7 +24,7 @@
         devices-with-button                       (map #(assoc % :show-button? true) devices)
         user-device                               (first devices-with-button)
         other-devices                             (rest devices-with-button)
-        profile-color                             (:color (rf/sub [:onboarding-2/profile]))
+        profile-color                             (rf/sub [:profile/customization-color])
         {:keys [paired-devices unpaired-devices]} (group-by
                                                    #(if (:enabled? %) :paired-devices :unpaired-devices)
                                                    other-devices)]

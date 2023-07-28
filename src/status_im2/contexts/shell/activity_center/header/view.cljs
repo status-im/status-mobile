@@ -23,14 +23,14 @@
   [rn/view
    [rn/view {:style style/header-container}
     [quo/button
-     {:icon-only?                true
+     {:icon-only?          true
       :type                :grey
       :size                32
       :accessibility-label :close-activity-center
       :on-press            #(rf/dispatch [:navigate-back])}
      :i/close]
     [quo/button
-     {:icon-only?                true
+     {:icon-only?          true
       :type                :grey
       :size                32
       :accessibility-label :activity-center-open-more

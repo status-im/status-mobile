@@ -18,7 +18,8 @@
   [:<>
    [quo/button
     {:icon-only?          true
-     :type                :blur-bg
+     :type                :grey
+     :background          :blur
      :size                32
      :accessibility-label :close-shell-share-tab
      :container-style     style/header-button

@@ -38,7 +38,7 @@
 
 (defn view
   []
-  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))
+  (let [profile-color (rf/sub [:profile/customization-color])
         valid-for-ms  (reagent/atom code-valid-for-ms)
         code          (reagent/atom nil)
         delay         (reagent/atom nil)

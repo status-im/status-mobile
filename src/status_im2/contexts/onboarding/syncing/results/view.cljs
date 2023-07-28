@@ -47,7 +47,7 @@
 
 (defn continue-button
   [on-press]
-  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))]
+  (let [profile-color (rf/sub [:profile/customization-color])]
     [quo/button
      {:on-press            (fn []
                              (when on-press
