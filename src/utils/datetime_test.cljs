@@ -190,3 +190,11 @@
                                               "it"
                                               #'utils.datetime/medium-date-time-format)]
        (is (= (datetime/day-relative epoch) "01 gen 1970, 12:00:00 AM")))))
+
+(deftest format-long-month-test
+  (testing "returns correct month string"
+    (is (= "January" (datetime/format-long-month 1)))
+    (is (= "February" (datetime/format-long-month 2)))
+    (is (= "March" (datetime/format-long-month 3)))
+    (is (= "April" (datetime/format-long-month 4)))
+    (is (= "December" (datetime/format-long-month 12)))))

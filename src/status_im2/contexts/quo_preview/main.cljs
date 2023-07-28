@@ -19,6 +19,9 @@
     [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
+    [status-im2.contexts.quo-preview.calendar.calendar :as calendar]
+    [status-im2.contexts.quo-preview.calendar.calendar-day :as calendar-day]
+    [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
     [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
@@ -145,6 +148,15 @@
    :browser           [{:name      :browser-input
                         :options   {:topBar {:visible false}}
                         :component browser-input/preview-browser-input}]
+   :calendar          [{:name      :calendar
+                        :options   {:topBar {:visible true}}
+                        :component calendar/preview-calendar}
+                       {:name      :calendar-day
+                        :options   {:topBar {:visible true}}
+                        :component calendar-day/preview-calendar-day}
+                       {:name      :calendar-year
+                        :options   {:topBar {:visible true}}
+                        :component calendar-year/preview-calendar-year}]
    :code              [{:name      :snippet
                         :options   {:topBar {:visible true}}
                         :component code-snippet/preview-code-snippet}]
