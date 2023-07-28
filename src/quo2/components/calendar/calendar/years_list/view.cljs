@@ -1,15 +1,13 @@
 (ns quo2.components.calendar.calendar.years-list.view
   (:require [react-native.core :as rn]
             [quo2.theme :as theme]
-            [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]
             [react-native.linear-gradient :as linear-gradient]
             [quo2.components.calendar.calendar.utils :as utils]
             [quo2.components.calendar.calendar-year.view :as calendar-year]
             [quo2.components.calendar.calendar.years-list.style :as style]))
 
-(defn- render-year
-  [year selected-year on-press]
+(defn- year-view
+  [year _ _ {:keys [selected-year on-press]}]
   [calendar-year/view
    {:selected? (= year selected-year)
     :on-press  #(on-press year)}
@@ -43,10 +41,9 @@
      :shows-vertical-scroll-indicator false
      :footer                          [footer]
      :separator                       [separator]
-     :render-fn                       (fn [item]
-                                        (render-year item
-                                                     year
-                                                     #(on-change-year %)))}]
+     :render-fn                       year-view
+     :render-data                     {:selected-year year
+                                       :on-press      #(on-change-year %)}}]
    [gradiant-overview theme]])
 
 (def view (theme/with-theme view-internal))

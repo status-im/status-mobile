@@ -53,7 +53,6 @@
       (h/fire-event :press (h/query-by-text (str (time/day start-date))))
       (h/was-called-with on-change {:start-date nil :end-date nil})))
 
-
   (h/test "should assign start and end date correctly when upper range selected first"
     (let [on-change (h/mock-fn)]
       (h/render

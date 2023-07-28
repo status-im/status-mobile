@@ -1,13 +1,12 @@
 (ns quo2.components.calendar.calendar.days-grid.view
   (:require [react-native.core :as rn]
-            [quo2.theme :as theme]
             [cljs-time.core :as time]
             [quo2.components.calendar.calendar.days-grid.utils :as utils]
             [quo2.components.calendar.calendar-day.view :as calendar-day]
             [quo2.components.calendar.calendar.days-grid.style :as style]))
 
-(defn- render-day
-  [{:keys [year month day selection-range on-press customization-color]}]
+(defn- day-view
+  [day _ _ {:keys [year month selection-range on-press customization-color]}]
   (let [today      (time/now)
         start-date (:start-date selection-range)
         end-date   (:end-date selection-range)
@@ -33,12 +32,10 @@
        :key-fn                  str
        :num-columns             7
        :content-container-style {:margin-horizontal -2}
-       :render-fn               (fn [item]
-                                  (render-day
-                                   {:customization-color customization-color
-                                    :year                year
-                                    :month               month
-                                    :day                 item
-                                    :on-press            on-day-press
-                                    :selection-range     {:start-date start-date
-                                                          :end-date   end-date}}))}]]))
+       :render-fn               day-view
+       :render-data             {:customization-color customization-color
+                                 :year                year
+                                 :month               month
+                                 :on-press            on-day-press
+                                 :selection-range     {:start-date start-date
+                                                       :end-date   end-date}}}]]))

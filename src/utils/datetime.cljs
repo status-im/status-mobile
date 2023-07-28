@@ -95,7 +95,7 @@
   [^js locsym]
   (nth (.-DATEFORMATS locsym) 2))
 
-(defn- format-date
+(defn format-date
   [date]
   (if date
     (t.format/unparse (t.format/formatter "dd/MM/yyyy") date)
@@ -121,6 +121,10 @@
 (def short-date-with-time-fmt (get-formatter-fn short-date-format-with-time))
 (def datetime-within-one-week-fmt (get-formatter-fn datetime-within-one-week-format))
 
+(def format-long-month
+  (memoize (fn [month]
+             (.format ^js ((get-formatter-fn (constantly "MMMM")))
+                      (t/date-time 1970 month)))))
 ;;;; Utilities
 (defn previous-years?
   [datetime]

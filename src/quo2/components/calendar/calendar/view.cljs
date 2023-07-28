@@ -2,7 +2,7 @@
   (:require [react-native.core :as rn]
             [quo2.theme :as theme]
             [reagent.core :as reagent]
-            [utils.number :as number-utils]
+            [utils.number :as utils.number]
             [quo2.components.calendar.calendar.utils :as utils]
             [quo2.components.calendar.calendar.style :as style]
             [quo2.components.calendar.calendar.years-list.view :as years-list]
@@ -16,8 +16,8 @@
         selected-month  (reagent/atom (utils/current-month))
         on-change-year  #(reset! selected-year %)
         on-change-month (fn [new-date]
-                          (reset! selected-year (number-utils/parse-int (:year new-date)))
-                          (reset! selected-month (number-utils/parse-int (:month new-date))))]
+                          (reset! selected-year (utils.number/parse-int (:year new-date)))
+                          (reset! selected-month (utils.number/parse-int (:month new-date))))]
     (fn [{:keys [on-change start-date end-date theme]}]
       [rn/view
        {:style (style/container theme)}

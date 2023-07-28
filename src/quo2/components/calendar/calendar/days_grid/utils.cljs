@@ -1,6 +1,6 @@
 (ns quo2.components.calendar.calendar.days-grid.utils
   (:require
-    [utils.number :as number-utils]
+    [utils.number :as utils.number]
     [cljs-time.core :as time]))
 
 (defn- day-of-week
@@ -14,8 +14,8 @@
 
 (defn day-grid
   [year month]
-  (let [year      (number-utils/parse-int year)
-        month     (number-utils/parse-int month)
+  (let [year      (utils.number/parse-int year)
+        month     (utils.number/parse-int month)
         first-day (time/date-time year month 1)
         start-day (add-days first-day (- 0 (day-of-week first-day)))
         end-day   (add-days start-day 34)]

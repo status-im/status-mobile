@@ -3,26 +3,28 @@
             [quo2.components.calendar.calendar.utils :as utils]
             [utils.datetime :as datetime]
             [clojure.string :as string]
-            [utils.number :as number-utils]))
+            [utils.number :as utils.number]))
 
-(deftest calendar-utils-test
-  (testing "generate-years"
+(deftest generate-years-test
+  (testing "returns correct years range"
     (let [current-year (utils/current-year)]
       (is (= (last (utils/generate-years current-year)) (- current-year 100)))
-      (is (= (first (utils/generate-years current-year)) current-year))))
+      (is (= (first (utils/generate-years current-year)) current-year)))))
 
-  (testing "current-year"
+(deftest current-year-test
+  (testing "returns the current year"
     (let [current-year (-> (datetime/now)
                            datetime/timestamp->year-month-day-date
                            (string/split #"-")
                            first
-                           number-utils/parse-int)]
-      (is (= (utils/current-year) current-year))))
+                           utils.number/parse-int)]
+      (is (= (utils/current-year) current-year)))))
 
-  (testing "current-month"
+(deftest current-month-test
+  (testing "returns the current month"
     (let [current-month (-> (datetime/now)
                             datetime/timestamp->year-month-day-date
                             (string/split #"-")
                             second
-                            number-utils/parse-int)]
+                            utils.number/parse-int)]
       (is (= (utils/current-month) current-month)))))

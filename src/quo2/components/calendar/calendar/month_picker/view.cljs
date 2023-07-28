@@ -1,6 +1,6 @@
 (ns quo2.components.calendar.calendar.month-picker.view
   (:require [react-native.core :as rn]
-            [utils.number :as number-utils]
+            [utils.number :as utils.number]
             [quo2.theme :as theme]
             [quo2.components.buttons.button.view :as button]
             [quo2.components.markdown.text :as text]
@@ -9,8 +9,8 @@
 
 (defn- view-internal
   [{:keys [year month on-change theme]}]
-  (let [year  (number-utils/parse-int year)
-        month (number-utils/parse-int month)]
+  (let [year  (utils.number/parse-int year)
+        month (utils.number/parse-int month)]
     [rn/view
      {:style style/container}
      [button/button
