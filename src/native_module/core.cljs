@@ -258,6 +258,13 @@
   (log/debug "[native-module] hash-message")
   (.hashMessage ^js (status) message callback))
 
+(defn start-searching-for-local-pairing-peers
+  "starts a UDP multicast beacon that both listens for and broadcasts to LAN peers"
+  [callback]
+  (log/info "[native-module] Start Searching for Local Pairing Peers"
+            {:fn :start-searching-for-local-pairing-peers})
+  (.startSearchForLocalPairingPeers ^js (status) callback))
+
 (defn local-pairing-preflight-outbound-check
   "Checks whether the device has allows connecting to the local server"
   [callback]
