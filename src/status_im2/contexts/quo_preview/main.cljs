@@ -24,6 +24,7 @@
     [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
     [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
+    [status-im2.contexts.quo-preview.graph.wallet-graph :as wallet-graph]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
     [status-im2.contexts.quo-preview.community.community-membership-list-view :as
@@ -218,6 +219,9 @@
    :gradient          [{:name      :gradient-cover
                         :options   {:topBar {:visible true}}
                         :component gradient-cover/preview-gradient-cover}]
+   :graph             [{:name      :wallet-graph
+                        :options   {:topBar {:visible true}}
+                        :component wallet-graph/preview-wallet-graph}]
    :info              [{:name      :info-message
                         :options   {:topBar {:visible true}}
                         :component info-message/preview-info-message}
