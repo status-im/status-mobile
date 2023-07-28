@@ -1,4 +1,4 @@
-(ns quo2.components.counter.--tests--.counter-component-spec
+(ns quo2.components.counter.component-spec
   (:require [quo2.components.counter.counter :as counter]
             [test-helpers.component :as h]))
 
