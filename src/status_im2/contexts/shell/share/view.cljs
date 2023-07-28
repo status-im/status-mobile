@@ -21,7 +21,6 @@
      :type                :blur-bg
      :size                32
      :accessibility-label :close-shell-share-tab
-     :override-theme      :dark
      :style               style/header-button
      :on-press            #(rf/dispatch [:navigate-back])}
     :i/close]
@@ -84,7 +83,6 @@
           :type                :blur-bg
           :size                32
           :accessibility-label :link-to-profile
-          :override-theme      :dark
           :on-press            #(list-selection/open-share {:message profile-url})}
          :i/share]]]]
 
@@ -113,7 +111,6 @@
          :type                :blur-bg
          :size                32
          :accessibility-label :link-to-profile
-         :override-theme      :dark
          :style               {:margin-right 12}
          :on-press            #(rf/dispatch [:share/copy-text-and-show-toast
                                              {:text-to-copy      emoji-hash-string
@@ -137,7 +134,6 @@
         [quo/segmented-control
          {:size           28
           :blur?          true
-          :override-theme :dark
           :on-change      #(reset! selected-tab %)
           :default-active :profile
           :data           [{:id    :profile

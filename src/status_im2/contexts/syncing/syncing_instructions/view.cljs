@@ -26,19 +26,17 @@
 
     :button-grey
     [quo/button
-     {:type           :grey
-      :override-theme :dark
-      :size           24
-      :style          style/button-grey}
+     {:type  :grey
+      :size  24
+      :style style/button-grey}
      (i18n/label value)]
 
     :button-grey-placeholder
     [quo/button
-     {:type           :grey
-      :override-theme :dark
-      :size           24
-      :before         :i/placeholder
-      :style          style/button-grey-placeholder}
+     {:type   :grey
+      :size   24
+      :before :i/placeholder
+      :style  style/button-grey-placeholder}
      (i18n/label value)]
 
     :context-tag
@@ -111,7 +109,6 @@
          [rn/view {:style style/tabs-container}
           [quo/segmented-control
            {:size           28
-            :override-theme :dark
             :blur?          true
             :default-active :mobile
             :data           platform-data

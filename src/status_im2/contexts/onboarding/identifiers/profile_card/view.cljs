@@ -31,7 +31,6 @@
         [quo/user-avatar
          {:full-name           name
           :profile-picture     profile-picture
-          :override-theme      :dark
           :size                :medium
           :status-indicator?   false
           :customization-color customization-color}]]

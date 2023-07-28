@@ -17,13 +17,6 @@
    {:label "Blur:"
     :key   :blur?
     :type  :boolean}
-   {:label   "Override Theme:"
-    :key     :override-theme
-    :type    :select
-    :options [{:key   :dark
-               :value "Dark"}
-              {:key   :light
-               :value "Light"}]}
    {:label "Error:"
     :key   :error?
     :type  :boolean}
@@ -65,7 +58,6 @@
   []
   (let [state (reagent/atom {:type                :text
                              :blur                false
-                             :override-theme      nil
                              :placeholder         "Type something"
                              :error               false
                              :icon-name           false

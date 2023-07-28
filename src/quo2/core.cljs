@@ -98,30 +98,7 @@
     quo2.components.tags.token-tag
     quo2.components.text-combinations.title.view))
 
-(def icon quo2.components.icon/icon)
 (def separator quo2.components.common.separator.view/separator)
-(def header quo2.components.header/header)
-(def dropdown quo2.components.dropdowns.dropdown/dropdown)
-(def info-message quo2.components.info.info-message/info-message)
-(def information-box quo2.components.info.information-box.view/view)
-(def gap quo2.components.messages.gap/gap)
-(def system-message quo2.components.messages.system-message/system-message)
-(def reaction quo2.components.reactions.reaction/reaction)
-(def add-reaction quo2.components.reactions.reaction/add-reaction)
-(def user-avatar-tag quo2.components.tags.context-tag.view/user-avatar-tag)
-(def context-tag quo2.components.tags.context-tag.view/context-tag)
-(def group-avatar-tag quo2.components.tags.context-tag.view/group-avatar-tag)
-(def audio-tag quo2.components.tags.context-tag.view/audio-tag)
-(def community-tag quo2.components.tags.context-tag.view/community-tag)
-
-
-(def disclaimer quo2.components.selectors.disclaimer.view/view)
-(def checkbox quo2.components.selectors.selectors.view/checkbox)
-(def filter quo2.components.selectors.filter.view/view)
-(def author quo2.components.messages.author.view/author)
-
-;;;; SELECTORS
-(def reactions quo2.components.selectors.reactions.view/view)
 
 ;;;; AVATAR
 (def account-avatar quo2.components.avatars.account-avatar/account-avatar)
@@ -184,8 +161,21 @@
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
+;;;; DROPDOWNS
+(def dropdown quo2.components.dropdowns.dropdown/dropdown)
+
 ;;;; EMPTY STATE
 (def empty-state quo2.components.empty-state.empty-state.view/empty-state)
+
+;;;; HEADER
+(def header quo2.components.header/header)
+
+;;;; ICON
+(def icon quo2.components.icon/icon)
+
+;;;; INFO
+(def info-message quo2.components.info.info-message/info-message)
+(def information-box quo2.components.info.information-box.view/view)
 
 ;;;; INPUTS
 (def input quo2.components.inputs.input.view/input)
@@ -213,6 +203,10 @@
 (def markdown-list quo2.components.markdown.list.view/view)
 (def text quo2.components.markdown.text/text)
 
+;;;; MESSAGES
+(def gap quo2.components.messages.gap/gap)
+(def system-message quo2.components.messages.system-message/system-message)
+
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)
 (def activity-logs-photos quo2.components.notifications.activity-logs-photos.view/view)
@@ -229,9 +223,20 @@
 (def profile-card quo2.components.profile.profile-card.view/profile-card)
 (def select-profile quo2.components.profile.select-profile.view/view)
 
+;;;; REACTIONS
+(def reaction quo2.components.reactions.reaction/reaction)
+(def add-reaction quo2.components.reactions.reaction/add-reaction)
+
 ;;;; RECORD AUDIO
 (def record-audio quo2.components.record-audio.record-audio.view/record-audio)
 (def soundtrack quo2.components.record-audio.soundtrack.view/f-soundtrack)
+
+;;;; SELECTORS
+(def author quo2.components.messages.author.view/author)
+(def disclaimer quo2.components.selectors.disclaimer.view/view)
+(def filter quo2.components.selectors.filter.view/view)
+(def reactions quo2.components.selectors.reactions.view/view)
+(def checkbox quo2.components.selectors.selectors.view/checkbox)
 
 ;;;; SETTINGS
 (def privacy-option quo2.components.settings.privacy-option/card)
@@ -255,6 +260,11 @@
 (def permission-tag quo2.components.tags.permission-tag/tag)
 (def status-tag quo2.components.tags.status-tags/status-tag)
 (def token-tag quo2.components.tags.token-tag/tag)
+(def user-avatar-tag quo2.components.tags.context-tag.view/user-avatar-tag)
+(def context-tag quo2.components.tags.context-tag.view/context-tag)
+(def group-avatar-tag quo2.components.tags.context-tag.view/group-avatar-tag)
+(def audio-tag quo2.components.tags.context-tag.view/audio-tag)
+(def community-tag quo2.components.tags.context-tag.view/community-tag)
 
 ;;;; TITLE
 (def title quo2.components.text-combinations.title.view/title)

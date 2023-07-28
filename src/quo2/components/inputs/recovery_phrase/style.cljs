@@ -17,29 +17,29 @@
          :text-align-vertical :top))
 
 (defn placeholder-color
-  [input-state override-theme blur?]
+  [input-state theme blur?]
   (cond
     (and (= input-state :focused) blur?)
-    (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 override-theme)
+    (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 theme)
 
     (= input-state :focused) ; Not blur
-    (colors/theme-colors colors/neutral-30 colors/neutral-60 override-theme)
+    (colors/theme-colors colors/neutral-30 colors/neutral-60 theme)
 
     blur? ; :default & blur
-    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-30 override-theme)
+    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-30 theme)
 
     :else ; :default & not blur
-    (colors/theme-colors colors/neutral-40 colors/neutral-50 override-theme)))
+    (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)))
 
 (defn cursor-color
-  [customization-color override-theme]
+  [customization-color theme]
   (colors/theme-colors (colors/custom-color customization-color 50)
                        (colors/custom-color customization-color 60)
-                       override-theme))
+                       theme))
 
 (defn error-word
-  []
+  [theme]
   {:height             22
    :padding-horizontal 20
    :background-color   colors/danger-50-opa-10
-   :color              (colors/theme-colors colors/danger-50 colors/danger-60)})
+   :color              (colors/theme-colors colors/danger-50 colors/danger-60 theme)})

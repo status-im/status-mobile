@@ -10,8 +10,8 @@
    :padding         6})
 
 (defn container-border-color
-  [pressed? blur? override-theme]
-  (let [dark? (= :dark override-theme)]
+  [pressed? blur? theme]
+  (let [dark? (= :dark theme)]
     (cond
       (and (not pressed?) (not dark?) (not blur?))
       colors/neutral-20
@@ -35,26 +35,24 @@
       nil)))
 
 (defn container-background-color
-  [pressed? override-theme]
+  [pressed? theme]
   (when pressed?
-    (if (= :dark override-theme)
-      colors/primary-60
-      colors/primary-50)))
+    (colors/theme-colors colors/primary-50 colors/primary-60 theme)))
 
 (defn container-outer
-  [pressed? override-theme]
+  [pressed? theme]
   (merge container-default
-         {:background-color (container-background-color pressed? override-theme)}))
+         {:background-color (container-background-color pressed? theme)}))
 
 (defn container-inner
-  [pressed? blur? override-theme]
+  [pressed? blur? theme]
   (merge container-default
          {:border-width 1
-          :border-color (container-border-color pressed? blur? override-theme)}))
+          :border-color (container-border-color pressed? blur? theme)}))
 
 (defn icon-color
-  [pressed? override-theme]
+  [pressed? theme]
   (if (and (not pressed?)
-           (= :light override-theme))
+           (= :light theme))
     colors/neutral-100
     colors/white))
