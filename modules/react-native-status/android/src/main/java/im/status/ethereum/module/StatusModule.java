@@ -824,6 +824,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void startSearchForLocalPairingPeers(final Callback callback) throws JSONException {
+        executeRunnableStatusGoMethod(() -> Statusgo.startSearchForLocalPairingPeers(), callback);
+    }
+
+    @ReactMethod
     public void getConnectionStringForBootstrappingAnotherDevice(final String configJSON, final Callback callback) throws JSONException {
          final JSONObject jsonConfig = new JSONObject(configJSON);
          final JSONObject senderConfig = jsonConfig.getJSONObject("senderConfig");
@@ -1172,19 +1177,19 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         executeRunnableStatusGoMethod(() -> Statusgo.deleteImportedKey(address, password, keyStoreDir), callback);
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true) 
+    @ReactMethod(isBlockingSynchronousMethod = true)
     public String keystoreDir() {
         final String absRootDirPath = this.getNoBackupDirectory();
         return pathCombine(absRootDirPath, "keystore");
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true) 
+    @ReactMethod(isBlockingSynchronousMethod = true)
     public String backupDisabledDataDir() {
         return this.getNoBackupDirectory();
     }
 
 
-    @ReactMethod(isBlockingSynchronousMethod = true) 
+    @ReactMethod(isBlockingSynchronousMethod = true)
     public String logFileDirectory() {
         return getPublicStorageDirectory().getAbsolutePath();
     }
