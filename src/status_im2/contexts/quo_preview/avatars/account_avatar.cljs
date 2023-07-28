@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.avatars.account-avatar
-  (:require [quo2.components.colors.color-picker.view :as color-picker]
-            [quo2.components.avatars.account-avatar.view :as account-avatar]
+  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -34,12 +33,7 @@
    {:label "Emoji"
     :key   :emoji
     :type  :text}
-   {:label   "Customization color:"
-    :key     :customization-color
-    :type    :select
-    :options (mapv (fn [color]
-                     {:key color :value color})
-                   color-picker/color-list)}])
+   (preview/customization-color-option)])
 
 (defn cool-preview
   []
@@ -60,8 +54,8 @@
 (defn preview-account-avatar
   []
   [rn/view
-   {:flex             1
-    :background-color (colors/theme-colors colors/white colors/neutral-95)}
+   {:style {:flex             1
+            :background-color (colors/theme-colors colors/white colors/neutral-95)}}
    [rn/flat-list
     {:flex                         1
      :keyboard-should-persist-taps :always
