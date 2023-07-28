@@ -23,15 +23,15 @@
   [rn/view
    [rn/view {:style style/header-container}
     [quo/button
-     {:icon                true
-      :type                :blur-bg
+     {:icon-only?                true
+      :type                :grey
       :size                32
       :accessibility-label :close-activity-center
       :on-press            #(rf/dispatch [:navigate-back])}
      :i/close]
     [quo/button
-     {:icon                true
-      :type                :blur-bg
+     {:icon-only?                true
+      :type                :grey
       :size                32
       :accessibility-label :activity-center-open-more
       :on-press            #(rf/dispatch [:show-bottom-sheet
