@@ -42,3 +42,5 @@
 (def ^:const unfurl-debounce-ms
   "Use a high threshold to prevent unnecessary rendering overhead."
   400)
+
+(def ^:const mention-rerender-debounce-ms 500)

@@ -1,7 +1,9 @@
 (ns status-im.chat.models.mentions
   (:require [clojure.set :as set]
             [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.debounce :as debounce]
+            [status-im2.contexts.chat.composer.constants :as constants]))
 
 (defn- transfer-input-segments
   [segments]
@@ -57,7 +59,7 @@
           mentionable-users))
 (defn- transfer-mention-result
   [result]
-  (let [{:keys [input-segments mentionable-users state chat-id new-text]}
+  (let [{:keys [input-segments mentionable-users state chat-id new-text call-id call-time]}
         (set/rename-keys result
                          {:InputSegments      :input-segments
                           :MentionSuggestions :mentionable-users
@@ -65,12 +67,14 @@
                           :ChatID             :chat-id
                           :NewText            :new-text
                           :CallID             :call-id
-                          :LatestCallID       :latest-call-id})]
+                          :CallTime           :call-time})]
     {:chat-id           chat-id
      :input-segments    (transfer-input-segments input-segments)
      :mentionable-users (rename-mentionable-users mentionable-users)
      :state             (rename-state state)
-     :new-text          new-text}))
+     :new-text          new-text
+     :call-id           call-id
+     :call-time         call-time}))
 
 (rf/defn on-error
   {:events [:mention/on-error]}
@@ -106,7 +110,7 @@
   {:events [:mention/on-change-text]}
   [{:keys [db]} text]
   (let [chat-id (:current-chat-id db)
-        params  [chat-id text (swap! current-call-id inc)]
+        params  [chat-id text (swap! current-call-id inc) (js/Date.now)]
         method  "wakuext_chatMentionOnChangeText"]
     (log/debug "[mentions] on-change-text" {:params params})
     {:json-rpc/call [{:method     method
@@ -121,12 +125,30 @@
   [{:keys [db]} result]
   (log/debug "[mentions] on-change-text-success" {:result result})
   (let [{:keys [state chat-id mentionable-users
-                input-segments call-id]} (transfer-mention-result result)]
+                input-segments call-id call-time]} (transfer-mention-result result)]
     (when (= call-id @current-call-id)
-      {:db (-> db
-               (assoc-in [:chats/mention-suggestions chat-id] mentionable-users)
-               (assoc-in [:chats/mentions chat-id :mentions] state)
-               (assoc-in [:chat/inputs-with-mentions chat-id] input-segments))})))
+      (debounce/debounce-and-dispatch [:mention/re-render-text-input
+                                       {:chat-id           chat-id
+                                        :mentionable-users mentionable-users
+                                        :state             state
+                                        :input-segments    input-segments
+                                        :call-id           call-id
+                                        :response-time     (- (js/Date.now) call-time)}]
+                                      constants/mention-rerender-debounce-ms)
+    )))
+
+(rf/defn re-render-text-input
+  {:events [:mention/re-render-text-input]}
+  [{:keys [db]}
+   {:keys [chat-id mentionable-users state input-segments] :as params}]
+  (log/debug "[mentions] re-render-text-input" params)
+  {:db (-> db
+           (assoc-in [:chat/inputs-with-mentions chat-id]
+                     input-segments)
+           (assoc-in [:chats/mention-suggestions chat-id]
+                     mentionable-users)
+           (assoc-in [:chats/mentions chat-id :mentions]
+                     state))})
 
 (rf/defn on-select-mention-success
   {:events [:mention/on-select-mention-success]}
