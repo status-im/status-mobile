@@ -145,9 +145,9 @@
  :chats/composer-height
  :<- [:chats/current-chat-input]
  :<- [:chats/link-previews-unfurled]
- (fn [[{:keys [input-content-height metadata]} link-previews]]
+ (fn [[{:keys [input-content-height metadata focused?]} link-previews]]
    (let [{:keys [responding-to-message editing-message sending-image]} metadata]
-     (+ (max composer.constants/input-height input-content-height)
+     (+ composer.constants/input-height
         (when responding-to-message
           composer.constants/reply-container-height)
         (when editing-message
