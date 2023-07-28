@@ -19,6 +19,7 @@
     [quo2.components.drawers.documentation-drawers.component-spec]
     [quo2.components.drawers.drawer-buttons.component-spec]
     [quo2.components.drawers.permission-context.component-spec]
+    [quo2.components.gradient.gradient-cover.component-spec]
     [quo2.components.inputs.input.component-spec]
     [quo2.components.inputs.profile-input.component-spec]
     [quo2.components.inputs.recovery-phrase.component-spec]
@@ -44,5 +45,4 @@
     [quo2.components.settings.settings-list.component-spec]
     [quo2.components.settings.category.component-spec]
     [quo2.components.share.share-qr-code.component-spec]
-    [quo2.components.tags.status-tags-component-spec]
-    [quo2.components.gradient.gradient-cover.component-spec]))
+    [quo2.components.tags.status-tags-component-spec]))
