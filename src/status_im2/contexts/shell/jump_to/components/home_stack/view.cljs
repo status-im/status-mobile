@@ -27,7 +27,7 @@
              :z-index (get shared-values
                            (get shell.constants/stacks-z-index-keywords stack-id))})}
    (case stack-id
-     :communities-stack [communities/home]
+     :communities-stack [:f> communities/home]
      :chats-stack       [chat/home]
      :wallet-stack      [wallet.accounts/accounts-overview-old]
      :browser-stack     [browser.stack/browser-stack]
