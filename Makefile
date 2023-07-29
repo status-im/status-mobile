@@ -263,6 +263,10 @@ run-metro: export TARGET := clojure
 run-metro: ##@run Start Metro to build React Native changes
 	@scripts/start-react-native.sh
 
+run-socat: export TARGET := clojure
+run-socat: ##@run Start Socat for WSL to port forward on windowsOS
+	socat -d -d TCP-LISTEN:5037,reuseaddr,fork TCP:$(cat /etc/resolv.conf | tail -n1 | cut -d " " -f 2):5037
+
 run-re-frisk: export TARGET := clojure
 run-re-frisk: ##@run Start re-frisk server
 	yarn shadow-cljs run re-frisk-remote.core/start

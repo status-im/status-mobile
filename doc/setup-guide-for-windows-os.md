@@ -14,13 +14,72 @@ To check your installed version of WSL execute this command in powershell:
 
 `wsl -l -v`
 
-If you see something any linux distro as an output with version 2 you are good to 
+If you see any linux distro as an output with version 2 you are good to 
 skip this step. Else you will have to install `WSL2`, use the following command
 in powershell which was "Run as Administrator" :
 
 `wsl --install`
 
 reference : https://learn.microsoft.com/de-de/windows/wsl/install#install-wsl-command
+
+#### Step 2: Get the status-mobile repository inside WSL2
+
+If you newly installed WSL2 and followed the setup till the end your existing powershell
+terminal would automatically log you into the WSL2 Linux Distro (Could be Ubuntu in your case).
+
+Otherwise you can open a WSL2 terminal by pressing the window key and typing "wsl"
+
+Once inside a wsl terminal decide where you want to clone status-mobile's repository and 
+cd into that directory and run :
+
+`git clone https://github.com/status-im/status-mobile.git`
+
+![Screenshot 2023-07-29 at 8.09.19 AM.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fnb%2Fl9h53lq15wd6xtccvkz737_00000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_qdXdA2%2FScreenshot%202023-07-29%20at%208.09.19%20AM.png)
+
+#### Step 3: Running the clojure terminal
+`cd status-mobile`
+
+Once inside the cloned repository you should run this command :
+
+`make run-clojure`
+
+#### What does it do?
+This command will install nix and nix will then install all the necessary 
+dependencies, once that is done. This command will run `shadow-cljs` and compile the
+`clojurescript` code and then start a hot reloading server.
+note : This might take a while
+
+wait till you see something like this : 
+
+```log
+[:mobile] Build completed. (1337 files, 1335 compiled, 0 warnings, 573.69s)
+```
+
+#### Your freshly installed Linux Distro might not have make
+In case of Ubuntu
+`sudo apt install make` should be all that's needed to install `make`
+
+#### Step 4: Running the metro terminal
+In a new terminal tab run the following command :
+`make run-metro`
+
+#### What does it do?
+This command first configures a nix shell with target `clojure` and then it runs the
+metro server which react-native needs.
+
+After it succeeds you should see something like this :
+
+![Screenshot 2023-07-29 at 9.00.43 AM.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fnb%2Fl9h53lq15wd6xtccvkz737_00000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_AvRCky%2FScreenshot%202023-07-29%20at%209.00.43%20AM.png)
+
+
+#### Step 5: Building and running on Android Emulator
+Open your Desired Android Emulator and make sure it has booted up.
+
+Then in a new terminal tab run the following command :
+`make run-android`
+
+
+//TODO : refactor below part once you verify makefile changes
 
 There are several different apps in the development stack that need to be coordinated. 
 Namely, `ADB`, `Shadow-CLJS`, and `React Metro`.
