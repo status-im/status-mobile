@@ -15,8 +15,8 @@
      :style  {:width 12 :height 12}}]
    [text/text
     {:weight :medium
-     :size  :paragraph-2
-     :style style/text}
+     :size   :paragraph-2
+     :style  style/text}
     (str amount " " (string/upper-case (clj->js token)))]
    [rn/view
     {:style (style/divider theme)}]])
