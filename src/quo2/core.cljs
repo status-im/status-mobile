@@ -38,6 +38,7 @@
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
     quo2.components.empty-state.empty-state.view
+    quo2.components.gradient.gradient-cover.view
     quo2.components.header
     quo2.components.icon
     quo2.components.info.info-message
@@ -281,3 +282,6 @@
 (def url-preview quo2.components.links.url-preview.view/view)
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 (def link-preview quo2.components.links.link-preview.view/view)
+
+;;;; GRADIENT
+(def gradient-cover quo2.components.gradient.gradient-cover.view/view)

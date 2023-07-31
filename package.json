@@ -56,7 +56,7 @@
     "react-native-image-viewing": "git+https://github.com/status-im/react-native-image-viewing.git#refs/tags/v0.2.1.status",
     "react-native-keychain": "git+https://github.com/status-im/react-native-keychain.git#refs/tags/v.3.0.0-5-status",
     "react-native-languages": "^3.0.2",
-    "react-native-linear-gradient": "^2.5.6",
+    "react-native-linear-gradient": "^2.8.0",
     "react-native-lottie-splash-screen": "^1.0.1",
     "react-native-mail": "git+https://github.com/status-im/react-native-mail.git#refs/tags/v6.1.2-status",
     "react-native-navigation": "^7.27.1",

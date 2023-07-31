@@ -103,7 +103,8 @@
     [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
-    [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]))
+    [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
+    [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]))
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -216,6 +217,9 @@
    :empty-state       [{:name      :empty-state
                         :options   {:topBar {:visible true}}
                         :component empty-state/preview-empty-state}]
+   :gradient          [{:name      :gradient-cover
+                        :options   {:topBar {:visible true}}
+                        :component gradient-cover/preview-gradient-cover}]
    :info              [{:name      :info-message
                         :options   {:topBar {:visible true}}
                         :component info-message/preview-info-message}

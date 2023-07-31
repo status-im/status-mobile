@@ -19,6 +19,7 @@
     [quo2.components.drawers.documentation-drawers.component-spec]
     [quo2.components.drawers.drawer-buttons.component-spec]
     [quo2.components.drawers.permission-context.component-spec]
+    [quo2.components.gradient.gradient-cover.component-spec]
     [quo2.components.inputs.input.component-spec]
     [quo2.components.inputs.profile-input.component-spec]
     [quo2.components.inputs.recovery-phrase.component-spec]
