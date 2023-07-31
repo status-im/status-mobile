@@ -99,8 +99,8 @@
                  :size  16}]]])])]])))
 
 (defn- add-account-view
-  [{:keys [on-press customization-color theme]}]
-  [rn/view (style/add-account-container theme)
+  [{:keys [on-press customization-color theme metrics?]}]
+  [rn/view (style/add-account-container theme metrics?)
    [button/button
     {:type                :primary
      :size                24

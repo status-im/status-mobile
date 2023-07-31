@@ -83,6 +83,7 @@
     :add-account
     {:customization-color :blue
      :on-press            #(js/alert "Button pressed")
+     :metrics?            true        
      :type                :add-account}))
 
 (defn cool-preview

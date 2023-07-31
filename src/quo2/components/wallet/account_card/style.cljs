@@ -14,7 +14,10 @@
    :height             (if metrics? 88 68)
    :background-color   (if watch-only?
                          (colors/theme-colors colors/neutral-80-opa-5 colors/neutral-95 theme)
-                         (colors/custom-color-by-theme customization-color 50 60))
+                         (colors/theme-colors
+                          (colors/custom-color customization-color 50)
+                          (colors/custom-color customization-color 60)
+                          theme))
    :border-radius      16
    :border-width       1
    :border-color       (if watch-only?
@@ -64,9 +67,9 @@
    :margin-horizontal 4})
 
 (defn add-account-container
-  [theme]
+  [theme metrics?]
   {:width              161
-   :height             88
+   :height             (if metrics? 88 68)
    :border-color       (colors/theme-colors colors/neutral-20 colors/white-opa-5 theme)
    :border-width       1
    :border-style       :dashed
