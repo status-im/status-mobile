@@ -7,10 +7,4 @@
     (h/render [network-amount/view
                {:amount "5.123"
                 :token  :eth}])
-    (h/is-truthy (h/get-by-text "5.123")))
-
-  (h/test "Token label renders"
-    (h/render [network-amount/view
-               {:amount "5.123"
-                :token  :eth}])
-    (h/is-truthy (h/get-by-text "ETH"))))
+    (h/is-truthy (h/get-by-text "5.123 ETH"))))
