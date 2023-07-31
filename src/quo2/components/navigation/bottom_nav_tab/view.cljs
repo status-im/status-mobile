@@ -79,7 +79,7 @@
           :source (icons/icon-source (keyword (str icon 24)))}])
       (when new-notifications?
         (if (= notification-indicator :counter)
-          [counter/counter
+          [counter/view
            {:customization-color customization-color
             :container-style     styles/notification-counter}
            counter-label]

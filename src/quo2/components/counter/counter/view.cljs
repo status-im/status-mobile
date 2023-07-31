@@ -7,7 +7,7 @@
     [quo2.theme :as quo.theme]
     [quo2.components.counter.counter.style :as style]))
 
-(defn- counter-internal
+(defn- view-internal
   [{:keys [type customization-color theme container-style accessibility-label max-value]
     :or   {max-value 99 customization-color :blue theme :dark}}
    value]
@@ -34,4 +34,4 @@
        :style  (when (= type :default) {:color colors/white})}
       label]]))
 
-(def counter (quo.theme/with-theme counter-internal))
+(def view (quo.theme/with-theme view-internal))

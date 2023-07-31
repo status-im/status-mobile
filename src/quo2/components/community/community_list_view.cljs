@@ -25,7 +25,7 @@
                         colors/neutral-50
                         colors/neutral-40)}]
     (pos? unread-mentions-count)
-    [counter/counter {:type :default} unread-mentions-count]
+    [counter/view {:type :default} unread-mentions-count]
 
     unread-messages?
     [unread-grey-dot :unviewed-messages-public]))

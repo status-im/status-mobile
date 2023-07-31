@@ -161,7 +161,7 @@
 (def channel-actions quo2.components.community.channel-actions/channel-actions)
 
 ;;;; COUNTER
-(def counter quo2.components.counter.counter.view/counter)
+(def counter quo2.components.counter.counter.view/view)
 (def step quo2.components.counter.step.view/step)
 
 ;;;; DIVIDERS

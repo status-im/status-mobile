@@ -54,7 +54,7 @@
             :blur?    blur?}]
 
           (and (= type :engage) (= info :mention) (pos? unread-count))
-          [counter/counter
+          [counter/view
            {:type                :default
             :customization-color customization-color}
            unread-count]
