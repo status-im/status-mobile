@@ -191,7 +191,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.just_fyi("Check it via 'Invite friends' on home view")
         self.home.invite_friends_button.click()
         self.home.share_via_messenger()
-        if not self.home.element_by_text_part('Hey join me on Status: https://join.status.im/u/%s' % chat_key).is_element_displayed(20):
+        if not self.home.element_by_text_part('Hey join me on Status: https://status.app/u/%s' % chat_key).is_element_displayed(20):
             self.errors.append("No expected message in input field when sharing via 'Invite friend'")
         self.home.click_system_back_button_until_element_is_shown()
 
@@ -199,7 +199,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.plus_button.click()
         self.home.chats_menu_invite_friends_button.click()
         self.home.share_via_messenger()
-        if not self.home.element_by_text_part('Hey join me on Status: https://join.status.im/u/%s' % chat_key).is_element_displayed(20):
+        if not self.home.element_by_text_part('Hey join me on Status: https://status.app/u/%s' % chat_key).is_element_displayed(20):
             self.errors.append("No expected message in input field when sharing via 'bottom sheet'")
         self.home.click_system_back_button_until_element_is_shown()
         self.errors.verify_no_errors()
@@ -215,7 +215,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
 
         users = {
             'scanning_ens_with_stateofus_domain_deep_link': {
-                'contact_code': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_message_sender['ens'],
+                'contact_code': 'https://status.app/u/%s.stateofus.eth' % ens_user_message_sender['ens'],
                 'username': ens_user_message_sender['username']
             },
             'scanning_public_key': {

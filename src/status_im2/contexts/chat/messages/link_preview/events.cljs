@@ -9,7 +9,7 @@
 
 (defn community-link
   [id]
-  (str "https://join.status.im/c/" id))
+  (str "https://status.app/c/" id))
 
 (rf/defn cache-link-preview-data
   {:events [:chat.ui/cache-link-preview-data]}

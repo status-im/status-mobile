@@ -22,7 +22,7 @@
 
 (def web-prefixes ["https://" "http://" "https://www." "http://wwww."])
 
-(def web2-domain "join.status.im")
+(def web2-domain "status.app")
 
 (def web-urls (map #(str % web2-domain "/") web-prefixes))
 

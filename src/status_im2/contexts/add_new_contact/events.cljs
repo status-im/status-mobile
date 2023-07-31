@@ -33,7 +33,7 @@
        (zipmap (repeat nil))))
   ([kv] (-> (init-contact) (merge kv))))
 
-(def url-regex #"^https?://join.status.im/u/(.+)")
+(def url-regex #"^https?://status.app/u/(.+)")
 
 (defn ->id
   [{:keys [input] :as contact}]

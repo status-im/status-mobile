@@ -19,9 +19,9 @@
           (is (nil? (get-in (links/handle-url {:db db} "some-url")
                             [:db :universal-links/url]))))
         (testing "Handle a custom string"
-          (is (= (get-in (links/handle-url {:db db} "https://join.status.im/u/statuse2e")
+          (is (= (get-in (links/handle-url {:db db} "https://status.app/u/statuse2e")
                          [::router/handle-uri :uri])
-                 "https://join.status.im/u/statuse2e")))))))
+                 "https://status.app/u/statuse2e")))))))
 
 (deftest url-event-listener
   (testing "the url is not nil"

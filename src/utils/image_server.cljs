@@ -5,8 +5,8 @@
 (def ^:const account-images-action "/accountImages")
 (def ^:const contact-images-action "/contactImages")
 (def ^:const generate-qr-action "/GenerateQRCode")
-(def ^:const status-profile-base-url "https://join.status.im/u/")
-(def ^:const status-profile-base-url-without-https "join.status.im/u/")
+(def ^:const status-profile-base-url "https://status.app/u/")
+(def ^:const status-profile-base-url-without-https "status.app/u/")
 
 (defn timestamp [] (datetime/timestamp))
 

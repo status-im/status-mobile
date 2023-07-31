@@ -431,8 +431,8 @@ class CommunityView(HomeView):
         self.driver.info("Copy community link")
         self.community_options_button.click()
         self.community_info_button.click()
-        self.element_starts_with_text('join.status.im/c/').click()
-        community_link_text = self.element_starts_with_text('join.status.im/c/').text
+        self.element_starts_with_text('status.app/c/').click()
+        community_link_text = self.element_starts_with_text('status.app/c/').text
         self.home_button.double_click()
         return 'https://%s' % community_link_text
 

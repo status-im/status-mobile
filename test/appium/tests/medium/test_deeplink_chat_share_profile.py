@@ -96,7 +96,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         chat.share_button.click()
         chat.share_via_messenger()
         if not chat.element_by_text_part(
-                'https://join.status.im/u/%s' % dummy_user["public_key"]).is_element_displayed():
+                'https://status.app/u/%s' % dummy_user["public_key"]).is_element_displayed():
             self.errors.append("Can't share public key of contact")
         for _ in range(2):
             chat.click_system_back_button_until_element_is_shown()
@@ -112,7 +112,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         self.public_chat.share_chat_button.click()
         self.public_chat.share_via_messenger()
         if not self.public_chat.element_by_text_part(
-                'https://join.status.im/%s' % self.public_chat_name).is_element_displayed():
+                'https://status.app/%s' % self.public_chat_name).is_element_displayed():
             self.errors.append("Can't share link to public chat")
         for _ in range(2):
             self.public_chat.click_system_back_button_until_element_is_shown()
@@ -127,8 +127,8 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
         browser.options_button.click()
         browser.share_url_button.click()
         browser.share_via_messenger()
-        expeceted_text_1 = 'https://join.status.im/b/https://dap.ps'
-        expeceted_text_2 = 'https://join.status.im/b/http://dap.ps'
+        expeceted_text_1 = 'https://status.app/b/https://dap.ps'
+        expeceted_text_2 = 'https://status.app/b/http://dap.ps'
 
         if not (browser.element_by_text_part(expeceted_text_1).is_element_displayed() or
                 browser.element_by_text_part(expeceted_text_2).is_element_displayed()):
@@ -389,11 +389,11 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
 
     #     url_data = {
     #         'ens_with_stateofus_domain_deep_link': {
-    #             'url': 'https://join.status.im/u/%s.stateofus.eth' % ens_user_message_sender['ens'],
+    #             'url': 'https://status.app/u/%s.stateofus.eth' % ens_user_message_sender['ens'],
     #             'username': '@%s' % ens_user_message_sender['ens']
     #         },
     #         'ens_without_stateofus_domain_deep_link': {
-    #             'url': 'https://join.status.im/u/%s' % ens_user_message_sender['ens'],
+    #             'url': 'https://status.app/u/%s' % ens_user_message_sender['ens'],
     #             'username': '@%s' % ens_user_message_sender['ens']
     #         },
     #         'ens_another_domain_deep_link': {
@@ -401,15 +401,15 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
     #             'username': '@%s' % ens_user['ens']
     #         },
     #         'own_profile_key_deep_link': {
-    #             'url': 'https://join.status.im/u/%s' % self.public_key,
+    #             'url': 'https://status.app/u/%s' % self.public_key,
     #             'error': "That's you"
     #         },
     #         'other_user_profile_key_deep_link': {
-    #             'url': 'https://join.status.im/u/%s' % transaction_senders['M']['public_key'],
+    #             'url': 'https://status.app/u/%s' % transaction_senders['M']['public_key'],
     #             'username': transaction_senders['M']['username']
     #         },
     #         'other_user_profile_key_deep_link_invalid': {
-    #             'url': 'https://join.status.im/u/%sinvalid' % ens_user['public_key'],
+    #             'url': 'https://status.app/u/%sinvalid' % ens_user['public_key'],
     #             'error': 'Please enter or scan a valid chat key'
     #         },
     #         'own_profile_key': {

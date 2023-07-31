@@ -11,7 +11,7 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:join.status.im</string>
+		<string>applinks:status.app/string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>

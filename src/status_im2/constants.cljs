@@ -179,8 +179,8 @@
 (def regx-bold #"\*[^*]+\*")
 (def regx-italic #"~[^~]+~")
 (def regx-backquote #"`[^`]+`")
-(def regx-universal-link #"((^https?://join.status.im/)|(^status-im://))[\x00-\x7F]+$")
-(def regx-community-universal-link #"((^https?://join.status.im/)|(^status-im://))c/([\x00-\x7F]+)$")
+(def regx-universal-link #"((^https?://status.app/)|(^status-im://))[\x00-\x7F]+$")
+(def regx-community-universal-link #"((^https?://status.app/)|(^status-im://))c/([\x00-\x7F]+)$")
 (def regx-deep-link #"((^ethereum:.*)|(^status-im://[\x00-\x7F]+$))")
 
 (def ^:const dapp-permission-contact-code "contact-code")
