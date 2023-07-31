@@ -281,8 +281,8 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         community_name, channel_name = "some name", "first_channel"
         community_description, community_pic = "something in community", 'sauce_logo.png'
         message, message_member = "message", "from member"
-        community_1 = self.home_1.create_community(community_name, community_description, set_image=True,
-                                                   file_name=community_pic)
+        community_1 = self.home_1.create_community_e2e(community_name, community_description, set_image=True,
+                                                       file_name=community_pic)
         channel_1 = community_1.add_channel(channel_name)
         channel_1.send_message(message)
         self.home_1.home_button.double_click()

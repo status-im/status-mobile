@@ -38,7 +38,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.channel_after_sync, self.message_after_sync = 'chann-after-sync', 'sent after sync'
 
         self.device_1.just_fyi('Create community, create group chat, edit user picture')
-        self.comm_before_1 = self.home_1.create_community(self.comm_before_sync_name)
+        self.comm_before_1 = self.home_1.create_community_e2e(self.comm_before_sync_name)
         self.channel_before_1 = self.comm_before_1.add_channel(self.channel)
         self.channel_before_1.send_message(self.message)
         self.home_1.home_button.double_click()
@@ -260,7 +260,7 @@ class TestPairingSyncMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
     def test_pairing_sync_community_add_new(self):
         self.device_3.put_app_to_background_and_back()
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
-        self.home_1.create_community(self.comm_after_sync_name)
+        self.home_1.create_community_e2e(self.comm_after_sync_name)
         if not self.home_2.element_by_text(self.comm_after_sync_name).is_element_displayed(30):
             self.errors.append('Added community was not appeared after initial sync')
         self.errors.append("Leaving community was not synced!")
