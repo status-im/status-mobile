@@ -49,6 +49,14 @@
     [quo2.components.settings.category.component-spec]
     [quo2.components.share.share-qr-code.component-spec]
     [quo2.components.tags.status-tags-component-spec]
+<<<<<<< HEAD
     [quo2.components.wallet.network-amount.component-spec]
     [quo2.components.wallet.network-bridge.component-spec]
     [quo2.components.wallet.account-card.component-spec]))
+=======
+<<<<<<< HEAD
+    [quo2.components.wallet.network-amount.component-spec]))
+=======
+    [quo2.components.wallet.token-input.component-spec]))
+>>>>>>> cca47fb89 (feat: quo2 token input)
+>>>>>>> ad1cd16ba (feat: quo2 token input)
