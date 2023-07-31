@@ -102,8 +102,8 @@
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
-<<<<<<< HEAD
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
+<<<<<<< HEAD
 <<<<<<< HEAD
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
@@ -114,6 +114,10 @@
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]))
 >>>>>>> cca47fb89 (feat: quo2 token input)
 >>>>>>> ad1cd16ba (feat: quo2 token input)
+=======
+    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
+    [status-im2.contexts.quo-preview.wallet.token-input :as token-input]))
+>>>>>>> e79d973df (lint)
 
 (def screens-categories
   {:foundations       [{:name      :shadows

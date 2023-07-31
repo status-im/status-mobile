@@ -14,9 +14,9 @@
                :value "ETH"}
               {:key   :snt
                :value "SNT"}]}
-   {:label "Currency:"
-    :key :currency
-    :type :select
+   {:label   "Currency:"
+    :key     :currency
+    :type    :select
     :options [{:key   :usd
                :value "USD"}
               {:key   :eur
@@ -25,8 +25,8 @@
 
 (defn preview
   []
-  (let [state (reagent/atom {:token :snt
-                             :currency :eur
+  (let [state (reagent/atom {:token      :snt
+                             :currency   :eur
                              :conversion 0.02})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
