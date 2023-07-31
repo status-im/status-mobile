@@ -97,7 +97,7 @@
     quo2.components.share.share-qr-code.view
     quo2.components.tabs.account-selector
     quo2.components.tabs.segmented-tab
-    quo2.components.tabs.tabs
+    quo2.components.tabs.tabs.view
     quo2.components.tags.context-tag.view
     quo2.components.tags.permission-tag
     quo2.components.tags.status-tags
@@ -279,7 +279,7 @@
 (def share-qr-code quo2.components.share.share-qr-code.view/view)
 
 ;;;; TABS
-(def tabs quo2.components.tabs.tabs/tabs)
+(def tabs quo2.components.tabs.tabs.view/view)
 (def segmented-control quo2.components.tabs.segmented-tab/segmented-control)
 (def account-selector quo2.components.tabs.account-selector/account-selector)
 
