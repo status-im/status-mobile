@@ -6,7 +6,7 @@
     [react-native.core :as rn]
     [utils.number]))
 
-(defn view-internal
+(defn- view-internal
   [{:keys [type accessibility-label theme in-blur-view? customization-color]} value]
   (let [type  (or type :neutral)
         value (utils.number/parse-int value)

@@ -15,7 +15,7 @@
 
 ;; TODO: this implementation does not support group display picture (can only display default group
 ;; icon).
-(defn view-internal
+(defn- view-internal
   [_]
   (fn [{:keys [color size theme]}]
     (let [container-size (get-in sizes [:container size])

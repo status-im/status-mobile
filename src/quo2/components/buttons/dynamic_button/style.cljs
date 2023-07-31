@@ -11,7 +11,8 @@
                     :notification-up   2
                     :search-with-label 8
                     :search            6
-                    :scroll-to-bottom  6)
+                    :scroll-to-bottom  6
+                    nil)
    :margin-right  (case type
                     :jump-to           8
                     :mention           2
@@ -19,7 +20,8 @@
                     :notification-up   8
                     :search-with-label 4
                     :search            6
-                    :scroll-to-bottom  6)})
+                    :scroll-to-bottom  6
+                    nil)})
 
 (defn text
   [type]
@@ -30,10 +32,12 @@
                     :mention           0
                     :notification-down 8
                     :notification-up   8
-                    :search-with-label 0)
+                    :search-with-label 0
+                    nil)
    :margin-right  (case type
                     :jump-to           0
                     :mention           8
                     :notification-down 0
                     :notification-up   0
-                    :search-with-label 8)})
+                    :search-with-label 8
+                    nil)})
