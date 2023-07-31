@@ -28,7 +28,6 @@
                    {:height          (:size opts)
                     :width           (:size opts)
                     :borderRadius    (style/get-border-radius (:size opts))
-                    :borderWidth     nil
                     :backgroundColor (colors/custom-color-by-theme (:customization-color opts) 50 60)})
       (h/is-truthy (h/query-by-label-text :account-emoji))
       (h/has-style (h/query-by-label-text :account-emoji)
@@ -65,7 +64,6 @@
                    {:height          (:size opts)
                     :width           (:size opts)
                     :borderRadius    (style/get-border-radius (:size opts))
-                    :borderWidth     nil
                     :backgroundColor (colors/custom-color-by-theme (:customization-color opts) 50 60)})
       (h/is-truthy (h/query-by-label-text :account-emoji))
       (h/has-style (h/query-by-label-text :account-emoji)
