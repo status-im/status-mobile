@@ -134,7 +134,7 @@
 (def slide-button quo2.components.buttons.slide-button.view/view)
 
 ;;;; BROWSER
-(def browser-input quo2.components.browser.browser-input.view/browser-input)
+(def browser-input quo2.components.browser.browser-input.view/view)
 
 ;;;; CALENDAR
 (def calendar quo2.components.calendar.calendar.view/view)
