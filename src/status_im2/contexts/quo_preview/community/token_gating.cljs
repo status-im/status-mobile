@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.community.token-gating
-  (:require [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [react-native.core :as rn]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [quo2.core :as quo]))
+  (:require
+    [quo2.foundations.resources :as resources]
+    [reagent.core :as reagent]
+    [react-native.core :as rn]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [quo2.core :as quo]))
 
 (def descriptor
   [{:label "Tokens sufficient"
