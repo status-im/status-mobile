@@ -101,11 +101,8 @@
     quo2.components.tags.tags
     quo2.components.tags.token-tag
     quo2.components.text-combinations.title.view
-<<<<<<< HEAD
-    quo2.components.wallet.network-amount.view))
-=======
+    quo2.components.wallet.network-amount.view
     quo2.components.wallet.network-bridge.view))
->>>>>>> 76125bc55 (feat: quo2 network bridge)
 
 (def separator quo2.components.common.separator.view/separator)
 
@@ -288,15 +285,9 @@
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 (def link-preview quo2.components.links.link-preview.view/view)
 
-<<<<<<< HEAD
-
 ;;;; GRADIENT
 (def gradient-cover quo2.components.gradient.gradient-cover.view/view)
 
 ;;;; WALLET
 (def network-amount quo2.components.wallet.network-amount.view/view)
-
-=======
-;;;;; WALLET
-(def network-bridge quo2.components.wallet.network-bridge.view/network-bridge)
->>>>>>> 76125bc55 (feat: quo2 network bridge)
+(def network-bridge quo2.components.wallet.network-bridge.view/view)

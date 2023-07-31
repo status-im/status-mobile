@@ -15,7 +15,7 @@
   [rn/view {:style (merge (style/container network state) (style/add-container))}
    [icon/icon :i/add-circle {:size 12}]])
 
-(defn network-bridge-internal
+(defn view-internal
   [{:keys [theme network status amount] :as args}]
   (let [network-text (if (= network :ethereum) "Mainnet" (string/capitalize (name network)))]
     (if (= status :add)
@@ -50,4 +50,4 @@
           :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
          network-text]]])))
 
-(def network-bridge (quo.theme/with-theme network-bridge-internal))
+(def view (quo.theme/with-theme view-internal))

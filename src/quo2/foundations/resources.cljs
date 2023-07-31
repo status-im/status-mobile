@@ -10,7 +10,6 @@
   [k]
   (get ui k))
 
-<<<<<<< HEAD
 (def tokens
   {:eth  (js/require "../resources/images/tokens/mainnet/ETH.png")
    :knc  (js/require "../resources/images/tokens/mainnet/KNC.png")
@@ -24,13 +23,9 @@
 (defn get-token
   [k]
   (get tokens k))
-=======
+
 (def networks
   {:ethereum (js/require "../resources/images/tokens/mainnet/ETH.png")
    :optimism (js/require "../resources/images/tokens/mainnet/OP.png")
    :arbitrum (js/require "../resources/images/tokens/mainnet/ARB.png")})
 
-(defn get-network
-  [k]
-  (get networks k))
->>>>>>> 8270c1be6 (quo2: network bridge)

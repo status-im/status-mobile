@@ -100,12 +100,9 @@
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
-<<<<<<< HEAD
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
-    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]))
-=======
+    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]))
->>>>>>> 76125bc55 (feat: quo2 network bridge)
 
 (def screens-categories
   {:foundations       [{:name      :shadows
