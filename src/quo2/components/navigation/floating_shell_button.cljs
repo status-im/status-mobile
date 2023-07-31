@@ -1,12 +1,12 @@
 (ns quo2.components.navigation.floating-shell-button
-  (:require [quo2.components.buttons.dynamic-button :as dynamic-button]
+  (:require [quo2.components.buttons.dynamic-button.view :as dynamic-button]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]))
 
 (defn dynamic-button-view
   [type dynamic-buttons style]
   (when-let [{:keys [on-press customization-color label] :as props} (get dynamic-buttons type)]
-    [dynamic-button/dynamic-button
+    [dynamic-button/view
      {:type                type
       :label               label
       :on-press            on-press

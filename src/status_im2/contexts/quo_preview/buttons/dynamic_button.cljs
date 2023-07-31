@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.buttons.dynamic-button
-  (:require [quo2.components.buttons.dynamic-button :as quo2]
+  (:require [quo.core :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]

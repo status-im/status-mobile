@@ -9,7 +9,7 @@
     quo2.components.avatars.wallet-user-avatar
     quo2.components.banners.banner.view
     quo2.components.buttons.button.view
-    quo2.components.buttons.dynamic-button
+    quo2.components.buttons.dynamic-button.view
     quo2.components.buttons.predictive-keyboard.view
     quo2.components.buttons.slide-button.view
     quo2.components.browser.browser-input.view
@@ -129,7 +129,7 @@
 
 ;;;; BUTTONS
 (def button quo2.components.buttons.button.view/button)
-(def dynamic-button quo2.components.buttons.dynamic-button/dynamic-button)
+(def dynamic-button quo2.components.buttons.dynamic-button.view/view)
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo2.components.buttons.slide-button.view/view)
 
