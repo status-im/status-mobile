@@ -7,25 +7,35 @@
 
 
 (def descriptor
-  [{:label "Amount:"
-    :key   :amount
-    :type  :text}
-   {:label   "Token:"
-    :key     :token
+  [{:label   "Network:"
+    :key     :network
     :type    :select
-    :options [{:key   :eth
-               :value "ETH"}
-              {:key   :snt
-               :value "SNT"}]}])
+    :options [{:key   :ethereum
+               :value "Ethereum"}
+              {:key   :optimism
+               :value "Optimism"}
+              {:key   :arbitrum
+               :value "Arbitrum"}]}
+   {:label   "State:"
+    :key     :state
+    :type    :select
+    :options [{:key :default :value :default}
+              {:key :locked :value :locked}
+              {:key :loading :value :loading}
+              {:key :disabled :value :disabled}]}])
 
 (defn preview
   []
-  (let [state (reagent/atom {:amount "5.123456"
-                             :token  :eth})]
+  (let [state (reagent/atom {:network :ethereum
+                             :state   :default
+                             :amount  "50 SNT"})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view
         {:style {:flex               1
                  :padding-horizontal 20}}
         [rn/view {:style {:min-height 150}} [preview/customizer state descriptor]]
-        [quo/network-bridge @state]]])))
+        [rn/view
+         {:style {:flex        1
+                  :margin-top  50
+                  :align-items :center}} [quo/network-bridge @state]]]])))
