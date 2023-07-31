@@ -125,7 +125,7 @@
 (def wallet-user-avatar quo2.components.avatars.wallet-user-avatar/wallet-user-avatar)
 
 ;;;; Banner
-(def banner quo2.components.banners.banner.view/banner)
+(def banner quo2.components.banners.banner.view/view)
 
 ;;;; Buttons
 (def button quo2.components.buttons.button.view/button)
@@ -168,7 +168,7 @@
 
 ;;;; Counter
 (def counter quo2.components.counter.counter.view/view)
-(def step quo2.components.counter.step.view/step)
+(def step quo2.components.counter.step.view/view)
 
 ;;;; Dividers
 (def divider-label quo2.components.dividers.divider-label/divider-label)
