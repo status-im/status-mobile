@@ -7,7 +7,7 @@
     [quo2.components.wallet.network-amount.style :as style]
     [quo2.foundations.resources :as resources]))
 
-(defn- network-amount-internal
+(defn- view-internal
   [{:keys [amount token theme]}]
   [rn/view {:style style/container}
    [rn/image
@@ -21,4 +21,4 @@
    [rn/view
     {:style (style/divider theme)}]])
 
-(def network-amount (quo.theme/with-theme network-amount-internal))
+(def view (quo.theme/with-theme view-internal))

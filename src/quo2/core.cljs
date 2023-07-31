@@ -284,10 +284,10 @@
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 (def link-preview quo2.components.links.link-preview.view/view)
 
-<<<<<<< HEAD
+
 ;;;; GRADIENT
 (def gradient-cover quo2.components.gradient.gradient-cover.view/view)
-=======
+
 ;;;; WALLET
-(def network-amount quo2.components.wallet.network-amount.view/network-amount)
->>>>>>> 0cde849f5 (feat: network amount comp)
+(def network-amount quo2.components.wallet.network-amount.view/view)
+
