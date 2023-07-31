@@ -1,6 +1,6 @@
 (ns quo2.components.banners.banner.view
   (:require [quo2.components.banners.banner.style :as style]
-            [quo2.components.counter.counter :as counter]
+            [quo2.components.counter.counter.view :as counter]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]

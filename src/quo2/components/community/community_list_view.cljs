@@ -1,7 +1,7 @@
 (ns quo2.components.community.community-list-view
   (:require [quo2.components.community.community-view :as community-view]
             [quo2.components.community.style :as style]
-            [quo2.components.counter.counter :as counter]
+            [quo2.components.counter.counter.view :as counter]
             [quo2.components.icon :as icons]
             [quo2.theme :as theme]
             [quo2.components.markdown.text :as text]

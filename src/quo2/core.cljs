@@ -26,7 +26,7 @@
     quo2.components.community.community-view
     quo2.components.community.icon
     quo2.components.community.token-gating
-    quo2.components.counter.counter
+    quo2.components.counter.counter.view
     quo2.components.counter.step.view
     quo2.components.dividers.date
     quo2.components.dividers.divider-label
@@ -161,7 +161,7 @@
 (def channel-actions quo2.components.community.channel-actions/channel-actions)
 
 ;;;; COUNTER
-(def counter quo2.components.counter.counter/counter)
+(def counter quo2.components.counter.counter.view/counter)
 (def step quo2.components.counter.step.view/step)
 
 ;;;; DIVIDERS

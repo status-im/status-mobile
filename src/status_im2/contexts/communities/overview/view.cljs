@@ -1,6 +1,5 @@
 (ns status-im2.contexts.communities.overview.view
   (:require [oops.core :as oops]
-            [quo2.components.navigation.floating-shell-button :as floating-shell-button]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
@@ -363,7 +362,7 @@
         customization-color (rf/sub [:profile/customization-color])]
     [rn/view {:style style/community-overview-container}
      [community-card-page-view id]
-     [floating-shell-button/floating-shell-button
+     [quo/floating-shell-button
       {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
                  :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}

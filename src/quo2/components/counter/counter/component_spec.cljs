@@ -1,5 +1,5 @@
-(ns quo2.components.counter.component-spec
-  (:require [quo2.components.counter.counter :as counter]
+(ns quo2.components.counter.counter.component-spec
+  (:require [quo2.components.counter.counter.view :as counter]
             [test-helpers.component :as h]))
 
 (h/describe "counter component"

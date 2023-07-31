@@ -1,5 +1,5 @@
 (ns quo2.components.navigation.bottom-nav-tab.view
-  (:require [quo2.components.counter.counter :as counter]
+  (:require [quo2.components.counter.counter.view :as counter]
             [quo2.components.icons.icons :as icons]
             [quo2.components.navigation.bottom-nav-tab.styles :as styles]
             [quo2.foundations.colors :as colors]
@@ -80,9 +80,8 @@
       (when new-notifications?
         (if (= notification-indicator :counter)
           [counter/counter
-           {:override-text-color colors/white
-            :override-bg-color   (colors/custom-color customization-color 60)
-            :style               styles/notification-counter}
+           {:customization-color customization-color
+            :container-style     styles/notification-counter}
            counter-label]
           [rn/view {:style (styles/notification-dot customization-color)}]))]]))
 

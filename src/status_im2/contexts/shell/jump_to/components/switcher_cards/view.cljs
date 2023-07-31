@@ -96,15 +96,14 @@
        nil))])
 
 (defn notification-container
-  [{:keys [notification-indicator counter-label color-60]}]
+  [{:keys [notification-indicator counter-label customization-color]}]
   [rn/view {:style style/notification-container}
    (if (= notification-indicator :counter)
      [quo/counter
       {:outline             false
-       :override-text-color colors/white
-       :override-bg-color   color-60}
+       :customization-color customization-color}
       counter-label]
-     [rn/view {:style (style/unread-dot color-60)}])])
+     [rn/view {:style (style/unread-dot customization-color)}])])
 
 (defn bottom-container
   [type {:keys [new-notifications?] :as content}]
@@ -223,8 +222,7 @@
   (let [card-ref (atom nil)]
     (fn [{:keys [avatar-params title type customization-color
                  content banner id channel-id]}]
-      (let [color-50 (colors/custom-color customization-color 50)
-            color-60 (colors/custom-color customization-color 60)]
+      (let [color-50 (colors/custom-color customization-color 50)]
         [rn/touchable-opacity
          {:on-press       #(calculate-card-position-and-open-screen
                             card-ref
@@ -253,8 +251,8 @@
              :style  style/subtitle}
             (subtitle type content)]
            [bottom-container type
-            (merge {:color-50 color-50
-                    :color-60 color-60}
+            (merge {:color-50            color-50
+                    :customization-color customization-color}
                    content)]]
           (when avatar-params
             [rn/view {:style style/avatar-container}
