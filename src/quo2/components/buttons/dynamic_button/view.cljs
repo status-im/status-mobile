@@ -61,10 +61,11 @@
                  {:flex-direction   :row
                   :height           24
                   :border-radius    12
-                  :background-color (get-button-color {:type type
-                                                       :pressed? @pressed?
-                                                       :customization-color (or customization-color :primary)
-                                                       :theme theme})}
+                  :background-color (get-button-color {:type                type
+                                                       :pressed?            @pressed?
+                                                       :customization-color (or customization-color
+                                                                                :primary)
+                                                       :theme               theme})}
                  style)}
         (when (#{:mention :search :search-with-label :scroll-to-bottom} type)
           [icon-view type])
@@ -72,7 +73,7 @@
           [text/text
            {:weight :medium
             :size   :paragraph-2
-            :style (assoc (style/text type) :color (get-icon-and-text-color type theme))}
+            :style  (assoc (style/text type) :color (get-icon-and-text-color type theme))}
            (case type
              :jump-to                                       label
              :search-with-label                             label

@@ -54,8 +54,8 @@
       (when (not= new-percentage
                   (get @fading :fade-end-percentage))
         (swap! fading assoc
-               :fade-end-percentage
-               new-percentage))))
+          :fade-end-percentage
+          new-percentage))))
   (when on-scroll
     (on-scroll e)))
 
@@ -71,11 +71,11 @@
    {:keys [id label notification-dot? accessibility-label]}
    index]
   [rn/view
-   {:style (style/tab {:size size
+   {:style (style/tab {:size             size
                        :default-tab-size default-tab-size
-                       :number-of-items number-of-items
-                       :index index
-                       :style style})}
+                       :number-of-items  number-of-items
+                       :index            index
+                       :style            style})}
    [tab/view
     {:id                  id
      :notification-dot?   notification-dot?
@@ -147,12 +147,12 @@
              rn/flat-list)
            (merge
             (dissoc props
-                    :default-active
-                    :fade-end-percentage
-                    :fade-end?
-                    :on-change
-                    :scroll-on-press?
-                    :size)
+             :default-active
+             :fade-end-percentage
+             :fade-end?
+             :on-change
+             :scroll-on-press?
+             :size)
             (when scroll-on-press?
               {:initial-scroll-index (utils.collection/first-index #(= @active-tab-id (:id %)) data)})
             {:ref                               #(reset! flat-list-ref %)

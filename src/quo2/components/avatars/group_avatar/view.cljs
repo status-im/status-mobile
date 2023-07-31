@@ -21,9 +21,9 @@
     (let [container-size (get-in sizes [:container size])
           icon-size      (get-in sizes [:icon size])]
       [rn/view
-       {:style (style/container {:container-size container-size
+       {:style (style/container {:container-size      container-size
                                  :customization-color color
-                                 :theme theme})}
+                                 :theme               theme})}
        [icon/icon :i/group
         {:size  icon-size
          :color colors/white-opa-70}]])))

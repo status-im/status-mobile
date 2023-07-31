@@ -1,6 +1,7 @@
 (ns quo2.components.buttons.dynamic-button.style)
 
-(defn container [type]
+(defn container
+  [type]
   {:margin-top    6
    :margin-bottom 6
    :margin-left   (case type
@@ -20,7 +21,8 @@
                     :search            6
                     :scroll-to-bottom  6)})
 
-(defn text [type]
+(defn text
+  [type]
   {:margin-top    2.5
    :margin-bottom 3.5
    :margin-left   (case type
