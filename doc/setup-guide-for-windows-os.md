@@ -72,6 +72,22 @@ After it succeeds you should see something like this :
 ![Screenshot 2023-07-29 at 9.00.43 AM.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Fnb%2Fl9h53lq15wd6xtccvkz737_00000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_AvRCky%2FScreenshot%202023-07-29%20at%209.00.43%20AM.png)
 
 
+#### Step 6: Set up WSA (Windows Subsystem for Android)
+ref : https://learn.microsoft.com/en-us/windows/android/wsa/
+
+Windows Subsystem for Android is available on **Windows 11.** 
+Your device must meet specific requirements: 
+https://support.microsoft.com/en-gb/windows/install-mobile-apps-and-the-amazon-appstore-on-windows-f8d0abb5-44ad-47d8-b9fb-ad6b1459ff6c
+
+A pre-requisite of WSA is to Download Amazon App Store which is only available for the following countries :
+https://support.microsoft.com/en-gb/windows/countries-and-regions-that-support-amazon-appstore-on-windows-d8dd17c7-5994-4187-9527-ddb076f9493e?preview=true
+
+You can change your Region in settings and the restart your microsoft store and then search "amazon app store"
+This will allow you to proceed further.
+
+![Screenshot 2023-07-30 at 1.51.15 PM.png](..%2F..%2F..%2F..%2F..%2FDesktop%2FScreenshot%202023-07-30%20at%201.51.15%20PM.png)
+
+
 #### Step 5: Building and running on Android Emulator
 Open your Desired Android Emulator and make sure it has booted up.
 
