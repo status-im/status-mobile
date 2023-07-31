@@ -39,16 +39,16 @@
   []
   (let [state (reagent/atom {:customization-color :purple
                              :size                80
-                             :emoji               "💰"
+                             :emoji               "🍑"
                              :type                :default})]
     (fn []
       [rn/view
-       {:margin-bottom 50
-        :padding       16}
+       {:style {:margin-bottom 50
+                :padding       16}}
        [preview/customizer state descriptor]
        [rn/view
-        {:padding-vertical 60
-         :align-items      :center}
+        {:style {:padding-vertical 60
+                 :align-items      :center}}
         [account-avatar/view @state]]])))
 
 (defn preview-account-avatar

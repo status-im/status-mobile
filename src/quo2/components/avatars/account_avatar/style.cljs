@@ -3,6 +3,7 @@
 
 (def default-size 80)
 (def default-border-radius 16)
+(def default-padding 16)
 (def default-emoji-size 36)
 
 (defn get-border-radius
@@ -17,6 +18,18 @@
     16 4
     default-border-radius))
 
+(defn get-padding
+  [size]
+  (case size
+    80 16
+    48 8
+    32 6
+    28 6
+    24 6
+    20 4
+    16 2
+    default-padding))
+
 (defn get-emoji-size
   [size]
   (case size
@@ -30,25 +43,27 @@
     default-emoji-size))
 
 (defn get-border-width
-  [watch-only? size]
-  (when watch-only?
-    (case size
-      16 0.8 ;; 0.8 px is for only size 16
-      ;; Rest of the size will have 1 px
-      1)))
+  [size]
+  (case size
+    16 0.8 ;; 0.8 px is for only size 16
+    ;; Rest of the size will have 1 px
+    1))
 
 (defn root-container
   [{:keys [type size theme customization-color]
     :or   {size                default-size
            customization-color :blue}}]
   (let [watch-only? (= type :watch-only)]
-    {:width            size
-     :height           size
-     :background-color (if watch-only?
-                         (colors/custom-color-by-theme customization-color 50 50 10 10 theme)
-                         (colors/custom-color-by-theme customization-color 50 60 nil nil theme))
-     :border-radius    (get-border-radius size)
-     :border-width     (get-border-width watch-only? size)
-     :border-color     (if (= theme :light) colors/neutral-80-opa-5 colors/white-opa-5)
-     :justify-content  :center
-     :align-items      :center}))
+    (cond-> {:width            size
+             :height           size
+             :background-color (colors/custom-color-by-theme customization-color 50 60 nil nil theme)
+             :border-radius    (get-border-radius size)
+             :border-color     (if (= theme :light) colors/neutral-80-opa-5 colors/white-opa-5)
+             :padding          (get-padding size)
+             :align-items      :center
+             :justify-content  :center}
+
+      watch-only?
+      (assoc :border-width     (get-border-width size)
+             :background-color (colors/custom-color-by-theme customization-color 50 50 10 10 theme)))))
+

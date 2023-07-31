@@ -26,8 +26,9 @@
       :accessibility-label :account-avatar
       :style               (style/root-container opts)}
      [rn/text
-      {:accessibility-label :account-emoji
-       :style               {:font-size emoji-size}}
+      {:accessibility-label      :account-emoji
+       :adjusts-font-size-to-fit true
+       :style                    {:font-size emoji-size}}
       (string/trim emoji)]]))
 
 (def view (quo.theme/with-theme view-internal))
