@@ -11,7 +11,7 @@
 (defn keyboard-item
   [position]
   {:width         "33%"
-   :margin-bottom 12
+   :margin-bottom 6
    :align-items   (condp = (mod position 3)
                     1 :flex-start
                     2 :center
