@@ -97,6 +97,7 @@
     [status-im2.contexts.quo-preview.wallet.lowest-price :as lowest-price]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.transaction-progress :as transaction-progress]
+    [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
     [status-im2.contexts.quo-preview.wallet.network-breakdown :as network-breakdown]
     [status-im2.contexts.quo-preview.wallet.token-overview :as token-overview]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
@@ -377,7 +378,7 @@
    :text-combinations [{:name      :title
                         :options   {:topBar {:visible true}}
                         :component title/preview-title}]
-   :wallet            [{:name      :lowest-price
+   :aaawallet         [{:name      :lowest-price
                         :options   {:topBar {:visible true}}
                         :component lowest-price/preview-lowest-price}
                        {:name      :token-overview
@@ -389,9 +390,12 @@
                        {:name      :network-amount
                         :options   {:topBar {:visible true}}
                         :component network-amount/preview}
+                       {:name      :progress-bar
+                        :options   {:topBar {:visible true}}
+                        :component progress-bar/preview}
                        {:name      :transaction-progress
-                            :options   {:topBar {:visible true}}
-                            :component transaction-progress/preview}]
+                        :options   {:topBar {:visible true}}
+                        :component transaction-progress/preview}]
    :keycard           [{:name      :keycard-component
                         :options   {:topBar {:visible true}}
                         :component keycard/preview-keycard}]})
