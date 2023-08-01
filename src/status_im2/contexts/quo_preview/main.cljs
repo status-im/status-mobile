@@ -101,7 +101,8 @@
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
-    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]))
+    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
+    [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]))
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -391,7 +392,10 @@
                         :component title/preview-title}]
    :wallet            [{:name      :network-amount
                         :options   {:topBar {:visible true}}
-                        :component network-amount/preview}]
+                        :component network-amount/preview}
+                       {:name      :network-bridge
+                        :options   {:topBar {:visible true}}
+                        :component network-bridge/preview}]
    :keycard           [{:name      :keycard-component
                         :options   {:topBar {:visible true}}
                         :component keycard/preview-keycard}]})
