@@ -10,6 +10,7 @@
             [status-im2.common.home.banner.view :as common.home.banner]
             [status-im2.common.home.view :as common.home]
             [status-im2.common.resources :as resources]
+            [status-im2.contexts.chat.actions.view :as chat.actions.view]
             [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
             [status-im2.contexts.chat.home.contact-request.view :as contact-request]
             [utils.i18n :as i18n]
@@ -46,7 +47,7 @@
 (defn chats
   [{:keys [selected-tab set-scroll-ref scroll-shared-value]}]
   (let [unfiltered-items (rf/sub [:chats-stack-items])
-        items            (take 15 (cycle (filter-and-sort-items-by-tab selected-tab unfiltered-items)))]
+        items            (filter-and-sort-items-by-tab selected-tab unfiltered-items)]
     (if (empty? items)
       [common.home/empty-state-image
        {:selected-tab selected-tab
@@ -81,7 +82,7 @@
 
 (defn contacts
   [{:keys [pending-contact-requests set-scroll-ref scroll-shared-value]}]
-  (let [items (take 15 (cycle (rf/sub [:contacts/active-sections])))]
+  (let [items (rf/sub [:contacts/active-sections])]
     (if (and (empty? items) (empty? pending-contact-requests))
       [common.home/empty-state-image
        {:selected-tab :tab/contacts
@@ -114,6 +115,17 @@
     :accessibility-label :tab-contacts
     :notification-dot?   dot?}])
 
+(def ^:private banner-data
+  {:title-props
+   {:label               (i18n/label :t/messages)
+    :handler             #(rf/dispatch
+                           [:show-bottom-sheet {:content chat.actions.view/new-chat}])
+    :accessibility-label :new-chat-button}
+   :card-props
+   {:banner      (resources/get-image :invite-friends)
+    :title       (i18n/label :t/invite-friends-to-status)
+    :description (i18n/label :t/share-invite-link)}})
+
 (defn home
   []
   (let [scroll-ref     (atom nil)
@@ -133,7 +145,7 @@
              :set-scroll-ref      set-scroll-ref
              :scroll-shared-value scroll-shared-value}])
          [:f> common.home.banner/animated-banner
-          {:content             :chats
+          {:content             banner-data
            :scroll-ref          scroll-ref
            :tabs                (get-tabs-data (pos? (count pending-contact-requests)))
            :selected-tab        selected-tab

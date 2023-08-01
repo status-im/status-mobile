@@ -8,6 +8,7 @@
             [status-im2.common.home.view :as common.home]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.communities.actions.community-options.view :as options]
+            [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.number]
@@ -57,6 +58,18 @@
     :image       (resources/get-image (theme/theme-value :no-opened-communities-light
                                                          :no-opened-communities-dark))}})
 
+(def ^:private banner-data
+  {:title-props
+   {:label               (i18n/label :t/communities)
+    :handler             #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}])
+    :accessibility-label :new-communities-button}
+   :card-props
+   {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
+    :title               (i18n/label :t/discover)
+    :description         (i18n/label :t/favorite-communities)
+    :banner              (resources/get-image :discover)
+    :accessibility-label :communities-home-discover-card}})
+
 (defn home
   []
   (let [flat-list-ref     (atom nil)
@@ -64,10 +77,10 @@
     (fn []
       (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
             {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
-            selected-items                  (take 15 (cycle (case selected-tab
-                                                              :joined joined
-                                                              :pending pending
-                                                              :opened opened)))
+            selected-items                  (case selected-tab
+                                              :joined  joined
+                                              :pending pending
+                                              :opened  opened)
             scroll-shared-value             (reanimated/use-shared-value 0)]
         [:<>
          (if (empty? selected-items)
@@ -88,7 +101,7 @@
                                                                   "nativeEvent.contentOffset.y")
                                                    :shared-value scroll-shared-value})}])
          [:f> common.home.banner/animated-banner
-          {:content             :communities
+          {:content             banner-data
            :scroll-ref          flat-list-ref
            :tabs                tabs-data
            :selected-tab        selected-tab

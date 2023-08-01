@@ -9,33 +9,7 @@
             [react-native.reanimated :as reanimated]
             [status-im2.common.home.banner.style :as style]
             [status-im2.common.home.view :as common.home]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.chat.actions.view :as home.sheet]
-            [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
-            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
-
-(def ^:private banner-content
-  {:communities
-   {:title-props
-    {:label               (i18n/label :t/communities)
-     :handler             #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}])
-     :accessibility-label :new-communities-button}
-    :card-props
-    {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
-     :title               (i18n/label :t/discover)
-     :description         (i18n/label :t/favorite-communities)
-     :banner              (resources/get-image :discover)
-     :accessibility-label :communities-home-discover-card}}
-   :chats
-   {:title-props
-    {:label               (i18n/label :t/messages)
-     :handler             #(rf/dispatch [:show-bottom-sheet {:content home.sheet/new-chat}])
-     :accessibility-label :new-chat-button}
-    :card-props
-    {:banner      (resources/get-image :invite-friends)
-     :title       (i18n/label :t/invite-friends-to-status)
-     :description (i18n/label :t/share-invite-link)}}})
 
 (defn- reset-banner-animation
   [scroll-shared-value]
@@ -45,11 +19,9 @@
   [scroll-ref]
   (cond
     (.-scrollToLocation scroll-ref)
-    (oops/ocall! scroll-ref "scrollToLocation" #js{:itemIndex    0
-                                                   :sectionIndex 0
-                                                   :viewOffset   0})
+    (oops/ocall! scroll-ref "scrollToLocation" #js {:itemIndex 0 :sectionIndex 0 :viewOffset 0})
     (.-scrollToOffset scroll-ref)
-    (oops/ocall! scroll-ref "scrollToOffset" #js{:offset 0})))
+    (oops/ocall! scroll-ref "scrollToOffset" #js {:offset 0})))
 
 (defn- banner-card-blur-layer
   [scroll-shared-value]
@@ -84,15 +56,16 @@
      :data           tabs
      :on-change      (fn [tab]
                        (reset-banner-animation scroll-shared-value)
-                       (some-> scroll-ref deref reset-scroll)
+                       (some-> scroll-ref
+                               deref
+                               reset-scroll)
                        (on-tab-change tab))}]])
 
 (defn animated-banner
   [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content]}]
   [:<>
    [:f> banner-card-blur-layer scroll-shared-value]
-   [:f> banner-card-hiding-layer
-    (assoc (banner-content content) :scroll-shared-value scroll-shared-value)]
+   [:f> banner-card-hiding-layer (assoc content :scroll-shared-value scroll-shared-value)]
    [:f> banner-card-tabs-layer
     {:scroll-shared-value scroll-shared-value
      :selected-tab        selected-tab
