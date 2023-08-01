@@ -103,7 +103,8 @@
     quo2.components.tags.token-tag
     quo2.components.text-combinations.title.view
     quo2.components.wallet.network-amount.view
-    quo2.components.wallet.network-bridge.view))
+    quo2.components.wallet.network-bridge.view
+    quo2.components.wallet.account-card.view))
 
 (def separator quo2.components.common.separator.view/separator)
 
@@ -295,3 +296,4 @@
 ;;;; WALLET
 (def network-amount quo2.components.wallet.network-amount.view/view)
 (def network-bridge quo2.components.wallet.network-bridge.view/view)
+(def account-card quo2.components.wallet.account-card.view/view)
