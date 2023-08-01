@@ -248,26 +248,26 @@
 
 (defn- replace-multiaccount-image-uri
   [multiaccount port font-file avatar-opts]
-  (let [{:keys [key-uid ens-name images]} multiaccount
-        theme                             (theme/get-theme)
-        avatar-opts                       (assoc avatar-opts :override-ring? (when ens-name false))
-        images-with-uri                   (mapv (fn [{key-uid :keyUid image-name :type :as image}]
-                                                  (let [uri-fn (image-server/get-account-image-uri-fn
-                                                                (merge {:port       port
-                                                                        :image-name image-name
-                                                                        :key-uid    key-uid
-                                                                        :theme      theme}
-                                                                       avatar-opts))]
-                                                    (assoc image :fn uri-fn)))
-                                                images)
-        new-images                        (if (seq images-with-uri)
-                                            images-with-uri
-                                            [{:fn (image-server/get-initials-avatar-uri-fn
-                                                   (merge {:port      port
-                                                           :key-uid   key-uid
-                                                           :theme     theme
-                                                           :font-file font-file}
-                                                          avatar-opts))}])]
+  (let [{:keys [key-uid ens-name? images]} multiaccount
+        theme                              (theme/get-theme)
+        avatar-opts                        (assoc avatar-opts :override-ring? (when ens-name? false))
+        images-with-uri                    (mapv (fn [{key-uid :keyUid image-name :type :as image}]
+                                                   (let [uri-fn (image-server/get-account-image-uri-fn
+                                                                 (merge {:port       port
+                                                                         :image-name image-name
+                                                                         :key-uid    key-uid
+                                                                         :theme      theme}
+                                                                        avatar-opts))]
+                                                     (assoc image :fn uri-fn)))
+                                                 images)
+        new-images                         (if (seq images-with-uri)
+                                             images-with-uri
+                                             [{:fn (image-server/get-initials-avatar-uri-fn
+                                                    (merge {:port      port
+                                                            :key-uid   key-uid
+                                                            :theme     theme
+                                                            :font-file font-file}
+                                                           avatar-opts))}])]
     (assoc multiaccount :images new-images)))
 
 (re-frame/reg-sub
