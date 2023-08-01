@@ -39,6 +39,7 @@
     quo2.components.dropdowns.dropdown
     quo2.components.empty-state.empty-state.view
     quo2.components.gradient.gradient-cover.view
+    quo2.components.graph.wallet-graph.view
     quo2.components.header
     quo2.components.icon
     quo2.components.info.info-message
@@ -177,6 +178,9 @@
 
 ;;;; EMPTY STATE
 (def empty-state quo2.components.empty-state.empty-state.view/empty-state)
+
+;;;; GRAPH
+(def wallet-graph quo2.components.graph.wallet-graph.view/view)
 
 ;;;; HEADER
 (def header quo2.components.header/header)
