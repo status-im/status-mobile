@@ -102,6 +102,7 @@
     [status-im2.contexts.quo-preview.title.title :as title]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
+    [status-im2.contexts.quo-preview.loaders.community-card-skeleton :as community-card-skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
@@ -283,7 +284,10 @@
                         :component token-value/preview}]
    :loaders           [{:name      :skeleton
                         :options   {:topBar {:visible true}}
-                        :component skeleton/preview-skeleton}]
+                        :component skeleton/preview-skeleton}
+                       {:name      :community-card-skeleton
+                        :options   {:topBar {:visible true}}
+                        :component community-card-skeleton/preview-skeleton}]
    :markdown          [{:name      :texts
                         :options   {:topBar {:visible true}}
                         :component text/preview-text}
