@@ -22,6 +22,6 @@
           {:title           title
            :description     description
            :link            hostname
-           :thumbnail       (:url thumbnail)
+           :thumbnail       (or (:url thumbnail) url)
            :thumbnail-size  (when (nearly-square? thumbnail) :large)
            :container-style {:margin-top 8}}])])))
