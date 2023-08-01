@@ -45,7 +45,7 @@
       [quo/counter
        {:accessibility-label :activity-center-unread-count
         :type                unread-type
-        :container-style     (style/unread-indicator unread-count
+        :style               (style/unread-indicator unread-count
                                                      constants/activity-center-max-unread-count)}
        unread-count])))
 

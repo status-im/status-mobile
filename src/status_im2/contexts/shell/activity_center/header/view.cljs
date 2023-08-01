@@ -25,6 +25,7 @@
     [quo/button
      {:icon-only?          true
       :type                :grey
+      :background          :blur
       :size                32
       :accessibility-label :close-activity-center
       :on-press            #(rf/dispatch [:navigate-back])}
@@ -32,6 +33,7 @@
     [quo/button
      {:icon-only?          true
       :type                :grey
+      :background          :blur
       :size                32
       :accessibility-label :activity-center-open-more
       :on-press            #(rf/dispatch [:show-bottom-sheet
