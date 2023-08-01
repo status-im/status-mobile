@@ -1,5 +1,5 @@
 (ns quo2.components.loaders.community-card-skeleton.view
-  (:require [quo2.theme :as theme]
+  (:require [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [quo2.components.loaders.community-card-skeleton.style :as style]))
 
@@ -28,4 +28,4 @@
      [rn/view {:style (style/tag theme 8)}]
      [rn/view {:style (style/tag theme 8)}]]]])
 
-(def view (theme/with-theme internal-view))
+(def view (quo.theme/with-theme internal-view))
