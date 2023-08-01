@@ -1,4 +1,4 @@
-(ns status-im2.contexts.quo-preview.numbered-keyboard.numbered-keyboard 
+(ns status-im2.contexts.quo-preview.numbered-keyboard.numbered-keyboard
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
@@ -27,22 +27,22 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:disabled? false
-                             :on-press  (fn [item] (js/alert (str item " pressed")))
-                             :blur?     false
-                             :delete-key?      true
+  (let [state (reagent/atom {:disabled?   false
+                             :on-press    (fn [item] (js/alert (str item " pressed")))
+                             :blur?       false
+                             :delete-key? true
                              :left-action :dot})]
     (fn []
       [rn/view
        [rn/view {:style {:flex 1}}
         [preview/customizer state descriptor]]
        [preview/blur-view
-        {:style                 {:flex 1
+        {:style                 {:flex              1
                                  :align-self        :center
                                  :justify-self      :center
                                  :margin-horizontal 20}
          :show-blur-background? (:blur? @state)
-         :height 270
+         :height                270
          :blur-view-props       (when (:blur? @state)
                                   {:overlay-color colors/neutral-80-opa-80})}
         [quo/numbered-keyboard @state]]])))

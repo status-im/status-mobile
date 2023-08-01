@@ -1,4 +1,4 @@
-(ns quo2.components.numbered-keyboard.numbered-keyboard.view 
+(ns quo2.components.numbered-keyboard.numbered-keyboard.view
   (:require [quo2.theme :as quo.theme]
             [quo2.components.numbered-keyboard.keyboard-key.view :as quo]
             [react-native.core :as rn]
@@ -9,11 +9,12 @@
   [rn/view
    {:style (style/keyboard-item position)}
    (when item
-     [quo/keyboard-key {:disabled? disabled?
-                        :on-press  on-press
-                        :blur?     blur?
-                        :theme     theme
-                        :type      type} item])])
+     [quo/keyboard-key
+      {:disabled? disabled?
+       :on-press  on-press
+       :blur?     blur?
+       :theme     theme
+       :type      type} item])])
 
 (defn- numbered-keyboard-internal
   []
@@ -23,9 +24,9 @@
      (for [item (range 1 10)]
        [keyboard-item item :digit disabled? on-press blur? item theme])
      (condp = left-action
-       :dot [keyboard-item "." :digit disabled? on-press blur? 1 theme]
+       :dot     [keyboard-item "." :digit disabled? on-press blur? 1 theme]
        :face-id [keyboard-item :i/face-id :key disabled? on-press blur? 1 theme]
-       :none [keyboard-item nil])
+       :none    [keyboard-item nil])
      [keyboard-item "0" :digit disabled? on-press blur? 2 theme]
      (if delete-key?
        [keyboard-item :i/delete :key disabled? on-press blur? 3 theme]
