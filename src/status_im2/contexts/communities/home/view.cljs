@@ -40,118 +40,26 @@
    {:id :pending :label (i18n/label :t/pending) :accessibility-label :pending-tab}
    {:id :opened :label (i18n/label :t/opened) :accessibility-label :opened-tab}])
 
-(defn empty-state-content
-  [selected-tab]
-  (case selected-tab
-    :joined
-    {:title       (i18n/label :t/no-communities)
-     :description [:<>
-                   [rn/text {:style {:text-decoration-line :line-through}}
-                    (i18n/label :t/no-communities-description-strikethrough)]
-                   " "
-                   (i18n/label :t/no-communities-description)]
-     :image       (resources/get-image (theme/theme-value :no-communities-light
-                                                          :no-communities-dark))}
-    :pending
-    {:title       (i18n/label :t/no-pending-communities)
-     :description (i18n/label :t/no-pending-communities-description)
-     :image       (resources/get-image (theme/theme-value :no-pending-communities-light
-                                                          :no-pending-communities-dark))}
-    :opened
-    {:title       (i18n/label :t/no-opened-communities)
-     :description (i18n/label :t/no-opened-communities-description)
-     :image       (resources/get-image (theme/theme-value :no-opened-communities-light
-                                                          :no-opened-communities-dark))}
-    nil))
-
-(defn- empty-state
-  [{:keys [style selected-tab]}]
-  (let [{:keys [image title description]} (empty-state-content selected-tab)
-        customization-color               (rf/sub [:profile/customization-color])]
-    [rn/view {:style style}
-     [quo/empty-state
-      {:customization-color customization-color
-       :image               image
-       :title               title
-       :description         description}]]))
-
-(defn- blur-banner-layer
-  [animated-translation-y]
-  (let [open-sheet? (-> (rf/sub [:bottom-sheet]) :sheets seq)]
-    [reanimated/view {:style (style/blur-banner-layer animated-translation-y)}
-     [blur/view
-      {:blur-amount   (if platform/ios? 20 10)
-       :blur-type     (theme/theme-value (if platform/ios? :light :xlight) :dark)
-       :style         style/blur
-       :overlay-color (if open-sheet?
-                        (colors/theme-colors colors/white colors/neutral-95-opa-70)
-                        (theme/theme-value nil colors/neutral-95-opa-70))}]]))
-
-(defn- hiding-banner-layer
-  [animated-translation-y animated-opacity]
-  (let [customization-color (rf/sub [:profile/customization-color])]
-    [rn/view {:style (style/hiding-banner-layer)}
-     [common.home/top-nav {:type :grey}]
-     [common.home/title-column
-      {:label               (i18n/label :t/communities)
-       :handler             #(rf/dispatch
-                              [:show-bottom-sheet {:content actions.home-plus/view}])
-       :accessibility-label :new-communities-button
-       :customization-color customization-color}]
-     [rn/view {:style style/animated-card-container}
-      [reanimated/view {:style (style/animated-card animated-opacity animated-translation-y)}
-       [quo/discover-card
-        {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
-         :title               (i18n/label :t/discover)
-         :description         (i18n/label :t/favorite-communities)
-         :banner              (resources/get-image :discover)
-         :accessibility-label :communities-home-discover-card}]]]]))
-
-(defn- reset-banner-animation
-  [animated-opacity animated-translation-y]
-  (reanimated/animate-shared-value-with-timing animated-opacity 1 200 :easing3)
-  (reanimated/animate-shared-value-with-timing animated-translation-y 0 200 :easing3))
-
-(defn- reset-scroll
-  [flat-list-ref]
-  (some-> flat-list-ref
-          (.scrollToOffset #js {:offset 0 :animated? true})))
-
-(defn- tabs-banner-layer
-  [animated-translation-y animated-opacity selected-tab flat-list-ref]
-  (let [on-tab-change (fn [tab]
-                        (if (empty? (get (rf/sub [:communities/grouped-by-status]) tab))
-                          (reset-banner-animation animated-opacity animated-translation-y)
-                          (reset-scroll @flat-list-ref))
-                        (rf/dispatch [:communities/select-tab tab]))]
-    [reanimated/view {:style (style/tabs-banner-layer animated-translation-y)}
-     ^{:key (str "tabs-" selected-tab)}
-     [quo/tabs
-      {:size           32
-       :style          style/tabs
-       :on-change      on-tab-change
-       :default-active selected-tab
-       :data           tabs-data}]]))
-
-(defn- animated-banner
-  [{:keys [selected-tab animated-translation-y animated-opacity flat-list-ref]}]
-  [:<>
-   [:f> blur-banner-layer animated-translation-y]
-   [:f> hiding-banner-layer animated-translation-y animated-opacity]
-   [:f> tabs-banner-layer animated-translation-y animated-opacity selected-tab flat-list-ref]])
-
-(def ^:private card-height (+ 56 16)) ; Card height + its vertical margins
-(def ^:private card-opacity-factor (/ 100 card-height 100))
-(def ^:private max-scroll (- (+ card-height 8))) ; added 8 from tabs top padding
-
-(defn- set-animated-banner-values
-  [{:keys [scroll-offset translation-y opacity]}]
-  (let [new-opacity       (-> (* (- card-height scroll-offset) card-opacity-factor)
-                              (utils.number/value-in-range 0 1))
-        new-translation-y (-> (- scroll-offset)
-                              (utils.number/value-in-range max-scroll 0))]
-    (reanimated/animate-shared-value-with-timing opacity new-opacity 80 :easing4)
-    (reanimated/animate-shared-value-with-timing translation-y new-translation-y 80 :easing4)))
+(def empty-state-content
+  {:joined
+   {:title       (i18n/label :t/no-communities)
+    :description [:<>
+                  [rn/text {:style {:text-decoration-line :line-through}}
+                   (i18n/label :t/no-communities-description-strikethrough)]
+                  " "
+                  (i18n/label :t/no-communities-description)]
+    :image       (resources/get-image (theme/theme-value :no-communities-light
+                                                         :no-communities-dark))}
+   :pending
+   {:title       (i18n/label :t/no-pending-communities)
+    :description (i18n/label :t/no-pending-communities-description)
+    :image       (resources/get-image (theme/theme-value :no-pending-communities-light
+                                                         :no-pending-communities-dark))}
+   :opened
+   {:title       (i18n/label :t/no-opened-communities)
+    :description (i18n/label :t/no-opened-communities-description)
+    :image       (resources/get-image (theme/theme-value :no-opened-communities-light
+                                                         :no-opened-communities-dark))}})
 
 (defn home
   []
@@ -167,14 +75,14 @@
             animated-translation-y          (reanimated/use-shared-value 0)]
         [:<>
          (if (empty? selected-items)
-           [empty-state
-            {:style        (style/empty-state-container)
-             :selected-tab selected-tab}]
+           [common.home/empty-state-image
+            {:selected-tab selected-tab
+             :tab->content empty-state-content}]
            [rn/flat-list
             {:ref                               #(reset! flat-list-ref %)
              :key-fn                            :id
              :content-inset-adjustment-behavior :never
-             :header                            [rn/view {:style (style/header-spacing)}]
+             :header                            [common.home/header-spacing]
              :render-fn                         item-render
              :data                              selected-items
              :on-scroll                         #(set-animated-banner-values

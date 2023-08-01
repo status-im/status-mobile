@@ -30,34 +30,22 @@
          (filter k)
          (sort-by :timestamp >))))
 
-(defn empty-state-content
-  [selected-tab]
-  (case selected-tab
-    :tab/contacts
-    {:title       (i18n/label :t/no-contacts)
-     :description (i18n/label :t/no-contacts-description)
-     :image       (resources/get-image
-                   (theme/theme-value :no-contacts-light :no-contacts-dark))}
-    :tab/groups
-    {:title       (i18n/label :t/no-group-chats)
-     :description (i18n/label :t/no-group-chats-description)
-     :image       (resources/get-image
-                   (theme/theme-value :no-group-chats-light :no-group-chats-dark))}
-    :tab/recent
-    {:title       (i18n/label :t/no-messages)
-     :description (i18n/label :t/no-messages-description)
-     :image       (resources/get-image
-                   (theme/theme-value :no-messages-light :no-messages-dark))}
-    nil))
-
-(defn empty-state
-  [{:keys [selected-tab top]}]
-  (let [{:keys [image title description]} (empty-state-content selected-tab)]
-    [rn/view {:style (style/empty-content-container top)}
-     [quo/empty-state
-      {:image       image
-       :title       title
-       :description description}]]))
+(def empty-state-content
+  #:tab{:contacts
+        {:title       (i18n/label :t/no-contacts)
+         :description (i18n/label :t/no-contacts-description)
+         :image       (resources/get-image
+                       (theme/theme-value :no-contacts-light :no-contacts-dark))}
+        :groups
+        {:title       (i18n/label :t/no-group-chats)
+         :description (i18n/label :t/no-group-chats-description)
+         :image       (resources/get-image
+                       (theme/theme-value :no-group-chats-light :no-group-chats-dark))}
+        :recent
+        {:title       (i18n/label :t/no-messages)
+         :description (i18n/label :t/no-messages-description)
+         :image       (resources/get-image
+                       (theme/theme-value :no-messages-light :no-messages-dark))}})
 
 (defn chats
   [selected-tab top]
@@ -92,13 +80,15 @@
   [pending-contact-requests top]
   (let [items (rf/sub [:contacts/active-sections])]
     (if (and (empty? items) (empty? pending-contact-requests))
-      [empty-state {:top top :selected-tab :tab/contacts}]
+      [common.home/empty-state-image
+       {:selected-tab :tab/contacts
+        :tab->content empty-state-content}]
       [rn/section-list
        {:key-fn                            :public-key
         :get-item-layout                   get-item-layout
         :content-inset-adjustment-behavior :never
         :header                            [:<>
-                                            [rn/view {:style (style/header-space top)}]
+                                            [common.home/header-spacing]
                                             (when (seq pending-contact-requests)
                                               [contact-request/contact-requests
                                                pending-contact-requests])]
