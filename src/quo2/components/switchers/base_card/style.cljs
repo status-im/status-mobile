@@ -2,20 +2,20 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn base-container
-  [background-color]
+  [customization-color]
   {:width            160
    :height           160
    :border-radius    16
-   :background-color (colors/alpha background-color 0.4)})
+   :background-color (colors/custom-color-by-theme customization-color 50 50 40 40)})
 
 (def thumb-card
-  {:width              160
-   :height             120
-   :border-radius      16
-   :bottom             0
-   :position           :absolute
-   :background-color   colors/neutral-95
-   :padding-horizontal 12})
+  {:width            160
+   :height           120
+   :border-radius    16
+   :bottom           0
+   :position         :absolute
+   :background-color colors/neutral-95
+   :padding          12})
 
 (def close-button
   {:position :absolute

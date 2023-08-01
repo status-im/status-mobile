@@ -3,51 +3,47 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
-            [status-im2.constants :as constants]
             [status-im2.contexts.quo-preview.preview :as preview]
             [status-im2.common.resources :as resources]))
 
 (def descriptor
-  [{:label "Banner?"
-    :key   :banner?
-    :type  :boolean}
-   {:label "Title"
+  [{:label "Title"
     :key   :title
     :type  :text}
-   {:label "New Notifications?"
-    :key   :new-notifications?
-    :type  :boolean}
-   {:label   "Notification Indicator"
-    :key     :notification-indicator
+   {:label   "Status"
+    :key     :status
     :type    :select
-    :options [{:key   :counter
-               :value :counter}
-              {:key   :unread-dot
-               :value :unread-dot}]}
+    :options [{:key   :read
+               :value :read}
+              {:key   :unread
+               :value :unread}
+              {:key   :mention
+               :value :mention}]}
    {:label "Counter Label"
     :key   :counter-label
     :type  :text}
-   {:label   "Content Type"
-    :key     :content-type
+   {:label   "Type"
+    :key     :type
     :type    :select
-    :options [{:key   constants/content-type-text
+    :options [{:key   :message
                :value :text}
-              {:key   constants/content-type-image
+              {:key   :photo
                :value :photo}
-              {:key   constants/content-type-sticker
+              {:key   :sticker
                :value :sticker}
-              {:key   constants/content-type-gif
+              {:key   :gif
                :value :gif}
-              {:key   constants/content-type-audio
+              {:key   :audio
                :value :audio}
-              {:key   constants/content-type-community
+              {:key   :community
                :value :community}
-              {:key   constants/content-type-link
-               :value :link}]}
+              {:key   :link
+               :value :link}
+              {:key   :code
+               :value :code-snippet}]}
    {:label "Last Message"
     :key   :last-message
     :type  :text}
-
    {:label   "Customization"
     :key     :customization-color
     :type    :select
@@ -58,7 +54,6 @@
               (keys colors/customization))}])
 
 ;; Mock data
-(def banner {:source (resources/get-mock-image :community-banner)})
 (def sticker {:source (resources/get-mock-image :sticker)})
 (def community-avatar {:source (resources/get-mock-image :community-logo)})
 (def gif {:source (resources/get-mock-image :gif)})
@@ -73,53 +68,56 @@
 
 (defn get-mock-content
   [data]
-  (case (:content-type data)
-    constants/content-type-text
+  (case (:type data)
+    :message
     {:text (:last-message data)}
 
-    constants/content-type-image
-    photos-list
+    :photo
+    {:photos photos-list}
 
-    constants/content-type-sticker
+    :sticker
     sticker
 
-    constants/content-type-gif
+    :gif
     gif
 
-    constants/content-type-audio
-    "00:32"
+    :audio
+    {:duration "00:32"}
 
-    constants/content-type-community
-    {:avatar         coinbase-community
-     :community-name "Coinbase"}
+    :community
+    {:community-avatar coinbase-community
+     :community-name   "Coinbase"}
 
-    constants/content-type-link
+    :link
+    {:source (resources/get-mock-image :status-logo)
+     :text   "Rolling St..."}
+
+    :code
     nil))
 
 (defn get-mock-data
   [data]
   (merge
    data
-   {:banner  (when (:banner? data) banner)
-    :content {:new-notifications?     (:new-notifications? data)
-              :notification-indicator (:notification-indicator data)
-              :counter-label          (:counter-label data)
-              :content-type           (:content-type data)
-              :community-channel      {:emoji "🍑" :channel-name "# random"}
-              :community-info         {:type :kicked}
-              :data                   (get-mock-content data)}}))
+   {:content (merge (get-mock-content data)
+                    {:mention-count (when (= (:status data) :mention) (:counter-label data))})
+    ;; {:mention-count          (when (= (:status data) :mention) 5)
+    ;;  :type                   (:type data)
+    ;;  :community-channel      {:emoji        "🍑"
+    ;;                           :channel-name "# random"}
+    ;;  :community-info         {:type :kicked}
+    ;;  :data                   (get-mock-content data)}
+   }))
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:title                  "Hester, John, Steven, and 2 others"
-                             :new-notifications?     true
-                             :notification-indicator :counter
-                             :counter-label          2
-                             :content-type           constants/content-type-text
-                             :last-message           "Hello there, there is a new message"
-                             :customization-color    :camel
-                             :banner?                false
-                             :avatar                 true})]
+  (let [state (reagent/atom {:title               "Hester, John, Steven, and 2 others"
+                             :type                :message
+                             :status              :read
+                             :last-message        "Hello there, there is a new message"
+                             :customization-color :camel
+                             :avatar              true
+                             :counter-label       5})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}

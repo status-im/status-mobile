@@ -1,18 +1,16 @@
 (ns quo2.components.switchers.base-card.view
   (:require [quo.react-native :as rn]
             [quo2.components.buttons.button.view :as button]
-            [quo2.components.switchers.base-card.style :as style]
-            [quo2.foundations.colors :as colors]))
+            [quo2.components.switchers.base-card.style :as style]))
 
 (defn base-card
   [{:keys [banner on-press on-close customization-color]} & children]
-  (let [card-ref (atom nil)
-        color-50 (colors/custom-color customization-color 50)]
+  (let [card-ref (atom nil)]
     [rn/touchable-opacity
      {:on-press       on-press
       :ref            #(reset! card-ref %)
       :active-opacity 1}
-     [rn/view {:style (style/base-container color-50)}
+     [rn/view {:style (style/base-container customization-color)}
       (when banner
         [rn/image
          {:source (:source banner)
