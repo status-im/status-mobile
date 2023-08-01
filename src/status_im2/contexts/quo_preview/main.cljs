@@ -107,10 +107,14 @@
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
+<<<<<<< HEAD
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
     [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
     [utils.re-frame :as rf]))
+=======
+    [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]))
+>>>>>>> 51177d716 (feat: quo2 summary info)
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -414,6 +418,7 @@
                         :component title/preview-title}]
    :wallet            [{:name      :account-card
                         :options   {:topBar {:visible true}}
+<<<<<<< HEAD
                         :component account-card/preview-account-card}
                        {:name      :network-amount
                         :options   {:topBar {:visible true}}
@@ -423,10 +428,20 @@
                         :component network-bridge/preview}
                        {:name      :token-input
                         :options   {:topBar {:visible true}}
+<<<<<<< HEAD
                         :component token-input/preview}
                        {:name      :wallet-overview
                         :options   {:topBar {:visible true}}
                         :component wallet-overview/preview-wallet-overview}]
+=======
+                        :component token-input/preview}]
+=======
+                        :component network-amount/preview}
+                       {:name      :summary-info
+                        :options   {:topBar {:visible true}}
+                        :component summary-info/preview}]
+>>>>>>> 51177d716 (feat: quo2 summary info)
+>>>>>>> 9ef42f0fb (feat: quo2 summary info)
    :keycard           [{:name      :keycard-component
                         :options   {:topBar {:visible true}}
                         :component keycard/preview-keycard}]})

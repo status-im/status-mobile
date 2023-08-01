@@ -26,6 +26,12 @@
 
 (def networks
   {:ethereum (js/require "../resources/images/tokens/mainnet/ETH.png")
+<<<<<<< HEAD
    :optimism (js/require "../resources/images/tokens/mainnet/OP.png")
    :arbitrum (js/require "../resources/images/tokens/mainnet/ARB.png")})
 
+=======
+   ;:optimism (js/require "../resources/images/tokens/mainnet/OP.png")
+   ;:arbitrum (js/require "../resources/images/tokens/mainnet/ARB.png")
+   })
+>>>>>>> 51177d716 (feat: quo2 summary info)

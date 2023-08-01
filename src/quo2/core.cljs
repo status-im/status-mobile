@@ -106,9 +106,18 @@
     quo2.components.text-combinations.title.view
     quo2.components.wallet.account-card.view
     quo2.components.wallet.network-amount.view
+<<<<<<< HEAD
     quo2.components.wallet.network-bridge.view
+<<<<<<< HEAD
     quo2.components.wallet.token-input.view
     quo2.components.wallet.wallet-overview.view))
+=======
+    quo2.components.wallet.account-card.view
+    quo2.components.wallet.token-input.view))
+=======
+    quo2.components.wallet.summary-info.view))
+>>>>>>> 51177d716 (feat: quo2 summary info)
+>>>>>>> 9ef42f0fb (feat: quo2 summary info)
 
 (def separator quo2.components.common.separator.view/separator)
 
@@ -304,7 +313,15 @@
 
 ;;;; WALLET
 (def network-amount quo2.components.wallet.network-amount.view/view)
+<<<<<<< HEAD
 (def network-bridge quo2.components.wallet.network-bridge.view/view)
 (def account-card quo2.components.wallet.account-card.view/view)
 (def token-input quo2.components.wallet.token-input.view/view)
+<<<<<<< HEAD
 (def wallet-overview quo2.components.wallet.wallet-overview.view/view)
+=======
+=======
+(def summary-info quo2.components.wallet.summary-info.view/view)
+>>>>>>> 51177d716 (feat: quo2 summary info)
+
+>>>>>>> 9ef42f0fb (feat: quo2 summary info)
