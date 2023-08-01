@@ -100,7 +100,7 @@
              :size            :paragraph-2
              :style           (style/header-status)}
             (i18n/label
-              (if online? :t/online :t/offline))])]]]
+             (if online? :t/online :t/offline))])]]]
       [rn/touchable-opacity
        {:active-opacity      1
         :style               (style/button-container {:margin-right 20})
