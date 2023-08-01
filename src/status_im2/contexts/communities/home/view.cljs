@@ -59,7 +59,8 @@
 
 (defn home
   []
-  (let [flat-list-ref (atom nil)]
+  (let [flat-list-ref     (atom nil)
+        set-flat-list-ref #(reset! flat-list-ref %)]
     (fn []
       (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
             {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
@@ -74,7 +75,7 @@
             {:selected-tab selected-tab
              :tab->content empty-state-content}]
            [reanimated/flat-list
-            {:ref                               #(reset! flat-list-ref %)
+            {:ref                               set-flat-list-ref
              :key-fn                            :id
              :content-inset-adjustment-behavior :never
              :header                            [common.home/header-spacing]
@@ -88,8 +89,8 @@
                                                    :shared-value scroll-shared-value})}])
          [:f> common.home.banner/animated-banner
           {:content             :communities
-           :flat-list-ref       flat-list-ref
+           :scroll-ref          flat-list-ref
            :tabs                tabs-data
            :selected-tab        selected-tab
-           :on-tab-change-event (fn [tab] (rf/dispatch [:communities/select-tab tab]))
+           :on-tab-change       (fn [tab] (rf/dispatch [:communities/select-tab tab]))
            :scroll-shared-value scroll-shared-value}]]))))

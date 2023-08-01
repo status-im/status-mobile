@@ -44,7 +44,7 @@
                        (theme/theme-value :no-messages-light :no-messages-dark))}})
 
 (defn chats
-  [{:keys [selected-tab flat-list-ref scroll-shared-value]}]
+  [{:keys [selected-tab set-scroll-ref scroll-shared-value]}]
   (let [unfiltered-items (rf/sub [:chats-stack-items])
         items            (take 15 (cycle (filter-and-sort-items-by-tab selected-tab unfiltered-items)))]
     (if (empty? items)
@@ -52,7 +52,7 @@
        {:selected-tab selected-tab
         :tab->content empty-state-content}]
       [reanimated/flat-list
-       {:ref                               #(reset! flat-list-ref %)
+       {:ref                               set-scroll-ref
         :key-fn                            #(or (:chat-id %) (:public-key %) (:id %))
         :content-inset-adjustment-behavior :never
         :header                            [common.home/header-spacing]
@@ -80,14 +80,14 @@
      item]))
 
 (defn contacts
-  [{:keys [pending-contact-requests flat-list-ref scroll-shared-value]}]
+  [{:keys [pending-contact-requests set-scroll-ref scroll-shared-value]}]
   (let [items (take 15 (cycle (rf/sub [:contacts/active-sections])))]
     (if (and (empty? items) (empty? pending-contact-requests))
       [common.home/empty-state-image
        {:selected-tab :tab/contacts
         :tab->content empty-state-content}]
       [rn/section-list
-       {:ref                               #(reset! flat-list-ref %)
+       {:ref                               set-scroll-ref
         :key-fn                            :public-key
         :get-item-layout                   get-item-layout
         :content-inset-adjustment-behavior :never
@@ -116,7 +116,8 @@
 
 (defn home
   []
-  (let [flat-list-ref (atom nil)]
+  (let [scroll-ref     (atom nil)
+        set-scroll-ref #(reset! scroll-ref %)]
     (fn []
       (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
             selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
@@ -125,16 +126,16 @@
          (if (= selected-tab :tab/contacts)
            [contacts
             {:pending-contact-requests pending-contact-requests
-             :flat-list-ref            flat-list-ref
+             :set-scroll-ref           set-scroll-ref
              :scroll-shared-value      scroll-shared-value}]
            [chats
             {:selected-tab        selected-tab
-             :flat-list-ref       flat-list-ref
+             :set-scroll-ref      set-scroll-ref
              :scroll-shared-value scroll-shared-value}])
          [:f> common.home.banner/animated-banner
           {:content             :chats
-           :flat-list-ref       flat-list-ref
+           :scroll-ref          scroll-ref
            :tabs                (get-tabs-data (pos? (count pending-contact-requests)))
            :selected-tab        selected-tab
-           :on-tab-change-event (fn [tab] (rf/dispatch [:messages-home/select-tab tab]))
+           :on-tab-change       (fn [tab] (rf/dispatch [:messages-home/select-tab tab]))
            :scroll-shared-value scroll-shared-value}]]))))

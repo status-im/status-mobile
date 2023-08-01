@@ -1,5 +1,6 @@
 (ns status-im2.common.home.banner.view
-  (:require [quo2.core :as quo]
+  (:require [oops.core :as oops]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.blur :as blur]
@@ -41,9 +42,14 @@
   (reanimated/animate-shared-value-with-timing scroll-shared-value 0 200 :easing3))
 
 (defn- reset-scroll
-  [flat-list-ref]
-  (some-> flat-list-ref
-          (.scrollToOffset #js {:offset 0 :animated? true})))
+  [scroll-ref]
+  (cond
+    (.-scrollToLocation scroll-ref)
+    (oops/ocall! scroll-ref "scrollToLocation" #js{:itemIndex    0
+                                                   :sectionIndex 0
+                                                   :viewOffset   0})
+    (.-scrollToOffset scroll-ref)
+    (oops/ocall! scroll-ref "scrollToOffset" #js{:offset 0})))
 
 (defn- banner-card-blur-layer
   [scroll-shared-value]
@@ -68,7 +74,7 @@
        [quo/discover-card card-props]]]]))
 
 (defn- banner-card-tabs-layer
-  [{:keys [selected-tab tabs on-tab-change-event flat-list-ref scroll-shared-value]}]
+  [{:keys [selected-tab tabs on-tab-change scroll-ref scroll-shared-value]}]
   [reanimated/view {:style (style/banner-card-tabs-layer scroll-shared-value)}
    ^{:key (str "tabs-" selected-tab)}
    [quo/tabs
@@ -77,13 +83,12 @@
      :default-active selected-tab
      :data           tabs
      :on-change      (fn [tab]
-                       (if (empty? (get (rf/sub [:communities/grouped-by-status]) tab))
-                         (reset-banner-animation scroll-shared-value)
-                         (reset-scroll @flat-list-ref))
-                       (on-tab-change-event tab))}]])
+                       (reset-banner-animation scroll-shared-value)
+                       (some-> scroll-ref deref reset-scroll)
+                       (on-tab-change tab))}]])
 
 (defn animated-banner
-  [{:keys [flat-list-ref tabs selected-tab on-tab-change-event scroll-shared-value content]}]
+  [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content]}]
   [:<>
    [:f> banner-card-blur-layer scroll-shared-value]
    [:f> banner-card-hiding-layer
@@ -92,8 +97,8 @@
     {:scroll-shared-value scroll-shared-value
      :selected-tab        selected-tab
      :tabs                tabs
-     :on-tab-change-event on-tab-change-event
-     :flat-list-ref       flat-list-ref}]])
+     :on-tab-change       on-tab-change
+     :scroll-ref          scroll-ref}]])
 
 (defn set-scroll-shared-value
   [{:keys [shared-value scroll-input]}]
