@@ -1,17 +1,13 @@
 (ns status-im2.contexts.communities.home.view
   (:require [oops.core :as oops]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
-            [react-native.blur :as blur]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
+            [status-im2.common.home.banner.view :as common.home.banner]
             [status-im2.common.home.view :as common.home]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.communities.actions.community-options.view :as options]
-            [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
-            [status-im2.contexts.communities.home.style :as style]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.number]
@@ -71,8 +67,7 @@
                                               :joined  joined
                                               :pending pending
                                               :opened  opened)
-            animated-opacity                (reanimated/use-shared-value 1)
-            animated-translation-y          (reanimated/use-shared-value 0)]
+            scroll-shared-value             (reanimated/use-shared-value 0)]
         [:<>
          (if (empty? selected-items)
            [common.home/empty-state-image
@@ -85,14 +80,15 @@
              :header                            [common.home/header-spacing]
              :render-fn                         item-render
              :data                              selected-items
-             :on-scroll                         #(set-animated-banner-values
-                                                  {:scroll-offset (oops/oget
-                                                                   %
-                                                                   "nativeEvent.contentOffset.y")
-                                                   :translation-y animated-translation-y
-                                                   :opacity       animated-opacity})}])
-         [:f> animated-banner
-          {:selected-tab           selected-tab
-           :animated-translation-y animated-translation-y
-           :animated-opacity       animated-opacity
-           :flat-list-ref          flat-list-ref}]]))))
+             :on-scroll                         #(common.home.banner/set-scroll-shared-value
+                                                  {:scroll-input (oops/oget
+                                                                  %
+                                                                  "nativeEvent.contentOffset.y")
+                                                   :shared-value scroll-shared-value})}])
+         [:f> common.home.banner/animated-banner
+          {:content             :communities
+           :flat-list-ref       flat-list-ref
+           :tabs                tabs-data
+           :selected-tab        selected-tab
+           :on-tab-change-event (fn [tab] (rf/dispatch [:communities/select-tab tab]))
+           :scroll-shared-value scroll-shared-value}]]))))
