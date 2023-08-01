@@ -1,13 +1,14 @@
 (ns quo2.components.wallet.token-input.style
   (:require
     [quo2.foundations.colors :as colors]
-    [react-native.platform :as platform]))
-
+    [react-native.platform :as platform]
+    [quo2.foundations.typography :as typography]))
 
 (defn main-container
   [width]
   {:padding-vertical 8
    :width            width})
+
 (def amount-container
   {:padding-horizontal 20
    :padding-bottom     4
@@ -20,14 +21,13 @@
    :height 32})
 
 (def text-input
-  {:font-size    27
-   :font-weight  "600"
-   :line-height  32
-   :margin-left  4
-   :margin-right (if platform/ios? 6 4)
-   :padding      0
-   :text-align   :center
-   :height       "100%"})
+  (merge typography/heading-1
+         {:font-weight  "600"
+          :margin-left  4
+          :margin-right (if platform/ios? 6 4)
+          :padding      0
+          :text-align   :center
+          :height       "100%"}))
 
 (defn divider
   [width theme]

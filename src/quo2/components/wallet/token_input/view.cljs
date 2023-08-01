@@ -8,16 +8,13 @@
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
+    [quo2.foundations.common :as common]
     [quo2.components.wallet.token-input.style :as style]))
-
-(def currency-label
-  {:eur "€"
-   :usd "$"})
 
 (defn calc-value
   [crypto? currency token value conversion]
   (if crypto?
-    (str (get currency-label currency) (.toFixed (* value conversion) 2))
+    (str (get common/currency-label currency) (.toFixed (* value conversion) 2))
     (str (.toFixed (/ value conversion) 2) " " (string/upper-case (clj->js token)))))
 
 (defn- view-internal
