@@ -63,23 +63,24 @@
     (fn []
       (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
             {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
-            selected-items                  (case selected-tab
-                                              :joined  joined
-                                              :pending pending
-                                              :opened  opened)
+            selected-items                  (take 15 (cycle (case selected-tab
+                                                              :joined joined
+                                                              :pending pending
+                                                              :opened opened)))
             scroll-shared-value             (reanimated/use-shared-value 0)]
         [:<>
          (if (empty? selected-items)
            [common.home/empty-state-image
             {:selected-tab selected-tab
              :tab->content empty-state-content}]
-           [rn/flat-list
+           [reanimated/flat-list
             {:ref                               #(reset! flat-list-ref %)
              :key-fn                            :id
              :content-inset-adjustment-behavior :never
              :header                            [common.home/header-spacing]
              :render-fn                         item-render
              :data                              selected-items
+             :scroll-event-throttle             8
              :on-scroll                         #(common.home.banner/set-scroll-shared-value
                                                   {:scroll-input (oops/oget
                                                                   %

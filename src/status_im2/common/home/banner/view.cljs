@@ -97,4 +97,4 @@
 
 (defn set-scroll-shared-value
   [{:keys [shared-value scroll-input]}]
-  (reanimated/animate-shared-value-with-timing shared-value scroll-input 80 :easing4))
+  (reanimated/set-shared-value shared-value scroll-input))

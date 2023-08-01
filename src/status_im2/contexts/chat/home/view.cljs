@@ -46,13 +46,13 @@
 (defn chats
   [{:keys [selected-tab flat-list-ref scroll-shared-value]}]
   (let [unfiltered-items (rf/sub [:chats-stack-items])
-        items            (filter-and-sort-items-by-tab selected-tab unfiltered-items)]
+        items            (take 15 (cycle (filter-and-sort-items-by-tab selected-tab unfiltered-items)))]
     (if (empty? items)
       [common.home/empty-state-image
        {:selected-tab selected-tab
         :tab->content empty-state-content}]
-      [rn/flat-list
-       {:flat-list-ref                     #(reset! flat-list-ref %)
+      [reanimated/flat-list
+       {:ref                               #(reset! flat-list-ref %)
         :key-fn                            #(or (:chat-id %) (:public-key %) (:id %))
         :content-inset-adjustment-behavior :never
         :header                            [common.home/header-spacing]
@@ -61,6 +61,7 @@
         :keyboard-should-persist-taps      :always
         :data                              items
         :render-fn                         chat-list-item/chat-list-item
+        :scroll-event-throttle             8
         :on-scroll                         #(common.home.banner/set-scroll-shared-value
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")
                                               :shared-value scroll-shared-value})}])))
@@ -80,13 +81,13 @@
 
 (defn contacts
   [{:keys [pending-contact-requests flat-list-ref scroll-shared-value]}]
-  (let [items (rf/sub [:contacts/active-sections])]
+  (let [items (take 15 (cycle (rf/sub [:contacts/active-sections])))]
     (if (and (empty? items) (empty? pending-contact-requests))
       [common.home/empty-state-image
        {:selected-tab :tab/contacts
         :tab->content empty-state-content}]
       [rn/section-list
-       {:flat-list-ref                     #(reset! flat-list-ref %)
+       {:ref                               #(reset! flat-list-ref %)
         :key-fn                            :public-key
         :get-item-layout                   get-item-layout
         :content-inset-adjustment-behavior :never
@@ -99,6 +100,7 @@
         :sticky-section-headers-enabled    false
         :render-section-header-fn          contact-list/contacts-section-header
         :render-fn                         contact-item-render
+        :scroll-event-throttle             8
         :on-scroll                         #(common.home.banner/set-scroll-shared-value
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")
                                               :shared-value scroll-shared-value})}])))
