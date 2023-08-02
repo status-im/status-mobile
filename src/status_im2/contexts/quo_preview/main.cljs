@@ -24,6 +24,7 @@
     [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
     [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
+    [status-im2.contexts.quo-preview.graph.wallet-graph :as wallet-graph]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
     [status-im2.contexts.quo-preview.community.community-membership-list-view :as
@@ -49,6 +50,7 @@
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
+    [status-im2.contexts.quo-preview.numbered-keyboard.keyboard-key :as keyboard-key]
     [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
     [status-im2.contexts.quo-preview.links.url-preview-list :as url-preview-list]
     [status-im2.contexts.quo-preview.links.link-preview :as link-preview]
@@ -101,7 +103,9 @@
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
-    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]))
+    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
+    [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
+    [status-im2.contexts.quo-preview.wallet.account-card :as account-card]))
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -217,6 +221,9 @@
    :gradient          [{:name      :gradient-cover
                         :options   {:topBar {:visible true}}
                         :component gradient-cover/preview-gradient-cover}]
+   :graph             [{:name      :wallet-graph
+                        :options   {:topBar {:visible true}}
+                        :component wallet-graph/preview-wallet-graph}]
    :info              [{:name      :info-message
                         :options   {:topBar {:visible true}}
                         :component info-message/preview-info-message}
@@ -238,6 +245,10 @@
                        {:name      :title-input
                         :options   {:topBar {:visible true}}
                         :component title-input/preview-title-input}]
+   :numbered-keyboard [{:name      :keyboard-key
+                        :options   {:insets {:top? true}
+                                    :topBar {:visible true}}
+                        :component keyboard-key/preview-keyboard-key}]
    :links             [{:name      :url-preview
                         :options   {:insets {:top? true}
                                     :topBar {:visible true}}
@@ -389,9 +400,15 @@
    :text-combinations [{:name      :title
                         :options   {:topBar {:visible true}}
                         :component title/preview-title}]
-   :wallet            [{:name      :network-amount
+   :wallet            [{:name      :account-card
                         :options   {:topBar {:visible true}}
-                        :component network-amount/preview}]
+                        :component account-card/preview-account-card}
+                       {:name      :network-amount
+                        :options   {:topBar {:visible true}}
+                        :component network-amount/preview}
+                       {:name      :network-bridge
+                        :options   {:topBar {:visible true}}
+                        :component network-bridge/preview}]
    :keycard           [{:name      :keycard-component
                         :options   {:topBar {:visible true}}
                         :component keycard/preview-keycard}]})

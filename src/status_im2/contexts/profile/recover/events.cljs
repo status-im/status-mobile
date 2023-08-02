@@ -14,8 +14,11 @@
 
 (rf/defn recover-profile-and-login
   {:events [:profile.recover/recover-and-login]}
-  [_ {:keys [display-name password image-path color seed-phrase]}]
-  {::restore-profile-and-login
+  [{:keys [db]} {:keys [display-name password image-path color seed-phrase]}]
+  {:db
+   (assoc db :onboarding-2/recovered-account? true)
+
+   ::restore-profile-and-login
    (merge (profile.config/create)
           {:displayName        display-name
            :mnemonic           (security/safe-unmask-data seed-phrase)

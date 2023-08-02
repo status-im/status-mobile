@@ -88,6 +88,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
         self.device_2.just_fyi('Device2 sends a contact request to Device1 via Paste button and check user details')
         self.home_2.driver.set_clipboard_text(self.public_key_1)
+        self.home_2.chats_tab.click()
         self.home_2.new_chat_button.click_until_presence_of_element(self.home_2.add_a_contact_chat_bottom_sheet_button)
         self.home_2.add_a_contact_chat_bottom_sheet_button.click()
         self.home_2.element_by_translation_id("paste").click()
@@ -99,6 +100,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.device_1.just_fyi('Device1 accepts pending contact request by swiping')
         self.home_1.chats_tab.click()
         self.home_1.notifications_unread_badge.wait_for_visibility_of_element(30)
+        if self.home_1.toast_content_element.is_element_displayed(10):
+            self.home_1.toast_content_element.wait_for_invisibility_of_element()
         self.home_1.open_activity_center_button.click()
 
         self.home_1.just_fyi("Mark all as read")
@@ -118,6 +121,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
             self.errors.append("Contact was not added to contact list after accepting contact request (as receiver)")
 
         self.device_2.just_fyi('Device1 check that contact appeared in contact list mutually')
+        self.home_2.click_system_back_button_until_element_is_shown()
         self.home_2.chats_tab.click()
         self.home_2.contacts_tab.click()
         if not self.home_2.contact_details_row(username=self.username_1).is_element_displayed(20):
