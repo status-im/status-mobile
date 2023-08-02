@@ -232,18 +232,17 @@
      [rn/view
       {:style style/multi-profile-button-container}
       (when config/quo-preview-enabled?
-        [rn/view
-         {:style {:margin-right 12
-                  :border-color :red
-                  :border-width 1}}
-         [quo/button
-          {:size                32
-           :type                :grey
-           :background          :blur
-           :icon-only?          true
-           :on-press            #(rf/dispatch [:navigate-to :quo2-preview])
-           :accessibility-label :quo2-preview}
-          :i/placeholder]])
+        [quo/button
+         {:size                32
+          :type                :grey
+          :background          :blur
+          :icon-only?          true
+          :on-press            #(rf/dispatch [:navigate-to :quo2-preview])
+          :accessibility-label :quo2-preview
+          :container-style     {:margin-right 12
+                                :border-color :red
+                                :border-width 1}}
+         :i/wallet])
       [quo/button
        {:size                32
         :type                :grey

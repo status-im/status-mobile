@@ -111,20 +111,21 @@
                              :icon            :i/arrow-left
                              :on-press        navigate-back}
      :right-section-buttons [(when config/quo-preview-enabled?
-                               {:type     :grey
-                                :icon     :i/placeholder
-                                :icon-background     :blur
-                                :on-press #(rf/dispatch [:navigate-to
-                                                         :quo2-preview])
-                                :style    {:border-color :red
-                                           :border-width 1}})
-                             {:type                :grey
-                              :icon                :i/info
-                              :icon-background     :blur
-                              :on-press            #(rf/dispatch
-                                                     [:show-bottom-sheet
-                                                      {:content getting-started-doc
-                                                       :shell?  true}])}]}]])
+                               {:type            :grey
+                                :icon            :i/wallet
+                                :icon-background :blur
+                                :on-press        #(rf/dispatch [:navigate-to
+                                                                :quo2-preview])
+                                :style           {:border-radius 10
+                                                  :border-color  :red
+                                                  :border-width  1}})
+                             {:type            :grey
+                              :icon            :i/info
+                              :icon-background :blur
+                              :on-press        #(rf/dispatch
+                                                 [:show-bottom-sheet
+                                                  {:content getting-started-doc
+                                                   :shell?  true}])}]}]])
 
 (defn new-to-status
   []
