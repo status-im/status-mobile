@@ -7,7 +7,7 @@
 (defn- button-disabled
   [disabled-text on-enable]
   [button/button
-   {:before              :i/reveal
+   {:icon-left           :i/reveal
     :size                32
     :type                :grey
     :on-press            on-enable

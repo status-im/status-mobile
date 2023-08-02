@@ -45,7 +45,7 @@
 
 (defn view
   []
-  (let [profile-color         (:color (rf/sub [:onboarding-2/profile]))
+  (let [profile-color         (rf/sub [:onboarding-2/customization-color])
         {:keys [status-type]} (rf/sub [:multiaccount/current-user-visibility-status])
         insets                (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}

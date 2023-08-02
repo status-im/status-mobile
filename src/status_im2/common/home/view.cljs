@@ -22,17 +22,16 @@
      :customization-color customization-color}]])
 
 (defn- get-button-common-props
-  [type]
+  [type background]
   (let [default? (= type :default)
         dark?    (colors/dark?)]
-    {:icon                      true
-     :size                      32
-     :style                     {:margin-left 12}
-     :type                      (if default?
-                                  (if dark? :grey :dark-grey)
-                                  type)
-     :override-background-color (when (and dark? default?)
-                                  colors/neutral-90)}))
+    {:icon-only?      true
+     :size            32
+     :container-style {:margin-left 12}
+     :type            (if default?
+                        (if dark? :grey :dark-grey)
+                        type)
+     :background      background}))
 
 (defn- unread-indicator
   []
@@ -73,23 +72,21 @@
      [quo/text {:accessibility-label :peers-count-text} (str "PEERS COUNT: " peers-count)]]))
 
 (defn- right-section
-  [{:keys [button-type search?]}]
-  (let [button-common-props (get-button-common-props button-type)
+  [{:keys [button-type search? button-background]}]
+  (let [button-common-props (get-button-common-props button-type button-background)
         network-type        (rf/sub [:network/type])]
     [rn/view {:style style/right-section}
      (when (= network-type "cellular")
        [quo/button
         (merge button-common-props
-               {:icon                false
-                :accessibility-label :on-cellular-network
+               {:accessibility-label :on-cellular-network
                 :on-press            #(rf/dispatch [:show-bottom-sheet
                                                     {:content connectivity-sheet}])})
         "🦄"])
      (when (= network-type "none")
        [quo/button
         (merge button-common-props
-               {:icon                false
-                :accessibility-label :no-network-connection
+               {:accessibility-label :no-network-connection
                 :on-press            #(rf/dispatch [:show-bottom-sheet
                                                     {:content connectivity-sheet}])})
         "💀"])
@@ -117,10 +114,11 @@
   "[top-nav props]
   props
   {:type    quo/button types
+   :background quo/button background
    :style   override-style
    :search? When non-nil, show search button}
   "
-  [{:keys [type style search?]
+  [{:keys [type style search? background]
     :or   {type :default}}]
   (let [account             (rf/sub [:profile/multiaccount])
         customization-color (rf/sub [:profile/customization-color])
@@ -129,4 +127,4 @@
                              :profile-picture     (multiaccounts/displayed-photo account)}]
     [rn/view {:style (merge style/top-nav-container style)}
      [left-section {:avatar avatar}]
-     [right-section {:button-type type :search? search?}]]))
+     [right-section {:button-type type :button-background background :search? search?}]]))

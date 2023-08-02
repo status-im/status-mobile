@@ -38,11 +38,9 @@
       :type                :grey
       :background          :blur
       :on-press            on-press
-      :icon-size           20
-      :width               24
       :size                24
-      :icon                :i/camera
-      :style               style/button
+      :icon-only?          true
+      :container-style     style/button
       :inner-style         style/button-inner} :i/camera]]
    [rn/view {:style style/input-container}
     [title-input/title-input

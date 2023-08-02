@@ -260,11 +260,11 @@
             [rn/view {:style style/avatar-container}
              [avatar avatar-params type customization-color]])
           [quo/button
-           {:size     24
-            :type     :grey
-            :icon     true
-            :on-press #(rf/dispatch [:shell/close-switcher-card id])
-            :style    style/close-button}
+           {:size            24
+            :type            :grey
+            :icon-only?      true
+            :on-press        #(rf/dispatch [:shell/close-switcher-card id])
+            :container-style style/close-button}
            :i/close]]]))))
 
 ;; browser Card
