@@ -5,10 +5,11 @@
 
 (defn base-card
   [{:keys [banner on-press on-close customization-color]} & children]
-  (let [card-ref (atom nil)]
+  (let [card-ref (atom nil)
+        set-ref  #(reset! card-ref %)]
     [rn/touchable-opacity
      {:on-press       on-press
-      :ref            #(reset! card-ref %)
+      :ref            set-ref
       :active-opacity 1}
      [rn/view {:style (style/base-container customization-color)}
       (when banner
