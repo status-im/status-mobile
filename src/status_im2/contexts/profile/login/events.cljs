@@ -132,19 +132,19 @@
               (switcher-cards-store/fetch-switcher-cards-rpc))))
 
 (rf/defn login-node-signal
-  [{{:keys [recovered-account?] :as db} :db :as cofx} {:keys [settings account error]}]
+  [{{:onboarding-2/keys [recovered-account? new-account?] :as db} :db :as cofx}
+   {:keys [settings account error]}]
   (log/debug "[signals] node.login" "error" error)
   (if error
     {:db (update db :profile/login #(-> % (dissoc :processing) (assoc :error error)))}
-    (let [{:keys [creating?]} (:profile/login db)]
-      (rf/merge cofx
-                {:db         (dissoc db :profile/login)
-                 :dispatch-n [[:logging/initialize-web3-client-version]
-                              (when (and creating? (not recovered-account?))
-                                [:wallet/set-initial-blocks-range])]}
-                (if (or creating? recovered-account?)
-                  (profile.create/login-new-profile recovered-account?)
-                  (login-existing-profile settings account))))))
+    (rf/merge cofx
+              {:db         (dissoc db :profile/login)
+               :dispatch-n [[:logging/initialize-web3-client-version]
+                            (when (and new-account? (not recovered-account?))
+                              [:wallet/set-initial-blocks-range])]}
+              (if (or new-account? recovered-account?)
+                (profile.create/login-new-profile recovered-account?)
+                (login-existing-profile settings account)))))
 
 (rf/defn login-with-biometric-if-available
   {:events [:profile.login/login-with-biometric-if-available]}
