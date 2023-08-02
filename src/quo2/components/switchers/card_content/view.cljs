@@ -29,7 +29,7 @@
      :photo
      [preview-list/preview-list
       {:type               :photo
-       :more-than-99-label (i18n/label :counter-99-plus)
+       :more-than-99-label (i18n/label :t/counter-99-plus)
        :size               24
        :override-theme     :dark} photos]
 
@@ -60,8 +60,7 @@
       {:language  (:language content)
        :max-lines 0}
       content]
-     ;; Components not available
-     ;; Code snippet content type is not supported yet
+
      nil)])
 
 (defn notification-indicator

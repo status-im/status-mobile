@@ -44,14 +44,7 @@
    {:label "Last Message"
     :key   :last-message
     :type  :text}
-   {:label   "Customization"
-    :key     :customization-color
-    :type    :select
-    :options (map
-              (fn [c]
-                {:key   c
-                 :value c})
-              (keys colors/customization))}])
+   (preview/customization-color-option)])
 
 ;; Mock data
 (def sticker {:source (resources/get-mock-image :sticker)})
@@ -100,14 +93,7 @@
   (merge
    data
    {:content (merge (get-mock-content data)
-                    {:mention-count (when (= (:status data) :mention) (:counter-label data))})
-    ;; {:mention-count          (when (= (:status data) :mention) 5)
-    ;;  :type                   (:type data)
-    ;;  :community-channel      {:emoji        "🍑"
-    ;;                           :channel-name "# random"}
-    ;;  :community-info         {:type :kicked}
-    ;;  :data                   (get-mock-content data)}
-   }))
+                    {:mention-count (when (= (:status data) :mention) (:counter-label data))})}))
 
 (defn cool-preview
   []

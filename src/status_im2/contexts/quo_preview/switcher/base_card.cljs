@@ -10,17 +10,8 @@
   [{:label "Banner?"
     :key   :banner?
     :type  :boolean}
-   {:label "Customization"
-    :key :customization-color
-    :type :select
-    :options
-    (map
-     (fn [c]
-       {:key   c
-        :value c})
-     (keys colors/customization))}])
+   (preview/customization-color-option)])
 
-;; Mock data
 (def banner {:source (resources/get-mock-image :community-banner)})
 
 (defn cool-preview
@@ -32,8 +23,8 @@
        [rn/view {:padding-bottom 150}
         [preview/customizer state descriptor]
         [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
+         {:style {:padding-vertical 60
+                  :align-items      :center}}
          [quo/switcher-base-card
           (merge @state
                  {:title    "jonathan.eth"
