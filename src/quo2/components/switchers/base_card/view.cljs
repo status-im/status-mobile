@@ -19,7 +19,7 @@
       [button/button
        {:size            24
         :type            :grey
-        :icon            true
+        :icon-only?      true
         :on-press        on-close
         :background      :photo
         :container-style style/close-button}
