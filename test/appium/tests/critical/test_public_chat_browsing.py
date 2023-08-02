@@ -1062,6 +1062,56 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         #             "Channel did not open by clicking on a notification with the mention for the invited member")
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(702809)
+    def test_community_markdown_support(self):
+        markdown = {
+            'bold text in asterics': '**',
+            'bold text in underscores': '__',
+            'italic text in asteric': '*',
+            'italic text in underscore': '_',
+            'inline code': '`',
+            'code blocks': '```',
+            'quote reply (one row)': '>',
+        }
+
+        for home in self.homes:
+            home.click_system_back_button_until_element_is_shown()
+            home.jump_to_communities_home()
+            community = home.get_chat(self.community_name, community=True).click()
+            community.get_channel(self.channel_name).click()
+
+        for message, symbol in markdown.items():
+            self.home_1.just_fyi('Checking that "%s" is applied (%s) in community channel' % (message, symbol))
+            message_to_send = symbol + message + symbol if 'quote' not in message else symbol + message
+            self.channel_2.send_message(message_to_send)
+            if not self.channel_2.chat_element_by_text(message).is_element_displayed():
+                self.errors.append(
+                    '%s is not displayed with markdown in community channel for the sender (device 2) \n' % message)
+
+            if not self.channel_1.chat_element_by_text(message).is_element_displayed():
+                self.errors.append(
+                    '%s is not displayed with markdown in community channel for the recipient (device 1) \n' % message)
+
+        for home in self.homes:
+            home.jump_to_messages_home()
+
+        chat_1 = self.home_1.get_chat(self.username_2).click()
+        chat_2 = self.home_2.get_chat(self.username_1).click()
+
+        for message, symbol in markdown.items():
+            self.home_1.just_fyi('Checking that "%s" is applied (%s) in 1-1 chat' % (message, symbol))
+            message_to_send = symbol + message + symbol if 'quote' not in message else symbol + message
+            chat_1.send_message(message_to_send)
+            if not chat_1.chat_element_by_text(message).is_element_displayed(30):
+                self.errors.append(
+                    '%s is not displayed with markdown in 1-1 chat for the sender (device 1) \n' % message)
+
+            if not chat_2.chat_element_by_text(message).is_element_displayed(30):
+                self.errors.append(
+                    '%s is not displayed with markdown in 1-1 chat for the recipient (device 2) \n' % message)
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702845)
     def test_community_leave(self):
         self.home_2.click_system_back_button_until_element_is_shown()
