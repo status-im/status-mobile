@@ -75,8 +75,8 @@
             {:size                32
              :type                :grey
              :background          :blur
-             :icon                true
-             :style               style/option-button
+             :icon-only?          true
+             :container-style     style/option-button
              :on-press            on-options-press
              :accessibility-label :profile-card-options}
             :i/options])]]

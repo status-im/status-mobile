@@ -175,7 +175,7 @@
 
           [rn/view {:style style/button-container}
            [quo/button
-            {:disabled            (not meet-requirements?)
+            {:disabled?           (not meet-requirements?)
              :customization-color user-color
              :on-press            #(rf/dispatch
                                     [:onboarding-2/password-set
@@ -217,10 +217,10 @@
         [navigation-bar/navigation-bar
          {:stack-id              :new-to-status
           :top                   top
-          :right-section-buttons [{:type                :blur-bg
-                                   :icon                :i/info
-                                   :icon-override-theme :dark
-                                   :on-press            on-press-info}]}]
+          :right-section-buttons [{:type            :grey
+                                   :icon-background :blur
+                                   :icon            :i/info
+                                   :on-press        on-press-info}]}]
         [password-form]
         [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]]]]
     (finally

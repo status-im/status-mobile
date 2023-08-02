@@ -129,8 +129,8 @@
      (-> button
          (assoc :size size)
          (assoc :type subtype)
-         (assoc :disabled (and replying? disable-when (disable-when @reply-input)))
-         (update :style merge common-style {:margin-right 8}))
+         (assoc :disabled? (and replying? disable-when (disable-when @reply-input)))
+         (update :container-style merge common-style {:margin-right 8}))
      label]))
 
 (defmethod footer-item-view :status

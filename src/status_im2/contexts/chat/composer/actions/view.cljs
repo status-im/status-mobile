@@ -58,7 +58,7 @@
   [reanimated/view
    {:style (style/send-button btn-opacity @z-index)}
    [quo/button
-    {:icon                true
+    {:icon-only?          true
      :size                32
      :accessibility-label :send-message-button
      :on-press            #(send-message props state animations window-height edit)}
@@ -73,10 +73,10 @@
 (defn disabled-audio-button
   []
   [quo/button
-   {:on-press #(js/alert "to be implemented")
-    :icon     true
-    :type     :outline
-    :size     32}
+   {:on-press   #(js/alert "to be implemented")
+    :icon-only? true
+    :type       :outline
+    :size       32}
    :i/audio])
 
 (defn audio-button
@@ -170,11 +170,11 @@
   []
   (let [images-count (count (vals (rf/sub [:chats/sending-image])))]
     [quo/button
-     {:on-press #(go-to-camera images-count)
-      :icon     true
-      :type     :outline
-      :size     32
-      :style    {:margin-right 12}}
+     {:on-press        #(go-to-camera images-count)
+      :icon-only?      true
+      :type            :outline
+      :size            32
+      :container-style {:margin-right 12}}
      :i/camera]))
 
 (defn open-photo-selector
@@ -199,29 +199,29 @@
   [quo/button
    {:on-press            #(open-photo-selector props animations insets)
     :accessibility-label :open-images-button
-    :icon                true
+    :icon-only?          true
     :type                :outline
     :size                32
-    :style               {:margin-right 12}}
+    :container-style     {:margin-right 12}}
    :i/image])
 
 (defn reaction-button
   []
   [quo/button
-   {:on-press #(js/alert "to be implemented")
-    :icon     true
-    :type     :outline
-    :size     32
-    :style    {:margin-right 12}}
+   {:on-press        #(js/alert "to be implemented")
+    :icon-only?      true
+    :type            :outline
+    :size            32
+    :container-style {:margin-right 12}}
    :i/reaction])
 
 (defn format-button
   []
   [quo/button
-   {:on-press #(js/alert "to be implemented")
-    :icon     true
-    :type     :outline
-    :size     32}
+   {:on-press   #(js/alert "to be implemented")
+    :icon-only? true
+    :type       :outline
+    :size       32}
    :i/format])
 
 (defn view

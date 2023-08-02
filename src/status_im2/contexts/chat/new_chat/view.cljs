@@ -28,11 +28,11 @@
      :size   :label}
     (i18n/label :t/dont-yell-at-me)]
    [quo/button
-    {:type     :primary
-     :size     32
-     :style    {:margin-top    20
-                :margin-bottom 12}
-     :on-press #(rf/dispatch [:invite.events/share-link])}
+    {:type            :primary
+     :size            32
+     :container-style {:margin-top    20
+                       :margin-bottom 12}
+     :on-press        #(rf/dispatch [:invite.events/share-link])}
     (i18n/label :t/invite-friends)]
    [quo/button
     {:type     :grey
@@ -68,7 +68,11 @@
                                                      (first selected-contacts)]))]
     [rn/view {:flex 1}
      [rn/view {:padding-horizontal 20}
-      [quo/button {:type :grey :size 32 :icon true :on-press close} :i/close]
+      [quo/button
+       {:type       :grey
+        :size       32
+        :icon-only? true
+        :on-press   close} :i/close]
       [rn/view {:style style/contact-selection-heading}
        [quo/text
         {:weight :semi-bold
@@ -99,7 +103,7 @@
        [quo/button
         {:type                :primary
          :accessibility-label :next-button
-         :style               style/chat-button
+         :container-style     style/chat-button
          :on-press            (fn []
                                 (if one-contact-selected?
                                   (rf/dispatch [:chat.ui/start-chat public-key])

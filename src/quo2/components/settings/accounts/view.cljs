@@ -20,11 +20,11 @@
   [{:keys [on-press]}]
   [rn/view {:style style/menu-button-container}
    [button/button
-    {:style    (style/menu-button-color)
-     :type     :gray
-     :icon     true
-     :size     24
-     :on-press on-press}
+    {:container-style (style/menu-button-color)
+     :type            :grey
+     :icon-only?      true
+     :size            24
+     :on-press        on-press}
     :i/more]])
 
 (defn account
