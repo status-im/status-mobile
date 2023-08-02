@@ -206,7 +206,7 @@
                         :options   {:topBar {:visible true}}
                         :component action-drawers/preview-action-drawers}
                        {:name      :documentation-drawer
-                        :insets    {:top false}
+                        :options   {:topBar {:visible true}}
                         :component documenation-drawers/preview-documenation-drawers}
                        {:name      :drawer-buttons
                         :options   {:topBar {:visible true}}
