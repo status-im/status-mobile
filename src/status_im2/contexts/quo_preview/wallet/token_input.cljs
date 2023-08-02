@@ -5,7 +5,6 @@
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
-
 (def descriptor
   [{:label   "Token:"
     :key     :token
@@ -22,11 +21,10 @@
               {:key   :eur
                :value "EUR"}]}])
 
-
 (defn preview
   []
-  (let [state (reagent/atom {:token      :snt
-                             :currency   :eur
+  (let [state (reagent/atom {:token      :eth
+                             :currency   :usd
                              :conversion 0.02})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}

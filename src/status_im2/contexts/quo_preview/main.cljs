@@ -103,21 +103,10 @@
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
-<<<<<<< HEAD
-<<<<<<< HEAD
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
-    [status-im2.contexts.quo-preview.wallet.account-card :as account-card]))
-=======
-    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]))
-=======
+    [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]))
->>>>>>> cca47fb89 (feat: quo2 token input)
->>>>>>> ad1cd16ba (feat: quo2 token input)
-=======
-    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
-    [status-im2.contexts.quo-preview.wallet.token-input :as token-input]))
->>>>>>> e79d973df (lint)
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -414,20 +403,16 @@
                         :component title/preview-title}]
    :wallet            [{:name      :account-card
                         :options   {:topBar {:visible true}}
-<<<<<<< HEAD
                         :component account-card/preview-account-card}
                        {:name      :network-amount
                         :options   {:topBar {:visible true}}
                         :component network-amount/preview}
                        {:name      :network-bridge
                         :options   {:topBar {:visible true}}
-                        :component network-bridge/preview}]
-=======
-                        :component network-amount/preview}
+                        :component network-bridge/preview}
                        {:name      :token-input
                         :options   {:topBar {:visible true}}
                         :component token-input/preview}]
->>>>>>> ad1cd16ba (feat: quo2 token input)
    :keycard           [{:name      :keycard-component
                         :options   {:topBar {:visible true}}
                         :component keycard/preview-keycard}]})

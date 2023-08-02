@@ -18,22 +18,26 @@
     (str (.toFixed (/ value conversion) 2) " " (string/upper-case (clj->js token)))))
 
 (defn- view-internal
-  [{:keys [theme token currency conversion]}]
-  (let [width   (:width (rn/get-window))
-        value   (reagent/atom 0)
-        crypto? (reagent/atom true)]
-    (fn []
+  []
+  (let [width     (:width (rn/get-window))
+        value     (reagent/atom 0)
+        crypto?   (reagent/atom true)
+        input-ref (atom nil)]
+    (fn [{:keys [theme token currency conversion]}]
       [rn/view {:style (style/main-container width)}
        [rn/view {:style style/amount-container}
-        [rn/view
-         {:style {:flex-direction :row
-                  :align-items    :flex-end}}
+        [rn/pressable
+         {:on-press #(.focus ^js @input-ref)
+          :style    {:flex-direction :row
+                     :flex-grow      1
+                     :align-items    :flex-end}}
          [rn/image
           {:style  style/token
            :source (resources/get-token token)}]
          [rn/text-input
-          {:placeholder            "0"
-           :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-50)
+          {:ref                    #(reset! input-ref %)
+           :placeholder            "0"
+           :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)
            :keyboard-type          :numeric
            :max-length             12
            :default-value          @value
@@ -57,7 +61,7 @@
         [text/text
          {:size   :paragraph-2
           :weight :medium
-          :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
+          :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
          (calc-value @crypto? currency token @value conversion)]]])))
 
 (def view (quo.theme/with-theme view-internal))

@@ -9,6 +9,7 @@
                 :currency   :eur
                 :conversion 1}])
     (h/is-truthy (h/get-by-text "SNT")))
+
   (h/test "Amount renders"
     (h/render [token-input/view
                {:token      :snt
