@@ -334,7 +334,7 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         community_1.home_button.double_click()
         self.home_1.get_chat(community_name, community=True).click()
         chat_element_1 = community_1.get_chat(channel_name)
-        if not chat_element_1.new_messages_public_chat.is_element_displayed():
+        if not chat_element_1.new_messages_grey_dot.is_element_displayed():
             self.errors.append("Unread messages counter is not shown for community channel!")
         if not community_1.element_by_text(message_member).is_element_displayed():
             self.errors.append("Message from member is not shown for community channel!")

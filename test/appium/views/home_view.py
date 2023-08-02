@@ -101,20 +101,20 @@ class ChatElement(SilentButton):
         return NoMessageText(self.driver, self.locator)
 
     @property
-    def new_messages_public_chat(self):
+    def new_messages_grey_dot(self):
         class UnreadMessagesPublicChat(BaseElement):
-            def __init__(self, driver):
-                super().__init__(driver, accessibility_id="unviewed-messages-public")
+            def __init__(self, driver, parent_locator):
+                super().__init__(driver, xpath="%s/*[@content-desc='unviewed-messages-public']" % parent_locator)
 
-        return UnreadMessagesPublicChat(self.driver)
+        return UnreadMessagesPublicChat(self.driver, self.locator)
 
-    @property
-    def new_messages_community(self):
-        class UnreadMessagesCommunity(BaseElement):
-            def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="%s/android.view.ViewGroup" % parent_locator)
-
-        return UnreadMessagesCommunity(self.driver, self.locator)
+    # @property
+    # def new_messages_community(self):
+    #     class UnreadMessagesCommunity(BaseElement):
+    #         def __init__(self, driver, parent_locator: str):
+    #             super().__init__(driver, prefix=parent_locator, xpath="%s/android.view.ViewGroup" % parent_locator)
+    #
+    #     return UnreadMessagesCommunity(self.driver, self.locator)
 
     @property
     def chat_image(self):

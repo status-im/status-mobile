@@ -227,7 +227,9 @@
 
        ;; TODO: use the grey-dot component when chat-list-item is moved to quo2.components
        (and group-chat unread-messages?)
-       [rn/view {:style (style/grey-dot)}]
+       [rn/view
+        {:style               (style/grey-dot)
+         :accessibility-label :unviewed-messages-public}]
 
        unread-messages?
        [quo/info-count

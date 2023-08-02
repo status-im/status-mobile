@@ -850,14 +850,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.send_message(message)
         self.home_1.just_fyi('Check new messages badge is shown for community')
         community_element_1 = self.home_1.get_chat(self.community_name, community=True)
-        if not community_element_1.new_messages_community.is_element_displayed(sec=30):
+        if not community_element_1.new_messages_grey_dot.is_element_displayed(sec=30):
             self.errors.append('New message community badge is not shown')
 
         community_1 = community_element_1.click()
         channel_1_element = community_1.get_channel(self.channel_name)
 
         self.home_1.just_fyi('Check new messages badge is shown for community')
-        if not community_element_1.new_messages_community.is_element_displayed():
+        if not community_element_1.new_messages_grey_dot.is_element_displayed():
             self.errors.append('New messages channel badge is not shown on channel')
         channel_1_element.click()
         self.errors.verify_no_errors()
@@ -966,12 +966,12 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.community_2.get_channel(self.channel_name).click()
         self.channel_2.send_message(self.text_message)
         community_1_element = self.community_1.get_chat(self.community_name)
-        if not community_1_element.new_messages_public_chat.is_element_displayed(90):
+        if not community_1_element.new_messages_grey_dot.is_element_displayed(90):
             self.errors.append('New messages counter is not shown in home > Commmunity element')
         mark_as_read_button = self.community_1.mark_all_messages_as_read_button
         community_1_element.long_press_until_element_is_shown(mark_as_read_button)
         mark_as_read_button.click()
-        if community_1_element.new_messages_public_chat.is_element_displayed():
+        if community_1_element.new_messages_grey_dot.is_element_displayed():
             self.errors.append(
                 'Unread messages badge is shown in community channel while there are no unread messages')
         # TODO: there should be one more check for community channel, which is still not ready
