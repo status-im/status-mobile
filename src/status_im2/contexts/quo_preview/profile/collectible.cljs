@@ -36,7 +36,9 @@
          [rn/view
           {:padding-vertical 100
            :align-items      :center}
-          [quo/collectible {:images images-to-show}]]]))))
+          [quo/collectible
+           {:images   images-to-show
+            :on-press #(js/alert "Pressed")}]]]))))
 
 (defn preview-collectible
   []
