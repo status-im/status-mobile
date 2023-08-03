@@ -35,13 +35,15 @@
 
      :sticker
      [fast-image/fast-image
-      {:source source
-       :style  style/sticker}]
+      {:accessibility-label :sticker
+       :source              source
+       :style               style/sticker}]
 
      :gif
      [fast-image/fast-image
-      {:source source
-       :style  style/gif}]
+      {:accessibility-label :gif
+       :source              source
+       :style               style/gif}]
 
      :audio
      [tag/audio-tag duration {:override-theme :dark}]

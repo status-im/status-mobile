@@ -7,7 +7,7 @@
   (h/test "Default render"
     (h/render [base-card/base-card {}])
     (h/is-truthy (h/query-by-label-text :base-card)))
-  (h/test "Banner renders"
+  (h/test "Banner render"
     (h/render [base-card/base-card {:banner {:source "banner"}}])
     (h/is-truthy (h/query-by-label-text :base-card))
     (h/is-truthy (h/query-by-label-text :banner)))

@@ -10,6 +10,12 @@
     [quo2.foundations.colors :as colors]))
 
 (defn view
+  "Opts:
+    :type  - keyword -> :message/:photo/:sticker/:gif/:audio/:community/:link/:code
+
+    :status - keyword -> :read/:unread/:mention
+    
+    :customization-color - keyword or hexstring -> :blue/:army/... or #ABCEDF"
   [{:keys [avatar type status title customization-color on-close content]}]
   (let [custom-color (colors/custom-color customization-color 60)]
     [base-card/base-card
