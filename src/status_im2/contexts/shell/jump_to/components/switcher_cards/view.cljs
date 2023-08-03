@@ -14,10 +14,11 @@
             [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]))
 
 (defn- channel-card
-  [{:keys [emoji channel-name customization-color] :as _community-channel}]
+  [{:keys [emoji channel-name customization-color]}]
   [rn/view style/channel-card-container
    [quo/channel-avatar
     {:emoji               emoji
+     :full-name           channel-name
      :customization-color customization-color}]
    [rn/view style/channel-card-text-container
     [quo/text
