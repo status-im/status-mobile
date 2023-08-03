@@ -17,12 +17,16 @@
                :value "Messages"}]}
    {:label "Blur?"
     :key   :blur?
+    :type  :boolean}
+   {:label "Animated?"
+    :key   :animated?
     :type  :boolean}])
 
 (defn cool-preview
   []
   (let [state (reagent/atom {:content       :messages
                              :blur?         false
+                             :animated?     true
                              :parent-height 600})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
