@@ -9,7 +9,7 @@
             [quo2.components.loaders.skeleton.constants :as constants]))
 
 (defn skeleton-item
-  [index content color animated?]
+  [index parent-index content color animated?]
   [:f>
    (fn []
      (let [loading-color           (colors/theme-colors colors/neutral-10 colors/neutral-60)
@@ -19,10 +19,14 @@
                                     {:transform [{:translateX translate-x}]}
                                     {:width  window-width
                                      :height "100%"})]
+
        (reanimated/animate-shared-value-with-repeat translate-x window-width 1000 :linear (- 1) false)
        [masked-view/masked-view
         {:style               {:height (get-in constants/layout-dimensions [content :height])}
-         :accessibility-label (if animated? :skeleton-animated :skeleton-static)
+         :accessibility-label (str (if animated? "skeleton-animated-" "skeleton-static-")
+                                   index
+                                   "-"
+                                   parent-index)
          :maskElement         (reagent/as-element
                                [rn/view
                                 {:style (style/container content)}
@@ -62,8 +66,8 @@
 
     [rn/view {:style {:padding 8}}
      (doall
-      (for [index (range number-of-skeletons)]
-        ^{:key index}
-        [skeleton-item (mod index 4) content color animated?]))]))
+      (for [parent-index (range number-of-skeletons)]
+        ^{:key parent-index}
+        [skeleton-item (mod parent-index 4) parent-index content color animated?]))]))
 
 (def view (theme/with-theme internal-view))
