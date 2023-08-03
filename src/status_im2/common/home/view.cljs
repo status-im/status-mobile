@@ -3,12 +3,12 @@
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
-    [status-im2.common.home.style :as style]
     [status-im.multiaccounts.core :as multiaccounts]
+    [status-im2.common.home.style :as style]
     [status-im2.common.plus-button.view :as plus-button]
     [status-im2.constants :as constants]
-    [utils.re-frame :as rf]
-    [utils.debounce :refer [dispatch-and-chill]]))
+    [utils.debounce :refer [dispatch-and-chill]]
+    [utils.re-frame :as rf]))
 
 (defn title-column
   [{:keys [label handler accessibility-label customization-color]}]
@@ -130,3 +130,18 @@
     [rn/view {:style (merge style/top-nav-container style)}
      [left-section {:avatar avatar}]
      [right-section {:button-type type :button-background background :search? search?}]]))
+
+(defn header-spacing
+  []
+  [rn/view {:style (style/header-spacing)}])
+
+(defn empty-state-image
+  [{:keys [selected-tab tab->content]}]
+  (let [{:keys [image title description]} (tab->content selected-tab)
+        customization-color               (rf/sub [:profile/customization-color])]
+    [rn/view {:style (style/empty-state-container)}
+     [quo/empty-state
+      {:customization-color customization-color
+       :image               image
+       :title               title
+       :description         description}]]))
