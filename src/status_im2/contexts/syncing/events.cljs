@@ -72,23 +72,6 @@
                          :event    :syncing/input-connection-string-for-bootstrapping}))))]
     (native-module/prepare-dir-and-update-config "" default-node-config-string callback)))
 
-;; TODO :: Password verification is currently based on length but we have to do it realtime
-;; (rf/defn verify-user-password
-;;   {:events [:verify-profile-password]}
-;;   (println "In verify")
-;;   (fn [{:keys [address key-uid callback masked-password]}]
-;;     (let [hashed-password
-;;           (-> masked-password
-;;               security/safe-unmask-data
-;;               ethereum/sha3)]
-;;       (native-module/verify
-;;        address
-;;        hashed-password
-;;        (fn [result]
-;;          (let [{:keys [error]} (types/json->clj result)]
-;;            (log/info "[verify-profile-password] verify-password" result error)
-;;            (safe-blank? error)))))))
-
 (rf/defn preparations-for-connection-string
   {:events [:syncing/get-connection-string-for-bootstrapping-another-device]}
   [{:keys [db]} entered-password set-code]

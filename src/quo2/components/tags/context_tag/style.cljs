@@ -29,8 +29,8 @@
    :padding-vertical 2})
 
 (def audio-tag-icon-container
-  {:width            24
-   :height           24
+  {:width            20
+   :height           20
    :border-radius    10
    :align-items      :center
    :justify-content  :center

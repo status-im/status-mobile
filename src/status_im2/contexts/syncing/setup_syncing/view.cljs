@@ -38,30 +38,31 @@
 
 (defn view
   []
-  (let [profile-color (rf/sub [:profile/customization-color])
-        valid-for-ms  (reagent/atom code-valid-for-ms)
-        code          (reagent/atom nil)
-        delay         (reagent/atom nil)
-        timestamp     (reagent/atom nil)
-        set-code      (fn [connection-string]
-                        (when (sync-utils/valid-connection-string? connection-string)
-                          (reset! timestamp (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000))))
-                          (reset! delay 1000)
-                          (reset! code connection-string)))
-        clock         (fn []
-                        (if (pos? (- code-valid-for-ms
-                                     (- (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000)))
-                                        @timestamp)))
-                          (swap! valid-for-ms (fn [_]
-                                                (- code-valid-for-ms
-                                                   (- (* 1000
-                                                         (js/Math.ceil (/ (datetime/timestamp) 1000)))
-                                                      @timestamp))))
-                          (reset! delay nil)))
-        cleanup-clock (fn []
-                        (reset! code nil)
-                        (reset! timestamp nil)
-                        (reset! valid-for-ms code-valid-for-ms))]
+  (let [valid-for-ms        (reagent/atom code-valid-for-ms)
+        customization-color (rf/sub [:profile/customization-color])
+        code                (reagent/atom nil)
+        delay               (reagent/atom nil)
+        timestamp           (reagent/atom nil)
+        set-code            (fn [connection-string]
+                              (when (sync-utils/valid-connection-string? connection-string)
+                                (reset! timestamp (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000))))
+                                (reset! delay 1000)
+                                (reset! code connection-string)))
+        clock               (fn []
+                              (if (pos? (- code-valid-for-ms
+                                           (- (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000)))
+                                              @timestamp)))
+                                (swap! valid-for-ms (fn [_]
+                                                      (- code-valid-for-ms
+                                                         (- (* 1000
+                                                               (js/Math.ceil (/ (datetime/timestamp)
+                                                                                1000)))
+                                                            @timestamp))))
+                                (reset! delay nil)))
+        cleanup-clock       (fn []
+                              (reset! code nil)
+                              (reset! timestamp nil)
+                              (reset! valid-for-ms code-valid-for-ms))]
 
     (fn []
       [rn/view {:style style/container-main}
@@ -115,18 +116,17 @@
                :icon-left       :i/copy}
               (i18n/label :t/copy-qr)]])]]
         (when-not (sync-utils/valid-connection-string? @code)
-          ;; Implemented standard in-app authentication
           [rn/view {:style style/standard-auth}
            [standard-auth/view
-            {:track-text              (i18n/label :t/slide-to-reveal-code)
-             :thumb-color             profile-color
-             :track-text-color        colors/white-opa-40
-             :customization-color     colors/white-opa-5
-             :enter-pass-callback     set-code
-             :use-biometric-auth      false
-             :fallback-button-label   (i18n/label :t/reveal-sync-code)
-             :on-auth-success         #()
-             :on-auth-fail            #()}]])
+            {:track-text            (i18n/label :t/slide-to-reveal-code)
+             :thumb-color           customization-color
+             :track-text-color      colors/white-opa-40
+             :customization-color   colors/white-opa-5
+             :enter-pass-callback   set-code
+             :use-biometric-auth    false
+             :fallback-button-label (i18n/label :t/reveal-sync-code)
+             :on-auth-success       #()
+             :on-auth-fail          #()}]])
 
         [rn/view {:style style/sync-code}
          [quo/divider-label

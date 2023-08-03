@@ -21,12 +21,13 @@
 
 (defn view
   [set-code button-label]
-  (let [entered-password (atom "")
-        {:keys [key-uid display-name customization-color]}          (rf/sub [:profile/multiaccount])
-        {:keys [error processing password]}                         (rf/sub [:profile/login])
-        sign-in-enabled?                                            (rf/sub [:sign-in-enabled?])
-        profile-picture                                             (rf/sub [:profile/login-profiles-picture key-uid])
-        error                                                       (get-error-message error)]
+  (let [entered-password                    (atom "")
+        {:keys [key-uid display-name
+                customization-color]}       (rf/sub [:profile/multiaccount])
+        {:keys [error processing password]} (rf/sub [:profile/login])
+        sign-in-enabled?                    (rf/sub [:sign-in-enabled?])
+        profile-picture                     (rf/sub [:profile/login-profiles-picture key-uid])
+        error                               (get-error-message error)]
     [background/view true]
     [:<>
      [rn/view {:style style/enter-password-container}
@@ -35,13 +36,13 @@
         {:accessibility-label :sync-code-generated
          :weight              :bold
          :size                :heading-1
-         :style               {:color  (colors/theme-colors colors/neutral-100 colors/white)
+         :style               {:color         (colors/theme-colors colors/neutral-100 colors/white)
                                :margin-bottom 4}}
         (i18n/label :t/enter-password)]
 
        [rn/view
         {:flex-direction :row :margin-bottom 20 :margin-top 8}
-        [quo/context-tag {:blur? false} profile-picture  display-name]]
+        [quo/context-tag {:blur? false} profile-picture display-name]]
 
        [rn/view {:flex-direction :row :align-items :flex-end}
         [rn/view {:flex 6}
@@ -90,6 +91,7 @@
           :style               {:margin-bottom 12 :background-color "#5A33CA"}
           :on-press            (fn []
                                  (rf/dispatch [:set-in [:profile/login :key-uid] key-uid])
-                                 (rf/dispatch [:syncing/get-connection-string-for-bootstrapping-another-device
-                                               password set-code]))}
+                                 (rf/dispatch
+                                  [:syncing/get-connection-string-for-bootstrapping-another-device
+                                   password set-code]))}
          button-label]]]]]))

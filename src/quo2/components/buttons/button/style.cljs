@@ -53,7 +53,7 @@
                       12))})
 
 (defn style-container
-  [{:keys [size disabled? border-radius background-color border-color icon-only? icon-top
+  [{:keys [size disabled border-radius background-color border-color icon-only? icon-top
            icon-left icon-right]}]
   (merge {:height             size
           :align-items        :center
@@ -112,4 +112,4 @@
            {:border-color border-color
             :border-width 1})
          (when disabled
-           {:opacity 0.7})))
+           {:opacity 0.3})))
