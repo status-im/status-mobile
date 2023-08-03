@@ -112,13 +112,10 @@
                              :on-press        navigate-back}
      :right-section-buttons [(when config/quo-preview-enabled?
                                {:type            :grey
-                                :icon            :i/wallet
+                                :icon            :i/reveal-whitelist
                                 :icon-background :blur
                                 :on-press        #(rf/dispatch [:navigate-to
-                                                                :quo2-preview])
-                                :style           {:border-radius 10
-                                                  :border-color  :red
-                                                  :border-width  1}})
+                                                                :quo2-preview])})
                              {:type            :grey
                               :icon            :i/info
                               :icon-background :blur

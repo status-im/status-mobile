@@ -238,11 +238,10 @@
           :background          :blur
           :icon-only?          true
           :on-press            #(rf/dispatch [:navigate-to :quo2-preview])
+          :disabled?           processing
           :accessibility-label :quo2-preview
-          :container-style     {:margin-right 12
-                                :border-color :red
-                                :border-width 1}}
-         :i/wallet])
+          :container-style     {:margin-right 12}}
+         :i/reveal-whitelist])
       [quo/button
        {:size                32
         :type                :grey
