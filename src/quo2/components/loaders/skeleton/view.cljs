@@ -8,7 +8,7 @@
             [reagent.core :as reagent]
             [quo2.components.loaders.skeleton.constants :as constants]))
 
-(defn- skeleton-item
+(defn skeleton-item
   [index content color animated?]
   [:f>
    (fn []
@@ -19,38 +19,28 @@
                                     {:transform [{:translateX translate-x}]}
                                     {:width  window-width
                                      :height "100%"})]
-
        (reanimated/animate-shared-value-with-repeat translate-x window-width 1000 :linear (- 1) false)
        [masked-view/masked-view
-        {:style       {:height constants/message-skeleton-height}
-         :maskElement (reagent/as-element
-                       [rn/view
-                        {:style {:height           constants/message-skeleton-height
-                                 :flex-direction   :row
-                                 :padding-vertical 11
-                                 :background-color :transparent
-                                 :padding-left     8}}
-                        [rn/view
-                         {:style {:height           constants/avatar-skeleton-size
-                                  :width            constants/avatar-skeleton-size
-                                  :border-radius    (/ constants/avatar-skeleton-size 2)
-                                  :background-color color
-                                  :overflow         :hidden}}]
-                        [rn/view
-                         {:style {:padding-left     8
-                                  :background-color :transparent}}
-                         [rn/view
-                          {:style (style/content-view
-                                   {:type    (if (= content :list-items) :message :author)
-                                    :index   index
-                                    :content content
-                                    :color   color})}]
-                         [rn/view
-                          {:style (style/content-view
-                                   {:type    (if (= content :list-items) :author :message)
-                                    :index   index
-                                    :content content
-                                    :color   color})}]]])}
+        {:style               {:height (get-in constants/layout-dimensions [content :height])}
+         :accessibility-label (if animated? :skeleton-animated :skeleton-static)
+         :maskElement         (reagent/as-element
+                               [rn/view
+                                {:style (style/container content)}
+                                [rn/view
+                                 {:style (style/avatar color)}]
+                                [rn/view {:style style/content-container}
+                                 [rn/view
+                                  {:style (style/content-view
+                                           {:type    (if (= content :list-items) :message :author)
+                                            :index   index
+                                            :content content
+                                            :color   color})}]
+                                 [rn/view
+                                  {:style (style/content-view
+                                           {:type    (if (= content :list-items) :author :message)
+                                            :index   index
+                                            :content content
+                                            :color   color})}]]])}
         [rn/view
          {:style {:flex             1
                   :background-color color}}
@@ -69,7 +59,7 @@
                               blur?           colors/white-opa-5
                               (= theme :dark) colors/neutral-90
                               :else           colors/neutral-5)]
-  
+
     [rn/view {:style {:padding 8}}
      (doall
       (for [index (range number-of-skeletons)]
