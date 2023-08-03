@@ -3,7 +3,7 @@
   (:require
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
-    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [react-native.core :as rn]
     [status-im2.common.theme.core :as theme]
     [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]
@@ -107,7 +107,7 @@
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
-    [reagent.core :as reagent]))
+    [utils.re-frame :as rf]))
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -206,7 +206,7 @@
                         :options   {:topBar {:visible true}}
                         :component action-drawers/preview-action-drawers}
                        {:name      :documentation-drawer
-                        :insets    {:top false}
+                        :options   {:topBar {:visible true}}
                         :component documenation-drawers/preview-documenation-drawers}
                        {:name      :drawer-buttons
                         :options   {:topBar {:visible true}}
@@ -420,11 +420,29 @@
 
 (def screens (flatten (map val screens-categories)))
 
+(defn navigation-bar
+  []
+  (let [logged-in?    (rf/sub [:multiaccount/logged-in?])
+        has-profiles? (boolean (rf/sub [:profile/profiles-overview]))]
+    [quo/page-nav
+     {:align-mid?   true
+      :mid-section  {:type      :text-only
+                     :main-text "Quo2 components preview"}
+      :left-section {:icon     :i/close
+                     :on-press (fn []
+                                 (when-not logged-in?
+                                   (theme/set-theme :dark))
+                                 (rf/dispatch [:navigate-back])
+                                 (when-not has-profiles?
+                                   (rf/dispatch [:open-modal :new-to-status])))}}]))
+
 (defn theme-switcher
   []
   [rn/view
-   {:style {:flex-direction  :row
-            :margin-vertical 8}}
+   {:style {:flex-direction     :row
+            :justify-content    :space-between
+            :padding-horizontal 24
+            :padding-vertical   12}}
    [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
    [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
 
@@ -441,26 +459,28 @@
            [quo/button
             {:type            :outline
              :container-style {:margin-vertical 8}
-             :on-press        #(re-frame/dispatch [:navigate-to name])}
+             :on-press        #(rf/dispatch [:navigate-to name])}
             (clojure.core/name name)]))])))
 
 (defn main-screen
   []
   (fn []
-    [rn/scroll-view
-     {:flex               1
-      :padding-bottom     8
-      :padding-horizontal 16
-      :background-color   (colors/theme-colors colors/white colors/neutral-90)}
+    [:<>
+     [navigation-bar]
      [theme-switcher]
-     [quo/text {:size :heading-1} "Preview Quo2 Components"]
-     [rn/view
-      (map (fn [category]
-             ^{:key (get category 0)}
-             [category-view category])
-           (sort screens-categories))]]))
+     [rn/scroll-view
+      {:flex               1
+       :padding-bottom     8
+       :padding-horizontal 16
+       :background-color   (colors/theme-colors colors/white colors/neutral-90)}
+      [rn/view
+       (map (fn [category]
+              ^{:key (get category 0)}
+              [category-view category])
+            (sort screens-categories))]]]))
 
 (def main-screens
   [{:name      :quo2-preview
-    :options   {:topBar {:visible true}}
+    :options   {:topBar {:visible false}
+                :insets {:top? true}}
     :component main-screen}])

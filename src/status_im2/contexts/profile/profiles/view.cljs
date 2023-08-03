@@ -1,21 +1,22 @@
 (ns status-im2.contexts.profile.profiles.view
-  (:require [native-module.core :as native-module]
+  (:require [clojure.string :as string]
+            [native-module.core :as native-module]
             [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
+            [react-native.reanimated :as reanimated]
+            [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
+            [status-im2.config :as config]
+            [status-im2.constants :as constants]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.profile.profiles.style :as style]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [utils.security.core :as security]
-            [utils.transforms :as types]
-            [quo2.foundations.colors :as colors]
-            [react-native.safe-area :as safe-area]
-            [clojure.string :as string]
-            [react-native.reanimated :as reanimated]
-            [status-im2.constants :as constants]))
+            [utils.transforms :as types]))
 
 (defonce push-animation-fn-atom (atom nil))
 (defonce pop-animation-fn-atom (atom nil))
@@ -228,16 +229,28 @@
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
       :keyboardVerticalOffset (- (safe-area/get-bottom))}
-     [quo/button
-      {:size                32
-       :type                :grey
-       :background          :blur
-       :icon-only?          true
-       :on-press            set-show-profiles
-       :disabled?           processing
-       :accessibility-label :show-profiles
-       :container-style     style/multi-profile-button}
-      :i/multi-profile]
+     [rn/view
+      {:style style/multi-profile-button-container}
+      (when config/quo-preview-enabled?
+        [quo/button
+         {:size                32
+          :type                :grey
+          :background          :blur
+          :icon-only?          true
+          :on-press            #(rf/dispatch [:navigate-to :quo2-preview])
+          :disabled?           processing
+          :accessibility-label :quo2-preview
+          :container-style     {:margin-right 12}}
+         :i/reveal-whitelist])
+      [quo/button
+       {:size                32
+        :type                :grey
+        :background          :blur
+        :icon-only?          true
+        :on-press            set-show-profiles
+        :disabled?           processing
+        :accessibility-label :show-profiles}
+       :i/multi-profile]]
      [rn/scroll-view
       {:keyboard-should-persist-taps :always
        :style                        {:flex 1}}

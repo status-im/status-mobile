@@ -9,7 +9,8 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [status-im2.contexts.onboarding.common.overlay.view :as overlay]
-    [status-im2.contexts.profile.profiles.view :as profiles]))
+    [status-im2.contexts.profile.profiles.view :as profiles]
+    [status-im2.config :as config]))
 
 (defn navigate-back
   []
@@ -109,14 +110,19 @@
                              :icon-background :blur
                              :icon            :i/arrow-left
                              :on-press        navigate-back}
-     :right-section-buttons [{:type                :grey
-                              :icon                :i/info
-                              :icon-background     :blur
-                              :icon-override-theme :dark
-                              :on-press            #(rf/dispatch
-                                                     [:show-bottom-sheet
-                                                      {:content getting-started-doc
-                                                       :shell?  true}])}]}]])
+     :right-section-buttons [(when config/quo-preview-enabled?
+                               {:type            :grey
+                                :icon            :i/reveal-whitelist
+                                :icon-background :blur
+                                :on-press        #(rf/dispatch [:navigate-to
+                                                                :quo2-preview])})
+                             {:type            :grey
+                              :icon            :i/info
+                              :icon-background :blur
+                              :on-press        #(rf/dispatch
+                                                 [:show-bottom-sheet
+                                                  {:content getting-started-doc
+                                                   :shell?  true}])}]}]])
 
 (defn new-to-status
   []
