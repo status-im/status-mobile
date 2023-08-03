@@ -219,8 +219,8 @@
        [icons/icon :i/muted {:color colors/neutral-40}]
 
        (and group-chat unread-mentions?)
-       [quo/info-count
-        {:style               {:position :relative :right 0}
+       [quo/counter
+        {:container-style     {:position :relative :right 0}
          :customization-color customization-color
          :accessibility-label :new-message-counter}
         unviewed-mentions-count]
@@ -232,8 +232,8 @@
          :accessibility-label :unviewed-messages-public}]
 
        unread-messages?
-       [quo/info-count
-        {:style               {:position :relative :right 0}
+       [quo/counter
+        {:container-style     {:position :relative :right 0}
          :customization-color customization-color
          :accessibility-label :new-message-counter}
         unviewed-messages-count])]))
