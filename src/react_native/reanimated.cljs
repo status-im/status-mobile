@@ -17,11 +17,14 @@
                              SlideInUp
                              SlideOutUp
                              LinearTransition
+                             enableLayoutAnimations
                              runOnJS)]
             [reagent.core :as reagent]
             ["react-native-redash" :refer (withPause)]
             [react-native.flat-list :as rn-flat-list]
             [utils.worklets.core :as worklets.core]))
+
+(def enable-layout-animations enableLayoutAnimations)
 
 (def ^:const default-duration 300)
 
