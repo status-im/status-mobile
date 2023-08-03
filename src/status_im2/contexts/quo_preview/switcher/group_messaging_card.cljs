@@ -58,6 +58,22 @@
    {:source (resources/get-mock-image :photo1)}
    {:source (resources/get-mock-image :photo2)}
    {:source (resources/get-mock-image :photo3)}])
+(def clojure-example
+  "(defn request->xhrio-options
+  [{:as   request
+    :keys [on-success on-failure]
+    :or   {on-success      [:http-no-on-success]
+           on-failure      [:http-no-on-failure]}}]
+  ; wrap events in cljs-ajax callback
+  (let [api (new goog.net.XhrIo)]
+    (-> request
+        (assoc
+          :api     api
+          :handler (partial ajax-xhrio-handler
+                            #(dispatch (conj on-success %))
+                            #(dispatch (conj on-failure %))
+                            api))
+        (dissoc :on-success :on-failure :on-request))))")
 
 (defn get-mock-content
   [data]
@@ -86,7 +102,8 @@
      :text   "Rolling St..."}
 
     :code
-    nil
+    {:language :clojure
+     :text     clojure-example}
 
     nil))
 

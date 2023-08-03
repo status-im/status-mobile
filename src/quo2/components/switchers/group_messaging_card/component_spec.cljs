@@ -3,17 +3,17 @@
             [quo2.components.switchers.group-messaging-card.view :as group-messaging-card]
             [quo2.components.switchers.utils :as utils]))
 
-(defonce photos-list
+(def photos-list
   [{:source (js/require "../resources/images/mock2/photo1.png")}
    {:source (js/require "../resources/images/mock2/photo2.png")}
    {:source (js/require "../resources/images/mock2/photo3.png")}
    {:source (js/require "../resources/images/mock2/photo1.png")}
    {:source (js/require "../resources/images/mock2/photo2.png")}
    {:source (js/require "../resources/images/mock2/photo3.png")}])
-(defonce sticker {:source (js/require "../resources/images/mock2/sticker.png")})
-(defonce gif {:source (js/require "../resources/images/mock2/gif.png")})
-(defonce coinbase-community (js/require "../resources/images/mock2/coinbase.png"))
-(defonce link-icon (js/require "../resources/images/mock2/status-logo.png"))
+(def sticker {:source (js/require "../resources/images/mock2/sticker.png")})
+(def gif {:source (js/require "../resources/images/mock2/gif.png")})
+(def coinbase-community (js/require "../resources/images/mock2/coinbase.png"))
+(def link-icon (js/require "../resources/images/mock2/status-logo.png"))
 
 (h/describe "Switcher: Group Messaging Card"
   (h/test "Default render"
