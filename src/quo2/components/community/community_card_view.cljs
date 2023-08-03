@@ -32,7 +32,7 @@
 
 (defn- community-card-view
   [{:keys [community on-press width theme]}]
-  (let [{:keys [name description locked images cover
+  (let [{:keys [name description locked? images cover
                 status tokens tags]} community]
     [rn/touchable-without-feedback
      {:accessibility-label :community-card-item
@@ -56,9 +56,9 @@
          (when (= status :gated)
            [rn/view (style/permission-tag-styles)
             [community-view/permission-tag-container
-             {:locked locked
-              :status status
-              :tokens tokens}]])
+             {:locked? locked?
+              :status  status
+              :tokens  tokens}]])
          [community-view/community-title
           {:title       name
            :description description}]

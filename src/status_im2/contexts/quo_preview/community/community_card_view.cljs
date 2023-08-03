@@ -17,13 +17,15 @@
    :community-icon (resources/get-mock-image :status-logo)
    :color (rand-nth quo.colors/chat-colors)
    :tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}]
-   :tags [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}
+   :tags [{:id        1
+           :tag-label (i18n/label :t/music)
+           :emoji     (resources/get-image :music)}
           {:id        2
            :tag-label (i18n/label :t/lifestyle)
-           :resource  (resources/get-image :lifestyle)}
+           :emoji     (resources/get-image :lifestyle)}
           {:id        3
            :tag-label (i18n/label :t/podcasts)
-           :resource  (resources/get-image :podcasts)}]})
+           :emoji     (resources/get-image :podcasts)}]})
 
 (def descriptor
   [{:label   "Status:"
