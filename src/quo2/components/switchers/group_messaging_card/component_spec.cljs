@@ -1,8 +1,7 @@
 (ns quo2.components.switchers.group-messaging-card.component-spec
   (:require [test-helpers.component :as h]
             [quo2.components.switchers.group-messaging-card.view :as group-messaging-card]
-            [quo2.components.switchers.utils :as utils]
-            [status-im2.common.resources :as resources]))
+            [quo2.components.switchers.utils :as utils]))
 
 (defonce photos-list
   [{:source (js/require "../resources/images/mock2/photo1.png")}
@@ -14,6 +13,7 @@
 (defonce sticker {:source (js/require "../resources/images/mock2/sticker.png")})
 (defonce gif {:source (js/require "../resources/images/mock2/gif.png")})
 (defonce coinbase-community (js/require "../resources/images/mock2/coinbase.png"))
+(defonce link-icon (js/require "../resources/images/mock2/status-logo.png"))
 
 (h/describe "Switcher: Group Messaging Card"
   (h/test "Default render"
@@ -109,7 +109,7 @@
                 :status  :read
                 :type    :link
                 :title   "Title"
-                :content {:source (resources/get-mock-image :status-logo)
+                :content {:source link-icon
                           :text   "Rolling St..."}}])
     (h/is-truthy (h/get-by-text (utils/subtitle :link nil)))
     (h/is-truthy (h/get-by-label-text :user-avatar))
