@@ -9,7 +9,6 @@ stdenv.mkDerivation {
   phases = [
     "unpackPhase"
     "patchGradlePhase"
-    "patchHermesPhase"
     "patchReactNativePhase"
     "patchPodPhase"
     "installPhase"
@@ -46,16 +45,6 @@ stdenv.mkDerivation {
       fi
       ${patchMavenSources} $modBuildGradle
     done
-  '';
-
-  # Fix bugs in Hermes usage:
-  # https://github.com/facebook/react-native/issues/25601#issuecomment-510856047
-  # - Make PR builds also count as release builds
-  # - Fix issue where hermes command is being called with same input/output file
-  patchHermesPhase = ''
-    substituteInPlace ./node_modules/react-native/react.gradle --replace \
-        'targetName.toLowerCase().contains("release")' \
-        '!targetName.toLowerCase().contains("debug")'
   '';
 
   installPhase = ''
