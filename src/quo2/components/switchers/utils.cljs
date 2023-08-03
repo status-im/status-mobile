@@ -30,4 +30,6 @@
     (i18n/label :t/external-link)
 
     :code
-    (i18n/label :t/code-snippet)))
+    (i18n/label :t/code-snippet)
+
+    ""))

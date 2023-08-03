@@ -112,7 +112,6 @@
    quo2.components.settings.section-label.view
    quo2.components.share.qr-code.view
    quo2.components.share.share-qr-code.view
-   quo2.components.switchers.base-card.view
    quo2.components.switchers.group-messaging-card.view
    quo2.components.tabs.account-selector
    quo2.components.tabs.segmented-tab

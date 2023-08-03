@@ -75,7 +75,9 @@
        [counter/counter
         {:outline             false
          :override-text-color colors/white}
-        mention-count])]))
+        mention-count]
+
+       nil)]))
 
 (defn view
   [type status content]

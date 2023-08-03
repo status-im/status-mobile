@@ -106,18 +106,18 @@
                              :counter-label       5})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
+       [rn/view {:style {:padding-bottom 150}}
         [preview/customizer state descriptor]
         [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
+         {:style {:padding-vertical 60
+                  :align-items      :center}}
          [quo/group-messaging-card (get-mock-data @state)]]]])))
 
 (defn preview-group-messaging-card
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
+   {:style {:flex             1
+            :background-color (colors/theme-colors colors/white colors/neutral-90)}}
    [rn/flat-list
     {:flex                         1
      :keyboard-should-persist-taps :always
