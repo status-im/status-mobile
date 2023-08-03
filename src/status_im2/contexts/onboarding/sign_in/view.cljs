@@ -15,7 +15,7 @@
     :show-bottom-view? true
     :background        [background/view true]
     :animated?         false
-    :screen-name       "sign-in-intro"}])
+    :screen-name       "sign-in"}])
 
 (defn animated-view
   []
