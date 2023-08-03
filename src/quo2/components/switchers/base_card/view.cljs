@@ -7,7 +7,7 @@
   []
   (let [card-ref (atom nil)
         set-ref  #(reset! card-ref %)]
-    (fn  [{:keys [banner on-press on-close customization-color]} & children]
+    (fn [{:keys [banner on-press on-close customization-color]} & children]
       [rn/touchable-opacity
        {:on-press       on-press
         :ref            set-ref
