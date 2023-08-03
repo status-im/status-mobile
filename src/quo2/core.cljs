@@ -105,7 +105,8 @@
     quo2.components.text-combinations.title.view
     quo2.components.wallet.network-amount.view
     quo2.components.wallet.network-bridge.view
-    quo2.components.wallet.account-card.view))
+    quo2.components.wallet.account-card.view
+    quo2.components.wallet.token-input.view))
 
 (def separator quo2.components.common.separator.view/separator)
 
@@ -294,6 +295,7 @@
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 (def link-preview quo2.components.links.link-preview.view/view)
 
+
 ;;;; GRADIENT
 (def gradient-cover quo2.components.gradient.gradient-cover.view/view)
 
@@ -301,3 +303,5 @@
 (def network-amount quo2.components.wallet.network-amount.view/view)
 (def network-bridge quo2.components.wallet.network-bridge.view/view)
 (def account-card quo2.components.wallet.account-card.view/view)
+(def token-input quo2.components.wallet.token-input.view/view)
+
