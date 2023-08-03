@@ -15,5 +15,5 @@
 (defn authenticate
   [{:keys [on-success on-fail reason options]}]
   (-> (.authenticate ^js touchid reason (clj->js options))
-      (.then #(when on-success (on-success)))
+      (.then #(when on-success (on-success %)))
       (.catch #(when on-fail (on-fail (aget % "code"))))))

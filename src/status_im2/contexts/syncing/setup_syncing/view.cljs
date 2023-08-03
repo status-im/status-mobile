@@ -7,10 +7,10 @@
             [status-im2.contexts.syncing.setup-syncing.style :as style]
             [utils.re-frame :as rf]
             [react-native.clipboard :as clipboard]
-            [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]
             [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
+            [status-im2.contexts.syncing.standard-authentication.view :as standard-auth]
             [react-native.hooks :as hooks]
             [status-im2.contexts.syncing.utils :as sync-utils]))
 
@@ -38,30 +38,30 @@
 
 (defn view
   []
-  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))
-        valid-for-ms  (reagent/atom code-valid-for-ms)
-        code          (reagent/atom nil)
-        delay         (reagent/atom nil)
-        timestamp     (reagent/atom nil)
-        set-code      (fn [connection-string]
-                        (when (sync-utils/valid-connection-string? connection-string)
-                          (reset! timestamp (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000))))
-                          (reset! delay 1000)
-                          (reset! code connection-string)))
-        clock         (fn []
-                        (if (pos? (- code-valid-for-ms
-                                     (- (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000)))
-                                        @timestamp)))
-                          (swap! valid-for-ms (fn [_]
-                                                (- code-valid-for-ms
-                                                   (- (* 1000
-                                                         (js/Math.ceil (/ (datetime/timestamp) 1000)))
-                                                      @timestamp))))
-                          (reset! delay nil)))
-        cleanup-clock (fn []
-                        (reset! code nil)
-                        (reset! timestamp nil)
-                        (reset! valid-for-ms code-valid-for-ms))]
+  (let [valid-for-ms                           (reagent/atom code-valid-for-ms)
+        {:keys [customization-color]}          (rf/sub [:profile/multiaccount])
+        code                                   (reagent/atom nil)
+        delay                                  (reagent/atom nil)
+        timestamp                              (reagent/atom nil)
+        set-code                               (fn [connection-string]
+                                                 (when (sync-utils/valid-connection-string? connection-string)
+                                                   (reset! timestamp (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000))))
+                                                   (reset! delay 1000)
+                                                   (reset! code connection-string)))
+        clock                                   (fn []
+                                                  (if (pos? (- code-valid-for-ms
+                                                               (- (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000)))
+                                                                  @timestamp)))
+                                                    (swap! valid-for-ms (fn [_]
+                                                                          (- code-valid-for-ms
+                                                                             (- (* 1000
+                                                                                   (js/Math.ceil (/ (datetime/timestamp) 1000)))
+                                                                                @timestamp))))
+                                                    (reset! delay nil)))
+        cleanup-clock                           (fn []
+                                                  (reset! code nil)
+                                                  (reset! timestamp nil)
+                                                  (reset! valid-for-ms code-valid-for-ms))]
 
     (fn []
       [rn/view {:style style/container-main}
@@ -82,21 +82,6 @@
              {:source (resources/get-image :qr-code)
               :height 220
               :width  "100%"}])
-          (when-not (sync-utils/valid-connection-string? @code)
-            [quo/button
-             {:on-press            (fn []
-                                     ;TODO https://github.com/status-im/status-mobile/issues/15570
-                                     ;remove old bottom sheet when Authentication process design is
-                                     ;created.
-                                     (rf/dispatch [:bottom-sheet/hide-old])
-                                     (rf/dispatch [:bottom-sheet/show-sheet-old
-                                                   {:content (fn []
-                                                               [enter-password/sheet set-code])}]))
-              :type                :primary
-              :customization-color profile-color
-              :size                40
-              :style               style/generate-button
-              :before              :i/reveal} (i18n/label :t/reveal-sync-code)])
           (when (sync-utils/valid-connection-string? @code)
             [rn/view
              {:style style/valid-cs-container}
@@ -129,6 +114,20 @@
                :style    {:margin-top 12}
                :before   :i/copy}
               (i18n/label :t/copy-qr)]])]]
+        (when-not (sync-utils/valid-connection-string? @code)
+          ;; Implemented standard in-app authentication
+          [rn/view {:style style/standard-auth}
+           [standard-auth/view
+            {:track-text              (i18n/label :t/slide-to-reveal-code)
+             :thumb-color             customization-color
+             :track-text-color        colors/white-opa-40
+             :customization-color     colors/white-opa-5
+             :enter-pass-callback     set-code
+             :use-biometric-auth      false
+             :fallback-button-label   (i18n/label :t/reveal-sync-code)
+             :on-auth-success         #()
+             :on-auth-fail            #()}]])
+
         [rn/view {:style style/sync-code}
          [quo/divider-label
           {:label                 (i18n/label :t/have-a-sync-code?)

@@ -21,15 +21,16 @@
 (def context-tag-text-container
   {:align-items    :center
    :margin-left    4
-   :flex-direction :row})
+   :flex-direction :row
+   :font-size      13})
 
 (def audio-tag-container
   {:padding-left     2
    :padding-vertical 2})
 
 (def audio-tag-icon-container
-  {:width            20
-   :height           20
+  {:width            24
+   :height           24
    :border-radius    10
    :align-items      :center
    :justify-content  :center

@@ -103,4 +103,4 @@
            {:border-color border-color
             :border-width 1})
          (when disabled
-           {:opacity 0.3})))
+           {:opacity 0.7})))

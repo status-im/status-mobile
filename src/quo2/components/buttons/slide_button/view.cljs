@@ -1,19 +1,19 @@
 (ns quo2.components.buttons.slide-button.view
   (:require
-    [quo2.components.icon :as icon]
-    [quo2.foundations.colors :as colors]
-    [quo2.components.buttons.slide-button.style :as style]
-    [quo2.components.buttons.slide-button.utils :as utils]
-    [quo2.components.buttons.slide-button.animations :as animations]
-    [react-native.gesture :as gesture]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [oops.core :as oops]
-    [react-native.reanimated :as reanimated]
-    [quo2.components.buttons.slide-button.constants :as constants]))
+   [quo2.components.icon :as icon]
+   [quo2.foundations.colors :as colors]
+   [quo2.components.buttons.slide-button.style :as style]
+   [quo2.components.buttons.slide-button.utils :as utils]
+   [quo2.components.buttons.slide-button.animations :as animations]
+   [react-native.gesture :as gesture]
+   [react-native.core :as rn]
+   [reagent.core :as reagent]
+   [oops.core :as oops]
+   [react-native.reanimated :as reanimated]
+   [quo2.components.buttons.slide-button.constants :as constants]))
 
 (defn- f-slider
-  [{:keys [disabled?]}]
+  [{:keys [disabled? track-text-color thumb-color]}]
   (let [track-width        (reagent/atom nil)
         sliding-complete?  (reagent/atom false)
         gestures-disabled? (reagent/atom disabled?)
@@ -55,14 +55,14 @@
           [reanimated/view {:style (style/track-cover interpolate-track)}
            [rn/view {:style (style/track-cover-text-container @track-width)}
             [icon/icon track-icon
-             {:color (utils/slider-color :main customization-color)
+             {:color (utils/slider-color :main track-text-color)
               :size  20}]
             [rn/view {:width 4}]
-            [rn/text {:style (style/track-text customization-color)} track-text]]]
+            [rn/text {:style (style/track-text track-text-color)} track-text]]]
           [reanimated/view
            {:style (style/thumb-container interpolate-track
                                           (dimensions :thumb)
-                                          customization-color)}
+                                          thumb-color)}
            [reanimated/view {:style (style/arrow-icon-container interpolate-track)}
             [icon/icon :arrow-right
              {:color colors/white
