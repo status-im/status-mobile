@@ -68,6 +68,9 @@
   (get-config :VERIFY_ENS_CONTRACT_ADDRESS
               ((ethereum/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
 
+(def fast-create-community-enabled?
+  (enabled? (get-config :FAST_CREATE_COMMUNITY_ENABLED "0")))
+
 (def default-multiaccount
   {:preview-privacy?                   blank-preview?
    :wallet/visible-tokens              {:mainnet #{:SNT}}
