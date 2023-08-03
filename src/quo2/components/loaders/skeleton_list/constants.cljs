@@ -8,10 +8,6 @@
    :notifications {:height      90
                    :padding-top 8}})
 
-(def message-skeleton-height 54)
-
-(def avatar-skeleton-size 32)
-
 (def ^:const content-dimensions
   {:messages      {0 {:author  {:width         112
                                 :height        8

@@ -3,63 +3,28 @@
             [quo2.foundations.colors :as colors]
             [test-helpers.component :as h]))
 
+(defn test-skeleton
+  [content animated? i]
+  (let [animation-state (if animated? "animated" "static")
+        rendered        (h/render [skeleton-list/view
+                                   {:index         0
+                                    :content       content
+                                    :color         colors/neutral-10
+                                    :parent-height 600
+                                    :animated?     animated?}])
+        label-text      (str "skeleton-" animation-state "-" (mod i 4) "-" i)]
+    (h/is-truthy (h/get-by-label-text rendered label-text))))
+
 (h/describe "Skeleton tests"
-  (doseq [i (range 0 2)]
-    (h/test (str "Skeleton :messages component with index " i " is animated when animated? is true")
-      (let [rendered (h/render [skeleton-list/view
-                                {:index         0
-                                 :content       :messages
-                                 :color         colors/neutral-10
-                                 :parent-height 600
-                                 :animated?     true}])]
-        (h/is-truthy (h/get-by-label-text rendered (str "skeleton-animated-" (mod i 4) "-" i))))))
-
-  (doseq [i (range 0 2)]
-    (h/test (str "Skeleton :messages component with index " i " is static when animated? is false")
-      (let [rendered (h/render [skeleton-list/view
-                                {:index         0
-                                 :content       :messages
-                                 :color         colors/neutral-10
-                                 :parent-height 600
-                                 :animated?     false}])]
-        (h/is-truthy (h/get-by-label-text rendered (str "skeleton-static-" (mod i 4) "-" i))))))
-
-  (doseq [i (range 0 2)]
-    (h/test (str "Skeleton :notifications component with index " i " is animated when animated? is true")
-      (let [rendered (h/render [skeleton-list/view
-                                {:index         0
-                                 :content       :notifications
-                                 :color         colors/neutral-10
-                                 :parent-height 600
-                                 :animated?     true}])]
-        (h/is-truthy (h/get-by-label-text rendered (str "skeleton-animated-" (mod i 4) "-" i))))))
-
-  (doseq [i (range 0 2)]
-    (h/test (str "Skeleton :notifications component with index " i " is static when animated? is false")
-      (let [rendered (h/render [skeleton-list/view
-                                {:index         0
-                                 :content       :notifications
-                                 :color         colors/neutral-10
-                                 :parent-height 600
-                                 :animated?     false}])]
-        (h/is-truthy (h/get-by-label-text rendered (str "skeleton-static-" (mod i 4) "-" i))))))
-
-  (doseq [i (range 0 2)]
-    (h/test (str "Skeleton :list-items component with index " i " is animated when animated? is true")
-      (let [rendered (h/render [skeleton-list/view
-                                {:index         0
-                                 :content       :list-items
-                                 :color         colors/neutral-10
-                                 :parent-height 600
-                                 :animated?     true}])]
-        (h/is-truthy (h/get-by-label-text rendered (str "skeleton-animated-" (mod i 4) "-" i))))))
-
-  (doseq [i (range 0 2)]
-    (h/test (str "Skeleton :list-items component with index " i " is static when animated? is false")
-      (let [rendered (h/render [skeleton-list/view
-                                {:index         0
-                                 :content       :list-items
-                                 :color         colors/neutral-10
-                                 :parent-height 600
-                                 :animated?     false}])]
-        (h/is-truthy (h/get-by-label-text rendered (str "skeleton-static-" (mod i 4) "-" i)))))))
+  (doseq [content   [:messages :notifications :list-items]
+          i         (range 0 2)
+          animated? [true false]]
+    (let [content-str (name content)]
+      (h/test (str "Skeleton :"
+                   content-str
+                   " component with index "
+                   i
+                   " is "
+                   (if animated? "animated" "static")
+                   " based on animated? " animated?)
+        (test-skeleton content animated? i)))))
