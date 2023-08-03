@@ -34,18 +34,16 @@
                              :left-action :dot})]
     (fn []
       [rn/view
-       [rn/view {:style {:flex 1}}
-        [preview/customizer state descriptor]]
-       [preview/blur-view
-        {:style                 {:flex              1
-                                 :align-self        :center
-                                 :justify-self      :center
-                                 :margin-horizontal 20}
-         :show-blur-background? (:blur? @state)
-         :height                270
-         :blur-view-props       (when (:blur? @state)
-                                  {:overlay-color colors/neutral-80-opa-80})}
-        [quo/numbered-keyboard @state]]])))
+       [rn/view {:height 550}
+        [rn/view {:flex 1}
+         [preview/customizer state descriptor]]
+        [preview/blur-view
+         {:show-blur-background? (:blur? @state)
+          :blur-view-props       {:blur-type     :dark
+                                  :overlay-color colors/neutral-80-opa-80}
+          :height                270
+          :style                 {:align-self :center :margin-horizontal 20}}
+         [quo/numbered-keyboard @state]]]])))
 
 (defn preview-numbered-keyboard
   []

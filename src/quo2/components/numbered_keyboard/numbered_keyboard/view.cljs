@@ -5,7 +5,9 @@
             [quo2.components.numbered-keyboard.numbered-keyboard.style :as style]))
 
 (defn keyboard-item
-  [item type disabled? on-press blur? position theme]
+  [{:keys [item type position disabled? on-press blur? theme]
+    :or   {position 1
+           item     nil}}]
   [rn/view
    {:style (style/keyboard-item position)}
    (when item
@@ -22,14 +24,48 @@
     [rn/view
      {:style style/container}
      (for [item (range 1 10)]
-       [keyboard-item item :digit disabled? on-press blur? item theme])
+       ^{:key item}
+       [keyboard-item
+        {:item      item
+         :type      :digit
+         :position  item
+         :disabled? disabled?
+         :on-press  on-press
+         :blur?     blur?
+         :theme     theme}])
      (condp = left-action
-       :dot     [keyboard-item "." :digit disabled? on-press blur? 1 theme]
-       :face-id [keyboard-item :i/face-id :key disabled? on-press blur? 1 theme]
-       :none    [keyboard-item nil])
-     [keyboard-item "0" :digit disabled? on-press blur? 2 theme]
+       :dot     [keyboard-item
+                 {:item      "."
+                  :type      :digit
+                  :disabled? disabled?
+                  :on-press  on-press
+                  :blur?     blur?
+                  :theme     theme}]
+       :face-id [keyboard-item
+                 {:item      :i/face-id
+                  :type      :key
+                  :disabled? disabled?
+                  :on-press  on-press
+                  :blur?     blur?
+                  :theme     theme}]
+       :none    [keyboard-item])
+     [keyboard-item
+      {:item      "0"
+       :type      :digit
+       :position  2
+       :disabled? disabled?
+       :on-press  on-press
+       :blur?     blur?
+       :theme     theme}]
      (if delete-key?
-       [keyboard-item :i/delete :key disabled? on-press blur? 3 theme]
-       [keyboard-item nil])]))
+       [keyboard-item
+        {:item      :i/delete
+         :type      :key
+         :position  3
+         :disabled? disabled?
+         :on-press  on-press
+         :blur?     blur?
+         :theme     theme}]
+       [keyboard-item])]))
 
 (def numbered-keyboard (quo.theme/with-theme numbered-keyboard-internal))
