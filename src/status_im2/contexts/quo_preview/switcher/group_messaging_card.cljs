@@ -86,6 +86,8 @@
      :text   "Rolling St..."}
 
     :code
+    nil
+
     nil))
 
 (defn get-mock-data

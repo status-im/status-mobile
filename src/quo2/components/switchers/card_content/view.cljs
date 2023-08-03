@@ -3,7 +3,7 @@
             [react-native.fast-image :as fast-image]
             [quo2.components.switchers.card-content.style :as style]
             [quo2.components.notifications.notification-dot :as notification-dot]
-            [quo2.components.counter.counter :as counter]
+            [quo2.components.counter.counter.view :as counter]
             [quo2.components.markdown.text :as text]
             [quo2.components.list-items.preview-list :as preview-list]
             [quo2.components.tags.context-tag.view :as tag]
@@ -72,7 +72,7 @@
        [notification-dot/notification-dot]
 
        :mention
-       [counter/counter
+       [counter/view
         {:outline             false
          :override-text-color colors/white}
         mention-count]

@@ -15,4 +15,4 @@
     (h/render [base-card/base-card {:customization-color :blue}])
     (h/has-style
      (h/query-by-label-text :base-card)
-     {:backgroundColor (colors/custom-color-by-theme :blue 50 50 40 40)})))
+     {:backgroundColor (colors/custom-color :blue 50 40)})))

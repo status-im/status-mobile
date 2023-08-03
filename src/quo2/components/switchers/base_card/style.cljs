@@ -6,7 +6,7 @@
   {:width            160
    :height           160
    :border-radius    16
-   :background-color (colors/custom-color-by-theme customization-color 50 50 40 40)})
+   :background-color (colors/custom-color customization-color 50 40)})
 
 (def thumb-card
   {:width            160

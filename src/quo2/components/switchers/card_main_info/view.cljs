@@ -10,8 +10,7 @@
     {:size            :paragraph-1
      :weight          :semi-bold
      :number-of-lines 1
-     :ellipsize-mode  :tail
-     :style           style/title}
+     :ellipsize-mode  :tail}
     title]
    [text/text
     {:size   :paragraph-2
