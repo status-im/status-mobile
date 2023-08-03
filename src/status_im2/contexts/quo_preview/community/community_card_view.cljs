@@ -35,12 +35,16 @@
                :value "Open"}]}
    {:label "Locked:"
     :key   :locked?
+    :type  :boolean}
+   {:label "Loading:"
+    :key   :loading?
     :type  :boolean}])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:status  :gated
-                             :locked? true})]
+  (let [state (reagent/atom {:status   :gated
+                             :locked?  true
+                             :loading? false})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -51,7 +55,9 @@
         [rn/view
          {:padding-vertical 60
           :justify-content  :center}
-         [community-card-view/community-card-view-item (merge @state community-data)]]]])))
+         [community-card-view/view
+          {:community (merge @state community-data)
+           :loading?  (:loading? @state)}]]]])))
 
 (defn preview-community-card
   []

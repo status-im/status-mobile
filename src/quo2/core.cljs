@@ -61,7 +61,6 @@
     quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
     quo2.components.loaders.skeleton.view
-    quo2.components.loaders.community-card-skeleton.view
     quo2.components.markdown.list.view
     quo2.components.markdown.text
     quo2.components.messages.author.view
@@ -149,7 +148,7 @@
 (def picker-colors quo2.components.colors.color-picker.view/picker-colors)
 
 ;;;; COMMUNITY
-(def community-card-view-item quo2.components.community.community-card-view/community-card-view-item)
+(def community-card-view-item quo2.components.community.community-card-view/view)
 (def communities-membership-list-item
   quo2.components.community.community-list-view/communities-membership-list-item)
 (def community-stats-column quo2.components.community.community-view/community-stats-column)
@@ -218,7 +217,6 @@
 ;;;; LOADERS
 (def skeleton quo2.components.loaders.skeleton/skeleton)
 (def static-skeleton quo2.components.loaders.skeleton.view/view)
-(def community-card-skeleton quo2.components.loaders.community-card-skeleton.view/view)
 
 ;;;; NAVIGATION
 (def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
