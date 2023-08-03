@@ -292,3 +292,15 @@
 (defn dark?
   []
   (theme/dark?))
+
+;;;; Networks
+
+(def networks
+  {:ethereum "#758EEB"
+   :optimism "#E76E6E"
+   :arbitrum "#6BD5F0"
+   :zkSync   "#9FA0FE"
+   :hermez   "#EB8462"
+   :xDai     "#3FC0BD"
+   :polygon  "#AD71F3"
+   :unknown  "#EEF2F5"})

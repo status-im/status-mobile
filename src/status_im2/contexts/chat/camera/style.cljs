@@ -7,15 +7,34 @@
   {:flex             1
    :background-color colors/black})
 
-(def flash-container
-  {:position :absolute
-   :top      50
-   :left     25})
+(defn flash-container
+  [rotate uri]
+  (reanimated/apply-animations-to-style
+   {:transform [{:rotate rotate}]}
+   {:position :absolute
+    :top      50
+    :left     (if uri -25 25)}))
+
+(def cancel-dash
+  {:width            1
+   :height           32
+   :top              -4
+   :left             12
+   :z-index          1
+   :transform        [{:rotate "-45deg"}]
+   :background-color colors/white
+   :position         :absolute})
 
 (defn camera-window
   [width height top]
   {:width  width
    :height height
+   :top    top})
+
+(defn image
+  [width height top portrait?]
+  {:width  width
+   :height (if portrait? height (* width 0.75))
    :top    top})
 
 (def zoom-button-container
@@ -38,19 +57,22 @@
    :bottom           (+ top (:bottom insets) (when platform/android? (:top insets)) 18)})
 
 (defn zoom-button
-  [size]
+  [size rotate]
   (reanimated/apply-animations-to-style
-   {:width  size
-    :height size}
+   {:width     size
+    :height    size
+    :transform [{:rotate rotate}]}
    {:background-color colors/black-opa-30
     :justify-content  :center
     :align-items      :center
     :border-radius    50}))
 
 (defn bottom-area
-  [top insets]
+  [top insets uri]
   {:left     20
    :right    20
+   :opacity  (if uri 0 1)
+   :z-index  (if uri 0 1)
    :position :absolute
    :height   (+ top (when platform/android? (:top insets)))
    :bottom   (:bottom insets)})
@@ -84,8 +106,10 @@
    :background-color colors/white})
 
 (defn confirmation-container
-  [insets]
+  [insets uri]
   {:position           :absolute
+   :opacity            (if uri 1 0)
+   :z-index            (if uri 1 0)
    :bottom             0
    :left               0
    :right              0

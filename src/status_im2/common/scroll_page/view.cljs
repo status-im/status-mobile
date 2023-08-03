@@ -1,17 +1,12 @@
 (ns status-im2.common.scroll-page.view
   (:require [oops.core :as oops]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.common.scroll-page.style :as style]
             [utils.re-frame :as rf]
             [react-native.reanimated :as reanimated]))
-
-(defn icon-color
-  []
-  (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40))
 
 (def negative-scroll-position-0 (if platform/ios? -44 0))
 (def scroll-position-0 (if platform/ios? 44 0))
@@ -71,18 +66,24 @@
          top-nav]
         [rn/view {:style {:margin-top 44}}
          [quo/page-nav
-          (merge {:horizontal-description? true
-                  :one-icon-align-left?    true
-                  :align-mid?              false
-                  :page-nav-color          :transparent
-                  :mid-section             {:type            :text-with-description
-                                            :main-text       nil
-                                            :description-img nil}
-                  :right-section-buttons   page-nav}
-                 (when navigate-back?
-                   {:left-section {:icon                  :i/close
-                                   :icon-background-color (icon-color)
-                                   :on-press              #(rf/dispatch [:navigate-back])}}))]])
+          (merge
+           {:horizontal-description? true
+            :one-icon-align-left?    true
+            :align-mid?              false
+            :page-nav-color          :transparent
+            :mid-section             {:type            :text-with-description
+                                      :main-text       nil
+                                      :description-img nil}
+            :right-section-buttons   (if (= 1 reanimated/get-shared-value opacity-animation)
+                                       (assoc page-nav :icon-background :blur)
+                                       page-nav)}
+           (when navigate-back?
+             {:left-section {:icon            :i/close
+                             :type            :grey
+                             :icon-background (if (= 1 reanimated/get-shared-value opacity-animation)
+                                                :blur
+                                                :photo)
+                             :on-press        #(rf/dispatch [:navigate-back])}}))]])
       (when title-colum
         title-colum)
       sticky-header]]))

@@ -1,7 +1,7 @@
 (ns quo2.core
   (:refer-clojure :exclude [filter])
   (:require
-    quo2.components.avatars.account-avatar
+    quo2.components.avatars.account-avatar.view
     quo2.components.avatars.channel-avatar.view
     quo2.components.avatars.group-avatar
     quo2.components.avatars.icon-avatar
@@ -26,7 +26,7 @@
     quo2.components.community.community-view
     quo2.components.community.icon
     quo2.components.community.token-gating
-    quo2.components.counter.counter
+    quo2.components.counter.counter.view
     quo2.components.counter.step.view
     quo2.components.dividers.date
     quo2.components.dividers.divider-label
@@ -38,6 +38,8 @@
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
     quo2.components.empty-state.empty-state.view
+    quo2.components.gradient.gradient-cover.view
+    quo2.components.graph.wallet-graph.view
     quo2.components.header
     quo2.components.icon
     quo2.components.info.info-message
@@ -68,10 +70,10 @@
     quo2.components.notifications.activity-log.view
     quo2.components.notifications.activity-logs-photos.view
     quo2.components.notifications.count-down-circle
-    quo2.components.notifications.info-count
     quo2.components.notifications.notification-dot
     quo2.components.notifications.notification.view
     quo2.components.notifications.toast.view
+    quo2.components.numbered-keyboard.keyboard-key.view
     quo2.components.onboarding.small-option-card.view
     quo2.components.password.tips.view
     quo2.components.profile.profile-card.view
@@ -99,12 +101,16 @@
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
-    quo2.components.text-combinations.title.view))
+    quo2.components.text-combinations.title.view
+    quo2.components.wallet.network-amount.view
+    quo2.components.wallet.network-bridge.view
+    quo2.components.wallet.account-card.view
+    quo2.components.wallet.token-input.view))
 
 (def separator quo2.components.common.separator.view/separator)
 
 ;;;; AVATAR
-(def account-avatar quo2.components.avatars.account-avatar/account-avatar)
+(def account-avatar quo2.components.avatars.account-avatar.view/view)
 (def channel-avatar quo2.components.avatars.channel-avatar.view/view)
 (def group-avatar quo2.components.avatars.group-avatar/group-avatar)
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
@@ -154,7 +160,7 @@
 (def channel-actions quo2.components.community.channel-actions/channel-actions)
 
 ;;;; COUNTER
-(def counter quo2.components.counter.counter/counter)
+(def counter quo2.components.counter.counter.view/view)
 (def step quo2.components.counter.step.view/step)
 
 ;;;; DIVIDERS
@@ -175,6 +181,9 @@
 ;;;; EMPTY STATE
 (def empty-state quo2.components.empty-state.empty-state.view/empty-state)
 
+;;;; GRAPH
+(def wallet-graph quo2.components.graph.wallet-graph.view/view)
+
 ;;;; HEADER
 (def header quo2.components.header/header)
 
@@ -191,6 +200,9 @@
 (def recovery-phrase-input quo2.components.inputs.recovery-phrase.view/recovery-phrase-input)
 (def search-input quo2.components.inputs.search-input.view/search-input)
 (def title-input quo2.components.inputs.title-input.view/title-input)
+
+;;;; NUMBERED KEYBOARD
+(def keyboard-key quo2.components.numbered-keyboard.keyboard-key.view/keyboard-key)
 
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)
@@ -218,7 +230,6 @@
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)
 (def activity-logs-photos quo2.components.notifications.activity-logs-photos.view/view)
-(def info-count quo2.components.notifications.info-count/info-count)
 (def notification-dot quo2.components.notifications.notification-dot/notification-dot)
 (def count-down-circle quo2.components.notifications.count-down-circle/circle-timer)
 (def notification quo2.components.notifications.notification.view/notification)
@@ -281,3 +292,14 @@
 (def url-preview quo2.components.links.url-preview.view/view)
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 (def link-preview quo2.components.links.link-preview.view/view)
+
+
+;;;; GRADIENT
+(def gradient-cover quo2.components.gradient.gradient-cover.view/view)
+
+;;;; WALLET
+(def network-amount quo2.components.wallet.network-amount.view/view)
+(def network-bridge quo2.components.wallet.network-bridge.view/view)
+(def account-card quo2.components.wallet.account-card.view/view)
+(def token-input quo2.components.wallet.token-input.view/view)
+

@@ -38,30 +38,30 @@
 
 (defn view
   []
-  (let [valid-for-ms                           (reagent/atom code-valid-for-ms)
-        {:keys [customization-color]}          (rf/sub [:profile/multiaccount])
-        code                                   (reagent/atom nil)
-        delay                                  (reagent/atom nil)
-        timestamp                              (reagent/atom nil)
-        set-code                               (fn [connection-string]
-                                                 (when (sync-utils/valid-connection-string? connection-string)
-                                                   (reset! timestamp (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000))))
-                                                   (reset! delay 1000)
-                                                   (reset! code connection-string)))
-        clock                                   (fn []
-                                                  (if (pos? (- code-valid-for-ms
-                                                               (- (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000)))
-                                                                  @timestamp)))
-                                                    (swap! valid-for-ms (fn [_]
-                                                                          (- code-valid-for-ms
-                                                                             (- (* 1000
-                                                                                   (js/Math.ceil (/ (datetime/timestamp) 1000)))
-                                                                                @timestamp))))
-                                                    (reset! delay nil)))
-        cleanup-clock                           (fn []
-                                                  (reset! code nil)
-                                                  (reset! timestamp nil)
-                                                  (reset! valid-for-ms code-valid-for-ms))]
+  (let [profile-color (rf/sub [:profile/customization-color])
+        valid-for-ms  (reagent/atom code-valid-for-ms)
+        code          (reagent/atom nil)
+        delay         (reagent/atom nil)
+        timestamp     (reagent/atom nil)
+        set-code      (fn [connection-string]
+                        (when (sync-utils/valid-connection-string? connection-string)
+                          (reset! timestamp (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000))))
+                          (reset! delay 1000)
+                          (reset! code connection-string)))
+        clock         (fn []
+                        (if (pos? (- code-valid-for-ms
+                                     (- (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000)))
+                                        @timestamp)))
+                          (swap! valid-for-ms (fn [_]
+                                                (- code-valid-for-ms
+                                                   (- (* 1000
+                                                         (js/Math.ceil (/ (datetime/timestamp) 1000)))
+                                                      @timestamp))))
+                          (reset! delay nil)))
+        cleanup-clock (fn []
+                        (reset! code nil)
+                        (reset! timestamp nil)
+                        (reset! valid-for-ms code-valid-for-ms))]
 
     (fn []
       [rn/view {:style style/container-main}
@@ -103,23 +103,23 @@
                :default-shown? true
                :editable       false}]
              [quo/button
-              {:on-press (fn []
-                           (clipboard/set-string @code)
-                           (rf/dispatch [:toasts/upsert
-                                         {:icon       :i/correct
-                                          :icon-color colors/success-50
-                                          :text       (i18n/label
-                                                       :t/sharing-copied-to-clipboard)}]))
-               :type     :grey
-               :style    {:margin-top 12}
-               :before   :i/copy}
+              {:on-press        (fn []
+                                  (clipboard/set-string @code)
+                                  (rf/dispatch [:toasts/upsert
+                                                {:icon       :correct
+                                                 :icon-color colors/success-50
+                                                 :text       (i18n/label
+                                                              :t/sharing-copied-to-clipboard)}]))
+               :type            :grey
+               :container-style {:margin-top 12}
+               :icon-left       :i/copy}
               (i18n/label :t/copy-qr)]])]]
         (when-not (sync-utils/valid-connection-string? @code)
           ;; Implemented standard in-app authentication
           [rn/view {:style style/standard-auth}
            [standard-auth/view
             {:track-text              (i18n/label :t/slide-to-reveal-code)
-             :thumb-color             customization-color
+             :thumb-color             profile-color
              :track-text-color        colors/white-opa-40
              :customization-color     colors/white-opa-5
              :enter-pass-callback     set-code

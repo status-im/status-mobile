@@ -47,15 +47,15 @@
 
 (defn continue-button
   [on-press]
-  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))]
+  (let [profile-color (rf/sub [:profile/customization-color])]
     [quo/button
      {:on-press            (fn []
                              (when on-press
                                (on-press))
                              (rf/dispatch [:open-modal :enable-notifications]))
       :accessibility-label :continue-button
-      :customization0color profile-color
-      :style               style/continue-button}
+      :customization-color profile-color
+      :container-style     style/continue-button}
      (i18n/label :t/continue)]))
 
 (defn- f-view

@@ -60,7 +60,7 @@
              {:accessibility-label :cancel
               :on-press            #(rf/dispatch [:navigate-back])
               :type                :grey
-              :style               style/cancel-button}
+              :container-style     style/cancel-button}
              (i18n/label :t/cancel)]
             [quo/button
              {:accessibility-label :join-community-button
@@ -75,8 +75,8 @@
                                                  requested-to-join-at))
                                            (rf/dispatch [:communities/request-to-join id])
                                            (rf/dispatch [:navigate-back]))))
-              :disabled            (not @agreed-to-rules?)
-              :style               {:flex 1}}
+              :disabled?           (not @agreed-to-rules?)
+              :container-style     {:flex 1}}
              (request-to-join-text open?)]]
            [rn/view {:style style/final-disclaimer-container}
             [quo/text

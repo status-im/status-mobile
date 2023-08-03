@@ -63,14 +63,14 @@
          [extra-action-view extra-action extra-text extra-action-selected?]
          [rn/view {:style style/buttons-container}
           [quo/button
-           {:type     :grey
-            :style    {:flex 0.48} ;;WUT? 0.48 , whats that ?
-            :on-press #(rf/dispatch [:hide-bottom-sheet])}
+           {:type            :grey
+            :container-style {:flex 0.48} ;;WUT? 0.48 , whats that ?
+            :on-press        #(rf/dispatch [:hide-bottom-sheet])}
            (or close-button-text (i18n/label :t/close))]
           [quo/button
-           {:type     :danger
-            :style    {:flex 0.48}
-            :on-press #(do
-                         (when @extra-action-selected? (extra-action))
-                         (on-press))}
+           {:type            :danger
+            :container-style {:flex 0.48}
+            :on-press        #(do
+                                (when @extra-action-selected? (extra-action))
+                                (on-press))}
            button-text]]]))))

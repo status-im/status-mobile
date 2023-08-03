@@ -80,7 +80,7 @@
 (def header-content-container
   {:flex-direction :row
    :align-items    :center
-   :margin-left    8
+   :margin-left    12
    :margin-right   8
    :margin-top     -4
    :height         40})
@@ -95,6 +95,6 @@
   []
   {:color (colors/theme-colors colors/black colors/white)})
 
-(defn header-online
+(defn header-status
   []
   {:color (colors/theme-colors colors/neutral-80-opa-50 colors/white-opa-50)})

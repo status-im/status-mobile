@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.composer.actions.style
   (:require
-    [quo2.foundations.colors :as colors]
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.composer.constants :as constants]))
 
@@ -18,7 +17,6 @@
    {:position         :absolute
     :right            0
     :z-index          z-index
-    :background-color (colors/theme-colors colors/white colors/neutral-95)
     :padding-vertical 3
     :padding-left     2}))
 

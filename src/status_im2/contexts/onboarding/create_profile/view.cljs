@@ -170,8 +170,8 @@
                                                 {:image-path   @profile-pic
                                                  :display-name @full-name
                                                  :color        @custom-color}]))
-           :style               style/continue-button
-           :disabled            (or (not valid-name?) (not (seq @full-name)))}
+           :container-style     style/continue-button
+           :disabled?           (or (not valid-name?) (not (seq @full-name)))}
           (i18n/label :t/continue)]]]])
     (finally
      (oops/ocall show-listener "remove")

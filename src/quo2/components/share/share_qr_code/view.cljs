@@ -40,10 +40,10 @@
        qr-url]]]
     [rn/view {:style style/share-button-container}
      [button/button
-      {:icon                true
-       :type                :blur-bg
+      {:icon-only?          true
+       :type                :grey
+       :background          :blur
        :size                32
        :accessibility-label :share-profile
-       :override-theme      :dark
        :on-press            share-on-press}
       :i/share]]]])

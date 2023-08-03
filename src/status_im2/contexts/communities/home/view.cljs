@@ -19,17 +19,19 @@
 
 (defn item-render
   [{:keys [id] :as item}]
-  (let [unviewed-counts (rf/sub [:communities/unviewed-counts id])
-        item            (merge item unviewed-counts)]
+  (let [unviewed-counts     (rf/sub [:communities/unviewed-counts id])
+        customization-color (rf/sub [:profile/customization-color])
+        item                (merge item unviewed-counts)]
     [quo/communities-membership-list-item
-     {:style         {:padding-horizontal 18}
-      :on-press      #(debounce/dispatch-and-chill [:navigate-to :community-overview id] 500)
-      :on-long-press #(rf/dispatch
-                       [:show-bottom-sheet
-                        {:content       (fn []
-                                          [options/community-options-bottom-sheet id])
-                         :selected-item (fn []
-                                          [quo/communities-membership-list-item {} true item])}])}
+     {:customization-color customization-color
+      :style               {:padding-horizontal 18}
+      :on-press            #(debounce/dispatch-and-chill [:navigate-to :community-overview id] 500)
+      :on-long-press       #(rf/dispatch
+                             [:show-bottom-sheet
+                              {:content       (fn []
+                                                [options/community-options-bottom-sheet id])
+                               :selected-item (fn []
+                                                [quo/communities-membership-list-item {} true item])}])}
      false
      item]))
 

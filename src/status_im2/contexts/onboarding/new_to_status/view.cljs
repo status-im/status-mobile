@@ -105,12 +105,13 @@
    [quo/page-nav
     {:align-mid?            true
      :mid-section           {:type :text-only :main-text ""}
-     :left-section          {:type                :blur-bg
-                             :icon                :i/arrow-left
-                             :icon-override-theme :dark
-                             :on-press            navigate-back}
-     :right-section-buttons [{:type                :blur-bg
+     :left-section          {:type            :grey
+                             :icon-background :blur
+                             :icon            :i/arrow-left
+                             :on-press        navigate-back}
+     :right-section-buttons [{:type                :grey
                               :icon                :i/info
+                              :icon-background     :blur
                               :icon-override-theme :dark
                               :on-press            #(rf/dispatch
                                                      [:show-bottom-sheet

@@ -93,13 +93,14 @@
             :number-of-lines 1
             :style           (style/header-display-name)}
            display-name]]
-         (when online?
+         (when-not group-chat
            [quo/text
             {:number-of-lines 1
-             :weight          :regular
+             :weight          :medium
              :size            :paragraph-2
-             :style           (style/header-online)}
-            (i18n/label :t/online)])]]]
+             :style           (style/header-status)}
+            (i18n/label
+             (if online? :t/online :t/offline))])]]]
       [rn/touchable-opacity
        {:active-opacity      1
         :style               (style/button-container {:margin-right 20})

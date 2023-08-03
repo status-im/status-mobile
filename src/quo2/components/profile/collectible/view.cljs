@@ -91,7 +91,9 @@
              [remaining-tiles (- (count remaining-images) 3)]])]]))))
 
 (defn collectible
-  [{:keys [images]}]
+  [{:keys [images on-press]}]
   [rn/view {:style style/tile-outer-container}
-   [rn/view {:style style/tile-inner-container}
+   [rn/pressable
+    {:on-press on-press
+     :style    style/tile-inner-container}
     [tile-container {:images images}]]])
