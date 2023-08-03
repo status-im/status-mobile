@@ -35,7 +35,7 @@
           {:style  style/token
            :source (resources/get-token token)}]
          [rn/text-input
-          {:ref                    #(reset! input-ref %)
+          {:ref                    #(when @input-ref (reset! input-ref %))
            :placeholder            "0"
            :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)
            :keyboard-type          :numeric
