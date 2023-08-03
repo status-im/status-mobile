@@ -35,17 +35,19 @@
 
 (defn- unread-indicator
   []
-  (let [unread-count (rf/sub [:activity-center/unread-count])
-        indicator    (rf/sub [:activity-center/unread-indicator])
-        unread-type  (case indicator
-                       :unread-indicator/seen :grey
-                       :unread-indicator/new  :default
-                       nil)]
+  (let [unread-count        (rf/sub [:activity-center/unread-count])
+        indicator           (rf/sub [:activity-center/unread-indicator])
+        unread-type         (case indicator
+                              :unread-indicator/seen :grey
+                              :unread-indicator/new  :default
+                              nil)
+        customization-color (rf/sub [:profile/customization-color])]
     (when (pos? unread-count)
       [quo/counter
-       {:accessibility-label :activity-center-unread-count
+       {:customization-color customization-color
+        :accessibility-label :activity-center-unread-count
         :type                unread-type
-        :style               (style/unread-indicator unread-count
+        :container-style     (style/unread-indicator unread-count
                                                      constants/activity-center-max-unread-count)}
        unread-count])))
 

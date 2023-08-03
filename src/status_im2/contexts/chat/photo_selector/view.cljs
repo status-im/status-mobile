@@ -6,7 +6,6 @@
     [react-native.platform :as platform]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [quo2.components.notifications.info-count :as info-count]
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -69,7 +68,8 @@
 
 (defn render-image
   [item index _ {:keys [window-width selected]}]
-  (let [item-selected? (some #(= (:uri item) (:uri %)) @selected)]
+  (let [customization-color (rf/sub [:profile/customization-color])
+        item-selected?      (some #(= (:uri item) (:uri %)) @selected)]
     [rn/touchable-opacity
      {:on-press            (fn []
                              (if item-selected?
@@ -84,8 +84,9 @@
      (when item-selected?
        [:<>
         [rn/view {:style (style/overlay window-width)}]
-        [info-count/info-count
-         {:style               style/image-count
+        [quo/counter
+         {:container-style     style/image-count
+          :customization-color customization-color
           :accessibility-label (str "count-" index)}
          (inc (utils.collection/first-index #(= (:uri item) (:uri %)) @selected))]])]))
 

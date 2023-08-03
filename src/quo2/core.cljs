@@ -26,7 +26,7 @@
     quo2.components.community.community-view
     quo2.components.community.icon
     quo2.components.community.token-gating
-    quo2.components.counter.counter
+    quo2.components.counter.counter.view
     quo2.components.counter.step.view
     quo2.components.dividers.date
     quo2.components.dividers.divider-label
@@ -70,7 +70,6 @@
     quo2.components.notifications.activity-log.view
     quo2.components.notifications.activity-logs-photos.view
     quo2.components.notifications.count-down-circle
-    quo2.components.notifications.info-count
     quo2.components.notifications.notification-dot
     quo2.components.notifications.notification.view
     quo2.components.notifications.toast.view
@@ -161,7 +160,7 @@
 (def channel-actions quo2.components.community.channel-actions/channel-actions)
 
 ;;;; COUNTER
-(def counter quo2.components.counter.counter/counter)
+(def counter quo2.components.counter.counter.view/view)
 (def step quo2.components.counter.step.view/step)
 
 ;;;; DIVIDERS
@@ -231,7 +230,6 @@
 ;;;; NOTIFICATIONS
 (def activity-log quo2.components.notifications.activity-log.view/view)
 (def activity-logs-photos quo2.components.notifications.activity-logs-photos.view/view)
-(def info-count quo2.components.notifications.info-count/info-count)
 (def notification-dot quo2.components.notifications.notification-dot/notification-dot)
 (def count-down-circle quo2.components.notifications.count-down-circle/circle-timer)
 (def notification quo2.components.notifications.notification.view/notification)
