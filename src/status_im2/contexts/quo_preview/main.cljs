@@ -106,7 +106,8 @@
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
-    [status-im2.contexts.quo-preview.wallet.token-input :as token-input]))
+    [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
+    [reagent.core :as reagent]))
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -427,6 +428,22 @@
    [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
    [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
 
+(defn category-view
+  []
+  (let [open? (reagent/atom false)]
+    (fn [category]
+      [rn/view {:style {:margin-vertical 8}}
+       [quo/dropdown {:selected @open? :on-change #(swap! open? not) :type :grey}
+        (clojure.core/name (key category))]
+       (when @open?
+         (for [{:keys [name]} (val category)]
+           ^{:key name}
+           [quo/button
+            {:type            :outline
+             :container-style {:margin-vertical 8}
+             :on-press        #(re-frame/dispatch [:navigate-to name])}
+            (clojure.core/name name)]))])))
+
 (defn main-screen
   []
   (fn []
@@ -440,17 +457,7 @@
      [rn/view
       (map (fn [category]
              ^{:key (get category 0)}
-             [rn/view {:style {:margin-vertical 8}}
-              [quo/text
-               {:weight :semi-bold
-                :size   :heading-2}
-               (clojure.core/name (key category))]
-              (for [{:keys [name]} (val category)]
-                ^{:key name}
-                [quo/button
-                 {:container-style {:margin-vertical 8}
-                  :on-press        #(re-frame/dispatch [:navigate-to name])}
-                 (clojure.core/name name)])])
+             [category-view category])
            (sort screens-categories))]]))
 
 (def main-screens
