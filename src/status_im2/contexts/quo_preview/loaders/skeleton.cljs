@@ -33,7 +33,7 @@
        [rn/view {:padding-bottom 150}
         [preview/customizer state descriptor]
         [rn/view
-         [quo/static-skeleton @state]]]])))
+         [quo/skeleton-list @state]]]])))
 
 (defn preview-skeleton
   []
