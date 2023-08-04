@@ -52,5 +52,11 @@
     [quo2.components.wallet.account-card.component-spec]
     [quo2.components.wallet.network-amount.component-spec]
     [quo2.components.wallet.network-bridge.component-spec]
+<<<<<<< HEAD
     [quo2.components.wallet.token-input.component-spec]
     [quo2.components.wallet.wallet-overview.component-spec]))
+=======
+    [quo2.components.wallet.account-card.component-spec]
+    [quo2.components.wallet.token-input.component-spec]
+    [quo2.components.list-items.token-value.component-spec]))
+>>>>>>> 44d5d4d15 (add test)
