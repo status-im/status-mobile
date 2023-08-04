@@ -1,7 +1,6 @@
 (ns quo2.components.list-items.token-value.style
   (:require [quo2.foundations.colors :as colors]))
 
-
 (defn container
   [color bg-opacity]
   {:width              359

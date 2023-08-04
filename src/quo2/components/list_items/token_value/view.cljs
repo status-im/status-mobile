@@ -10,7 +10,6 @@
     [quo2.foundations.common :as common]
     [quo2.components.list-items.token-value.style :as style]))
 
-
 (defn- internal-view
   [{:keys [theme color state status token metrics? values]}]
   (let [bg-opacity                                                      (case state

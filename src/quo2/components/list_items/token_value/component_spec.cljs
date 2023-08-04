@@ -4,7 +4,6 @@
     [test-helpers.component :as h]
     [quo2.components.list-items.token-value.view :as token-value]))
 
-
 (h/describe "List Items: Token Value"
   (h/test "Token label renders"
     (h/render [token-value/view
