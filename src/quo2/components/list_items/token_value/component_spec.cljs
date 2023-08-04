@@ -58,6 +58,3 @@
                            :percentage-change "0.00"
                            :fiat-change       "€0.00"}}])
     (h/is-truthy (h/get-by-label-text :arrow-icon))))
-
-
-

@@ -31,15 +31,7 @@
                :value "Positive"}
               {:key   :negative
                :value "Negative"}]}
-   {:label   "Color:"
-    :key     :color
-    :type    :select
-    :options [{:key   :blue
-               :value "Blue"}
-              {:key   :orange
-               :value "Orange"}
-              {:key   :green
-               :value "Green"}]}
+   (preview/customization-color-option)
    {:label "Metrics?:"
     :key   :metrics?
     :type  :boolean}])
