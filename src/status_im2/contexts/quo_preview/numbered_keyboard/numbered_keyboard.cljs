@@ -37,13 +37,13 @@
        [rn/view {:height 550}
         [rn/view {:flex 1}
          [preview/customizer state descriptor]]
-        [preview/blur-view
-         {:show-blur-background? (:blur? @state)
-          :blur-view-props       {:blur-type     :dark
-                                  :overlay-color colors/neutral-80-opa-80}
-          :height                270
-          :style                 {:align-self :center :margin-horizontal 20}}
-         [quo/numbered-keyboard @state]]]])))
+        [rn/view
+         {:style                 {:height  500
+                                  :margin-left 20
+                                  :margin-right 20
+                                  :flex 1 
+                                  :align-self :center}}]
+        [quo/numbered-keyboard @state]]])))
 
 (defn preview-numbered-keyboard
   []

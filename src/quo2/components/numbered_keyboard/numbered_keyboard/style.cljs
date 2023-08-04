@@ -1,18 +1,22 @@
 (ns quo2.components.numbered-keyboard.numbered-keyboard.style)
 
 (def container
-  {:flex-direction     :row
-   :flex-wrap          :wrap
-   :flex               1
-   :padding-horizontal 34
+  {:flex               1
    :padding-top        8
-   :padding-bottom     0})
+   :padding-bottom     0
+   :border-width 1
+   :border-color :red
+   :justify-content :space-between
+   :align-items :center})
 
 (defn keyboard-item
   [position]
-  {:width         "33%"
-   :margin-bottom 6
-   :align-items   (condp = (mod position 3)
-                    1 :flex-start
-                    2 :center
-                    0 :flex-end)})
+  {:margin-bottom 6
+   :flex 1})
+
+
+(def row-container
+  {:flex-direction     :row
+   :align-items :space-between
+   :flex 1
+   :justify-content :center})

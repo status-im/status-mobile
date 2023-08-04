@@ -8,8 +8,7 @@
   [{:keys [item type position disabled? on-press blur? theme]
     :or   {position 1
            item     nil}}]
-  [rn/view
-   {:style (style/keyboard-item position)}
+  [rn/view  {:style (style/keyboard-item position)}
    (when item
      [quo/keyboard-key
       {:disabled? disabled?
@@ -23,49 +22,54 @@
   (fn [{:keys [disabled? theme blur? left-action delete-key? on-press]}]
     [rn/view
      {:style style/container}
-     (for [item (range 1 10)]
-       ^{:key item}
-       [keyboard-item
-        {:item      item
-         :type      :digit
-         :position  item
-         :disabled? disabled?
-         :on-press  on-press
-         :blur?     blur?
-         :theme     theme}])
-     (condp = left-action
-       :dot     [keyboard-item
-                 {:item      "."
-                  :type      :digit
-                  :disabled? disabled?
-                  :on-press  on-press
-                  :blur?     blur?
-                  :theme     theme}]
-       :face-id [keyboard-item
-                 {:item      :i/face-id
-                  :type      :key
-                  :disabled? disabled?
-                  :on-press  on-press
-                  :blur?     blur?
-                  :theme     theme}]
-       :none    [keyboard-item])
-     [keyboard-item
-      {:item      "0"
-       :type      :digit
-       :position  2
-       :disabled? disabled?
-       :on-press  on-press
-       :blur?     blur?
-       :theme     theme}]
-     (if delete-key?
-       [keyboard-item
-        {:item      :i/delete
-         :type      :key
-         :position  3
-         :disabled? disabled?
-         :on-press  on-press
-         :blur?     blur?
-         :theme     theme}]
-       [keyboard-item])]))
+     (for [row-index (range 1 4)]
+       ^{:key row-index}
+       [rn/view {:style style/row-container}
+        (for [column-index (range 1 4)]
+
+          [keyboard-item
+           {:item      (+ (* (dec row-index) 3) column-index)
+            :type      :digit
+            :position  column-index
+            :disabled? disabled?
+            :on-press  on-press
+            :blur?     blur?
+            :theme     theme}])])
+     ;; bottom row
+     [rn/view {:style style/row-container}
+      (condp = left-action
+        :dot     [keyboard-item
+                  {:item      "."
+                   :type      :digit
+                   :disabled? disabled?
+                   :on-press  on-press
+                   :blur?     blur?
+                   :theme     theme}]
+        :face-id [keyboard-item
+                  {:item      :i/face-id
+                   :type      :key
+                   :disabled? disabled?
+                   :on-press  on-press
+                   :blur?     blur?
+                   :theme     theme}]
+        :none    [keyboard-item])
+      [keyboard-item
+       {:item      "0"
+        :type      :digit
+        :position  2
+        :disabled? disabled?
+        :on-press  on-press
+        :blur?     blur?
+        :theme     theme}]
+      (if delete-key?
+        [keyboard-item
+         {:item      :i/delete
+          :type      :key
+          :position  3
+          :disabled? disabled?
+          :on-press  on-press
+          :blur?     blur?
+          :theme     theme}]
+        [keyboard-item])]]))
 
 (def numbered-keyboard (quo.theme/with-theme numbered-keyboard-internal))
