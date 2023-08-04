@@ -9,7 +9,7 @@
             [quo2.components.loaders.skeleton-list.constants :as constants]))
 
 (defn skeleton-item
-  [index parent-index content color animated?]
+  [{:keys [index parent-index content color animated?]}]
   [:f>
    (fn []
      (let [loading-color           (colors/theme-colors colors/neutral-10 colors/neutral-60)
@@ -56,7 +56,7 @@
              :style  animated-gradient-style}])]]))])
 
 (defn- internal-view
-  [{:keys [content theme blur? parent-height animated?]}]
+  [{:keys [content theme blur? parent-height animated?] :as props}]
   (let [skeleton-height     (get-in constants/layout-dimensions [content :height])
         number-of-skeletons (int (Math/ceil (/ parent-height skeleton-height)))
         color               (cond
@@ -68,6 +68,11 @@
      (doall
       (for [parent-index (range number-of-skeletons)]
         ^{:key parent-index}
-        [skeleton-item (mod parent-index 4) parent-index content color animated?]))]))
+        [skeleton-item
+         (merge props
+                {:index        (mod parent-index 4)
+                 :parent-index parent-index
+                 :animated?    animated?
+                 :color        color})]))]))
 
 (def view (theme/with-theme internal-view))
