@@ -11,14 +11,14 @@
     [quo2.components.list-items.token-value.style :as style]))
 
 (defn- internal-view
-  [{:keys [theme color state status token metrics? values]}]
+  [{:keys [theme customization-color state status token metrics? values]}]
   (let [bg-opacity                                                      (case state
                                                                           :active  10
                                                                           :pressed 5
                                                                           0)
         {:keys [crypto-value fiat-value percentage-change fiat-change]} values]
     [rn/view
-     {:style               (style/container color bg-opacity)
+     {:style               (style/container customization-color bg-opacity)
       :accessibility-label :container}
      [rn/view
       {:style {:flex-direction :row

@@ -41,7 +41,7 @@
   (let [state (reagent/atom {:token    :snt
                              :state    :default
                              :status   :empty
-                             :color    :blue
+                             :customization-color    :blue
                              :metrics? true
                              :values   {:crypto-value      "0.00"
                                         :fiat-value        "€0.00"
