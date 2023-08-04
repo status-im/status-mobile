@@ -425,8 +425,8 @@ PODS:
     - React-Core
   - RNStaticSafeAreaInsets (2.2.0):
     - React-Core
-  - RNSVG (13.10.0):
-    - React-Core
+  - RNSVG (9.13.6):
+    - React
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
