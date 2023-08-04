@@ -6,7 +6,7 @@
             [quo2.components.numbered-keyboard.keyboard-key.style :as style]
             [reagent.core :as reagent]))
 
-(defn- keyboard-key-internal
+(defn- view-internal
   []
   (let [pressed? (reagent/atom false)]
     (fn [{:keys [disabled? theme blur? on-press type]} label]
@@ -14,7 +14,7 @@
             background-color (style/toggle-background-color @pressed? blur? theme)]
         [rn/pressable
          {:accessibility-label :keyboard-key
-          :disabled            disabled?
+          :disabled            (or disabled? (not label))
           :on-press            (fn [] (on-press label))
           :on-press-in         #(reset! pressed? true)
           :on-press-out        #(reset! pressed? false)
@@ -34,6 +34,7 @@
                              :i/derivation-path
                              {:color               label-color
                               :size                32
-                              :accessibility-label :derivation-path-label}])]))))
+                              :accessibility-label :derivation-path-label}]
+           nil)]))))
 
-(def keyboard-key (quo.theme/with-theme keyboard-key-internal))
+(def view (quo.theme/with-theme view-internal))

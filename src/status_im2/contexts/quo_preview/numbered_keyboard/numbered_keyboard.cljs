@@ -3,7 +3,8 @@
             [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [react-native.blur :as blur]))
 
 (def descriptor
   [{:label "Blur:"
@@ -31,19 +32,22 @@
                              :on-press    (fn [item] (js/alert (str item " pressed")))
                              :blur?       false
                              :delete-key? true
-                             :left-action :dot})]
+                             :left-action :dot})
+        blur? (reagent/cursor state [:blur?])]
     (fn []
       [rn/view
-       [rn/view {:height 550}
-        [rn/view {:flex 1}
-         [preview/customizer state descriptor]]
-        [rn/view
-         {:style                 {:height  500
-                                  :margin-left 20
-                                  :margin-right 20
-                                  :flex 1 
-                                  :align-self :center}}]
-        [quo/numbered-keyboard @state]]])))
+       [rn/view {:flex 1}
+        [preview/customizer state descriptor]]
+       (when @blur?
+         [blur/view
+          {:style         {:position         :absolute
+                           :left             0
+                           :right            0
+                           :bottom           0
+                           :height           220
+                           :background-color colors/neutral-80-opa-70}
+           :overlay-color :transparent}])
+       [quo/numbered-keyboard @state]])))
 
 (defn preview-numbered-keyboard
   []
