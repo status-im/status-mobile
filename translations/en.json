@@ -2262,6 +2262,11 @@
     "channel-unmuted-successfully": "Channel unmuted successfully! ",
     "photo-saved": "Photo saved to your device",
     "community-unmuted": "Community unmuted",
+    "all-time": "All time",
+    "one-week-int": "1 week",
+    "one-month-int": "1 month",
+    "three-months-int": "3 months",
+    "one-year": "1 year",
     "retake": "Retake",
     "use-photo": "Use Photo",
     "photo-caps": "PHOTO"
