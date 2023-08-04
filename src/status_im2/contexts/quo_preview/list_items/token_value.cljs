@@ -41,25 +41,25 @@
               {:key   :green
                :value "Green"}]}
    {:label "Metrics?:"
-    :key :metrics?
-    :type :boolean}])
+    :key   :metrics?
+    :type  :boolean}])
 
 (defn preview
   []
-  (let [state (reagent/atom {:amount "5.123456"
-                             :token  :snt
-                             :state :default
-                             :status :empty
-                             :color :blue
+  (let [state (reagent/atom {:token    :snt
+                             :state    :default
+                             :status   :empty
+                             :color    :blue
                              :metrics? true
-                             :values {:crypto-value "0.00"
-                                      :fiat-value "€0.00"
-                                      :percentage-change "0.00"
-                                      :fiat-change "€0.00"}})]
+                             :values   {:crypto-value      "0.00"
+                                        :fiat-value        "€0.00"
+                                        :percentage-change "0.00"
+                                        :fiat-change       "€0.00"}})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view
-        {:style {:flex               1}}
+        {:style {:flex 1}}
         [rn/view {:style {:min-height 300}} [preview/customizer state descriptor]]
-        [rn/view {:style {:align-items :center
-                          :margin-top 50}} [quo/token-value @state]]]])))
+        [rn/view
+         {:style {:align-items :center
+                  :margin-top  50}} [quo/token-value @state]]]])))
