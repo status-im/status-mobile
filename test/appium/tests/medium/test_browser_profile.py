@@ -313,7 +313,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.just_fyi('Create community chats')
         community_name = 'test community'
         community_description, community_pic = "test community description", 'sauce_logo.png'
-        self.home.create_community(community_name, community_description, set_image=True, file_name=community_pic)
+        self.home.create_community_e2e(community_name, community_description, set_image=True, file_name=community_pic)
         self.home.home_button.double_click()
 
         self.home.just_fyi('Add ENS-user to contacts')

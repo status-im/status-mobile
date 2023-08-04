@@ -2,6 +2,7 @@ import time
 
 from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from typing_extensions import Literal
 
 from tests import test_dapp_url
 from views.base_element import Button, Text, BaseElement, SilentButton, CheckBox, EditBox
@@ -235,6 +236,10 @@ class HomeView(BaseView):
         self.my_profile_on_start_new_chat_button = Button(self.driver,
                                                           xpath="//*[@content-desc='current-account-photo']")
         self.communities_button = ChatButton(self.driver, accessibility_id="create-community")
+        self.create_closed_community_button = ChatButton(self.driver, accessibility_id="create-closed-community")
+        self.create_open_community_button = ChatButton(self.driver, accessibility_id="create-open-community")
+        self.create_token_gated_community_button = ChatButton(self.driver,
+                                                              accessibility_id="create-token-gated-community")
         self.ens_banner_close_button = Button(self.driver, accessibility_id=":ens-banner-close-button")
 
         # Notification centre
@@ -425,8 +430,8 @@ class HomeView(BaseView):
         chat.profile_add_to_contacts_button.click()
         self.click_system_back_button_until_element_is_shown()
 
-    def create_community(self, name: str, description="some_description", set_image=False, file_name='sauce_logo.png',
-                         require_approval=True):
+    def create_community_e2e(self, name: str, description="some_description", set_image=False, file_name='sauce_logo.png',
+                             require_approval=True):
         self.driver.info("## Creating community '%s', set image is set to '%s'" % (name, str(set_image)), device=False)
         self.plus_community_button.click()
         chat_view = self.communities_button.click()
@@ -447,6 +452,18 @@ class HomeView(BaseView):
         chat_view.confirm_create_in_community_button.wait_and_click()
         self.driver.info("## Community is created successfully!", device=False)
         return self.get_community_view()
+
+    def create_community(self, community_type: Literal["open", "closed", "token-gated"]):
+        self.driver.info("## Creating %s community" % community_type)
+        self.plus_community_button.click()
+        if community_type == "open":
+            self.create_open_community_button.click()
+        elif community_type == "closed":
+            self.create_closed_community_button.click()
+        elif community_type == "token-gated":
+            self.create_token_gated_community_button.click()
+        else:
+            raise ValueError("Incorrect community type is set")
 
     def import_community(self, key):
         self.driver.info("## Importing community")

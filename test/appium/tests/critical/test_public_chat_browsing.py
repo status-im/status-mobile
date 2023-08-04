@@ -312,9 +312,9 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home = self.sign_in.create_user(username=self.username)
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_community_button)
-        self.community_name = self.home.get_random_chat_name()
-        self.channel_name = 'general'
-        self.community = self.home.create_community(name=self.community_name, description='test description')
+        self.community_name = "closed community"
+        self.channel_name = "cats"
+        self.community = self.home.create_community(community_type="closed")
 
         self.home.get_chat(self.community_name, community=True).click()
         self.community_view = self.home.get_community_view()
@@ -538,9 +538,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
-        self.community_name = self.home_1.get_random_chat_name()
+        self.community_name = "open community"
         self.channel_name = 'general'
-        self.home_1.create_community(name=self.community_name, description='community to test', require_approval=False)
+        self.home_1.create_community(community_type="open")
         self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
         self.channel_1.send_message(self.text_message)
 

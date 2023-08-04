@@ -110,19 +110,20 @@
                              :icon-background :blur
                              :icon            :i/arrow-left
                              :on-press        navigate-back}
-     :right-section-buttons [(when config/quo-preview-enabled?
-                               {:type            :grey
-                                :icon            :i/reveal-whitelist
-                                :icon-background :blur
-                                :on-press        #(rf/dispatch [:navigate-to
-                                                                :quo2-preview])})
-                             {:type            :grey
-                              :icon            :i/info
-                              :icon-background :blur
-                              :on-press        #(rf/dispatch
-                                                 [:show-bottom-sheet
-                                                  {:content getting-started-doc
-                                                   :shell?  true}])}]}]])
+     :right-section-buttons (cond-> [{:type            :grey
+                                      :icon            :i/info
+                                      :icon-background :blur
+                                      :on-press        #(rf/dispatch
+                                                         [:show-bottom-sheet
+                                                          {:content getting-started-doc
+                                                           :shell?  true}])}]
+
+                              config/quo-preview-enabled?
+                              (conj {:type            :grey
+                                     :icon            :i/reveal-whitelist
+                                     :icon-background :blur
+                                     :on-press        #(rf/dispatch [:navigate-to
+                                                                     :quo2-preview])}))}]])
 
 (defn new-to-status
   []
