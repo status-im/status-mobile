@@ -106,18 +106,19 @@
     quo2.components.text-combinations.title.view
     quo2.components.wallet.account-card.view
     quo2.components.wallet.network-amount.view
-<<<<<<< HEAD
     quo2.components.wallet.network-bridge.view
 <<<<<<< HEAD
     quo2.components.wallet.token-input.view
     quo2.components.wallet.wallet-overview.view))
 =======
     quo2.components.wallet.account-card.view
-    quo2.components.wallet.token-input.view))
-=======
+    quo2.components.wallet.token-input.view
     quo2.components.wallet.summary-info.view))
+<<<<<<< HEAD
 >>>>>>> 51177d716 (feat: quo2 summary info)
 >>>>>>> 9ef42f0fb (feat: quo2 summary info)
+=======
+>>>>>>> ff9729681 (feat: quo2 wallet - summary info)
 
 (def separator quo2.components.common.separator.view/separator)
 
@@ -313,15 +314,16 @@
 
 ;;;; WALLET
 (def network-amount quo2.components.wallet.network-amount.view/view)
-<<<<<<< HEAD
 (def network-bridge quo2.components.wallet.network-bridge.view/view)
 (def account-card quo2.components.wallet.account-card.view/view)
 (def token-input quo2.components.wallet.token-input.view/view)
 <<<<<<< HEAD
+<<<<<<< HEAD
 (def wallet-overview quo2.components.wallet.wallet-overview.view/view)
 =======
 =======
+=======
+>>>>>>> ff9729681 (feat: quo2 wallet - summary info)
 (def summary-info quo2.components.wallet.summary-info.view/view)
->>>>>>> 51177d716 (feat: quo2 summary info)
 
 >>>>>>> 9ef42f0fb (feat: quo2 summary info)
