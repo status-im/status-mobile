@@ -68,7 +68,7 @@
     quo2.components.list-items.token-value.view
     quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
-    quo2.components.loaders.skeleton.view
+    quo2.components.loaders.skeleton-list.view
     quo2.components.markdown.list.view
     quo2.components.markdown.text
     quo2.components.messages.author.view
@@ -247,7 +247,7 @@
 
 ;;;; Loaders
 (def skeleton quo2.components.loaders.skeleton/skeleton)
-(def static-skeleton quo2.components.loaders.skeleton.view/view)
+(def skeleton-list quo2.components.loaders.skeleton-list.view/view)
 
 ;;;; Navigation
 (def floating-shell-button quo2.components.navigation.floating-shell-button.view/view)

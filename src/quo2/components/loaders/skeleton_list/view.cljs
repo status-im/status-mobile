@@ -1,12 +1,12 @@
-(ns quo2.components.loaders.skeleton.view
+(ns quo2.components.loaders.skeleton-list.view
   (:require [quo2.theme :as theme]
             [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [react-native.masked-view :as masked-view]
             [react-native.reanimated :as reanimated]
-            [quo2.components.loaders.skeleton.style :as style]
+            [quo2.components.loaders.skeleton-list.style :as style]
             [reagent.core :as reagent]
-            [quo2.components.loaders.skeleton.constants :as constants]))
+            [quo2.components.loaders.skeleton-list.constants :as constants]))
 
 (defn skeleton-item
   [index parent-index content color animated?]

@@ -1,5 +1,5 @@
-(ns quo2.components.loaders.skeleton.style
-  (:require [quo2.components.loaders.skeleton.constants :as constants]))
+(ns quo2.components.loaders.skeleton-list.style
+  (:require [quo2.components.loaders.skeleton-list.constants :as constants]))
 
 (defn container
   [content]
