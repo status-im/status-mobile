@@ -5,17 +5,21 @@
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.context-tag.style :as style]
-            [react-native.core :as rn]))
+            [react-native.core :as rn]
+            [quo2.components.tags.context-tag.view :as context-tag]
+            [quo2.theme :as quo.theme]))
 
 (defn trim-public-key
   [pk]
   (str (subs pk 0 6) "..." (subs pk (- (count pk) 3))))
 
-(defn base-tag
-  [{:keys [override-theme style blur?]} & children]
+(defn- base-tag-internal
+  [{:keys [override-theme style blur? theme]} & children]
   (into
-   [rn/view {:style (merge (style/base-tag override-theme blur?) style)}]
+   [rn/view {:style (merge (style/base-tag (or theme override-theme) blur?) style)}]
    children))
+
+(def base-tag (quo.theme/with-theme base-tag-internal))
 
 (defn group-avatar-tag
   [label opts]
@@ -39,8 +43,8 @@
      :size   :paragraph-2}
     (trim-public-key public-key)]])
 
-(defn context-tag
-  [{:keys [text-style blur? no-avatar-placeholder? text-container-style ellipsize-text?]
+(defn- context-tag-internal
+  [{:keys [text-style blur? no-avatar-placeholder? text-container-style ellipsize-text? theme]
     :as   props}
    photo
    name
@@ -70,9 +74,11 @@
         [:<>
          [icons/icon
           :i/chevron-right
-          {:color (style/context-tag-icon-color blur?)
+          {:color (style/context-tag-icon-color blur? theme)
            :size  16}]
          [text/text text-props (str "# " channel-name)]])]]))
+
+(def context-tag (quo.theme/with-theme context-tag-internal))
 
 (defn user-avatar-tag
   [params username photo]

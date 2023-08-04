@@ -13,10 +13,10 @@
                        (colors/theme-colors colors/neutral-10 colors/neutral-90 override-theme))})
 
 (defn context-tag-icon-color
-  [blur?]
+  [blur? theme]
   (if blur?
-    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40)
-    (colors/theme-colors colors/neutral-50 colors/neutral-40)))
+    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
+    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
 
 (def context-tag-text-container
   {:align-items    :center

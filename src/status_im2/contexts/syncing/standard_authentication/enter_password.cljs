@@ -36,8 +36,7 @@
         {:accessibility-label :sync-code-generated
          :weight              :bold
          :size                :heading-1
-         :style               {:color         (colors/theme-colors colors/neutral-100 colors/white)
-                               :margin-bottom 4}}
+         :style               {:margin-bottom 4}}
         (i18n/label :t/enter-password)]
 
        [rn/view
