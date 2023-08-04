@@ -244,7 +244,7 @@
    :margin-left      margin-left})
 
 (defn loading-content-line
-  [theme width margin-top]
+  [{:keys [theme width margin-top]}]
   {:width            width
    :height           16
    :background-color (colors/theme-colors colors/neutral-20 colors/neutral-70 theme)

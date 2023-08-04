@@ -96,6 +96,8 @@
    {:width    width
     :loading? true}])
 
+(def loading-instances-to-show 3)
+
 (defn featured-list
   [communities view-type]
   (let [view-size (reagent/atom 0)
@@ -114,7 +116,7 @@
            :shows-horizontal-scroll-indicator false
            :nestedScrollEnabled               true
            :separator                         [rn/view {:width 12}]
-           :data                              (if loaded? communities [1 2 3])
+           :data                              (if loaded? communities (range loading-instances-to-show))
            :render-fn                         (if loaded? community-list-item loading-community-item)
            :render-data                       {:width     @view-size
                                                :view-type view-type}

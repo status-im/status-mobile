@@ -14,9 +14,9 @@
     [rn/view (style/loading-lock theme)]
     [rn/view
      {:style style/loading-card-content-container}
-     [rn/view {:style (style/loading-content-line theme 84 0)}]
-     [rn/view {:style (style/loading-content-line theme 311 8)}]
-     [rn/view {:style (style/loading-content-line theme 271 8)}]]
+     [rn/view {:style (style/loading-content-line {:theme theme :width 84 :margin-top 0})}]
+     [rn/view {:style (style/loading-content-line {:theme theme :width 311 :margin-top 8})}]
+     [rn/view {:style (style/loading-content-line {:theme theme :width 271 :margin-top 8})}]]
     [rn/view
      {:style style/loading-stats-container}
      [rn/view {:style (style/loading-stat-circle theme 0)}]
@@ -28,7 +28,6 @@
      [rn/view {:style (style/loading-tag theme 0)}]
      [rn/view {:style (style/loading-tag theme 8)}]
      [rn/view {:style (style/loading-tag theme 8)}]]]])
-
 
 (defn- community-card-view
   [{:keys [community on-press width theme]}]
@@ -67,7 +66,6 @@
            {:type :card-view}]]
          [rn/view {:style (style/community-tags-position)}
           [community-view/community-tags {:tags tags}]]]]]]]))
-
 
 (defn- internal-view
   [{:keys [loading?] :as props}]

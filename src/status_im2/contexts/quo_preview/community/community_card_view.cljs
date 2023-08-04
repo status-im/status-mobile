@@ -35,10 +35,10 @@
                :value "Gated"}
               {:key   :open
                :value "Open"}]}
-   {:label "Locked:"
+   {:label "Locked?"
     :key   :locked?
     :type  :boolean}
-   {:label "Loading:"
+   {:label "Loading?"
     :key   :loading?
     :type  :boolean}])
 
