@@ -13,7 +13,7 @@
     [quo2.components.buttons.slide-button.constants :as constants]))
 
 (defn- f-slider
-  [{:keys [disabled? track-text-color thumb-color]}]
+  [{:keys [disabled?]}]
   (let [track-width        (reagent/atom nil)
         sliding-complete?  (reagent/atom false)
         gestures-disabled? (reagent/atom disabled?)
@@ -55,14 +55,14 @@
           [reanimated/view {:style (style/track-cover interpolate-track)}
            [rn/view {:style (style/track-cover-text-container @track-width)}
             [icon/icon track-icon
-             {:color (utils/slider-color :main track-text-color)
+             {:color (utils/slider-color :main customization-color)
               :size  20}]
             [rn/view {:width 4}]
-            [rn/text {:style (style/track-text track-text-color)} track-text]]]
+            [rn/text {:style (style/track-text customization-color)} track-text]]]
           [reanimated/view
            {:style (style/thumb-container interpolate-track
                                           (dimensions :thumb)
-                                          thumb-color)}
+                                          customization-color)}
            [reanimated/view {:style (style/arrow-icon-container interpolate-track)}
             [icon/icon :arrow-right
              {:color colors/white

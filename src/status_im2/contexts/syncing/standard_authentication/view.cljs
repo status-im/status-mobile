@@ -28,8 +28,6 @@
 
 (defn view
   [{:keys [track-text
-           thumb-color
-           track-text-color
            customization-color
            fallback-button-label
            enter-pass-callback
@@ -44,7 +42,5 @@
                                        :auth-success          on-auth-success
                                        :auth-fail             on-auth-fail
                                        :fallback-button-label fallback-button-label})
-     :thumb-color         thumb-color
      :track-icon          :i/face-id
-     :track-text          track-text
-     :track-text-color    track-text-color}]])
+     :track-text          track-text}]])

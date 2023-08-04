@@ -41,25 +41,24 @@
         (i18n/label :t/enter-password)]
 
        [rn/view
-        {:flex-direction :row :margin-bottom 20 :margin-top 8}
+        {:style style/context-tag}
         [quo/context-tag {:blur? false} profile-picture display-name]]
 
-       [rn/view {:flex-direction :row :align-items :flex-end}
-        [rn/view {:flex 6}
-         [quo/input
-          {:type                :password
-           :blur?               true
-           :placeholder         (i18n/label :t/type-your-password)
-           :auto-focus          true
-           :show-cancel         false
-           :error?              (seq error)
-           :accessibility-label :password-input
-           :label               (i18n/label :t/profile-password)
-           :on-change-text      (fn [password]
-                                  (rf/dispatch [:set-in [:profile/login :password]
-                                                (security/mask-data password)])
-                                  (reset! entered-password password)
-                                  (rf/dispatch [:set-in [:profile/login :error] ""]))}]]]
+       [rn/view
+        [quo/input
+         {:type                :password
+          :blur?               true
+          :placeholder         (i18n/label :t/type-your-password)
+          :auto-focus          true
+          :show-cancel         false
+          :error?              (seq error)
+          :accessibility-label :password-input
+          :label               (i18n/label :t/profile-password)
+          :on-change-text      (fn [password]
+                                 (rf/dispatch [:set-in [:profile/login :password]
+                                               (security/mask-data password)])
+                                 (reset! entered-password password)
+                                 (rf/dispatch [:set-in [:profile/login :error] ""]))}]]
        (when (seq error)
          [rn/view {:style style/error-message}
           [quo/info-message
@@ -72,23 +71,21 @@
             :disabled       false
             :active-opacity 1
             :on-press       #(reset! entered-password %)}
-           [rn/text
+           [quo/text
             {:style                 {:text-decoration-line :underline
                                      :color                colors/danger-60}
              :size                  :paragraph-2
              :suppress-highlighting true}
             (i18n/label :t/forgot-password)]]])
 
-       [rn/view
-        {:margin-top 45}
+       [rn/view {:style style/enter-password-button}
         [quo/button
          {:size                40
           :type                :primary
           :customization-color (or customization-color :primary)
           :accessibility-label :login-button
-          :before              :i/reveal
-          :disabled            (or (not sign-in-enabled?) processing)
-          :style               {:margin-bottom 12 :background-color "#5A33CA"}
+          :icon-left           :i/reveal
+          :disabled?           (or (not sign-in-enabled?) processing)
           :on-press            (fn []
                                  (rf/dispatch [:set-in [:profile/login :key-uid] key-uid])
                                  (rf/dispatch

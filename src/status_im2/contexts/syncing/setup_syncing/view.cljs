@@ -119,9 +119,7 @@
           [rn/view {:style style/standard-auth}
            [standard-auth/view
             {:track-text            (i18n/label :t/slide-to-reveal-code)
-             :thumb-color           customization-color
-             :track-text-color      colors/white-opa-40
-             :customization-color   colors/white-opa-5
+             :customization-color   customization-color
              :enter-pass-callback   set-code
              :use-biometric-auth    false
              :fallback-button-label (i18n/label :t/reveal-sync-code)

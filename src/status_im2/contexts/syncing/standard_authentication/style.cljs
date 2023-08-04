@@ -9,3 +9,12 @@
   {:margin-top     8
    :flex-direction :row
    :align-items    :center})
+
+(def enter-password-button
+  {:margin-top    45
+   :margin-bottom 12})
+
+(def context-tag
+  {:flex-direction :row
+   :margin-bottom  20
+   :margin-top     8})
