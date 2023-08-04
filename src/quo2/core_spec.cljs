@@ -31,6 +31,7 @@
     [quo2.components.links.url-preview-list.component-spec]
     [quo2.components.links.url-preview.component-spec]
     [quo2.components.list-items.community.component-spec]
+    [quo2.components.list-items.token-value.component-spec]
     [quo2.components.markdown.text-component-spec]
     [quo2.components.markdown.list.component-spec]
     [quo2.components.notifications.notification.component-spec]
@@ -57,6 +58,10 @@
     [quo2.components.wallet.wallet-overview.component-spec]))
 =======
     [quo2.components.wallet.account-card.component-spec]
+<<<<<<< HEAD
     [quo2.components.wallet.token-input.component-spec]
     [quo2.components.list-items.token-value.component-spec]))
 >>>>>>> 44d5d4d15 (add test)
+=======
+    [quo2.components.wallet.token-input.component-spec]))
+>>>>>>> 602b54f94 (review)

@@ -57,8 +57,8 @@
     quo2.components.list-items.community.view
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
-    quo2.components.list-items.user-list
     quo2.components.list-items.token-value.view
+    quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
     quo2.components.loaders.skeleton.view
     quo2.components.markdown.list.view
