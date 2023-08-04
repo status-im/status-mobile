@@ -33,8 +33,9 @@
         {:size  :paragraph-2
          :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
         (str crypto-value " " (string/upper-case (clj->js token)))]]]
-     [rn/view {:style {:align-items :flex-end
-                       :justify-content :space-between}}
+     [rn/view
+      {:style {:align-items     :flex-end
+               :justify-content :space-between}}
       [text/text
        {:weight :medium
         :size   :paragraph-2} fiat-value]

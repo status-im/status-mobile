@@ -38,15 +38,15 @@
 
 (defn preview
   []
-  (let [state (reagent/atom {:token    :snt
-                             :state    :default
-                             :status   :empty
-                             :customization-color    :blue
-                             :metrics? true
-                             :values   {:crypto-value      "0.00"
-                                        :fiat-value        "€0.00"
-                                        :percentage-change "0.00"
-                                        :fiat-change       "€0.00"}})]
+  (let [state (reagent/atom {:token               :snt
+                             :state               :default
+                             :status              :empty
+                             :customization-color :blue
+                             :metrics?            true
+                             :values              {:crypto-value      "0.00"
+                                                   :fiat-value        "€0.00"
+                                                   :percentage-change "0.00"
+                                                   :fiat-change       "€0.00"}})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view
