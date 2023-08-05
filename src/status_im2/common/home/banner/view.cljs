@@ -1,0 +1,78 @@
+(ns status-im2.common.home.banner.view
+  (:require [oops.core :as oops]
+            [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as theme]
+            [react-native.blur :as blur]
+            [react-native.core :as rn]
+            [react-native.platform :as platform]
+            [react-native.reanimated :as reanimated]
+            [status-im2.common.home.banner.style :as style]
+            [status-im2.common.home.view :as common.home]
+            [utils.re-frame :as rf]))
+
+(defn- reset-banner-animation
+  [scroll-shared-value]
+  (reanimated/animate-shared-value-with-timing scroll-shared-value 0 200 :easing3))
+
+(defn- reset-scroll
+  [scroll-ref]
+  (cond
+    (.-scrollToLocation scroll-ref)
+    (oops/ocall! scroll-ref "scrollToLocation" #js {:itemIndex 0 :sectionIndex 0 :viewOffset 0})
+    (.-scrollToOffset scroll-ref)
+    (oops/ocall! scroll-ref "scrollToOffset" #js {:offset 0})))
+
+(defn- banner-card-blur-layer
+  [scroll-shared-value]
+  (let [open-sheet? (-> (rf/sub [:bottom-sheet]) :sheets seq)]
+    [reanimated/view {:style (style/banner-card-blur-layer scroll-shared-value)}
+     [blur/view
+      {:style         style/fill-space
+       :blur-amount   (if platform/ios? 20 10)
+       :blur-type     (theme/theme-value (if platform/ios? :light :xlight) :dark)
+       :overlay-color (if open-sheet?
+                        (colors/theme-colors colors/white colors/neutral-95-opa-70)
+                        (theme/theme-value nil colors/neutral-95-opa-70))}]]))
+
+(defn- banner-card-hiding-layer
+  [{:keys [title-props card-props scroll-shared-value]}]
+  (let [customization-color (rf/sub [:profile/customization-color])]
+    [rn/view {:style (style/banner-card-hiding-layer)}
+     [common.home/top-nav {:type :grey}]
+     [common.home/title-column (assoc title-props :customization-color customization-color)]
+     [rn/view {:style style/animated-banner-card-container}
+      [reanimated/view {:style (style/animated-banner-card scroll-shared-value)}
+       [quo/discover-card card-props]]]]))
+
+(defn- banner-card-tabs-layer
+  [{:keys [selected-tab tabs on-tab-change scroll-ref scroll-shared-value]}]
+  [reanimated/view {:style (style/banner-card-tabs-layer scroll-shared-value)}
+   ^{:key (str "tabs-" selected-tab)}
+   [quo/tabs
+    {:style          style/banner-card-tabs
+     :size           32
+     :default-active selected-tab
+     :data           tabs
+     :on-change      (fn [tab]
+                       (reset-banner-animation scroll-shared-value)
+                       (some-> scroll-ref
+                               deref
+                               reset-scroll)
+                       (on-tab-change tab))}]])
+
+(defn animated-banner
+  [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content]}]
+  [:<>
+   [:f> banner-card-blur-layer scroll-shared-value]
+   [:f> banner-card-hiding-layer (assoc content :scroll-shared-value scroll-shared-value)]
+   [:f> banner-card-tabs-layer
+    {:scroll-shared-value scroll-shared-value
+     :selected-tab        selected-tab
+     :tabs                tabs
+     :on-tab-change       on-tab-change
+     :scroll-ref          scroll-ref}]])
+
+(defn set-scroll-shared-value
+  [{:keys [shared-value scroll-input]}]
+  (reanimated/set-shared-value shared-value scroll-input))
