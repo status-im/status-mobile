@@ -181,6 +181,9 @@
       constants/content-type-link
       (i18n/label :t/external-link)
 
+      constants/content-type-contact-request
+      (i18n/label :t/contact-request)
+
       "")))
 
 (defn open-screen
