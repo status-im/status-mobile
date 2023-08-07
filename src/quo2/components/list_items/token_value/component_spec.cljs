@@ -30,7 +30,7 @@
                            :percentage-change "0.00"
                            :fiat-change       "€0.00"}}])
     (h/has-style (h/get-by-label-text :container)
-                 {:background-color (colors/custom-color-by-theme :blue 50 50 5 5)}))
+                 {:background-color "rgba(42,74,245,0.05)"}))
 
   (h/test "Active state"
     (h/render [token-value/view
@@ -44,7 +44,7 @@
                            :percentage-change "0.00"
                            :fiat-change       "€0.00"}}])
     (h/has-style (h/get-by-label-text :container)
-                 {:background-color (colors/custom-color-by-theme :blue 50 50 10 10)}))
+                 {:background-color "rgba(42,74,245,0.1)"}))
 
   (h/test "Status change"
     (h/render [token-value/view
