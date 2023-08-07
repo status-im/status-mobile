@@ -57,4 +57,4 @@
                                 :optimism 50
                                 :arbitrum 25}
                 :account-props status-account-props}])
-    (h/is-falsy (h/get-by-label-text :networks))))
+    (h/is-null (h/query-by-label-text :networks))))
