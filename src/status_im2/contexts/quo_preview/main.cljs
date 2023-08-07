@@ -363,10 +363,6 @@
                         :component react/preview-react}]
    :record-audio      [{:name      :record-audio
                         :component record-audio/preview-record-audio}]
-   :switcher          [{:name      :group-messaging-card
-                        :component group-messaging-card/preview-group-messaging-card}
-                       {:name      :switcher-cards
-                        :component switcher-cards/preview-switcher-cards}]
    :selectors         [{:name      :disclaimer
                         :component disclaimer/preview-disclaimer}
                        {:name      :filter
@@ -393,6 +389,10 @@
                         :component qr-code/preview-qr-code}
                        {:name      :share-qr-code
                         :component share-qr-code/preview-share-qr-code}]
+   :switchers         [{:name      :group-messaging-card
+                        :component group-messaging-card/preview-group-messaging-card}
+                       {:name      :switcher-cards
+                        :component switcher-cards/preview-switcher-cards}]
    :tabs              [{:name      :segmented
                         :component segmented/preview-segmented}
                        {:name      :tabs
