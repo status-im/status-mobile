@@ -1,5 +1,6 @@
 (ns quo2.components.list-items.token-value.component-spec
   (:require
+    [quo2.foundations.colors :as colors]
     [test-helpers.component :as h]
     [quo2.components.list-items.token-value.view :as token-value]))
 
@@ -18,7 +19,7 @@
     (h/is-truthy (h/get-by-text "Status")))
 
   (h/test "Pressed state"
-    (h/render [token-value/view
+          (h/render [token-value/view
                {:token    :snt
                 :state    :pressed
                 :status   :empty
@@ -28,8 +29,8 @@
                            :fiat-value        "€0.00"
                            :percentage-change "0.00"
                            :fiat-change       "€0.00"}}])
-    (h/has-style (h/get-by-label-text :container)
-                 {:background-color "rgba(42,74,245,0.05)"}))
+          (h/has-style (h/get-by-label-text :container)
+                       {:backgroundColor (colors/custom-color-by-theme :blue 50 50 5 5)}))
 
   (h/test "Active state"
     (h/render [token-value/view
@@ -43,7 +44,7 @@
                            :percentage-change "0.00"
                            :fiat-change       "€0.00"}}])
     (h/has-style (h/get-by-label-text :container)
-                 {:background-color "rgba(42,74,245,0.1)"}))
+                 {:backgroundColor (colors/custom-color-by-theme :blue 50 50 10 10)}))
 
   (h/test "Status change"
     (h/render [token-value/view
