@@ -75,6 +75,7 @@
     quo2.components.notifications.notification.view
     quo2.components.notifications.toast.view
     quo2.components.numbered-keyboard.keyboard-key.view
+    quo2.components.numbered-keyboard.numbered-keyboard.view
     quo2.components.onboarding.small-option-card.view
     quo2.components.password.tips.view
     quo2.components.profile.profile-card.view
@@ -204,7 +205,8 @@
 (def title-input quo2.components.inputs.title-input.view/title-input)
 
 ;;;; NUMBERED KEYBOARD
-(def keyboard-key quo2.components.numbered-keyboard.keyboard-key.view/keyboard-key)
+(def keyboard-key quo2.components.numbered-keyboard.keyboard-key.view/view)
+(def numbered-keyboard quo2.components.numbered-keyboard.numbered-keyboard.view/view)
 
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)

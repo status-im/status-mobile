@@ -51,6 +51,7 @@
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
     [status-im2.contexts.quo-preview.numbered-keyboard.keyboard-key :as keyboard-key]
+    [status-im2.contexts.quo-preview.numbered-keyboard.numbered-keyboard :as numbered-keyboard]
     [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
     [status-im2.contexts.quo-preview.links.url-preview-list :as url-preview-list]
     [status-im2.contexts.quo-preview.links.link-preview :as link-preview]
@@ -252,7 +253,11 @@
    :numbered-keyboard [{:name      :keyboard-key
                         :options   {:insets {:top? true}
                                     :topBar {:visible true}}
-                        :component keyboard-key/preview-keyboard-key}]
+                        :component keyboard-key/preview-keyboard-key}
+                       {:name      :numbered-keyboard
+                        :options   {:insets {:top? true}
+                                    :topBar {:visible true}}
+                        :component numbered-keyboard/preview-numbered-keyboard}]
    :links             [{:name      :url-preview
                         :options   {:insets {:top? true}
                                     :topBar {:visible true}}
