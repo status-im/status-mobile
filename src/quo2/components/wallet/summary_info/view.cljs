@@ -13,8 +13,8 @@
   [{:keys [network amount divider? theme]}]
   [:<>
    [rn/image
-    {:style  {:width  16
-              :height 16}
+    {:style  {:width  14
+              :height 14}
      :source (resources/networks network)}]
    [text/text
     {:size   :paragraph-2
