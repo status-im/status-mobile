@@ -32,19 +32,19 @@
 (defn avatar
   [item type size border-radius]
   (case type
-    :user                 [user-avatar/user-avatar
-                           (merge {:ring?             false
-                                   :status-indicator? false
-                                   :size              (case size
-                                                        32 :small
-                                                        24 :xs
-                                                        16 :xxxs)}
-                                  item)]
-    (:photo :collectible) [fast-image/fast-image
-                           {:source (:source item)
-                            :style  {:width         size
-                                     :height        size
-                                     :border-radius border-radius}}]))
+    :user                          [user-avatar/user-avatar
+                                    (merge {:ring?             false
+                                            :status-indicator? false
+                                            :size              (case size
+                                                                 32 :small
+                                                                 24 :xs
+                                                                 16 :xxxs)}
+                                           item)]
+    (:photo :collectible :network) [fast-image/fast-image
+                                    {:source (:source item)
+                                     :style  {:width         size
+                                              :height        size
+                                              :border-radius border-radius}}]))
 
 (defn list-item
   [index type size item list-size margin-left
@@ -115,7 +115,7 @@
 (defn- preview-list-internal
   "[preview-list opts items]
    opts
-   {:type          :user/:community/:account/:token/:collectible/:dapp
+   {:type          :user/:community/:account/:token/:collectible/:dapp/:network
     :size          32/24/16
     :list-size     override items count in overflow label (optional)
     :transparent?  overflow-label transparent?}

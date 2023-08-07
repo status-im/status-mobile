@@ -48,6 +48,8 @@
     [quo2.components.settings.settings-list.component-spec]
     [quo2.components.settings.category.component-spec]
     [quo2.components.share.share-qr-code.component-spec]
+    [quo2.components.tags.--tests--.status-tags-component-spec]
+    [quo2.components.tags.network-tags.component-spec]
     [quo2.components.tags.status-tags-component-spec]
     [quo2.components.wallet.account-card.component-spec]
     [quo2.components.wallet.network-amount.component-spec]

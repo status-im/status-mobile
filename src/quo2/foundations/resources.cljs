@@ -29,3 +29,7 @@
    :optimism (js/require "../resources/images/tokens/mainnet/OP.png")
    :arbitrum (js/require "../resources/images/tokens/mainnet/ARB.png")})
 
+(defn get-network
+  [k]
+  (get networks k))
+
