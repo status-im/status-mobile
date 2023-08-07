@@ -10,7 +10,7 @@
    :border-radius      12
    :flex-direction     :row
    :justify-content    :space-between
-   :background-color   (colors/custom-color-by-theme color 50 50 bg-opacity bg-opacity)})
+   :backgroundColor    (colors/custom-color-by-theme color 50 50 bg-opacity bg-opacity)})
 
 (defn metric-text
   [status theme]
