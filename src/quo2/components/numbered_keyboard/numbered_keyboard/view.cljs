@@ -5,14 +5,14 @@
             [quo2.components.numbered-keyboard.numbered-keyboard.style :as style]))
 
 (defn keyboard-item
-  [{:keys [item type disabled? on-press blur? theme]
-    :or   {item nil}}]
+  [{:keys [item type disabled? on-press blur? theme]}]
   [keyboard-key/view
    {:disabled? disabled?
     :on-press  on-press
     :blur?     blur?
     :theme     theme
-    :type      type} item])
+    :type      type}
+   item])
 
 (defn- view-internal
   []
@@ -23,7 +23,6 @@
        ^{:key row-index}
        [rn/view {:style style/row-container}
         (for [column-index (range 1 4)]
-
           [keyboard-item
            {:item      (+ (* (dec row-index) 3) column-index)
             :type      :digit
@@ -33,7 +32,7 @@
             :theme     theme}])])
      ;; bottom row
      [rn/view {:style style/row-container}
-      (condp = left-action
+      (case left-action
         :dot     [keyboard-item
                   {:item      "."
                    :type      :digit

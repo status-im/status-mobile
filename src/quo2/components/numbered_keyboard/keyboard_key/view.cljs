@@ -19,7 +19,7 @@
           :on-press-in         #(reset! pressed? true)
           :on-press-out        #(reset! pressed? false)
           :style               (style/container background-color)}
-         (condp = type
+         (case type
            :key             [icons/icon
                              label
                              {:color               label-color
