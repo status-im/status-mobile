@@ -8,7 +8,6 @@
             [quo2.components.list-items.preview-list :as preview-list]
             [quo2.components.tags.context-tag.view :as tag]
             [quo2.components.code.snippet :as snippet]
-            [quo2.foundations.colors :as colors]
             [utils.i18n :as i18n]))
 
 (defn content-view
