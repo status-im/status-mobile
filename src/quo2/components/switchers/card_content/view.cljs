@@ -66,7 +66,7 @@
      nil)])
 
 (defn notification-indicator
-  [{:keys [status mention-count]}]
+  [{:keys [status mention-count customization-color]}]
   (when (not= status :read)
     [rn/view {:style style/notification-container}
      (case status
@@ -76,15 +76,16 @@
        :mention
        [counter/view
         {:outline             false
-         :override-text-color colors/white}
+         :customization-color customization-color}
         mention-count]
 
        nil)]))
 
 (defn view
-  [type status content]
-  [rn/view {:style style/content-container}
+  [type status customization-color content]
+  [rn/view {:style (style/content-container status)}
    [content-view {:type type :content content}]
    [notification-indicator
-    {:status        status
-     :mention-count (:mention-count content)}]])
+    {:status              status
+     :customization-color customization-color
+     :mention-count       (:mention-count content)}]])

@@ -1,10 +1,11 @@
 (ns quo2.components.switchers.card-content.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def content-container
+(defn content-container
+  [status]
   {:flex-direction  :row
    :justify-content :space-between
-   :align-items     :center})
+   :align-items     (if (= status :mention) :center :flex-end)})
 
 (def notification-container
   {:width           20
@@ -24,3 +25,6 @@
   {:width         24
    :height        24
    :border-radius 8})
+
+(defn notification-dot [customization-color]
+  {:background-color customization-color})
