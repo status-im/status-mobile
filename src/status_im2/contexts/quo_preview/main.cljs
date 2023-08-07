@@ -108,12 +108,9 @@
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
-    [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
-<<<<<<< HEAD
-    [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
-=======
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
->>>>>>> ff9729681 (feat: quo2 wallet - summary info)
+    [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
+    [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
     [utils.re-frame :as rf]))
 
 (def screens-categories
@@ -425,29 +422,15 @@
                        {:name      :network-bridge
                         :options   {:topBar {:visible true}}
                         :component network-bridge/preview}
+                       {:name      :summary-info
+                        :options   {:topBar {:visible true}}
+                        :component summary-info/preview}
                        {:name      :token-input
                         :options   {:topBar {:visible true}}
-<<<<<<< HEAD
-<<<<<<< HEAD
                         :component token-input/preview}
                        {:name      :wallet-overview
                         :options   {:topBar {:visible true}}
                         :component wallet-overview/preview-wallet-overview}]
-=======
-                        :component token-input/preview}]
-=======
-                        :component network-amount/preview}
-                       {:name      :summary-info
-                        :options   {:topBar {:visible true}}
-                        :component summary-info/preview}]
->>>>>>> 51177d716 (feat: quo2 summary info)
->>>>>>> 9ef42f0fb (feat: quo2 summary info)
-=======
-                        :component token-input/preview}
-                       {:name      :summary-info
-                        :options   {:topBar {:visible true}}
-                        :component summary-info/preview}]
->>>>>>> ff9729681 (feat: quo2 wallet - summary info)
    :keycard           [{:name      :keycard-component
                         :options   {:topBar {:visible true}}
                         :component keycard/preview-keycard}]})
