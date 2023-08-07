@@ -36,8 +36,8 @@ quo2/
             └── view.cljs
 ```
 
-Files `style.cljs` and `component_spec.cljs` should always have the same name,
-regardless of component.
+Files `view.cljs`, `style.cljs`, and `component_spec.cljs` should always have
+the same name, regardless of component.
 
 ## Component API
 
@@ -129,8 +129,7 @@ Use the following pattern:
 ```
 
 Then pass the `theme` value down to all functions that may rely on the OS theme,
-like `quo2.foundations.colors/custom-color-by-theme` or
-`quo2.foundations.shadows/get`.
+like `quo2.foundations.colors/theme-colors` or `quo2.foundations.shadows/get`.
 
 ## Avoid using quo's version number in namespace aliases
 
