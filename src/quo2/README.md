@@ -71,8 +71,9 @@ In the image above we can see the properties are `Type`, `State`, `Size`,
 
 ## Clojure var conventions
 
-- Given that components only have one public component, name the public var
-  `view` to avoid the redundancy of `[some-component/some-component ...]`.
+- Due to the fact that every `view` namespace should export only one component
+  and to avoid the redundancy of `[some-component/some-component ...]`, name the
+  public var `view` as well.
 - Try to make all other vars private because they should almost never be used
   directly.
 
