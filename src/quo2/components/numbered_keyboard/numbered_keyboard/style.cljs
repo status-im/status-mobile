@@ -8,5 +8,5 @@
 (def row-container
   {:flex-direction  :row
    :justify-content :space-between
-   :margin-bottom   6
+   :margin-bottom   12
    :align-items     :center})

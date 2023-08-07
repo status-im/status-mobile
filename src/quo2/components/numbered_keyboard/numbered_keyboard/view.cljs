@@ -41,7 +41,7 @@
                    :blur?     blur?
                    :theme     theme}]
         :face-id [keyboard-item
-                  {:item      :i/face-id
+                  {:item      :i/faceid-key
                    :type      :key
                    :disabled? disabled?
                    :on-press  on-press
