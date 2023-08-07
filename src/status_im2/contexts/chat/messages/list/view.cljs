@@ -126,15 +126,17 @@
           loading-indicator-page-loading-height)]])))
 
 (defn list-header
-  [insets]
+  [insets able-to-send-message?]
   [rn/view
    {:background-color (colors/theme-colors colors/white colors/neutral-95)
     :margin-bottom    (- 0
                          (:top insets)
                          (when platform/ios? style/overscroll-cover-height))
-    :height           (+ composer.constants/composer-default-height
-                         (:bottom insets)
-                         spacing-between-composer-and-content
+    :height           (+ (if able-to-send-message?
+                           (+ composer.constants/composer-default-height
+                              spacing-between-composer-and-content
+                              (:bottom insets))
+                           (- 70 (:bottom insets)))
                          (when platform/ios? style/overscroll-cover-height))}])
 
 (defn f-list-footer-avatar
@@ -253,9 +255,7 @@
   [{:keys [type value content-type] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
   ;;TODO temporary hide mutual-state-updates https://github.com/status-im/status-mobile/issues/16254
-  (when-not (#{constants/content-type-system-message-mutual-event-sent
-               constants/content-type-system-message-mutual-event-accepted
-               constants/content-type-system-message-mutual-event-removed}
+  (when-not (#{constants/content-type-contact-request}
              content-type)
     [rn/view
      (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
@@ -289,7 +289,7 @@
       {:key-fn                       list-key-fn
        :ref                          list-ref
        :header                       [:<>
-                                      [list-header insets]
+                                      [list-header insets (:able-to-send-message? context)]
                                       (when (= (:chat-type chat) constants/private-group-chat-type)
                                         [list-group-chat-header chat])]
        :footer                       [list-footer
@@ -322,7 +322,10 @@
                                            (reanimated/set-shared-value content-height y))))
        :on-end-reached               #(list-on-end-reached scroll-y)
        :on-scroll-to-index-failed    identity
-       :scroll-indicator-insets      {:top (- composer.constants/composer-default-height 16)}
+       :scroll-indicator-insets      {:top (if (:able-to-send-message? context)
+                                             (- composer.constants/composer-default-height 16)
+                                             0)}
+
        :keyboard-dismiss-mode        :interactive
        :keyboard-should-persist-taps :always
        :on-scroll-begin-drag         rn/dismiss-keyboard!

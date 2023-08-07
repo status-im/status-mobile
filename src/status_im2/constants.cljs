@@ -12,7 +12,7 @@
 (def ^:const content-type-audio 8)
 (def ^:const content-type-community 9)
 (def ^:const content-type-gap 10)
-(def ^:const content-type-contact-request 11) ;; TODO: temp, will be removed
+(def ^:const content-type-contact-request 11)
 (def ^:const content-type-system-pinned-message 14)
 (def ^:const content-type-system-message-mutual-event-sent 15)
 (def ^:const content-type-system-message-mutual-event-accepted 16)

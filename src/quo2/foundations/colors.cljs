@@ -58,6 +58,8 @@
 (def neutral-95 "#0D1625")
 (def neutral-100 "#09101C")
 
+(def neutral-50-opa-40 (alpha neutral-50 0.4))
+
 ;;80 with transparency
 (def neutral-80-opa-5 (alpha neutral-80 0.05))
 (def neutral-80-opa-10 (alpha neutral-80 0.1))

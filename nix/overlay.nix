@@ -13,11 +13,8 @@ in {
   # Fix for MacOS
   mkShell = super.mkShell.override { stdenv = stdenvNoCC; };
 
-  # Various utilities
-  utils = callPackage ./tools/utils.nix { };
   lib = (super.lib or { }) // (import ./lib {
     inherit (super) lib;
-    inherit (self) config;
   });
 
   # Project dependencies
@@ -28,9 +25,6 @@ in {
     nodejs-patched = callPackage ./deps/nodejs-patched { };
     react-native = callPackage ./deps/react-native { };
   };
-
-  # For parsing gradle.properties into an attrset
-  gradlePropParser = callPackage ./tools/gradlePropParser.nix { };
 
   # Fix for missing libarclite_macosx.a in Xcode 14.3.
   # https://github.com/ios-control/ios-deploy/issues/580

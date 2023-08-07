@@ -31,6 +31,7 @@
     [quo2.components.links.url-preview-list.component-spec]
     [quo2.components.links.url-preview.component-spec]
     [quo2.components.list-items.community.component-spec]
+    [quo2.components.list-items.token-value.component-spec]
     [quo2.components.markdown.text-component-spec]
     [quo2.components.markdown.list.component-spec]
     [quo2.components.notifications.notification.component-spec]
