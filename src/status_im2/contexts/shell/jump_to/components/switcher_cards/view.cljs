@@ -148,7 +148,6 @@
 
 (defn subtitle
   [type {:keys [content-type data]}]
-  (println "content-type" content-type)
   (case type
     shell.constants/community-card
     (i18n/label :t/community)
