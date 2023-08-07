@@ -11,7 +11,8 @@
             [status-im2.constants :as constants]
             [quo2.foundations.colors :as colors]
             [status-im2.contexts.profile.login.events :as profile.login]
-            [utils.transforms :as transforms]))
+            [utils.transforms :as transforms]
+            [status-im2.contexts.communities.discover.events]))
 
 (rf/defn summary
   [{:keys [db] :as cofx} peers-summary]
@@ -95,50 +96,54 @@
         ^js event-js (.-event data)
         type         (.-type data)]
     (case type
-      "node.login"              (profile.login/login-node-signal cofx (transforms/js->clj event-js))
-      "backup.performed"        {:db (assoc-in db
-                                      [:profile/profile :last-backup]
-                                      (.-lastBackup event-js))}
-      "envelope.sent"           (transport.message/update-envelopes-status cofx
-                                                                           (:ids
+      "node.login"                 (profile.login/login-node-signal cofx (transforms/js->clj event-js))
+      "backup.performed"           {:db (assoc-in db
+                                         [:profile/profile :last-backup]
+                                         (.-lastBackup event-js))}
+      "envelope.sent"              (transport.message/update-envelopes-status cofx
+                                                                              (:ids
+                                                                               (js->clj event-js
+                                                                                        :keywordize-keys
+                                                                                        true))
+                                                                              :sent)
+      "envelope.expired"           (transport.message/update-envelopes-status cofx
+                                                                              (:ids
+                                                                               (js->clj event-js
+                                                                                        :keywordize-keys
+                                                                                        true))
+                                                                              :not-sent)
+      "message.delivered"          (let [{:keys [chatID messageID]} (js->clj event-js
+                                                                             :keywordize-keys
+                                                                             true)]
+                                     (models.message/update-db-message-status cofx
+                                                                              chatID
+                                                                              messageID
+                                                                              :delivered))
+      "mailserver.changed"         (mailserver/handle-mailserver-changed cofx (.-id event-js))
+      "mailserver.available"       (mailserver/handle-mailserver-available cofx (.-id event-js))
+      "mailserver.not.working"     (mailserver/handle-mailserver-not-working cofx)
+      "discovery.summary"          (summary cofx (js->clj event-js :keywordize-keys true))
+      "mediaserver.started"        {:db (assoc db :mediaserver/port (.-port event-js))}
+      "wakuv2.peerstats"           (wakuv2-peer-stats cofx (js->clj event-js :keywordize-keys true))
+      "messages.new"               (transport.message/sanitize-messages-and-process-response cofx
+                                                                                             event-js
+                                                                                             true)
+      "wallet"                     (ethereum.subscriptions/new-wallet-event cofx
                                                                             (js->clj event-js
                                                                                      :keywordize-keys
                                                                                      true))
-                                                                           :sent)
-      "envelope.expired"        (transport.message/update-envelopes-status cofx
-                                                                           (:ids
-                                                                            (js->clj event-js
-                                                                                     :keywordize-keys
-                                                                                     true))
-                                                                           :not-sent)
-      "message.delivered"       (let [{:keys [chatID messageID]} (js->clj event-js
-                                                                          :keywordize-keys
-                                                                          true)]
-                                  (models.message/update-db-message-status cofx
-                                                                           chatID
-                                                                           messageID
-                                                                           :delivered))
-      "mailserver.changed"      (mailserver/handle-mailserver-changed cofx (.-id event-js))
-      "mailserver.available"    (mailserver/handle-mailserver-available cofx (.-id event-js))
-      "mailserver.not.working"  (mailserver/handle-mailserver-not-working cofx)
-      "discovery.summary"       (summary cofx (js->clj event-js :keywordize-keys true))
-      "mediaserver.started"     {:db (assoc db :mediaserver/port (.-port event-js))}
-      "wakuv2.peerstats"        (wakuv2-peer-stats cofx (js->clj event-js :keywordize-keys true))
-      "messages.new"            (transport.message/sanitize-messages-and-process-response cofx
-                                                                                          event-js
-                                                                                          true)
-      "wallet"                  (ethereum.subscriptions/new-wallet-event cofx
-                                                                         (js->clj event-js
-                                                                                  :keywordize-keys
-                                                                                  true))
-      "local-notifications"     (local-notifications/process cofx
-                                                             (js->clj event-js :keywordize-keys true))
-      "community.found"         (link-preview/cache-community-preview-data (js->clj event-js
-                                                                                    :keywordize-keys
-                                                                                    true))
-      "status.updates.timedout" (visibility-status-updates/handle-visibility-status-updates
-                                 cofx
-                                 (js->clj event-js :keywordize-keys true))
-      "localPairing"            (handle-local-pairing-signals cofx
-                                                              (js->clj event-js :keywordize-keys true))
+      "local-notifications"        (local-notifications/process cofx
+                                                                (js->clj event-js :keywordize-keys true))
+      "community.found"            (link-preview/cache-community-preview-data (js->clj event-js
+                                                                                       :keywordize-keys
+                                                                                       true))
+      "status.updates.timedout"    (visibility-status-updates/handle-visibility-status-updates
+                                    cofx
+                                    (js->clj event-js :keywordize-keys true))
+      "localPairing"               (handle-local-pairing-signals
+                                    cofx
+                                    (js->clj event-js :keywordize-keys true))
+      "curated.communities.update" (rf/dispatch [:fetched-contract-communities
+                                                 (js->clj event-js :keywordize-keys true)])
+
       (log/debug "Event " type " not handled"))))

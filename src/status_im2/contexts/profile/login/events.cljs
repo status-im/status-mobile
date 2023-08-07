@@ -13,7 +13,6 @@
     [status-im.notifications.core :as notifications]
     [status-im2.config :as config]
     [status-im.data-store.settings :as data-store.settings]
-    [status-im2.contexts.communities.discover.events :as contract-communities]
     [status-im.communities.core :as communities]
     [status-im2.common.log :as logging]
     [status-im2.contexts.shell.activity-center.events :as activity-center]
@@ -87,7 +86,6 @@
                      (re-frame/dispatch [:profile.login/get-chats-callback]))})
               (profile.config/get-node-config)
               (communities/fetch)
-              (contract-communities/fetch-contract-communities)
               (communities/fetch-collapsed-community-categories)
               (communities/check-and-delete-pending-request-to-join)
               (logging/set-log-level (:log-level settings))

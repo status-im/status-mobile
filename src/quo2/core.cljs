@@ -148,7 +148,7 @@
 (def picker-colors quo2.components.colors.color-picker.view/picker-colors)
 
 ;;;; COMMUNITY
-(def community-card-view-item quo2.components.community.community-card-view/community-card-view-item)
+(def community-card-view-item quo2.components.community.community-card-view/view)
 (def communities-membership-list-item
   quo2.components.community.community-list-view/communities-membership-list-item)
 (def community-stats-column quo2.components.community.community-view/community-stats-column)
