@@ -122,7 +122,7 @@
    (if incoming?
      (i18n/label :t/contact-request-removed-you-as-contact)
      (i18n/label :t/contact-request-removed-as-contact))
-   :i/remove-user])
+   :i/sad])
 
 (defn system-message-contact-request-internal
   [{:keys [display-name photo-path customization-color theme timestamp incoming?]}]

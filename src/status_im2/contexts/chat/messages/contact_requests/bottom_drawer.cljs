@@ -15,12 +15,12 @@
     [rn/view
      [permission-context/view
       [quo/button
-       {:type     :ghost
-        :size     24
-        :on-press #(rf/dispatch [:chat.ui/show-profile contact-id])
-        :before   (if (= contact-request-state constants/contact-request-state-sent)
-                    :i/pending-state
-                    :i/add-user)}
+       {:type      :ghost
+        :size      24
+        :on-press  #(rf/dispatch [:chat.ui/show-profile contact-id])
+        :icon-left (if (= contact-request-state constants/contact-request-state-sent)
+                     :i/pending-state
+                     :i/add-user)}
        (cond
          group-chat
          (i18n/label :t/group-chat-not-member)
