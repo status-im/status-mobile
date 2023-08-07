@@ -1,6 +1,5 @@
 (ns quo2.components.list-items.token-value.component-spec
   (:require
-    [quo2.foundations.colors :as colors]
     [test-helpers.component :as h]
     [quo2.components.list-items.token-value.view :as token-value]))
 
