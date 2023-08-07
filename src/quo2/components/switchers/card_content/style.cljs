@@ -25,6 +25,3 @@
   {:width         24
    :height        24
    :border-radius 8})
-
-(defn notification-dot [customization-color]
-  {:background-color customization-color})
