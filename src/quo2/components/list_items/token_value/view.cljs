@@ -18,7 +18,7 @@
                                                                           0)
         {:keys [crypto-value fiat-value percentage-change fiat-change]} values]
     [rn/view
-     {:style               (style/container customization-color bg-opacity)
+     {:style               (style/container customization-color bg-opacity theme)
       :accessibility-label :container}
      [rn/view
       {:style {:flex-direction :row

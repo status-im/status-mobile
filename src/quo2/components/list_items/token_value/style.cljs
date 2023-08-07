@@ -2,7 +2,7 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn container
-  [color bg-opacity]
+  [color bg-opacity theme]
   {:width              359
    :height             56
    :padding-horizontal 12
@@ -10,7 +10,7 @@
    :border-radius      12
    :flex-direction     :row
    :justify-content    :space-between
-   :backgroundColor    (colors/custom-color-by-theme color 50 50 bg-opacity bg-opacity)})
+   :background-color   (colors/custom-color-by-theme color 50 50 bg-opacity bg-opacity theme)})
 
 (defn metric-text
   [status theme]
