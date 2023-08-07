@@ -7,21 +7,32 @@
 
 
 (def descriptor
-  [{:label "Amount:"
-    :key   :amount
-    :type  :text}
-   {:label   "Token:"
-    :key     :token
+  [{:label   "State:"
+    :key     :state
     :type    :select
-    :options [{:key   :eth
-               :value "ETH"}
-              {:key   :snt
-               :value "SNT"}]}])
+    :options [{:key   :default
+               :value "Default"}
+              {:key   :pressed
+               :value "Pressed"}]}
+   {:label   "Action:"
+    :key     :action
+    :type    :select
+    :options [{:key   :none
+               :value "None"}
+              {:key   :icon
+               :value "Icon"}]}])
 
 (defn preview
   []
-  (let [state (reagent/atom {:amount "5.123456"
-                             :token  :eth})]
+  (let [state (reagent/atom {:account-props {:customization-color :purple
+                                             :size                32
+                                             :emoji               "🍑"
+                                             :type                :default
+                                             :name                "Tip to Vegas"
+                                             :address             "0x0ah...78b"}
+                             :network       :ethereum
+                             :state         :default
+                             :action        :none})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view
