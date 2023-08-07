@@ -106,15 +106,15 @@
         [preview/customizer state descriptor]
         [rn/view {:padding-vertical 60}
          [quo/button
-          {:style    {:margin-horizontal 40
-                      :margin-bottom     20}
-           :on-press #(rf/dispatch [:show-bottom-sheet
-                                    {:content     (constantly [render-documenation-drawer @title
-                                                               @show-button?
-                                                               @button-label expanded? @shell?])
-                                     :expandable? @show-button?
-                                     :shell?      @shell?
-                                     :expanded?   @expanded?}])}
+          {:container-style {:margin-horizontal 40
+                             :margin-bottom     20}
+           :on-press        #(rf/dispatch [:show-bottom-sheet
+                                           {:content     (constantly [render-documenation-drawer @title
+                                                                      @show-button?
+                                                                      @button-label expanded? @shell?])
+                                            :expandable? @show-button?
+                                            :shell?      @shell?
+                                            :expanded?   @expanded?}])}
           "Open drawer"]
          [render-documenation-drawer @title @show-button? @button-label expanded?]]]])))
 

@@ -5,7 +5,7 @@
             [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [quo2.theme :as theme]))
+            [quo2.theme :as quo.theme]))
 
 (defn- label-&-counter
   [{:keys [label current-chars char-limit variant-colors]}]
@@ -54,7 +54,7 @@
 
 (def ^:private custom-props
   "Custom properties that must be removed from properties map passed to InputText."
-  [:type :blur? :override-theme :error? :right-icon :left-icon :disabled? :small? :button
+  [:type :blur? :theme :error? :right-icon :left-icon :disabled? :small? :button
    :label :char-limit :on-char-limit-reach :icon-name :multiline? :on-focus :on-blur])
 
 (defn- base-input
@@ -74,15 +74,15 @@
                                 (reset! char-count amount-chars)
                                 (when (>= amount-chars char-limit)
                                   (on-char-limit-reach amount-chars))))]
-    (fn [{:keys [blur? override-theme error? right-icon left-icon disabled? small? button
+    (fn [{:keys [blur? theme error? right-icon left-icon disabled? small? button
                  label char-limit multiline? clearable? on-focus on-blur]
           :as   props}]
       (let [status-kw        (cond
                                disabled? :disabled
                                error?    :error
                                :else     @status)
-            colors-by-status (style/status-colors status-kw blur? override-theme)
-            variant-colors   (style/variants-colors blur? override-theme)
+            colors-by-status (style/status-colors status-kw blur? theme)
+            variant-colors   (style/variants-colors blur? theme)
             clean-props      (apply dissoc props custom-props)]
         [:<>
          (when (or label char-limit)
@@ -101,7 +101,7 @@
            (cond-> {:style                  (style/input colors-by-status small? @multiple-lines?)
                     :accessibility-label    :input
                     :placeholder-text-color (:placeholder colors-by-status)
-                    :keyboard-appearance    (theme/theme-value :light :dark override-theme)
+                    :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
                     :cursor-color           (:cursor variant-colors)
                     :editable               (not disabled?)
                     :on-focus               (fn []
@@ -148,11 +148,11 @@
                                     :icon-name (if @password-shown? :i/hide :i/reveal)
                                     :on-press  #(swap! password-shown? not)})])))
 
-(defn input
+(defn input-internal
   "This input supports the following properties:
   - :type - Can be `:text`(default) or `:password`.
   - :blur? - Boolean to set the blur color variant.
-  - :override-theme - Can be `light` or `:dark`.
+  - :theme - Can be `light` or `:dark`.
   - :small? - Boolean to specify if this input is rendered in its small version.
   - :multiline? - Boolean to specify if this input support multiple lines.
   - :icon-name - The name of an icon to display at the left of the input.
@@ -188,3 +188,5 @@
     (if (= type :password)
       [password-input base-props]
       [base-input base-props])))
+
+(def input (quo.theme/with-theme input-internal))

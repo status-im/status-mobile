@@ -12,10 +12,10 @@
      [quo/page-nav
       {:align-mid?            true
        :mid-section           {:type :text-only :main-text ""}
-       :left-section          {:type                :blur-bg
-                               :icon                :i/arrow-left
-                               :icon-override-theme :dark
-                               :on-press            (fn []
-                                                      (when-not disable-back-button?
-                                                        (rf/dispatch back-event)))}
+       :left-section          {:type            :grey
+                               :icon-background :blur
+                               :icon            :i/arrow-left
+                               :on-press        (fn []
+                                                  (when-not disable-back-button?
+                                                    (rf/dispatch back-event)))}
        :right-section-buttons right-section-buttons}]]))

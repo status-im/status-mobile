@@ -1,9 +1,9 @@
 (ns quo2.components.community.community-list-view
   (:require [quo2.components.community.community-view :as community-view]
             [quo2.components.community.style :as style]
-            [quo2.components.counter.counter :as counter]
+            [quo2.components.counter.counter.view :as counter]
             [quo2.components.icon :as icons]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [quo2.components.community.icon :as community-icon]
@@ -11,9 +11,11 @@
             [react-native.core :as rn]))
 
 (defn notification-view
-  [{:keys [muted?
+  [{:keys [theme
+           muted?
            unread-messages?
-           unread-mentions-count]}]
+           unread-mentions-count
+           customization-color]}]
   (cond
     muted?
     [icons/icon :i/muted
@@ -23,15 +25,18 @@
       :size            20
       :color           (colors/theme-colors
                         colors/neutral-50
-                        colors/neutral-40)}]
+                        colors/neutral-40
+                        theme)}]
     (pos? unread-mentions-count)
-    [counter/counter {:type :default} unread-mentions-count]
+    [counter/view
+     {:customization-color customization-color
+      :type                :default} unread-mentions-count]
 
     unread-messages?
     [unread-grey-dot :unviewed-messages-public]))
 
-(defn communities-list-view-item
-  [props
+(defn- communities-list-view-item-internal
+  [{:keys [theme customization-color] :as props}
    {:keys [name
            locked?
            status
@@ -63,7 +68,8 @@
          :style               {:color (when muted
                                         (colors/theme-colors
                                          colors/neutral-40
-                                         colors/neutral-60))}}
+                                         colors/neutral-60
+                                         theme))}}
         name]
        [community-view/community-stats-column
         {:type :list-view}]]
@@ -72,12 +78,16 @@
          {:locked? locked?
           :tokens  tokens}]
         [notification-view
-         {:muted?                muted
+         {:customization-color   customization-color
+          :theme                 theme
+          :muted?                muted
           :unread-mentions-count unread-mentions-count
           :unread-messages?      unread-messages?}])]]]])
 
-(defn communities-membership-list-item
-  [props
+(def communities-list-view-item (quo.theme/with-theme communities-list-view-item-internal))
+
+(defn- communities-membership-list-item-internal
+  [{:keys [theme customization-color] :as props}
    bottom-sheet?
    {:keys [name
            muted
@@ -91,7 +101,8 @@
   [rn/touchable-highlight
    (merge {:underlay-color (colors/theme-colors
                             colors/neutral-5
-                            colors/neutral-95)
+                            colors/neutral-95
+                            theme)
            :style          {:border-radius 12
                             :margin-left   12}}
           props)
@@ -109,9 +120,10 @@
        :weight              :semi-bold
        :size                :paragraph-1
        :style               (when muted
-                              {:color (if (theme/dark?)
-                                        colors/neutral-60
-                                        colors/neutral-40)})}
+                              {:color (colors/theme-colors
+                                       colors/neutral-40
+                                       colors/neutral-60
+                                       theme)})}
       name]]
 
     [rn/view
@@ -123,6 +135,10 @@
         {:locked? locked?
          :tokens  tokens}]
        [notification-view
-        {:muted?                muted
+        {:theme                 theme
+         :customization-color   customization-color
+         :muted?                muted
          :unread-mentions-count unviewed-mentions-count
          :unread-messages?      (pos? unviewed-messages-count)}])]]])
+
+(def communities-membership-list-item (quo.theme/with-theme communities-membership-list-item-internal))

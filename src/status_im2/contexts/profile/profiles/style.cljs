@@ -45,9 +45,10 @@
    :padding-top        56
    :padding-horizontal 20})
 
-(def multi-profile-button
-  {:align-self    :flex-end
-   :margin-bottom 20})
+(def multi-profile-button-container
+  {:flex-direction  :row
+   :justify-content :flex-end
+   :margin-bottom   20})
 
 (def login-profile-card
   {:margin-bottom 20})

@@ -38,15 +38,13 @@
      shell.constants/community-card
      (case (:type community-info)
        :pending             [quo/status-tag
-                             {:status         {:type :pending}
-                              :label          (i18n/label :t/pending)
-                              :size           :small
-                              :override-theme :dark}]
+                             {:status {:type :pending}
+                              :label  (i18n/label :t/pending)
+                              :size   :small}]
        :kicked              [quo/status-tag
-                             {:status         {:type :negative}
-                              :size           :small
-                              :override-theme :dark
-                              :label          (i18n/label :t/kicked)}]
+                             {:status {:type :negative}
+                              :size   :small
+                              :label  (i18n/label :t/kicked)}]
        (:count :permission) [:<>] ;; Add components for these cases
        nil)
 
@@ -69,8 +67,8 @@
        [quo/preview-list
         {:type               :photo
          :more-than-99-label (i18n/label :counter-99-plus)
-         :size               24
-         :override-theme     :dark} data]
+         :size               24}
+        data]
 
        constants/content-type-sticker
        [fast-image/fast-image
@@ -98,15 +96,14 @@
        nil))])
 
 (defn notification-container
-  [{:keys [notification-indicator counter-label color-60]}]
+  [{:keys [notification-indicator counter-label customization-color]}]
   [rn/view {:style style/notification-container}
    (if (= notification-indicator :counter)
      [quo/counter
       {:outline             false
-       :override-text-color colors/white
-       :override-bg-color   color-60}
+       :customization-color customization-color}
       counter-label]
-     [rn/view {:style (style/unread-dot color-60)}])])
+     [rn/view {:style (style/unread-dot customization-color)}])])
 
 (defn bottom-container
   [type {:keys [new-notifications?] :as content}]
@@ -225,8 +222,7 @@
   (let [card-ref (atom nil)]
     (fn [{:keys [avatar-params title type customization-color
                  content banner id channel-id]}]
-      (let [color-50 (colors/custom-color customization-color 50)
-            color-60 (colors/custom-color customization-color 60)]
+      (let [color-50 (colors/custom-color customization-color 50)]
         [rn/touchable-opacity
          {:on-press       #(calculate-card-position-and-open-screen
                             card-ref
@@ -255,19 +251,18 @@
              :style  style/subtitle}
             (subtitle type content)]
            [bottom-container type
-            (merge {:color-50 color-50
-                    :color-60 color-60}
+            (merge {:color-50            color-50
+                    :customization-color customization-color}
                    content)]]
           (when avatar-params
             [rn/view {:style style/avatar-container}
              [avatar avatar-params type customization-color]])
           [quo/button
-           {:size           24
-            :type           :grey
-            :icon           true
-            :on-press       #(rf/dispatch [:shell/close-switcher-card id])
-            :override-theme :dark
-            :style          style/close-button}
+           {:size            24
+            :type            :grey
+            :icon-only?      true
+            :on-press        #(rf/dispatch [:shell/close-switcher-card id])
+            :container-style style/close-button}
            :i/close]]]))))
 
 ;; browser Card

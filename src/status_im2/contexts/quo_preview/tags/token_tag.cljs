@@ -1,10 +1,10 @@
 (ns status-im2.contexts.quo-preview.tags.token-tag
   (:require [quo2.components.tags.token-tag :as quo2]
             [quo2.foundations.colors :as colors]
+            [quo2.foundations.resources :as resources]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.common.resources :as resources]))
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Size:"

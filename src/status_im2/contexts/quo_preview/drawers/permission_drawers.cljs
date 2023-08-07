@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.drawers.permission-drawers
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [quo2.foundations.resources :as quo.resources]
             [react-native.core :as rn]
             [status-im2.common.resources :as resources]))
 
@@ -43,7 +44,7 @@
    [quo/text {:style {:margin-right 4}} "Hold"]
    [quo/token-tag
     {:size          :small
-     :token-img-src (resources/get-token :eth)} "ETH"]
+     :token-img-src (quo.resources/get-token :eth)} "ETH"]
    [quo/text {:style {:margin-left 4}} "To post"]])
 
 (defn example-3

@@ -37,7 +37,7 @@
        :accessibility-label :information-box-action-button
        :size                24
        :on-press            on-button-press
-       :style               style/content-button}
+       :container-style     style/content-button}
       button-label])])
 
 (defn view

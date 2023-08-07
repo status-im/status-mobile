@@ -50,11 +50,11 @@
                  :transform [{:translate-y controls-translate-y}]}
                 {})}
        [quo/button
-        {:icon                true
-         :type                :blur-bg
+        {:icon-only?          true
+         :type                :grey
+         :background          :blur
          :size                32
          :accessibility-label :close-sign-in-by-syncing
-         :override-theme      :dark
          :on-press            (fn []
                                 (if (and animated? reset-animations-fn)
                                   (reset-animations-fn)
@@ -66,11 +66,11 @@
                  :transform [{:translate-y controls-translate-y}]}
                 {})}
        [quo/button
-        {:before              :i/info
-         :type                :blur-bg
+        {:icon-left           :i/info
+         :type                :grey
+         :background          :blur
          :size                32
          :accessibility-label :find-sync-code
-         :override-theme      :dark
          :on-press            #(rf/dispatch [:open-modal :find-sync-code])}
         (i18n/label :t/find-sync-code)]]]
      [reanimated/view
@@ -101,7 +101,6 @@
                style/tabs-container)}
       [quo/segmented-control
        {:size           32
-        :override-theme :dark
         :blur?          true
         :default-active @active-tab
         :data           [{:id 1 :label (i18n/label :t/scan-sync-qr-code)}
@@ -147,11 +146,10 @@
        :style  style/enable-camera-access-sub-text}
       (i18n/label description-label-key)]
      [quo/button
-      {:before              button-icon
+      {:icon-left           button-icon
        :type                :primary
        :size                32
        :accessibility-label accessibility-label
-       :override-theme      :dark
        :customization-color :blue
        :on-press            on-press}
       (i18n/label button-label)]]))
@@ -395,12 +393,12 @@
           (when show-bottom-view? [bottom-view insets bottom-view-translate-y])
           (when (and (or (not animated?) @render-camera?) show-camera?)
             [quo/button
-             {:icon                true
+             {:icon-only?          true
               :type                :grey
               :background          :blur
               :size                style/flash-button-size
               :accessibility-label :camera-flash
-              :style               (style/camera-flash-button @qr-view-finder)
+              :container-style     (style/camera-flash-button @qr-view-finder)
               :on-press            #(swap! torch? not)}
              flashlight-icon])]]))))
 

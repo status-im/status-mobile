@@ -1,7 +1,7 @@
 (ns quo2.components.list-items.channel
   (:require [quo2.components.avatars.channel-avatar.view :as channel-avatar]
             [quo2.components.common.unread-grey-dot.view :as unread-grey-dot]
-            [quo2.components.counter.counter :as quo2.counter]
+            [quo2.components.counter.counter.view :as counter]
             [quo2.components.icon :as quo2.icons]
             [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as colors]
@@ -61,7 +61,7 @@
 
            (pos? (int mentions-count))
            [rn/view {:style {:margin-right 2 :margin-top 2}}
-            [quo2.counter/counter {:override-bg-color channel-color}
+            [counter/view {:customization-color channel-color}
              mentions-count]]
 
            unread-messages?

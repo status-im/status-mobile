@@ -23,3 +23,9 @@
      (if (integer? maybe-int)
        maybe-int
        default))))
+
+(defn value-in-range
+  "Returns `num` if is in the range [`lower-bound` `upper-bound`]
+  if `num` exceeds a given bound, then returns the bound exceeded."
+  [number lower-bound upper-bound]
+  (max lower-bound (min number upper-bound)))

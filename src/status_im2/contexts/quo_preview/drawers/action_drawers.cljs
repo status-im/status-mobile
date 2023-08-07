@@ -67,10 +67,10 @@
        [rn/view {:padding-bottom 400}
         [preview/customizer state descriptor]
         [quo/button
-         {:style    {:margin-horizontal 40}
-          :on-press #(rf/dispatch [:show-bottom-sheet
-                                   {:content (fn [] [render-action-sheet state])
-                                    :theme   (:theme @state)}])}
+         {:container-style {:margin-horizontal 40}
+          :on-press        #(rf/dispatch [:show-bottom-sheet
+                                          {:content (fn [] [render-action-sheet state])
+                                           :theme   (:theme @state)}])}
          "See in bottom sheet"]
         [rn/view {:padding-vertical 60}
          [render-action-sheet state]]]])))

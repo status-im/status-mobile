@@ -15,7 +15,7 @@
    :margin-bottom (+ (safe-area/get-bottom) 8)})
 
 (defn title
-  [shell?]
+  [theme]
   {:color (colors/theme-colors colors/neutral-100
                                colors/white
-                               (when shell? :dark))})
+                               theme)})
