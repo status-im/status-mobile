@@ -5,7 +5,6 @@
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
-
 (def descriptor
   [{:label   "State:"
     :key     :state
@@ -40,4 +39,3 @@
                  :padding-horizontal 20}}
         [rn/view {:style {:min-height 150}} [preview/customizer state descriptor]]
         [quo/account-list-card @state]]])))
-
