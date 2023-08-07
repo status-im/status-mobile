@@ -9,7 +9,6 @@
     [react-native.core :as rn]
     [quo2.components.wallet.summary-info.style :as style]))
 
-
 (defn- network-amount
   [{:keys [network amount divider? theme]}]
   [:<>
@@ -23,20 +22,13 @@
      :style  {:margin-left 4}} amount]
    (when divider?
      [rn/view
-      {:style {:width             2
-               :height            2
-               :border-radius     2
-               :margin-horizontal 8
-               :background-color  (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)}}])])
+      {:style (style/dot-divider theme)}])])
 
 (defn networks
   [values theme]
   (let [{:keys [ethereum optimism arbitrum]} values]
     [rn/view
-     {:style               {:padding-horizontal 12
-                            :padding-vertical   4
-                            :flex-direction     :row
-                            :align-items        :center}
+     {:style               style/networks-container
       :accessibility-label :networks}
      [network-amount
       {:network  :ethereum
@@ -55,38 +47,37 @@
 
 (defn- view-internal
   [{:keys [theme type account-props networks? values]}]
-  (let []
-    [rn/view
-     {:style (style/container networks? theme)}
+  [rn/view
+   {:style (style/container networks? theme)}
+   [rn/view
+    {:style style/info-container}
+    (if (= type :status-account)
+      [account-avatar/view account-props]
+      [user-avatar/user-avatar account-props])
+    [rn/view {:style {:margin-left 8}}
+     (when (not= type :account) [text/text {:weight :semi-bold} (:name account-props)])
      [rn/view
-      {:style style/info-container}
-      (if (= type :status-account)
-        [account-avatar/view account-props]
-        [user-avatar/user-avatar account-props])
-      [rn/view {:style {:margin-left 8}}
-       (when (not= type :account) [text/text {:weight :semi-bold} (:name account-props)])
-       [rn/view
-        {:style {:flex-direction :row
-                 :align-items    :center}}
-        (when (= type :user)
-          [:<>
-           [rn/view {:style {:margin-right 4}} [account-avatar/view (:status-account account-props)]]
-           [text/text
-            {:size  :paragraph-2
-             :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
-            (get-in account-props [:status-account :name])]
-           [rn/view
-            {:style (style/dot-divider theme)}]])
-        [text/text
-         {:size   (when (not= type :account) :paragraph-2)
-          :weight (when (= type :account) :semi-bold)
-          :style  {:color (when (not= type :account)
-                            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
-         (:address account-props)]]]]
-     (when networks?
-       [:<>
-        [rn/view
-         {:style (style/line-divider theme)}]
-        [networks values theme]])]))
+      {:style {:flex-direction :row
+               :align-items    :center}}
+      (when (= type :user)
+        [:<>
+         [rn/view {:style {:margin-right 4}} [account-avatar/view (:status-account account-props)]]
+         [text/text
+          {:size  :paragraph-2
+           :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+          (get-in account-props [:status-account :name])]
+         [rn/view
+          {:style (style/dot-divider theme)}]])
+      [text/text
+       {:size   (when (not= type :account) :paragraph-2)
+        :weight (when (= type :account) :semi-bold)
+        :style  {:color (when (not= type :account)
+                          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
+       (:address account-props)]]]]
+   (when networks?
+     [:<>
+      [rn/view
+       {:style (style/line-divider theme)}]
+      [networks values theme]])])
 
 (def view (quo.theme/with-theme view-internal))

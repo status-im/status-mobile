@@ -21,7 +21,7 @@
   {:width             2
    :height            2
    :border-radius     2
-   :margin-horizontal 2
+   :margin-horizontal 8
    :background-color  (colors/theme-colors colors/neutral-50
                                            colors/neutral-60
                                            theme)})
@@ -31,3 +31,10 @@
   {:width            "100%"
    :height           1
    :background-color (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)})
+
+(def networks-container
+  {:padding-horizontal 12
+   :padding-vertical   4
+   :height             32
+   :flex-direction     :row
+   :align-items        :center})

@@ -58,6 +58,3 @@
                                 :arbitrum 25}
                 :account-props status-account-props}])
     (h/is-falsy (h/get-by-label-text :networks))))
-
-
-
