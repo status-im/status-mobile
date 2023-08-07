@@ -88,6 +88,9 @@
             :dont-show    (i18n/label :t/Pinned-a-message)
             (i18n/label :t/Pinned-a-message))
 
+          constants/content-type-contact-request
+          (i18n/label :t/contact-request)
+
           constants/content-type-sticker
           (case author
             :you          (i18n/label :t/you-sent-a-sticker)

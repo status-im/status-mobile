@@ -27,7 +27,7 @@
       [rn/view {:style (style/main-container width)}
        [rn/view {:style style/amount-container}
         [rn/pressable
-         {:on-press #(.focus ^js @input-ref)
+         {:on-press #(when @input-ref (.focus ^js @input-ref))
           :style    {:flex-direction :row
                      :flex-grow      1
                      :align-items    :flex-end}}
@@ -35,7 +35,7 @@
           {:style  style/token
            :source (resources/get-token token)}]
          [rn/text-input
-          {:ref                    #(when @input-ref (reset! input-ref %))
+          {:ref                    #(reset! input-ref %)
            :placeholder            "0"
            :placeholder-text-color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)
            :keyboard-type          :numeric

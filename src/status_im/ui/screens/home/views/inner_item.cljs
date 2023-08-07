@@ -93,7 +93,6 @@
      [preview-label :t/no-messages]
 
      (and (or (= constants/content-type-text content-type)
-              (= constants/content-type-contact-request content-type)
               (= constants/content-type-emoji content-type)
               (= constants/content-type-command content-type))
           (not (string/blank? (:text content))))
