@@ -19,7 +19,7 @@
     (h/is-truthy (h/get-by-text "Status")))
 
   (h/test "Pressed state"
-          (h/render [token-value/view
+    (h/render [token-value/view
                {:token    :snt
                 :state    :pressed
                 :status   :empty
@@ -29,8 +29,8 @@
                            :fiat-value        "€0.00"
                            :percentage-change "0.00"
                            :fiat-change       "€0.00"}}])
-          (h/has-style (h/get-by-label-text :container)
-                       {:backgroundColor (colors/custom-color-by-theme :blue 50 50 5 5)}))
+    (h/has-style (h/get-by-label-text :container)
+                 {:backgroundColor (colors/custom-color-by-theme :blue 50 50 5 5)}))
 
   (h/test "Active state"
     (h/render [token-value/view
