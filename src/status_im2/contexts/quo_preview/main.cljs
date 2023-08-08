@@ -46,6 +46,7 @@
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
     [status-im2.contexts.quo-preview.inputs.input :as input]
+    [status-im2.contexts.quo-preview.inputs.locked-input :as locked-input]
     [status-im2.contexts.quo-preview.inputs.recovery-phrase-input :as recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
@@ -240,6 +241,9 @@
    :inputs            [{:name      :input
                         :options   {:topBar {:visible true}}
                         :component input/preview-input}
+                       {:name      :locked-input
+                        :options   {:topBar {:visible true}}
+                        :component locked-input/preview-locked-input}
                        {:name      :profile-input
                         :options   {:topBar {:visible true}}
                         :component profile-input/preview-profile-input}
