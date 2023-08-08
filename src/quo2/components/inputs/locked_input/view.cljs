@@ -13,20 +13,19 @@
    [rn/view
     (when icon
       [icons/icon icon
-       {:color (colors/theme-colors colors/neutral-50
-                                    colors/neutral-40
-                                    theme)}])]
+       {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}])]
    [text/text
     {:size  :paragraph-1
      :style (style/info-box-label theme)} value-text]])
 
 (defn- locked-input-internal
-  [{:keys [label-text icon style theme]} value]
-  [rn/view {:style style}
+  [{:keys [label icon container-style theme]} value]
+  [rn/view {:style container-style}
    [text/text
     {:size   :paragraph-2
      :weight :medium
-     :style  {:color colors/neutral-40}} label-text]
+     :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+    label]
    [info-box
     {:theme      theme
      :icon       icon
@@ -35,10 +34,10 @@
 (def locked-input
   "Options:
 
-  :label-text - string (default nil) - Text to display above the input
+  :label - string (default nil) - Text to display above the input
   :icon - keyword (default nil) - Icon to display in the info box
-  :style - style map (default nil) - Override style for the container
-  :theme - :light/:dark
+  :container-style - style map (default nil) - Override style for the container
+  :theme - :light/:dark (passed from with-theme HOC)
 
   :value - string (default nil) - value to display in the info box"
   (quo.theme/with-theme locked-input-internal))

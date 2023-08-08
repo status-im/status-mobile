@@ -45,11 +45,11 @@
     quo2.components.info.info-message
     quo2.components.info.information-box.view
     quo2.components.inputs.input.view
+    quo2.components.inputs.locked-input.view
     quo2.components.inputs.profile-input.view
     quo2.components.inputs.recovery-phrase.view
     quo2.components.inputs.search-input.view
     quo2.components.inputs.title-input.view
-    quo2.components.inputs.locked-input.view
     quo2.components.keycard.view
     quo2.components.links.link-preview.view
     quo2.components.links.url-preview-list.view
@@ -202,11 +202,11 @@
 
 ;;;; INPUTS
 (def input quo2.components.inputs.input.view/input)
+(def locked-input quo2.components.inputs.locked-input.view/locked-input)
 (def profile-input quo2.components.inputs.profile-input.view/profile-input)
 (def recovery-phrase-input quo2.components.inputs.recovery-phrase.view/recovery-phrase-input)
 (def search-input quo2.components.inputs.search-input.view/search-input)
 (def title-input quo2.components.inputs.title-input.view/title-input)
-(def locked-input quo2.components.inputs.locked-input.view/locked-input)
 
 ;;;; NUMBERED KEYBOARD
 (def keyboard-key quo2.components.numbered-keyboard.keyboard-key.view/view)

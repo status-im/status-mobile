@@ -46,6 +46,7 @@
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
     [status-im2.contexts.quo-preview.inputs.input :as input]
+    [status-im2.contexts.quo-preview.inputs.locked-input :as locked-input]
     [status-im2.contexts.quo-preview.inputs.recovery-phrase-input :as recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
@@ -101,8 +102,6 @@
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.title.title :as title]
-    [status-im2.contexts.quo-preview.transaction-sheet.transaction-sheet :as
-     transaction-sheet]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
@@ -242,6 +241,9 @@
    :inputs            [{:name      :input
                         :options   {:topBar {:visible true}}
                         :component input/preview-input}
+                       {:name      :locked-input
+                        :options   {:topBar {:visible true}}
+                        :component locked-input/preview-locked-input}
                        {:name      :profile-input
                         :options   {:topBar {:visible true}}
                         :component profile-input/preview-profile-input}
@@ -416,10 +418,6 @@
    :text-combinations [{:name      :title
                         :options   {:topBar {:visible true}}
                         :component title/preview-title}]
-   :transaction-sheet [{:name      :transaction-sheet
-                        :options   {:topBar {:visible true}}
-                        :component transaction-sheet/preview-transaction-sheet
-                       }]
    :wallet            [{:name      :account-card
                         :options   {:topBar {:visible true}}
                         :component account-card/preview-account-card}
