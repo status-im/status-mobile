@@ -14,8 +14,10 @@
             [reagent.core :as reagent]
             [status-im2.common.device-permissions :as device-permissions]
             [status-im2.constants :as constants]
+            [status-im2.contexts.syncing.scan-sync-code.animation :as animation]
             [status-im2.contexts.syncing.scan-sync-code.style :as style]
             [status-im2.contexts.syncing.utils :as sync-utils]
+            [status-im2.navigation.util :as navigation.util]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
@@ -37,7 +39,7 @@
   (rf/dispatch [:syncing/preflight-outbound-check #(reset! preflight-check-passed? %)]))
 
 (defn- header
-  [{:keys [active-tab read-qr-once? title title-opacity subtitle-opacity reset-animations-fn animated?]}]
+  [{:keys [active-tab title title-opacity subtitle-opacity reset-animations-fn animated?]}]
   (let [subtitle-translate-x (reanimated/interpolate subtitle-opacity [0 1] [-13 0])
         subtitle-translate-y (reanimated/interpolate subtitle-opacity [0 1] [-85 0])
         subtitle-scale       (reanimated/interpolate subtitle-opacity [0 1] [0.9 1])
@@ -106,8 +108,7 @@
         :data           [{:id 1 :label (i18n/label :t/scan-sync-qr-code)}
                          {:id 2 :label (i18n/label :t/enter-sync-code)}]
         :on-change      (fn [id]
-                          (reset! active-tab id)
-                          (reset! read-qr-once? false))}]]]))
+                          (reset! active-tab id))}]]]))
 
 (defn get-labels-and-on-press-method
   []
@@ -225,135 +226,114 @@
   [insets translate-y]
   [:f> f-bottom-view insets translate-y])
 
-(defn- check-qr-code-data
-  [event]
+(defn- check-qr-code-and-navigate
+  [{:keys [event on-success-scan on-failed-scan]}]
   (let [connection-string        (string/trim (oops/oget event "nativeEvent.codeStringValue"))
         valid-connection-string? (sync-utils/valid-connection-string? connection-string)]
+    ;; debounce-and-dispatch used because the QR code scanner performs callbacks too fast
     (if valid-connection-string?
-      (debounce/debounce-and-dispatch [:syncing/input-connection-string-for-bootstrapping
-                                       connection-string]
-                                      300)
-      (rf/dispatch [:toasts/upsert
-                    {:icon       :i/info
-                     :icon-color colors/danger-50
-                     :theme      :dark
-                     :text       (i18n/label :t/error-this-is-not-a-sync-qr-code)}]))))
+      (do
+        (on-success-scan)
+        (debounce/debounce-and-dispatch
+         [:syncing/input-connection-string-for-bootstrapping connection-string]
+         300))
+      (do
+        (on-failed-scan)
+        (debounce/debounce-and-dispatch
+         [:toasts/upsert
+          {:icon       :i/info
+           :icon-color colors/danger-50
+           :theme      :dark
+           :text       (i18n/label :t/error-this-is-not-a-sync-qr-code)}]
+         300)))))
 
-(defn render-camera
-  [show-camera? torch-mode qr-view-finder camera-ref on-read-code]
-  (when (and show-camera? (:x qr-view-finder))
-    [:<>
-     [rn/view {:style style/camera-container}
-      [camera-kit/camera
-       {:ref          #(reset! camera-ref %)
-        :style        style/camera-style
-        :camera-type  camera-kit/camera-type-back
-        :zoom-mode    :off
-        :torch-mode   torch-mode
-        :scan-barcode true
-        :on-read-code on-read-code}]]
-     [hole-view/hole-view
-      {:style style/hole
-       :holes [(assoc qr-view-finder :borderRadius 16)]}
-      [blur/view
-       {:style            style/absolute-fill
-        :blur-amount      10
-        :blur-type        :transparent
-        :overlay-color    colors/neutral-80-opa-80
-        :background-color colors/neutral-80-opa-80}]]]))
+(defn- render-camera
+  [{:keys [torch-mode qr-view-finder scan-code? set-qr-code-succeeded set-rescan-timeout]}]
+  [:<>
+   [rn/view {:style style/camera-container}
+    [camera-kit/camera
+     {:style        style/camera-style
+      :camera-type  camera-kit/camera-type-back
+      :zoom-mode    :off
+      :torch-mode   torch-mode
+      :scan-barcode true
+      :on-read-code #(when scan-code?
+                       (check-qr-code-and-navigate {:event           %
+                                                    :on-success-scan set-qr-code-succeeded
+                                                    :on-failed-scan  set-rescan-timeout}))}]]
+   [hole-view/hole-view
+    {:style style/hole
+     :holes [(assoc qr-view-finder :borderRadius 16)]}
+    [blur/view
+     {:style            style/absolute-fill
+      :blur-amount      10
+      :blur-type        :transparent
+      :overlay-color    colors/neutral-80-opa-80
+      :background-color colors/neutral-80-opa-80}]]])
+
+(defn- reset-animations-and-navigate-fn
+  [{:keys [render-camera? show-camera?] :as params}]
+  (letfn [(reset-fn []
+            (rf/dispatch [:navigate-back])
+            (when @dismiss-animations (@dismiss-animations))
+            (animation/reset-animations params))]
+    (fn []
+      (reset! render-camera? false)
+      (js/setTimeout reset-fn (if show-camera? 500 0)))))
+
+(defn- set-listener-torch-off-on-app-inactive
+  [torch-atm]
+  (let [set-torch-off-fn   #(when (not= % "active") (reset! torch-atm false))
+        app-state-listener (.addEventListener rn/app-state "change" set-torch-off-fn)]
+    #(.remove app-state-listener)))
 
 (defn f-view
-  [{:keys [title show-bottom-view? background animated?]}]
+  [_]
   (let [insets             (safe-area/get-insets)
         active-tab         (reagent/atom 1)
         qr-view-finder     (reagent/atom {})
         render-camera?     (reagent/atom false)
         torch?             (reagent/atom false)
-        app-state-listener (atom nil)]
-    (fn []
-      (let [camera-ref (atom nil)
-            read-qr-once? (atom false)
-            torch-mode (if @torch? :on :off)
-            flashlight-icon (if @torch? :i/flashlight-on :i/flashlight-off)
-            ;; The below check is to prevent scanning of any QR code
-            ;; when the user is in syncing progress screen
-            user-in-syncing-progress-screen? (= (rf/sub [:view-id]) :syncing-progress)
-            on-read-code (fn [data]
-                           (when (and (not @read-qr-once?)
-                                      (not user-in-syncing-progress-screen?))
-                             (reset! read-qr-once? true)
-                             (js/setTimeout (fn []
-                                              (reset! read-qr-once? false))
-                                            3000)
-                             (check-qr-code-data data)))
-            scan-qr-code-tab? (= @active-tab 1)
-            show-camera? (and scan-qr-code-tab?
-                              @camera-permission-granted?
-                              @preflight-check-passed?
-                              (boolean (not-empty @qr-view-finder)))
-            title-opacity (reanimated/use-shared-value (if animated? 0 1))
-            subtitle-opacity (reanimated/use-shared-value (if animated? 0 1))
-            content-opacity (reanimated/use-shared-value (if animated? 0 1))
-            content-translate-y (reanimated/interpolate subtitle-opacity [0 1] [85 0])
+        scan-code?         (reagent/atom true)
+        set-rescan-timeout (fn []
+                             (reset! scan-code? false)
+                             (js/setTimeout #(reset! scan-code? true) 3000))]
+    (fn [{:keys [title show-bottom-view? background animated? qr-code-succeed?
+                 set-qr-code-succeeded]}]
+      (let [torch-mode              (if @torch? :on :off)
+            flashlight-icon         (if @torch? :i/flashlight-on :i/flashlight-off)
+            scan-qr-code-tab?       (= @active-tab 1)
+            show-camera?            (and scan-qr-code-tab?
+                                         @camera-permission-granted?
+                                         @preflight-check-passed?
+                                         (boolean (not-empty @qr-view-finder)))
+            camera-ready-to-scan?   (and (or (not animated?) @render-camera?)
+                                         show-camera?
+                                         (not qr-code-succeed?))
+            title-opacity           (reanimated/use-shared-value (if animated? 0 1))
+            subtitle-opacity        (reanimated/use-shared-value (if animated? 0 1))
+            content-opacity         (reanimated/use-shared-value (if animated? 0 1))
+            content-translate-y     (reanimated/interpolate subtitle-opacity [0 1] [85 0])
             bottom-view-translate-y (reanimated/use-shared-value
                                      (if animated? (+ 42.2 (:bottom insets)) 0))
-            reset-animations-fn
-            (fn []
-              (reset! render-camera? false)
-              (js/setTimeout
-               (fn []
-                 (rf/dispatch [:navigate-back])
-                 (when @dismiss-animations
-                   (@dismiss-animations))
-                 (reanimated/animate-shared-value-with-timing
-                  content-opacity
-                  0
-                  (/ constants/onboarding-modal-animation-duration 8)
-                  :easing4)
-                 (reanimated/animate-shared-value-with-timing
-                  subtitle-opacity
-                  0
-                  (- constants/onboarding-modal-animation-duration
-                     constants/onboarding-modal-animation-delay)
-                  :easing4)
-                 (reanimated/animate-shared-value-with-timing title-opacity
-                                                              0
-                                                              0
-                                                              :easing4))
-               (if show-camera? 500 0)))]
-        (rn/use-effect (fn []
-                         (reset! app-state-listener
-                           (.addEventListener rn/app-state
-                                              "change"
-                                              #(when (and (not= % "active") @torch?)
-                                                 (reset! torch? false))))
-                         #(.remove @app-state-listener)))
-        (when animated?
-          (reanimated/animate-shared-value-with-delay subtitle-opacity
-                                                      1 constants/onboarding-modal-animation-duration
-                                                      :easing4
-                                                      (/
-                                                       constants/onboarding-modal-animation-delay
-                                                       2))
-          (reanimated/animate-shared-value-with-delay title-opacity
-                                                      1 0
-                                                      :easing4
-                                                      (+ constants/onboarding-modal-animation-duration
-                                                         constants/onboarding-modal-animation-delay))
-          (reanimated/animate-delay bottom-view-translate-y
-                                    0
-                                    (+ constants/onboarding-modal-animation-duration
-                                       constants/onboarding-modal-animation-delay)
-                                    100))
+            reset-animations-fn     (reset-animations-and-navigate-fn
+                                     {:render-camera?   render-camera?
+                                      :show-camera?     show-camera?
+                                      :content-opacity  content-opacity
+                                      :subtitle-opacity subtitle-opacity
+                                      :title-opacity    title-opacity})]
         (rn/use-effect
-         (fn []
+         #(set-listener-torch-off-on-app-inactive torch?))
+
+        (when animated?
+          (animation/animate-subtitle subtitle-opacity)
+          (animation/animate-title title-opacity)
+          (animation/animate-bottom bottom-view-translate-y))
+
+        (rn/use-effect
+         (fn initialize-component []
            (when animated?
-             (reanimated/animate-shared-value-with-delay content-opacity
-                                                         1 constants/onboarding-modal-animation-duration
-                                                         :easing4
-                                                         (/
-                                                          constants/onboarding-modal-animation-delay
-                                                          2))
+             (animation/animate-content content-opacity)
              (js/setTimeout #(reset! render-camera? true)
                             (+ constants/onboarding-modal-animation-duration
                                constants/onboarding-modal-animation-delay
@@ -365,12 +345,16 @@
                                               #(reset! camera-permission-granted? false)))))
         [:<>
          background
-         (when (or (not animated?) @render-camera?)
-           [render-camera show-camera? torch-mode @qr-view-finder camera-ref on-read-code])
+         (when camera-ready-to-scan?
+           [render-camera
+            {:torch-mode            torch-mode
+             :qr-view-finder        @qr-view-finder
+             :scan-code?            @scan-code?
+             :set-qr-code-succeeded set-qr-code-succeeded
+             :set-rescan-timeout    set-rescan-timeout}])
          [rn/view {:style (style/root-container (:top insets))}
           [:f> header
            {:active-tab          active-tab
-            :read-qr-once?       read-qr-once?
             :title               title
             :title-opacity       title-opacity
             :subtitle-opacity    subtitle-opacity
@@ -390,8 +374,10 @@
              2 [enter-sync-code-tab]
              nil)]
           [rn/view {:style style/flex-spacer}]
-          (when show-bottom-view? [bottom-view insets bottom-view-translate-y])
-          (when (and (or (not animated?) @render-camera?) show-camera?)
+          (when show-bottom-view?
+            [bottom-view insets bottom-view-translate-y])
+          (when (and (or (not animated?) @render-camera?)
+                     show-camera?)
             [quo/button
              {:icon-only?          true
               :type                :grey
@@ -403,5 +389,14 @@
              flashlight-icon])]]))))
 
 (defn view
-  [props]
-  [:f> f-view props])
+  [{:keys [screen-name] :as _props}]
+  (let [qr-code-succeed? (reagent/atom false)]
+    (navigation.util/create-class-and-bind
+     screen-name
+     {:component-did-appear (fn set-qr-code-failed [_this]
+                              (reset! qr-code-succeed? false))}
+     (fn [props]
+       (let [new-pops (assoc props
+                             :qr-code-succeed?      @qr-code-succeed?
+                             :set-qr-code-succeeded #(reset! qr-code-succeed? true))]
+         [:f> f-view new-pops])))))
