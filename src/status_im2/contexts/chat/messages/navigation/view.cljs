@@ -30,41 +30,9 @@
         contact                  (when-not group-chat
                                    (rf/sub [:contacts/contact-by-address chat-id]))
         photo-path               (when-not (empty? (:images contact))
-                                   (rf/sub [:chats/photo-path chat-id]))
-        opacity-animation        (reanimated/interpolate scroll-y
-                                                         [style/navigation-bar-height
-                                                          (+ style/navigation-bar-height 30)]
-                                                         [0 1]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "extend"})
-        banner-opacity-animation (reanimated/interpolate scroll-y
-                                                         [(+ style/navigation-bar-height 150)
-                                                          (+ style/navigation-bar-height 200)]
-                                                         [0 1]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "extend"})
-        translate-animation      (reanimated/interpolate scroll-y
-                                                         [(+ style/navigation-bar-height 25)
-                                                          (+ style/navigation-bar-height 100)]
-                                                         [50 0]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "clamp"})
-        title-opacity-animation  (reanimated/interpolate scroll-y
-                                                         [0 50]
-                                                         [0 1]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "clamp"})]
+                                   (rf/sub [:chats/photo-path chat-id]))]
     [rn/view {:style style/navigation-view
               :key "parent"}
-     [reanimated/view
-      {:style (style/animated-background-view all-loaded? opacity-animation nil)}]
-
-     [reanimated/view {:style (style/animated-blur-view all-loaded? opacity-animation)}
-      [blur/view
-       {:blur-amount 20
-        :blur-type   (colors/theme-colors :light :dark)
-        :blur-radius (if platform/ios? 20 10)
-        :style       {:flex 1}}]]
      [rn/view {:style style/header-container}
       [rn/touchable-opacity
        {:on-press            #(do
@@ -76,8 +44,7 @@
         :style               (style/button-container {:margin-left 20})}
        [quo/icon :i/arrow-left
         {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
-      [reanimated/view
-       {:style (style/animated-header all-loaded? translate-animation title-opacity-animation)}
+      [rn/view
        [rn/view {:style style/header-content-container}
         (when-not group-chat
           [rn/view {:style style/header-avatar-container}
@@ -110,13 +77,7 @@
                                (rf/dispatch [:dismiss-keyboard])
                                (rf/dispatch [:show-bottom-sheet
                                              {:content (fn [] [actions/chat-actions chat true])}]))}
-       [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
-     [:f>
-      pin.banner/f-banner
-      {:chat-id           chat-id
-       :opacity-animation banner-opacity-animation
-       :all-loaded?       all-loaded?
-       :top-offset        style/navigation-bar-height}]]))
+       [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]]))
 
 (defn- internal-navigation-view
   [params]

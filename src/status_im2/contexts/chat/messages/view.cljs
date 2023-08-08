@@ -15,7 +15,7 @@
                 group-chat
                 able-to-send-message?]
          :as   chat} (rf/sub [:chats/current-chat-chat-view])]
-    [messages.navigation/navigation-view {:scroll-y scroll-y}]
+    [messages.navigation/navigation-view]
     #_[messages.list/messages-list
        {:cover-bg-color :turquoise
         :chat           chat
