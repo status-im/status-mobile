@@ -27,7 +27,7 @@
     {:style               (style/screen-container (utils/dimensions))
      :accessibility-label (str screen-id "-floating-screen")
      :key                 id}
-    [(get screens-map screen-id) id]]])
+    [:f> (get screens-map screen-id) id]]])
 
 ;; Currently chat screen and events both depends on current-chat-id, once we remove
 ;; use of current-chat-id from view then we can keep last chat loaded, for fast navigation
