@@ -6,19 +6,19 @@
   {:light {:pending   {:border-color     colors/neutral-80-opa-5
                        :background-color colors/neutral-5}
            :confirmed {:border-color     colors/neutral-80-opa-5
-                       :background-color colors/success-50}
+                       :background-color (colors/custom-color :success 50)}
            :finalized {:border-color     colors/neutral-80-opa-5
                        :background-color (colors/custom-color customization-color 50)}
            :error     {:border-color     colors/neutral-80-opa-5
-                       :background-color colors/danger-50}}
+                       :background-color (colors/custom-color :danger 50)}}
    :dark  {:pending   {:border-color     colors/neutral-70
                        :background-color colors/neutral-80}
            :confirmed {:border-color     colors/white-opa-5
-                       :background-color colors/success-60}
+                       :background-color (colors/custom-color :success 60)}
            :finalized {:border-color     colors/neutral-80-opa-5
                        :background-color (colors/custom-color customization-color 60)}
            :error     {:border-color     colors/white-opa-5
-                       :background-color colors/danger-60}}})
+                       :background-color (colors/custom-color :danger 60)}}})
 
 (defn root-container
   [{:keys [customization-color state theme]}]
