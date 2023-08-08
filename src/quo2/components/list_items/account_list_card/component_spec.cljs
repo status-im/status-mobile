@@ -20,7 +20,7 @@
                 :state         :default
                 :action        :none}])
     (h/has-style (h/get-by-label-text :container)
-                 {:backgroundColor (colors/theme-colors colors/neutral-2-5 colors/neutral-80-opa-40)}))
+                 {:backgroundColor (colors/theme-colors colors/neutral-2_5 colors/neutral-80-opa-40)}))
 
   (h/test "Test background-color for State: pressed"
     (h/render [account-list-card/view
