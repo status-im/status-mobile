@@ -381,9 +381,9 @@
      [keyboard-shown keyboard-height])
     ;; Note - Don't pass `behavior :height` to keyboard avoiding view,
     ;; It breaks composer - https://github.com/status-im/status-mobile/issues/16595
-    [rn/keyboard-avoiding-view
-     {:style                    (style/keyboard-avoiding-container insets)
-      :keyboard-vertical-offset (- (:bottom insets))}
+    [rn/view
+     {:key "header-parent"
+      :style                    (style/keyboard-avoiding-container insets)}
 
      (when header-comp
        [header-comp

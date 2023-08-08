@@ -54,7 +54,8 @@
                                                          [0 1]
                                                          {:extrapolateLeft  "clamp"
                                                           :extrapolateRight "clamp"})]
-    [rn/view {:style style/navigation-view}
+    [rn/view {:style style/navigation-view
+              :key "parent"}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]
 
