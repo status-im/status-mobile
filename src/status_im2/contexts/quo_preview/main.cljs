@@ -46,6 +46,7 @@
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
     [status-im2.contexts.quo-preview.inputs.input :as input]
+    [status-im2.contexts.quo-preview.inputs.locked-input :as locked-input]
     [status-im2.contexts.quo-preview.inputs.recovery-phrase-input :as recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
@@ -108,6 +109,7 @@
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
+    [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
     [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
@@ -239,6 +241,9 @@
    :inputs            [{:name      :input
                         :options   {:topBar {:visible true}}
                         :component input/preview-input}
+                       {:name      :locked-input
+                        :options   {:topBar {:visible true}}
+                        :component locked-input/preview-locked-input}
                        {:name      :profile-input
                         :options   {:topBar {:visible true}}
                         :component profile-input/preview-profile-input}
@@ -422,6 +427,9 @@
                        {:name      :network-bridge
                         :options   {:topBar {:visible true}}
                         :component network-bridge/preview}
+                       {:name      :progress-bar
+                        :options   {:topBar {:visible true}}
+                        :component progress-bar/preview}
                        {:name      :summary-info
                         :options   {:topBar {:visible true}}
                         :component summary-info/preview}
@@ -440,18 +448,22 @@
 (defn navigation-bar
   []
   (let [logged-in?    (rf/sub [:multiaccount/logged-in?])
-        has-profiles? (boolean (rf/sub [:profile/profiles-overview]))]
+        has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
+        root          (if has-profiles? :profiles :intro)]
     [quo/page-nav
      {:align-mid?   true
       :mid-section  {:type      :text-only
                      :main-text "Quo2 components preview"}
       :left-section {:icon     :i/close
                      :on-press (fn []
-                                 (when-not logged-in?
-                                   (theme/set-theme :dark))
-                                 (rf/dispatch [:navigate-back])
-                                 (when-not has-profiles?
-                                   (rf/dispatch [:open-modal :new-to-status])))}}]))
+                                 (cond
+                                   logged-in?
+                                   (rf/dispatch [:navigate-back])
+
+                                   :else
+                                   (do
+                                     (theme/set-theme :dark)
+                                     (rf/dispatch [:init-root root]))))}}]))
 
 (defn theme-switcher
   []
