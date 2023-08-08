@@ -3,33 +3,36 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Size"
     :key     :size
     :type    :select
-    :options [{:key   :small
+    :options [{:key   :x-small
+               :value "x-small"}
+              {:key   :small
                :value "Small"}
               {:key   :medium
                :value "Medium"}
               {:key   :large
-               :value "Large"}]}
-   {:label "Color"
-    :key :color
-    :type :select
-    :options
-    (map
-     (fn [c]
-       {:key   c
-        :value c})
-     ["#ff0000" "#0000ff"])}]) ; TODO: this is temporary only. Issue: https://github.com/status-im/status-mobile/issues/14566
+               :value "Large"}
+              {:key   :x-large
+               :value "x-Large"}]}
+   {:label "Avatar"
+    :key   :avatar?
+    :type  :boolean}
+   (preview/customization-color-option)]) ; TODO: this is temporary only. Issue: https://github.com/status-im/status-mobile/issues/14566
+
+(def avatar (resources/get-mock-image :user-picture-male4))
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:theme :light
-                             :color :purple
-                             :size  :small})]
+  (let [state (reagent/atom {:theme               :light
+                             :customization-color :blue
+                             :size                :small
+                             :avatar?             false})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -39,7 +42,12 @@
          {:padding-vertical 60
           :flex-direction   :row
           :justify-content  :center}
-         [quo2/group-avatar @state]]]])))
+         (let [{:keys [avatar?]} @state
+               params            (cond-> @state
+                                   (boolean avatar?)
+                                   (assoc :avatar? avatar))]
+           (println params)
+           [quo2/group-avatar params])]]])))
 
 (defn preview-group-avatar
   []
