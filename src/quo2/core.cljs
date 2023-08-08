@@ -107,6 +107,7 @@
     quo2.components.wallet.account-card.view
     quo2.components.wallet.network-amount.view
     quo2.components.wallet.network-bridge.view
+    quo2.components.wallet.summary-info.view
     quo2.components.wallet.token-input.view
     quo2.components.wallet.wallet-overview.view))
 
@@ -306,5 +307,7 @@
 (def network-amount quo2.components.wallet.network-amount.view/view)
 (def network-bridge quo2.components.wallet.network-bridge.view/view)
 (def account-card quo2.components.wallet.account-card.view/view)
+(def summary-info quo2.components.wallet.summary-info.view/view)
 (def token-input quo2.components.wallet.token-input.view/view)
 (def wallet-overview quo2.components.wallet.wallet-overview.view/view)
+
