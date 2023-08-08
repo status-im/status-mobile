@@ -24,6 +24,7 @@
     [quo2.components.graph.wallet-graph.component-spec]
     [quo2.components.inputs.input.component-spec]
     [quo2.components.inputs.profile-input.component-spec]
+    [quo2.components.inputs.locked-input.component-spec]
     [quo2.components.inputs.recovery-phrase.component-spec]
     [quo2.components.inputs.title-input.component-spec]
     [quo2.components.keycard.component-spec]
@@ -31,6 +32,7 @@
     [quo2.components.links.url-preview-list.component-spec]
     [quo2.components.links.url-preview.component-spec]
     [quo2.components.list-items.community.component-spec]
+    [quo2.components.list-items.token-value.component-spec]
     [quo2.components.markdown.text-component-spec]
     [quo2.components.markdown.list.component-spec]
     [quo2.components.notifications.notification.component-spec]
@@ -52,5 +54,7 @@
     [quo2.components.wallet.account-card.component-spec]
     [quo2.components.wallet.network-amount.component-spec]
     [quo2.components.wallet.network-bridge.component-spec]
+    [quo2.components.wallet.progress-bar.component-spec]
+    [quo2.components.wallet.summary-info.component-spec]
     [quo2.components.wallet.token-input.component-spec]
     [quo2.components.wallet.wallet-overview.component-spec]))

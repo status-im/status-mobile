@@ -46,7 +46,7 @@
            community-icon
            tokens]}]
   [rn/view
-   {:style (merge (style/community-card 16)
+   {:style (merge (style/community-card 16 theme)
                   {:margin-bottom 12})}
    [rn/touchable-highlight
     (merge {:style {:height        56

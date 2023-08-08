@@ -4,7 +4,7 @@
 
 (h/describe "Keyboard Key"
   (h/test "render digit type"
-    (h/render [component/keyboard-key
+    (h/render [component/view
                {:disabled? false
                 :on-press  #(js/alert "pressed")
                 :blur?     false
@@ -12,7 +12,7 @@
     (h/is-truthy (h/query-by-label-text :text-label)))
 
   (h/test "render key type"
-    (h/render [component/keyboard-key
+    (h/render [component/view
                {:disabled? false
                 :on-press  #(js/alert "pressed")
                 :blur?     false
@@ -20,7 +20,7 @@
     (h/is-truthy (h/query-by-label-text :icon-label)))
 
   (h/test "render derivation path type"
-    (h/render [component/keyboard-key
+    (h/render [component/view
                {:disabled? false
                 :on-press  #(js/alert "pressed")
                 :blur?     false
@@ -29,7 +29,7 @@
 
   (h/test "Is pressable when disabled is false"
     (let [on-press (h/mock-fn)]
-      (h/render [component/keyboard-key
+      (h/render [component/view
                  {:disabled? false
                   :on-press  #(on-press)
                   :blur?     false
@@ -40,7 +40,7 @@
 
   (h/test "Is not pressable when disabled is true"
     (let [on-press (h/mock-fn)]
-      (h/render [component/keyboard-key
+      (h/render [component/view
                  {:disabled? true
                   :on-press  #(on-press)
                   :blur?     false

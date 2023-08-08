@@ -7,6 +7,6 @@
   [children on-press]
   [rn/touchable-highlight
    {:on-press       on-press
-    :underlay-color (colors/theme-colors :transparent colors/neutral-95-opa-70)
-    :style          style/container}
+    :style          (style/container)
+    :underlay-color (colors/theme-colors :transparent colors/neutral-95-opa-70)}
    children])

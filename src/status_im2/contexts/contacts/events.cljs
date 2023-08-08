@@ -99,10 +99,11 @@
                       (assoc-in [:contacts/contacts public-key :active?] false)
                       (assoc-in [:contacts/contacts public-key :contact-request-state]
                                 constants/contact-request-state-none))
-   :json-rpc/call [{:method     "wakuext_retractContactRequest"
-                    :params     [{:id public-key}]
-                    :on-success #(log/debug "contact removed successfully")
-                    :on-error   #(log/error "failed to remove contact" public-key %)}]})
+   :json-rpc/call [{:method      "wakuext_retractContactRequest"
+                    :params      [{:id public-key}]
+                    :js-response true
+                    :on-success  #(rf/dispatch [:sanitize-messages-and-process-response %])
+                    :on-error    #(log/error "failed to remove contact" public-key %)}]})
 
 (rf/defn update-nickname
   {:events [:contacts/update-nickname]}

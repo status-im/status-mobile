@@ -46,11 +46,13 @@
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
     [status-im2.contexts.quo-preview.inputs.input :as input]
+    [status-im2.contexts.quo-preview.inputs.locked-input :as locked-input]
     [status-im2.contexts.quo-preview.inputs.recovery-phrase-input :as recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
     [status-im2.contexts.quo-preview.numbered-keyboard.keyboard-key :as keyboard-key]
+    [status-im2.contexts.quo-preview.numbered-keyboard.numbered-keyboard :as numbered-keyboard]
     [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
     [status-im2.contexts.quo-preview.links.url-preview-list :as url-preview-list]
     [status-im2.contexts.quo-preview.links.link-preview :as link-preview]
@@ -58,6 +60,7 @@
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
+    [status-im2.contexts.quo-preview.list-items.token-value :as token-value]
     [status-im2.contexts.quo-preview.markdown.text :as text]
     [status-im2.contexts.quo-preview.markdown.list :as markdown-list]
     [status-im2.contexts.quo-preview.messages.author :as messages-author]
@@ -106,6 +109,8 @@
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
+    [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
+    [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
     [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
     [utils.re-frame :as rf]))
@@ -236,6 +241,9 @@
    :inputs            [{:name      :input
                         :options   {:topBar {:visible true}}
                         :component input/preview-input}
+                       {:name      :locked-input
+                        :options   {:topBar {:visible true}}
+                        :component locked-input/preview-locked-input}
                        {:name      :profile-input
                         :options   {:topBar {:visible true}}
                         :component profile-input/preview-profile-input}
@@ -251,7 +259,11 @@
    :numbered-keyboard [{:name      :keyboard-key
                         :options   {:insets {:top? true}
                                     :topBar {:visible true}}
-                        :component keyboard-key/preview-keyboard-key}]
+                        :component keyboard-key/preview-keyboard-key}
+                       {:name      :numbered-keyboard
+                        :options   {:insets {:top? true}
+                                    :topBar {:visible true}}
+                        :component numbered-keyboard/preview-numbered-keyboard}]
    :links             [{:name      :url-preview
                         :options   {:insets {:top? true}
                                     :topBar {:visible true}}
@@ -276,7 +288,10 @@
                         :component preview-lists/preview-preview-lists}
                        {:name      :user-list
                         :options   {:topBar {:visible true}}
-                        :component user-list/preview-user-list}]
+                        :component user-list/preview-user-list}
+                       {:name      :token-value
+                        :options   {:topBar {:visible true}}
+                        :component token-value/preview}]
    :loaders           [{:name      :skeleton
                         :options   {:topBar {:visible true}}
                         :component skeleton/preview-skeleton}]
@@ -412,6 +427,12 @@
                        {:name      :network-bridge
                         :options   {:topBar {:visible true}}
                         :component network-bridge/preview}
+                       {:name      :progress-bar
+                        :options   {:topBar {:visible true}}
+                        :component progress-bar/preview}
+                       {:name      :summary-info
+                        :options   {:topBar {:visible true}}
+                        :component summary-info/preview}
                        {:name      :token-input
                         :options   {:topBar {:visible true}}
                         :component token-input/preview}
@@ -427,18 +448,22 @@
 (defn navigation-bar
   []
   (let [logged-in?    (rf/sub [:multiaccount/logged-in?])
-        has-profiles? (boolean (rf/sub [:profile/profiles-overview]))]
+        has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
+        root          (if has-profiles? :profiles :intro)]
     [quo/page-nav
      {:align-mid?   true
       :mid-section  {:type      :text-only
                      :main-text "Quo2 components preview"}
       :left-section {:icon     :i/close
                      :on-press (fn []
-                                 (when-not logged-in?
-                                   (theme/set-theme :dark))
-                                 (rf/dispatch [:navigate-back])
-                                 (when-not has-profiles?
-                                   (rf/dispatch [:open-modal :new-to-status])))}}]))
+                                 (cond
+                                   logged-in?
+                                   (rf/dispatch [:navigate-back])
+
+                                   :else
+                                   (do
+                                     (theme/set-theme :dark)
+                                     (rf/dispatch [:init-root root]))))}}]))
 
 (defn theme-switcher
   []
