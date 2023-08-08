@@ -1,35 +1,41 @@
 (ns quo2.components.tags.network-tags.style
   (:require [quo2.foundations.colors :as colors]))
 
-(defn network-tags-container
-  [status]
+(defn container
+  [{:keys [status theme blur?]}]
   {:flex-direction   :row
-   :background-color (if (= status :error)
-                       colors/danger-50-opa-10
-                       {})
-   :border-width     2
-   :border-color     (if (= status :error)
-                       colors/danger-50-opa-20
+   :align-self       :flex-start
+   :background-color (when (= status :error)
                        (colors/theme-colors
-                        colors/neutral-20
-                        colors/neutral-80))
-   :border-radius    12
-   :align-items      :center
-   :padding-left     10
-   :padding-vertical 6
-   :justify-content  :flex-end})
+                        (colors/custom-color :danger 50 10)
+                        (colors/custom-color :danger 60 10)
+                        theme))
+   :border-width     1
+   :border-color     (cond (= status :error)
+                           (colors/theme-colors
+                            (colors/custom-color :danger 50 20)
+                            (colors/custom-color :danger 60 20)
+                            theme)
+                           (and blur? (= status :default)) (colors/theme-colors
+                                                            colors/neutral-80-opa-5
+                                                            colors/white-opa-5
+                                                            theme)
+                           :else (colors/theme-colors
+                                  colors/neutral-20
+                                  colors/neutral-80
+                                  theme))
+   :border-radius    8
+   :padding-left     5
+   :padding-right    5
+   :padding-top      3
+   :padding-bottom   2})
 
-(defn network-tag-view
-  []
-  {:flex-direction  :row
-   :align-items     :center
-   :padding         5
-   :justify-content :flex-end})
-
-(defn network-tag-title-style
-  [status]
-  {:weight :medium
-   :style  (if (= status :error)
-             {:color colors/danger-50}
-             {})
-   :size   :paragraph-2})
+(defn title-style
+  [{:keys [status theme]}]
+  {:padding-left 4
+   :margin-top   -1
+   :color        (when (= status :error)
+                   (colors/theme-colors
+                    (colors/custom-color :danger 50)
+                    (colors/custom-color :danger 60)
+                    theme))})

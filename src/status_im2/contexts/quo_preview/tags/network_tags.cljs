@@ -1,53 +1,51 @@
 (ns status-im2.contexts.quo-preview.tags.network-tags
-  (:require [quo2.components.tags.network-tags.view :as quo2]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.core :as quo]
             [quo2.foundations.resources :as resources]
+            [status-im2.contexts.quo-preview.preview :as preview]
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 
 (def community-networks
-  [{:title "Tags" :status :error :networks [{:source (resources/get-network :ethereum)}]}
-   {:title    "Tags"
-    :status   :default
-    :networks [{:source (resources/get-network :ethereum)}
-               {:source (resources/get-network :arbitrum)}]}
-   {:title    "Tags"
-    :status   :default
-    :networks [{:source (resources/get-network :ethereum)}
-               {:source (resources/get-network :arbitrum)}
-               {:source (resources/get-network :optimism)}]}])
+  [[{:source (resources/get-network :ethereum)}]
+   [{:source (resources/get-network :arbitrum)}
+    {:source (resources/get-network :ethereum)}]
+   [{:source (resources/get-network :arbitrum)}
+    {:source (resources/get-network :optimism)}
+    {:source (resources/get-network :ethereum)}]])
 
-(defn cool-preview
+(def descriptor
+  [{:type    :select
+    :key     :status
+    :options [{:key :error}
+              {:key :default}]}
+   {:type :text
+    :key  :title}
+   {:type    :select
+    :key     :networks
+    :options [{:key 1}
+              {:key 2}
+              {:key 3}]}
+   {:type :boolean
+    :key  :blur?}])
+
+
+(defn preview
   []
-  (let [state (reagent/atom {:size 32})]
+  (let [state (reagent/atom {:title    "Tag"
+                             :status   :default
+                             :networks 3})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [rn/view
-         {:padding-vertical 60
-          :align-self       :center
-          :justify-content  :center}
-         (when @state
-           (for [{:keys [networks title status]} community-networks]
-             ^{:key networks}
-             [rn/view
-              {:margin-top 20
-               :align-self :flex-end}
-              [quo2/network-tags
-               (merge @state
-                      {:networks networks
-                       :status   status
-                       :title    title})]]))]]])))
-
-(defn preview-network-tags
-  []
-  [rn/view
-   {:background-color (colors/theme-colors
-                       colors/white
-                       colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container
+       {:state                 state
+        :descriptor            descriptor
+        :blur?                 (:blur? @state)
+        :show-blur-background? true}
+       [rn/view
+        {:style {:align-self      :center
+                 :justify-content :center
+                 :flex            1}}
+        [quo/network-tags
+         {:networks (nth community-networks (dec (:networks @state)))
+          :status   (:status @state)
+          :title    (:title @state)
+          :blur?    (:blur? @state)}]]])))

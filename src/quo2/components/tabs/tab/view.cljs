@@ -3,7 +3,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.common.notification-dot.view :as notification-dot]
             [quo2.components.tabs.tab.style :as style]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.svg :as svg]))
 
@@ -47,7 +47,7 @@
      (vector? children)
      children)])
 
-(defn- themed-view
+(defn- view-internal
   [{:keys [accessibility-label
            active
            before
@@ -104,4 +104,4 @@
           :disabled         disabled
           :background-color background-color}])]]))
 
-(def view (theme/with-theme themed-view))
+(def view (quo.theme/with-theme view-internal))
