@@ -11,6 +11,8 @@
    {:width            32
     :height           32
     :border-radius    10
+    :border-color :red
+    :border-width 1
     :justify-content  :center
     :align-items      :center
     :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)}

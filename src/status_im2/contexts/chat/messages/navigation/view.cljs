@@ -67,11 +67,11 @@
         :style       {:flex 1}}]]
      [rn/view {:style style/header-container}
       [rn/touchable-opacity
-       {:active-opacity      1
-        :on-press            #(do
+       {:on-press            #(do
                                 (when config/shell-navigation-disabled?
                                   (rf/dispatch [:chat/close]))
                                 (rf/dispatch [:navigate-back]))
+        :accessible true
         :accessibility-label :back-button
         :style               (style/button-container {:margin-left 20})}
        [quo/icon :i/arrow-left
@@ -103,9 +103,9 @@
             (i18n/label
              (if online? :t/online :t/offline))])]]]
       [rn/touchable-opacity
-       {:active-opacity      1
-        :style               (style/button-container {:margin-right 20})
+       {:style               (style/button-container {:margin-right 20})
         :accessibility-label :options-button
+        :accessible true
         :on-press            (fn []
                                (rf/dispatch [:dismiss-keyboard])
                                (rf/dispatch [:show-bottom-sheet
