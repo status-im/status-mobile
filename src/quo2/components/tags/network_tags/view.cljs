@@ -14,11 +14,9 @@
       {:size 32
        :type :permission}
       [rn/view {:style (style/network-tag-view)}
-       [preview-list/preview-list {:type :network :size 32} networks]
+       [preview-list/preview-list {:type :network :size 16} networks]
        [rn/view
-        {:padding-left (case 32
-                         8 32
-                         6)}
+        {:padding-left 4}
         [text/text
          {:style (style/network-tag-title-style status)}
          title]]]]]))
