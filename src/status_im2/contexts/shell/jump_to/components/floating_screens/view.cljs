@@ -25,7 +25,6 @@
    {:style (style/screen (get @state/shared-values-atom screen-id) screen-id)}
    [rn/view
     {:style               (style/screen-container (utils/dimensions))
-     :accessibility-label (str screen-id "-floating-screen")
      :key                 id}
     [:f> (get screens-map screen-id) id]]])
 
