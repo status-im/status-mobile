@@ -21,10 +21,10 @@
     ;; recommended in the documentation. It fixes KeyboardAvoidingView but
     ;; the pushing of views by the keyboard is not smooth & while animating it creates a weird jump.
     :position         (if (= screen-id shell.constants/chat-screen) :relative :absolute)
-    :flex             -1}))
+    :flex             1}))
 
 (defn screen-container
   [{:keys [width height]}]
   {:width  width
-   :flex   -1
+   :flex   1
    :height height})
