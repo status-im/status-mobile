@@ -114,8 +114,7 @@
        :max-dist                22
        :ref                     long-press-ref}
       [animated/view
-       {:accessible          true
-        :accessibility-label accessibility-label}
+       {:accessibility-label accessibility-label}
        [gesture-handler/tap-gesture-handler
         (merge gesture-handler
                {:shouldCancelWhenOutside true

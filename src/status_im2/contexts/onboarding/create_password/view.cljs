@@ -210,8 +210,7 @@
                                                            :shell?  true}]))]
     [:<>
      [rn/touchable-without-feedback
-      {:on-press   rn/dismiss-keyboard!
-       :accessible false}
+      {:on-press   rn/dismiss-keyboard!}
       [rn/view {:style style/flex-fill}
        [rn/keyboard-avoiding-view {:style style/flex-fill}
         [navigation-bar/navigation-bar

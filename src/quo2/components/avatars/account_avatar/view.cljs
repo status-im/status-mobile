@@ -22,8 +22,7 @@
     :as   opts}]
   (let [emoji-size (style/get-emoji-size size)]
     [rn/view
-     {:accessible          true
-      :accessibility-label :account-avatar
+     {:accessibility-label :account-avatar
       :style               (style/root-container opts)}
      [rn/text
       {:accessibility-label      :account-emoji

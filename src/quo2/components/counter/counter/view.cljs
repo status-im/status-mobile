@@ -18,7 +18,6 @@
                 (str value))]
     [rn/view
      {:test-ID             :counter-component
-      :accessible          true
       :accessibility-label accessibility-label
       :style               (style/container
                             {:label               label

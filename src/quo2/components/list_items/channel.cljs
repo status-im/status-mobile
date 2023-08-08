@@ -35,7 +35,6 @@
        {:style               {:flex-direction  :row
                               :justify-content :flex-start
                               :align-items     :center}
-        :accessible          true
         :accessibility-label :chat-name-text}
        [channel-avatar/view
         {:size                :size/l

@@ -52,8 +52,7 @@
 (defn badge-icon
   [override-theme]
   [rn/view
-   {:accessible          :true
-    :accessibility-label :setting-list-badge
+   {:accessibility-label :setting-list-badge
     :style               (style/dot override-theme)}])
 
 (defn right-button

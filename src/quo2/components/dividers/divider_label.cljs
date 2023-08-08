@@ -38,8 +38,7 @@
         counter-text-color          (if dark? colors/white colors/neutral-100)]
     [rn/touchable-without-feedback {:on-press on-press}
      [rn/view
-      {:accessible          true
-       :accessibility-label :divider-label
+      {:accessibility-label :divider-label
        :style               (merge {:border-top-width 1
                                     :border-top-color border-and-counter-bg-color
                                     :padding-top      padding-top

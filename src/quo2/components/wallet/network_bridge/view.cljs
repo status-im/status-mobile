@@ -22,12 +22,10 @@
       [network-bridge-add args]
       [rn/view
        {:style               (style/container network status)
-        :accessible          true
         :accessibility-label :container}
        (if (= status :loading)
          [rn/view
           {:style               (style/loading-skeleton theme)
-           :accessible          true
            :accessibility-label :loading}]
          [rn/view
           {:style {:flex-direction  :row
@@ -39,7 +37,6 @@
             [icon/icon :i/locked
              {:size                12
               :color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-              :accessible          true
               :accessibility-label :lock}])])
        [rn/view
         {:style {:flex-direction :row

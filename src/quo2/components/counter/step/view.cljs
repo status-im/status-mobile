@@ -13,8 +13,7 @@
         label (str value)
         size  (count label)]
     [rn/view
-     {:accessible          true
-      :accessibility-label (or accessibility-label :step-counter)
+     {:accessibility-label (or accessibility-label :step-counter)
       :style               (style/container {:size                size
                                              :type                type
                                              :in-blur-view?       in-blur-view?

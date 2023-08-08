@@ -34,7 +34,6 @@
        [rn/view {:style {:margin-bottom 4}} [text/text-content first-image]]
        [rn/view
         {:style               (style/album-container portrait?)
-         :accessible          true
          :accessibility-label :image-container}
         (map-indexed
          (fn [index item]

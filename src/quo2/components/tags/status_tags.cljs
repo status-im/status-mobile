@@ -33,8 +33,7 @@
              accessibility-label]}]
     (let [paragraph-size (if (= size :small) :paragraph-2 :paragraph-1)]
       [rn/view
-       {:accessible          true
-        :accessibility-label accessibility-label
+       {:accessibility-label accessibility-label
         :style               (assoc (if (= size :small)
                                       small-container-style
                                       large-container-style)

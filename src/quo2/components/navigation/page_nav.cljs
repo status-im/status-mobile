@@ -160,8 +160,7 @@
                      (cond-> {:style (assoc style
                                             :margin-right
                                             (if (= index last-icon-index) 0 8))}
-                       accessibility-label (assoc :accessibility-label accessibility-label
-                                                  :accessible          true))
+                       accessibility-label (assoc :accessibility-label accessibility-label))
                      [button/button
                       {:on-press   on-press
                        :icon-only? (not label)

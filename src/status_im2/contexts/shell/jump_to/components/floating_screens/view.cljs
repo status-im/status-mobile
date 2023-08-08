@@ -26,7 +26,6 @@
    [rn/view
     {:style               (style/screen-container (utils/dimensions))
      :accessibility-label (str screen-id "-floating-screen")
-     :accessible          true
      :key                 id}
     [(get screens-map screen-id) id]]])
 

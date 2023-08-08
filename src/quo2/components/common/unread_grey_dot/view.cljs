@@ -6,4 +6,4 @@
   [accessibility-label]
   [rn/view
    (cond-> {:style style/unread-grey-dot}
-     accessibility-label (assoc :accessibility-label accessibility-label :accessible true))])
+     accessibility-label (assoc :accessibility-label accessibility-label))])
