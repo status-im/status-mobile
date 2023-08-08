@@ -37,7 +37,9 @@
    {:id :pending :label (i18n/label :t/pending) :accessibility-label :pending-tab}
    {:id :opened :label (i18n/label :t/opened) :accessibility-label :opened-tab}])
 
-(def empty-state-content
+
+(defn empty-state-content
+  []
   {:joined
    {:title       (i18n/label :t/no-communities)
     :description [:<>
@@ -87,7 +89,7 @@
          (if (empty? selected-items)
            [common.home/empty-state-image
             {:selected-tab selected-tab
-             :tab->content empty-state-content}]
+             :tab->content (empty-state-content)}]
            [reanimated/flat-list
             {:ref                               set-flat-list-ref
              :key-fn                            :id

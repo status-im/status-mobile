@@ -27,7 +27,8 @@
          (filter k)
          (sort-by :timestamp >))))
 
-(def empty-state-content
+(defn empty-state-content
+  []
   #:tab{:contacts
         {:title       (i18n/label :t/no-contacts)
          :description (i18n/label :t/no-contacts-description)
@@ -51,7 +52,7 @@
     (if (empty? items)
       [common.home/empty-state-image
        {:selected-tab selected-tab
-        :tab->content empty-state-content}]
+        :tab->content (empty-state-content)}]
       [reanimated/flat-list
        {:ref                               set-scroll-ref
         :key-fn                            #(or (:chat-id %) (:public-key %) (:id %))
@@ -86,7 +87,7 @@
     (if (and (empty? items) (empty? pending-contact-requests))
       [common.home/empty-state-image
        {:selected-tab :tab/contacts
-        :tab->content empty-state-content}]
+        :tab->content (empty-state-content)}]
       [rn/section-list
        {:ref                               set-scroll-ref
         :key-fn                            :public-key
