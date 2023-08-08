@@ -45,6 +45,7 @@
     quo2.components.info.info-message
     quo2.components.info.information-box.view
     quo2.components.inputs.input.view
+    quo2.components.inputs.locked-input.view
     quo2.components.inputs.profile-input.view
     quo2.components.inputs.recovery-phrase.view
     quo2.components.inputs.search-input.view
@@ -75,6 +76,7 @@
     quo2.components.notifications.notification.view
     quo2.components.notifications.toast.view
     quo2.components.numbered-keyboard.keyboard-key.view
+    quo2.components.numbered-keyboard.numbered-keyboard.view
     quo2.components.onboarding.small-option-card.view
     quo2.components.password.tips.view
     quo2.components.profile.profile-card.view
@@ -107,6 +109,8 @@
     quo2.components.wallet.account-card.view
     quo2.components.wallet.network-amount.view
     quo2.components.wallet.network-bridge.view
+    quo2.components.wallet.progress-bar.view
+    quo2.components.wallet.summary-info.view
     quo2.components.wallet.token-input.view
     quo2.components.wallet.wallet-overview.view))
 
@@ -149,7 +153,7 @@
 (def picker-colors quo2.components.colors.color-picker.view/picker-colors)
 
 ;;;; COMMUNITY
-(def community-card-view-item quo2.components.community.community-card-view/community-card-view-item)
+(def community-card-view-item quo2.components.community.community-card-view/view)
 (def communities-membership-list-item
   quo2.components.community.community-list-view/communities-membership-list-item)
 (def community-stats-column quo2.components.community.community-view/community-stats-column)
@@ -199,13 +203,15 @@
 
 ;;;; INPUTS
 (def input quo2.components.inputs.input.view/input)
+(def locked-input quo2.components.inputs.locked-input.view/locked-input)
 (def profile-input quo2.components.inputs.profile-input.view/profile-input)
 (def recovery-phrase-input quo2.components.inputs.recovery-phrase.view/recovery-phrase-input)
 (def search-input quo2.components.inputs.search-input.view/search-input)
 (def title-input quo2.components.inputs.title-input.view/title-input)
 
 ;;;; NUMBERED KEYBOARD
-(def keyboard-key quo2.components.numbered-keyboard.keyboard-key.view/keyboard-key)
+(def keyboard-key quo2.components.numbered-keyboard.keyboard-key.view/view)
+(def numbered-keyboard quo2.components.numbered-keyboard.numbered-keyboard.view/view)
 
 ;;;; LIST ITEMS
 (def channel-list-item quo2.components.list-items.channel/list-item)
@@ -297,14 +303,16 @@
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 (def link-preview quo2.components.links.link-preview.view/view)
 
-
 ;;;; GRADIENT
 (def gradient-cover quo2.components.gradient.gradient-cover.view/view)
 
 ;;;; WALLET
-(def network-amount quo2.components.wallet.network-amount.view/view)
-(def network-bridge quo2.components.wallet.network-bridge.view/view)
 (def account-card quo2.components.wallet.account-card.view/view)
 (def account-overview quo2.components.wallet.account-overview.view/view)
+(def network-amount quo2.components.wallet.network-amount.view/view)
+(def network-bridge quo2.components.wallet.network-bridge.view/view)
+(def progress-bar quo2.components.wallet.progress-bar.view/view)
+(def summary-info quo2.components.wallet.summary-info.view/view)
 (def token-input quo2.components.wallet.token-input.view/view)
 (def wallet-overview quo2.components.wallet.wallet-overview.view/view)
+

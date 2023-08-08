@@ -6,20 +6,30 @@
   buildEnv ? "prod",
   # Path to the file containing secret environment variables
   secretsFile ? "",
+  # Build type (influences which .env file gets used for feature flags)
+  # TODO: pr or relase for default?
+  buildType ? lib.getEnvWithDefault "BUILD_TYPE" "release",
+  # Used for versionCode
+  buildNumber ? lib.getEnvWithDefault "BUILD_NUMBER" 9999,
+  # Included in APK Manifest for easier identification.
+  # TODO: or GIT_COMMIT from Jenkins?
+  commitHash ? lib.getEnvWithDefault "COMMIT_HASH" "unknown",
+  # Gradle options passed for Android builds
+  androidGradleOpts ? lib.getEnvWithDefault "ANDROID_GRADLE_OPTS" null,
+  statusGoSrcOverride ? lib.getEnvWithDefault "STATUS_GO_SRC_OVERRIDE" null,
+  # If APKs should be split based on architectures
+  androidAbiSplit ? lib.getEnvWithDefault "ANDROID_ABI_SPLIT" "false",
+  # Android architectures to build for
+  # Used to detect end-to-end builds
+  androidAbiInclude ? lib.getEnvWithDefault "ANDROID_ABI_INCLUDE" "armeabi-v7a;arm64-v8a;x86",
 }:
 
 let
-  inherit (lib) toLower optionalString stringLength getConfig makeLibraryPath elem;
+  inherit (lib) toLower optionalString stringLength makeLibraryPath elem;
 
   # Pass secretsFile for POKT_TOKEN to jsbundle build
   builtJsBundle = jsbundle { inherit secretsFile; };
 
-  buildType = getConfig "build-type" "release";
-  buildNumber = getConfig "build-number" 9999;
-  commitHash = getConfig "commit-hash" "unknown";
-  gradleOpts = getConfig "android.gradle-opts" null;
-  # Used to detect end-to-end builds
-  androidAbiInclude = getConfig "android.abi-include" "armeabi-v7a;arm64-v8a;x86";
 
   envFileName =
     if androidAbiInclude == "x86"                  then ".env.e2e"
@@ -63,9 +73,8 @@ in stdenv.mkDerivation rec {
   # Used by Clojure at compile time to include JS modules
   BUILD_ENV = buildEnv;
 
-  # custom env variables derived from config
-  STATUS_GO_SRC_OVERRIDE = getConfig "status-go.src-override" null;
-  ANDROID_ABI_SPLIT = getConfig "android.abi-split" "false";
+  STATUS_GO_SRC_OVERRIDE = statusGoSrcOverride;
+  ANDROID_ABI_SPLIT = androidAbiSplit;
   ANDROID_ABI_INCLUDE = androidAbiInclude;
 
   # Android SDK/NDK for use by Gradle
@@ -122,17 +131,9 @@ in stdenv.mkDerivation rec {
   buildPhase = let
     adhocEnvVars = optionalString stdenv.isLinux
       "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${makeLibraryPath [ pkgs.zlib ]}";
-  in
-    assert ANDROID_ABI_SPLIT != null && ANDROID_ABI_SPLIT != "";
-    assert stringLength ANDROID_ABI_INCLUDE > 0;
-  ''
-    # Fixes issue with failing to load libnative-platform.so
-    export GRADLE_USER_HOME=$(mktemp -d)
-    export ANDROID_SDK_HOME=$(mktemp -d)
-
-    pushd ./android
-    ${adhocEnvVars} ${pkgs.gradle}/bin/gradle \
-      ${toString gradleOpts} \
+    gradleCommand = ''
+      ${pkgs.gradle}/bin/gradle \
+      ${toString androidGradleOpts} \
       --console=plain \
       --offline \
       --no-daemon \
@@ -142,8 +143,21 @@ in stdenv.mkDerivation rec {
       -Dmaven.repo.local='${deps.gradle}' \
       -PversionCode=${toString buildNumber} \
       -PcommitHash=${commitHash} \
-      assemble${gradleBuildType} \
-      || exit 1
+      assemble${gradleBuildType}
+    '';
+  in
+    assert ANDROID_ABI_SPLIT != null && ANDROID_ABI_SPLIT != "";
+    assert stringLength ANDROID_ABI_INCLUDE > 0;
+  ''
+    # Fixes issue with failing to load libnative-platform.so
+    export GRADLE_USER_HOME=$(mktemp -d)
+    export ANDROID_SDK_HOME=$(mktemp -d)
+
+    echo "Adhoc ENV: ${adhocEnvVars}"
+    echo "Running: ${gradleCommand}"
+
+    pushd ./android
+    ${adhocEnvVars} ${gradleCommand}
     popd > /dev/null
   '';
   doCheck = true;

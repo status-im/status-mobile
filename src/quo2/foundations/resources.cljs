@@ -28,4 +28,3 @@
   {:ethereum (js/require "../resources/images/tokens/mainnet/ETH.png")
    :optimism (js/require "../resources/images/tokens/mainnet/OP.png")
    :arbitrum (js/require "../resources/images/tokens/mainnet/ARB.png")})
-
