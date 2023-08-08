@@ -3,7 +3,7 @@
 
 (defn container
   [state theme]
-  (let [light-bg     (if (= state :default) colors/neutral-2-5 colors/neutral-5)
+  (let [light-bg     (if (= state :default) colors/neutral-2_5 colors/neutral-5)
         dark-bg      (if (= state :default) colors/neutral-80-opa-40 colors/neutral-80-opa-60)
         light-border (if (= state :default) colors/neutral-10 colors/neutral-20)
         dark-border  (if (= state :default) colors/neutral-80 colors/neutral-70)]

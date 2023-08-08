@@ -9,7 +9,7 @@
     [quo2.components.list-items.account-list-card.style :as style]))
 
 (defn- internal-view
-  [{:keys [theme account-props network state action]}]
+  [{:keys [theme account-props networks state action]}]
   [rn/view
    {:style               (style/container state theme)
     :accessibility-label :container}
@@ -21,9 +21,13 @@
      [text/text
       {:weight :semi-bold
        :size   :paragraph-2} (:name account-props)]
-     [text/text
-      {:size  :paragraph-2
-       :style {:color (get colors/networks network)}} "eth:"
+     [text/text {:size :paragraph-2}
+      (map (fn [network]
+             ^{:key (str network)}
+             [text/text
+              {:size  :paragraph-2
+               :style {:color (get colors/networks network)}} (str (subs (name network) 0 3) ":")])
+           networks)
       [text/text
        {:size  :paragraph-2
         :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}

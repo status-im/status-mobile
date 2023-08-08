@@ -27,9 +27,9 @@
                                              :size                32
                                              :emoji               "🍑"
                                              :type                :default
-                                             :name                "Tip to Vegas"
+                                             :name                "Trip to Vegas"
                                              :address             "0x0ah...78b"}
-                             :network       :ethereum
+                             :networks      [:ethereum :optimism]
                              :state         :default
                              :action        :none})]
     (fn []
