@@ -1,6 +1,5 @@
 (ns status-im2.contexts.syncing.syncing-instructions.view
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [reagent.core :as reagent]
@@ -15,7 +14,8 @@
     [quo/text
      {:size            :paragraph-2
       :weight          :regular
-      :container-style style/list-text} (i18n/label value)]
+      :container-style style/list-text}
+     (i18n/label value)]
 
     :button-primary
     [quo/button
@@ -42,10 +42,10 @@
 
     :context-tag
     [quo/context-tag
-     {:override-theme :dark
-      :text-style     {:color colors/white}}
-     (resources/get-mock-image (:source value))
-     (i18n/label (:label value))]))
+     {:blur?           true
+      :size            24
+      :profile-picture (resources/get-mock-image (:source value))
+      :full-name       (i18n/label (:label value))}]))
 
 (defn- render-item
   [i list-item]

@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.notifications.activity-logs
-  (:require [quo2.core :as quo2]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]
@@ -67,27 +68,20 @@
    status-tags/status-tags-options])
 
 (def basic-user-action
-  [[quo2/user-avatar-tag
-    {:color          :purple
-     :override-theme :dark
-     :size           :small
-     :style          {:background-color colors/white-opa-10}
-     :text-style     {:color colors/white}}
-    "Name"]
+  [[quo/context-tag
+    {:size      24
+     :full-name "Name"
+     :blur?     true}]
    "did something here."])
 
 (def complex-user-action
-  (let [tag-props {:color      :purple
-                   :size       :small
-                   :style      {:background-color colors/white-opa-10}
-                   :text-style {:color colors/white}}]
-    [[quo2/user-avatar-tag tag-props "Alice"]
-     "from"
-     [quo2/user-avatar-tag tag-props "Mainnet"]
-     "to"
-     [quo2/user-avatar-tag tag-props "Optimism"]
-     "on"
-     [quo2/user-avatar-tag tag-props "My savings"]]))
+  [[quo/context-tag {:size 24 :full-name "Alice" :blur? true}]
+   "from"
+   [quo/context-tag {:size 24 :full-name "Mainnet" :blur? true}]
+   "to"
+   [quo/context-tag {:size 24 :full-name "Optimism" :blur? true}]
+   "on"
+   [quo/context-tag {:size 24 :full-name "My savings" :blur? true}]])
 
 (def message-with-mention
   (let [common-text-style {:style {:color colors/white}
@@ -95,8 +89,8 @@
     {:body [rn/view
             {:flex           1
              :flex-direction :row}
-            [quo2/text common-text-style "Hello"]
-            [quo2/text
+            [quo/text common-text-style "Hello"]
+            [quo/text
              {:style {:background-color   colors/primary-50-opa-10
                       :border-radius      6
                       :color              colors/primary-50
@@ -104,7 +98,7 @@
                       :padding-horizontal 3
                       :size               :paragraph-1}}
              "@name"]
-            [quo2/text common-text-style "! How are you feeling?"]]}))
+            [quo/text common-text-style "! How are you feeling?"]]}))
 
 (def message-with-title
   {:body  "Your favorite color is Turquoise."
@@ -176,12 +170,13 @@
           {:flex    1
            :padding 16}
           [preview/customizer state descriptor]]
-         [rn/view
-          {:background-color colors/neutral-90
-           :flex-direction   :row
-           :justify-content  :center
-           :padding-vertical 60}
-          [quo2/activity-log props]]]))))
+         [quo.theme/provider {:theme :dark}
+          [rn/view
+           {:background-color colors/neutral-90
+            :flex-direction   :row
+            :justify-content  :center
+            :padding-vertical 60}
+           [quo/activity-log props]]]]))))
 
 (defn preview-activity-logs
   []

@@ -315,11 +315,8 @@
 (def permission-tag quo2.components.tags.permission-tag/tag)
 (def status-tag quo2.components.tags.status-tags/status-tag)
 (def token-tag quo2.components.tags.token-tag/tag)
-(def user-avatar-tag quo2.components.tags.context-tag.view/user-avatar-tag)
-(def context-tag quo2.components.tags.context-tag.view/context-tag)
-(def group-avatar-tag quo2.components.tags.context-tag.view/group-avatar-tag)
-(def audio-tag quo2.components.tags.context-tag.view/audio-tag)
-(def community-tag quo2.components.tags.context-tag.view/community-tag)
+
+(def context-tag quo2.components.tags.context-tag.view/view)
 
 ;;;; Title
 (def title quo2.components.text-combinations.title.view/title)
