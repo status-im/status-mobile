@@ -12,7 +12,7 @@
             [quo2.components.common.not-implemented :as not-implemented]))
 
 (defn- render-right-side
-  [label icon-right?]
+  [label icon-right? icon-color]
   [rn/view
    {:style style/right-container}
    (case label
@@ -29,10 +29,11 @@
        (if (= :none label)
          :i/copy
          :i/chevron-right)
-       {:size 20}]])])
+       {:color icon-color
+        :size  20}]])])
 
 (defn- render-left-side
-  [theme title status size blur? description icon subtitle label]
+  [theme title status size blur? description icon subtitle label icon-color]
   [rn/view
    [rn/view
     {:style style/title-container}
@@ -54,7 +55,7 @@
       (when (not= :small size)
         [rn/view {:style (style/subtitle-icon-container description)}
          (case description
-           :icon    [icons/icon icon {:size 16}]
+           :icon    [icons/icon icon {:size 16 :color icon-color}]
            :account [account-avatar/view
                      {:customization-color (get-in colors/customization
                                                    [:yellow (if (= theme :dark) 60 50)])
@@ -74,14 +75,17 @@
   []
   (fn [{:keys [blur? card? icon-right? label description status size theme on-press]}
        {:keys [title subtitle icon]}]
-    (if (= :graph label)
-      [not-implemented/not-implemented [not-implemented/not-implemented [text/text "not implemented"]]]
-      [rn/pressable
-       {:disabled (not icon-right?)
-        :on-press on-press
-        :style    (style/container size card? theme blur?)}
-       [render-left-side theme title status size blur? description icon subtitle label]
-       (when (and (= :default status) (not= :small size))
-         [render-right-side label icon-right?])])))
+    (let [icon-color (cond
+                       (or blur? (= :dark theme)) colors/white
+                       (= :light theme)           colors/neutral-100)]
+      (if (= :graph label)
+        [not-implemented/not-implemented [not-implemented/not-implemented [text/text "not implemented"]]]
+        [rn/pressable
+         {:disabled (not icon-right?)
+          :on-press on-press
+          :style    (style/container size card? theme blur?)}
+         [render-left-side theme title status size blur? description icon subtitle label icon-color]
+         (when (and (= :default status) (not= :small size))
+           [render-right-side label icon-right? icon-color])]))))
 
 (def view (quo.theme/with-theme view-internal))
