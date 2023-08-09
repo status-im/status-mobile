@@ -9,7 +9,7 @@
     [quo2.components.list-items.account-list-card.style :as style]))
 
 (defn- internal-view
-  [{:keys [theme account-props networks state action]}]
+  [{:keys [theme account-props networks state action on-press]}]
   [rn/view
    {:style               (style/container state theme)
     :accessibility-label :container}
@@ -35,6 +35,7 @@
    (when (= action :icon)
      [icon/icon :i/options
       {:color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+       :on-press            on-press
        :accessibility-label :icon}])])
 
 (def view (quo.theme/with-theme internal-view))

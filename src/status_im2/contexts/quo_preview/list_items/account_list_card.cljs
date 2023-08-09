@@ -31,7 +31,8 @@
                                              :address             "0x0ah...78b"}
                              :networks      [:ethereum :optimism]
                              :state         :default
-                             :action        :none})]
+                             :action        :none
+                             :on-press      (fn [] (js/alert "Button pressed"))})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view
