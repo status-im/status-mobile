@@ -309,6 +309,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in = SignInView(self.drivers[0])
         self.username = 'first user'
+        self.discovery_community_attributes = "Contributors' test community", 'test anything here', 'Web3', 'Software dev'
 
         self.home = self.sign_in.create_user(username=self.username)
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_community_button)
@@ -320,13 +321,31 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.community_view = self.home.get_community_view()
         self.channel = self.community_view.get_channel(self.channel_name).click()
 
+    @marks.testrail_id(703503)
+    def test_community_discovery(self):
+        self.home.jump_to_communities_home()
+        self.home.discover_communities_button.click()
+        for text in self.discovery_community_attributes:
+            if not self.home.element_by_text(text).is_element_displayed(10):
+                self.errors.append("%s in not in Discovery!" % text)
+        self.home.element_by_text(self.discovery_community_attributes[0]).click()
+        element_templates = {
+            self.community_view.join_button: 'discovery_join_button.png',
+            self.community_view.get_channel_avatar(): 'discovery_general_channel.png',
+            }
+        for element, template in element_templates.items():
+            if element.is_element_differs_from_template(template):
+                element.save_new_screenshot_of_element('%s_different.png' % element.name)
+                self.errors.append("%s is different from expected %s!" % (element.name, template))
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702846)
     def test_community_navigate_to_channel_when_relaunch(self):
         text_message = 'some_text'
         if not self.channel.chat_message_input.is_element_displayed():
-            self.home.communities_tab.double_click()
-            self.home.get_chat(self.community_name, community=True).click()
-            self.community.get_chat(self.channel_name).click()
+            self.home.click_system_back_button_until_element_is_shown()
+            self.home.get_to_community_channel_from_home(self.community_name)
+
         self.channel.send_message(text_message)
         self.channel.reopen_app()
         if not self.channel.chat_element_by_text(text_message).is_element_displayed(30):
