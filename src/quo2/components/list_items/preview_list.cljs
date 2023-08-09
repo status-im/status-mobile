@@ -21,6 +21,12 @@
        :hole-size     26
        :hole-x        19
        :hole-y        -1}
+   20 {:border-radius {:circular 11 :rounded 8}
+       :hole-radius   {:circular 10 :rounded 9}
+       :margin-left   -4
+       :hole-size     22
+       :hole-x        15
+       :hole-y        -1}
    16 {:border-radius {:circular 8 :rounded 8}
        :hole-radius   {:circular 9 :rounded 9}
        :margin-left   -4
@@ -38,6 +44,7 @@
                                    :size              (case size
                                                         32 :small
                                                         24 :xs
+                                                        20 :xxs
                                                         16 :xxxs)}
                                   item)]
     (:photo :collectible) [fast-image/fast-image
@@ -47,11 +54,10 @@
                                      :border-radius border-radius}}]))
 
 (defn list-item
-  [index type size item list-size margin-left
-   hole-size hole-radius hole-x hole-y border-radius]
-  (let [last-item? (= index (- list-size 1))]
+  [index type size item list-size margin-left hole-size hole-radius hole-x hole-y border-radius]
+  (let [last-item? (= index (dec list-size))]
     [hole-view/hole-view
-     {:style {:margin-left (if (= index 0) 0 margin-left)}
+     {:style {:margin-left (if (zero? index) 0 margin-left)}
       :holes (if last-item?
                []
                [{:x            hole-x
@@ -122,8 +128,7 @@
    items           preview list items (only 4 items is required for preview)
   "
   [{:keys [type size list-size transparent? theme more-than-99-label]} items]
-  (let [items-arr     (into [] items)
-        list-size     (or list-size (count items))
+  (let [list-size     (or list-size (count items))
         margin-left   (get-in params [size :margin-left])
         hole-size     (get-in params [size :hole-size])
         border-radius (get-in params [size :border-radius (border-type type)])
@@ -133,7 +138,7 @@
     [rn/view {:style {:flex-direction :row}}
      (for [index (range (if (> list-size 4) 3 list-size))]
        ^{:key (str index list-size)}
-       [list-item index type size (get items-arr index) list-size
+       [list-item index type size (get (vec items) index) list-size
         margin-left hole-size hole-radius hole-x hole-y border-radius])
      (when (> list-size 4)
        [overflow-label
