@@ -31,6 +31,10 @@
          (assoc :test-ID             stack-id
                 :icon                icon
                 :icon-color-anim     icon-color
+                ;NOTE temporary use of on long press while we support old wallet
+                :on-long-press       #(when (= stack-id :wallet-stack)
+                                        (swap! state/load-new-wallet? not)
+                                        (animation/bottom-tab-on-press stack-id true))
                 :on-press            #(animation/bottom-tab-on-press stack-id true)
                 :accessibility-label (str (name stack-id) "-tab")
                 :customization-color customization-color))]))
