@@ -12,7 +12,7 @@
    :address             "0x0ah...78b"})
 
 (h/describe "List items: account list card"
-  (h/test "Test icon renders for `:action :icon`"
+  (h/test "Test icon renders for ':action :icon'"
     (h/render [account-list-card/view
                {:account-props account-props
                 :network       :ethereum
