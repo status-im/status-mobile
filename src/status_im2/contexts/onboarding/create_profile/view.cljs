@@ -6,6 +6,7 @@
             [utils.i18n :as i18n]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
+            [react-native.hooks :as hooks]
             [reagent.core :as reagent]
             [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
             [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
@@ -30,6 +31,8 @@
 (defn has-special-characters [s] (not (re-find status-regex s)))
 (def min-length 5)
 (defn length-not-valid [s] (< (count (string/trim (str s))) min-length))
+(def scroll-view-height (reagent/atom 0))
+(def content-container-height (reagent/atom 0))
 
 (defn validation-message
   [s]
@@ -46,35 +49,62 @@
     (has-emojis s)               (i18n/label :t/are-not-allowed {:check (i18n/label :t/emojis)})
     :else                        nil))
 
+
+(defn show-button-background
+  [keyboard-height keyboard-shown]
+  (let [button-container-height 64
+        keyboard-view-height    (+ keyboard-height button-container-height)]
+    (when keyboard-shown
+      (cond
+        platform/android?
+        (< (- @scroll-view-height button-container-height) @content-container-height)
+
+        platform/ios?
+        (< (- @scroll-view-height keyboard-view-height) @content-container-height)
+
+        :else
+        false))))
+
+
 (defn button-container
-  [keyboard-shown? children]
-  [rn/view {:style {:margin-top :auto}}
-   (if keyboard-shown?
-     [blur/ios-view
-      {:blur-amount      34
-       :blur-type        :transparent
-       :overlay-color    :transparent
-       :background-color (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)
-       :style            style/blur-button-container}
-      children]
-     [rn/view {:style style/view-button-container}
-      children])])
+  [show-keyboard? keyboard-shown show-background? keyboard-height children]
+  (let [height (reagent/atom 0)]
+    (reset! height (if show-keyboard? (if keyboard-shown keyboard-height 0) 0))
+    [rn/view {:style {:margin-top :auto}}
+     (cond
+       (and (> @height 0) show-background?)
+       [blur/ios-view
+        (when keyboard-shown
+          {:blur-amount      34
+           :blur-type        :transparent
+           :overlay-color    :transparent
+           :background-color (if platform/android? colors/neutral-100 colors/neutral-80-opa-1-blur)
+           :style            style/blur-button-container})
+        children]
+
+       (and (> @height 0) (not show-background?))
+       [rn/view {:style (style/view-button-container true)}
+        children]
+
+       (not show-keyboard?)
+       [rn/view {:style (style/view-button-container false)}
+        children])]))
 
 (defn- f-page
   [{:keys [onboarding-profile-data navigation-bar-top]}]
-  (reagent/with-let [keyboard-shown?                         (reagent/atom false)
+  (reagent/with-let [show-keyboard?                          (reagent/atom false)
                      show-listener                           (oops/ocall rn/keyboard
                                                                          "addListener"
                                                                          (if platform/android?
                                                                            "keyboardDidShow"
                                                                            "keyboardWillShow")
-                                                                         #(reset! keyboard-shown? true))
+                                                                         #(reset! show-keyboard? true))
                      hide-listener                           (oops/ocall rn/keyboard
                                                                          "addListener"
                                                                          (if platform/android?
                                                                            "keyboardDidHide"
                                                                            "keyboardWillHide")
-                                                                         #(reset! keyboard-shown? false))
+                                                                         #(reset! show-keyboard? false))
                      {:keys [image-path display-name color]} onboarding-profile-data
                      full-name                               (reagent/atom display-name)
                      validation-msg                          (reagent/atom (validation-message
@@ -88,22 +118,31 @@
                      profile-pic                             (reagent/atom image-path)
                      on-change-profile-pic                   #(reset! profile-pic %)
                      on-change                               #(reset! custom-color %)]
-    (let [name-too-short? (length-not-valid @full-name)
-          valid-name?     (and (not @validation-msg) (not name-too-short?))
-          info-message    (if @validation-msg
-                            @validation-msg
-                            (i18n/label :t/minimum-characters
-                                        {:min-chars min-length}))
-          info-type       (cond @validation-msg :error
-                                name-too-short? :default
-                                :else           :success)]
+    (let [name-too-short?                          (length-not-valid @full-name)
+          valid-name?                              (and (not @validation-msg) (not name-too-short?))
+          info-message                             (if @validation-msg
+                                                     @validation-msg
+                                                     (i18n/label :t/minimum-characters
+                                                                 {:min-chars min-length}))
+          info-type                                (cond @validation-msg :error
+                                                         name-too-short? :default
+                                                         :else           :success)
+          {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
+          show-background?                         (show-button-background keyboard-height
+                                                                           keyboard-shown)]
       [rn/view {:style style/page-container}
        [navigation-bar/navigation-bar
         {:stack-id :new-to-status
          :top      navigation-bar-top}]
        [rn/scroll-view
-        {:content-container-style {:flexGrow 1}}
-        [rn/view {:style style/page-container}
+        {:on-layout               (fn [event]
+                                    (let [height (oops/oget event "nativeEvent.layout.height")]
+                                      (reset! scroll-view-height height)))
+         :content-container-style {:flexGrow 1}}
+        [rn/view
+         {:on-layout (fn [event]
+                       (let [height (oops/oget event "nativeEvent.layout.height")]
+                         (reset! content-container-height height)))}
          [rn/view
           {:style style/content-container}
           [quo/text
@@ -153,6 +192,7 @@
              :default-selected? :blue
              :selected          @custom-color
              :on-change         on-change}]]]]]
+
        [rn/keyboard-avoiding-view
         {:style          {:position :absolute
                           :top      0
@@ -160,7 +200,7 @@
                           :left     0
                           :right    0}
          :pointer-events :box-none}
-        [button-container @keyboard-shown?
+        [button-container @show-keyboard? keyboard-shown show-background? keyboard-height
          [quo/button
           {:accessibility-label :submit-create-profile-button
            :type                :primary

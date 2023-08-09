@@ -8,12 +8,7 @@
 
 (defn pairing-progress
   [status]
-  (cond
-    (= status :error)
-    false
-
-    :else
-    true))
+  (not= status :error))
 
 (defn page-title
   [pairing-progress?]
