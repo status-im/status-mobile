@@ -7,18 +7,15 @@
             [quo2.theme :as theme]
             [react-native.core :as rn]))
 
-(defn add-reaction
-  [{:keys [on-press]}]
-  (let [dark? (theme/dark?)]
-    [rn/touchable-opacity
-     {:on-press            on-press
-      :accessibility-label :emoji-reaction-add
-      :style               (style/add-reaction)}
-     [icons/icon :i/add-reaction
-      {:size  20
-       :color (if dark?
-                colors/white
-                colors/neutral-100)}]]))
+(defn- add-reaction-internal
+  [{:keys [on-press theme]}]
+  [rn/touchable-opacity
+   {:on-press            on-press
+    :accessibility-label :emoji-reaction-add
+    :style               (style/add-reaction)}
+   [icons/icon :i/add-reaction
+    {:size  20
+     :color (colors/theme-colors colors/neutral-50 colors/white theme)}]])
 
 (defn reaction
   "Add your emoji as a param here"
@@ -41,3 +38,5 @@
        :justify-content :center}
       (when (pos? numeric-value)
         (str " " numeric-value))]]))
+
+(def add-reaction (theme/with-theme add-reaction-internal))
