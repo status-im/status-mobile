@@ -33,9 +33,9 @@
         :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
        (:address account-props)]]]]
    (when (= action :icon)
-     [icon/icon :i/options
-      {:color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-       :on-press            on-press
-       :accessibility-label :icon}])])
+     [rn/pressable {:on-press on-press}
+      [icon/icon :i/options
+       {:color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+        :accessibility-label :icon}]])])
 
 (def view (quo.theme/with-theme internal-view))
