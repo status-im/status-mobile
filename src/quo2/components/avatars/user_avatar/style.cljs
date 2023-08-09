@@ -17,6 +17,11 @@
             :status-indicator        12
             :status-indicator-border 2
             :font-size               :paragraph-2}
+   28      {:outer                   28
+            :inner                   28
+            :status-indicator        0
+            :status-indicator-border 0
+            :font-size               :paragraph-2}
    :xs     {:outer                   24
             :inner                   24
             :status-indicator        0
