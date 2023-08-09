@@ -11,13 +11,15 @@
   [color]
   [:<>
    [rn/view
-    (style/loading-bar-margin-bottom {:color  color
-                                      :width  104
-                                      :height 14})]
+    (style/loading-bar-margin-bottom {:color         color
+                                      :width         104
+                                      :height        14
+                                      :margin-bottom 14})]
    [rn/view
-    (style/loading-bar-margin-bottom {:color  color
-                                      :width  152
-                                      :height 20})]
+    (style/loading-bar-margin-bottom {:color         color
+                                      :width         152
+                                      :height        20
+                                      :margin-bottom 12})]
    [rn/view {:style {:flex-direction :row}}
     [rn/view {:style (style/loading-bar-margin-right color)}]
     [rn/view {:style (style/loading-bar-margin-right color)}]
@@ -43,7 +45,8 @@
   [:<>
    [icons/icon :i/positive-right
     {:size            16
-     :container-style style/right-arrow}]
+     :container-style style/right-arrow
+     :color           colors/neutral-80-opa-90}]
    [text/text
     {:weight :medium
      :size   :paragraph-2
@@ -106,13 +109,13 @@
         [rn/view
          {:style style/row-centered}
          [:<>
-          [text/text
-           {:weight :medium
-            :size   :paragraph-2
-            :style  (style/bottom-time-text (and (not= :custom time-frame)
-                                                 (seq time-frame-to-string)))}
-           (when (seq time-frame-string)
-             time-frame-string)]
+          (when (seq time-frame-string)
+            [text/text
+             {:weight :medium
+              :size   :paragraph-2
+              :style  (style/bottom-time-text (and (not= :custom time-frame)
+                                                   (seq time-frame-to-string)))}
+             time-frame-string])
           (when (and (= :custom time-frame)
                      (seq time-frame-to-string))
             [custom-time-frame time-frame-to-string])]

@@ -11,7 +11,7 @@
 
 (defn account-name
   [color]
-  {:margin-bottom 3
+  {:margin-bottom 4
    :color         color})
 
 (def reveal-icon
@@ -27,15 +27,16 @@
 
 (defn bottom-time-text
   [margin-right?]
-  {:margin-right (when margin-right?
-                   8)})
+  {:margin-right (when margin-right? 8)
+   :color        colors/neutral-80-opa-40})
 
 (def right-arrow
   {:margin-top   1
    :margin-right 1})
 
 (def bottom-time-to-text
-  {:margin-right 8})
+  {:margin-right 8
+   :color        colors/neutral-80-opa-40})
 
 (defn percentage-change
   [customization-color theme]
@@ -65,12 +66,12 @@
    :margin-right 4})
 
 (defn loading-bar-margin-bottom
-  [{:keys [width height color]}]
+  [{:keys [width height color margin-bottom]}]
   {:style {:width            width
            :height           height
            :border-radius    6
            :background-color color
-           :margin-bottom    8}})
+           :margin-bottom    margin-bottom}})
 
 (defn loading-bar-margin-right
   [color]
