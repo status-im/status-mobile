@@ -62,6 +62,7 @@
 (defn- render-tab
   [{:keys [active-tab-id
            blur?
+           customization-color
            flat-list-ref
            number-of-items
            on-change
@@ -79,6 +80,7 @@
    [tab/view
     {:id                  id
      :notification-dot?   notification-dot?
+     :customization-color customization-color
      :accessibility-label accessibility-label
      :size                size
      :blur?               blur?
@@ -131,7 +133,8 @@
                style
                size
                blur?
-               in-scroll-view?]
+               in-scroll-view?
+               customization-color]
         :or   {fade-end-percentage fade-end-percentage
                fade-end?           false
                scrollable?         false
@@ -176,24 +179,26 @@
                                                           :fading              fading
                                                           :on-scroll           on-scroll})
              :render-fn                         (partial render-tab
-                                                         {:active-tab-id    active-tab-id
-                                                          :blur?            blur?
-                                                          :flat-list-ref    flat-list-ref
-                                                          :number-of-items  (count data)
-                                                          :on-change        on-change
-                                                          :scroll-on-press? scroll-on-press?
-                                                          :size             size
-                                                          :style            style})})]]]
+                                                         {:active-tab-id       active-tab-id
+                                                          :blur?               blur?
+                                                          :customization-color customization-color
+                                                          :flat-list-ref       flat-list-ref
+                                                          :number-of-items     (count data)
+                                                          :on-change           on-change
+                                                          :scroll-on-press?    scroll-on-press?
+                                                          :size                size
+                                                          :style               style})})]]]
         [rn/view (merge style {:flex-direction :row})
          (map-indexed (fn [index item]
                         ^{:key (:id item)}
                         [render-tab
-                         {:active-tab-id   active-tab-id
-                          :blur?           blur?
-                          :number-of-items (count data)
-                          :on-change       on-change
-                          :size            size
-                          :style           style}
+                         {:active-tab-id       active-tab-id
+                          :blur?               blur?
+                          :customization-color customization-color
+                          :number-of-items     (count data)
+                          :on-change           on-change
+                          :size                size
+                          :style               style}
                          item
                          index])
                       data)]))))

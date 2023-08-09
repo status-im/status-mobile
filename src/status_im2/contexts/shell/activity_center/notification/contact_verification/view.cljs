@@ -153,7 +153,7 @@
 (defn view
   [_]
   (let [reply (atom "")]
-    (fn [{:keys [notification set-swipeable-height replying?] :as props}]
+    (fn [{:keys [notification set-swipeable-height replying? customization-color] :as props}]
       (let [{:keys [id message
                     contact-verification-status]} notification
             challenger?                           (:outgoing message)]
@@ -169,6 +169,7 @@
              (when-not replying?
                {:on-layout set-swipeable-height})
              {:title (i18n/label :t/identity-verification-request)
+              :customization-color customization-color
               :icon :i/friend
               :timestamp (datetime/timestamp->relative (:timestamp notification))
               :unread? (not (:read notification))

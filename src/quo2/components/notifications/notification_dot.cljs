@@ -4,12 +4,18 @@
 
 (def ^:const size 8)
 
+(defn dot-background-color
+  [customization-color]
+  (if customization-color
+    (colors/custom-color-by-theme customization-color 50 60)
+    (colors/theme-colors colors/primary-50 colors/primary-60)))
+
 (defn notification-dot
-  [{:keys [style]}]
+  [{:keys [customization-color style]}]
   [rn/view
    {:accessibility-label :notification-dot
     :style               (merge
-                          {:background-color (colors/theme-colors colors/primary-50 colors/primary-60)
+                          {:background-color (dot-background-color customization-color)
                            :width            size
                            :height           size
                            :border-radius    (/ size 2)

@@ -46,23 +46,24 @@
        [quo/discover-card card-props]]]]))
 
 (defn- banner-card-tabs-layer
-  [{:keys [selected-tab tabs on-tab-change scroll-ref scroll-shared-value]}]
+  [{:keys [selected-tab tabs on-tab-change scroll-ref scroll-shared-value customization-color]}]
   [reanimated/view {:style (style/banner-card-tabs-layer scroll-shared-value)}
    ^{:key (str "tabs-" selected-tab)}
    [quo/tabs
-    {:style          style/banner-card-tabs
-     :size           32
-     :default-active selected-tab
-     :data           tabs
-     :on-change      (fn [tab]
-                       (reset-banner-animation scroll-shared-value)
-                       (some-> scroll-ref
-                               deref
-                               reset-scroll)
-                       (on-tab-change tab))}]])
+    {:style               style/banner-card-tabs
+     :customization-color customization-color
+     :size                32
+     :default-active      selected-tab
+     :data                tabs
+     :on-change           (fn [tab]
+                            (reset-banner-animation scroll-shared-value)
+                            (some-> scroll-ref
+                                    deref
+                                    reset-scroll)
+                            (on-tab-change tab))}]])
 
 (defn animated-banner
-  [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content]}]
+  [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content customization-color]}]
   [:<>
    [:f> banner-card-blur-layer scroll-shared-value]
    [:f> banner-card-hiding-layer (assoc content :scroll-shared-value scroll-shared-value)]
@@ -71,7 +72,8 @@
      :selected-tab        selected-tab
      :tabs                tabs
      :on-tab-change       on-tab-change
-     :scroll-ref          scroll-ref}]])
+     :scroll-ref          scroll-ref
+     :customization-color customization-color}]])
 
 (defn set-scroll-shared-value
   [{:keys [shared-value scroll-input]}]

@@ -60,7 +60,8 @@
            theme
            segmented?
            size
-           notification-dot?]
+           notification-dot?
+           customization-color]
     :or   {size 32}}
    children]
   (let [show-notification-dot? (and notification-dot? (= size 32))
@@ -79,7 +80,8 @@
      [rn/view {:style style/container}
       (when show-notification-dot?
         [notification-dot/notification-dot
-         {:style style/notification-dot}])
+         {:style               style/notification-dot
+          :customization-color customization-color}])
       [rn/view
        {:style (merge
                 (style/tab

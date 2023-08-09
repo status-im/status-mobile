@@ -48,7 +48,7 @@
       :else nil)))
 
 (defn view
-  [{:keys [notification set-swipeable-height] :as props}]
+  [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [community-id membership-status read
                 timestamp]}           notification
         community                     (rf/sub [:communities/community community-id])
@@ -56,9 +56,10 @@
                                                                    membership-status)]
     [swipeable props
      [quo/activity-log
-      {:title     header-text
-       :icon      :i/communities
-       :on-layout set-swipeable-height
-       :timestamp (datetime/timestamp->relative timestamp)
-       :unread?   (not read)
-       :context   context}]]))
+      {:title               header-text
+       :customization-color customization-color
+       :icon                :i/communities
+       :on-layout           set-swipeable-height
+       :timestamp           (datetime/timestamp->relative timestamp)
+       :unread?             (not read)
+       :context             context}]]))

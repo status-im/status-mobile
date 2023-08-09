@@ -52,7 +52,7 @@
       child)))
 
 (defn view
-  [{:keys [notification set-swipeable-height] :as props}]
+  [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [author community-id id membership-status
                 read timestamp]} notification
         community                (rf/sub [:communities/community community-id])
@@ -60,48 +60,50 @@
         community-image          (get-in community [:images :thumbnail :uri])]
     [swipeable props
      [quo/activity-log
-      {:title     (i18n/label :t/join-request)
-       :icon      :i/add-user
-       :timestamp (datetime/timestamp->relative timestamp)
-       :unread?   (not read)
-       :on-layout set-swipeable-height
-       :context   [[common/user-avatar-tag author]
-                   (i18n/label :t/wants-to-join)
-                   [quo/context-tag
-                    common/tag-params
-                    community-image community-name]]
-       :items     (case membership-status
-                    constants/activity-center-membership-status-accepted
-                    [{:type    :status
-                      :subtype :positive
-                      :key     :status-accepted
-                      :blur?   true
-                      :label   (i18n/label :t/accepted)}]
+      {:title               (i18n/label :t/join-request)
+       :customization-color customization-color
+       :icon                :i/add-user
+       :timestamp           (datetime/timestamp->relative timestamp)
+       :unread?             (not read)
+       :on-layout           set-swipeable-height
+       :context             [[common/user-avatar-tag author]
+                             (i18n/label :t/wants-to-join)
+                             [quo/context-tag
+                              common/tag-params
+                              community-image community-name]]
+       :items               (case membership-status
+                              constants/activity-center-membership-status-accepted
+                              [{:type    :status
+                                :subtype :positive
+                                :key     :status-accepted
+                                :blur?   true
+                                :label   (i18n/label :t/accepted)}]
 
-                    constants/activity-center-membership-status-declined
-                    [{:type    :status
-                      :subtype :negative
-                      :key     :status-declined
-                      :blur?   true
-                      :label   (i18n/label :t/declined)}]
+                              constants/activity-center-membership-status-declined
+                              [{:type    :status
+                                :subtype :negative
+                                :key     :status-declined
+                                :blur?   true
+                                :label   (i18n/label :t/declined)}]
 
-                    constants/activity-center-membership-status-pending
-                    [{:type                :button
-                      :subtype             :danger
-                      :key                 :button-decline
-                      :label               (i18n/label :t/decline)
-                      :accessibility-label :decline-join-request
-                      :on-press            (fn []
-                                             (rf/dispatch
-                                              [:communities.ui/decline-request-to-join-pressed
-                                               community-id id]))}
-                     {:type                :button
-                      :subtype             :positive
-                      :key                 :button-accept
-                      :label               (i18n/label :t/accept)
-                      :accessibility-label :accept-join-request
-                      :on-press            (fn []
-                                             (rf/dispatch [:communities.ui/accept-request-to-join-pressed
-                                                           community-id id]))}]
+                              constants/activity-center-membership-status-pending
+                              [{:type                :button
+                                :subtype             :danger
+                                :key                 :button-decline
+                                :label               (i18n/label :t/decline)
+                                :accessibility-label :decline-join-request
+                                :on-press            (fn []
+                                                       (rf/dispatch
+                                                        [:communities.ui/decline-request-to-join-pressed
+                                                         community-id id]))}
+                               {:type                :button
+                                :subtype             :positive
+                                :key                 :button-accept
+                                :label               (i18n/label :t/accept)
+                                :accessibility-label :accept-join-request
+                                :on-press            (fn []
+                                                       (rf/dispatch
+                                                        [:communities.ui/accept-request-to-join-pressed
+                                                         community-id id]))}]
 
-                    nil)}]]))
+                              nil)}]]))

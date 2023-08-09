@@ -53,32 +53,35 @@
        child])))
 
 (defn view
-  [{:keys [notification set-swipeable-height] :as props}]
+  [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [id accepted dismissed author read timestamp chat-name chat-id]} notification]
     [swipeable props
      [pressable {:accepted accepted :chat-id chat-id}
       [quo/activity-log
-       {:title     (i18n/label :t/added-to-group-chat)
-        :on-layout set-swipeable-height
-        :icon      :i/add-user
-        :timestamp (datetime/timestamp->relative timestamp)
-        :unread?   (not read)
-        :context   [[common/user-avatar-tag author]
-                    (i18n/label :t/added-you-to)
-                    [quo/group-avatar-tag chat-name
-                     {:size  :small
-                      :color :purple}]]
-        :items     (when-not (or accepted dismissed)
-                     [{:type                :button
-                       :subtype             :positive
-                       :key                 :button-accept
-                       :label               (i18n/label :t/accept)
-                       :accessibility-label :accept-group-chat-invitation
-                       :on-press            #(rf/dispatch [:activity-center.notifications/accept id])}
-                      {:type                :button
-                       :subtype             :danger
-                       :key                 :button-decline
-                       :label               (i18n/label :t/decline)
-                       :accessibility-label :decline-group-chat-invitation
-                       :on-press            #(rf/dispatch [:activity-center.notifications/dismiss
-                                                           id])}])}]]]))
+       {:title               (i18n/label :t/added-to-group-chat)
+        :customization-color customization-color
+        :on-layout           set-swipeable-height
+        :icon                :i/add-user
+        :timestamp           (datetime/timestamp->relative timestamp)
+        :unread?             (not read)
+        :context             [[common/user-avatar-tag author]
+                              (i18n/label :t/added-you-to)
+                              [quo/group-avatar-tag chat-name
+                               {:size  :small
+                                :color :purple}]]
+        :items               (when-not (or accepted dismissed)
+                               [{:type                :button
+                                 :subtype             :positive
+                                 :key                 :button-accept
+                                 :label               (i18n/label :t/accept)
+                                 :accessibility-label :accept-group-chat-invitation
+                                 :on-press            #(rf/dispatch
+                                                        [:activity-center.notifications/accept id])}
+                                {:type                :button
+                                 :subtype             :danger
+                                 :key                 :button-decline
+                                 :label               (i18n/label :t/decline)
+                                 :accessibility-label :decline-group-chat-invitation
+                                 :on-press            #(rf/dispatch
+                                                        [:activity-center.notifications/dismiss
+                                                         id])}])}]]]))
