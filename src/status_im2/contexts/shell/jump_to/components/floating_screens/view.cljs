@@ -8,7 +8,8 @@
             [status-im2.contexts.shell.jump-to.animation :as animation]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [status-im2.contexts.communities.overview.view :as communities.overview]
-            [status-im2.contexts.shell.jump-to.components.floating-screens.style :as style]))
+            [status-im2.contexts.shell.jump-to.components.floating-screens.style :as style]
+            [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]))
 
 (def screens-map
   {shell.constants/community-screen communities.overview/overview
@@ -26,7 +27,7 @@
    [rn/view
     {:style               (style/screen-container (utils/dimensions))
      :key                 id}
-    [:f> (get screens-map screen-id) id]]])
+    [messages.navigation/f-view]]])
 
 ;; Currently chat screen and events both depends on current-chat-id, once we remove
 ;; use of current-chat-id from view then we can keep last chat loaded, for fast navigation
