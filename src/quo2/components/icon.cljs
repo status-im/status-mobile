@@ -14,7 +14,8 @@
 
 (defn memo-icon-fn
   [{:keys [color color-2 no-color
-           container-style size accessibility-label theme]}
+           container-style size accessibility-label theme]
+    :or   {accessibility-label :icon}}
    icon-name]
   (let [size (or size 20)]
     ^{:key icon-name}

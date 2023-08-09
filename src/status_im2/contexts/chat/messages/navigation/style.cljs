@@ -52,9 +52,6 @@
      {:opacity animation})
    blur-view))
 
-(def navigation-view
-  {:z-index 1})
-
 (def header-container
   {:position       :absolute
    :top            header-offset
