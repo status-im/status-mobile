@@ -27,8 +27,7 @@
    [rn/view
     {:style               (style/screen-container (utils/dimensions))
      :key                 id}
-    [rn/view {:accessibility-label :crazy :margin-top 200}
-     [rn/text "CRAZY"]]]])
+    [messages.navigation/f-view]]])
 
 ;; Currently chat screen and events both depends on current-chat-id, once we remove
 ;; use of current-chat-id from view then we can keep last chat loaded, for fast navigation

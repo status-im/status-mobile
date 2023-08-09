@@ -32,16 +32,17 @@
         photo-path               (when-not (empty? (:images contact))
                                    (rf/sub [:chats/photo-path chat-id]))]
     [rn/view {:flex-direction :row :flex 1 :margin-top 50}
+     [rn/view {:accessibility-label :crazy}
+      [rn/text "CRAZY"]]
      [rn/touchable-opacity
       {:on-press            #(do
                                (when config/shell-navigation-disabled?
                                  (rf/dispatch [:chat/close]))
                                (rf/dispatch [:navigate-back]))
-       :accessible true
-       :accessibility-label :back-button
        :style               (style/button-container {:margin-left 20})}
-      [quo/icon :i/arrow-left
-       {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+      [rn/view {:accessibility-label :back-button}
+       [quo/icon :i/arrow-left
+        {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
      [rn/view
       [rn/view {:style style/header-content-container}
        (when-not group-chat
