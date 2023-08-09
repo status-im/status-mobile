@@ -75,7 +75,8 @@
                               (rf/dispatch [:dismiss-keyboard])
                               (rf/dispatch [:show-bottom-sheet
                                             {:content (fn [] [actions/chat-actions chat true])}]))}
-      [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]))
+      [rn/view {:accessibility-label :options-button}
+       [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]]))
 
 (defn- internal-navigation-view
   [params]
