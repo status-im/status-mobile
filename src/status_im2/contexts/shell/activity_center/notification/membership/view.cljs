@@ -66,9 +66,11 @@
         :unread?             (not read)
         :context             [[common/user-avatar-tag author]
                               (i18n/label :t/added-you-to)
-                              [quo/group-avatar-tag chat-name
-                               {:size                :x-small
-                                :customization-color :purple}]]
+                              [quo/context-tag
+                               {:type       :group
+                                :blur?      true
+                                :size       24
+                                :group-name chat-name}]]
         :items               (when-not (or accepted dismissed)
                                [{:type                :button
                                  :subtype             :positive
@@ -83,5 +85,4 @@
                                  :label               (i18n/label :t/decline)
                                  :accessibility-label :decline-group-chat-invitation
                                  :on-press            #(rf/dispatch
-                                                        [:activity-center.notifications/dismiss
-                                                         id])}])}]]]))
+                                                        [:activity-center.notifications/dismiss id])}])}]]]))

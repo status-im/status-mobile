@@ -37,11 +37,12 @@
               :weight              :semi-bold
               :size                :heading-1}
              (request-to-join-text open?)]]
-           [quo/context-tag
-            {:style
-             {:margin-right :auto
-              :margin-top   8}}
-            (:thumbnail images) name]
+           [rn/view {:style {:margin-right :auto :margin-top 8}}
+            [quo/context-tag
+             {:type           :community
+              :size           24
+              :community-logo (:thumbnail images)
+              :community-name name}]]
            [quo/text
             {:style               {:margin-top 24}
              :accessibility-label :communities-rules-title

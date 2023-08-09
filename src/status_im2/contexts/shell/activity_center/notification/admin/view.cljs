@@ -69,8 +69,11 @@
        :context             [[common/user-avatar-tag author]
                              (i18n/label :t/wants-to-join)
                              [quo/context-tag
-                              common/tag-params
-                              community-image community-name]]
+                              {:type           :community
+                               :size           24
+                               :blur?          true
+                               :community-logo community-image
+                               :community-name community-name}]]
        :items               (case membership-status
                               constants/activity-center-membership-status-accepted
                               [{:type    :status

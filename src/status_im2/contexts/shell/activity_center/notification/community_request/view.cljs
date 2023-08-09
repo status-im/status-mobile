@@ -22,8 +22,12 @@
   [community membership-status]
   (let [community-name        (:name community)
         community-image       (get-in community [:images :thumbnail :uri])
-        community-context-tag [quo/context-tag common/tag-params community-image
-                               community-name]]
+        community-context-tag [quo/context-tag
+                               {:type           :community
+                                :size           24
+                                :blur?          true
+                                :community-logo community-image
+                                :community-name community-name}]]
     (cond
       (= membership-status constants/activity-center-membership-status-idle)
       {:header-text (i18n/label :t/community-request-not-accepted)

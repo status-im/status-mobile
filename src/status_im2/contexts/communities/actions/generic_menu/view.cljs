@@ -14,7 +14,10 @@
         :weight              :semi-bold
         :size                :heading-1}
        title]]
-     [quo/context-tag
-      {:style style/context-tag}
-      (:thumbnail images) name]
+     [rn/view {:style style/community-tag}
+      [quo/context-tag
+       {:type           :community
+        :size           24
+        :community-logo (:thumbnail images)
+        :community-name name}]]
      children]))

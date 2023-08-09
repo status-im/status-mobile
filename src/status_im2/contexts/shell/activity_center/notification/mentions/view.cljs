@@ -59,9 +59,19 @@
         :timestamp           (datetime/timestamp->relative timestamp)
         :unread?             (not read)
         :context             [[common/user-avatar-tag author]
-                              [quo/text {:style style/tag-text} (string/lower-case (i18n/label :t/on))]
+                              [quo/text {:style style/tag-text}
+                               (string/lower-case (i18n/label :t/on))]
                               (if community-chat?
-                                [quo/context-tag common/tag-params community-image community-name
-                                 chat-name]
-                                [quo/group-avatar-tag chat-name common/tag-params])]
+                                [quo/context-tag
+                                 {:type           :channel
+                                  :blur?          true
+                                  :size           24
+                                  :community-logo community-image
+                                  :community-name community-name
+                                  :channel-name   chat-name}]
+                                [quo/context-tag
+                                 {:type       :group
+                                  :group-name chat-name
+                                  :blur?      true
+                                  :size       24}])]
         :message             {:body (message-body message)}}]]]))
