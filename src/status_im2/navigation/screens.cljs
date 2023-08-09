@@ -1,12 +1,14 @@
 (ns status-im2.navigation.screens
   (:require
     [status-im2.config :as config]
-    [status-im2.contexts.shell.activity-center.view :as activity-center]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
+    [status-im2.contexts.chat.group-details.view :as group-details]
     [status-im2.contexts.chat.lightbox.view :as lightbox]
     [status-im2.contexts.chat.messages.view :as chat]
+    [status-im2.contexts.chat.new-chat.view :as new-chat]
     [status-im2.contexts.chat.photo-selector.view :as photo-selector]
     [status-im2.contexts.chat.camera.view :as camera-screen]
+    [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
     [status-im2.contexts.onboarding.intro.view :as intro]
@@ -20,23 +22,27 @@
     [status-im2.contexts.onboarding.sign-in.view :as sign-in]
     [status-im2.contexts.onboarding.generating-keys.view :as generating-keys]
     [status-im2.contexts.onboarding.enter-seed-phrase.view :as enter-seed-phrase]
-    [status-im2.contexts.profile.profiles.view :as profiles]
-    [status-im2.contexts.quo-preview.main :as quo.preview]
-    [status-im2.contexts.shell.jump-to.view :as shell]
-    [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
-    [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
-    [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
-    [status-im2.contexts.syncing.find-sync-code.view :as find-sync-code]
-    [status-im2.navigation.options :as options]
-    [status-im2.contexts.chat.group-details.view :as group-details]
-    [status-im.ui.screens.screens :as old-screens]
-    [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
-    [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
-    [status-im2.contexts.shell.share.view :as share]
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.syncing.progress.view :as syncing-devices]
-    [status-im2.contexts.chat.new-chat.view :as new-chat]
-    [status-im2.navigation.transitions :as transitions]))
+    [status-im2.navigation.transitions :as transitions]
+    [status-im2.contexts.profile.profiles.view :as profiles]
+    [status-im2.contexts.quo-preview.main :as quo.preview]
+    [status-im2.contexts.shell.activity-center.view :as activity-center]
+    [status-im2.contexts.shell.jump-to.view :as shell]
+    [status-im2.contexts.shell.share.view :as share]
+    [status-im2.contexts.syncing.how-to-pair.view :as how-to-pair]
+    [status-im2.contexts.syncing.find-sync-code.view :as find-sync-code]
+    [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
+    [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
+    [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
+    [status-im2.contexts.wallet.account.view :as wallet-accounts]
+    [status-im2.contexts.wallet.collectible.view :as wallet-collectibles]
+    [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
+    [status-im2.contexts.wallet.saved-address.view :as wallet-saved-address]
+    [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
+    [status-im2.contexts.wallet.send.view :as wallet-send]
+    [status-im.ui.screens.screens :as old-screens]
+    [status-im2.navigation.options :as options]))
 
 (defn screens
   []
@@ -232,7 +238,25 @@
      :options   {:theme      :dark
                  :layout     options/onboarding-transparent-layout
                  :animations transitions/push-animations-for-transparent-background}
-     :component welcome/view}]
+     :component welcome/view}
+
+    {:name      :wallet-accounts
+     :component wallet-accounts/view}
+
+    {:name      :wallet-collectibles
+     :component wallet-collectibles/view}
+
+    {:name      :wallet-create-account
+     :component wallet-create-account/view}
+
+    {:name      :wallet-saved-address
+     :component wallet-saved-address/view}
+
+    {:name      :wallet-saved-addresses
+     :component wallet-saved-addresses/view}
+
+    {:name      :wallet-send
+     :component wallet-send/view}]
 
    (when config/quo-preview-enabled?
      quo.preview/screens)

@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.jump-to.components.home-stack.view
   (:require [react-native.reanimated :as reanimated]
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
+            [status-im2.contexts.wallet.home.view :as wallet-new]
             [status-im2.contexts.chat.home.view :as chat]
             [status-im2.contexts.shell.jump-to.state :as state]
             [status-im2.contexts.shell.jump-to.utils :as utils]
@@ -29,7 +30,10 @@
    (case stack-id
      :communities-stack [:f> communities/home]
      :chats-stack       [:f> chat/home]
-     :wallet-stack      [wallet.accounts/accounts-overview-old]
+     ;NOTE temporary while we support old wallet
+     :wallet-stack      (if @state/load-new-wallet?
+                          [wallet-new/view]
+                          [wallet.accounts/accounts-overview-old])
      :browser-stack     [browser.stack/browser-stack]
      [:<>])])
 
