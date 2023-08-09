@@ -422,12 +422,12 @@
    :wallet            [{:name      :account-card
                         :options   {:topBar {:visible true}}
                         :component account-card/preview-account-card}
-                       {:name      :network-amount
-                        :options   {:topBar {:visible true}}
-                        :component network-amount/preview}
                        {:name      :account-overview
                         :options   {:topBar {:visible true}}
                         :component account-overview/preview-account-overview}
+                       {:name      :network-amount
+                        :options   {:topBar {:visible true}}
+                        :component network-amount/preview}
                        {:name      :network-bridge
                         :options   {:topBar {:visible true}}
                         :component network-bridge/preview}
