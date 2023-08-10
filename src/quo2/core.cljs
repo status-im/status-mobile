@@ -219,17 +219,13 @@
 (def keyboard-key quo2.components.numbered-keyboard.keyboard-key.view/view)
 (def numbered-keyboard quo2.components.numbered-keyboard.numbered-keyboard.view/view)
 
-<<<<<<< HEAD
 ;;;; Links
 (def link-preview quo2.components.links.link-preview.view/view)
 (def url-preview quo2.components.links.url-preview.view/view)
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 
 ;;;; List items
-=======
-;;;; LIST ITEMS
 (def account-list-card quo2.components.list-items.account-list-card.view/view)
->>>>>>> 7f810b81c (feat: quo2 account-list-card)
 (def channel-list-item quo2.components.list-items.channel/list-item)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
