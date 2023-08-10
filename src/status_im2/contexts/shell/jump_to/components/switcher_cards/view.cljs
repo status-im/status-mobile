@@ -38,14 +38,14 @@
    (case type
      shell.constants/community-card
      (case (:type community-info)
-       :pending [quo/status-tag
-                 {:status {:type :pending}
-                  :label  (i18n/label :t/pending)
-                  :size   :small}]
-       :kicked [quo/status-tag
-                {:status {:type :negative}
-                 :size   :small
-                 :label  (i18n/label :t/kicked)}]
+       :pending             [quo/status-tag
+                             {:status {:type :pending}
+                              :label  (i18n/label :t/pending)
+                              :size   :small}]
+       :kicked              [quo/status-tag
+                             {:status {:type :negative}
+                              :size   :small
+                              :label  (i18n/label :t/kicked)}]
        (:count :permission) [:<>] ;; Add components for these cases
        nil)
 
