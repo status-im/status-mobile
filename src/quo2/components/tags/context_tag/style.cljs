@@ -26,7 +26,10 @@
                            (not (#{:account :collectible} type)) 16
                            (= size 24)                           8
                            :else                                 10)
-        border-color     (colors/custom-color-by-theme customization-color 50 60 nil nil theme)]
+        border-color     (colors/theme-colors
+                          (colors/custom-color customization-color 50)
+                          (colors/custom-color customization-color 60)
+                          theme)]
     (cond-> {:padding          2
              :flex-direction   :row
              :align-items      :center
