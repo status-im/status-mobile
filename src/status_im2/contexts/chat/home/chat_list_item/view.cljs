@@ -206,7 +206,7 @@
        {:full-name       full-name
         :size            :small
         :online?         online?
-        :muted?          muted?
+        :ring?           (when muted? false)
         :profile-picture photo-path}])
     [quo/group-avatar
      {:customization-color color

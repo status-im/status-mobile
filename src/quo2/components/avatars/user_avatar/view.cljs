@@ -50,7 +50,7 @@
   the reason we use the `profile-picture-fn` here is to separate
   logic (pubkey, key-uid... in subs) and style (color, size... in this component)"
   [{:keys [full-name size profile-picture customization-color static?
-           status-indicator? online? ring? muted? theme]
+           status-indicator? online? ring? theme]
     :or   {size                :big
            status-indicator?   true
            online?             true
@@ -96,7 +96,7 @@
                        :background-color (style/customization-color customization-color theme)
                        :color            (:color style/initials-avatar-text)
                        :size             (:width outer-styles)
-                       :ring?            (if muted? false ring?)})}
+                       :ring?            ring?})}
                (:uri profile-picture)
                profile-picture
                :else {:uri profile-picture})}])]))
