@@ -124,9 +124,9 @@
 
     shell.constants/private-group-chat-card
     [quo/group-avatar
-     {:color          customization-color
-      :size           :large
-      :override-theme :dark}]
+     {:customization-color customization-color
+      :size                :large
+      :override-theme      :dark}]
 
     (shell.constants/community-card
      shell.constants/community-channel-card)

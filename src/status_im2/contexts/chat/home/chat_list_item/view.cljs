@@ -210,8 +210,8 @@
         image-key  photo-path
         :muted?    muted?}])
     [quo/group-avatar
-     {:color color
-      :size  :medium}]))
+     {:customization-color color
+      :size                :small}]))
 
 (defn notification
   [{:keys [muted group-chat unviewed-messages-count unviewed-mentions-count]}]

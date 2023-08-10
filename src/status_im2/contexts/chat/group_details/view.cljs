@@ -168,8 +168,8 @@
                :margin-top         24
                :padding-horizontal 20}}
       [quo/group-avatar
-       {:color color
-        :size  :medium}]
+       {:customization-color color
+        :size                :small}]
       [quo/text
        {:weight :semi-bold
         :size   :heading-1

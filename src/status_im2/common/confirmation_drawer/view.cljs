@@ -10,8 +10,8 @@
   [group-chat color display-name photo-path]
   (if group-chat
     [quo/group-avatar
-     {:color color
-      :size  :small}]
+     {:customization-color color
+      :size                :x-small}]
     [quo/user-avatar
      {:full-name        display-name
       :profile-picture  photo-path

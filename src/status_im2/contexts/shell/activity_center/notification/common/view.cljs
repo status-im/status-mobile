@@ -10,7 +10,7 @@
 
 (def tag-params
   {:size                   :small
-   :color                  colors/primary-50
+   :customization-color    :blue
    :style                  style/user-avatar-tag
    :text-style             style/user-avatar-tag-text
    :no-avatar-placeholder? true})
