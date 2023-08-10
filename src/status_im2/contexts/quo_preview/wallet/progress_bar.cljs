@@ -10,7 +10,7 @@
   [{:label "Width"
     :key   :width
     :type  :text}
-    {:label "Height"
+   {:label "Height"
     :key   :height
     :type  :text}
    {:label   "Network State"
@@ -27,9 +27,9 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:width               "80"
-                             :height               "120"
-                             :network-state        "pending"})]
+  (let [state (reagent/atom {:width         "80"
+                             :height        "120"
+                             :network-state "pending"})]
     (fn []
       [rn/view
        {:margin-bottom 50
@@ -38,7 +38,7 @@
        [rn/view
         {:padding-vertical 60
          :align-items      :center}
-        [quo/progress-bar @state] ]])))
+        [quo/progress-bar @state]]])))
 
 (defn preview
   []

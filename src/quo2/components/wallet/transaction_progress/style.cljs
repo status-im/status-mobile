@@ -20,13 +20,13 @@
   {:align-items        :center
    :flex-direction     :row
    :padding-horizontal 12
-   :padding-top 8
-   :padding-bottom   5})
+   :padding-top        8
+   :padding-bottom     5})
 
 (def item-container
-  {:align-items        :center
-   :flex-direction     :row
-   :padding-top   7})
+  {:align-items    :center
+   :flex-direction :row
+   :padding-top    7})
 
 (def progress-box-container
   {:align-items        :center
@@ -36,12 +36,12 @@
    :flex-wrap          "wrap"})
 
 (def progress-container
-  {:flex-direction   :row
-   :border-top-width 1
+  {:flex-direction     :row
+   :border-top-width   1
    :padding-horizontal 12
-   :border-color     colors/neutral-5
-   :padding-top      8
-   :padding-bottom      4})
+   :border-color       colors/neutral-5
+   :padding-top        8
+   :padding-bottom     4})
 
 (def inner-container
   {:flex-direction :row})
@@ -71,12 +71,10 @@
    :margin-vertical   2})
 
 (def progress-box-arbitrum-abs
-  {:position         :absolute
-   :border-radius    3
-   :border-color     colors/neutral-80-opa-5
-   :top              0
-   :bottom           0
-   :left             0
-   :right            0
-   :background-color colors/white
-   })
+  {:position      :absolute
+   :border-radius 3
+   :border-color  colors/neutral-80-opa-5
+   :top           0
+   :bottom        0
+   :left          0
+   :right         0})

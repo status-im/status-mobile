@@ -44,93 +44,86 @@
 (def app-state (reagent/atom {:counter 0}))
 (def interval-id (reagent/atom nil)) ; To store the interval ID
 
-(defn stop-interval []
+(defn stop-interval
+  []
   (when @interval-id
-  (println @interval-id "stop-interval")
     (js/clearInterval @interval-id)
     (reset! interval-id nil))) ; Clear the interval ID
 
-(defn clear-counter []
-(swap! app-state assoc :counter 0))
+(defn clear-counter
+  []
+  (swap! app-state assoc :counter 0))
 
-(defn update-counter [networkState]
+(defn update-counter
+  [networkState]
   (let [new-counter-value (-> @app-state :counter inc)]
-;; (println new-counter-value "new-counter-value")
-  (if (or (and (= networkState "pending") (> new-counter-value 1) ) 
-      (and (= networkState "sending") (> new-counter-value 2) )
-      (and (= networkState "confirmed") (> new-counter-value 4) )
-      (and (= networkState "finalising") (> new-counter-value 18) )
-      (and (= networkState "finalised") (> new-counter-value total-box) )
-      (and (= networkState "error") (> new-counter-value 2) ) )
-      (stop-interval)      
-    (swap! app-state assoc :counter new-counter-value))))
+    (if (or (and (= networkState "pending") (> new-counter-value 1))
+            (and (= networkState "sending") (> new-counter-value 2))
+            (and (= networkState "confirmed") (> new-counter-value 4))
+            (and (= networkState "finalising") (> new-counter-value 18))
+            (and (= networkState "finalised") (> new-counter-value total-box))
+            (and (= networkState "error") (> new-counter-value 2)))
+      (stop-interval)
+      (swap! app-state assoc :counter new-counter-value))))
 
-(defn start-interval [networkState]
-(println "start-interval" networkState)
+(defn start-interval
+  [networkState]
   (reset! interval-id
-          (js/setInterval
-            (fn []
-              (update-counter networkState))
-            50)
-            )) ; Interval of 1000ms (1 second)
+    (js/setInterval
+     (fn []
+       (update-counter networkState))
+     50))) ; Interval of 50ms
 
-(defn box [blue index]
-;; (println blue "blue" index)
-  [rn/view {
-    :key index
-    :style {:width 8
-                     :height 12
-                     :background-color (if (> blue index) "blue" "grey")
-                     :border-width      1
-                     :margin   2}}])
-
-(defn calculate-box-state [networkState counter index]
+(defn calculate-box-state
+  [networkState counter index]
   (cond
-    (and (= networkState "sending") (>= counter index) (< index 3))      "confirmed"
-    (and (= networkState "confirmed") (>= counter index) (< index 5))      "confirmed"
-    (and (= networkState "finalising") (>= counter index) (< index 5))      "confirmed"
-    (and (= networkState "finalising") (>= counter index) (> index 4) (< index 20))      "finalised"
-    (and (= networkState "finalised") (>= counter index) (< index 5))      "confirmed"
-    (and (= networkState "finalised") (>= counter index) (> index 4))      "finalised"
-    (and (= networkState "error") (>= counter index) (< index 2))      "error"
-    :else           "pending"))
+    (and (= networkState "sending") (>= counter index) (< index 3))                 "confirmed"
+    (and (= networkState "confirmed") (>= counter index) (< index 5))               "confirmed"
+    (and (= networkState "finalising") (>= counter index) (< index 5))              "confirmed"
+    (and (= networkState "finalising") (>= counter index) (> index 4) (< index 20)) "finalised"
+    (and (= networkState "finalised") (>= counter index) (< index 5))               "confirmed"
+    (and (= networkState "finalised") (>= counter index) (> index 4))               "finalised"
+    (and (= networkState "error") (>= counter index) (< index 2))                   "error"
+    :else                                                                           "pending"))
 
 (defn progress-boxes
-  [networkState ]
+  [networkState]
   [rn/view
    {:style style/progress-box-container}
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
-        [progress-box/progress-bar {:network-state (calculate-box-state networkState (@app-state :counter) n)
-                                    :width "8"
-                                    :height "12"
-                                    :marginHorizontal 2
-                                    :key n
-                                    }])))])
+              [progress-box/progress-bar
+               {:network-state    (calculate-box-state networkState (@app-state :counter) n)
+                :width            "8"
+                :height           "12"
+                :marginHorizontal 2
+                :key              n
+               }])))])
 
-(defn calculate-box-state-arbitrum [networkState]
+(defn calculate-box-state-arbitrum
+  [networkState]
   (cond
-    (= networkState "pending")      "pending"
-    (= networkState "error")      "error"
-    :else           "confirmed"))
+    (= networkState "pending") "pending"
+    (= networkState "error")   "error"
+    :else                      "confirmed"))
 
-(defn calculate-box-width [showHalf]
-(cond
+(defn calculate-box-width
+  [showHalf]
+  (cond
     (and showHalf (< (@app-state :counter) 30)) (- total-box (@app-state :counter))
-    showHalf 30
-    (< (@app-state :counter) total-box) (- total-box (@app-state :counter))
-    :else           0))
+    showHalf                                    30
+    (< (@app-state :counter) total-box)         (- total-box (@app-state :counter))
+    :else                                       0))
 
 (defn progress-boxes-arbitrum
   [networkState]
-    ;; (println (@app-state :counter) "RightSide")
   [rn/view
    {:style style/progress-box-container}
-   [progress-box/progress-bar {:network-state (calculate-box-state-arbitrum networkState)
-                                    :width "8"
-                                    :height "12"
-                                    :marginHorizontal 2
-                                    }]
+   [progress-box/progress-bar
+    {:network-state    (calculate-box-state-arbitrum networkState)
+     :width            "8"
+     :height           "12"
+     :marginHorizontal 2}]
    [rn/view
     {:style        style/progress-box-arbitrum
      :border-color (get-colors "neutral-10")}
@@ -149,10 +142,9 @@
                                                              :background-color
                                                              (get-colors "neutral-5")))]
         box-style)
-        :align-self "flex-end"
+      :align-self "flex-end"
       :border-color
-      (get-colors "neutral-10"))]
-      ]])
+      (get-colors "neutral-10"))]]])
 
 (defn render-text
   [title override-theme &
@@ -183,12 +175,17 @@
 (defn steps-text
   [networkType networkState]
   (cond
-    (and (= networkType "mainnet") (not= networkState "finalised") (not= networkState "error")) (str (if (< (@app-state :counter) 4)
-       (@app-state :counter)
-       "4") "/4")
-    (= networkState "finalised")                                          "Epoch 181,329"
-    (and (= networkType "mainnet") (= networkState "error"))              "0/4"
-    (and (= networkType "optimism/arbitrum") (= networkState "finalising")) "1/1" 
+    (and (= networkType "mainnet")
+         (not= networkState "finalised")
+         (not= networkState "error"))   (str (if (< (@app-state :counter) 4)
+                                               (@app-state :counter)
+                                               "4")
+                                             "/4")
+    (= networkState "finalised")        "Epoch 181,329"
+    (and (= networkType "mainnet")
+         (= networkState "error"))      "0/4"
+    (and (= networkType "optimism/arbitrum")
+         (= networkState "finalising")) "1/1"
     (= networkType "optimism/arbitrum") "0/1"))
 
 (defn get-status-icon
@@ -210,89 +207,89 @@
            networkState
            container-style
            override-theme]}]
-(let [count (reagent/atom 0)]  
-  (rn/use-effect
-  (fn []
-    (start-interval networkState)
-    (clear-counter)  
-      (fn []
-      (stop-interval))) 
-  [networkState])
-  [rn/view
-   [rn/touchable-without-feedback
-    {:on-press            on-press
-     :accessibility-label accessibility-label}
+  (let [count (reagent/atom 0)]
+    (rn/use-effect
+     (fn []
+       (start-interval networkState)
+       (clear-counter)
+       (fn []
+         (stop-interval)))
+     [networkState])
     [rn/view
-     {:style style/box-style}
-     [rn/view
-      {:style style/title-item-container}
+     [rn/touchable-without-feedback
+      {:on-press            on-press
+       :accessibility-label accessibility-label}
       [rn/view
-       {:style style/inner-container}
-       [load-icon "placeholder" (get-colors "neutral-50")]
+       {:style style/box-style}
        [rn/view
-        {:style style/title-container}
-        [render-text title override-theme]]
-       (if (= networkState "error")
-         [button/button
-          {:size   32
-           :before :i/refresh
-           :type   :primary} "Retry"])]]
-     [rn/view
-      {:style style/padding-row}
-      [quo2/context-tag {:blur? [false] }
-       (resources/get-mock-image :collectible)
-       "Doodle #120"]]
-     (if (= networkType "mainnet")
-       [rn/view
-        {:style style/item-container}
+        {:style style/title-item-container}
         [rn/view
-         {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
-         (let [[status-icon color] (get-status-icon networkType networkState)]
-           [load-icon status-icon color])
+         {:style style/inner-container}
+         [load-icon "placeholder" (get-colors "neutral-50")]
          [rn/view
           {:style style/title-container}
-          [render-text (str (network-type-text networkType networkState) " Mainnet") override-theme
-           :typography
-           :typography/font-regular :weight :regular :size :paragraph-2]]
-         [rn/view
-          [render-text (steps-text networkType networkState) override-theme :typography
-           :typography/font-regular :weight :regular :size :paragraph-2 :style
-           {:color (get-colors "neutral-50")}]]]])
-     (if (= networkType "optimism/arbitrum")
+          [render-text title override-theme]]
+         (if (= networkState "error")
+           [button/button
+            {:size   32
+             :before :i/refresh
+             :type   :primary} "Retry"])]]
        [rn/view
-        {:style style/item-container}
-        [rn/view
-         {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
-         (let [[status-icon color] (get-status-icon networkType networkState)]
-           [load-icon status-icon color])
+        {:style style/padding-row}
+        [quo2/context-tag {:blur? [false]}
+         (resources/get-mock-image :collectible)
+         "Doodle #120"]]
+       (if (= networkType "mainnet")
          [rn/view
-          {:style style/title-container}
-          [render-text (str (network-type-text networkType networkState) " Arbitrum") override-theme
-           :typography
-           :typography/font-regular :weight :regular :size :paragraph-2]]
+          {:style style/item-container}
+          [rn/view
+           {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
+           (let [[status-icon color] (get-status-icon networkType networkState)]
+             [load-icon status-icon color])
+           [rn/view
+            {:style style/title-container}
+            [render-text (str (network-type-text networkType networkState) " Mainnet") override-theme
+             :typography
+             :typography/font-regular :weight :regular :size :paragraph-2]]
+           [rn/view
+            [render-text (steps-text networkType networkState) override-theme :typography
+             :typography/font-regular :weight :regular :size :paragraph-2 :style
+             {:color (get-colors "neutral-50")}]]]])
+       (if (= networkType "optimism/arbitrum")
          [rn/view
-          [render-text (steps-text networkType networkState) override-theme :typography
-           :typography/font-regular :weight :regular :size :paragraph-2 :style
-           {:color (get-colors "neutral-50")}]]]])
-     (if (= networkType "optimism/arbitrum")
-       [progress-boxes-arbitrum networkState])
-     (if (= networkType "optimism/arbitrum")
-       [rn/view
-        {:style style/item-container}
-        [rn/view
-         {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
-         (let [[status-icon color] (get-status-icon networkType networkState)]
-           [load-icon status-icon color])
+          {:style style/item-container}
+          [rn/view
+           {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
+           (let [[status-icon color] (get-status-icon networkType networkState)]
+             [load-icon status-icon color])
+           [rn/view
+            {:style style/title-container}
+            [render-text (str (network-type-text networkType networkState) " Arbitrum") override-theme
+             :typography
+             :typography/font-regular :weight :regular :size :paragraph-2]]
+           [rn/view
+            [render-text (steps-text networkType networkState) override-theme :typography
+             :typography/font-regular :weight :regular :size :paragraph-2 :style
+             {:color (get-colors "neutral-50")}]]]])
+       (if (= networkType "optimism/arbitrum")
+         [progress-boxes-arbitrum networkState])
+       (if (= networkType "optimism/arbitrum")
          [rn/view
-          {:style style/title-container}
-          [render-text (str (network-type-text networkType networkState) " Optimism") override-theme
-           :typography
-           :typography/font-regular :weight :regular :size :paragraph-2]]
-         [rn/view
-          [render-text (steps-text networkType networkState) override-theme :typography
-           :typography/font-regular :weight :regular :size :paragraph-2 :style
-           {:color (get-colors "neutral-50")}]]]])
-     (if (= networkType "optimism/arbitrum")
-       [progress-boxes-arbitrum networkState])
-     (if (= networkType "mainnet")
+          {:style style/item-container}
+          [rn/view
+           {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
+           (let [[status-icon color] (get-status-icon networkType networkState)]
+             [load-icon status-icon color])
+           [rn/view
+            {:style style/title-container}
+            [render-text (str (network-type-text networkType networkState) " Optimism") override-theme
+             :typography
+             :typography/font-regular :weight :regular :size :paragraph-2]]
+           [rn/view
+            [render-text (steps-text networkType networkState) override-theme :typography
+             :typography/font-regular :weight :regular :size :paragraph-2 :style
+             {:color (get-colors "neutral-50")}]]]])
+       (if (= networkType "optimism/arbitrum")
+         [progress-boxes-arbitrum networkState])
+       (if (= networkType "mainnet")
          [progress-boxes networkState])]]]))
