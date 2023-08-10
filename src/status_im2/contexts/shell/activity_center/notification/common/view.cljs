@@ -1,8 +1,8 @@
 (ns status-im2.contexts.shell.activity-center.notification.common.view
   (:require [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
-            [quo2.foundations.colors :as colors]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im2.contexts.shell.activity-center.notification.common.style :as style]
             [utils.i18n :as i18n]
@@ -22,7 +22,8 @@
      {:color      :purple
       :size       :small
       :style      style/user-avatar-tag
-      :text-style style/user-avatar-tag-text}
+      :text-style style/user-avatar-tag-text
+      :ring?      false}
      primary-name
      (multiaccounts/displayed-photo contact)]))
 

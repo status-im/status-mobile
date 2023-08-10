@@ -40,7 +40,7 @@
     (trim-public-key public-key)]])
 
 (defn context-tag
-  [{:keys [text-style blur? no-avatar-placeholder? text-container-style ellipsize-text?]
+  [{:keys [text-style blur? no-avatar-placeholder? text-container-style ellipsize-text? ring?]
     :as   props}
    photo
    name
@@ -60,6 +60,7 @@
         {:full-name         name
          :profile-picture   photo
          :size              avatar-size
+         :ring?             ring?
          :status-indicator? false}])
      [rn/view {:style (or text-container-style style/context-tag-text-container)}
       (if ellipsize-text?
