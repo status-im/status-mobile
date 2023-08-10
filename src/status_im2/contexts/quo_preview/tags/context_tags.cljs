@@ -140,9 +140,9 @@
                              (:channel-name @state)]
 
               :group-avatar [quo2/group-avatar-tag (:label @state)
-                             {:blur? (:blur? @state)
-                              :size  :small
-                              :color :purple}]
+                             {:blur?               (:blur? @state)
+                              :size                :x-small
+                              :customization-color :purple}]
 
               :public-key   [quo2/public-key-tag
                              {:blur? (:blur? @state)
