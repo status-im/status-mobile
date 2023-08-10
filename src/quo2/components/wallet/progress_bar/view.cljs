@@ -33,7 +33,7 @@
 
 (defn progress-bar
   [{:keys [network-state width height marginHorizontal]}]
-  ;; (println network-state "network-state in Box")
+  (println network-state "network-state in Box")
   [rn/view
     {:accessibility-label :progress-bar
            :background-color    (colors/theme-colors colors/white colors/neutral-95)

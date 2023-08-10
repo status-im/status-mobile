@@ -41,47 +41,6 @@
 
 (def total-box 85)
 
-(defn progress-boxes-arbitrum
-  [networkState]
-  [rn/view
-   {:style style/progress-box-container}
-   [rn/view
-    (assoc (let [box-style (cond
-                             (or (= networkState "confirmed")
-                                 (= networkState "finalising")
-                                 (= networkState "finalised")) (assoc {:style style/progress-box}
-                                                                      :background-color
-                                                                      (get-colors "success-50"))
-                             (= networkState "error")          (assoc {:style style/progress-box}
-                                                                      :background-color
-                                                                      (get-colors "danger-50"))
-                             :else                             (assoc {:style style/progress-box}
-                                                                      :background-color
-                                                                      (get-colors "neutral-5")))]
-             box-style)
-           :border-color
-           (get-colors "neutral-10"))]
-   [rn/view
-    {:style        style/progress-box-arbitrum
-     :border-color (get-colors "neutral-10")}
-    [rn/view
-     (assoc
-      (let [box-style (cond
-                        (= networkState "finalising") (assoc {:style style/progress-box-arbitrum-abs}
-                                                             :right "70%"
-                                                             :background-color
-                                                             (colors/custom-color-by-theme :blue 50 60))
-                        (= networkState "finalised")  (assoc {:style style/progress-box-arbitrum-abs}
-                                                             :right 0
-                                                             :background-color
-                                                             (colors/custom-color-by-theme :blue 50 60))
-                        :else                         (assoc {:style style/progress-box-arbitrum-abs}
-                                                             :background-color
-                                                             (get-colors "neutral-5")))]
-        box-style)
-      :border-color
-      (get-colors "neutral-10"))]]])
-
 (def app-state (reagent/atom {:counter 0}))
 (def interval-id (reagent/atom nil)) ; To store the interval ID
 
@@ -96,7 +55,7 @@
 
 (defn update-counter [networkState]
   (let [new-counter-value (-> @app-state :counter inc)]
-(println new-counter-value "new-counter-value")
+;; (println new-counter-value "new-counter-value")
   (if (or (and (= networkState "pending") (> new-counter-value 1) ) 
       (and (= networkState "sending") (> new-counter-value 2) )
       (and (= networkState "confirmed") (> new-counter-value 4) )
@@ -148,6 +107,52 @@
                                     :marginHorizontal 2
                                     :key n
                                     }])))])
+
+(defn calculate-box-state-arbitrum [networkState]
+  (cond
+    (= networkState "pending")      "pending"
+    (= networkState "error")      "error"
+    :else           "confirmed"))
+
+(defn calculate-box-width [showHalf]
+(cond
+    (and showHalf (< (@app-state :counter) 30)) (- total-box (@app-state :counter))
+    showHalf 30
+    (< (@app-state :counter) total-box) (- total-box (@app-state :counter))
+    :else           0))
+
+(defn progress-boxes-arbitrum
+  [networkState]
+    ;; (println (@app-state :counter) "RightSide")
+  [rn/view
+   {:style style/progress-box-container}
+   [progress-box/progress-bar {:network-state (calculate-box-state-arbitrum networkState)
+                                    :width "8"
+                                    :height "12"
+                                    :marginHorizontal 2
+                                    }]
+   [rn/view
+    {:style        style/progress-box-arbitrum
+     :border-color (get-colors "neutral-10")}
+    [rn/view
+     (assoc
+      (let [box-style (cond
+                        (= networkState "finalising") (assoc {:style style/progress-box-arbitrum-abs}
+                                                             :right (str (calculate-box-width true) "%")
+                                                             :background-color
+                                                             (colors/custom-color-by-theme :blue 50 60))
+                        (= networkState "finalised")  (assoc {:style style/progress-box-arbitrum-abs}
+                                                             :right (str (calculate-box-width false) "%")
+                                                             :background-color
+                                                             (colors/custom-color-by-theme :blue 50 60))
+                        :else                         (assoc {:style style/progress-box-arbitrum-abs}
+                                                             :background-color
+                                                             (get-colors "neutral-5")))]
+        box-style)
+        :align-self "flex-end"
+      :border-color
+      (get-colors "neutral-10"))]
+      ]])
 
 (defn render-text
   [title override-theme &

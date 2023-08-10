@@ -61,7 +61,7 @@
   (let [state (reagent/atom {:title               "Title"
                              :accessibility-label :transaction-progress-item
                              :networkState        "pending"
-                             :networkType         "mainnet"
+                             :networkType         "optimism/arbitrum"
                              :on-press            (fn []
                                                     (js/alert "Transaction progress item pressed"))})]
     (fn []

@@ -77,5 +77,6 @@
    :top              0
    :bottom           0
    :left             0
-   :right            "100%"
-   :background-color colors/white})
+   :right            0
+   :background-color colors/white
+   })
