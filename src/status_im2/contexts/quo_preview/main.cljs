@@ -106,6 +106,7 @@
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
+    [status-im2.contexts.quo-preview.wallet.account-overview :as account-overview]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
@@ -421,6 +422,9 @@
    :wallet            [{:name      :account-card
                         :options   {:topBar {:visible true}}
                         :component account-card/preview-account-card}
+                       {:name      :account-overview
+                        :options   {:topBar {:visible true}}
+                        :component account-overview/preview-account-overview}
                        {:name      :network-amount
                         :options   {:topBar {:visible true}}
                         :component network-amount/preview}
