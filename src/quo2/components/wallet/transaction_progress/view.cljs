@@ -94,19 +94,25 @@
 (defn clear-counter []
 (swap! app-state assoc :counter 0))
 
-(defn update-counter []
+(defn update-counter [networkState]
   (let [new-counter-value (-> @app-state :counter inc)]
-  (if (> new-counter-value total-box)
+(println new-counter-value "new-counter-value")
+  (if (or (and (= networkState "pending") (> new-counter-value 1) ) 
+      (and (= networkState "sending") (> new-counter-value 2) )
+      (and (= networkState "confirmed") (> new-counter-value 4) )
+      (and (= networkState "finalising") (> new-counter-value 18) )
+      (and (= networkState "finalised") (> new-counter-value total-box) )
+      (and (= networkState "error") (> new-counter-value 2) ) )
       (stop-interval)      
     (swap! app-state assoc :counter new-counter-value))))
 
-(defn start-interval []
-(println "start-interval")
+(defn start-interval [networkState]
+(println "start-interval" networkState)
   (reset! interval-id
           (js/setInterval
             (fn []
-              (update-counter))
-            40)
+              (update-counter networkState))
+            50)
             )) ; Interval of 1000ms (1 second)
 
 (defn box [blue index]
@@ -121,13 +127,13 @@
 
 (defn calculate-box-state [networkState counter index]
   (cond
-    (and (= networkState "sending") (> counter index) (< index 3))      "confirmed"
-    (and (= networkState "confirmed") (> counter index) (< index 5))      "confirmed"
-    (and (= networkState "finalising") (> counter index) (< index 5))      "confirmed"
-    (and (= networkState "finalising") (> counter index) (> index 4) (< index 20))      "finalised"
-    (and (= networkState "finalised") (> counter index) (< index 5))      "confirmed"
-    (and (= networkState "finalised") (> counter index) (> index 4))      "finalised"
-    (and (= networkState "error") (> counter index) (< index 2))      "error"
+    (and (= networkState "sending") (>= counter index) (< index 3))      "confirmed"
+    (and (= networkState "confirmed") (>= counter index) (< index 5))      "confirmed"
+    (and (= networkState "finalising") (>= counter index) (< index 5))      "confirmed"
+    (and (= networkState "finalising") (>= counter index) (> index 4) (< index 20))      "finalised"
+    (and (= networkState "finalised") (>= counter index) (< index 5))      "confirmed"
+    (and (= networkState "finalised") (>= counter index) (> index 4))      "finalised"
+    (and (= networkState "error") (>= counter index) (< index 2))      "error"
     :else           "pending"))
 
 (defn progress-boxes
@@ -172,14 +178,13 @@
 (defn steps-text
   [networkType networkState]
   (cond
-    (and (= networkType "mainnet") (= networkState "pending"))            "0/4"
-    (and (= networkType "mainnet") (= networkState "sending"))            "2/4"
-    (and (= networkType "mainnet")
-         (or (= networkState "confirmed") (= networkState "finalising"))) "4/4"
+    (and (= networkType "mainnet") (not= networkState "finalised") (not= networkState "error")) (str (if (< (@app-state :counter) 4)
+       (@app-state :counter)
+       "4") "/4")
     (= networkState "finalised")                                          "Epoch 181,329"
-    (and (= networkType "mainnet") (= networkState "error"))              "0/4")
-    (and (= networkType "optimism/arbitrum") (= networkState "finalising"))
-    "1/1" (= networkType "optimism/arbitrum") "0/1")
+    (and (= networkType "mainnet") (= networkState "error"))              "0/4"
+    (and (= networkType "optimism/arbitrum") (= networkState "finalising")) "1/1" 
+    (= networkType "optimism/arbitrum") "0/1"))
 
 (defn get-status-icon
   [networkType networkState]
@@ -203,7 +208,7 @@
 (let [count (reagent/atom 0)]  
   (rn/use-effect
   (fn []
-    (start-interval)
+    (start-interval networkState)
     (clear-counter)  
       (fn []
       (stop-interval))) 
