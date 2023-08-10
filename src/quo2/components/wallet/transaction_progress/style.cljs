@@ -20,18 +20,19 @@
   {:align-items        :center
    :flex-direction     :row
    :padding-horizontal 12
-   :padding-vertical   13})
+   :padding-top 8
+   :padding-bottom   5})
 
 (def item-container
   {:align-items        :center
    :flex-direction     :row
-   :padding-vertical   13})
+   :padding-top   7})
 
 (def progress-box-container
   {:align-items        :center
    :padding-horizontal 12
    :flex-direction     :row
-   :padding-bottom     13
+   :padding-bottom     11
    :flex-wrap          "wrap"})
 
 (def progress-container
@@ -39,7 +40,8 @@
    :border-top-width 1
    :padding-horizontal 12
    :border-color     colors/neutral-5
-   :padding-top      12})
+   :padding-top      8
+   :padding-bottom      4})
 
 (def inner-container
   {:flex-direction :row})

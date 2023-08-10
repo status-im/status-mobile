@@ -229,7 +229,7 @@
            :type   :primary} "Retry"])]]
      [rn/view
       {:style style/padding-row}
-      [quo2/context-tag {:blur? [false]}
+      [quo2/context-tag {:blur? [false] }
        (resources/get-mock-image :collectible)
        "Doodle #120"]]
      (if (= networkType "mainnet")
