@@ -4,10 +4,19 @@
             [quo2.theme :as theme]
             [utils.number]))
 
+(defn get-border-color
+  [network-state]
+  (let [current-theme (theme/get-theme)]
+    (cond
+      (= current-theme :dark)
+      (cond
+        (= network-state "pending")  colors/neutral-70
+        :else colors/white-opa-5) ; Add an :else to handle other cases
+      :else colors/neutral-80-opa-5))) ; Add an :else to handle the case when current-theme is not :dark
+
 (defn get-bg-color
   [network-state]
   (let [current-theme (theme/get-theme)]
-    (println "Arjun in progress Bar" current-theme)
     (cond
       (= current-theme :light)
       (cond
@@ -23,19 +32,19 @@
         (= network-state "error")  colors/danger-60))))
 
 (defn progress-bar
-  [{:keys [network-state width height]}]
+  [{:keys [network-state width height count]}]
+  ;; (println network-state "network-state in Box")
   [rn/view
     {:accessibility-label :progress-bar
            :background-color    (colors/theme-colors colors/white colors/neutral-95)
-           :padding             60}
-    (println "Arjun in progress Bar" (get-bg-color network-state))
+           :padding             0}
    [rn/view
     {:style {:width            (utils.number/parse-int width)
             :height            (utils.number/parse-int height)
             :border-width      1
             :border-radius     3
-            :border-color      colors/neutral-80-opa-5
+            :border-color      (get-border-color network-state)
             :background-color  (get-bg-color network-state)
-            :margin-horizontal 2
+            :margin-horizontal count
             :margin-vertical   2}}    
     ]])

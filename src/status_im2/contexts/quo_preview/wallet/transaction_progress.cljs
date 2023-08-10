@@ -73,7 +73,7 @@
         {:padding-vertical   100
          :padding-horizontal 20
          :align-items        :center}
-        [quo/transaction-progress (get-props @state)]]])))
+        [:f> quo/transaction-progress (get-props @state)]]])))
 
 (defn preview
   []

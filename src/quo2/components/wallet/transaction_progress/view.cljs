@@ -3,11 +3,13 @@
             [quo2.core :as quo2]
             [quo2.components.selectors.selectors.view :as selectors]
             [quo2.components.buttons.button.view :as button]
+            [quo2.components.wallet.progress-bar.view :as progress-box]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.status-tags :as status-tag]
             [quo2.foundations.colors :as colors]
             [status-im2.common.resources :as resources]
             [quo2.theme :as theme]
+            [reagent.core :as reagent]
             [react-native.core :as rn]))
 
 (defn get-colors
@@ -80,29 +82,82 @@
       :border-color
       (get-colors "neutral-10"))]]])
 
+(def app-state (reagent/atom {:counter 0}))
+(def interval-id (reagent/atom nil)) ; To store the interval ID
+
+(defn stop-interval []
+  (when @interval-id
+  (println @interval-id "stop-interval")
+    (js/clearInterval @interval-id)
+    (reset! interval-id nil)
+    ;; (swap! app-state assoc :counter 0)
+     )) ; Clear the interval ID
+
+(defn clear-counter []
+(swap! app-state assoc :counter 0))
+
+(defn update-counter []
+  (let [new-counter-value (-> @app-state :counter inc)]
+  ;; (println @app-state "ravi" new-counter-value @interval-id)
+  (if (> new-counter-value total-box)
+      (stop-interval)
+      
+    (swap! app-state assoc :counter new-counter-value))
+    ))
+
+(defn delayed-update []
+(println "delayed-update")
+  (reset! interval-id
+          (js/setInterval
+            (fn []
+              (update-counter))
+            40)
+            )) ; Interval of 1000ms (1 second)
+
+(defn box [blue index]
+;; (println blue "blue" index)
+  [rn/view {
+    :key index
+    :style {:width 8
+                     :height 12
+                     :background-color (if (> blue index) "blue" "grey")
+                     :border-width      1
+                     :margin   2}}])
+
+(defn calculate-box-state [counter index]
+  (cond
+    (and (> counter index) (> index 4))      "finalised"
+    (and (> counter index) (<= index 4))      "confirmed"))
+
 (defn progress-boxes
-  [green blue red]
+  [networkState ]
   [rn/view
    {:style style/progress-box-container}
    (let [numbers (range 1 total-box)] ; Numbers from 1 to 30 (inclusive)
-     (for [n numbers]
-       [rn/view
-        (assoc (let [box-style (cond
-                                 (<= n green) (assoc {:style style/progress-box}
-                                                     :background-color
-                                                     (get-colors "success-50"))
-                                 (<= n blue)  (assoc {:style style/progress-box}
-                                                     :background-color
-                                                     (colors/custom-color-by-theme :blue 50 60))
-                                 (<= n red)   (assoc {:style style/progress-box}
-                                                     :background-color
-                                                     (get-colors "danger-50"))
-                                 :else        (assoc {:style style/progress-box}
-                                                     :background-color
-                                                     (get-colors "neutral-5")))]
-                 box-style)
-               :key          n
-               :border-color (get-colors "neutral-10"))]))])
+      ;; (println @app-state "ravi")
+      ;; [rn/view 
+      ;; {
+      ;;   :flex-direction "row"
+      ;; }
+      ;; (doall (for [i (range 20)]
+      ;; (box (@app-state :counter) i)))
+      ;; ;; (box (@app-state :counter) 0)
+      ;; ;; (box (@app-state :counter) 1)
+      ;; ;; (box (@app-state :counter) 2)
+      ;; ;; (box (@app-state :counter) 3)
+      ;; ;; ;; (box 1)
+      ;; ;; ;; (box 2)
+      ;; ]
+      ;; (println (calculate-box-state (@app-state :counter) 0) "ArjunState")
+     (doall (for [n numbers]
+        [progress-box/progress-bar {:network-state (calculate-box-state (@app-state :counter) n)
+                                    :width "8"
+                                    :height "12"
+                                    :count 2
+                                    :key          n
+                                    }]
+                ))
+                )])
 
 (defn render-text
   [title override-theme &
@@ -171,6 +226,17 @@
            networkState
            container-style
            override-theme]}]
+(let [count (reagent/atom 0)]  
+  (rn/use-effect
+  (fn []
+    (delayed-update)
+    (clear-counter)  
+      (fn []
+      (stop-interval) 
+      )  
+  ) 
+  [networkState])
+  ;; (println @app-state "arjun")
   [rn/view
    [rn/touchable-without-feedback
     {:on-press            on-press
@@ -249,4 +315,4 @@
        [progress-boxes-arbitrum networkState])
      (if (= networkType "mainnet")
        (let [[green blue red] (get-status-count networkType networkState)]
-         [progress-boxes green blue red]))]]])
+         [progress-boxes networkState]))]]]))
