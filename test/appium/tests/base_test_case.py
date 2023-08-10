@@ -70,7 +70,7 @@ def get_capabilities_sauce_lab():
     desired_caps['name'] = test_suite_data.current_test.name
     desired_caps['platformName'] = 'Android'
     desired_caps['appiumVersion'] = '1.18.1'
-    desired_caps['platformVersion'] = '10.0'
+    desired_caps['platformVersion'] = '11.0'
     desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
     desired_caps['deviceOrientation'] = "portrait"
     desired_caps['commandTimeout'] = 600
