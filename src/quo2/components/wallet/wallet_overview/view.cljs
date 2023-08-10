@@ -24,8 +24,10 @@
 (defn- network-dropdown-temporary
   []
   [:<>
-   [rn/view {:style (merge style/network-dropdown {:justify-content :center
-                                                   :align-items :center})}
+   [rn/view
+    {:style (merge style/network-dropdown
+                   {:justify-content :center
+                    :align-items     :center})}
     [text/text "[WIP]"]]])
 
 (defn- view-info-top
@@ -111,8 +113,8 @@
 (defn- view-internal
   [props]
   [rn/view {:style style/container-info}
-    [view-info-top props]
-    [view-info-bottom props]])
+   [view-info-top props]
+   [view-info-bottom props]])
 
 (def view
   (quo.theme/with-theme view-internal))

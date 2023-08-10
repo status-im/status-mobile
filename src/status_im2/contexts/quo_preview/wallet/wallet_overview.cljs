@@ -54,12 +54,13 @@
                              :currency-change   "€0.00"
                              :percentage-change "0.00%"})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!
-                                      :style {:flex 1}}
+      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
-         [preview/customizer state descriptor]
+        [rn/view {:flex 1}
+         [preview/customizer state descriptor]]
         [rn/view
          {:padding-vertical 60
+          :flex-direction   :row
           :justify-content  :center}
          [quo/wallet-overview @state]]]])))
 
@@ -67,8 +68,10 @@
   []
   [rn/view
    {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-95)}
+                                           colors/neutral-95)
+    :flex             1}
    [rn/flat-list
-    {:keyboard-should-persist-taps :always
+    {:flex                         1
+     :keyboard-should-persist-taps :always
      :header                       [cool-preview]
      :key-fn                       str}]])

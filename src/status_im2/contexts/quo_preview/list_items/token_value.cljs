@@ -52,7 +52,7 @@
        [rn/view
         [rn/view {:style {:min-height 300}} [preview/customizer state descriptor]]
         [rn/view
-         {:style {:align-items    :center
-                  :margin-top     50}}
+         {:style {:align-items :center
+                  :margin-top  50}}
          [quo/token-value @state]]]])))
 

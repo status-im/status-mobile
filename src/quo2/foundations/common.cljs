@@ -6,4 +6,5 @@
 
 (def token-label
   {:eth "Ethereum"
-   :snt "Status"})
+   :snt "Status"
+   :dai "Dai"})

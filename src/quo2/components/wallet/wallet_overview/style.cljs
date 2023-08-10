@@ -4,14 +4,13 @@
 (def container-info
   {:padding-horizontal 20
    :padding-top        12
+   :flex-grow          1
    :padding-bottom     32
-   :height 98})
+   :max-height         98})
 
 (def container-info-top
   {:flex-direction  :row
-   :flex            1
-   :justify-content :space-between
-   :align-items     :center})
+   :justify-content :space-between})
 
 (def network-dropdown
   {:border-color  colors/neutral-50
