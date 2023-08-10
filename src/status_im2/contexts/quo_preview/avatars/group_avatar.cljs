@@ -43,9 +43,7 @@
                   :flex-direction   :row
                   :justify-content  :center}}
          (let [{:keys [picture?]} @state
-               params             (cond-> @state
-                                    (picture?)
-                                    (assoc :picture avatar))]
+               params             (if picture? (assoc @state :picture avatar) @state)]
            [quo2/group-avatar params])]]])))
 
 (defn preview-group-avatar

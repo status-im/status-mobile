@@ -34,7 +34,7 @@
           {:source picture
            :style  {:width  container-size
                     :height container-size}}]
-         [icon/icon :i/group
+         [icon/icon :i/members
           {:size  icon-size
            :color colors/white-opa-70}])])))
 
