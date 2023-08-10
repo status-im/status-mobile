@@ -21,9 +21,9 @@
               {:key   :x-large
                :value "x-Large"}]}
    {:label "Avatar"
-    :key   :avatar?
+    :key   :picture?
     :type  :boolean}
-   (preview/customization-color-option)]) ; TODO: this is temporary only. Issue: https://github.com/status-im/status-mobile/issues/14566
+   (preview/customization-color-option)])
 
 (def avatar (resources/get-mock-image :user-picture-male4))
 
@@ -32,29 +32,28 @@
   (let [state (reagent/atom {:theme               :light
                              :customization-color :blue
                              :size                :small
-                             :avatar?             false})]
+                             :picture?            false})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [rn/view {:flex 1}
+       [rn/view {:style {:padding-bottom 150}}
+        [rn/view {:style {:flex 1}}
          [preview/customizer state descriptor]]
         [rn/view
-         {:padding-vertical 60
-          :flex-direction   :row
-          :justify-content  :center}
-         (let [{:keys [avatar?]} @state
-               params            (cond-> @state
-                                   (boolean avatar?)
-                                   (assoc :avatar? avatar))]
-           (println params)
+         {:style {:padding-vertical 60
+                  :flex-direction   :row
+                  :justify-content  :center}}
+         (let [{:keys [picture?]} @state
+               params             (cond-> @state
+                                    (picture?)
+                                    (assoc :picture avatar))]
            [quo2/group-avatar params])]]])))
 
 (defn preview-group-avatar
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-90)
-    :flex             1}
+   {:style {:background-color (colors/theme-colors colors/white
+                                                   colors/neutral-90)
+            :flex             1}}
    [rn/flat-list
     {:flex                         1
      :keyboard-should-persist-taps :always
