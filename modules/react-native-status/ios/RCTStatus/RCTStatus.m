@@ -312,6 +312,11 @@ RCT_EXPORT_METHOD(localPairingPreflightOutboundCheck:(RCTResponseSenderBlock)cal
     callback(@[result]);
 }
 
+RCT_EXPORT_METHOD(startSearchForLocalPairingPeers:(RCTResponseSenderBlock)callback) {
+    NSString *result = StatusgoStartSearchForLocalPairingPeers();
+    callback(@[result]);
+}
+
 RCT_EXPORT_METHOD(getConnectionStringForBootstrappingAnotherDevice:(NSString *)configJSON
                   callback:(RCTResponseSenderBlock)callback) {
 

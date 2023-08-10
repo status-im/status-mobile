@@ -41,10 +41,11 @@
       (when-let [{lower-button-text     :text
                   lower-button-on-press :on-press} lower-button]
         [button/button
-         {:style    {:margin-top 12}
-          :size     32
-          :type     :blur-bg
-          :on-press lower-button-on-press}
+         {:container-style {:margin-top 12}
+          :size            32
+          :type            :grey
+          :background      :blur
+          :on-press        lower-button-on-press}
          lower-button-text])])])
 
 (def empty-state (theme/with-theme empty-state-internal))

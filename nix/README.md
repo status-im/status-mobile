@@ -8,27 +8,27 @@ The main config file is [`nix/nix.conf`](/nix/nix.conf) and its main purpose is 
 
 ## Build arguments
 
-We leverage the `config` argument of standard `nixpkgs` for our own parameterization of the builds (e.g. to pass a build number or build type).
+We leverage the environment variables for parameterization of the builds (e.g. to pass a build number or build type).
 
-Here is a sample structure of the `config` attribute set:
-
-```nix
-{
-  status-im = {
-    build-type = "pr";     # Build type (influences which .env file gets used for feature flags)
-    build-number = 9999;   # Used for versionCode and CFBundleVersion in Android and iOS respectively
-    android = {
-      gradle-opts = "";    # Gradle options passed for Android builds
-      abi-split = false;   # If APKs should be split based on architectures
-      abi-include = "x86"; # Android architectures to build for
-    };
-    status-go = {
-      src-override = "$HOME/my/source/status-go"; # local source override
-    };
-  };
-}
+Here is the list of variables you can use to override defaults:
+```shell
+# Build type (influences which .env file gets used for feature flags)
+export BUILD_TYPE="pr"
+# Used for versionCode and CFBundleVersion in Android and iOS respectively
+export BUILD_NUMBER=9999
+# Gradle options passed for Android builds
+export ANDROID_GRADLE_OPTS=""
+# If APKs should be split based on architectures
+export ANDROID_ABI_SPLIT=false
+# Android architectures to build for
+export ANDROID_ABI_INCLUDE="x86"
+# Local source override, see below
+export STATUS_GO_SRC_OVERRIDE="$HOME/my/source/status-go"
+export STATUS_GO_IPFS_GATEWAY_URL="https://ipfs.status.im/"
 ```
-You can see the defaults in [`nix/config.nix`](./config.nix).
+You can see the defaults in code:
+- [`nix/status-go/default.nix`](./status-go/default.nix)
+- [`nix/mobile/android/release.nix`](./mobile/android/release.nix)
 
 ## Shell
 

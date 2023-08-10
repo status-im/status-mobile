@@ -22,15 +22,7 @@ function append_env_export() {
   echo "export ${VAR_NAME}=\"${VAR_VALUE}\";" >> "${SECRETS_FILE_PATH}"
 }
 
-config=''
-if [[ -n "${STATUS_GO_SRC_OVERRIDE}" ]]; then
-  config+="status-im.status-go.src-override=\"${STATUS_GO_SRC_OVERRIDE}\";"
-fi
-config+="status-im.commit-hash=\"$(git rev-parse --verify HEAD)\";"
-config+="status-im.build-type=\"$(must_get_env BUILD_TYPE)\";"
-config+="status-im.build-number=\"$(must_get_env BUILD_NUMBER)\";"
-config+="status-im.android.abi-split=\"$(must_get_env ANDROID_ABI_SPLIT)\";"
-config+="status-im.android.abi-include=\"$(must_get_env ANDROID_ABI_INCLUDE)\";"
+export COMMIT_HASH="$(git rev-parse --verify HEAD)"
 nixOpts=()
 
 # We create if now so the trap knows its location
@@ -73,6 +65,5 @@ else
   nixOpts+=("--option" "build-use-sandbox" "true")
 fi
 
-nixOpts+=("--arg" "config" "{${config}}")
 
 "${GIT_ROOT}/nix/scripts/build.sh" targets.mobile.android.release "${nixOpts[@]}"

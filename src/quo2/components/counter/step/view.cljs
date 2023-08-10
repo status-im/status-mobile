@@ -6,7 +6,7 @@
     [react-native.core :as rn]
     [utils.number]))
 
-(defn step-internal
+(defn- view-internal
   [{:keys [type accessibility-label theme in-blur-view? customization-color]} value]
   (let [type  (or type :neutral)
         value (utils.number/parse-int value)
@@ -25,4 +25,4 @@
        :size   :label
        :style  {:color (style/text-color type theme)}} label]]))
 
-(def step (theme/with-theme step-internal))
+(def view (theme/with-theme view-internal))

@@ -393,6 +393,7 @@ class CommunityView(HomeView):
         self.join_button = Button(self.driver, accessibility_id="show-request-to-join-screen-button")
         self.join_community_button = Button(self.driver, accessibility_id="join-community-button")
         self.follow_button = Button(self.driver, translation_id="follow")
+        self.community_tags = BaseElement(self.driver, xpath="//*[@content-desc='chat-name-text']/../android.widget.HorizontalScrollView")
 
         #### NEW UI
         # Communities initial page
@@ -426,6 +427,9 @@ class CommunityView(HomeView):
         self.community_options_button.wait_and_click()
         self.community_info_button.wait_and_click()
         self.leave_community_button.scroll_and_click()
+
+    def get_channel_avatar(self, channel_name='general'):
+        return Button(self.driver, xpath='//*[@text="# %s"]/../*[@content-desc="channel-avatar"]' % channel_name)
 
     def copy_community_link(self):
         self.driver.info("Copy community link")

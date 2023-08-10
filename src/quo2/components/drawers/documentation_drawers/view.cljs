@@ -3,9 +3,10 @@
             [quo2.components.drawers.documentation-drawers.style :as style]
             [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
-            [react-native.gesture :as gesture]))
+            [react-native.gesture :as gesture]
+            [quo2.theme :as quo.theme]))
 
-(defn view
+(defn- view-internal
   "Options
    - `title` Title text
    - `show-button?` Show button
@@ -15,7 +16,7 @@
    - `shell?` use shell theme
    `content` Content of the drawer
    "
-  [{:keys [title show-button? on-press-button button-label button-icon shell?]} content]
+  [{:keys [title show-button? on-press-button button-label button-icon theme shell?]} content]
   [gesture/scroll-view
    {:style                             style/outer-container
     :always-bounce-vertical            false
@@ -24,18 +25,19 @@
     [text/text
      {:size                :heading-2
       :accessibility-label :documentation-drawer-title
-      :style               (style/title shell?)
+      :style               (style/title theme)
       :weight              :semi-bold}
      title]
     [rn/view {:style style/content :accessibility-label :documentation-drawer-content}
      content]
     (when show-button?
       [button/button
-       (cond-> {:size                24
-                :type                (if shell? :blur-bg-outline :outline)
-                :on-press            on-press-button
-                :accessibility-label :documentation-drawer-button
-                :after               button-icon}
-         shell? (assoc :override-theme :dark))
+       {:size                24
+        :type                :outline
+        :background          (when shell? :blur)
+        :on-press            on-press-button
+        :accessibility-label :documentation-drawer-button
+        :icon-right          button-icon}
        button-label])]])
 
+(def view (quo.theme/with-theme view-internal))

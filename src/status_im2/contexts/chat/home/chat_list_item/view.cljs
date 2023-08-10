@@ -88,6 +88,9 @@
             :dont-show    (i18n/label :t/Pinned-a-message)
             (i18n/label :t/Pinned-a-message))
 
+          constants/content-type-contact-request
+          (i18n/label :t/contact-request)
+
           constants/content-type-sticker
           (case author
             :you          (i18n/label :t/you-sent-a-sticker)
@@ -208,16 +211,44 @@
      {:color color
       :size  :medium}]))
 
+(defn notification
+  [{:keys [muted group-chat unviewed-messages-count unviewed-mentions-count]}]
+  (let [customization-color (rf/sub [:profile/customization-color])
+        unread-messages?    (pos? unviewed-messages-count)
+        unread-mentions?    (pos? unviewed-mentions-count)]
+    [rn/view {:style style/notification-container}
+     (cond
+       muted
+       [icons/icon :i/muted {:color colors/neutral-40}]
+
+       (and group-chat unread-mentions?)
+       [quo/counter
+        {:container-style     {:position :relative :right 0}
+         :customization-color customization-color
+         :accessibility-label :new-message-counter}
+        unviewed-mentions-count]
+
+       ;; TODO: use the grey-dot component when chat-list-item is moved to quo2.components
+       (and group-chat unread-messages?)
+       [rn/view
+        {:style               (style/grey-dot)
+         :accessibility-label :unviewed-messages-public}]
+
+       unread-messages?
+       [quo/counter
+        {:container-style     {:position :relative :right 0}
+         :customization-color customization-color
+         :accessibility-label :new-message-counter}
+        unviewed-messages-count])]))
+
 (defn chat-list-item
-  [{:keys [chat-id group-chat color name unviewed-messages-count
-           timestamp last-message muted]
+  [{:keys [chat-id group-chat color name timestamp last-message muted]
     :as   item}]
-  (let [display-name       (if group-chat
-                             name
-                             (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
-        contact            (when-not group-chat
-                             (rf/sub [:contacts/contact-by-address chat-id]))
-        show-unread-badge? (and (not muted) (> unviewed-messages-count 0))]
+  (let [display-name (if group-chat
+                       name
+                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
+        contact      (when-not group-chat
+                       (rf/sub [:contacts/contact-by-address chat-id]))]
     [rn/touchable-opacity
      {:style         (style/container)
       :on-press      (open-chat chat-id)
@@ -229,16 +260,7 @@
        :full-name display-name
        :color     color
        :muted?    muted}]
-     [rn/view {:style {:margin-left 8}}
+     [rn/view {:style style/chat-data-container}
       [name-view display-name contact timestamp muted]
       [last-message-preview group-chat last-message muted]]
-     (if-not muted
-       (when show-unread-badge?
-         [quo/info-count
-          {:style               {:top   16
-                                 :right 16}
-           :accessibility-label :new-message-counter}
-          unviewed-messages-count])
-       [icons/icon :i/muted
-        {:color           colors/neutral-40
-         :container-style style/muted-icon}])]))
+     [notification item]]))

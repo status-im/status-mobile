@@ -58,7 +58,7 @@
   [reanimated/view
    {:style (style/send-button btn-opacity @z-index)}
    [quo/button
-    {:icon                true
+    {:icon-only?          true
      :size                32
      :accessibility-label :send-message-button
      :on-press            #(send-message props state animations window-height edit)}
@@ -72,12 +72,9 @@
 
 (defn disabled-audio-button
   []
-  [quo/button
+  [quo/composer-button
    {:on-press #(js/alert "to be implemented")
-    :icon     true
-    :type     :outline
-    :size     32}
-   :i/audio])
+    :icon     :i/audio}])
 
 (defn audio-button
   [{:keys [record-reset-fn input-ref]}
@@ -169,13 +166,11 @@
 (defn camera-button
   []
   (let [images-count (count (vals (rf/sub [:chats/sending-image])))]
-    [quo/button
-     {:on-press #(go-to-camera images-count)
-      :icon     true
-      :type     :outline
-      :size     32
-      :style    {:margin-right 12}}
-     :i/camera]))
+    [quo/composer-button
+     {:on-press        #(go-to-camera images-count)
+      :icon            :i/camera
+      :container-style {:margin-right 12}}
+    ]))
 
 (defn open-photo-selector
   [{:keys [input-ref]}
@@ -196,33 +191,24 @@
 
 (defn image-button
   [props animations insets]
-  [quo/button
+  [quo/composer-button
    {:on-press            #(open-photo-selector props animations insets)
     :accessibility-label :open-images-button
-    :icon                true
-    :type                :outline
-    :size                32
-    :style               {:margin-right 12}}
-   :i/image])
+    :container-style     {:margin-right 12}
+    :icon                :i/image}])
 
 (defn reaction-button
   []
-  [quo/button
-   {:on-press #(js/alert "to be implemented")
-    :icon     true
-    :type     :outline
-    :size     32
-    :style    {:margin-right 12}}
-   :i/reaction])
+  [quo/composer-button
+   {:icon            :i/reaction
+    :on-press        #(js/alert "to be implemented")
+    :container-style {:margin-right 12}}])
 
 (defn format-button
   []
-  [quo/button
+  [quo/composer-button
    {:on-press #(js/alert "to be implemented")
-    :icon     true
-    :type     :outline
-    :size     32}
-   :i/format])
+    :icon     :i/format}])
 
 (defn view
   [props state animations window-height insets {:keys [edit images]}]

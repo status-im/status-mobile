@@ -13,7 +13,10 @@ let
   };
 
   # Status specific configuration defaults
-  defaultConfig = import ./config.nix;
+  defaultConfig = {
+    android_sdk.accept_license = true;
+    allowUnfree = true;
+  };
 
   # Override some packages and utilities
   pkgsOverlay = import ./overlay.nix;

@@ -1,5 +1,5 @@
 (ns quo2.components.tags.context-tag.view
-  (:require [quo2.components.avatars.group-avatar :as group-avatar]
+  (:require [quo2.components.avatars.group-avatar.view :as group-avatar]
             [quo2.components.avatars.user-avatar.style :as user-avatar-style]
             [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.icon :as icons]
@@ -24,7 +24,7 @@
        (select-keys [:override-theme :style :blur?])
        (assoc-in [:style :padding-left] 3)
        (assoc-in [:style :padding-vertical] 2))
-   [group-avatar/group-avatar opts]
+   [group-avatar/view opts]
    [text/text
     {:weight :medium
      :size   :paragraph-2

@@ -1,5 +1,5 @@
 (ns quo2.components.settings.accounts.view
-  (:require [quo2.components.avatars.account-avatar :as account-avatar]
+  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
             [quo2.components.buttons.button.view :as button]
             [quo2.components.markdown.text :as text]
             [quo2.components.settings.accounts.style :as style]
@@ -14,17 +14,17 @@
 (defn avatar
   [avatar-props]
   [rn/view {:style (style/avatar-border)}
-   [account-avatar/account-avatar (assoc avatar-props :size 48)]])
+   [account-avatar/view (assoc avatar-props :size 48)]])
 
 (defn menu-button
   [{:keys [on-press]}]
   [rn/view {:style style/menu-button-container}
    [button/button
-    {:style    (style/menu-button-color)
-     :type     :gray
-     :icon     true
-     :size     24
-     :on-press on-press}
+    {:container-style (style/menu-button-color)
+     :type            :grey
+     :icon-only?      true
+     :size            24
+     :on-press        on-press}
     :i/more]])
 
 (defn account

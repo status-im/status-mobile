@@ -4,6 +4,7 @@
   (:require
     ["@testing-library/react-native" :as rtl]
     [camel-snake-kebab.core :as camel-snake-kebab]
+    [quo2.theme :as quo.theme]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
@@ -49,6 +50,10 @@
 (defn render
   [component]
   (rtl/render (reagent/as-element component)))
+
+(defn render-with-theme-provider
+  [component theme]
+  (rtl/render (reagent/as-element [quo.theme/provider {:theme theme} component])))
 
 (def unmount
   "Unmount rendered component.
@@ -203,6 +208,10 @@
 (defn was-called
   [mock]
   (.toHaveBeenCalled (js/expect mock)))
+
+(defn was-called-with
+  [mock expected-arg]
+  (.toHaveBeenCalledWith (js/expect mock) expected-arg))
 
 (defn was-called-times
   [^js mock number-of-times]

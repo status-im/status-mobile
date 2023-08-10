@@ -73,7 +73,7 @@
        :size              :xxxs}]
      [quo/text
       {:weight          :semi-bold
-       :size            :label
+       :size            :paragraph-2
        :number-of-lines 1
        :style           style/message-author-text}
       (format-reply-author from contact-name current-public-key)]]))
@@ -125,18 +125,15 @@
                                                  (i18n/label :t/photo))
                  constant/content-type-sticker (i18n/label :t/sticker)
                  constant/content-type-audio   (i18n/label :t/audio)
-                 ""))]
-        ])]
+                 ""))]])]
      (when (and in-chat-input? (not recording-audio?))
        [quo/button
-        {:width               24
+        {:icon-only?          true
          :size                24
          :accessibility-label :reply-cancel-button
          :on-press            #(rf/dispatch [:chat.ui/cancel-message-reply])
          :type                :outline}
-        [quo/icon :i/close
-         {:size  16
-          :color (colors/theme-colors colors/neutral-100 colors/neutral-40)}]])
+        :i/close])
      (when (and in-chat-input? recording-audio?)
        [linear-gradient/linear-gradient
         {:colors [(colors/theme-colors colors/white-opa-0 colors/neutral-90-opa-0)

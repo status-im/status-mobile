@@ -17,12 +17,12 @@
   []
   [:<>
    [quo/button
-    {:icon                true
-     :type                :blur-bg
+    {:icon-only?          true
+     :type                :grey
+     :background          :blur
      :size                32
      :accessibility-label :close-shell-share-tab
-     :override-theme      :dark
-     :style               style/header-button
+     :container-style     style/header-button
      :on-press            #(rf/dispatch [:navigate-back])}
     :i/close]
    [quo/text
@@ -80,11 +80,11 @@
           abbreviated-url]]]
        [rn/view {:style style/share-button-container}
         [quo/button
-         {:icon                true
-          :type                :blur-bg
+         {:icon-only?          true
+          :type                :grey
+          :background          :blur
           :size                32
           :accessibility-label :link-to-profile
-          :override-theme      :dark
           :on-press            #(list-selection/open-share {:message profile-url})}
          :i/share]]]]
 
@@ -109,12 +109,12 @@
          [rn/text {:style style/emoji-hash-content} emoji-hash-string]]]]
       [rn/view {:style style/emoji-share-button-container}
        [quo/button
-        {:icon                true
-         :type                :blur-bg
+        {:icon-only?          true
+         :type                :grey
+         :background          :blur
          :size                32
          :accessibility-label :link-to-profile
-         :override-theme      :dark
-         :style               {:margin-right 12}
+         :container-style     {:margin-right 12}
          :on-press            #(rf/dispatch [:share/copy-text-and-show-toast
                                              {:text-to-copy      emoji-hash-string
                                               :post-copy-message (i18n/label :t/emoji-hash-copied)}])
@@ -137,7 +137,6 @@
         [quo/segmented-control
          {:size           28
           :blur?          true
-          :override-theme :dark
           :on-change      #(reset! selected-tab %)
           :default-active :profile
           :data           [{:id    :profile

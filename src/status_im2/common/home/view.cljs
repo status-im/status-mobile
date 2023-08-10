@@ -3,12 +3,12 @@
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
-    [status-im2.common.home.style :as style]
     [status-im.multiaccounts.core :as multiaccounts]
+    [status-im2.common.home.style :as style]
     [status-im2.common.plus-button.view :as plus-button]
     [status-im2.constants :as constants]
-    [utils.re-frame :as rf]
-    [utils.debounce :refer [dispatch-and-chill]]))
+    [utils.debounce :refer [dispatch-and-chill]]
+    [utils.re-frame :as rf]))
 
 (defn title-column
   [{:keys [label handler accessibility-label customization-color]}]
@@ -22,31 +22,32 @@
      :customization-color customization-color}]])
 
 (defn- get-button-common-props
-  [type]
+  [type background]
   (let [default? (= type :default)
         dark?    (colors/dark?)]
-    {:icon                      true
-     :size                      32
-     :style                     {:margin-left 12}
-     :type                      (if default?
-                                  (if dark? :grey :dark-grey)
-                                  type)
-     :override-background-color (when (and dark? default?)
-                                  colors/neutral-90)}))
+    {:icon-only?      true
+     :size            32
+     :container-style {:margin-left 12}
+     :type            (if default?
+                        (if dark? :grey :dark-grey)
+                        type)
+     :background      background}))
 
 (defn- unread-indicator
   []
-  (let [unread-count (rf/sub [:activity-center/unread-count])
-        indicator    (rf/sub [:activity-center/unread-indicator])
-        unread-type  (case indicator
-                       :unread-indicator/seen :grey
-                       :unread-indicator/new  :default
-                       nil)]
+  (let [unread-count        (rf/sub [:activity-center/unread-count])
+        indicator           (rf/sub [:activity-center/unread-indicator])
+        unread-type         (case indicator
+                              :unread-indicator/seen :grey
+                              :unread-indicator/new  :default
+                              nil)
+        customization-color (rf/sub [:profile/customization-color])]
     (when (pos? unread-count)
       [quo/counter
-       {:accessibility-label :activity-center-unread-count
+       {:customization-color customization-color
+        :accessibility-label :activity-center-unread-count
         :type                unread-type
-        :style               (style/unread-indicator unread-count
+        :container-style     (style/unread-indicator unread-count
                                                      constants/activity-center-max-unread-count)}
        unread-count])))
 
@@ -73,23 +74,21 @@
      [quo/text {:accessibility-label :peers-count-text} (str "PEERS COUNT: " peers-count)]]))
 
 (defn- right-section
-  [{:keys [button-type search?]}]
-  (let [button-common-props (get-button-common-props button-type)
+  [{:keys [button-type search? button-background]}]
+  (let [button-common-props (get-button-common-props button-type button-background)
         network-type        (rf/sub [:network/type])]
     [rn/view {:style style/right-section}
      (when (= network-type "cellular")
        [quo/button
         (merge button-common-props
-               {:icon                false
-                :accessibility-label :on-cellular-network
+               {:accessibility-label :on-cellular-network
                 :on-press            #(rf/dispatch [:show-bottom-sheet
                                                     {:content connectivity-sheet}])})
         "🦄"])
      (when (= network-type "none")
        [quo/button
         (merge button-common-props
-               {:icon                false
-                :accessibility-label :no-network-connection
+               {:accessibility-label :no-network-connection
                 :on-press            #(rf/dispatch [:show-bottom-sheet
                                                     {:content connectivity-sheet}])})
         "💀"])
@@ -117,10 +116,11 @@
   "[top-nav props]
   props
   {:type    quo/button types
+   :background quo/button background
    :style   override-style
    :search? When non-nil, show search button}
   "
-  [{:keys [type style search?]
+  [{:keys [type style search? background]
     :or   {type :default}}]
   (let [account             (rf/sub [:profile/multiaccount])
         customization-color (rf/sub [:profile/customization-color])
@@ -129,4 +129,19 @@
                              :profile-picture     (multiaccounts/displayed-photo account)}]
     [rn/view {:style (merge style/top-nav-container style)}
      [left-section {:avatar avatar}]
-     [right-section {:button-type type :search? search?}]]))
+     [right-section {:button-type type :button-background background :search? search?}]]))
+
+(defn header-spacing
+  []
+  [rn/view {:style (style/header-spacing)}])
+
+(defn empty-state-image
+  [{:keys [selected-tab tab->content]}]
+  (let [{:keys [image title description]} (tab->content selected-tab)
+        customization-color               (rf/sub [:profile/customization-color])]
+    [rn/view {:style (style/empty-state-container)}
+     [quo/empty-state
+      {:customization-color customization-color
+       :image               image
+       :title               title
+       :description         description}]]))

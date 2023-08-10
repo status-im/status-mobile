@@ -9,7 +9,8 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [status-im2.contexts.onboarding.common.overlay.view :as overlay]
-    [status-im2.contexts.profile.profiles.view :as profiles]))
+    [status-im2.contexts.profile.profiles.view :as profiles]
+    [status-im2.config :as config]))
 
 (defn navigate-back
   []
@@ -105,17 +106,24 @@
    [quo/page-nav
     {:align-mid?            true
      :mid-section           {:type :text-only :main-text ""}
-     :left-section          {:type                :blur-bg
-                             :icon                :i/arrow-left
-                             :icon-override-theme :dark
-                             :on-press            navigate-back}
-     :right-section-buttons [{:type                :blur-bg
-                              :icon                :i/info
-                              :icon-override-theme :dark
-                              :on-press            #(rf/dispatch
-                                                     [:show-bottom-sheet
-                                                      {:content getting-started-doc
-                                                       :shell?  true}])}]}]])
+     :left-section          {:type            :grey
+                             :icon-background :blur
+                             :icon            :i/arrow-left
+                             :on-press        navigate-back}
+     :right-section-buttons (cond-> [{:type            :grey
+                                      :icon            :i/info
+                                      :icon-background :blur
+                                      :on-press        #(rf/dispatch
+                                                         [:show-bottom-sheet
+                                                          {:content getting-started-doc
+                                                           :shell?  true}])}]
+
+                              config/quo-preview-enabled?
+                              (conj {:type            :grey
+                                     :icon            :i/reveal-whitelist
+                                     :icon-background :blur
+                                     :on-press        #(rf/dispatch [:navigate-to
+                                                                     :quo2-preview])}))}]])
 
 (defn new-to-status
   []

@@ -83,14 +83,10 @@
 (defn header-action
   [{:keys [icon label on-press disabled accessibility-label]}]
   [button/button
-   (merge {:on-press on-press
-           :disabled disabled}
-          (cond
-            icon  {:type  :icon
-                   :theme :icon}
-            label {:type :secondary})
-          (when accessibility-label
-            {:accessibility-label accessibility-label}))
+   {:on-press            on-press
+    :disabled?           disabled
+    :icon-only?          (boolean icon)
+    :accessibility-label accessibility-label}
    (cond
      icon  icon
      label label)])

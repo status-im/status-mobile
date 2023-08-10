@@ -1,33 +1,34 @@
 (ns status-im2.contexts.communities.home.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
+  (:require [oops.core :as oops]
+            [quo2.core :as quo]
             [quo2.theme :as theme]
-            [utils.debounce :as debounce]
-            [react-native.blur :as blur]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
-            [react-native.safe-area :as safe-area]
+            [react-native.reanimated :as reanimated]
+            [status-im2.common.home.banner.view :as common.home.banner]
             [status-im2.common.home.view :as common.home]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
-            [status-im2.contexts.communities.home.style :as style]
+            [utils.debounce :as debounce]
             [utils.i18n :as i18n]
+            [utils.number]
             [utils.re-frame :as rf]))
 
 (defn item-render
   [{:keys [id] :as item}]
-  (let [unviewed-counts (rf/sub [:communities/unviewed-counts id])
-        item            (merge item unviewed-counts)]
+  (let [unviewed-counts     (rf/sub [:communities/unviewed-counts id])
+        customization-color (rf/sub [:profile/customization-color])
+        item                (merge item unviewed-counts)]
     [quo/communities-membership-list-item
-     {:style         {:padding-horizontal 18}
-      :on-press      #(debounce/dispatch-and-chill [:navigate-to :community-overview id] 500)
-      :on-long-press #(rf/dispatch
-                       [:show-bottom-sheet
-                        {:content       (fn []
-                                          [options/community-options-bottom-sheet id])
-                         :selected-item (fn []
-                                          [quo/communities-membership-list-item {} true item])}])}
+     {:customization-color customization-color
+      :style               {:padding-horizontal 18}
+      :on-press            #(debounce/dispatch-and-chill [:navigate-to :community-overview id] 500)
+      :on-long-press       #(rf/dispatch
+                             [:show-bottom-sheet
+                              {:content       (fn []
+                                                [options/community-options-bottom-sheet id])
+                               :selected-item (fn []
+                                                [quo/communities-membership-list-item {} true item])}])}
      false
      item]))
 
@@ -36,90 +37,73 @@
    {:id :pending :label (i18n/label :t/pending) :accessibility-label :pending-tab}
    {:id :opened :label (i18n/label :t/opened) :accessibility-label :opened-tab}])
 
-(defn empty-state-content
-  [selected-tab]
-  (case selected-tab
-    :joined
-    {:title       (i18n/label :t/no-communities)
-     :description [:<>
-                   [rn/text {:style {:text-decoration-line :line-through}}
-                    (i18n/label :t/no-communities-description-strikethrough)]
-                   " "
-                   (i18n/label :t/no-communities-description)]
-     :image       (resources/get-image (theme/theme-value :no-communities-light
-                                                          :no-communities-dark))}
-    :pending
-    {:title       (i18n/label :t/no-pending-communities)
-     :description (i18n/label :t/no-pending-communities-description)
-     :image       (resources/get-image (theme/theme-value :no-pending-communities-light
-                                                          :no-pending-communities-dark))}
-    :opened
-    {:title       (i18n/label :t/no-opened-communities)
-     :description (i18n/label :t/no-opened-communities-description)
-     :image       (resources/get-image (theme/theme-value :no-opened-communities-light
-                                                          :no-opened-communities-dark))}
-    nil))
+(def empty-state-content
+  {:joined
+   {:title       (i18n/label :t/no-communities)
+    :description [:<>
+                  [rn/text {:style {:text-decoration-line :line-through}}
+                   (i18n/label :t/no-communities-description-strikethrough)]
+                  " "
+                  (i18n/label :t/no-communities-description)]
+    :image       (resources/get-image (theme/theme-value :no-communities-light
+                                                         :no-communities-dark))}
+   :pending
+   {:title       (i18n/label :t/no-pending-communities)
+    :description (i18n/label :t/no-pending-communities-description)
+    :image       (resources/get-image (theme/theme-value :no-pending-communities-light
+                                                         :no-pending-communities-dark))}
+   :opened
+   {:title       (i18n/label :t/no-opened-communities)
+    :description (i18n/label :t/no-opened-communities-description)
+    :image       (resources/get-image (theme/theme-value :no-opened-communities-light
+                                                         :no-opened-communities-dark))}})
 
-(defn empty-state
-  [{:keys [style selected-tab customization-color]}]
-  (let [{:keys [image title description]} (empty-state-content selected-tab)]
-    [rn/view {:style style}
-     [quo/empty-state
-      {:customization-color customization-color
-       :image               image
-       :title               title
-       :description         description}]]))
+(def ^:private banner-data
+  {:title-props
+   {:label               (i18n/label :t/communities)
+    :handler             #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}])
+    :accessibility-label :new-communities-button}
+   :card-props
+   {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
+    :title               (i18n/label :t/discover)
+    :description         (i18n/label :t/favorite-communities)
+    :banner              (resources/get-image :discover)
+    :accessibility-label :communities-home-discover-card}})
 
 (defn home
   []
-  (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
-        {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
-        customization-color             (rf/sub [:profile/customization-color])
-        selected-items                  (case selected-tab
-                                          :joined  joined
-                                          :pending pending
-                                          :opened  opened)
-        top                             (safe-area/get-top)]
-    [:<>
-     (if (empty? selected-items)
-       [empty-state
-        {:style               (style/empty-state-container top)
-         :selected-tab        selected-tab
-         :customization-color customization-color}]
-       [rn/flat-list
-        {:key-fn                            :id
-         :content-inset-adjustment-behavior :never
-         :header                            [rn/view {:style (style/header-spacing top)}]
-         :render-fn                         item-render
-         :data                              selected-items}])
-
-     [rn/view {:style (style/blur-container top)}
-      (let [{:keys [sheets]} (rf/sub [:bottom-sheet])]
-        [blur/view
-         {:blur-amount   (if platform/ios? 20 10)
-          :blur-type     (if (colors/dark?) :dark (if platform/ios? :light :xlight))
-          :style         style/blur
-          :overlay-color (if (seq sheets)
-                           (theme/theme-value colors/white colors/neutral-95-opa-70)
-                           (when (colors/dark?)
-                             colors/neutral-95-opa-70))}])
-      [common.home/top-nav {:type :grey}]
-      [common.home/title-column
-       {:label               (i18n/label :t/communities)
-        :handler             #(rf/dispatch [:show-bottom-sheet {:content actions.home-plus/view}])
-        :accessibility-label :new-communities-button
-        :customization-color customization-color}]
-      [quo/discover-card
-       {:on-press            #(rf/dispatch [:navigate-to :discover-communities])
-        :title               (i18n/label :t/discover)
-        :description         (i18n/label :t/favorite-communities)
-        :banner              (resources/get-image :discover)
-        :accessibility-label :communities-home-discover-card}]
-      ^{:key (str "tabs-" selected-tab)}
-      [quo/tabs
-       {:size           32
-        :style          style/tabs
-        :on-change      (fn [tab]
-                          (rf/dispatch [:communities/select-tab tab]))
-        :default-active selected-tab
-        :data           tabs-data}]]]))
+  (let [flat-list-ref     (atom nil)
+        set-flat-list-ref #(reset! flat-list-ref %)]
+    (fn []
+      (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
+            {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
+            selected-items                  (case selected-tab
+                                              :joined  joined
+                                              :pending pending
+                                              :opened  opened)
+            scroll-shared-value             (reanimated/use-shared-value 0)]
+        [:<>
+         (if (empty? selected-items)
+           [common.home/empty-state-image
+            {:selected-tab selected-tab
+             :tab->content empty-state-content}]
+           [reanimated/flat-list
+            {:ref                               set-flat-list-ref
+             :key-fn                            :id
+             :content-inset-adjustment-behavior :never
+             :header                            [common.home/header-spacing]
+             :render-fn                         item-render
+             :data                              selected-items
+             :scroll-event-throttle             8
+             :on-scroll                         #(common.home.banner/set-scroll-shared-value
+                                                  {:scroll-input (oops/oget
+                                                                  %
+                                                                  "nativeEvent.contentOffset.y")
+                                                   :shared-value scroll-shared-value})}])
+         [:f> common.home.banner/animated-banner
+          {:content             banner-data
+           :scroll-ref          flat-list-ref
+           :tabs                tabs-data
+           :selected-tab        selected-tab
+           :on-tab-change       (fn [tab] (rf/dispatch [:communities/select-tab tab]))
+           :scroll-shared-value scroll-shared-value}]]))))

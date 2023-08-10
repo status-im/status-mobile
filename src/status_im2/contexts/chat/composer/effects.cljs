@@ -9,7 +9,7 @@
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
     [status-im2.contexts.chat.composer.utils :as utils]
-    [utils.number :as utils.number]
+    [utils.number]
     [utils.re-frame :as rf]))
 
 (defn reenter-screen-effect

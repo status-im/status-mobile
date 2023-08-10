@@ -3,8 +3,6 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
@@ -13,8 +11,12 @@
     :type    :select
     :options [{:value "Message pinned"
                :key   :pinned}
+              {:value "Contact request"
+               :key   :contact-request}
               {:value "User added"
                :key   :added}
+              {:value "User removed"
+               :key   :removed}
               {:value "Message deleted"
                :key   :deleted}]}
    {:label   "Action"
@@ -32,39 +34,27 @@
     :type  :text}
    {:label "Content Info"
     :key   :content-info
-    :type  :text}
-   {:label "Timestamp"
-    :key   :timestamp-str
     :type  :text}])
 
 (defn finalize-state
   [state]
   (merge @state
-         {:mentions [{:name  "Alicia Keys"
-                      :image (resources/get-mock-image :user-picture-female2)}
-                     {:name  "pedro.eth"
-                      :image (resources/get-mock-image :user-picture-male4)}]
-          :content  {:text     (:content-text @state)
-                     :info     (:content-info @state)
-                     :mentions {:name  "Alisher"
-                                :image (resources/get-mock-image :user-picture-male5)}}}))
+         {:child        (when (= (:type @state) :pinned) [rn/text "Message content"])
+          :display-name (:pinned-by @state)}))
+
 (defn preview
   []
-  (let [state (reagent/atom {:type          :deleted
-                             :pinned-by     "Steve"
-                             :content-text  "Hello! This is an example of a pinned message!"
-                             :content-info  "3 photos"
-                             :timestamp-str "09:41"
-                             :labels        {:pinned-a-message (i18n/label :pinned-a-message)
-                                             :message-deleted  (i18n/label :message-deleted)
-                                             :added            (i18n/label :added)}})]
+  (let [state (reagent/atom {:type         :pinned
+                             :pinned-by    "Steve"
+                             :timestamp    "09:41"
+                             :content-text "Hello! This is an example of a pinned message!"
+                             :content-info "3 photos"})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
         [preview/customizer state descriptor]
         [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
+         {:padding-vertical 60 :flex 1}
          [system-message/system-message (finalize-state state)]]]])))
 
 (defn preview-system-message

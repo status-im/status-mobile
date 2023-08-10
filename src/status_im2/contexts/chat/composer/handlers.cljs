@@ -10,6 +10,7 @@
     [status-im2.contexts.chat.composer.selection :as selection]
     [status-im2.contexts.chat.composer.utils :as utils]
     [utils.debounce :as debounce]
+    [utils.number]
     [utils.re-frame :as rf]))
 
 (defn focus
@@ -82,7 +83,9 @@
           content-size          (if (or (= lines 1) (empty? @text-value))
                                   constants/input-height
                                   (if (= lines 2) constants/multiline-minimized-height content-size))
-          new-height            (utils/bounded-val content-size constants/input-height max-height)
+          new-height            (utils.number/value-in-range content-size
+                                                             constants/input-height
+                                                             max-height)
           bottom-content-height (utils/calc-bottom-content-height images link-previews?)
           new-height            (min (+ new-height bottom-content-height) max-height)]
       (reset! content-height content-size)

@@ -64,7 +64,11 @@
          (let [community (get communities (:community-id last-message))]
            {:content-type constants/content-type-community
             :data         {:avatar         (community-avatar community)
-                           :community-name (:name community)}})))
+                           :community-name (:name community)}})
+
+         (= content-type constants/content-type-contact-request)
+         {:content-type constants/content-type-contact-request}))
+
      {:new-notifications?     (pos? (:unviewed-messages-count chat))
       :notification-indicator (if (pos? (:unviewed-mentions-count chat))
                                 :counter
