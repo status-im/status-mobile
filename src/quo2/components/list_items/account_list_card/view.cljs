@@ -20,7 +20,8 @@
     [rn/view {:style {:margin-left 8}}
      [text/text
       {:weight :semi-bold
-       :size   :paragraph-2} (:name account-props)]
+       :size   :paragraph-2}
+      (:name account-props)]
      [text/text {:size :paragraph-2}
       (map (fn [network]
              ^{:key (str network)}
