@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.163.6",
-    "commit-sha1": "52fb1cd60589691f3fae61c84720eacd2b02ae6e",
-    "src-sha256": "0si6dy45cjgrdaj9zgw2f6k1slhnl734g0xr6q31yabigp3qq9ng"
+    "version": "feature/Add_preview_and_counters_for_CR_system_messages_#16898",
+    "commit-sha1": "0c177e257779f4667351f75614ea6b7b439c3fa1",
+    "src-sha256": "1rr2167zcnqds29lk8c0bm8q1rn7wb9715mvbr5d7wn75xd2iagx"
 }
