@@ -14,6 +14,12 @@
      :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8)}}
     {:elevation (if @focused? 10 0)}))
 
+(def composer-sheet-and-jump-to-container
+  {:position :absolute
+   :bottom   0
+   :left     0
+   :right    0})
+
 (defn sheet-container
   [insets {:keys [focused?]} {:keys [container-opacity]}]
   (reanimated/apply-animations-to-style
@@ -22,10 +28,6 @@
     {:border-top-left-radius  20
      :border-top-right-radius 20
      :padding-horizontal      20
-     :position                :absolute
-     :bottom                  0
-     :left                    0
-     :right                   0
      :background-color        (colors/theme-colors colors/white colors/neutral-95)
      :z-index                 3
      :padding-bottom          (:bottom insets)}
@@ -109,15 +111,6 @@
    :blur-radius (if platform/ios? 20 10)
    :blur-type   (colors/theme-colors :light :dark)
    :blur-amount 20})
-
-(defn shell-container
-  [bottom translate-y]
-  (reanimated/apply-animations-to-style
-   {:bottom    bottom ; we use height of the input directly as bottom position
-    :transform [{:translate-y translate-y}]}
-   {:position :absolute
-    :left     0
-    :right    0}))
 
 (defn shell-button
   [translate-y opacity]
