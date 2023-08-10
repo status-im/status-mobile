@@ -118,12 +118,12 @@ class ProfileBlockContactButton(Button):
 class ChatElementByText(Text):
     def __init__(self, driver, text):
         self.message_text = text
+        self.chat_item_locator = "android.view.ViewGroup[@content-desc='chat-item']"
         if text in ["image", "sticker", "audio"]:
             self.message_locator = "//android.view.ViewGroup[@content-desc='%s-message']" % text
         else:
             self.message_locator = "//*[starts-with(@text,'%s')]" % text
-        super().__init__(driver, prefix=self.message_locator,
-                         xpath="/ancestor::android.view.ViewGroup[@content-desc='chat-item']")
+        super().__init__(driver, prefix=self.message_locator, xpath="/ancestor::%s" % self.chat_item_locator)
 
     def find_element(self):
         for _ in range(2):
@@ -176,10 +176,12 @@ class ChatElementByText(Text):
 
         return Username(self.driver, self.locator)
 
-    def contains_text(self, text, wait_time=5) -> bool:
-        element = Text(self.driver, prefix=self.locator,
-                       xpath="//android.view.ViewGroup//android.widget.TextView[contains(@text,'%s')]" % text)
-        return element.is_element_displayed(wait_time)
+    @property
+    def message_body(self):
+        return Text(
+            self.driver,
+            xpath="//%s//android.widget.TextView[contains(@text,'%s')]" % (self.chat_item_locator, self.message_text)
+        )
 
     def wait_for_sent_state(self, wait_time=30):
         return BaseElement(self.driver, prefix=self.locator,
@@ -309,6 +311,10 @@ class ChatElementByText(Text):
 
         return PinnedByLabelText(self.driver, self.locator)
 
+    @property
+    def view_community_button(self):
+        return BaseElement(self.driver, xpath=self.locator + "//*[@text='View']")
+
 
 class UsernameOptions(Button):
     def __init__(self, driver, username):
@@ -393,7 +399,8 @@ class CommunityView(HomeView):
         self.join_button = Button(self.driver, accessibility_id="show-request-to-join-screen-button")
         self.join_community_button = Button(self.driver, accessibility_id="join-community-button")
         self.follow_button = Button(self.driver, translation_id="follow")
-        self.community_tags = BaseElement(self.driver, xpath="//*[@content-desc='chat-name-text']/../android.widget.HorizontalScrollView")
+        self.community_tags = BaseElement(
+            self.driver, xpath="//*[@content-desc='chat-name-text']/../android.widget.HorizontalScrollView")
 
         #### NEW UI
         # Communities initial page
