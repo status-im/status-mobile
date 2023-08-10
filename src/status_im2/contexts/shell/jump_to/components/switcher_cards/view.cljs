@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [status-im2.config :as config]
@@ -35,69 +34,68 @@
    {:keys                             [content-type data new-notifications? color-50
                                        community-info community-channel]
     {:keys [text parsed-text source]} :data}]
-  [quo.theme/provider {:theme :dark}
-   [rn/view {:style (style/content-container new-notifications?)}
-    (case type
-      shell.constants/community-card
-      (case (:type community-info)
-        :pending             [quo/status-tag
-                              {:status {:type :pending}
-                               :label  (i18n/label :t/pending)
-                               :size   :small}]
-        :kicked              [quo/status-tag
-                              {:status {:type :negative}
-                               :size   :small
-                               :label  (i18n/label :t/kicked)}]
-        (:count :permission) [:<>] ;; Add components for these cases
-        nil)
+  [rn/view {:style (style/content-container new-notifications?)}
+   (case type
+     shell.constants/community-card
+     (case (:type community-info)
+       :pending [quo/status-tag
+                 {:status {:type :pending}
+                  :label  (i18n/label :t/pending)
+                  :size   :small}]
+       :kicked [quo/status-tag
+                {:status {:type :negative}
+                 :size   :small
+                 :label  (i18n/label :t/kicked)}]
+       (:count :permission) [:<>] ;; Add components for these cases
+       nil)
 
-      shell.constants/community-channel-card
-      [channel-card (assoc community-channel :customization-color color-50)]
+     shell.constants/community-channel-card
+     [channel-card (assoc community-channel :customization-color color-50)]
 
-      (case content-type
-        constants/content-type-text
-        [quo/text
-         {:size            :paragraph-2
-          :weight          :regular
-          :number-of-lines 1
-          :ellipsize-mode  :tail
-          :style           style/last-message-text}
-         (if parsed-text
-           (resolver/resolve-message parsed-text)
-           text)]
+     (case content-type
+       constants/content-type-text
+       [quo/text
+        {:size            :paragraph-2
+         :weight          :regular
+         :number-of-lines 1
+         :ellipsize-mode  :tail
+         :style           style/last-message-text}
+        (if parsed-text
+          (resolver/resolve-message parsed-text)
+          text)]
 
-        constants/content-type-image
-        [quo/preview-list
-         {:type               :photo
-          :more-than-99-label (i18n/label :counter-99-plus)
-          :size               24}
-         data]
+       constants/content-type-image
+       [quo/preview-list
+        {:type               :photo
+         :more-than-99-label (i18n/label :counter-99-plus)
+         :size               24}
+        data]
 
-        constants/content-type-sticker
-        [fast-image/fast-image
-         {:source source
-          :style  style/sticker}]
+       constants/content-type-sticker
+       [fast-image/fast-image
+        {:source source
+         :style  style/sticker}]
 
-        constants/content-type-gif
-        [fast-image/fast-image
-         {:source source
-          :style  style/gif}]
+       constants/content-type-gif
+       [fast-image/fast-image
+        {:source source
+         :style  style/gif}]
 
-        constants/content-type-audio
-        [quo/context-tag {:type :audio :duration data}]
+       constants/content-type-audio
+       [quo/context-tag {:type :audio :duration data}]
 
-        constants/content-type-community
-        [quo/context-tag
-         {:type           :community
-          :size           24
-          :community-logo (:avatar data)
-          :community-name (:community-name data)}]
+       constants/content-type-community
+       [quo/context-tag
+        {:type           :community
+         :size           24
+         :community-logo (:avatar data)
+         :community-name (:community-name data)}]
 
-        (constants/content-type-link) ;; Components not available
-        ;; Code snippet content type is not supported yet
-        [:<>]
+       (constants/content-type-link) ;; Components not available
+       ;; Code snippet content type is not supported yet
+       [:<>]
 
-        nil))]])
+       nil))])
 
 (defn notification-container
   [{:keys [notification-indicator counter-label customization-color]}]

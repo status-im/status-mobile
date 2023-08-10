@@ -1,6 +1,5 @@
 (ns status-im2.contexts.syncing.syncing-instructions.view
   (:require [quo2.core :as quo]
-            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [reagent.core :as reagent]
@@ -42,13 +41,11 @@
      (i18n/label value)]
 
     :context-tag
-
-    [quo.theme/provider {:theme :dark}
-     [quo/context-tag
-      {:blur?           true
-       :size            24
-       :profile-picture (resources/get-mock-image (:source value))
-       :full-name       (i18n/label (:label value))}]]))
+    [quo/context-tag
+     {:blur?           true
+      :size            24
+      :profile-picture (resources/get-mock-image (:source value))
+      :full-name       (i18n/label (:label value))}]))
 
 (defn- render-item
   [i list-item]
