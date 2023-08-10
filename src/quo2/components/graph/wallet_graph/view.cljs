@@ -31,16 +31,17 @@
                           (colors/theme-colors colors/danger-50 colors/danger-60 theme))
         gradient-colors [(colors/alpha line-color 0.1) (colors/alpha line-color 0)]
         fill-color      (colors/theme-colors colors/white colors/neutral-95)]
-    [linear-gradient/linear-gradient
-     {:colors gradient-colors
-      :start  {:x 0 :y 1}
-      :end    {:x 0 :y 0}
-      :style  style/gradient-background}
-     (if (= time-frame :empty)
-       [rn/view
-        {:accessibility-label :illustration
-         :style               style/illustration}
-        [text/text "Illustration here"]]
+    (if (= time-frame :empty)
+      [rn/view
+       {:accessibility-label :illustration
+        :style               style/illustration}
+       [text/text {:style {:color colors/white}}
+        "Illustration here"]]
+      [linear-gradient/linear-gradient
+       {:colors gradient-colors
+        :start  {:x 0 :y 1}
+        :end    {:x 0 :y 0}
+        :style  style/gradient-background}
        [rn/view {:accessibility-label :line-chart}
         [charts/line-chart
          {:height                  96
@@ -65,6 +66,6 @@
           :disable-scroll          true
           :y-axis-label-width      0.01
           :labels-extra-height     -36
-          :x-axis-label-text-style style/x-axis-label-text-style}]])]))
+          :x-axis-label-text-style style/x-axis-label-text-style}]]])))
 
 (def view (quo.theme/with-theme view-internal))

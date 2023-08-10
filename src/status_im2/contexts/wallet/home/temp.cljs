@@ -46,7 +46,6 @@
     :state               :default
     :status              :empty
     :customization-color :blue
-    :metrics?            true
     :values              {:crypto-value      "0.00"
                           :fiat-value        "€0.00"
                           :percentage-change "0.00"
@@ -55,7 +54,6 @@
     :state               :default
     :status              :empty
     :customization-color :blue
-    :metrics?            true
     :values              {:crypto-value      "0.00"
                           :fiat-value        "€0.00"
                           :percentage-change "0.00"
@@ -64,7 +62,6 @@
     :state               :default
     :status              :empty
     :customization-color :blue
-    :metrics?            true
     :values              {:crypto-value      "0.00"
                           :fiat-value        "€0.00"
                           :percentage-change "0.00"

@@ -17,12 +17,6 @@
    :height           80
    :background-color colors/danger})
 
-(def illustration-container
-  {:height           96
-   :background-color colors/danger
-   :justify-content  :center
-   :align-items      :center})
-
 (def accounts-list
   {:padding-horizontal 20
    :padding-top        32

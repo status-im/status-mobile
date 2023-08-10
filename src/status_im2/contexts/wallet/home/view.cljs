@@ -41,9 +41,8 @@
        [common.home/top-nav {:type :grey}]
        [quo/wallet-overview temp/wallet-overview-state]
        [rn/pressable
-        {:style         style/illustration-container
-         :on-long-press #(rf/dispatch [:show-bottom-sheet {:content temp/wallet-temporary-navigation}])}
-        [quo/text {:style {:color colors/white}} "Illustration here"]]
+        {:on-long-press #(rf/dispatch [:show-bottom-sheet {:content temp/wallet-temporary-navigation}])}
+        [quo/wallet-graph {:time-frame :empty}]]
        [rn/flat-list
         {:style      style/accounts-list
          :data       temp/account-cards
