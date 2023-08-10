@@ -124,10 +124,16 @@
                      :border-width      1
                      :margin   2}}])
 
-(defn calculate-box-state [counter index]
+(defn calculate-box-state [networkState counter index]
   (cond
-    (and (> counter index) (> index 4))      "finalised"
-    (and (> counter index) (<= index 4))      "confirmed"))
+    (and (= networkState "sending") (> counter index) (< index 3))      "confirmed"
+    (and (= networkState "confirmed") (> counter index) (< index 5))      "confirmed"
+    (and (= networkState "finalising") (> counter index) (< index 5))      "confirmed"
+    (and (= networkState "finalising") (> counter index) (> index 4) (< index 20))      "finalised"
+    (and (= networkState "finalised") (> counter index) (< index 5))      "confirmed"
+    (and (= networkState "finalised") (> counter index) (> index 4))      "finalised"
+    (and (= networkState "error") (> counter index) (< index 2))      "error"
+    :else           "pending"))
 
 (defn progress-boxes
   [networkState ]
@@ -150,7 +156,7 @@
       ;; ]
       ;; (println (calculate-box-state (@app-state :counter) 0) "ArjunState")
      (doall (for [n numbers]
-        [progress-box/progress-bar {:network-state (calculate-box-state (@app-state :counter) n)
+        [progress-box/progress-bar {:network-state (calculate-box-state networkState (@app-state :counter) n)
                                     :width "8"
                                     :height "12"
                                     :count 2
