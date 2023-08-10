@@ -1,4 +1,4 @@
-(ns quo2.components.tabs.tabs
+(ns quo2.components.tabs.tabs.view
   (:require [oops.core :refer [oget]]
             [quo2.components.tabs.tab.view :as tab]
             [react-native.core :as rn]
@@ -7,7 +7,8 @@
             [reagent.core :as reagent]
             [utils.collection :as utils.collection]
             [utils.number]
-            [react-native.gesture :as gesture]))
+            [react-native.gesture :as gesture]
+            [quo2.components.tabs.tabs.style :as style]))
 
 (def default-tab-size 32)
 (def unread-count-offset 3)
@@ -34,8 +35,7 @@
                :start          {:x 0 :y 0}
                :end            {:x 1 :y 0}
                :pointer-events :none
-               :style          {:width  "100%"
-                                :height "100%"}}])}]
+               :style          style/linear-gradient}])}]
           children)
     (into [:<>] children)))
 
@@ -71,9 +71,11 @@
    {:keys [id label notification-dot? accessibility-label]}
    index]
   [rn/view
-   {:style {:margin-right  (if (= size default-tab-size) 12 8)
-            :padding-right (when (= index (dec number-of-items))
-                             (:padding-left style))}}
+   {:style (style/tab {:size             size
+                       :default-tab-size default-tab-size
+                       :number-of-items  number-of-items
+                       :index            index
+                       :style            style})}
    [tab/view
     {:id                  id
      :notification-dot?   notification-dot?
@@ -93,7 +95,7 @@
                               (on-change id)))}
     label]])
 
-(defn tabs
+(defn view
   " Common options (for scrollable and non-scrollable tabs):
 
   - `blur?` Boolean passed down to `quo2.components.tabs.tab/tab`.
