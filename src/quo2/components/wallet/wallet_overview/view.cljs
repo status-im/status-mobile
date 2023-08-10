@@ -1,5 +1,6 @@
 (ns quo2.components.wallet.wallet-overview.view
   (:require [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as text]
             [quo2.components.markdown.text :as quo2]
             [react-native.core :as rn]
             [utils.i18n :as i18n]
@@ -20,10 +21,12 @@
        bars))
 
 ;; temporary placeholder for network dropdown component
-(defn- network-dropdown
+(defn- network-dropdown-temporary
   []
   [:<>
-   [rn/view {:style style/network-dropdown}]])
+   [rn/view {:style (merge style/network-dropdown {:justify-content :center
+                                                   :align-items :center})}
+    [text/text "[WIP]"]]])
 
 (defn- view-info-top
   [{:keys [state balance theme]}]
@@ -35,7 +38,7 @@
        :size   :heading-1
        :style  (style/style-text-heading theme)}
       balance])
-   [network-dropdown]])
+   [network-dropdown-temporary]])
 
 (defn- view-metrics
   [metrics currency-change percentage-change]
@@ -108,9 +111,8 @@
 (defn- view-internal
   [props]
   [rn/view {:style style/container-info}
-   [rn/view {:style {:flex 1}}
     [view-info-top props]
-    [view-info-bottom props]]])
+    [view-info-bottom props]])
 
 (def view
   (quo.theme/with-theme view-internal))

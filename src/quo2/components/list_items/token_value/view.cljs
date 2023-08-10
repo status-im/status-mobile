@@ -22,7 +22,8 @@
       :accessibility-label :container}
      [rn/view
       {:style {:flex-direction :row
-               :align-items    :center}}
+               :align-items    :center
+               :flex 1}}
       [rn/image
        {:source (resources/tokens token)
         :style  {:width  32
