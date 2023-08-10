@@ -8,7 +8,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.context-tag.style :as style]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]))
 
 (defn- tag-skeleton
@@ -204,4 +204,4 @@
   - `:audio`
     - duration (string)
   "
-  (theme/with-theme view-internal))
+  (quo.theme/with-theme view-internal))
