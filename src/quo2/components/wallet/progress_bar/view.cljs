@@ -32,7 +32,7 @@
         (= network-state "error")  colors/danger-60))))
 
 (defn progress-bar
-  [{:keys [network-state width height count]}]
+  [{:keys [network-state width height marginHorizontal]}]
   ;; (println network-state "network-state in Box")
   [rn/view
     {:accessibility-label :progress-bar
@@ -45,6 +45,6 @@
             :border-radius     3
             :border-color      (get-border-color network-state)
             :background-color  (get-bg-color network-state)
-            :margin-horizontal count
-            :margin-vertical   2}}    
+            :margin-horizontal marginHorizontal
+            :margin-vertical   4}}    
     ]])

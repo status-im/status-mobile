@@ -39,7 +39,7 @@
    [quo2/icon icon
     {:color color}]])
 
-(def total-box 68)
+(def total-box 85)
 
 (defn progress-boxes-arbitrum
   [networkState]
@@ -89,24 +89,19 @@
   (when @interval-id
   (println @interval-id "stop-interval")
     (js/clearInterval @interval-id)
-    (reset! interval-id nil)
-    ;; (swap! app-state assoc :counter 0)
-     )) ; Clear the interval ID
+    (reset! interval-id nil))) ; Clear the interval ID
 
 (defn clear-counter []
 (swap! app-state assoc :counter 0))
 
 (defn update-counter []
   (let [new-counter-value (-> @app-state :counter inc)]
-  ;; (println @app-state "ravi" new-counter-value @interval-id)
   (if (> new-counter-value total-box)
-      (stop-interval)
-      
-    (swap! app-state assoc :counter new-counter-value))
-    ))
+      (stop-interval)      
+    (swap! app-state assoc :counter new-counter-value))))
 
-(defn delayed-update []
-(println "delayed-update")
+(defn start-interval []
+(println "start-interval")
   (reset! interval-id
           (js/setInterval
             (fn []
@@ -139,31 +134,14 @@
   [networkState ]
   [rn/view
    {:style style/progress-box-container}
-   (let [numbers (range 1 total-box)] ; Numbers from 1 to 30 (inclusive)
-      ;; (println @app-state "ravi")
-      ;; [rn/view 
-      ;; {
-      ;;   :flex-direction "row"
-      ;; }
-      ;; (doall (for [i (range 20)]
-      ;; (box (@app-state :counter) i)))
-      ;; ;; (box (@app-state :counter) 0)
-      ;; ;; (box (@app-state :counter) 1)
-      ;; ;; (box (@app-state :counter) 2)
-      ;; ;; (box (@app-state :counter) 3)
-      ;; ;; ;; (box 1)
-      ;; ;; ;; (box 2)
-      ;; ]
-      ;; (println (calculate-box-state (@app-state :counter) 0) "ArjunState")
+   (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
         [progress-box/progress-bar {:network-state (calculate-box-state networkState (@app-state :counter) n)
                                     :width "8"
                                     :height "12"
-                                    :count 2
-                                    :key          n
-                                    }]
-                ))
-                )])
+                                    :marginHorizontal 2
+                                    :key n
+                                    }])))])
 
 (defn render-text
   [title override-theme &
@@ -203,16 +181,6 @@
     (and (= networkType "optimism/arbitrum") (= networkState "finalising"))
     "1/1" (= networkType "optimism/arbitrum") "0/1")
 
-(defn get-status-count
-  [networkType networkState]
-  (cond
-    (and (= networkType "mainnet") (= networkState "pending"))    [0 0 0]
-    (and (= networkType "mainnet") (= networkState "sending"))    [2 0 0]
-    (and (= networkType "mainnet") (= networkState "confirmed"))  [4 0 0]
-    (and (= networkType "mainnet") (= networkState "finalising")) [4 10 0]
-    (and (= networkType "mainnet") (= networkState "finalised"))  [4 total-box 0]
-    (and (= networkType "mainnet") (= networkState "error"))      [0 0 1]))
-
 (defn get-status-icon
   [networkType networkState]
   (cond
@@ -235,14 +203,11 @@
 (let [count (reagent/atom 0)]  
   (rn/use-effect
   (fn []
-    (delayed-update)
+    (start-interval)
     (clear-counter)  
       (fn []
-      (stop-interval) 
-      )  
-  ) 
+      (stop-interval))) 
   [networkState])
-  ;; (println @app-state "arjun")
   [rn/view
    [rn/touchable-without-feedback
     {:on-press            on-press
@@ -250,10 +215,10 @@
     [rn/view
      {:style style/box-style}
      [rn/view
-      {:style style/item-container}
+      {:style style/title-item-container}
       [rn/view
        {:style style/inner-container}
-       [load-icon "placeholder" (get-colors "neutral-40")]
+       [load-icon "placeholder" (get-colors "neutral-50")]
        [rn/view
         {:style style/title-container}
         [render-text title override-theme]]
@@ -320,5 +285,4 @@
      (if (= networkType "optimism/arbitrum")
        [progress-boxes-arbitrum networkState])
      (if (= networkType "mainnet")
-       (let [[green blue red] (get-status-count networkType networkState)]
-         [progress-boxes networkState]))]]]))
+         [progress-boxes networkState])]]]))

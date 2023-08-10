@@ -16,9 +16,14 @@
    :border-width  1
    :border-color  colors/neutral-10})
 
+(def title-item-container
+  {:align-items        :center
+   :flex-direction     :row
+   :padding-horizontal 12
+   :padding-vertical   13})
+
 (def item-container
   {:align-items        :center
-   :padding-horizontal 12
    :flex-direction     :row
    :padding-vertical   13})
 
@@ -32,6 +37,7 @@
 (def progress-container
   {:flex-direction   :row
    :border-top-width 1
+   :padding-horizontal 12
    :border-color     colors/neutral-5
    :padding-top      12})
 
