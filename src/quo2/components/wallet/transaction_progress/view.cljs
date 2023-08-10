@@ -18,7 +18,7 @@
     (cond
       (= current-theme :dark)
       (cond
-        (= color "neutral-5")  colors/neutral-40
+        (= color "neutral-5")  colors/neutral-70
         (= color "neutral-10") colors/neutral-80
         (= color "neutral-40") colors/neutral-50
         (= color "neutral-50") colors/neutral-60
@@ -125,8 +125,9 @@
      :height           "12"
      :marginHorizontal 2}]
    [rn/view
-    {:style        style/progress-box-arbitrum
-     :border-color (get-colors "neutral-10")}
+    {:style            style/progress-box-arbitrum
+     :background-color (get-colors "neutral-5")
+     :border-color     (get-colors "neutral-10")}
     [rn/view
      (assoc
       (let [box-style (cond

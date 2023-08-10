@@ -35,7 +35,6 @@
   [{:keys [network-state width height marginHorizontal]}]
   [rn/view
    {:accessibility-label :progress-bar
-    :background-color    (colors/theme-colors colors/white colors/neutral-95)
     :padding             0}
    [rn/view
     {:style {:width             (utils.number/parse-int width)
