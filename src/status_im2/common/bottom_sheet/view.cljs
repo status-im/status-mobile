@@ -1,5 +1,6 @@
 (ns status-im2.common.bottom-sheet.view
   (:require [oops.core :as oops]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.blur :as blur]
@@ -57,7 +58,8 @@
   [_ _]
   (let [sheet-height (reagent/atom 0)]
     (fn [{:keys [hide? insets theme]}
-         {:keys [content selected-item padding-bottom-override on-close shell?]}]
+         {:keys [content selected-item padding-bottom-override on-close shell?
+                 gradient-customization-color]}]
       (let [{window-height :height} (rn/get-window)
             bg-opacity              (reanimated/use-shared-value 0)
             translate-y             (reanimated/use-shared-value window-height)
@@ -90,6 +92,9 @@
                                      padding-bottom-override
                                      shell?))
             :on-layout #(reset! sheet-height (oops/oget % "nativeEvent" "layout" "height"))}
+           (when gradient-customization-color
+             [rn/view {:style style/gradient-bg}
+              [quo/gradient-cover {:customization-color gradient-customization-color}]])
            (when shell?
              [blur/ios-view {:style style/shell-bg}])
            (when selected-item

@@ -23,12 +23,18 @@
    :right                   0
    :border-top-left-radius  20
    :border-top-right-radius 20
-   :overflow                (when shell? :hidden)
+   :overflow                :hidden
    :flex                    1
    :padding-bottom          (or padding-bottom-override (+ bottom 8))
    :background-color        (if shell?
                               :transparent
                               (colors/theme-colors colors/white colors/neutral-95 theme))})
+
+(def gradient-bg
+  {:position :absolute
+   :top      0
+   :left     0
+   :right    0})
 
 (def shell-bg
   {:position         :absolute
