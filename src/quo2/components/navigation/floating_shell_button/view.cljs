@@ -32,9 +32,7 @@
    ;; Right Section
    [section
     [rn/view
-     {:style {:position       :absolute
-              :flex-direction :row
-              :right          0}}
+     {:style style/right-section}
      [dynamic-button-view :mention dynamic-buttons {:margin-left 8}]
      [dynamic-button-view :notification-down dynamic-buttons {:margin-left 8}]
      [dynamic-button-view :notification-up dynamic-buttons {:margin-left 8}]

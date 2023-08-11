@@ -15,3 +15,8 @@
      :padding-horizontal 12
      :pointer-events     :box-none}
     style)))
+
+(def right-section
+  {:position       :absolute
+   :flex-direction :row
+   :right          0})
