@@ -1,7 +1,7 @@
 (ns quo2.components.tabs.tab.view
   (:require [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
-            [quo2.components.notifications.notification-dot :as notification-dot]
+            [quo2.components.common.notification-dot.view :as notification-dot]
             [quo2.components.tabs.tab.style :as style]
             [quo2.theme :as theme]
             [react-native.core :as rn]
@@ -81,6 +81,7 @@
       (when show-notification-dot?
         [notification-dot/notification-dot
          {:style               style/notification-dot
+          :theme               theme
           :customization-color customization-color}])
       [rn/view
        {:style (merge
