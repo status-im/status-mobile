@@ -1,6 +1,5 @@
 (ns status-im2.contexts.wallet.home.view
   (:require
-    [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [quo2.core :as quo]
     [react-native.safe-area :as safe-area]
