@@ -203,11 +203,12 @@
     (let [online?    (rf/sub [:visibility-status-updates/online? chat-id])
           photo-path (rf/sub [:chats/photo-path chat-id])]
       [quo/user-avatar
-       {:full-name       full-name
-        :size            :small
-        :online?         online?
-        :ring?           (when muted? false)
-        :profile-picture photo-path}])
+       (cond-> {:full-name       full-name
+                :size            :small
+                :online?         online?
+                :profile-picture photo-path}
+         muted?
+         (assoc :ring? false))])
     [quo/group-avatar
      {:customization-color color
       :size                :small}]))
