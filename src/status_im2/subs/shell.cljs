@@ -67,8 +67,8 @@
                            :community-name (:name community)}})
 
          (#{constants/content-type-contact-request
-             constants/content-type-system-message-mutual-event-removed
-             constants/content-type-system-message-mutual-event-accepted}
+            constants/content-type-system-message-mutual-event-removed
+            constants/content-type-system-message-mutual-event-accepted}
           content-type)
          {:content-type constants/content-type-contact-request}))
 
