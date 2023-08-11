@@ -1021,7 +1021,7 @@
     "new-public-group-chat": "Join public chat",
     "next": "Next",
     "no": "No",
-    "no-collectibles": "No collectibles available",
+    "no-collectibles": "No collectibles",
     "no-keycard-applet-on-card": "No Keycard applet on card",
     "no-pairing-slots-available": "This card is already paired to 5 devices and cannot pair to this one. Please use one of the paired devices, log in with this card and free up pairing slots on the card",
     "no-result": "No results",
@@ -2274,5 +2274,10 @@
     "one-year": "1 year",
     "retake": "Retake",
     "use-photo": "Use Photo",
-    "photo-caps": "PHOTO"
+    "photo-caps": "PHOTO",
+    "assets": "Assets",
+    "collectibles": "Collectibles",
+    "no-collectibles-description": "Don't be a bored ape",
+    "no-activity": "No activity",
+    "no-activity-description": "C'mon do something..."
 }

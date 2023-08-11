@@ -50,8 +50,9 @@
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view
-        {:style {:flex 1}}
         [rn/view {:style {:min-height 300}} [preview/customizer state descriptor]]
         [rn/view
          {:style {:align-items :center
-                  :margin-top  50}} [quo/token-value @state]]]])))
+                  :margin-top  50}}
+         [quo/token-value @state]]]])))
+

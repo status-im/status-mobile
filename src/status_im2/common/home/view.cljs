@@ -112,6 +112,7 @@
                :on-press            #(rf/dispatch [:activity-center/open])})
        :i/activity-center]]]))
 
+;; TODO: should be moved to quo2 https://github.com/status-im/status-mobile/issues/16964
 (defn top-nav
   "[top-nav props]
   props
