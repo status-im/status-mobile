@@ -40,7 +40,9 @@ In practice, this means that sometimes they need to be merged in lockstep.
   git push origin vx.y.z
 ```
 5) Update status-mobile with the new status-go version, using the new tag `scripts/update-status-go.sh "vx.y.z"`
-6) In status-mobile, push, rebase against `develop` and merge it 🚀
+6) If you had to rebase status-go to include new changes, e2e test MUST be re-run. If there's any issue you will
+   have to fix in status-go with another PR and follow the same process.
+7) In status-mobile, push, rebase against `develop` and merge it 🚀
 
 
 important note : make sure your status-go PRs get a tested-ok by QA before merging them in. 
