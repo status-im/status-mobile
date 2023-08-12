@@ -149,13 +149,10 @@ class ActivityCenterElement(SilentButton):
         return Button(self.driver, xpath=self.locator + '//*[@content-desc="activity-message-body"]')
 
     def handle_cr(self, element_accessibility: str):
-        try:
-            accept_element = Button(self.driver,
-                                    xpath=self.locator + '/*[@content-desc="%s"]' % element_accessibility).find_element()
-        except NoSuchElementException:
-            return ''
-        if accept_element:
-            accept_element.click()
+        Button(
+            self.driver,
+            xpath=self.locator + '/*[@content-desc="%s"]' % element_accessibility
+        ).wait_for_rendering_ended_and_click()
 
     def accept_contact_request(self):
         self.handle_cr("accept-contact-request")
@@ -383,7 +380,7 @@ class HomeView(BaseView):
             chat_element.cancel_contact_request()
         else:
             self.driver.fail("Illegal option for CR!")
-        self.close_activity_centre.click()
+        self.close_activity_centre.wait_for_rendering_ended_and_click()
         self.chats_tab.wait_for_visibility_of_element()
 
     def get_username_below_start_new_chat_button(self, username_part):

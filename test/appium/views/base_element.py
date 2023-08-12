@@ -9,8 +9,7 @@ import imagehash
 from PIL import Image, ImageChops, ImageStat
 from appium.webdriver.common.mobileby import MobileBy
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -81,8 +80,8 @@ class BaseElement(object):
                     "Device %s: %s by %s: `%s` is not found on the screen" % (
                         self.driver.number, self.name, self.by, self.locator)) from None
             except Exception as exception:
-                if 'Internal Server Error' in str(exception):
-                    continue
+                # if 'Internal Server Error' in str(exception):
+                raise exception
 
     def find_elements(self):
         return self.driver.find_elements(self.by, self.locator)
@@ -150,22 +149,45 @@ class BaseElement(object):
                 "Device %s: %s by %s: `%s`  is still visible on the screen after %s seconds after wait_for_invisibility_of_element" % (
                     self.driver.number, self.name, self.by, self.locator, seconds)) from None
 
+    def wait_for_staleness_of_element(self, seconds=10):
+        try:
+            return WebDriverWait(self.driver, seconds).until(expected_conditions.staleness_of(self.find_element()))
+        except TimeoutException:
+            raise TimeoutException(
+                "Device %s: %s by %s: `%s` is not stale after %s seconds" % (
+                    self.driver.number, self.name, self.by, self.locator, seconds)) from None
+
+    def wait_for_rendering_ended_and_click(self, attempts=3):
+        for i in range(attempts):
+            try:
+                self.click()
+                self.driver.info("Attempt %s is successful clicking %s" % (i, self.locator))
+                return
+            except StaleElementReferenceException:
+                time.sleep(1)
+        raise StaleElementReferenceException(
+            msg="Device %s: continuous rendering, can't click an element by %s: %s" % (
+                self.driver.number, self.by, self.locator))
+
     def wait_for_element_text(self, text, wait_time=30, message=None):
-        counter = 0
+        if not isinstance(text, str):
+            text = str(text)
         self.driver.info("Wait for text element `%s` to be equal to `%s`" % (self.name, text))
-        while True:
-            text_element = self.find_element().text
-            if isinstance(text, int):
-                text_element = int(text_element.strip())
-            if counter >= wait_time:
-                self.driver.fail(message if message else "`%s` is not equal to expected `%s` in %s sec" % (
-                    text_element, text, wait_time))
-            elif text_element != text:
-                counter += 10
-                time.sleep(10)
-            else:
+        element_text = str()
+        counter = 0
+        while counter < wait_time:
+            try:
+                element_text = self.find_element().text.strip()
+            except StaleElementReferenceException:
+                time.sleep(1)
+                element_text = self.find_element().text.strip()
+            if element_text == text:
                 self.driver.info('Element %s text is equal to %s' % (self.name, text))
                 return
+            counter += 10
+            time.sleep(10)
+        self.driver.fail(message if message else "`%s` is not equal to expected `%s` in %s sec" % (
+            element_text, text, wait_time))
 
     def scroll_to_element(self, depth: int = 9, direction='down'):
         self.driver.info('Scrolling %s to %s' % (direction, self.name))

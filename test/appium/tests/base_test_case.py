@@ -60,25 +60,35 @@ def add_local_devices_to_capabilities():
 
 
 def get_capabilities_sauce_lab():
-    desired_caps = dict()
-    desired_caps['app'] = 'sauce-storage:' + test_suite_data.apk_name
+    caps = dict()
+    caps['platformName'] = 'Android'
+    caps['idleTimeout'] = 1000
+    caps['appium:app'] = 'sauce-storage:' + test_suite_data.apk_name
+    caps['appium:deviceName'] = 'Android GoogleAPI Emulator'
+    caps['appium:deviceOrientation'] = 'portrait'
+    caps['appium:platformVersion'] = '10.0'
+    caps['appium:automationName'] = 'UiAutomator2'
+    caps['appium:newCommandTimeout'] = 600
+    caps['appium:idleTimeout'] = 1000
+    caps['appium:unicodeKeyboard'] = True
+    caps['appium:automationName'] = 'UiAutomator2'
+    caps['appium:setWebContentDebuggingEnabled'] = True
+    caps['appium:ignoreUnimportantViews'] = False
+    caps['ignoreUnimportantViews'] = False
+    caps['appium:enableNotificationListener'] = True
+    caps['enableNotificationListener'] = True
+    caps['appium:enforceXPath1'] = True
+    caps['enforceXPath1'] = True
+    caps['sauce:options'] = dict()
+    caps['sauce:options']['appiumVersion'] = '2.0.0'
+    caps['sauce:options']['username'] = sauce_username
+    caps['sauce:options']['accessKey'] = sauce_access_key
+    caps['sauce:options']['build'] = pytest_config_global['build']
+    caps['sauce:options']['name'] = test_suite_data.current_test.name
+    caps['sauce:options']['maxDuration'] = 3600
+    caps['sauce:options']['idleTimeout'] = 1000
 
-    desired_caps['build'] = pytest_config_global['build']
-    desired_caps['name'] = test_suite_data.current_test.name
-    desired_caps['platformName'] = 'Android'
-    desired_caps['appiumVersion'] = '1.18.1'
-    desired_caps['platformVersion'] = '10.0'
-    desired_caps['deviceName'] = 'Android GoogleAPI Emulator'
-    desired_caps['deviceOrientation'] = "portrait"
-    desired_caps['commandTimeout'] = 600
-    desired_caps['idleTimeout'] = 1000
-    desired_caps['unicodeKeyboard'] = True
-    desired_caps['automationName'] = 'UiAutomator2'
-    desired_caps['setWebContentDebuggingEnabled'] = True
-    desired_caps['ignoreUnimportantViews'] = False
-    desired_caps['enableNotificationListener'] = True
-    desired_caps['maxDuration'] = 3600
-    return desired_caps
+    return caps
 
 
 def update_capabilities_sauce_lab(new_capabilities: dict):

@@ -226,6 +226,8 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         if not reply_element.unread_indicator.is_element_displayed():
             self.errors.append("No unread dot is shown on activity center element!")
 
+        self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
+
         self.home_1.just_fyi("Swiping to 'Replies' on activity center and check unread there")
         self.home_1.mention_activity_tab_button.click()
         if reply_element.is_element_displayed(2):
@@ -236,6 +238,8 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         if not reply_element.is_element_displayed():
             self.errors.append("Filter on replies tab is not working in Activity centre!")
 
+        self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
+
         self.home_1.just_fyi("Mark it as read and check filter")
         reply_element.swipe_right_on_element()
         self.home_1.activity_notification_swipe_button.click()
@@ -244,6 +248,8 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.activity_unread_filter_button.click()
         if not reply_element.is_element_displayed(2):
             self.errors.append("Read filter is not displayed read message!")
+
+        self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
 
         self.home_1.just_fyi("Mark it as unread and check filter via right swipe")
         reply_element.swipe_right_on_element()
@@ -259,6 +265,8 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.communities_tab.click()
         if self.home_1.notifications_unread_badge.is_element_displayed():
             self.errors.append("Notification was not marked as read after opening it in community channel!")
+
+        self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
 
         self.home_1.just_fyi("Delete it from unread via left swipe")
         self.home_1.open_activity_center_button.click()
@@ -323,6 +331,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_2.clear_chat_long_press(self.username_1)
 
         [home.navigate_back_to_home_view() for home in (self.home_1, self.home_2)]
+
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
         community_name = 'closed community'
