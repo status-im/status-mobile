@@ -41,7 +41,6 @@
        (reanimated/animate opacity (if hide-shell? 0 1))
        (reanimated/animate y-shell (if hide-shell? 35 0)))
      [@focused? @messages.list/show-floating-scroll-down-button])
-    (rn/use-effect #(reanimated/animate y-container neg-y) [reply edit])
     [reanimated/view
      {:style (style/shell-container height y-container)}
      [reanimated/view
