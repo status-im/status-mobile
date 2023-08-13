@@ -7,7 +7,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.shake :as react-native-shake]
-    [react-native.reanimated :as reanimated]
+    ;    [react-native.reanimated :as reanimated]
     [reagent.impl.batching :as batching]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]
     [status-im2.contexts.shell.jump-to.state :as shell.state]
@@ -54,8 +54,6 @@
   ;; We can remove this call, once reanimated library is upgraded to v3.
   ;; Also, we can't move this call to reanimated.cljs file,
   ;; because that causes component tests to fail. (as function is not mocked in library jestUtils)
-  (reanimated/enable-layout-animations true)
-
+  ;  (reanimated/enable-layout-animations true)
   (dev/setup)
-
   (re-frame/dispatch-sync [:app-started]))

@@ -145,5 +145,4 @@
                                     (js->clj event-js :keywordize-keys true))
       "curated.communities.update" (rf/dispatch [:fetched-contract-communities
                                                  (js->clj event-js :keywordize-keys true)])
-
       (log/debug "Event " type " not handled"))))

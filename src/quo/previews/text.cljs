@@ -1,10 +1,11 @@
 (ns quo.previews.text
-  (:require [quo.animated :as animated]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
-            [reagent.core :as reagent]))
+  (:require
+    ;    [quo.animated :as animated]
+    [quo.core :as quo]
+    [quo.design-system.colors :as colors]
+    [quo.previews.preview :as preview]
+    [quo.react-native :as rn]
+    [reagent.core :as reagent]))
 
 (def all-props
   (preview/list-comp [size   [:tiny :small :base :large :x-large :xx-large]
@@ -70,19 +71,31 @@
 
 (defn cool-preview
   []
-  (let [state     (reagent/atom {})
-        animation (animated/value 0)]
+  (let [state (reagent/atom {})
+        ;;;; Animated.Code is deprecated with reanimated version 1.
+        ;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+        ;;;; TODO: replace this with an updated implementation
+        ;        animation (animated/value 0)
+       ]
     (fn []
       [rn/view
        {:margin-bottom 50
         :padding       16}
-       [animated/code {:exec (animated/set animation (animated/loop* {:duration 1000}))}]
+       ;;;; Animated.Code is deprecated with reanimated version 1.
+       ;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+       ;;;; TODO: replace this with an updated implementation
+       ;       [animated/code {:exec (animated/set animation (animated/loop* {:duration 1000}))}]
        [preview/customizer state descriptor]
        [rn/view {:padding-vertical 16}
         [quo/text
          (merge @state
-                (when (:animated? @state)
-                  {:opacity animation}))
+                ;                (when (:animated? @state)
+                ;;;; Animated.Code is deprecated with reanimated version 1.
+                ;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+                ;;;; TODO: replace this with an updated implementation
+                ;                  {:opacity animation}
+                ;                      )
+         )
          "This is a demo text 1 2 0 2x2 0x0"]]])))
 
 (defn preview-text

@@ -16,14 +16,20 @@
                   value
                   {:inputRange  [0 offset]
                    :outputRange [0 4]
-                   :extrapolate (:clamp animated/extrapolate)})})
+                   ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+                   ;TODO: replace this with an updated implementation
+                   ;                   :extrapolate (:clamp animated/extrapolate)
+                  })})
    (when (and offset platform/ios?)
      {:z-index        2
       :shadow-opacity (animated/interpolate
                        value
                        {:inputRange  [0 offset]
                         :outputRange [0 1]
-                        :extrapolate (:clamp animated/extrapolate)})
+                        ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+                        ;TODO: replace this with an updated implementation
+                        ;                        :extrapolate (:clamp animated/extrapolate)
+                       })
       :shadow-radius  16
       :shadow-color   (:shadow-01 @colors/theme)
       :shadow-offset  {:width 0 :height 4}})))
@@ -36,12 +42,16 @@
 
 (defn header-container
   []
-  (let [y               (animated/value 0)
-        animation-value (animated/value 0)
+  (let [y               0 ;;(animated/value 0)
+        animation-value 0 ;;(animated/value 0)
         animation       (animated/with-timing-transition
                          animation-value
                          {:duration 250
-                          :easing   (:ease-in animated/easings)})
+                          ;commented out to upgrade react-native-reanimated to v3 and react-native to
+                          ;0.72
+                          ;TODO: replace this with an updated implementation
+                          ;                          :easing   (:ease-in animated/easings)
+                         })
         on-scroll       (animated/on-scroll {:y y})
         layout          (reagent/atom {})
         offset          (reagent/atom 0)
@@ -51,13 +61,15 @@
       [animated/view
        {:flex           1
         :pointer-events :box-none}
-       [animated/code
-        {:key  (str @offset)
-         :exec (animated/cond*
-                (animated/and* (animated/greater-or-eq y @offset)
-                               (animated/greater-or-eq y 1))
-                (animated/set animation-value 1)
-                (animated/set animation-value 0))}]
+       ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+       ;TODO: replace this with an updated implementation
+       ;       [animated/code
+       ;        {:key  (str @offset)
+       ;         :exec (animated/cond*
+       ;                (animated/and* (animated/greater-or-eq y @offset)
+       ;                               (animated/greater-or-eq y 1))
+       ;                (animated/set animation-value 1)
+       ;                (animated/set animation-value 0))}]
        [animated/view
         {:pointer-events :box-none
          :style          (header-wrapper-style {:value  y

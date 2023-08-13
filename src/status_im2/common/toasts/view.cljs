@@ -49,7 +49,11 @@
          [reanimated/view
           {:entering animation/slide-in-up-animation
            :exiting  animation/slide-out-up-animation
-           :layout   animation/linear-transition
+           ;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+           ;;; LinearTransition is deprecated
+           ;;; https://github.com/software-mansion/react-native-reanimated/issues/4362#issuecomment-1508682400
+           ;;; TODO: replace this with an updated implementation
+           ;           :layout   animation/linear-transition
            :style    (reanimated/apply-animations-to-style
                       {:transform [{:translateY translate-y}]}
                       style/each-toast-container)}

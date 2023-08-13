@@ -66,7 +66,8 @@
         (if (network/chain-id-available? networks network)
           {:dispatch [:bottom-sheet/show-sheet-old
                       {:content (fn []
-                                  [sheet/permissions-panel dapp-name message-id params])}]}
+                                  [sheet/permissions-panel dapp-name message-id
+                                   params])}]}
           (send-success-call-to-bridge cofx id message-id)))
       {:browser/send-to-bridge {:type      constants/web3-send-async-callback
                                 :messageId message-id

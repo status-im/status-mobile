@@ -129,53 +129,57 @@
                                (reanimated/animate-shared-value-with-delay bottom-view-top
                                                                            (:height (rn/get-screen))
                                                                            animations-duration
-                                                                           :easing4
+                                                                           ;                                                                           :easing4
                                                                            animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 height
                                 max-height
                                 animations-duration
-                                :easing4
+                                ;                                :easing4
                                 animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-padding
                                 (+ 68 (safe-area/get-top))
                                 animations-duration
-                                :easing4
+                                ;                                :easing4
                                 animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-children-opacity
                                 0
                                 animations-duration
-                                :easing4 animations-delay)
+                                ;                                :easing4
+                                animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-title-opacity
                                 0
                                 0
-                                :linear
+                                ;                                :linear
                                 (+ animations-delay animations-duration 500)))
         reset-top-animation  (fn []
                                (reanimated/set-shared-value top-title-opacity 1)
                                (reanimated/animate-shared-value-with-delay bottom-view-top
                                                                            80
                                                                            animations-duration
-                                                                           :easing4
+                                                                           ;                                                                           :easing4
                                                                            50)
                                (reanimated/animate-shared-value-with-timing
                                 height
                                 default-height
                                 animations-duration
-                                :easing4)
+                                ;                                :easing4
+                               )
                                (reanimated/animate-shared-value-with-timing
                                 top-padding
                                 12
                                 animations-duration
-                                :easing4)
+                                ;                                :easing4
+                               )
                                (reanimated/animate-shared-value-with-timing
                                 top-children-opacity
                                 1
                                 animations-duration
-                                :easing4))]
+                                ;                                :easing4
+                               ))]
     (rn/use-effect (fn []
                      (when on-init
                        (on-init reset-top-animation))))
