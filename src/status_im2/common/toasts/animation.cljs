@@ -13,12 +13,15 @@
       (.springify)
       (.damping 20)
       (.stiffness 150)))
-
-(def linear-transition
-  (-> ^js reanimated/linear-transition
-      .springify
-      (.damping 20)
-      (.stiffness 170)))
+;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+;;;; LinearTransition is deprecated
+;;;; https://github.com/software-mansion/react-native-reanimated/issues/4362#issuecomment-1508682400
+;;; TODO: replace this with an updated implementation
+;(def linear-transition
+;  (-> ^js reanimated/linear-transition
+;      .springify
+;      (.damping 20)
+;      (.stiffness 170)))
 
 (defn- reset-translate-y
   ([translate-y]

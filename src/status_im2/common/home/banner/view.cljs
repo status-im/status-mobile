@@ -18,7 +18,11 @@
 
 (defn- reset-banner-animation
   [scroll-shared-value]
-  (reanimated/animate-shared-value-with-timing scroll-shared-value 0 200 :easing3))
+  (reanimated/animate-shared-value-with-timing scroll-shared-value
+                                               0
+                                               200
+                                               ;                                               :easing3
+  ))
 
 (defn- reset-scroll
   [scroll-ref]

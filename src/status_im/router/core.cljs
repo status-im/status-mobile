@@ -12,7 +12,6 @@
             [status-im.ethereum.stateofus :as stateofus]
             [utils.validators :as validators]
             [status-im.utils.http :as http]
-            [status-im.utils.wallet-connect :as wallet-connect]
             [taoensso.timbre :as log]
             [utils.security.core :as security]))
 
@@ -249,9 +248,6 @@
 
       (http/url? uri)
       (cb (match-browser-string uri))
-
-      (wallet-connect/url? uri)
-      (cb {:type :wallet-connect :data uri})
 
       (string/starts-with? uri constants/local-pairing-connection-string-identifier)
       (cb {:type :localpairing :data uri})

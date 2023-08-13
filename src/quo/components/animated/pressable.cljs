@@ -72,13 +72,20 @@
         (bean/bean props)
         long-press-ref (react/create-ref)
         state (animated/use-value (:undetermined gesture-handler/states))
-        active (animated/eq state (:began gesture-handler/states))
+        active (= state (:began gesture-handler/states))
         gesture-handler (animated/use-gesture {:state state})
         animation (react/use-memo
                    (fn []
                      (animated/with-timing-transition active
                                                       {:duration (animated/cond* active time-in time-out)
-                                                       :easing   (:ease-in animated/easings)}))
+                                                       ;commented out to upgrade react-native-reanimated
+                                                       ;to v3 and react-native to 0.72
+                                                       ;TODO: replace this with an updated implementation
+                                                       ;                                                       :easing
+                                                       ;
+                                                       ;                                                       (:ease-in
+                                                       ;                                                       animated/easings)
+                                                      }))
                    [])
         {:keys [background
                 foreground]}
@@ -97,13 +104,24 @@
                                   (when (and on-long-press
                                              (= gesture-state (:active gesture-handler/states)))
                                     (on-long-press)
-                                    (animated/set-value state (:undetermined gesture-handler/states)))))
+                                    ;commented out to upgrade react-native-reanimated to v3 and
+                                    ;react-native to 0.72
+                                    ;TODO: replace this with an updated implementation
+                                    ;                                    (animated/set-value state
+                                    ;                                    (:undetermined
+                                    ;                                    gesture-handler/states))
+                                  )))
                               [on-long-press on-press-start])]
     (animated/code!
      (fn []
        (when on-press
-         (animated/cond* (animated/eq state (:end gesture-handler/states))
-                         [(animated/set state (:undetermined gesture-handler/states))
+         (animated/cond* (= state (:end gesture-handler/states))
+                         [
+                          ;commented out to upgrade react-native-reanimated to v3 and react-native to
+                          ;0.72
+                          ;TODO: replace this with an updated implementation
+                          ;                           (animated/set state (:undetermined
+                          ;                           gesture-handler/states))
                           (animated/call* [] handle-press)])))
      [on-press])
     (reagent/as-element

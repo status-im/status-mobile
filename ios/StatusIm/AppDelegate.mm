@@ -45,10 +45,6 @@ extern "C" NSString* StatusgoImageServerTLSCert();
 {
 
   self.moduleName = @"StatusIm";
-  // You can add your custom initial props in the dictionary below.
-  // They will be passed down to the ViewController used by React Native.
-  self.initialProps = @{};
-
   if (!self.bridge) {
     self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
   }

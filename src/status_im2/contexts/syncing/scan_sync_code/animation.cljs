@@ -8,7 +8,7 @@
    subtitle-opacity
    1
    constants/onboarding-modal-animation-duration
-   :easing4
+   ;   :easing4
    (/ constants/onboarding-modal-animation-delay 2)))
 
 (defn animate-title
@@ -17,7 +17,7 @@
    title-opacity
    1
    0
-   :easing4
+   ;   :easing4
    (+ constants/onboarding-modal-animation-duration
       constants/onboarding-modal-animation-delay)))
 
@@ -36,7 +36,7 @@
    content-opacity
    1
    constants/onboarding-modal-animation-duration
-   :easing4
+   ;   :easing4
    (/ constants/onboarding-modal-animation-delay 2)))
 
 (defn reset-animations
@@ -45,17 +45,20 @@
    content-opacity
    0
    (/ constants/onboarding-modal-animation-duration 8)
-   :easing4)
+   ;   :easing4
+  )
 
   (reanimated/animate-shared-value-with-timing
    subtitle-opacity
    0
    (- constants/onboarding-modal-animation-duration
       constants/onboarding-modal-animation-delay)
-   :easing4)
+   ;   :easing4
+  )
 
   (reanimated/animate-shared-value-with-timing
    title-opacity
    0
    0
-   :easing4))
+   ;   :easing4
+  ))

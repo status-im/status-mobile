@@ -12,8 +12,8 @@
             [status-im.utils.http :as http]
             [utils.money :as money]
             [status-im.utils.universal-links.utils :as links]
-            [status-im.utils.wallet-connect :as wallet-connect]
-            [status-im2.navigation.events :as navigation]))
+            [status-im2.navigation.events :as navigation]
+            [clojure.string :as string]))
 
 ;; FIXME(Ferossgp): Should be part of QR scanner not wallet
 (rf/defn toggle-flashlight
@@ -144,7 +144,7 @@
       (if (links/universal-link? uri)
         {:dispatch [:universal-links/handle-url uri]}
         {:browser/show-browser-selection uri})
-      (if (wallet-connect/url? uri)
+      (if (string/starts-with? uri "wc:")
         {:ui/show-error "Wallet Connect not implemented"}
         ;; Re-enable with https://github.com/status-im/status-mobile/issues/13429
         ;; {:dispatch [::qr-scaner/handle-wallet-connect-uri {:data uri}]}

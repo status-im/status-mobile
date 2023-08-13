@@ -74,7 +74,7 @@
        #(reanimated/animate-shared-value-with-delay translate-x
                                                     (- window-width)
                                                     constants/onboarding-modal-animation-duration
-                                                    :linear
+                                                    ;                                                    :linear
                                                     200)]]]))
 
 (defn view

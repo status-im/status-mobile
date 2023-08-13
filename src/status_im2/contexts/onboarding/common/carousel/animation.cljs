@@ -18,8 +18,12 @@
    progress-bar-animation-delay
    (reanimated/with-timing
     progress-percentage
-    (js-obj "duration" (or duration progress-bar-animation-duration)
-            "easing"   (:linear reanimated/easings)))))
+    (js-obj "duration"
+            (or duration progress-bar-animation-duration)
+            ;;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+            ;;TODO: replace this with an updated implementation
+            ;            "easing"   (:linear reanimated/easings)
+    ))))
 
 (defn calculate-remainder
   [dividend divisor]

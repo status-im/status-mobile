@@ -1,10 +1,13 @@
 (ns quo.animated
   (:refer-clojure :exclude [abs set delay divide])
-  (:require ["react-native-reanimated" :default animated :refer (clockRunning EasingNode)]
+  (:require ["react-native-reanimated" :default animated :refer
+             (clockRunning
+              ;                                                                 EasingNode
+             )]
             ["react-native-redash" :as redash]
             [oops.core :refer [ocall oget]]
             [quo.gesture-handler :as gh]
-            quo.react
+            [quo.react]
             [quo.react-native :as rn]
             [reagent.core :as reagent])
   (:require-macros [quo.react :refer [maybe-js-deps]]))
@@ -14,7 +17,11 @@
 (def view (reagent/adapt-react-class (.-View animated)))
 (def text (reagent/adapt-react-class (.-Text animated)))
 (def scroll-view (reagent/adapt-react-class (.-ScrollView animated)))
-(def code (reagent/adapt-react-class (.-Code animated)))
+
+;;;; Animated.Code is deprecated with reanimated version 1.
+;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+;;;;; TODO: replace this with an updated implementation
+;(def code (reagent/adapt-react-class (.-Code animated)))
 (def animated-flat-list (create-animated-component gh/flat-list-raw))
 
 (defn flat-list
@@ -32,41 +39,74 @@
     (fn [] (setup-fn))
     (maybe-js-deps deps))))
 
-(def eq (oget animated "eq"))
-(def neq (oget animated "neq"))
-(def greater (oget animated "greaterThan"))
-(def greater-or-eq (oget animated "greaterOrEq"))
-(def less (oget animated "lessThan"))
-(def less-or-eq (oget animated "lessOrEq"))
-(def not* (oget animated "not"))
-(def or* (oget animated "or"))
-(def and* (oget animated "and"))
+;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+;;;;; TODO: replace this with an updated implementation
+;;;ERROR  Error: Oops, Missing expected object key 'eq'
+;(def eq (oget animated "eq"))
+;;; ERROR  Error: Oops, Missing expected object key 'neq'
+;(def neq (oget animated "neq"))
+;;;ERROR  Error: Oops, Missing expected object key 'greaterThan'
+;(def greater (oget animated "greaterThan"))
+;;;ERROR  Error: Oops, Missing expected object key 'greaterOrEq'
+;(def greater-or-eq (oget animated "greaterOrEq"))
+;;;ERROR  Error: Oops, Missing expected object key 'lessThan'
+;(def less (oget animated "lessThan"))
+;;;ERROR  Error: Oops, Missing expected object key 'lessOrEq'
+;(def less-or-eq (oget animated "lessOrEq"))
+;;;ERROR  Error: Oops, Missing expected object key 'not'
+;(def not* (oget animated "not"))
+;;;ERROR  Error: Oops, Missing expected object key 'or'
+;(def or* (oget animated "or"))
+;;;ERROR  Error: Oops, Missing expected object key 'and'
+;(def and* (oget animated "and"))
 
-(def diff (oget animated "diff"))
-(def add (oget animated "add"))
-(def sub (oget animated "sub"))
-(def multiply (oget animated "multiply"))
-(def divide (oget animated "divide"))
-(def abs (oget animated "abs"))
+;;;ERROR  Error: Oops, Missing expected object key 'diff'
+;(def diff (oget animated "diff"))
+;;;ERROR  Error: Oops, Missing expected object key 'add'
+;(def add (oget animated "add"))
+;;;ERROR  Error: Oops, Missing expected object key 'add'
+;(def sub (oget animated "sub"))
+;;;ERROR  Error: Oops, Missing expected object key 'multiply'
+;(def multiply (oget animated "multiply"))
+;;;ERROR  Error: Oops, Missing expected object key 'divide'
+;(def divide (oget animated "divide"))
+;;;ERROR  Error: Oops, Missing expected object key 'abs'
+;(def abs (oget animated "abs"))
 
-(def min* (oget animated "min"))
-(def max* (oget animated "max"))
+;;;ERROR  Error: Oops, Missing expected object key 'min'
+;(def min* (oget animated "min"))
+;;;ERROR  Error: Oops, Missing expected object key 'max'
+;(def max* (oget animated "max"))
 
-(def set (oget animated "set"))
-(def start-clock (oget animated "startClock"))
-(def stop-clock (oget animated "stopClock"))
+;;;ERROR  Error: Oops, Missing expected object key 'set'
+;(def set (oget animated "set"))
+;;;ERROR  Error: Oops, Missing expected object key 'startClock'
+;(def start-clock (oget animated "startClock"))
+;;;ERROR  Error: Oops, Missing expected object key 'stopClock'
+;(def stop-clock (oget animated "stopClock"))
+
 (def clock-running clockRunning)
-(def bezier (.-bezier ^js EasingNode))
-(def linear (.-linear ^js EasingNode))
 
-(def easings
-  {:linear      linear
-   :ease-in     (bezier 0.42 0 1 1)
-   :ease-out    (bezier 0 0 0.58 1)
-   :ease-in-out (bezier 0.42 0 0.58 1)
-   :cubic       (bezier 0.55 0.055 0.675 0.19)
-   :keyboard    (bezier 0.17 0.59 0.4 0.77)})
+;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+;;;;; TODO: replace this with an updated implementation
+;;;TypeError: undefined is not an object (evaluating
+;;;'shadow.js.shim.module$react_native_reanimated.EasingNode.bezier')
+;(def bezier (.-bezier ^js EasingNode))
 
+;;;ERROR  TypeError: undefined is not an object (evaluating
+;;;'shadow.js.shim.module$react_native_reanimated.EasingNode.linear')
+;(def linear (.-linear ^js EasingNode))
+
+
+;;; They depend on bezier and linear
+;(def easings
+;  {:linear      linear
+;   :ease-in     (bezier 0.42 0 1 1)
+;   :ease-out    (bezier 0 0 0.58 1)
+;   :ease-in-out (bezier 0.42 0 0.58 1)
+;   :cubic       (bezier 0.55 0.055 0.675 0.19)
+;   :keyboard    (bezier 0.17 0.59 0.4 0.77)})
+;
 (def springs
   {:lazy {:damping           50
           :mass              0.3
@@ -80,32 +120,39 @@
           :bouncyFactor              1
           :restSpeedThreshold        0.001
           :restDisplacementThreshold 0.001}})
-
+;
 (defn set-value
   [anim v]
   (ocall anim "setValue" v))
 
-(def Value (oget animated "Value"))
+;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+;;;;; TODO: replace this with an updated implementation
+;;;ERROR  Error: Oops, Missing expected object key 'Value'
+;(def Value (oget animated "Value"))
+;;;ERROR  Error: Oops, Missing expected object key 'Value'
+;(defn value
+;  [x]
+;  (new Value x))
 
-(defn value
-  [x]
-  (new Value x))
+;;;ERROR  Error: Oops, Missing expected object key 'Clock'
+;(def Clock (oget animated "Clock"))
+;;;ERROR  Error: Oops, Missing expected object key 'Clock'
+;(defn clock
+;  []
+;  (new Clock))
 
-(def Clock (oget animated "Clock"))
+;;;ERROR  Error: Oops, Missing expected object key 'debug'
+;(def debug (oget animated "debug"))
 
-(defn clock
-  []
-  (new Clock))
-
-(def debug (oget animated "debug"))
-(def log (oget animated "log"))
-
+;;;ERROR  Error: Oops, Missing expected object key 'log'
+;(def log (oget animated "log"))
+;
 (defn event
   ([config]
    (event config {}))
   ([config options]
    (ocall animated "event" (clj->js config) (clj->js options))))
-
+;
 (defn on-change
   [state node]
   (ocall animated
@@ -131,7 +178,7 @@
           (if (vector? else-node)
             (clj->js else-node)
             else-node))))
-
+;
 (defn block
   [opts]
   (.block ^js animated (to-array opts)))
@@ -150,7 +197,7 @@
            clock-value
            (clj->js opts)
            (clj->js config)))
-
+;
 (defn spring
   [clock-value opts config]
   (.spring ^js animated
@@ -158,13 +205,16 @@
            (clj->js opts)
            (clj->js config)))
 
-(def extrapolate {:clamp (oget animated "Extrapolate" "CLAMP")})
-
-;; utilities
-
+;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+;;;;; TODO: replace this with an updated implementation
+;;;ERROR  Error: Oops, Missing expected object key 'log'
+;(def extrapolate {:clamp (oget animated "Extrapolate" "CLAMP")})
+;
+;;; utilities
+;
 (def clamp (oget redash "clamp"))
 (def diff-clamp (.-diffClamp ^js redash))
-
+;
 (defn with-spring
   [config]
   (ocall redash "withSpring" (clj->js config)))
@@ -235,38 +285,40 @@
   [v velocity snap-points]
   (.snapPoint ^js redash v velocity (to-array snap-points)))
 
-(defn with-easing
-  [{v     :value
-    :keys [snap-points velocity offset state easing duration
-           animation-over]
-    :or   {duration       250
-           animation-over (value 1)
-           easing         (:ease-out easings)}}]
-  (let [position         (value 0)
-        c                (clock)
-        interrupted      (and* (eq state (:began gh/states))
-                               (clock-running c))
-        vel              (multiply velocity 1.5)
-        to               (snap-point position vel snap-points)
-        finish-animation [(set offset position)
-                          (stop-clock c)
-                          (set animation-over 1)]]
-    (block
-     [(cond* interrupted finish-animation)
-      (cond* animation-over
-             (set position offset))
-      (cond* (neq state (:end gh/states))
-             [(set animation-over 0)
-              (set position (add offset v))])
-      (cond* (and* (eq state (:end gh/states))
-                   (not* animation-over))
-             [(set position
-                   (re-timing
-                    {:clock    c
-                     :easing   easing
-                     :duration duration
-                     :from     position
-                     :to       to}))
-              (cond* (not* (clock-running c))
-                     finish-animation)])
-      position])))
+;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+;;;;; TODO: replace this with an updated implementation
+;(defn with-easing
+;  [{v     :value
+;    :keys [snap-points velocity offset state easing duration
+;           animation-over]
+;    :or   {duration       250
+;           animation-over (value 1)
+;           easing         (:ease-out easings)}}]
+;  (let [position         (value 0)
+;        c                (clock)
+;        interrupted      (and* (eq state (:began gh/states))
+;                               (clock-running c))
+;        vel              (multiply velocity 1.5)
+;        to               (snap-point position vel snap-points)
+;        finish-animation [(set offset position)
+;                          (stop-clock c)
+;                          (set animation-over 1)]]
+;    (block
+;     [(cond* interrupted finish-animation)
+;      (cond* animation-over
+;             (set position offset))
+;      (cond* (neq state (:end gh/states))
+;             [(set animation-over 0)
+;              (set position (add offset v))])
+;      (cond* (and* (eq state (:end gh/states))
+;                   (not* animation-over))
+;             [(set position
+;                   (re-timing
+;                    {:clock    c
+;                     :easing   easing
+;                     :duration duration
+;                     :from     position
+;                     :to       to}))
+;              (cond* (not* (clock-running c))
+;                     finish-animation)])
+;      position])))

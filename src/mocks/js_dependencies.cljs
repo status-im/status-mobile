@@ -432,7 +432,6 @@
     "../src/js/worklets/parallax.js"                 #js {}
     "../src/js/worklets/identifiers_highlighting.js" #js {}
     "./fleets.js"                                    default-fleets
-    "@walletconnect/client"                          wallet-connect-client
     "../translations/ar.json"                        (js/JSON.parse (slurp "./translations/ar.json"))
     "../translations/de.json"                        (js/JSON.parse (slurp "./translations/de.json"))
     "../translations/en.json"                        (js/JSON.parse (slurp "./translations/en.json"))

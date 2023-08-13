@@ -22,7 +22,7 @@
 
 (defn bottom-sheet-hooks
   [props]
-  (let [{on-cancel          :onCancel
+  (let [{;          on-cancel          :onCancel
          disable-drag?      :disableDrag?
          show-handle?       :showHandle?
          visible?           :visible?
@@ -51,7 +51,9 @@
                                                                 ;; implemented
                                                                 ;; https://github.com/wix/react-native-navigation/issues/7225
                            0))
-        min-height (+ (* styles/vertical-padding 2) (:bottom safe-area))
+        ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+        ;TODO: uncomment this when this let binding is in use
+        ;        min-height (+ (* styles/vertical-padding 2) (:bottom safe-area))
         max-height (- window-height (:top safe-area))
         visible (react/state false)
 
@@ -59,11 +61,15 @@
         master-velocity-y (animated/use-value (:undetermined gesture-handler/states))
         master-state (animated/use-value (:undetermined gesture-handler/states))
         tap-state (animated/use-value 0)
-        manual-open (animated/use-value 0)
+        ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+        ;TODO: replace this with an updated implementation
+        ;        manual-open (animated/use-value 0)
         manual-close (animated/use-value 0)
-        offset (animated/use-value 0)
-        drag-over (animated/use-value 1)
-        clock (animated/use-clock)
+        ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+        ;TODO: replace this with an updated implementation
+        ;        offset (animated/use-value 0)
+        ;        drag-over (animated/use-value 1)
+        ;        clock (animated/use-clock)
         tap-gesture-handler (animated/use-gesture {:state tap-state})
         on-master-event (animated/use-gesture
                          {:translationY master-translation-y
@@ -73,100 +79,118 @@
         sheet-height (min max-height
                           (+ styles/border-radius @height))
 
-        open-snap-point (animated/use-value 0)
-        close-snap-point 0
-        on-close (fn []
-                   (when @visible
-                     (reset! visible false)
-                     (reset! height 0)
-                     (when on-cancel
-                       (on-cancel))))
+        ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+        ;TODO: replace this with an updated implementation
+        ;        open-snap-point (animated/use-value 0)
+        ;        close-snap-point 0
+        ;        on-close (fn []
+        ;                   (when @visible
+        ;                     (reset! visible false)
+        ;                     (reset! height 0)
+        ;                     (when on-cancel
+        ;                       (on-cancel))))
         close-sheet (fn []
                       (animated/set-value manual-close 1))
-        on-snap (fn [pos]
-                  (when (= close-snap-point (aget pos 0))
-                    (on-close)))
-        interrupted (animated/and* (animated/eq master-state (:began gesture-handler/states))
-                                   (animated/clock-running clock))
-        translate-y (react/use-memo
-                     (fn []
-                       (animated/with-easing
-                        {:value          (animated/cond* (animated/less-or-eq master-translation-y 0)
-                                                         (animated/divide master-translation-y 2)
-                                                         master-translation-y)
-                         :velocity       master-velocity-y
-                         :offset         offset
-                         :state          master-state
-                         :animation-over drag-over
-                         :snap-points    [open-snap-point close-snap-point]}))
-                     [])
+        ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+        ;TODO: replace this with an updated implementation
+        ;        on-snap (fn [pos]
+        ;                  (when (= close-snap-point (aget pos 0))
+        ;                    (on-close)))
+        ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+        ;TODO: replace this with an updated implementation
+        ;        interrupted (animated/and* (animated/eq master-state (:began gesture-handler/states))
+        ;                                   (animated/clock-running clock))
+        ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+        ;TODO: replace this with an updated implementation
+        ;        translate-y (react/use-memo
+        ;                     (fn []
+        ;                       (animated/with-easing
+        ;                        {:value          (animated/cond* (animated/less-or-eq
+        ;                        master-translation-y 0)
+        ;                                                         (animated/divide
+        ;                                                         master-translation-y
+        ;                                                         2)
+        ;                                                         master-translation-y)
+        ;                         :velocity       master-velocity-y
+        ;                         :offset         offset
+        ;                         :state          master-state
+        ;                         :animation-over drag-over
+        ;                         :snap-points    [open-snap-point close-snap-point]})
+        ;                     )
+        ;                     [])
         opacity (react/use-memo
                  (fn []
-                   (animated/cond*
-                    open-snap-point
-                    (animated/interpolate
-                     translate-y
-                     {:inputRange  [(animated/multiply open-snap-point opacity-coeff) 0]
-                      :outputRange [1 0]
-                      :extrapolate (:clamp animated/extrapolate)})))
+                     ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+                     ;TODO: replace this with an updated implementation
+                     ;                   (animated/cond*
+                     ;                    open-snap-point
+                     ;                    (animated/interpolate
+                     ;                     translate-y
+                     ;                     {:inputRange  [(animated/multiply open-snap-point
+                     ;                     opacity-coeff) 0]
+                     ;                      :outputRange [1 0]
+                     ;                      :extrapolate (:clamp animated/extrapolate)}))
+                 )
                  [])]
-    (animated/code!
-     (fn []
-       (animated/cond* (animated/and* (animated/eq master-state (:end gesture-handler/states))
-                                      (animated/not* drag-over))
-                       (animated/call* [translate-y] on-snap)))
-     [on-snap])
-    (animated/code!
-     (fn []
-       (animated/block
-        [(animated/cond* (animated/and* interrupted manual-open)
-                         [(animated/set manual-open 0)
-                          (animated/set offset open-snap-point)
-                          (animated/stop-clock clock)])
-         (animated/cond* (animated/and* manual-open
-                                        (animated/not* manual-close))
-                         [(animated/set offset
-                                        (animated/re-spring {:from   offset
-                                                             :to     open-snap-point
-                                                             :clock  clock
-                                                             :config spring-config}))
-                          (animated/cond* (animated/not* (animated/clock-running clock))
-                                          (animated/set manual-open 0))])]))
-     [])
-    (animated/code!
-     (fn []
-       (animated/block
-        [(animated/cond* (animated/and* interrupted manual-close)
-                         [(animated/set manual-close 0)
-                          (animated/set offset close-snap-point)
-                          (animated/call* [] on-close)
-                          (animated/stop-clock clock)])
-         (animated/cond* (animated/eq tap-state (:end gesture-handler/states))
-                         [(animated/cond* (animated/and* (animated/not* manual-close))
-                                          [(animated/stop-clock clock)
-                                           (animated/set manual-close 1)])
-                          (animated/set tap-state (:undetermined gesture-handler/states))])
-         (animated/cond* manual-close
-                         [(animated/set offset
-                                        (animated/re-timing {:from     offset
-                                                             :to       close-snap-point
-                                                             :clock    clock
-                                                             :easing   (:ease-out animated/easings)
-                                                             :duration close-duration}))
-                          (animated/cond* (animated/not* (animated/clock-running clock))
-                                          [(animated/set manual-close 0)
-                                           (animated/set manual-open 0)
-                                           (animated/call* [] on-close)])])]))
-     [on-cancel])
-    (animated/code!
-     (fn []
-       (animated/cond* (animated/and* (animated/not* manual-close)
-                                      (if @visible 1 0)
-                                      (if (> @height min-height) 1 0))
-                       [(animated/stop-clock clock)
-                        (animated/set open-snap-point (* -1 sheet-height))
-                        (animated/set manual-open 1)]))
-     [@height @visible])
+    ;commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
+    ;TODO: replace this with an updated implementation
+    ;    (animated/code!
+    ;     (fn []
+    ;       (animated/cond* (animated/and* (animated/eq master-state (:end gesture-handler/states))
+    ;                                      (animated/not* drag-over))
+    ;                       (animated/call* [translate-y] on-snap)))
+    ;     [on-snap])
+    ;    (animated/code!
+    ;     (fn []
+    ;       (animated/block
+    ;        [(animated/cond* (animated/and* interrupted manual-open)
+    ;                         [(animated/set manual-open 0)
+    ;                          (animated/set offset open-snap-point)
+    ;                          (animated/stop-clock clock)])
+    ;         (animated/cond* (animated/and* manual-open
+    ;                                        (animated/not* manual-close))
+    ;                         [(animated/set offset
+    ;                                        (animated/re-spring {:from   offset
+    ;                                                             :to     open-snap-point
+    ;                                                             :clock  clock
+    ;                                                             :config spring-config}))
+    ;                          (animated/cond* (animated/not* (animated/clock-running clock))
+    ;                                          (animated/set manual-open 0))])]))
+    ;     [])
+    ;    (animated/code!
+    ;     (fn []
+    ;       (animated/block
+    ;        [(animated/cond* (animated/and* interrupted manual-close)
+    ;                         [(animated/set manual-close 0)
+    ;                          (animated/set offset close-snap-point)
+    ;                          (animated/call* [] on-close)
+    ;                          (animated/stop-clock clock)])
+    ;         (animated/cond* (animated/eq tap-state (:end gesture-handler/states))
+    ;                         [(animated/cond* (animated/and* (animated/not* manual-close))
+    ;                                          [(animated/stop-clock clock)
+    ;                                           (animated/set manual-close 1)])
+    ;                          (animated/set tap-state (:undetermined gesture-handler/states))])
+    ;         (animated/cond* manual-close
+    ;                         [(animated/set offset
+    ;                                        (animated/re-timing {:from     offset
+    ;                                                             :to       close-snap-point
+    ;                                                             :clock    clock
+    ;                                                             :easing   (:ease-out animated/easings)
+    ;                                                             :duration close-duration}))
+    ;                          (animated/cond* (animated/not* (animated/clock-running clock))
+    ;                                          [(animated/set manual-close 0)
+    ;                                           (animated/set manual-open 0)
+    ;                                           (animated/call* [] on-close)])])]))
+    ;     [on-cancel])
+    ;    (animated/code!
+    ;     (fn []
+    ;       (animated/cond* (animated/and* (animated/not* manual-close)
+    ;                                      (if @visible 1 0)
+    ;                                      (if (> @height min-height) 1 0))
+    ;                       [(animated/stop-clock clock)
+    ;                        (animated/set open-snap-point (* -1 sheet-height))
+    ;                        (animated/set manual-open 1)]))
+    ;     [@height @visible])
     ;; NOTE(Ferossgp): Remove me when RNGH will suport modal
     (rn/use-back-handler
      (fn []
@@ -198,10 +222,16 @@
                           :background-color (:backdrop @colors/theme)}))}]]
       [animated/view
        {:style (merge (styles/content-container window-height)
-                      {:transform [{:translateY (if (= sheet-height max-height)
-                                                  (animated/add translate-y
-                                                                keyboard-height-android-delta)
-                                                  translate-y)}
+                      {:transform [{:translateY (* window-height 2)
+                                    ;commented out to upgrade react-native-reanimated to v3 and
+                                    ;react-native to 0.72
+                                    ;TODO: replace this with an updated implementation
+                                    ;                                    (if (= sheet-height max-height)
+                                    ;                                                  (animated/add
+                                    ;                                                  translate-y
+                                    ;                                                                keyboard-height-android-delta)
+                                    ;                                                  translate-y)
+                                   }
                                    {:translateY (* window-height 2)}]})}
        [gesture-handler/pan-gesture-handler
         (merge on-master-event
