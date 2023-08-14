@@ -1,6 +1,6 @@
 (ns quo2.components.wallet.wallet-overview.view
   (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as quo2]
+            [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
             [utils.i18n :as i18n]
             [quo2.components.wallet.wallet-overview.style :as style]
@@ -20,36 +20,40 @@
        bars))
 
 ;; temporary placeholder for network dropdown component
-(defn- network-dropdown
+(defn- network-dropdown-temporary
   []
   [:<>
-   [rn/view {:style style/network-dropdown}]])
+   [rn/view
+    {:style (merge style/network-dropdown
+                   {:justify-content :center
+                    :align-items     :center})}
+    [text/text "[WIP]"]]])
 
 (defn- view-info-top
   [{:keys [state balance theme]}]
   [rn/view {:style style/container-info-top}
    (if (= state :loading)
      (loading-bars [{:width 201 :height 20 :margin 0}] theme)
-     [quo2/text
+     [text/text
       {:weight :semi-bold
        :size   :heading-1
        :style  (style/style-text-heading theme)}
       balance])
-   [network-dropdown]])
+   [network-dropdown-temporary]])
 
 (defn- view-metrics
   [metrics currency-change percentage-change]
   [rn/view
    {:style {:flex-direction :row
             :align-items    :center}}
-   [quo2/text
+   [text/text
     {:weight :medium
      :size   :paragraph-2
      :style  {:color (style/color-metrics metrics)}}
     percentage-change]
    [rn/view
     {:style (style/dot-separator metrics)}]
-   [quo2/text
+   [text/text
     {:weight :medium
      :size   :paragraph-2
      :style  {:color        (style/color-metrics metrics)
@@ -74,14 +78,14 @@
                      {:width 10 :height 10 :margin 0}]
                     theme)])
    (when (and (= state :default) (= time-frame :selected))
-     [quo2/text
+     [text/text
       {:weight :medium
        :size   :paragraph-2
        :style  (style/style-text-paragraph theme)}
       date])
    (when (and (= state :default) (= time-frame :custom))
      [rn/view {:style {:flex-direction :row}}
-      [quo2/text
+      [text/text
        {:weight :medium
         :size   :paragraph-2
         :style  (style/style-text-paragraph theme)}
@@ -89,14 +93,14 @@
       [icons/icon :i/positive-right
        {:color (style/color-text-paragraph theme)
         :size  16}]
-      [quo2/text
+      [text/text
        {:weight :medium
         :size   :paragraph-2
         :style  (style/style-text-paragraph theme)}
        end-date]])
    (when (and (= state :default) (not (#{:none :selected} time-frame)))
      [rn/view {:style {:flex-direction :row}}
-      [quo2/text
+      [text/text
        {:weight :medium
         :size   :paragraph-2
         :style  {:color        (style/color-text-paragraph theme)
@@ -108,9 +112,8 @@
 (defn- view-internal
   [props]
   [rn/view {:style style/container-info}
-   [rn/view {:style {:flex 1}}
-    [view-info-top props]
-    [view-info-bottom props]]])
+   [view-info-top props]
+   [view-info-bottom props]])
 
 (def view
   (quo.theme/with-theme view-internal))

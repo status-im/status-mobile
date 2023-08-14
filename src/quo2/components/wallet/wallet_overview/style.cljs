@@ -2,16 +2,15 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def container-info
-  {:flex               1
-   :padding-horizontal 20
+  {:padding-horizontal 20
    :padding-top        12
-   :padding-bottom     32})
+   :flex-grow          1
+   :padding-bottom     32
+   :max-height         98})
 
 (def container-info-top
   {:flex-direction  :row
-   :flex            1
-   :justify-content :space-between
-   :align-items     :center})
+   :justify-content :space-between})
 
 (def network-dropdown
   {:border-color  colors/neutral-50

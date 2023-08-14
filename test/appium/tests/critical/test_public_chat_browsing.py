@@ -332,7 +332,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         element_templates = {
             self.community_view.join_button: 'discovery_join_button.png',
             self.community_view.get_channel_avatar(): 'discovery_general_channel.png',
-            }
+        }
         for element, template in element_templates.items():
             if element.is_element_differs_from_template(template):
                 element.save_new_screenshot_of_element('%s_different.png' % element.name)
@@ -570,7 +570,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         # self.chat_2 = self.home_2.get_chat(self.username_1).click()
         self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
         self.chat_2.send_message(self.text_message)
-        self.chat_2.element_by_text_part('View').click()
+        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
@@ -1142,4 +1142,75 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         community_to_leave.leave_community_button.click()
         if not community.is_element_disappeared():
             self.errors.append('Community is still shown in the list after leave')
+        self.errors.verify_no_errors()
+
+    @marks.xfail(reason="Can't invite user to closed community https://github.com/status-im/status-mobile/issues/16968",
+                 run=False)
+    @marks.testrail_id(702948)
+    def test_community_hashtag_links_to_community_channels(self):
+        for home in self.homes:
+            home.click_system_back_button_until_element_is_shown()
+        self.home_2.jump_to_messages_home()
+        self.home_1.jump_to_communities_home()
+
+        self.home_1.just_fyi("Device 1 creates a closed community")
+        self.home_1.create_community(community_type="closed")
+        community_name = "closed community"
+        self.community_1.send_invite_to_community(community_name, self.username_2)
+
+        self.home_2.just_fyi("Device 2 joins the community")
+        self.home_2.get_chat(self.username_1).click()
+        control_message_1_1_chat = "it is just a message text"
+        self.chat_2.send_message(control_message_1_1_chat)
+        self.chat_2.chat_element_by_text(community_name).view_community_button.click()
+        self.community_2.join_community()
+
+        dogs_channel, cats_channel = "dogs", "cats"
+        cats_message = "Where is a cat?"
+
+        self.home_1.just_fyi("Device 1 sends a message in the cats channel")
+        self.home_1.get_to_community_channel_from_home(community_name=community_name, channel_name=cats_channel)
+        self.channel_1.send_message(cats_message)
+        self.channel_1.click_system_back_button_until_element_is_shown(
+            element=self.community_1.get_channel(dogs_channel))
+
+        self.home_1.just_fyi("Device 1 sends a message with hashtag in the dogs channel")
+        self.community_1.get_channel(dogs_channel).click_until_presence_of_element(self.channel_1.chat_message_input)
+        message_with_hashtag = "#cats"
+        self.channel_1.send_message(message_with_hashtag)
+
+        self.home_2.just_fyi("Device 2 clicks on the message with hashtag in the community channel")
+        self.community_2.get_channel(dogs_channel).click_until_presence_of_element(self.channel_2.chat_message_input)
+        self.channel_2.chat_element_by_text(message_with_hashtag).message_body.wait_for_visibility_of_element(30)
+        self.channel_2.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
+            rel_x=0.2, rel_y=0.5)
+        if not self.channel_2.chat_element_by_text(cats_message).is_element_displayed(30):
+            self.errors.append("Receiver was not navigated to the cats channel")
+
+        self.home_1.just_fyi("Device 1 clicks on the message with hashtag in the community channel")
+        self.channel_1.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
+            rel_x=0.2, rel_y=0.5)
+        if not self.channel_1.chat_element_by_text(cats_message).is_element_displayed(30):
+            self.errors.append("Sender was not navigated to the cats channel")
+
+        [home.jump_to_messages_home() for home in self.homes]
+
+        self.home_2.just_fyi("Device 2 sends a message with hashtag in 1-1 chat")
+        self.home_2.get_chat(self.username_1).click()
+        self.chat_2.send_message(message_with_hashtag)
+
+        self.home_1.just_fyi("Device 1 clicks on the message with hashtag in 1-1 chat")
+        self.home_1.get_chat(self.username_2).click()
+        self.chat_1.chat_element_by_text(message_with_hashtag).message_body.wait_for_visibility_of_element(30)
+        self.chat_1.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
+            rel_x=0.2, rel_y=0.5)
+        if self.chat_1.chat_element_by_text(control_message_1_1_chat).is_element_disappeared():
+            self.errors.append("Receiver was navigated out of 1-1 chat")
+
+        self.home_2.just_fyi("Device 2 clicks on the message with hashtag in 1-1 chat")
+        self.chat_2.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
+            rel_x=0.2, rel_y=0.5)
+        if self.chat_2.chat_element_by_text(control_message_1_1_chat).is_element_disappeared():
+            self.errors.append("Sender was navigated out of 1-1 chat")
+
         self.errors.verify_no_errors()

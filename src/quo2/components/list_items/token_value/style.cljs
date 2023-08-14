@@ -3,8 +3,7 @@
 
 (defn container
   [color bg-opacity theme]
-  {:width              359
-   :height             56
+  {:height             56
    :padding-horizontal 12
    :padding-vertical   8
    :border-radius      12
