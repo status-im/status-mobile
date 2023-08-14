@@ -110,9 +110,9 @@
      :group
      [tag-skeleton {:theme theme :size size :text group-name}
       [group-avatar/view
-       {:icon-name :i/members
-        :size      (if (= size 24) :small 28)
-        :color     (colors/custom-color :purple 50)}]]
+       {:icon-name           :i/members
+        :size                (if (= size 24) :x-small :small)
+        :customization-color (colors/custom-color :purple 50)}]]
 
      (:channel :community)
      [communities-tag (assoc props :channel? (= type :channel))]
