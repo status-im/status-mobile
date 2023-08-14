@@ -8,13 +8,15 @@
 
 (defn tabs
   []
-  (let [filter-type                   (rf/sub [:activity-center/filter-type])
+  (let [customization-color           (rf/sub [:profile/customization-color])
+        filter-type                   (rf/sub [:activity-center/filter-type])
         types-with-unread             (rf/sub [:activity-center/notification-types-with-unread])
         is-mark-all-as-read-undoable? (boolean (rf/sub
                                                 [:activity-center/mark-all-as-read-undoable-till]))]
     [quo/tabs
      {:size                32
       :scrollable?         true
+      :customization-color customization-color
       :blur?               true
       :style               style/tabs
       :fade-end-percentage 0.79

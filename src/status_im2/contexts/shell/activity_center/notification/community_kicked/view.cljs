@@ -18,7 +18,7 @@
    child])
 
 (defn view
-  [{:keys [notification set-swipeable-height] :as props}]
+  [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [community-id read
                 timestamp]} notification
         community           (rf/sub [:communities/community community-id])
@@ -26,12 +26,13 @@
         community-image     (get-in community [:images :thumbnail :uri])]
     [swipeable props
      [quo/activity-log
-      {:title     (i18n/label :t/community-kicked-heading)
-       :icon      :i/placeholder
-       :on-layout set-swipeable-height
-       :timestamp (datetime/timestamp->relative timestamp)
-       :unread?   (not read)
-       :context   [[quo/text {:style common-style/user-avatar-tag-text}
-                    (i18n/label :t/community-kicked-body)]
-                   [quo/context-tag common/tag-params community-image
-                    community-name]]}]]))
+      {:title               (i18n/label :t/community-kicked-heading)
+       :customization-color customization-color
+       :icon                :i/placeholder
+       :on-layout           set-swipeable-height
+       :timestamp           (datetime/timestamp->relative timestamp)
+       :unread?             (not read)
+       :context             [[quo/text {:style common-style/user-avatar-tag-text}
+                              (i18n/label :t/community-kicked-body)]
+                             [quo/context-tag common/tag-params community-image
+                              community-name]]}]]))

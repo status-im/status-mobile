@@ -39,7 +39,7 @@
    child])
 
 (defn view
-  [{:keys [notification set-swipeable-height] :as props}]
+  [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [author chat-name community-id chat-id
                 message read timestamp]} notification
         community-chat?                  (not (string/blank? community-id))
@@ -52,14 +52,16 @@
                    (rf/dispatch [:hide-popover])
                    (rf/dispatch [:chat/navigate-to-chat chat-id]))}
       [quo/activity-log
-       {:title     (i18n/label :t/mention)
-        :on-layout set-swipeable-height
-        :icon      :i/mention
-        :timestamp (datetime/timestamp->relative timestamp)
-        :unread?   (not read)
-        :context   [[common/user-avatar-tag author]
-                    [quo/text {:style style/tag-text} (string/lower-case (i18n/label :t/on))]
-                    (if community-chat?
-                      [quo/context-tag common/tag-params community-image community-name chat-name]
-                      [quo/group-avatar-tag chat-name common/tag-params])]
-        :message   {:body (message-body message)}}]]]))
+       {:title               (i18n/label :t/mention)
+        :customization-color customization-color
+        :on-layout           set-swipeable-height
+        :icon                :i/mention
+        :timestamp           (datetime/timestamp->relative timestamp)
+        :unread?             (not read)
+        :context             [[common/user-avatar-tag author]
+                              [quo/text {:style style/tag-text} (string/lower-case (i18n/label :t/on))]
+                              (if community-chat?
+                                [quo/context-tag common/tag-params community-image community-name
+                                 chat-name]
+                                [quo/group-avatar-tag chat-name common/tag-params])]
+        :message             {:body (message-body message)}}]]]))

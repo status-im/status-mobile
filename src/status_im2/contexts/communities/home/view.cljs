@@ -75,7 +75,8 @@
   (let [flat-list-ref     (atom nil)
         set-flat-list-ref #(reset! flat-list-ref %)]
     (fn []
-      (let [selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
+      (let [customization-color             (rf/sub [:profile/customization-color])
+            selected-tab                    (or (rf/sub [:communities/selected-tab]) :joined)
             {:keys [joined pending opened]} (rf/sub [:communities/grouped-by-status])
             selected-items                  (case selected-tab
                                               :joined  joined
@@ -102,6 +103,7 @@
                                                    :shared-value scroll-shared-value})}])
          [:f> common.home.banner/animated-banner
           {:content             banner-data
+           :customization-color customization-color
            :scroll-ref          flat-list-ref
            :tabs                tabs-data
            :selected-tab        selected-tab

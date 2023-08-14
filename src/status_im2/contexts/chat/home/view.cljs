@@ -106,15 +106,6 @@
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")
                                               :shared-value scroll-shared-value})}])))
 
-(defn get-tabs-data
-  [dot?]
-  [{:id :tab/recent :label (i18n/label :t/recent) :accessibility-label :tab-recent}
-   {:id :tab/groups :label (i18n/label :t/groups) :accessibility-label :tab-groups}
-   {:id                  :tab/contacts
-    :label               (i18n/label :t/contacts)
-    :accessibility-label :tab-contacts
-    :notification-dot?   dot?}])
-
 (def ^:private banner-data
   {:title-props
    {:label               (i18n/label :t/messages)
@@ -131,7 +122,8 @@
   (let [scroll-ref     (atom nil)
         set-scroll-ref #(reset! scroll-ref %)]
     (fn []
-      (let [pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
+      (let [customization-color      (rf/sub [:profile/customization-color])
+            pending-contact-requests (rf/sub [:activity-center/pending-contact-requests])
             selected-tab             (or (rf/sub [:messages-home/selected-tab]) :tab/recent)
             scroll-shared-value      (reanimated/use-shared-value 0)]
         [:<>
@@ -146,8 +138,18 @@
              :scroll-shared-value scroll-shared-value}])
          [:f> common.home.banner/animated-banner
           {:content             banner-data
+           :customization-color customization-color
            :scroll-ref          scroll-ref
-           :tabs                (get-tabs-data (pos? (count pending-contact-requests)))
+           :tabs                [{:id                  :tab/recent
+                                  :label               (i18n/label :t/recent)
+                                  :accessibility-label :tab-recent}
+                                 {:id                  :tab/groups
+                                  :label               (i18n/label :t/groups)
+                                  :accessibility-label :tab-groups}
+                                 {:id                  :tab/contacts
+                                  :label               (i18n/label :t/contacts)
+                                  :accessibility-label :tab-contacts
+                                  :notification-dot?   (pos? (count pending-contact-requests))}]
            :selected-tab        selected-tab
            :on-tab-change       (fn [tab] (rf/dispatch [:messages-home/select-tab tab]))
            :scroll-shared-value scroll-shared-value}]]))))
