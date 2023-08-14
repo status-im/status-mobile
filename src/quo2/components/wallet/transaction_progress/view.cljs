@@ -8,30 +8,9 @@
             [quo2.components.tags.status-tags :as status-tag]
             [quo2.foundations.colors :as colors]
             [status-im2.common.resources :as resources]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [reagent.core :as reagent]
             [react-native.core :as rn]))
-
-(defn get-colors
-  [color]
-  (let [current-theme (theme/get-theme)]
-    (cond
-      (= current-theme :dark)
-      (cond
-        (= color "neutral-5")  colors/neutral-70
-        (= color "neutral-10") colors/neutral-80
-        (= color "neutral-40") colors/neutral-50
-        (= color "neutral-50") colors/neutral-60
-        (= color "danger-50")  colors/danger-60
-        (= color "success-50") colors/success-60)
-      :else
-      (cond
-        (= color "neutral-5")  colors/neutral-5
-        (= color "neutral-10") colors/neutral-10
-        (= color "neutral-40") colors/neutral-40
-        (= color "neutral-50") colors/neutral-50
-        (= color "danger-50")  colors/danger-50
-        (= color "success-50") colors/success-50))))
 
 (defn load-icon
   [icon color]
@@ -124,26 +103,28 @@
      ]
    [rn/view
     {:style            style/progress-box-arbitrum
-     :background-color (get-colors "neutral-5")
-     :border-color     (get-colors "neutral-10")}
+     :background-color (colors/theme-colors colors/white colors/neutral-5 colors/neutral-70)
+     :border-color     (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80)}
     [rn/view
      (assoc
       (let [box-style (cond
                         (= network-state :finalising) (assoc {:style style/progress-box-arbitrum-abs}
                                                              :right (str (calculate-box-width true) "%")
                                                              :background-color
-                                                             (colors/custom-color-by-theme :blue 50 60))
+                                                             (colors/theme-colors
+(colors/custom-color :blue 50) (colors/custom-color :blue 60) quo.theme))
                         (= network-state :finalized)  (assoc {:style style/progress-box-arbitrum-abs}
                                                              :right (str (calculate-box-width false) "%")
                                                              :background-color
-                                                             (colors/custom-color-by-theme :blue 50 60))
+                                                             (colors/theme-colors
+(colors/custom-color :blue 50) (colors/custom-color :blue 60) quo.theme))
                         :else                         (assoc {:style style/progress-box-arbitrum-abs}
                                                              :background-color
-                                                             (get-colors "neutral-5")))]
+                                                             (colors/theme-colors colors/white colors/neutral-5 colors/neutral-70)))]
         box-style)
       :align-self "flex-end"
       :border-color
-      (get-colors "neutral-10"))]]])
+      (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))]]])
 
 (defn render-text
   [title override-theme &
@@ -191,12 +172,12 @@
   [networkType network-state]
   (cond
     (or (= network-state :pending) (= network-state :sending))      ["pending-state"
-                                                                     (get-colors "neutral-50")]
+                                                                     (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)]
     (or (= network-state :confirmed) (= network-state :finalising)) ["positive-state"
-                                                                     (get-colors "success-50")]
-    (= network-state :finalized)                                    ["diamond" (get-colors "success-50")]
-    (= network-state :error)                                        ["negative-state"
-                                                                     (get-colors "danger-50")]))
+                                                                     (colors/theme-colors colors/white colors/success-50 colors/success-60)]
+    (= network-state :finalized)  ["diamond" (colors/theme-colors colors/white colors/success-50 colors/success-60)]
+    (= network-state :error)  ["negative-state"
+                                  (colors/theme-colors colors/danger colors/danger-50 colors/danger-60) ]))
 
 (defn transaction-progress
   [{:keys [title
@@ -224,7 +205,7 @@
         {:style style/title-item-container}
         [rn/view
          {:style style/inner-container}
-         [load-icon "placeholder" (get-colors "neutral-50")]
+         [load-icon "placeholder" (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)]
          [rn/view
           {:style style/title-container}
           [render-text title override-theme]]
@@ -242,7 +223,7 @@
          [rn/view
           {:style style/item-container}
           [rn/view
-           {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
+           {:style (assoc style/progress-container :border-color (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
            (let [[status-icon color] (get-status-icon networkType network-state)]
              [load-icon status-icon color])
            [rn/view
@@ -253,12 +234,12 @@
            [rn/view
             [render-text (steps-text networkType network-state) override-theme :typography
              :typography/font-regular :weight :regular :size :paragraph-2 :style
-             {:color (get-colors "neutral-50")}]]]])
+             {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
        (if (= networkType :optimism-arbitrum)
          [rn/view
           {:style style/item-container}
           [rn/view
-           {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
+           {:style (assoc style/progress-container :border-color (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
            (let [[status-icon color] (get-status-icon networkType network-state)]
              [load-icon status-icon color])
            [rn/view
@@ -269,14 +250,14 @@
            [rn/view
             [render-text (steps-text networkType network-state) override-theme :typography
              :typography/font-regular :weight :regular :size :paragraph-2 :style
-             {:color (get-colors "neutral-50")}]]]])
+             {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
        (if (= networkType :optimism-arbitrum)
          [progress-boxes-arbitrum network-state])
        (if (= networkType :optimism-arbitrum)
          [rn/view
           {:style style/item-container}
           [rn/view
-           {:style (assoc style/progress-container :border-color (get-colors "neutral-10"))}
+           {:style (assoc style/progress-container :border-color (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
            (let [[status-icon color] (get-status-icon networkType network-state)]
              [load-icon status-icon color])
            [rn/view
@@ -287,7 +268,7 @@
            [rn/view
             [render-text (steps-text networkType network-state) override-theme :typography
              :typography/font-regular :weight :regular :size :paragraph-2 :style
-             {:color (get-colors "neutral-50")}]]]])
+             {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
        (if (= networkType :optimism-arbitrum)
          [progress-boxes-arbitrum network-state])
        (if (= networkType :mainnet)
