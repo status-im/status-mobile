@@ -11,7 +11,7 @@
   (get ui k))
 
 (def tokens
-  {:eth  (js/require "../resources/images/tokens/mainnet/ETH.png")
+  {:eth  (js/require "../resources/images/tokens/mainnet/ETH-token.png")
    :knc  (js/require "../resources/images/tokens/mainnet/KNC.png")
    :mana (js/require "../resources/images/tokens/mainnet/MANA.png")
    :rare (js/require "../resources/images/tokens/mainnet/RARE.png")
@@ -25,6 +25,6 @@
   (get tokens k))
 
 (def networks
-  {:ethereum (js/require "../resources/images/tokens/mainnet/ETH.png")
+  {:ethereum (js/require "../resources/images/tokens/mainnet/ETH-network.png")
    :optimism (js/require "../resources/images/tokens/mainnet/OP.png")
    :arbitrum (js/require "../resources/images/tokens/mainnet/ARB.png")})

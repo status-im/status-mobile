@@ -66,7 +66,10 @@
             :data         {:avatar         (community-avatar community)
                            :community-name (:name community)}})
 
-         (= content-type constants/content-type-contact-request)
+         (#{constants/content-type-contact-request
+            constants/content-type-system-message-mutual-event-removed
+            constants/content-type-system-message-mutual-event-accepted}
+          content-type)
          {:content-type constants/content-type-contact-request}))
 
      {:new-notifications?     (pos? (:unviewed-messages-count chat))

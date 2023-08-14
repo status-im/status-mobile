@@ -107,7 +107,8 @@
      :icon                true
      :accessibility-label :add-account
      :on-press            on-press
-     :customization-color customization-color}
+     :customization-color customization-color
+     :icon-only?          true}
     :i/add]])
 
 (defn- view-internal

@@ -88,7 +88,9 @@
             :dont-show    (i18n/label :t/Pinned-a-message)
             (i18n/label :t/Pinned-a-message))
 
-          constants/content-type-contact-request
+          (constants/content-type-contact-request
+           constants/content-type-system-message-mutual-event-removed
+           constants/content-type-system-message-mutual-event-accepted)
           (i18n/label :t/contact-request)
 
           constants/content-type-sticker
