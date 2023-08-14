@@ -4,7 +4,6 @@
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
