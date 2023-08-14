@@ -19,6 +19,7 @@
     {:color color}]])
 
 (def total-box 85)
+(def interval-ms 50)
 
 (def app-state (reagent/atom {:counter 0}))
 (def interval-id (reagent/atom nil))
@@ -51,7 +52,7 @@
     (js/setInterval
      (fn []
        (update-counter network-state))
-     50)))
+     interval-ms)))
 
 (defn calculate-box-state
   [network-state counter index]
