@@ -85,4 +85,5 @@
                                  :label               (i18n/label :t/decline)
                                  :accessibility-label :decline-group-chat-invitation
                                  :on-press            #(rf/dispatch
-                                                        [:activity-center.notifications/dismiss id])}])}]]]))
+                                                        [:activity-center.notifications/dismiss
+                                                         id])}])}]]]))
