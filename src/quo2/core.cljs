@@ -55,6 +55,7 @@
     quo2.components.links.link-preview.view
     quo2.components.links.url-preview-list.view
     quo2.components.links.url-preview.view
+    quo2.components.list-items.account-list-card.view
     quo2.components.list-items.channel
     quo2.components.list-items.community.view
     quo2.components.list-items.menu-item
@@ -224,6 +225,7 @@
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 
 ;;;; List items
+(def account-list-card quo2.components.list-items.account-list-card.view/view)
 (def channel-list-item quo2.components.list-items.channel/list-item)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
