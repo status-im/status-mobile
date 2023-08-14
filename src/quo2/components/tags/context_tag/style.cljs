@@ -18,7 +18,7 @@
 (def audio-tag-icon-color colors/white)
 
 (defn container
-  [theme type size state blur? customization-color]
+  [{:keys [theme type size state blur? customization-color]}]
   (let [background-color (if blur?
                            (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
                            (colors/theme-colors colors/neutral-10 colors/neutral-90 theme))

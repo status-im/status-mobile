@@ -78,7 +78,13 @@
            type                :default
            state               :default}
     :as   props}]
-  [rn/view {:style (style/container theme type size state blur? customization-color)}
+  [rn/view
+   {:style (style/container {:theme               theme
+                             :type                type
+                             :size                size
+                             :state               state
+                             :blur?               blur?
+                             :customization-color customization-color})}
    (case type
      :default
      [tag-skeleton {:theme theme :size size :text full-name}
