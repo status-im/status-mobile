@@ -26,16 +26,6 @@
          {:flex            1
           :align-items     :center
           :justify-content :center}
-         (when (:blur? @state)
-           [rn/image
-            {:source (if (= :light (quo2.theme/get-theme))
-                       (resources/get-mock-image :community-cover)
-                       (resources/get-mock-image :dark-blur-bg))
-             :style  {:position :absolute
-                      :top      200
-                      :left     0
-                      :right    0
-                      :bottom   0}}])
          [quo/wallet-button @state]]]])))
 
 (defn preview
