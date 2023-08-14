@@ -61,3 +61,4 @@
                          :content-container-style {:padding-horizontal 8}}]
          :collectibles [collectibles]
          [activity])])))
+

@@ -47,7 +47,7 @@
 
 (defn- user-account
   [{:keys [state name balance percentage-value loading? amount customization-color type emoji metrics?
-           theme]}]
+           theme on-press]}]
   (let [watch-only?        (= :watch-only type)
         empty?             (= :empty type)
         account-amount     (if (= :empty state) "€0.00" amount)
@@ -59,8 +59,9 @@
         :type                type
         :theme               theme
         :metrics?            metrics?}]
-      [:<>
-       [rn/view {:style (style/card customization-color watch-only? metrics? theme)}
+       [rn/pressable
+        {:style (style/card customization-color watch-only? metrics? theme)
+         :on-press on-press}
         [rn/view {:style style/profile-container}
          [rn/view {:style {:padding-bottom 2 :margin-right 2}}
           [text/text {:style style/emoji} emoji]]
@@ -96,7 +97,7 @@
                 {:color (if (and watch-only? (not (colors/dark?)))
                           colors/neutral-50
                           colors/white-opa-70)
-                 :size  16}]]])])]])))
+                 :size  16}]]])])])))
 
 (defn- add-account-view
   [{:keys [on-press customization-color theme metrics?]}]

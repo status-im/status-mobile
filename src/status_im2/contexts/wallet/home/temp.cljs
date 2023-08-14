@@ -36,7 +36,8 @@
     :percentage-value    "€0.00"
     :customization-color :blue
     :type                :empty
-    :emoji               "🍑"}
+    :emoji               "🍑"
+    :on-press #(rf/dispatch [:navigate-to :wallet-accounts])}
    {:customization-color :blue
     :on-press            #(js/alert "Button pressed")
     :type                :add-account}])
