@@ -98,7 +98,7 @@
      [preview-list/preview-list {:type :user :size 20}
       users]
 
-     :multinetwork ;; TODO: use multinetwork preview-list type when available
+     :multinetwork ;; TODO: use multinetwork preview-list type when available (issue #17008)
      [preview-list/preview-list {:type :user :size 20}
       (map #(hash-map :profile-picture %) networks)]
 
