@@ -29,4 +29,6 @@
      :border-radius    3
      :border-width     1
      :border-color     border-color
-     :background-color background-color}))
+     :background-color background-color
+     :margin 2
+     }))

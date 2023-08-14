@@ -57,12 +57,12 @@
 (defn update-counter
   [networkState]
   (let [new-counter-value (-> @app-state :counter inc)]
-    (if (or (and (= networkState "pending") (> new-counter-value 1))
-            (and (= networkState "sending") (> new-counter-value 2))
-            (and (= networkState "confirmed") (> new-counter-value 4))
-            (and (= networkState "finalising") (> new-counter-value 18))
-            (and (= networkState "finalised") (> new-counter-value total-box))
-            (and (= networkState "error") (> new-counter-value 2)))
+    (if (or (and (= networkState :pending) (> new-counter-value 1))
+            (and (= networkState :sending) (> new-counter-value 2))
+            (and (= networkState :confirmed) (> new-counter-value 4))
+            (and (= networkState :finalising) (> new-counter-value 18))
+            (and (= networkState :finalized) (> new-counter-value total-box))
+            (and (= networkState :error) (> new-counter-value 2)))
       (stop-interval)
       (swap! app-state assoc :counter new-counter-value))))
 
@@ -77,14 +77,14 @@
 (defn calculate-box-state
   [networkState counter index]
   (cond
-    (and (= networkState "sending") (>= counter index) (< index 3))                 "confirmed"
-    (and (= networkState "confirmed") (>= counter index) (< index 5))               "confirmed"
-    (and (= networkState "finalising") (>= counter index) (< index 5))              "confirmed"
-    (and (= networkState "finalising") (>= counter index) (> index 4) (< index 20)) "finalised"
-    (and (= networkState "finalised") (>= counter index) (< index 5))               "confirmed"
-    (and (= networkState "finalised") (>= counter index) (> index 4))               "finalised"
-    (and (= networkState "error") (>= counter index) (< index 2))                   "error"
-    :else                                                                           "pending"))
+    (and (= networkState :sending) (>= counter index) (< index 3))                 :confirmed
+    (and (= networkState :confirmed) (>= counter index) (< index 5))               :confirmed
+    (and (= networkState :finalising) (>= counter index) (< index 5))              :confirmed
+    (and (= networkState :finalising) (>= counter index) (> index 4) (< index 20)) :finalized
+    (and (= networkState :finalized) (>= counter index) (< index 5))               :confirmed
+    (and (= networkState :finalized) (>= counter index) (> index 4))               :finalized
+    (and (= networkState :error) (>= counter index) (< index 2))                   :error
+    :else                                                                           :pending))
 
 (defn progress-boxes
   [networkState]
@@ -92,20 +92,19 @@
    {:style style/progress-box-container}
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
-              [progress-box/progress-bar
-               {:network-state    (calculate-box-state networkState (@app-state :counter) n)
-                :width            "8"
-                :height           "12"
-                :marginHorizontal 2
+              [progress-box/view
+               {:state    (calculate-box-state networkState (@app-state :counter) n)
+               :customization-color :blue
                 :key              n
-               }])))])
+               }
+               ])))])
 
 (defn calculate-box-state-arbitrum
   [networkState]
   (cond
-    (= networkState "pending") "pending"
-    (= networkState "error")   "error"
-    :else                      "confirmed"))
+    (= networkState :pending) :pending
+    (= networkState :error)   :error
+    :else                      :confirmed))
 
 (defn calculate-box-width
   [showHalf]
@@ -119,11 +118,11 @@
   [networkState]
   [rn/view
    {:style style/progress-box-container}
-   [progress-box/progress-bar
-    {:network-state    (calculate-box-state-arbitrum networkState)
-     :width            "8"
-     :height           "12"
-     :marginHorizontal 2}]
+   [progress-box/view
+    {:state    (calculate-box-state-arbitrum networkState)
+    :customization-color :blue
+     }
+     ]
    [rn/view
     {:style            style/progress-box-arbitrum
      :background-color (get-colors "neutral-5")
@@ -131,11 +130,11 @@
     [rn/view
      (assoc
       (let [box-style (cond
-                        (= networkState "finalising") (assoc {:style style/progress-box-arbitrum-abs}
+                        (= networkState :finalising) (assoc {:style style/progress-box-arbitrum-abs}
                                                              :right (str (calculate-box-width true) "%")
                                                              :background-color
                                                              (colors/custom-color-by-theme :blue 50 60))
-                        (= networkState "finalised")  (assoc {:style style/progress-box-arbitrum-abs}
+                        (= networkState :finalized)  (assoc {:style style/progress-box-arbitrum-abs}
                                                              :right (str (calculate-box-width false) "%")
                                                              :background-color
                                                              (colors/custom-color-by-theme :blue 50 60))
@@ -168,36 +167,36 @@
 (defn network-type-text
   [networkType networkState]
   (cond
-    (or (= networkState "sending") (= networkState "pending"))      "Pending on"
-    (or (= networkState "confirmed") (= networkState "finalising")) "Confirmed on"
-    (= networkState "finalised")                                    "Finalised on"
-    (= networkState "error")                                        "Failed on"))
+    (or (= networkState :sending) (= networkState :pending))      "Pending on"
+    (or (= networkState :confirmed) (= networkState :finalising)) "Confirmed on"
+    (= networkState :finalized)                                    "finalized on"
+    (= networkState :error)                                        "Failed on"))
 
 (defn steps-text
   [networkType networkState]
   (cond
-    (and (= networkType "mainnet")
-         (not= networkState "finalised")
-         (not= networkState "error"))   (str (if (< (@app-state :counter) 4)
+    (and (= networkType :mainnet)
+         (not= networkState :finalized)
+         (not= networkState :error))   (str (if (< (@app-state :counter) 4)
                                                (@app-state :counter)
                                                "4")
                                              "/4")
-    (= networkState "finalised")        "Epoch 181,329"
-    (and (= networkType "mainnet")
-         (= networkState "error"))      "0/4"
-    (and (= networkType "optimism/arbitrum")
-         (= networkState "finalising")) "1/1"
-    (= networkType "optimism/arbitrum") "0/1"))
+    (= networkState :finalized)        "Epoch 181,329"
+    (and (= networkType :mainnet)
+         (= networkState :error))      "0/4"
+    (and (= networkType :optimism-arbitrum)
+         (= networkState :finalising)) "1/1"
+    (= networkType :optimism-arbitrum) "0/1"))
 
 (defn get-status-icon
   [networkType networkState]
   (cond
-    (or (= networkState "pending") (= networkState "sending"))      ["pending-state"
+    (or (= networkState :pending) (= networkState :sending))      ["pending-state"
                                                                      (get-colors "neutral-50")]
-    (or (= networkState "confirmed") (= networkState "finalising")) ["positive-state"
+    (or (= networkState :confirmed) (= networkState :finalising)) ["positive-state"
                                                                      (get-colors "success-50")]
-    (= networkState "finalised")                                    ["diamond" (get-colors "success-50")]
-    (= networkState "error")                                        ["negative-state"
+    (= networkState :finalized)                                    ["diamond" (get-colors "success-50")]
+    (= networkState :error)                                        ["negative-state"
                                                                      (get-colors "danger-50")]))
 
 (defn transaction-progress
@@ -230,7 +229,7 @@
          [rn/view
           {:style style/title-container}
           [render-text title override-theme]]
-         (if (= networkState "error")
+         (if (= networkState :error)
            [button/button
             {:size   32
              :before :i/refresh
@@ -240,7 +239,7 @@
         [quo2/context-tag {:blur? [false]}
          (resources/get-mock-image :collectible)
          "Doodle #120"]]
-       (if (= networkType "mainnet")
+       (if (= networkType :mainnet)
          [rn/view
           {:style style/item-container}
           [rn/view
@@ -256,7 +255,7 @@
             [render-text (steps-text networkType networkState) override-theme :typography
              :typography/font-regular :weight :regular :size :paragraph-2 :style
              {:color (get-colors "neutral-50")}]]]])
-       (if (= networkType "optimism/arbitrum")
+       (if (= networkType :optimism-arbitrum)
          [rn/view
           {:style style/item-container}
           [rn/view
@@ -272,9 +271,9 @@
             [render-text (steps-text networkType networkState) override-theme :typography
              :typography/font-regular :weight :regular :size :paragraph-2 :style
              {:color (get-colors "neutral-50")}]]]])
-       (if (= networkType "optimism/arbitrum")
+       (if (= networkType :optimism-arbitrum)
          [progress-boxes-arbitrum networkState])
-       (if (= networkType "optimism/arbitrum")
+       (if (= networkType :optimism-arbitrum)
          [rn/view
           {:style style/item-container}
           [rn/view
@@ -290,7 +289,7 @@
             [render-text (steps-text networkType networkState) override-theme :typography
              :typography/font-regular :weight :regular :size :paragraph-2 :style
              {:color (get-colors "neutral-50")}]]]])
-       (if (= networkType "optimism/arbitrum")
+       (if (= networkType :optimism-arbitrum)
          [progress-boxes-arbitrum networkState])
-       (if (= networkType "mainnet")
+       (if (= networkType :mainnet)
          [progress-boxes networkState])]]]))

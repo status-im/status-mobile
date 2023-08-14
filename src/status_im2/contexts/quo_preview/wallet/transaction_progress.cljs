@@ -13,25 +13,25 @@
    {:label   "Network Type:"
     :key     :networkType
     :type    :select
-    :options [{:key   "mainnet"
-               :value "Mainnet"}
-              {:key   "optimism/arbitrum"
-               :value "Optimism / Arbitrum"}]}
+    :options [{:key   :mainnet
+               :value "mainnet"}
+              {:key   :optimism-arbitrum
+               :value "optimism/arbitrum"}]}
    {:label   "Network State:"
     :key     :networkState
     :type    :select
-    :options [{:key   "pending"
-               :value "Pending"}
-              {:key   "sending"
-               :value "Sending"}
-              {:key   "confirmed"
-               :value "Confirmed"}
-              {:key   "finalising"
-               :value "Finalising"}
-              {:key   "finalised"
-               :value "Finalised"}
-              {:key   "error"
-               :value "Error"}]}])
+    :options [{:key   :pending
+               :value "pending"}
+              {:key   :sending
+               :value "sending"}
+              {:key   :confirmed
+               :value "confirmed"}
+              {:key   :finalising
+               :value "finalising"}
+              {:key   :finalized
+               :value "finalized"}
+              {:key   :error
+               :value "error"}]}])
 
 (defn get-props
   [data]
@@ -60,8 +60,8 @@
   []
   (let [state (reagent/atom {:title               "Title"
                              :accessibility-label :transaction-progress-item
-                             :networkState        "pending"
-                             :networkType         "mainnet"
+                             :networkState        :pending
+                             :networkType         :mainnet
                              :on-press            (fn []
                                                     (js/alert "Transaction progress item pressed"))})]
     (fn []
