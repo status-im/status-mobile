@@ -250,7 +250,7 @@
 ;;;; Notifications
 (def activity-log quo2.components.notifications.activity-log.view/view)
 (def activity-logs-photos quo2.components.notifications.activity-logs-photos.view/view)
-(def notification-dot quo2.components.common.notification-dot.view/notification-dot)
+(def notification-dot quo2.components.common.notification-dot.view/view)
 (def count-down-circle quo2.components.notifications.count-down-circle/circle-timer)
 (def notification quo2.components.notifications.notification.view/notification)
 (def toast quo2.components.notifications.toast.view/toast)

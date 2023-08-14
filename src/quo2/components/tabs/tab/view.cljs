@@ -79,9 +79,8 @@
                            (on-press id))}))
      [rn/view {:style style/container}
       (when show-notification-dot?
-        [notification-dot/notification-dot
+        [notification-dot/view
          {:style               style/notification-dot
-          :theme               theme
           :customization-color customization-color}])
       [rn/view
        {:style (merge
