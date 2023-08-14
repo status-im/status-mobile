@@ -18,7 +18,7 @@
               {:key   :optimism-arbitrum
                :value "optimism/arbitrum"}]}
    {:label   "Network State:"
-    :key     :networkState
+    :key     :network-state
     :type    :select
     :options [{:key   :pending
                :value "pending"}
@@ -60,7 +60,7 @@
   []
   (let [state (reagent/atom {:title               "Title"
                              :accessibility-label :transaction-progress-item
-                             :networkState        :pending
+                             :network-state        :pending
                              :networkType         :mainnet
                              :on-press            (fn []
                                                     (js/alert "Transaction progress item pressed"))})]
