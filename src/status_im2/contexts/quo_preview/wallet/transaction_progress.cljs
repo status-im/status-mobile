@@ -11,7 +11,7 @@
     :key   :title
     :type  :text}
    {:label   "Network Type:"
-    :key     :networkType
+    :key     :network-type
     :type    :select
     :options [{:key   :mainnet
                :value "mainnet"}
@@ -61,7 +61,8 @@
   (let [state (reagent/atom {:title               "Title"
                              :accessibility-label :transaction-progress-item
                              :network-state        :pending
-                             :networkType         :mainnet
+                             :network-type         :mainnet
+                             :start-interval-now         true
                              :on-press            (fn []
                                                     (js/alert "Transaction progress item pressed"))})]
     (fn []
