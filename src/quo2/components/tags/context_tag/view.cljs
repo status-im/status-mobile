@@ -53,7 +53,7 @@
   [rn/view {:style (style/address size)}
    [text/text
     {:style  (style/text theme)
-     :weight :monospace ;; TODO: fix this style
+     :weight :monospace ;; TODO: fix this style (issue #17009)
      :size   (if (= size 24) :paragraph-2 :paragraph-1)}
     (trim-public-key address)]])
 
