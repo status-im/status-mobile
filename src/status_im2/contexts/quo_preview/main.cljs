@@ -20,6 +20,8 @@
     [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
+    [status-im2.contexts.quo-preview.buttons.wallet-button :as wallet-button]
+    [status-im2.contexts.quo-preview.buttons.wallet-ctas :as wallet-ctas]
     [status-im2.contexts.quo-preview.calendar.calendar :as calendar]
     [status-im2.contexts.quo-preview.calendar.calendar-day :as calendar-day]
     [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
@@ -146,7 +148,18 @@
                        {:name      :slide-button
                         :component slide-button/preview-slide-button}
                        {:name      :predictive-keyboard
+<<<<<<< HEAD
                         :component predictive-keyboard/preview-predictive-keyboard}]
+=======
+                        :options   {:topBar {:visible true}}
+                        :component predictive-keyboard/preview-predictive-keyboard}
+                       {:name      :wallet-button
+                        :options   {:topBar {:visible true}}
+                        :component wallet-button/preview}
+                       {:name      :wallet-ctas
+                        :options   {:topBar {:visible true}}
+                        :component wallet-ctas/preview}]
+>>>>>>> 56c80e746 (quo2: wallet button and CTAs)
    :browser           [{:name      :browser-input
                         :component browser-input/preview-browser-input}]
    :calendar          [{:name      :calendar

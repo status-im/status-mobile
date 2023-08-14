@@ -13,6 +13,8 @@
     quo2.components.buttons.dynamic-button.view
     quo2.components.buttons.predictive-keyboard.view
     quo2.components.buttons.slide-button.view
+    quo2.components.buttons.wallet-button.view
+    quo2.components.buttons.wallet-ctas.view
     quo2.components.browser.browser-input.view
     quo2.components.calendar.calendar.view
     quo2.components.calendar.calendar-day.view
@@ -135,6 +137,8 @@
 (def dynamic-button quo2.components.buttons.dynamic-button.view/view)
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo2.components.buttons.slide-button.view/view)
+(def wallet-button quo2.components.buttons.wallet-button.view/view)
+(def wallet-ctas quo2.components.buttons.wallet-ctas.view/view)
 
 ;;;; Browser
 (def browser-input quo2.components.browser.browser-input.view/view)
