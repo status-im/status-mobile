@@ -7,15 +7,15 @@
 
 (defn f-sensor-animated-video
   [{:keys [offset stretch order source disable-parallax? enable-looping?]}]
-  (let [double-stretch          (* 2 stretch)
+  (let [double-stretch                               (* 2 stretch)
         {window-width  :width
          window-height :height} (rn/get-window)
-        image-style             (if (not disable-parallax?)
-                                  (worklets.parallax/sensor-animated-image order offset stretch)
-                                  {:top    0
-                                   :right  0
-                                   :bottom 0
-                                   :left   0})]
+        image-style                                  (if (not disable-parallax?)
+                                                       (worklets.parallax/sensor-animated-image order offset stretch)
+                                                       {:top    0
+                                                        :right  0
+                                                        :bottom 0
+                                                        :left   0})]
     (fn []
       [reanimated/view
        {:needsOffscreenAlphaCompositing true
@@ -24,9 +24,9 @@
                                           (+ window-height double-stretch))
                                          image-style]}
        [transparent-video/view
-        {:source      source
-         :style       style/video
-         :loopEnabled enable-looping?}]])))
+        {:source source
+         :style  style/video
+         :loop   enable-looping?}]])))
 
 (defn sensor-animated-video
   [props]
