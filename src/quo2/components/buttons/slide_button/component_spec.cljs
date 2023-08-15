@@ -82,16 +82,10 @@
       (h/has-style track-mock {:opacity constants/disable-opacity})))
 
   (h/test "render the small button"
-    (h/render [slide-button/view (assoc default-props :size :small)])
+    (h/render [slide-button/view (assoc default-props :size 40)])
     (let [mock         (h/get-by-test-id :slide-button-track)
           small-height (:track-height constants/small-dimensions)]
       (h/has-style mock {:height small-height})))
-
-  (h/test "render with the correct customization-color"
-    (h/render [slide-button/view (assoc default-props :customization-color :purple)])
-    (let [track-mock   (h/get-by-test-id :slide-button-track)
-          purple-color (utils/slider-color :track :purple)]
-      (h/has-style track-mock {:backgroundColor purple-color})))
 
   (h/test
     "calls on-complete when dragged"

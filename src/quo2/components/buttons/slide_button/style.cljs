@@ -13,10 +13,10 @@
    :right    0})
 
 (defn thumb-container
-  [interpolate-track thumb-size customization-color]
+  [{:keys [interpolate-track thumb-size customization-color theme]}]
   (reanimated/apply-animations-to-style
    {:transform [{:translate-x (interpolate-track :track-clamp)}]}
-   {:background-color (utils/slider-color :main customization-color)
+   {:background-color (utils/slider-color :main customization-color theme)
     :border-radius    12
     :height           thumb-size
     :width            thumb-size
@@ -46,7 +46,7 @@
     :justify-content :space-around}))
 
 (defn track
-  [disabled? customization-color height]
+  [{:keys [disabled? customization-color height theme]}]
   {:align-items      :flex-start
    :justify-content  :center
    :border-radius    14
@@ -54,7 +54,7 @@
    :align-self       :stretch
    :padding          constants/track-padding
    :opacity          (if disabled? 0.3 1)
-   :background-color (utils/slider-color :track customization-color)})
+   :background-color (utils/slider-color :track customization-color theme)})
 
 (defn track-cover
   [interpolate-track]
@@ -74,7 +74,7 @@
    :width           track-width})
 
 (defn track-text
-  [customization-color]
+  [customization-color theme]
   (-> typography/paragraph-1
       (merge typography/font-medium)
-      (assoc :color (utils/slider-color :main customization-color))))
+      (assoc :color (utils/slider-color :main customization-color theme))))

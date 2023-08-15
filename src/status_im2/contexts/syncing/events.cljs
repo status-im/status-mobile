@@ -79,7 +79,7 @@
         show-sheet      (fn [connection-string]
                           (set-code connection-string)
                           (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
-                          (rf/dispatch [:bottom-sheet/hide]))]
+                          (rf/dispatch [:hide-bottom-sheet]))]
     (if valid-password?
       (let [sha3-pwd   (native-module/sha3 (str (security/safe-unmask-data entered-password)))
             key-uid    (get-in db [:profile/profile :key-uid])

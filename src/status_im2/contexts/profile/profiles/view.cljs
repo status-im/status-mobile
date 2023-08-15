@@ -1,6 +1,5 @@
 (ns status-im2.contexts.profile.profiles.view
-  (:require [clojure.string :as string]
-            [native-module.core :as native-module]
+  (:require [native-module.core :as native-module]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
@@ -12,6 +11,7 @@
             [status-im2.constants :as constants]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.profile.profiles.style :as style]
+            [status-im2.common.standard-authentication.auth-utils :as auth-utils]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
@@ -213,14 +213,6 @@
       [quo/text {:size :paragraph-2}
        (i18n/label :t/forgot-your-password-info-create-new-password-description)]]]]])
 
-(defn- get-error-message
-  [error]
-  (if (and (some? error)
-           (or (= error "file is not a database")
-               (string/starts-with? error "failed to set ")
-               (string/starts-with? error "Failed")))
-    (i18n/label :t/oops-wrong-password)
-    error))
 
 (defn login-section
   [{:keys [set-show-profiles]}]
@@ -228,7 +220,7 @@
         {:keys [key-uid name customization-color]} (rf/sub [:profile/login-profile])
         sign-in-enabled?                           (rf/sub [:sign-in-enabled?])
         profile-picture                            (rf/sub [:profile/login-profiles-picture key-uid])
-        error                                      (get-error-message error)
+        error                                      (auth-utils/get-error-message error)
         login-multiaccount                         #(rf/dispatch [:profile.login/login])]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container

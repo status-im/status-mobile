@@ -6,9 +6,15 @@
 (defn slider-color
   "- `color-key`               `:main`/`:track`
    - `customization-color` Customization color"
-  [color-key customization-color]
-  (let [colors-by-key {:main  (colors/custom-color-by-theme customization-color 50 60)
-                       :track (colors/custom-color-by-theme customization-color 50 60 10 10)}]
+  [color-key customization-color theme]
+  (let [colors-by-key {:main  (colors/theme-colors
+                               (colors/custom-color customization-color 50)
+                               (colors/custom-color customization-color 60)
+                               theme)
+                       :track (colors/theme-colors
+                               (colors/custom-color customization-color 50 10)
+                               (colors/custom-color customization-color 60 10)
+                               theme)}]
     (color-key colors-by-key)))
 
 (defn clamp-value
@@ -28,8 +34,8 @@
 (defn get-dimensions
   [track-width size dimension-key]
   (let [default-dimensions (case size
-                             :small constants/small-dimensions
-                             :large constants/large-dimensions
+                             40 constants/small-dimensions
+                             48 constants/large-dimensions
                              constants/large-dimensions)]
     (-> default-dimensions
         (merge {:usable-track (calc-usable-track

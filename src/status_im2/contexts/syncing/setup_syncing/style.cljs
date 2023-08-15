@@ -6,7 +6,8 @@
    :flex             1})
 
 (def page-container
-  {:margin-horizontal 20})
+  {:margin-top 14
+   :margin-horizontal 20})
 
 (def title-container
   {:flex-direction  :row
@@ -17,17 +18,20 @@
   {:height 56})
 
 (def sync-code
-  {:margin-top 36})
+  {:margin-top 20})
 
-(defn qr-container
-  [valid-code?]
-  (merge {:margin-top       12
-          :background-color colors/white-opa-5
-          :border-radius    20
-          :padding          12}
-         (if valid-code?
-           {:flex 1}
-           {:aspect-ratio 1})))
+(def standard-auth
+  {:margin-top 12
+   :flex 1
+
+   })
+
+(def qr-container
+  {:margin-top                 12
+   :background-color           colors/white-opa-5
+   :border-radius              20
+   :flex 1
+   :padding                    12})
 
 (def sub-text-container
   {:margin-bottom   8
@@ -39,10 +43,3 @@
   {:flex   1
    :margin 12})
 
-(def generate-button
-  {:position          :absolute
-   :top               "50%"
-   :bottom            0
-   :left              0
-   :right             0
-   :margin-horizontal 60})
