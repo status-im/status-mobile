@@ -12,12 +12,11 @@
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.composer.constants :as composer.constants]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
             [status-im2.contexts.chat.messages.list.style :as style]
             [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
-            [status-im2.contexts.chat.composer.constants :as composer.constants]            
+            [status-im2.contexts.chat.composer.constants :as composer.constants]
             [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -130,7 +129,7 @@
   [insets able-to-send-message?]
   [rn/view
    {:background-color (colors/theme-colors colors/white colors/neutral-95)
-    :margin-bottom    (- (when platform/ios? style/overscroll-cover-height))
+    :margin-bottom    (when platform/ios? (- style/overscroll-cover-height))
     :height           (+ (if able-to-send-message?
                            (+ composer.constants/composer-default-height
                               jump-to.constants/floating-shell-button-height

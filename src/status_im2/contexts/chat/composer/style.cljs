@@ -89,8 +89,7 @@
     :right            0
     :bottom           0
     :height           window-height
-    :background-color colors/neutral-95-opa-70
-    :z-index          1}))
+    :background-color colors/neutral-95-opa-70}))
 
 (defn blur-container
   [height focused?]
