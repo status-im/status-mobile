@@ -60,10 +60,7 @@
       {:accessibility-label :open-profile
        :style               style/left-section}
       [quo/user-avatar
-       (merge {:status-indicator? true
-               :size              :small
-               :online?           online?}
-              avatar)]]]))
+       (merge {:size :small :online? online?} avatar)]]]))
 
 (defn connectivity-sheet
   []

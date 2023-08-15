@@ -35,14 +35,16 @@
       nil)))
 
 (defn container-background-color
-  [pressed? theme]
+  [customization-color pressed? theme]
   (when pressed?
-    (colors/theme-colors colors/primary-50 colors/primary-60 theme)))
+    (if customization-color
+      (colors/custom-color-by-theme customization-color 50 60)
+      (colors/theme-colors colors/primary-50 colors/primary-60 theme))))
 
 (defn container-outer
-  [pressed? theme]
+  [customization-color pressed? theme]
   (merge container-default
-         {:background-color (container-background-color pressed? theme)}))
+         {:background-color (container-background-color customization-color pressed? theme)}))
 
 (defn container-inner
   [pressed? blur? theme]

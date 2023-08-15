@@ -1,8 +1,8 @@
 (ns status-im2.subs.contact-test
   (:require [cljs.test :refer [is testing]]
             [re-frame.db :as rf-db]
-            [test-helpers.unit :as h]
             status-im2.subs.contact
+            [test-helpers.unit :as h]
             [utils.re-frame :as rf]))
 
 (def contacts-sample-data
@@ -74,14 +74,13 @@
                                         :has-added-us?         true
                                         :contact-request-state 1}}})
 
-(def expected-sorted-contacts
+(def expected-sorted-contacts-without-images
   [{:title "F"
     :data  [{:active?               true
              :last-updated          1672582629695
              :mutual?               true
              :blocked?              false
              :contactRequestClock   0
-             :images                {}
              :added?                true
              :name                  "slim.shady"
              :primary-name          "fslim.shady"
@@ -105,7 +104,6 @@
              :mutual?               true
              :blocked?              false
              :contactRequestClock   0
-             :images                {}
              :added?                true
              :name                  "slim.shady"
              :primary-name          "islim.shady"
@@ -129,7 +127,6 @@
              :mutual?               true
              :blocked?              false
              :contactRequestClock   0
-             :images                {}
              :added?                true
              :name                  "slim.shady"
              :primary-name          "rslim.shady"
@@ -147,6 +144,10 @@
              :public-key            "0xtest"
              :has-added-us?         true
              :contact-request-state 1}]}])
+
+(defn remove-contact-images
+  [{:keys [data] :as contact}]
+  (assoc contact :data (mapv #(dissoc % :images) data)))
 
 (h/deftest-sub :contacts/sorted-and-grouped-by-first-letter
   [sub-name]
@@ -170,4 +171,5 @@
                                                                    (dissoc contact :identicon))
                                                                  %)))
                                                 (rf/sub [sub-name]))]
-      (is (= expected-sorted-contacts contact-list-without-identicons)))))
+      (is (= expected-sorted-contacts-without-images
+             (mapv remove-contact-images contact-list-without-identicons))))))

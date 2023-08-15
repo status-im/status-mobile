@@ -111,7 +111,7 @@
       :customization-color  (or customization-color :primary)
       :keycard-account?     keycard-pairing
       :show-options-button? true
-      :profile-picture      (when profile-picture {:uri profile-picture})
+      :profile-picture      profile-picture
       :card-style           (style/profiles-profile-card last-item?)
       :on-options-press     #(show-profile-options
                               key-uid
@@ -257,7 +257,7 @@
       [quo/profile-card
        {:name                name
         :customization-color (or customization-color :primary)
-        :profile-picture     (when profile-picture {:uri profile-picture})
+        :profile-picture     profile-picture
         :card-style          style/login-profile-card}]
       [quo/input
        {:type              :password

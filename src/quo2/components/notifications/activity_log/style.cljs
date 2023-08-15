@@ -46,8 +46,9 @@
    :margin-left    8
    :color          colors/neutral-40})
 
-(def unread-dot
-  {:background-color colors/primary-50
+(defn unread-dot
+  [customization-color]
+  {:background-color (colors/custom-color (or customization-color :blue) 60)
    :border-radius    4
    :width            8
    :height           8})

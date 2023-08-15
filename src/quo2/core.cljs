@@ -19,6 +19,7 @@
     quo2.components.calendar.calendar-year.view
     quo2.components.code.snippet
     quo2.components.colors.color-picker.view
+    quo2.components.common.notification-dot.view
     quo2.components.common.separator.view
     quo2.components.community.banner.view
     quo2.components.community.channel-actions
@@ -55,6 +56,7 @@
     quo2.components.links.link-preview.view
     quo2.components.links.url-preview-list.view
     quo2.components.links.url-preview.view
+    quo2.components.list-items.account-list-card.view
     quo2.components.list-items.channel
     quo2.components.list-items.community.view
     quo2.components.list-items.menu-item
@@ -73,7 +75,6 @@
     quo2.components.notifications.activity-log.view
     quo2.components.notifications.activity-logs-photos.view
     quo2.components.notifications.count-down-circle
-    quo2.components.notifications.notification-dot
     quo2.components.notifications.notification.view
     quo2.components.notifications.toast.view
     quo2.components.numbered-keyboard.keyboard-key.view
@@ -224,6 +225,7 @@
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 
 ;;;; List items
+(def account-list-card quo2.components.list-items.account-list-card.view/view)
 (def channel-list-item quo2.components.list-items.channel/list-item)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
@@ -250,7 +252,7 @@
 ;;;; Notifications
 (def activity-log quo2.components.notifications.activity-log.view/view)
 (def activity-logs-photos quo2.components.notifications.activity-logs-photos.view/view)
-(def notification-dot quo2.components.notifications.notification-dot/notification-dot)
+(def notification-dot quo2.components.common.notification-dot.view/view)
 (def count-down-circle quo2.components.notifications.count-down-circle/circle-timer)
 (def notification quo2.components.notifications.notification.view/notification)
 (def toast quo2.components.notifications.toast.view/toast)

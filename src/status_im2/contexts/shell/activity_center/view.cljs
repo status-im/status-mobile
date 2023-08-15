@@ -25,8 +25,9 @@
   []
   (let [height               (atom 0)
         set-swipeable-height #(reset! height (oops/oget % "nativeEvent.layout.height"))]
-    (fn [{:keys [type] :as notification} index _ active-swipeable]
+    (fn [{:keys [type] :as notification} index _ {:keys [active-swipeable customization-color]}]
       (let [props {:height               height
+                   :customization-color  customization-color
                    :active-swipeable     active-swipeable
                    :set-swipeable-height set-swipeable-height
                    :notification         notification
@@ -66,13 +67,15 @@
   (let [active-swipeable (atom nil)]
     (rf/dispatch [:activity-center.notifications/fetch-first-page])
     (fn []
-      (let [notifications (rf/sub [:activity-center/notifications])]
+      (let [notifications       (rf/sub [:activity-center/notifications])
+            customization-color (rf/sub [:profile/customization-color])]
         [rn/view {:flex 1 :padding-top (navigation/status-bar-height)}
          [blur/view style/blur]
          [header/header]
          [rn/flat-list
           {:data                      notifications
-           :render-data               active-swipeable
+           :render-data               {:active-swipeable    active-swipeable
+                                       :customization-color customization-color}
            :content-container-style   {:flex-grow 1}
            :empty-component           [empty-tab/empty-tab]
            :key-fn                    :id

@@ -11,10 +11,17 @@
 
 (defn toast
   [toast-id]
-  (let [{:keys [type] :as toast-opts} (rf/sub [:toasts/toast toast-id])]
+  (let [{:keys [type user-public-key] :as toast-opts} (rf/sub [:toasts/toast toast-id])
+        profile-picture                               (when user-public-key
+                                                        (rf/sub [:chats/photo-path user-public-key]))
+        toast-opts-with-profile-picture               (if profile-picture
+                                                        (assoc-in toast-opts
+                                                         [:user :profile-picture]
+                                                         profile-picture)
+                                                        toast-opts)]
     (if (= type :notification)
-      [quo/notification toast-opts]
-      [quo/toast toast-opts])))
+      [quo/notification toast-opts-with-profile-picture]
+      [quo/toast toast-opts-with-profile-picture])))
 
 (defn f-container
   [toast-id]

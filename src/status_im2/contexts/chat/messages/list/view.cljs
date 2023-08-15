@@ -1,24 +1,24 @@
 (ns status-im2.contexts.chat.messages.list.view
   (:require [oops.core :as oops]
             [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
             [react-native.background-timer :as background-timer]
             [react-native.core :as rn]
             [react-native.hooks :as hooks]
             [react-native.platform :as platform]
+            [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im2.constants :as constants]
+            [status-im2.contexts.chat.composer.constants :as composer.constants]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
             [status-im2.contexts.chat.messages.list.style :as style]
             [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
-            [status-im2.contexts.chat.composer.constants :as composer.constants]
-            [utils.re-frame :as rf]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -203,8 +203,7 @@
         online?              (rf/sub [:visibility-status-updates/online? chat-id])
         contact              (when-not group-chat
                                (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path           (when-not (empty? (:images contact))
-                               (rf/sub [:chats/photo-path chat-id]))
+        photo-path           (rf/sub [:chats/photo-path chat-id])
         border-animation     (reanimated/interpolate scroll-y
                                                      [30 125]
                                                      [14 0]

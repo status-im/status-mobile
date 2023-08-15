@@ -90,7 +90,8 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
                                :configureNext (fn [])}
     :requireNativeComponent   (fn [] {:propTypes ""})
     :Appearance               {:getColorScheme    (fn [])
-                               :addChangeListener (fn [])}}))
+                               :addChangeListener (fn [])}
+    :PixelRatio               {:get (fn [])}}))
 
 (set! js/ReactNative react-native)
 

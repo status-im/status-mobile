@@ -1,12 +1,12 @@
 (ns status-im2.subs.shell
-  (:require [utils.i18n :as i18n]
-            [re-frame.core :as re-frame]
-            [utils.datetime :as datetime]
+  (:require [re-frame.core :as re-frame]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im2.common.resources :as resources]
             [status-im2.config :as config]
             [status-im2.constants :as constants]
-            [status-im2.common.resources :as resources]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+            [utils.datetime :as datetime]
+            [utils.i18n :as i18n]))
 
 ;; Helper Functions
 (defn community-avatar
@@ -79,13 +79,11 @@
       :counter-label          (:unviewed-mentions-count chat)})))
 
 (defn one-to-one-chat-card
-  [contact names chat id communities]
-  (let [images          (:images contact)
-        profile-picture (:uri (or (:thumbnail images) (:large images) (first images)))]
-    {:title               (first names)
-     :avatar-params       {:full-name       (first names)
-                           :profile-picture (when profile-picture
-                                              (str profile-picture "&addRing=0"))}
+  [contact names profile-picture chat id communities]
+  (let [display-name (first names)]
+    {:title               display-name
+     :avatar-params       {:full-name       display-name
+                           :profile-picture profile-picture}
      :customization-color (or (:customization-color contact) :primary)
      :content             (get-card-content
                            {:chat        chat
@@ -151,10 +149,16 @@
  (fn [[_ id] _]
    [(re-frame/subscribe [:contacts/contact-by-identity id])
     (re-frame/subscribe [:contacts/contact-two-names-by-identity id])
+    (re-frame/subscribe [:chats/photo-path id])
     (re-frame/subscribe [:chats/chat id])
     (re-frame/subscribe [:communities])])
- (fn [[contact names chat communities] [_ id]]
-   (one-to-one-chat-card contact names chat id communities)))
+ (fn [[contact names profile-picture chat communities] [_ id]]
+   (one-to-one-chat-card contact
+                         names
+                         profile-picture
+                         chat
+                         id
+                         communities)))
 
 (re-frame/reg-sub
  :shell/private-group-chat-card

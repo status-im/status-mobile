@@ -44,7 +44,7 @@
 
 ;;Solid
 
-
+(def neutral-2_5 "#FAFBFC")
 (def neutral-5 "#F5F6F8")
 (def neutral-10 "#F0F2F5")
 (def neutral-20 "#E7EAEE")
