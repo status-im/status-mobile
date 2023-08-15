@@ -102,7 +102,7 @@
      :component find-sync-code/view}
 
     {:name      :discover-communities
-     :component communities.discover/discover}
+     :component communities.discover/view}
 
     {:name      :community-overview
      :component communities.overview/overview}

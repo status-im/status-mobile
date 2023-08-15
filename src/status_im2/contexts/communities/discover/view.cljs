@@ -2,6 +2,7 @@
   (:require [utils.i18n :as i18n]
             [oops.core :as oops]
             [quo2.core :as quo]
+            [quo2.theme :as quo.theme]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -198,7 +199,7 @@
        [discover-communities-segments selected-tab true]])))
 
 (defn discover-screen-content
-  [featured-communities]
+  [featured-communities theme]
   (let [view-type                  (reagent/atom :card-view)
         selected-tab               (reagent/atom :all)
         scroll-height              (reagent/atom 0)
@@ -206,6 +207,7 @@
     (fn []
       [scroll-page/scroll-page
        {:name             (i18n/label :t/discover-communities)
+        :theme            theme
         :on-scroll        #(reset! scroll-height %)
         :background-color (colors/theme-colors
                            colors/white
@@ -223,14 +225,18 @@
         featured-communities
         @view-type]])))
 
-(defn discover
-  []
-  (rf/dispatch [:fetch-contract-communities])
-  (fn []
-    (let [featured-communities (rf/sub
-                                [:communities/featured-contract-communities])]
-      [rn/view
-       {:style (style/discover-screen-container (colors/theme-colors
-                                                 colors/white
-                                                 colors/neutral-95))}
-       [discover-screen-content featured-communities]])))
+(defn f-view-internal
+  [{:keys [theme]}]
+  (let [featured-communities (rf/sub [:communities/featured-contract-communities])]
+    [rn/view
+     {:style (style/discover-screen-container (colors/theme-colors
+                                               colors/white
+                                               colors/neutral-95))}
+     [discover-screen-content featured-communities theme]]))
+
+
+(defn- internal-discover-view
+  [params]
+  [:f> f-view-internal params])
+
+(def view (quo.theme/with-theme internal-discover-view))

@@ -39,7 +39,7 @@
             [quo/text
              {:accessibility-label :communities-join-community
               :weight              :semi-bold
-              :size                :heading-1}
+              :size                :heading-2}
              (request-to-join-text open?)]]
            [rn/view {:style {:margin-right :auto :margin-top 8}}
             [quo/context-tag
