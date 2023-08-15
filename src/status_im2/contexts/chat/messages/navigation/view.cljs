@@ -5,15 +5,15 @@
             [re-frame.db]
             [react-native.blur :as blur]
             [react-native.core :as rn]
-            [status-im2.config :as config]
-            [react-native.reanimated :as reanimated]
             [react-native.platform :as platform]
+            [react-native.reanimated :as reanimated]
+            [status-im2.common.home.actions.view :as actions]
+            [status-im2.config :as config]
+            [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.navigation.style :as style]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
-            [status-im2.constants :as constants]
-            [utils.re-frame :as rf]
             [utils.i18n :as i18n]
-            [status-im2.common.home.actions.view :as actions]))
+            [utils.re-frame :as rf]))
 
 (defn f-view
   [{:keys [scroll-y]}]
@@ -27,10 +27,7 @@
                                    (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
                                    (str emoji " " chat-name))
         online?                  (rf/sub [:visibility-status-updates/online? chat-id])
-        contact                  (when-not group-chat
-                                   (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path               (when-not (empty? (:images contact))
-                                   (rf/sub [:chats/photo-path chat-id]))
+        photo-path               (rf/sub [:chats/photo-path chat-id])
         opacity-animation        (reanimated/interpolate scroll-y
                                                          [style/navigation-bar-height
                                                           (+ style/navigation-bar-height 30)]

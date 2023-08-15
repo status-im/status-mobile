@@ -1,16 +1,16 @@
 (ns status-im2.contexts.chat.composer.reply.view
   (:require [clojure.string :as string]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.composer.constants :as constants]
-            [utils.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [status-im2.constants :as constant]
+            [react-native.core :as rn]
+            [react-native.linear-gradient :as linear-gradient]
+            [react-native.reanimated :as reanimated]
             [status-im.ethereum.stateofus :as stateofus]
-            [utils.re-frame :as rf]
+            [status-im2.constants :as constant]
+            [status-im2.contexts.chat.composer.constants :as constants]
             [status-im2.contexts.chat.composer.reply.style :as style]
-            [react-native.linear-gradient :as linear-gradient]))
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn get-quoted-text-with-mentions
   [parsed-text]
@@ -63,8 +63,7 @@
 (defn reply-from
   [{:keys [from contact-name current-public-key]}]
   (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
-        contact      (rf/sub [:contacts/contact-by-address from])
-        photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))]
+        photo-path   (rf/sub [:chats/photo-path from])]
     [rn/view {:style style/reply-from}
      [quo/user-avatar
       {:full-name         display-name

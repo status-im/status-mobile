@@ -1,5 +1,6 @@
 (ns status-im.multiaccounts.update.core
-  (:require [status-im.utils.types :as types]
+  (:require [status-im.ethereum.ens :as ens]
+            [status-im.utils.types :as types]
             [status-im2.constants :as constants]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
@@ -19,10 +20,12 @@
                 display-name]} (:profile/profile db)
         account                (some #(and (= (:key-uid %) key-uid) %) raw-multiaccounts-from-status-go)]
     (when-let [new-name (and account (or preferred-name display-name name))]
-      (rf/merge cofx
-                {:json-rpc/call [{:method     "multiaccounts_updateAccount"
-                                  :params     [(assoc account :name new-name)]
-                                  :on-success #(log/debug "sent multiaccount update")}]}))))
+      (rf/merge
+       cofx
+       {:db            (assoc-in db [:profile/profile :ens-name?] (ens/is-valid-eth-name? new-name))
+        :json-rpc/call [{:method     "multiaccounts_updateAccount"
+                         :params     [(assoc account :name new-name)]
+                         :on-success #(log/debug "sent multiaccount update")}]}))))
 
 (rf/defn multiaccount-update
   "Takes effects (containing :db) + new multiaccount fields, adds all effects necessary for multiaccount update.

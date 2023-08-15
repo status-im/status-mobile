@@ -75,6 +75,7 @@
 (reg-root-key-sub :password-authentication :password-authentication)
 (reg-root-key-sub :shell/floating-screens :shell/floating-screens)
 (reg-root-key-sub :shell/loaded-screens :shell/loaded-screens)
+(reg-root-key-sub :initials-avatar-font-file :initials-avatar-font-file)
 
 ;;NOTE this one is not related to ethereum network
 ;; it is about cellular network/ wifi network

@@ -1,12 +1,12 @@
 (ns status-im2.contexts.onboarding.identifiers.profile-card.view
-  (:require [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [react-native.masked-view :as masked-view]
-            [reagent.core :as reagent]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [utils.worklets.identifiers-highlighting :as worklets.identifiers-highlighting]
-            [status-im2.contexts.onboarding.identifiers.profile-card.style :as style]))
+            [react-native.core :as rn]
+            [react-native.masked-view :as masked-view]
+            [react-native.reanimated :as reanimated]
+            [reagent.core :as reagent]
+            [status-im2.contexts.onboarding.identifiers.profile-card.style :as style]
+            [utils.worklets.identifiers-highlighting :as worklets.identifiers-highlighting]))
 
 (defn- f-profile-card-component
   [{:keys [profile-picture name hash emoji-hash
@@ -20,29 +20,24 @@
         ring-opacity         (worklets.identifiers-highlighting/ring-opacity @progress)
         user-hash-color      (worklets.identifiers-highlighting/user-hash-color @progress)
         user-hash-opacity    (worklets.identifiers-highlighting/user-hash-opacity @progress)
-        emoji-hash-style     (worklets.identifiers-highlighting/emoji-hash-style @progress)]
+        emoji-hash-style     (worklets.identifiers-highlighting/emoji-hash-style @progress)
+        avatar               [quo/user-avatar
+                              {:full-name           name
+                               :profile-picture     profile-picture
+                               :size                :medium
+                               :status-indicator?   false
+                               :customization-color customization-color}]]
     [rn/view
      {:style style/card-view}
      [reanimated/view
       {:style (style/card-container container-background)}
       [rn/view {:style style/card-header}
-       [reanimated/view
-        {:style (style/avatar avatar-opacity)}
-        [quo/user-avatar
-         {:full-name           name
-          :profile-picture     profile-picture
-          :size                :medium
-          :status-indicator?   false
-          :customization-color customization-color}]]
+       [reanimated/view {:style (style/avatar avatar-opacity)} avatar]
        [masked-view/masked-view
         {:style        {:position :absolute}
          :mask-element (reagent/as-element
                         [reanimated/view {:style (style/mask-view ring-opacity)}])}
-        (when profile-picture
-          [rn/image
-           {:accessibility-label :ring-background
-            :style               style/picture-avatar-mask
-            :source              profile-picture}])]]
+        (when profile-picture avatar)]]
       [reanimated/view
        {:style (style/user-name-container opacity)}
        [quo/text
