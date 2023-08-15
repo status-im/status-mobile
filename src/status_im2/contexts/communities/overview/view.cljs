@@ -4,7 +4,6 @@
             [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.common.home.actions.view :as actions]
             [status-im2.common.password-authentication.view :as password-authentication]
@@ -69,15 +68,13 @@
    channels-list]
   [rn/view
    {:on-layout #(on-first-channel-height-changed
-                 (+ (if platform/ios? 0 38)
-                    (int (Math/ceil (layout-y %))))
+                 (+ 38 (int (Math/ceil (layout-y %))))
                  (into #{} (map (comp :name second) channels-list)))
-    :style     {:margin-top 20 :flex 1}}
+    :style     {:margin-top 8 :flex 1}}
    (doall
     (for [[category-id {:keys [chats name collapsed?]}] channels-list]
       [rn/view
-       {:style     {:flex 1}
-        :key       category-id
+       {:key       category-id
         ;; on-layout fires only when the component re-renders, so
         ;; in case the category hasn't changed, it will not be fired
         :on-layout #(on-category-layout name (int (layout-y %)))}
@@ -235,18 +232,22 @@
            [category (update v :chats add-on-press)])
          categorized-chats)))
 
+
 (defn community-header
-  [name]
-  [quo/text
-   {:accessibility-label :chat-name-text
-    :number-of-lines     1
-    :ellipsize-mode      :tail
-    :weight              :semi-bold
-    :size                :heading-1
-    :style               {:margin-top (+ scroll-page.style/picture-radius
-                                         scroll-page.style/picture-border-width
-                                         12)}}
-   name])
+  [title logo]
+  [quo/text-combinations
+   {:container-style
+    {:margin-horizontal 0
+     :padding-right 20
+     :margin-top
+     (if logo
+       12
+       (+ scroll-page.style/picture-radius
+          scroll-page.style/picture-border-width
+          12))}
+    :avatar logo
+    :title title
+    :title-accessibility-label :chat-name-text}])
 
 (defn community-description
   [description]
@@ -260,20 +261,25 @@
    description])
 
 (defn community-content
-  [{:keys [name description joined tags color id]
+  [{:keys [name description joined images tags color id]
     :as   community}
    pending?
-   {:keys [on-category-layout on-first-channel-height-changed]}]
+   {:keys [on-category-layout
+           collapsed?
+           on-first-channel-height-changed]}]
   (let [chats-by-category (rf/sub [:communities/categorized-channels id])]
     [:<>
      [rn/view {:style style/community-content-container}
-      [status-tag pending? joined]
-      [community-header name]
-      [community-description description]
-      [quo/community-tags
-       {:tags            tags
-        :last-item-style style/last-community-tag
-        :container-style style/community-tag-container}]
+      (when-not collapsed?
+        [status-tag pending? joined])
+      [community-header name (when collapsed? (get-in images [:thumbnail :uri]))]
+      (when-not collapsed?
+        [community-description description])
+      (when-not collapsed?
+        [quo/community-tags
+         {:tags            tags
+          :last-item-style style/last-community-tag
+          :container-style style/community-tag-container}])
       [join-community community pending?]]
      [channel-list-component
       {:on-category-layout              on-category-layout
@@ -311,43 +317,54 @@
                (and (>= scroll-height (+ height first-channel-height))
                     category)))))
 
-(defn community-card-page-view
-  []
-  (let [categories-heights   (reagent/atom {})
+(defn community-scroll-page
+  [{:keys [joined]}]
+  (let [scroll-height        (reagent/atom 0)
+        categories-heights   (reagent/atom {})
         first-channel-height (reagent/atom 0)
-        scroll-height        (reagent/atom 0)]
-    (fn [id]
-      (let [{:keys [name images id]
-             :as   community} (rf/sub [:communities/community id])
-            pending?          (rf/sub [:communities/my-pending-request-to-join id])
-            cover             {:uri (get-in images [:banner :uri])}
-            logo              {:uri (get-in images [:thumbnail :uri])}]
+        ;; We track the initial value of joined
+        ;; as we open the page to avoid switching
+        ;; from not collapsed to collapsed if the
+        ;; user is on this page
+        initial-joined?      joined]
+    (fn [{:keys [id name images] :as community} pending?]
+      (let [cover      {:uri (get-in images [:banner :uri])}
+            logo       {:uri (get-in images [:thumbnail :uri])}
+            collapsed? (and initial-joined? (:joined community))]
         [scroll-page/scroll-page
          {:cover-image                    cover
+          :collapsed?                     collapsed?
           :logo                           logo
           :page-nav-right-section-buttons (page-nav-right-section-buttons id)
           :name                           name
           :on-scroll                      #(reset! scroll-height %)
           :navigate-back?                 true
           :background-color               (colors/theme-colors colors/white colors/neutral-95)
-          :height                         (if platform/ios? 100 148)}
+          :height                         148}
          [sticky-category-header
           {:enabled (> @scroll-height @first-channel-height)
            :label   (pick-first-category-by-height
                      @scroll-height
                      @first-channel-height
                      @categories-heights)}]
-
          [community-content
           community
           pending?
           {:on-category-layout              (partial add-category-height categories-heights)
+           :collapsed?                      collapsed?
            :on-first-channel-height-changed
            ;; Here we set the height of the component and we filter out the
            ;; categories, as some might have been removed
            (fn [height categories]
              (swap! categories-heights select-keys categories)
              (reset! first-channel-height height))}]]))))
+
+(defn community-card-page-view
+  [id]
+  (let [{:keys [id]
+         :as   community} (rf/sub [:communities/community id])
+        pending?          (rf/sub [:communities/my-pending-request-to-join id])]
+    [community-scroll-page community pending?]))
 
 (defn overview
   [id]

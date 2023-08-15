@@ -11,12 +11,13 @@
 
 (defn page-title
   []
-  [quo/title
-   {:container-style              {:margin-top 12}
-    :title                        (i18n/label :t/intro-wizard-title6)
-    :title-accessibility-label    :notifications-title
-    :subtitle                     (i18n/label :t/enable-notifications-sub-title)
-    :subtitle-accessibility-label :notifications-sub-title}])
+  [quo/text-combinations
+   {:container-style                 {:margin-top 12}
+    :title                           (i18n/label :t/intro-wizard-title6)
+    :title-accessibility-label       :notifications-title
+    :description                     :description
+    :description-props               (i18n/label :t/enable-notifications-sub-title)
+    :description-accessibility-label :notifications-sub-title}])
 
 (defn enable-notification-buttons
   [{:keys [insets]}]

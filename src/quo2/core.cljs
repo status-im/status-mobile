@@ -113,9 +113,9 @@
     quo2.components.tags.tag
     quo2.components.tags.tags
     quo2.components.tags.token-tag
-    quo2.components.text-combinations.title.view
-    quo2.components.wallet.account-card.view
+    quo2.components.text-combinations.view
     quo2.components.wallet.account-overview.view
+    quo2.components.wallet.account-card.view
     quo2.components.wallet.keypair.view
     quo2.components.wallet.network-amount.view
     quo2.components.wallet.network-bridge.view
@@ -319,8 +319,8 @@
 (def context-tag quo2.components.tags.context-tag.view/view)
 (def number-tag quo2.components.tags.number-tag.view/view)
 
-;;;; Title
-(def title quo2.components.text-combinations.title.view/title)
+;;;; Text combinations
+(def text-combinations quo2.components.text-combinations.view/view)
 
 ;;;; Wallet
 (def account-card quo2.components.wallet.account-card.view/view)

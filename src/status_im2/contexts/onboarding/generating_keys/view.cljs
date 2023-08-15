@@ -11,17 +11,17 @@
 
 (defn generate-keys-title
   []
-  [quo/title
+  [quo/text-combinations
    {:title (i18n/label :t/generating-keys)}])
 
 (defn saving-keys-title
   []
-  [quo/title
+  [quo/text-combinations
    {:title (i18n/label :t/saving-keys-to-device)}])
 
 (defn keys-saved-title
   []
-  [quo/title
+  [quo/text-combinations
    {:title (i18n/label :t/keys-saved)}])
 
 (def first-transition-delay-ms 2000)

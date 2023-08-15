@@ -2,14 +2,13 @@
   (:require [oops.core :as oops]
             [quo2.core :as quo]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.common.scroll-page.style :as style]
             [utils.re-frame :as rf]
             [react-native.reanimated :as reanimated]))
 
-(def negative-scroll-position-0 (if platform/ios? -44 0))
-(def scroll-position-0 (if platform/ios? 44 0))
+(def negative-scroll-position-0 0)
+(def scroll-position-0 0)
 
 (defn diff-with-max-min
   [value maximum minimum]
@@ -19,10 +18,15 @@
     (max minimum)
     (min maximum)))
 
+(defn page-header-threshold
+  [collapsed?]
+  (if collapsed? 50 170))
+
 (defn f-scroll-page-header
-  [scroll-height height name page-nav-right-side logo sticky-header top-nav title-colum navigate-back?]
-  (let [input-range         (if platform/ios? [-47 10] [0 10])
-        output-range        (if platform/ios? [-208 0] [-208 -45])
+  [scroll-height height name page-nav-right-side logo sticky-header top-nav title-colum navigate-back?
+   collapsed?]
+  (let [input-range         [0 10]
+        output-range        [-208 -45]
         y                   (reanimated/use-shared-value scroll-height)
         translate-animation (reanimated/interpolate y
                                                     input-range
@@ -30,13 +34,13 @@
                                                     {:extrapolateLeft  "clamp"
                                                      :extrapolateRight "clamp"})
         opacity-animation   (reanimated/use-shared-value 0)
-        threshold           (if platform/ios? 30 170)]
+        threshold           (page-header-threshold collapsed?)]
     (rn/use-effect
-     #(do
-        (reanimated/set-shared-value y scroll-height)
-        (reanimated/set-shared-value opacity-animation
-                                     (reanimated/with-timing (if (>= scroll-height threshold) 1 0)
-                                                             (clj->js {:duration 300}))))
+     (fn []
+       (reanimated/set-shared-value y scroll-height)
+       (reanimated/set-shared-value opacity-animation
+                                    (reanimated/with-timing (if (>= scroll-height threshold) 1 0)
+                                                            (clj->js {:duration 300}))))
      [scroll-height])
     [:<>
      [reanimated/blur-view
@@ -62,7 +66,7 @@
            :style  {:line-height 21}}
           name]])
       (if top-nav
-        [rn/view {:style {:margin-top (if platform/ios? 44 0)}}
+        [rn/view {:style {:margin-top 0}}
          top-nav]
         [quo/page-nav
          (cond-> {:margin-top 44
@@ -80,7 +84,7 @@
 
 (defn f-display-picture
   [scroll-height cover]
-  (let [input-range (if platform/ios? [-67 10] [0 150])
+  (let [input-range [0 150]
         y           (reanimated/use-shared-value scroll-height)
         animation   (reanimated/interpolate y
                                             input-range
@@ -101,25 +105,27 @@
   [_ _ _]
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
     (fn [{:keys [name cover-image logo page-nav-right-section-buttons on-scroll
+                 collapsed?
                  height top-nav title-colum background-color navigate-back?]}
          sticky-header
          children]
       [:<>
        [:f> f-scroll-page-header @scroll-height height name page-nav-right-section-buttons
-        logo sticky-header top-nav title-colum navigate-back?]
+        logo sticky-header top-nav title-colum navigate-back? collapsed?]
        [rn/scroll-view
-        {:content-container-style         {:flex-grow 1}
-         :shows-vertical-scroll-indicator false
-         :scroll-event-throttle           16
-         :on-scroll                       (fn [^js event]
-                                            (reset! scroll-height (int
-                                                                   (oops/oget
-                                                                    event
-                                                                    "nativeEvent.contentOffset.y")))
-                                            (when on-scroll
-                                              (on-scroll @scroll-height)))}
+        {:content-container-style           {:flex-grow 1}
+         :content-inset-adjustment-behavior :never
+         :shows-vertical-scroll-indicator   false
+         :scroll-event-throttle             16
+         :on-scroll                         (fn [^js event]
+                                              (reset! scroll-height (int
+                                                                     (oops/oget
+                                                                      event
+                                                                      "nativeEvent.contentOffset.y")))
+                                              (when on-scroll
+                                                (on-scroll @scroll-height)))}
         (when cover-image
-          [rn/view {:style {:height 151}}
+          [rn/view {:style {:height (if collapsed? 110 151)}}
            [rn/image
             {:source cover-image
              ;; Using negative margin-bottom as a workaround because on Android,
@@ -131,6 +137,6 @@
           [rn/view
            {:style (style/children-container {:border-radius    (diff-with-max-min @scroll-height 16 0)
                                               :background-color background-color})}
-           (when cover-image
+           (when (and (not collapsed?) cover-image)
              [:f> f-display-picture @scroll-height logo])
            children])]])))

@@ -12,16 +12,17 @@
 
 (defn page-title
   [pairing-progress?]
-  [quo/title
-   {:container-style              {:margin-top 56}
-    :title                        (i18n/label (if pairing-progress?
-                                                :t/sync-devices-title
-                                                :t/sync-devices-error-title))
-    :subtitle                     (i18n/label (if pairing-progress?
-                                                :t/sync-devices-sub-title
-                                                :t/sync-devices-error-sub-title))
-    :title-accessibility-label    :progress-screen-title
-    :subtitle-accessibility-label :progress-screen-sub-title}])
+  [quo/text-combinations
+   {:container-style                 {:margin-top 56}
+    :title                           (i18n/label (if pairing-progress?
+                                                   :t/sync-devices-title
+                                                   :t/sync-devices-error-title))
+    :description                     :description
+    :description-props               (i18n/label (if pairing-progress?
+                                                   :t/sync-devices-sub-title
+                                                   :t/sync-devices-error-sub-title))
+    :title-accessibility-label       :progress-screen-title
+    :description-accessibility-label :progress-screen-sub-title}])
 
 (defn try-again-button
   [profile-color in-onboarding?]

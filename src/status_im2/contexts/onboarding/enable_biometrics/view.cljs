@@ -12,12 +12,13 @@
 
 (defn page-title
   []
-  [quo/title
-   {:container-style              {:margin-top 12}
-    :title                        (i18n/label :t/enable-biometrics)
-    :title-accessibility-label    :enable-biometrics-title
-    :subtitle                     (i18n/label :t/use-biometrics)
-    :subtitle-accessibility-label :enable-biometrics-sub-title}])
+  [quo/text-combinations
+   {:container-style                 {:margin-top 12}
+    :title                           (i18n/label :t/enable-biometrics)
+    :title-accessibility-label       :enable-biometrics-title
+    :description                     :description
+    :description-props               (i18n/label :t/use-biometrics)
+    :description-accessibility-label :enable-biometrics-sub-title}])
 
 (defn enable-biometrics-buttons
   [insets]

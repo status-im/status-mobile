@@ -4,7 +4,6 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.platform :as platform]
             [reagent.core :as reagent]
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im.ui.components.react :as react]
@@ -212,13 +211,9 @@
                            colors/white
                            colors/neutral-95)
         :navigate-back?   :true
-        :height           (if platform/ios?
-                            (if (> @scroll-height 360)
-                              156
-                              100)
-                            (if (> @scroll-height 360)
-                              208
-                              148))}
+        :height           (if (> @scroll-height 360)
+                            208
+                            148)}
        [render-sticky-header
         {:selected-tab  selected-tab
          :scroll-height scroll-height}]

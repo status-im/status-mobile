@@ -5,7 +5,7 @@
 
 (defn image-slider
   [size]
-  {:top     (if platform/ios? 0 -64)
+  {:top     -64
    :height  size
    :width   size
    :z-index 4

@@ -109,7 +109,7 @@
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
-    [status-im2.contexts.quo-preview.title.title :as title]
+    [status-im2.contexts.quo-preview.text-combinations.preview :as text-combinations]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton-list :as skeleton-list]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
@@ -348,8 +348,8 @@
                         :component status-tags/preview-status-tags}
                        {:name      :token-tag
                         :component token-tag/preview-token-tag}]
-   :text-combinations [{:name      :title
-                        :component title/preview-title}]
+   :text-combinations [{:name      :text-combinations
+                        :component text-combinations/preview}]
    :wallet            [{:name      :account-card
                         :component account-card/preview-account-card}
                        {:name      :account-overview
