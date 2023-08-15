@@ -27,6 +27,7 @@
     [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
     [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
+    [status-im2.contexts.quo-preview.graph.interactive-graph :as interactive-graph]
     [status-im2.contexts.quo-preview.graph.wallet-graph :as wallet-graph]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
@@ -212,7 +213,11 @@
                         :component empty-state/view}]
    :gradient          [{:name      :gradient-cover
                         :component gradient-cover/view}]
-   :graph             [{:name      :wallet-graph
+   :graph             [{:name      :interactive-graph
+                        :options   {:topBar {:visible true}}
+                        :component interactive-graph/view}
+                       {:name      :wallet-graph
+                        :options   {:topBar {:visible true}}
                         :component wallet-graph/view}]
    :info              [{:name      :info-message
                         :component info-message/view}
