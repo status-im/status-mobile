@@ -125,15 +125,15 @@
            v]]))]
      [rn/view {:style (style/footer)}
       [rn/pressable
-       {:style    (style/select-option false)
+       {:style    (style/select-button)
         :on-press (fn []
                     (reset! field-value nil)
                     (reset! open false))}
        [rn/text {:style (style/field-text false)}
         "Clear"]]
-      [rn/view {:width 16}]
+      [rn/view {:style {:width 16}}]
       [rn/touchable-opacity
-       {:style    (style/select-option false)
+       {:style    (style/select-button)
         :on-press #(reset! open false)}
        [rn/text {:style (style/field-text false)}
         "Close"]]]]]])

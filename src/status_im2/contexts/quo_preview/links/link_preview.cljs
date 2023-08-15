@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.links.link-preview
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -17,9 +16,7 @@
    {:type :boolean :key :enabled?}
    {:key     :thumbnail
     :type    :select
-    :options (mapv (fn [k]
-                     {:key   k
-                      :value (string/capitalize (name k))})
+    :options (mapv (fn [k] {:key k})
                    (keys resources/mock-images))}
    {:key     :thumbnail-size
     :type    :select

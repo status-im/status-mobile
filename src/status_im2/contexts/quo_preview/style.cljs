@@ -75,11 +75,16 @@
   [selected?]
   (merge (field-container selected?)
          {:justify-content :center
+          :flex            1
           :margin-vertical 4}
          (if selected?
            {:border-color     (field-active-bg-color)
             :background-color (field-active-bg-color)}
            {:background-color (field-default-bg-color)})))
+
+(defn select-button
+  []
+  (merge (select-option false) {:align-items :center}))
 
 (def label-container
   {:flex          (- 1 field-flex-percentage)
