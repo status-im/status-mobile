@@ -85,8 +85,9 @@
         [quo/button
          {:container-style {:margin-horizontal 40}
           :on-press        #(rf/dispatch [:show-bottom-sheet
-                                          {:content                      (fn [] [render-action-sheet])
-                                           :gradient-customization-color @customization-color}])}
+                                          {:content             (fn [] [render-action-sheet])
+                                           :gradient-cover?     true
+                                           :customization-color @customization-color}])}
          "See in bottom sheet"]])]))
 
 (defn preview-gradient-cover
