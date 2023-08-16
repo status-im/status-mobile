@@ -25,7 +25,7 @@
     :type  :boolean}
    (preview/customization-color-option)])
 
-(def avatar (resources/get-mock-image :user-picture-male4))
+(def avatar (resources/get-mock-image :photo1))
 
 (defn cool-preview
   []
