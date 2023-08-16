@@ -17,8 +17,7 @@
   [_]
   (fn [{:keys [size theme customization-color picture]
         :or   {size                20
-               customization-color :blue
-               picture             nil}}]
+               customization-color :blue}}]
     (let [icon-size (get-in sizes [size :icon])]
       [rn/view
        {:style (style/container {:container-size      size
