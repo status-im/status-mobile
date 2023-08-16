@@ -183,6 +183,10 @@ class ChatElementByText(Text):
             xpath="//%s//android.widget.TextView[contains(@text,'%s')]" % (self.chat_item_locator, self.message_text)
         )
 
+    def click_on_link_inside_message_body(self):
+        self.message_body.wait_for_visibility_of_element(30)
+        self.message_body.click_inside_element_by_coordinate(rel_x=0.1, rel_y=0.9)
+
     def wait_for_sent_state(self, wait_time=30):
         return BaseElement(self.driver, prefix=self.locator,
                            xpath="//*[@content-desc='message-sent']").is_element_displayed(wait_time)
@@ -458,6 +462,7 @@ class CommunityView(HomeView):
             Button(self.driver, xpath="//*[starts-with(@text,'%s')]%s" % (username, decline_suffix)).click()
         self.close_button.click()
 
+    # Should not be used anymore, outdated flow
     def send_invite_to_community(self, community_name, user_names_to_invite):
         if isinstance(user_names_to_invite, str):
             user_names_to_invite = [user_names_to_invite]
@@ -474,11 +479,15 @@ class CommunityView(HomeView):
         self.share_invite_button.click_until_presence_of_element(self.invite_button)
         self.back_button.click_until_presence_of_element(self.plus_button)
 
-    def share_community(self, coummunity_element, user_names_to_share):
+    def share_community(self, community_name, user_names_to_share):
         if isinstance(user_names_to_share, str):
             user_names_to_share = [user_names_to_share]
         self.driver.info("Share to  %s community" % ', '.join(map(str, user_names_to_share)))
-        coummunity_element.long_press_until_element_is_shown(self.share_community_button)
+        self.jump_to_communities_home()
+        home = self.get_home_view()
+        community_element = home.get_chat(community_name, community=True)
+        # community_element.long_press_until_element_is_shown(self.view_members_button)
+        community_element.long_press_until_element_is_shown(self.share_community_button)
         self.share_community_button.click()
         for user_name in user_names_to_share:
             user_contact = self.element_by_text_part(user_name)

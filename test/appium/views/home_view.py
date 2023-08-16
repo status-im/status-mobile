@@ -303,7 +303,6 @@ class HomeView(BaseView):
 
         # New UI
         self.new_chat_button = Button(self.driver, accessibility_id="new-chat-button")
-        self.jump_to_button = Button(self.driver, accessibility_id="jump-to")
         self.discover_communities_button = Button(self.driver, accessibility_id="communities-home-discover-card")
 
         # New UI bottom sheet
