@@ -33,14 +33,12 @@
                                                            :favicon?    false
                                                            :placeholder "Search or enter dapp domain"
                                                            :locked?     false})]
-    [rn/keyboard-avoiding-view
-     {:style {:flex 1 :padding-top top}}
+    [rn/keyboard-avoiding-view {:style {:flex 1 :padding-top top}}
      [quo/page-nav
-      {:align-mid?   true
-       :mid-section  {:type :text-only :main-text ""}
-       :left-section {:icon :i/arrow-left
-                      :on-press
-                      #(rf/dispatch [:navigate-back])}}]
+      {:type      :no-title
+       :icon-name :i/arrow-left
+       :on-press  #(rf/dispatch [:navigate-back])}]
+
      [rn/flat-list
       {:header                       [preview/customizer state descriptor]
        :key-fn                       str
