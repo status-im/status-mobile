@@ -20,7 +20,7 @@
     (min maximum)))
 
 (defn f-scroll-page-header
-  [scroll-height height name page-nav logo sticky-header top-nav title-colum navigate-back?]
+  [scroll-height height name page-nav-right-side logo sticky-header top-nav title-colum navigate-back?]
   (let [input-range         (if platform/ios? [-47 10] [0 10])
         output-range        (if platform/ios? [-208 0] [-208 -45])
         y                   (reanimated/use-shared-value scroll-height)
@@ -64,26 +64,15 @@
       (if top-nav
         [rn/view {:style {:margin-top (if platform/ios? 44 0)}}
          top-nav]
-        [rn/view {:style {:margin-top 44}}
-         [quo/page-nav
-          (merge
-           {:horizontal-description? true
-            :one-icon-align-left?    true
-            :align-mid?              false
-            :page-nav-color          :transparent
-            :mid-section             {:type            :text-with-description
-                                      :main-text       nil
-                                      :description-img nil}
-            :right-section-buttons   (if (= 1 reanimated/get-shared-value opacity-animation)
-                                       (assoc page-nav :icon-background :blur)
-                                       page-nav)}
-           (when navigate-back?
-             {:left-section {:icon            :i/close
-                             :type            :grey
-                             :icon-background (if (= 1 reanimated/get-shared-value opacity-animation)
-                                                :blur
-                                                :photo)
-                             :on-press        #(rf/dispatch [:navigate-back])}}))]])
+        [quo/page-nav
+         (cond-> {:margin-top 44
+                  :type       :no-title
+                  :background (if (= 1 (reanimated/get-shared-value opacity-animation))
+                                :blur
+                                :photo)
+                  :right-side page-nav-right-side}
+           navigate-back? (assoc :icon-name :i/close
+                                 :on-press  #(rf/dispatch [:navigate-back])))])
       (when title-colum
         title-colum)
       sticky-header]]))
