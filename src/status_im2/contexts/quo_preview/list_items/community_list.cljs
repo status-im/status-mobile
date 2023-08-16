@@ -2,39 +2,33 @@
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.community.data :as data]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor-type
-  {:label   "Type:"
+  {:type    :select
    :key     :type
-   :type    :select
-   :options [{:key :discover :value "Discover"}
-             {:key :engage :value "Engage"}
-             {:key :share :value "Share"}]})
+   :options [{:key :discover}
+             {:key :engage}
+             {:key :share}]})
 
 (def descriptor-locked
-  {:label "Locked?" :key :locked? :type :boolean})
+  {:type :boolean :key :locked?})
 
 (def descriptor-unread-count
-  {:label "Unread count:" :key :unread-count :type :number})
+  {:type :number :key :unread-count})
 
 (def descriptor-title
-  {:label "Title:" :key :title :type :text})
+  {:type :text :key :title})
 
 (def descriptor-blur
-  {:label "Blur?" :key :blur? :type :boolean})
+  {:type :boolean :key :blur?})
 
 (def descriptor-member-stats
-  [{:label "Total member count:"
-    :key   :members-count
-    :type  :number}
-   {:label "Active member count:"
-    :key   :active-count
-    :type  :number}])
+  [{:type :number :key :members-count}
+   {:type :number :key :active-count}])
 
 (def descriptors-base
   [descriptor-type
@@ -43,29 +37,27 @@
 
 (def descriptors-type-discover
   (conj descriptors-base
-        {:label   "Info:"
+        {:type    :select
          :key     :info
-         :type    :select
-         :options [{:key :token-gated :value "Token gated"}
-                   {:key :default :value "Default"}]}
+         :options [{:key :token-gated}
+                   {:key :default}]}
         {:label "Member stats?"
-         :key   :members?
-         :type  :boolean}))
+         :type  :boolean
+         :key   :members?}))
 
 (def descriptors-type-engage
   (conj descriptors-base
-        {:label   "Info:"
+        {:type    :select
          :key     :info
-         :type    :select
-         :options [{:key :notification :value "Notification"}
-                   {:key :mention :value "Mention"}
-                   {:key :muted :value "Muted"}
-                   {:key :token-gated :value "Token gated"}
-                   {:key :navigation :value "Navigation"}
-                   {:key :default :value "Default"}]}))
+         :options [{:key :notification}
+                   {:key :mention}
+                   {:key :muted}
+                   {:key :token-gated}
+                   {:key :navigation}
+                   {:key :default}]}))
 
 (def descriptors-type-share
-  (conj descriptors-base {:label "Subtitle:" :key :subtitle :type :text}))
+  (conj descriptors-base {:type :text :key :subtitle}))
 
 (defn descriptors
   [{:keys [members? info] :as state}]
@@ -88,7 +80,7 @@
       (into [descriptor-blur] descs)
       descs)))
 
-(defn cool-preview
+(defn view
   []
   (let [state (reagent/atom {:blur?               false
                              :customization-color :blue
@@ -103,30 +95,16 @@
                              :unread-count        5})]
     (fn []
       (let [customization-color (colors/custom-color-by-theme (:customization-color @state) 50 60)]
-        [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-         [rn/view {:style {:margin-bottom 20}}
-          [preview/customizer state (descriptors @state)]
-          [rn/view {:style {:margin-vertical 30 :align-items :center}}
-           [quo/community-list-item
-            (merge @state
-                   {:container-style     {:width 335}
-                    :logo                (resources/get-mock-image :status-logo)
-                    :tokens              (:tokens data/community)
-                    :customization-color customization-color
-                    :on-press            #(js/alert "List item pressed")
-                    :on-long-press       #(js/alert "Long pressed item")
-                    :on-press-info       #(js/alert "Info pressed")
-                    :members             (when (:members? @state)
-                                           {:members-count (:members-count @state)
-                                            :active-count  (:active-count @state)})})]]]]))))
-
-(defn preview
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/neutral-5 colors/neutral-95)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+        [preview/preview-container {:state state :descriptor (descriptors @state)}
+         [quo/community-list-item
+          (merge @state
+                 {:container-style     {:width 335}
+                  :logo                (resources/get-mock-image :status-logo)
+                  :tokens              (:tokens data/community)
+                  :customization-color customization-color
+                  :on-press            #(js/alert "List item pressed")
+                  :on-long-press       #(js/alert "Long pressed item")
+                  :on-press-info       #(js/alert "Info pressed")
+                  :members             (when (:members? @state)
+                                         {:members-count (:members-count @state)
+                                          :active-count  (:active-count @state)})})]]))))
