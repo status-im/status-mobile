@@ -73,18 +73,18 @@
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view
-               {:state    (calculate-box-state network-state (@app-state :counter) n)
-               :customization-color :blue
-                :key              n
+               {:state               (calculate-box-state network-state (@app-state :counter) n)
+                :customization-color :blue
+                :key                 n
                }])))])
 
 (defn calculate-box-state-arbitrum
   [network-state network-type]
   (cond
     (and (= network-type :arbitrum) (= network-state :sending)) :confirmed
-    (or (= network-state :pending) (= network-state :sending)) :pending
-    (= network-state :error)   :error
-    :else                      :confirmed))
+    (or (= network-state :pending) (= network-state :sending))  :pending
+    (= network-state :error)                                    :error
+    :else                                                       :confirmed))
 
 (defn calculate-box-width
   [showHalf]
@@ -99,8 +99,8 @@
   [rn/view
    {:style style/progress-box-container}
    [progress-box/view
-    {:state    (calculate-box-state-arbitrum network-state network-type)
-    :customization-color :blue}]
+    {:state               (calculate-box-state-arbitrum network-state network-type)
+     :customization-color :blue}]
    [rn/view
     {:style            style/progress-box-arbitrum
      :background-color (colors/theme-colors colors/white colors/neutral-5 colors/neutral-70)
@@ -112,15 +112,21 @@
                                                              :right (str (calculate-box-width true) "%")
                                                              :background-color
                                                              (colors/theme-colors
-(colors/custom-color :blue 50) (colors/custom-color :blue 60) quo.theme))
+                                                              (colors/custom-color :blue 50)
+                                                              (colors/custom-color :blue 60)
+                                                              quo.theme))
                         (= network-state :finalized)  (assoc {:style style/progress-box-arbitrum-abs}
                                                              :right (str (calculate-box-width false) "%")
                                                              :background-color
                                                              (colors/theme-colors
-(colors/custom-color :blue 50) (colors/custom-color :blue 60) quo.theme))
+                                                              (colors/custom-color :blue 50)
+                                                              (colors/custom-color :blue 60)
+                                                              quo.theme))
                         :else                         (assoc {:style style/progress-box-arbitrum-abs}
                                                              :background-color
-                                                             (colors/theme-colors colors/white colors/neutral-5 colors/neutral-70)))]
+                                                             (colors/theme-colors colors/white
+                                                                                  colors/neutral-5
+                                                                                  colors/neutral-70)))]
         box-style)
       :align-self "flex-end"
       :border-color
@@ -147,7 +153,7 @@
 (defn network-type-text
   [network-type network-state]
   (cond
-    (and (= network-state :sending) (= network-type :arbitrum)) "Confirmed on"
+    (and (= network-state :sending) (= network-type :arbitrum))     "Confirmed on"
     (or (= network-state :sending) (= network-state :pending))      "Pending on"
     (or (= network-state :confirmed) (= network-state :finalising)) "Confirmed on"
     (= network-state :finalized)                                    "Finalized on"
@@ -158,31 +164,46 @@
   (cond
     (and (= network-type :mainnet)
          (not= network-state :finalized)
-         (not= network-state :error))   (str (if (< (@app-state :counter) 4)
-                                               (@app-state :counter)
-                                               "4")
-                                             "/4")
-    (= network-state :finalized)        "Epoch 181,329"
+         (not= network-state :error))       (str (if (< (@app-state :counter) 4)
+                                                   (@app-state :counter)
+                                                   "4")
+                                                 "/4")
+    (= network-state :finalized)            "Epoch 181,329"
     (and (= network-type :mainnet)
-         (= network-state :error))      "0/4"
+         (= network-state :error))          "0/4"
     (and (not= network-type :mainnet)
-          (or (= network-state :finalising) (= network-state :confirmed))) "1/1"
+         (or (= network-state :finalising)
+             (= network-state :confirmed))) "1/1"
     (and (= network-type :arbitrum)
-          (= network-state :sending)) "1/1"
-    (not= network-type :mainnet) "0/1"))
+         (= network-state :sending))        "1/1"
+    (not= network-type :mainnet)            "0/1"))
 
 (defn get-status-icon
   [network-type network-state]
   (cond
-    (and (= network-type :arbitrum) (= network-state :sending))      ["positive-state"
-                                                                     (colors/theme-colors colors/white colors/success-50 colors/success-60)]
-    (or (= network-state :pending) (= network-state :sending))      ["pending-state"
-                                                                     (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)]
-    (or (= network-state :confirmed) (= network-state :finalising)) ["positive-state"
-                                                                     (colors/theme-colors colors/white colors/success-50 colors/success-60)]
-    (= network-state :finalized)  ["diamond" (colors/theme-colors colors/white colors/success-50 colors/success-60)]
-    (= network-state :error)  ["negative-state"
-                                  (colors/theme-colors colors/danger colors/danger-50 colors/danger-60) ]))
+    (and (= network-type :arbitrum)
+         (= network-state :sending))   ["positive-state"
+                                        (colors/theme-colors colors/white
+                                                             colors/success-50
+                                                             colors/success-60)]
+    (or (= network-state :pending)
+        (= network-state :sending))    ["pending-state"
+                                        (colors/theme-colors colors/white
+                                                             colors/neutral-50
+                                                             colors/neutral-60)]
+    (or (= network-state :confirmed)
+        (= network-state :finalising)) ["positive-state"
+                                        (colors/theme-colors colors/white
+                                                             colors/success-50
+                                                             colors/success-60)]
+    (= network-state :finalized)       ["diamond"
+                                        (colors/theme-colors colors/white
+                                                             colors/success-50
+                                                             colors/success-60)]
+    (= network-state :error)           ["negative-state"
+                                        (colors/theme-colors colors/danger
+                                                             colors/danger-50
+                                                             colors/danger-60)]))
 
 (defn transaction-progress
   [{:keys [title
@@ -195,8 +216,8 @@
   (let [count (reagent/atom 0)]
     (rn/use-effect
      (fn []
-        (when start-interval-now
-          (start-interval network-state))
+       (when start-interval-now
+         (start-interval network-state))
        (clear-counter)
        (fn []
          (stop-interval)))
@@ -217,9 +238,9 @@
           [render-text title override-theme]]
          (if (= network-state :error)
            [button/button
-            {:size   24
+            {:size      24
              :icon-left :i/refresh
-             :type   :primary} "Retry"])]]
+             :type      :primary} "Retry"])]]
        [rn/view
         {:style style/padding-row}
         [quo2/context-tag {:blur? [false]}
@@ -229,7 +250,9 @@
          [rn/view
           {:style style/item-container}
           [rn/view
-           {:style (assoc style/progress-container :border-color (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
+           {:style (assoc style/progress-container
+                          :border-color
+                          (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
            (let [[status-icon color] (get-status-icon network-type network-state)]
              [load-icon status-icon color])
            [rn/view
@@ -245,7 +268,9 @@
          [rn/view
           {:style style/item-container}
           [rn/view
-           {:style (assoc style/progress-container :border-color (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
+           {:style (assoc style/progress-container
+                          :border-color
+                          (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
            (let [[status-icon color] (get-status-icon :arbitrum network-state)]
              [load-icon status-icon color])
            [rn/view

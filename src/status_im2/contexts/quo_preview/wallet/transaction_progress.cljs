@@ -60,9 +60,9 @@
   []
   (let [state (reagent/atom {:title               "Title"
                              :accessibility-label :transaction-progress-item
-                             :network-state        :pending
-                             :network-type         :mainnet
-                             :start-interval-now         true
+                             :network-state       :pending
+                             :network-type        :mainnet
+                             :start-interval-now  true
                              :on-press            (fn []
                                                     (js/alert "Transaction progress item pressed"))})]
     (fn []

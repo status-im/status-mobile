@@ -29,12 +29,12 @@
    :padding-top    7})
 
 (def progress-box-container
-  {:align-items        :center
-   :padding-left 12
-   :padding-right 6
-   :flex-direction     :row
-   :padding-bottom     6
-   :flex-wrap          "wrap"})
+  {:align-items    :center
+   :padding-left   12
+   :padding-right  6
+   :flex-direction :row
+   :padding-bottom 6
+   :flex-wrap      "wrap"})
 
 (def progress-container
   {:flex-direction     :row
@@ -70,9 +70,9 @@
    :margin-vertical   2})
 
 (def progress-box-arbitrum-abs
-  {:position :absolute
-   :top      0
-   :bottom   0
-   :left     0
-   :right    0
-   :border-radius     3})
+  {:position      :absolute
+   :top           0
+   :bottom        0
+   :left          0
+   :right         0
+   :border-radius 3})
