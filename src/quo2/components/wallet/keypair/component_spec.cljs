@@ -2,7 +2,6 @@
   (:require [test-helpers.component :as h]
             [quo2.components.wallet.keypair.view :as keypair]))
 
-
 (def accounts
   [{:account-props {:customization-color :turquoise
                     :size                32
@@ -87,4 +86,3 @@
                 :action              :options
                 :details             other-details}])
     (h/is-truthy (h/get-by-label-text :options-button))))
-
