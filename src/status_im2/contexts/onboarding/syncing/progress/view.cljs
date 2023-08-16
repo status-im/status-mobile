@@ -41,7 +41,7 @@
         profile-color  (:color (rf/sub [:onboarding-2/profile]))]
     [rn/view {:style (style/page-container in-onboarding?)}
      (when-not in-onboarding? [background/view true])
-     [quo/page-nav]
+     [quo/page-nav {:type :no-title :background :blur}]
      [page-title (pairing-progress pairing-status)]
      (if (pairing-progress pairing-status)
        [rn/view {:style style/page-illustration}

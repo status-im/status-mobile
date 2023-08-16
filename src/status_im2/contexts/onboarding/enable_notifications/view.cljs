@@ -1,15 +1,13 @@
 (ns status-im2.contexts.onboarding.enable-notifications.view
-  (:require
-    [quo2.core :as quo]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [react-native.core :as rn]
-    [react-native.platform :as platform]
-    [react-native.safe-area :as safe-area]
-    [status-im.notifications.core :as notifications]
-    [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-    [status-im2.contexts.onboarding.enable-notifications.style :as style]
-    [status-im2.contexts.shell.jump-to.utils :as shell.utils]))
+  (:require [quo2.core :as quo]
+            [react-native.core :as rn]
+            [react-native.platform :as platform]
+            [react-native.safe-area :as safe-area]
+            [status-im.notifications.core :as notifications]
+            [status-im2.contexts.onboarding.enable-notifications.style :as style]
+            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn page-title
   []
@@ -50,9 +48,10 @@
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
-     [navigation-bar/navigation-bar
-      {:stack-id             :enable-notifications
-       :disable-back-button? true}]
+     [quo/page-nav
+      {:background :blur
+       :icon-name  :i/arrow-left
+       :on-press   #(rf/dispatch [:navigate-back-within-stack :identifiers])}]
      [page-title]
      [rn/view {:style style/page-illustration}
       [quo/text
