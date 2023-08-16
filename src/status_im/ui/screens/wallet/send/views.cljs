@@ -236,16 +236,14 @@
       [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
        [:<>
         [quo2/page-nav
-         {:align-mid?   true
-          :mid-section  {:type      :text-only
-                         :main-text (i18n/label :t/send-transaction)}
-
-          :left-section {:on-press            #(do
-                                                 (re-frame/dispatch [:navigate-back])
-                                                 (re-frame/dispatch
-                                                  [:wallet/cancel-transaction-command]))
-                         :icon                :i/arrow-left
-                         :accessibility-label :back-button}}]
+         {:type                :title
+          :text-align          :left
+          :title               (i18n/label :t/send-transaction)
+          :icon-name           :i/arrow-left
+          :on-press            (fn []
+                                 (re-frame/dispatch [:navigate-back])
+                                 (re-frame/dispatch [:wallet/cancel-transaction-command]))
+          :accessibility-label :back-button}]
         [react/scroll-view
          {:style                        {:flex 1}
           :keyboard-should-persist-taps :handled}
