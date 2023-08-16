@@ -30,4 +30,5 @@
      :border-width     1
      :border-color     border-color
      :background-color background-color
-     :margin 2}))
+     :margin-horizontal 1
+     :margin-vertical 2}))

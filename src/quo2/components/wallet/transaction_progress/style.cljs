@@ -30,9 +30,10 @@
 
 (def progress-box-container
   {:align-items        :center
-   :padding-horizontal 12
+   :padding-left 12
+   :padding-right 6
    :flex-direction     :row
-   :padding-bottom     11
+   :padding-bottom     6
    :flex-wrap          "wrap"})
 
 (def progress-container
@@ -73,4 +74,5 @@
    :top      0
    :bottom   0
    :left     0
-   :right    0})
+   :right    0
+   :border-radius     3})
