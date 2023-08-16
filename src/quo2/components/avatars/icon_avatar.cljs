@@ -9,7 +9,7 @@
    :small  20})
 
 (defn icon-avatar
-  [{:keys [size icon color opacity]
+  [{:keys [size icon color opacity border?]
     :or   {opacity 20}}]
   (let [component-size (size sizes)
         circle-color   (colors/custom-color color 50 opacity)
@@ -22,6 +22,8 @@
      {:style {:width            component-size
               :height           component-size
               :border-radius    component-size
+              :border-width     (when border? 1)
+              :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80)
               :background-color circle-color
               :justify-content  :center
               :align-items      :center}}

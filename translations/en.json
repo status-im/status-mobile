@@ -2281,6 +2281,11 @@
     "no-collectibles-description": "Don't be a bored ape",
     "no-activity": "No activity",
     "no-activity-description": "C'mon do something...",
+<<<<<<< HEAD
     "buy": "Buy",
     "bridge": "Bridge"
+=======
+    "on-device": "On device",
+    "on-keycard": "On Keycard"
+>>>>>>> 93b6969bd (quo2 wallet: keypair component)
 }

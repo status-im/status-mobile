@@ -112,6 +112,7 @@
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
     [status-im2.contexts.quo-preview.wallet.account-overview :as account-overview]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
+    [status-im2.contexts.quo-preview.wallet.keypair :as keypair]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
     [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
@@ -337,6 +338,9 @@
                         :component account-card/preview-account-card}
                        {:name      :account-overview
                         :component account-overview/preview-account-overview}
+                       {:name      :keypair
+                        :options   {:topBar {:visible true}}
+                        :component keypair/preview}
                        {:name      :network-amount
                         :component network-amount/preview}
                        {:name      :network-bridge
