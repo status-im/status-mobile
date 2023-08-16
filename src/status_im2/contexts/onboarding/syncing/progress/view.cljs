@@ -8,12 +8,7 @@
 
 (defn pairing-progress
   [status]
-  (cond
-    (= status :error)
-    false
-
-    :else
-    true))
+  (not= status :error))
 
 (defn page-title
   [pairing-progress?]
@@ -37,7 +32,7 @@
                                          (if in-onboarding? :sign-in-intro :sign-in)]))
     :accessibility-label :try-again-later-button
     :customization-color profile-color
-    :style               style/try-again-button}
+    :container-style     style/try-again-button}
    (i18n/label :t/try-again)])
 
 (defn view

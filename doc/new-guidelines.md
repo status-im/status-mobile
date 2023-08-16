@@ -1,8 +1,9 @@
 # Code Style Guidelines
 
->The goal of this document is to help all contributors (core and external) to
->write code in _unison_ and help establish good practices that serve the Status
->Mobile contributors well.
+> [!IMPORTANT]
+> The goal of this document is to help all contributors (core and external) to
+> write code in _unison_ and help establish good practices that serve the Status
+> Mobile contributors well.
 
 We don't want to turn this document into an exhaustive list of rules to be
 followed that nobody will read. As much as possible, we'll try to document only
@@ -10,35 +11,28 @@ what we consider important for Status Mobile. In other words, we don't want to
 maintain a general Clojure convention/style guide, nor do we want to turn this
 document into a long tutorial.
 
-This is a **work in progress**, and not all conventions are properly implemented
-in the codebase yet. The project structure is also going over major changes (as
-of Nov/2022), and it'll take a considerable amount of time until we migrate the
-existing code to the new structure.
+> [!WARNING]
+> This is a **work in progress**, and not all conventions are properly
+> implemented in the codebase yet. The project structure is also undergoing
+> major changes, and it will take a considerable amount of time until we migrate
+> the existing code to the new structure.
 
 If you find out anything is outdated or missing, please, share with us or even
 better, create a pull-request! 🤸
 
 ## Style guide
 
-We mostly follow the [Clojure Style
-Guide](https://github.com/bbatsov/clojure-style-guide), so it's recommended to
-get familiar with it.
-
-As of Nov/2022, running `make lint` should fix the most basic formatting issues,
-and we are in the process of integrating a tool to format non-trivial code
-according to the Clojure Style Guide. This should greatly reduce noise in
-pull-request reviews and it'll simplify the life of all contributors.
-
-Pay special attention to:
-
-- Align let bindings https://github.com/bbatsov/clojure-style-guide#bindings-alignment
-- Align map keys https://github.com/bbatsov/clojure-style-guide#map-keys-alignment
+We follow the [Clojure Style
+Guide](https://github.com/bbatsov/clojure-style-guide) and we use
+[zprint](https://github.com/kkinnear/zprint) to format Clojure code. Running
+`make lint-fix` should fix most formatting issues, but not all of them.
 
 ## Dos and don'ts
 
 ### Hiccup
 
-Never use anonymous inline function in hiccup, this will lead to reinitialization of component on each render of parent component
+Never use anonymous inline function in hiccup, this will lead to
+reinitialization of component on each render of parent component.
 
 ```clojure
 ;; bad
@@ -57,7 +51,7 @@ Never use anonymous inline function in hiccup, this will lead to reinitializatio
    [comp]])
 ```
 
-This mistake mostly happens with functional components
+This mistake mostly happens with functional components.
 
 ```clojure
 ;; bad
@@ -71,20 +65,24 @@ This mistake mostly happens with functional components
 ;; good
 (defn f-comp [atom]
  [rn/text atom])
-         
+
 (fn []
  (let [atom (rf/sub [:sub])]
    (fn []
-     [:f> f-comp atom]))) 
+     [:f> f-comp atom])))
 ```
 
-it's important to name functional components with `f-` prefix
+It's important to name functional components with `f-` prefix.
 
 ### Component props and API scheme to match Figma as closely as possible
 
-Ideally, the prop names for components (particularly in quo2 Design System) should match the Figma properties as best as possible. This makes it easier for the developer using that component to configure it correctly for the screen it is being used on and avoids unnecessary overwrites and adjustments being made.
+Ideally, the prop names for components (particularly in quo2 Design System)
+should match the Figma properties as best as possible. This makes it easier for
+the developer using that component to configure it correctly for the screen it
+is being used on and avoids unnecessary overwrites and adjustments being made.
 
 #### Avoid unnecessarily grouping categories to reduce the number of props
+
 For example in Figma if there is a component and it has the following variants:
 
 |theme: "light" blur: "False"|theme: "dark" blur: "False"|theme: "light" blur: "True"|theme: "dark"  blur: "True"|
@@ -107,12 +105,18 @@ type - can be :neutral :active :danger :danger-blur"
 (defn my-component [{:keys [theme blur? type]} label])
 ```
 
-Please note this is only for the external API of the component and there should be no restriction of how the component manages its internal API as that will not affect the developer using the component with the issues described above.
+Please note this is only for the external API of the component and there should
+be no restriction of how the component manages its internal API as that will not
+affect the developer using the component with the issues described above.
 
-In some cases this is not always possible or does not make sense. However the thought process should be how easy will it be for another developer to use this component with the correct configuration given the screen designs for Figma.
+In some cases this is not always possible or does not make sense. However the
+thought process should be how easy will it be for another developer to use this
+component with the correct configuration given the screen designs for Figma.
 
-#### Avoid unnecessarily renaming props 
-In general it can be helpful to avoid renaming props from their counterpart in Figma.
+#### Avoid unnecessarily renaming props
+
+In general it can be helpful to avoid renaming props from their counterpart in
+Figma.
 
 For example if Figma has sizes `:small`, `:medium` and `:large`
 
@@ -153,7 +157,7 @@ the source file. For a real example, see
 
 ### Always add styles inside the `:style` key
 
-Although when compiling ReactNative for mobile some components are able work with 
+Although when compiling ReactNative for mobile some components are able work with
 their styles in the top-level of the properties map, prefer to add them inside the
 `:style` key in order to separate styles from properties:
 
@@ -172,12 +176,11 @@ their styles in the top-level of the properties map, prefer to add them inside t
             :on-press #(js/alert "Hi!")
             :title    "Button"}]
 
-;; better 
+;; better
 ;; (define them in a style ns & place them inside `:style` key)
 [rn/button {:style    (style/button)
             :on-press #(js/alert "Hi!")
-            :title    "Button"}
- ]
+            :title    "Button"}]
 ```
 
 Also its fine to keep one liner styles in view
@@ -189,7 +192,7 @@ Also its fine to keep one liner styles in view
 
 ### Don't define properties in styles ns
 
-Properties must be set on view level 
+Properties must be set on view level
 
 ```clojure
 ;; bad
@@ -209,9 +212,7 @@ Properties must be set on view level
  :bottom           0}
 ```
 
-
 ### Apply animated styles in the style file
-
 
 ```clojure
 ;; bad
@@ -245,24 +246,37 @@ Joshua Comeau.
 [rn/view {:style {:padding-horizontal 20}}]
 ```
 
-### Don't prepend booleans with is-
+### Use a question mark to convey the value is a boolean
 
-It is a common practice in JavaScript and other languages to prepend boolean variable names with `is-*`. 
-In ClojureScript it is common practice to suffix boolean variable names with a `?`. 
-There is no need for both of these and so it is preferable to stick with the latter.
+The Clojure Style Guide suggests using a question mark only in [predicate
+functions](https://guide.clojure.style/#naming-predicates), but nothing is
+mentioned about other symbols and keywords. We prefer to extend the convention
+to all boolean references.
 
 ```clojure
 ;; bad
 (let [is-open? true] ...)
+(def flag-is-enabled false)
 
 ;; good
 (let [open? true] ...)
+(def flag-enabled? false)
+```
+
+And for keywords too:
+
+```clojure
+;; bad
+[some-component {:logged-in true}]
+
+;; good
+[some-component {:logged-in? true}]
 ```
 
 ### Styles def vs defn
 
-Always use `def` over `defn`, unless the style relies on dynamic values, such as
-deref'ed atoms.
+Always use `def` over `defn` if there are no dynamic values. This helps cut the
+cost of function calls.
 
 ```clojure
 ;; bad
@@ -286,15 +300,18 @@ deref'ed atoms.
 
 ### Custom Colors
 
-The Status designs have a lot of customization of user and group colors with components and pages. For consistency it is best to use `customization-color` as the prop key on pages and components. This will help easily identify what pages and components in the application are using customized colors.
+The Status designs have a lot of customization of user and group colors. For
+consistency it is best to use `customization-color` as the prop key on pages and
+components. This will help easily identify what pages and components in the
+application are using customized colors.
 
 ```clojure
 ;; bad
-(defn community-card [{keys [custom-color]}] 
+(defn community-card [{keys [custom-color]}]
   ...)
 
 ;; good
-(defn community-card [{keys [customization-color]}] 
+(defn community-card [{keys [customization-color]}]
   ...)
 ```
 
@@ -518,9 +535,9 @@ the `quo2/` directory.
 
 ;; good
 (ns my-namespace
-  (:require [quo2.core :as quo2]))
+  (:require [quo2.core :as quo]))
 
-(quo2/icon :i/verified)
+(quo/icon :i/verified)
 
 ;; also good because both namespaces are inside quo2/
 (ns quo2.components.tabs.account-selector
@@ -587,8 +604,7 @@ indices.
 
 ### Icons
 
-Use the appropriate keyword qualification/namespace and don't directly require
-namespaces inside `quo2/components/`.
+Use the appropriate keyword qualification/namespace.
 
 ```clojure
 ;; bad

@@ -7,6 +7,7 @@
 (defn view
   []
   [scan-sync-code/view
-   {:title      (i18n/label :t/scan-sync-code)
-    :background [rn/view
-                 {:style style/background} true]}])
+   {:title       (i18n/label :t/scan-sync-code)
+    :background  [rn/view
+                  {:style style/background} true]
+    :screen-name "scan-sync-code-page"}])

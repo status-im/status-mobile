@@ -14,7 +14,6 @@
 
 (def text-style
   {:color             colors/white
-   :align-self        :center
    :margin-horizontal 20
    :margin-bottom     constants/text-margin
    :flex-grow         1})

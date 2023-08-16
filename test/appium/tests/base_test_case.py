@@ -12,15 +12,12 @@ import requests
 from appium import webdriver
 from appium.webdriver.common.mobileby import MobileBy
 from sauceclient import SauceException
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import WebDriverException
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 from selenium.webdriver.support.wait import WebDriverWait
 from urllib3.exceptions import MaxRetryError, ProtocolError
 
 from support.api.network_api import NetworkApi
-from tests import test_suite_data, start_threads, appium_container, pytest_config_global
-from tests import transl
+from tests import test_suite_data, start_threads, appium_container, pytest_config_global, transl
 from tests.conftest import sauce_username, sauce_access_key, apibase, github_report
 
 executor_sauce_lab = 'https://%s:%s@ondemand.%s:443/wd/hub' % (sauce_username, sauce_access_key, apibase)
@@ -90,6 +87,24 @@ def update_capabilities_sauce_lab(new_capabilities: dict):
     return caps
 
 
+def get_app_path():
+    app_folder = 'im.status.ethereum'
+    apk = pytest_config_global['apk']
+    if re.findall(r'pr\d\d\d\d\d', apk) or re.findall(r'\d\d\d\d\d.apk', apk):
+        app_folder += '.pr'
+    app_path = '/storage/emulated/0/Android/data/%s/files/Download/' % app_folder
+    return app_path
+
+
+def get_geth_path():
+    return get_app_path() + 'geth.log'
+
+
+def pull_geth(driver):
+    result = driver.pull_file(get_geth_path())
+    return base64.b64decode(result)
+
+
 class AbstractTestCase:
     __metaclass__ = ABCMeta
 
@@ -100,19 +115,6 @@ class AbstractTestCase:
 
     def get_translation_by_key(self, key):
         return transl[key]
-
-    @property
-    def app_path(self):
-        app_folder = 'im.status.ethereum'
-        apk = pytest_config_global['apk']
-        if re.findall(r'pr\d\d\d\d\d', apk) or re.findall(r'\d\d\d\d\d.apk', apk):
-            app_folder += '.pr'
-        app_path = '/storage/emulated/0/Android/data/%s/files/Download/' % app_folder
-        return app_path
-
-    @property
-    def geth_path(self):
-        return self.app_path + 'geth.log'
 
     @abstractmethod
     def setup_method(self, method):
@@ -145,14 +147,6 @@ class AbstractTestCase:
         except (RemoteDisconnected, ProtocolError):
             test_suite_data.current_test.testruns[-1].error = "%s; \n RemoteDisconnected" % \
                                                               test_suite_data.current_test.testruns[-1].error
-
-    def pull_geth(self, driver):
-        result = ""
-        # try:
-        result = driver.pull_file(self.geth_path)
-        # except WebDriverException:
-        #     pass
-        return base64.b64decode(result)
 
 
 class Driver(webdriver.Remote):
@@ -207,7 +201,7 @@ class SingleDeviceTestCase(AbstractTestCase):
             self.print_sauce_lab_info(self.driver)
         try:
             self.add_alert_text_to_report(self.driver)
-            geth_content = self.pull_geth(self.driver)
+            geth_content = pull_geth(self.driver)
             self.driver.quit()
             if pytest_config_global['docker']:
                 appium_container.stop_container()
@@ -215,7 +209,7 @@ class SingleDeviceTestCase(AbstractTestCase):
             pass
         finally:
             github_report.save_test(test_suite_data.current_test,
-                                         {'%s_geth.log' % test_suite_data.current_test.name: geth_content})
+                                    {'%s_geth.log' % test_suite_data.current_test.name: geth_content})
 
 
 class LocalMultipleDeviceTestCase(AbstractTestCase):
@@ -271,7 +265,7 @@ class SauceMultipleDeviceTestCase(AbstractTestCase):
                 self.add_alert_text_to_report(self.drivers[driver])
                 geth_names.append(
                     '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
-                geth_contents.append(self.pull_geth(self.drivers[driver]))
+                geth_contents.append(pull_geth(self.drivers[driver]))
                 self.drivers[driver].quit()
             except (WebDriverException, AttributeError):
                 pass
@@ -372,7 +366,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 self.add_alert_text_to_report(self.drivers[driver])
                 geth_names.append(
                     '%s_geth%s.log' % (test_suite_data.current_test.name, str(self.drivers[driver].number)))
-                geth_contents.append(self.pull_geth(self.drivers[driver]))
+                geth_contents.append(pull_geth(self.drivers[driver]))
 
             except (WebDriverException, AttributeError, RemoteDisconnected, ProtocolError):
                 pass
@@ -396,8 +390,16 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
         from tests.conftest import sauce
         requests_session = requests.Session()
         requests_session.auth = (sauce_username, sauce_access_key)
+        if test_suite_data.tests[0].testruns[-1].error and 'setup failed' in test_suite_data.tests[0].testruns[
+            -1].error:
+            group_setup_failed = True
+        else:
+            group_setup_failed = False
+        geth_contents = list()
         try:
             for _, driver in cls.drivers.items():
+                if group_setup_failed:
+                    geth_contents.append(pull_geth(driver=driver))
                 session_id = driver.session_id
                 try:
                     sauce.jobs.update_job(username=sauce_username, job_id=session_id, name=cls.__name__)
@@ -428,7 +430,14 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 cls.loop.close()
             except AttributeError:
                 pass
+
+        geth_names = ['%s_geth%s.log' % (cls.__name__, i) for i in range(len(geth_contents))]
+        geth = dict(zip(geth_names, geth_contents))
+        geth_paths = github_report.save_geth(geth)
+
         for test in test_suite_data.tests:
+            if group_setup_failed:
+                test.geth_paths = geth_paths
             github_report.save_test(test)
 
 

@@ -1,5 +1,6 @@
 (ns quo2.components.tabs.account-selector
-  (:require [quo2.components.markdown.text :as quo2]
+  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
+            [quo2.components.markdown.text :as quo2]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]))
@@ -31,14 +32,9 @@
   {:height 16
    :width  16})
 
-(def account-emoji-container
-  {:background-color (colors/custom-color :purple 50)
-   :padding          8
-   :justify-content  :center
-   :align-items      :center
-   :border-radius    10
-   :margin-left      4
-   :margin-right     8})
+(def account-avatar-container
+  {:margin-left  4
+   :margin-right 8})
 
 (defn get-color-by-type
   [type k]
@@ -66,8 +62,8 @@
                   :margin-bottom 8}}
         label-text])
      [rn/view {:style (account-container-row background-color)}
-      [rn/view {:style account-emoji-container}
-       [quo2/text account-emoji]]
+      [rn/view {:style account-avatar-container}
+       [account-avatar/view {:emoji account-emoji :size 32}]]
       [quo2/text
        {:weight :medium
         :size   :paragraph-1

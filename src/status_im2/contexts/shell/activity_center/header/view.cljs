@@ -9,29 +9,33 @@
 
 (defn filter-selector-read-toggle
   []
-  (let [unread-filter-enabled? (rf/sub [:activity-center/filter-status-unread-enabled?])]
+  (let [customization-color    (rf/sub [:profile/customization-color])
+        unread-filter-enabled? (rf/sub [:activity-center/filter-status-unread-enabled?])]
     [quo/filter
-     {:pressed?     unread-filter-enabled?
-      :blur?        true
-      :on-press-out #(rf/dispatch [:activity-center.notifications/fetch-first-page
-                                   {:filter-status (if unread-filter-enabled?
-                                                     :all
-                                                     :unread)}])}]))
+     {:pressed?            unread-filter-enabled?
+      :customization-color customization-color
+      :blur?               true
+      :on-press-out        #(rf/dispatch [:activity-center.notifications/fetch-first-page
+                                          {:filter-status (if unread-filter-enabled?
+                                                            :all
+                                                            :unread)}])}]))
 
 (defn header
   []
   [rn/view
    [rn/view {:style style/header-container}
     [quo/button
-     {:icon                true
-      :type                :blur-bg
+     {:icon-only?          true
+      :type                :grey
+      :background          :blur
       :size                32
       :accessibility-label :close-activity-center
       :on-press            #(rf/dispatch [:navigate-back])}
      :i/close]
     [quo/button
-     {:icon                true
-      :type                :blur-bg
+     {:icon-only?          true
+      :type                :grey
+      :background          :blur
       :size                32
       :accessibility-label :activity-center-open-more
       :on-press            #(rf/dispatch [:show-bottom-sheet

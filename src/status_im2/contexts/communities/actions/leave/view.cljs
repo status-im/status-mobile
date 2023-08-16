@@ -25,13 +25,13 @@
     [rn/view
      {:style style/button-container}
      [quo/button
-      {:on-press #(rf/dispatch [:hide-bottom-sheet])
-       :type     :grey
-       :style    style/cancel-button}
+      {:on-press        #(rf/dispatch [:hide-bottom-sheet])
+       :type            :grey
+       :container-style style/cancel-button}
       (i18n/label :t/cancel)]
      [quo/button
-      {:on-press #(hide-sheet-and-dispatch [:communities/leave id])
-       :style    style/action-button}
+      {:on-press        #(hide-sheet-and-dispatch [:communities/leave id])
+       :container-style style/action-button}
       (i18n/label :t/leave-community)]]]])
 
 (defn cancel-request-sheet
@@ -51,10 +51,10 @@
       {:accessibility-label :cancel-button
        :on-press            #(rf/dispatch [:hide-bottom-sheet])
        :type                :grey
-       :style               style/cancel-button}
+       :container-style     style/cancel-button}
       (i18n/label :t/close)]
      [quo/button
       {:accessibility-label :confirm-button
        :on-press            #(hide-sheet-and-dispatch [:communities/cancel-request-to-join request-id])
-       :style               style/action-button}
+       :container-style     style/action-button}
       (i18n/label :t/confirm)]]]])

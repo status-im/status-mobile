@@ -4,172 +4,172 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.messages.author.view :as author]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]))
+            [utils.i18n :as i18n]
+            [quo2.theme :as quo.theme]
+            [clojure.string :as string]))
 
-(def themes-landed
-  {:pinned  colors/primary-50-opa-5
-   :added   colors/primary-50-opa-5
-   :deleted colors/danger-50-opa-5})
+(defn text-color
+  [theme]
+  (colors/theme-colors colors/neutral-100 colors/white theme))
 
-(def themes
-  {:light {:text colors/neutral-100
-           :time colors/neutral-50
-           :bg   {:default colors/white
-                  :pressed colors/neutral-5
-                  :landed  themes-landed}}
-   :dark  {:text colors/white
-           :time colors/neutral-40
-           :bg   {:default colors/neutral-90
-                  :pressed colors/neutral-80
-                  :landed  themes-landed}}})
-
-(defn get-color
-  [& keys]
-  (reduce (fn [acc k] (get acc k (reduced acc)))
-          ((theme/get-theme) themes)
-          (vec keys)))
-
-(defn sm-timestamp
-  [timestamp-str]
-  [rn/view {:margin-left 8}
-   [text/text
-    {:size  :label
-     :style {:color          (get-color :time)
-             :text-transform :none}}
-    timestamp-str]])
+(defn time-color
+  [theme]
+  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
 
 (defn sm-icon
   [{:keys [icon color opacity]}]
   [rn/view
-   {:align-items  :center
-    :margin-right 8}
+   {:margin-right 8}
    [icon-avatar/icon-avatar
     {:size    :medium
      :icon    icon
      :color   color
      :opacity opacity}]])
 
+(defn sm-timestamp
+  [timestamp]
+  [rn/view {:margin-left 8 :margin-top 2}
+   [text/text
+    {:size  :label
+     :style {:color          (time-color :time)
+             :text-transform :none}}
+    timestamp]])
+
 (defn sm-user-avatar
-  [image]
+  [display-name photo-path]
   [rn/view {:margin-right 4}
    [user-avatar/user-avatar
-    {:status-indicator? false
-     :online?           false
-     :size              :xxxs
-     :profile-picture   image
-     :ring?             false}]])
+    {:size              :xxxs
+     :full-name         display-name
+     :profile-picture   photo-path
+     :ring?             false
+     :status-indicator? false}]])
 
-(defmulti system-message-content :type)
+(defn split-text
+  [label theme add-pred?]
+  (let [color (text-color theme)]
+    [:<>
+     (when add-pred?
+       [text/text {} " "])
+     (for [[indx item] (map-indexed vector (string/split label " "))]
+       ^{:key indx}
+       [text/text
+        {:size  :paragraph-2
+         :style {:color        color
+                 :margin-right 3}}
+        item])]))
 
-(defmethod system-message-content :deleted
-  [{:keys [label timestamp-str labels child]}]
+(defn system-message-base
+  [{:keys [icon timestamp]} child]
   [rn/view
    {:flex-direction :row
-    :flex           1
-    :align-items    :center}
-   [sm-icon
-    {:icon    :main-icons/delete
-     :color   :danger
-     :opacity 5}]
+    :flex           1}
+   [sm-icon icon]
    [rn/view
-    {:align-items    :baseline
+    {:align-self     :center
      :flex-direction :row
-     :flex           1
-     :flex-wrap      :wrap}
-    (if child
-      child
-      [text/text
-       {:size  :paragraph-2
-        :style {:color (get-color :text)}}
-       (or (get labels label)
-           label
-           (:message-deleted labels))])
-    [sm-timestamp timestamp-str]]])
-
-(defmethod system-message-content :added
-  [{:keys [state mentions timestamp-str labels]}]
-  [rn/view
-   {:align-items    :center
-    :flex-direction :row}
-   [sm-icon
-    {:icon    :main-icons/add-user
-     :color   :primary
-     :opacity (if (= state :landed) 0 5)}]
-   [sm-user-avatar (:image (first mentions))]
-   [text/text
-    {:weight :semi-bold
-     :size   :paragraph-2}
-    (:name (first mentions))]
-   [text/text
-    {:size  :paragraph-2
-     :style {:color        (get-color :text)
-             :margin-left  3
-             :margin-right 3}}
-    (:added labels)]
-   [sm-user-avatar (:image (second mentions))]
-   [text/text
-    {:weight :semi-bold
-     :size   :paragraph-2}
-    (:name (second mentions))]
-   [sm-timestamp timestamp-str]])
-
-(defmethod system-message-content :pinned
-  [{:keys [state pinned-by child timestamp-str labels]}]
-  [rn/view
-   {:flex-direction :row
-    :flex           1
-    :align-items    :center}
-   [sm-icon
-    {:icon    :main-icons/pin
-     :color   :primary
-     :opacity (if (= state :landed) 0 5)}]
-   [rn/view
-    {:flex-direction :column
+     :margin-right   40 ;; dirty hack, flexbox won't work as expected
      :flex           1}
-    [rn/view
-     {:align-items    :baseline
-      :flex-direction :row
-      :flex           1
-      :flex-wrap      :wrap}
-     [author/author
-      {:primary-name pinned-by
-       :style        {:margin-right 4}}]
-     [rn/view
-      [text/text
-       {:size  :paragraph-2
-        :style {:color (get-color :text)}}
-       (:pinned-a-message labels)]]
-     [sm-timestamp timestamp-str]]
-    (when child
-      child)]])
+    child
+    [sm-timestamp timestamp]]])
 
-(defn- f-system-message
-  [{:keys [type style non-pressable? animate-landing? labels on-long-press] :as message}]
-  (let [sv-color (reanimated/use-shared-value
-                  (get-color :bg (if animate-landing? :landed :default) type))]
-    (when animate-landing?
-      (reanimated/animate-shared-value-with-delay
-       sv-color
-       (get-color :bg :default type)
-       0
-       :linear
-       1000))
-    [reanimated/touchable-opacity
-     {:on-press      #(when-not non-pressable?
-                        (reanimated/set-shared-value sv-color (get-color :bg :pressed type)))
-      :on-long-press on-long-press
-      :style         (reanimated/apply-animations-to-style
-                      {:background-color sv-color}
-                      (merge {:flex-direction     :row
-                              :flex               1
-                              :padding-vertical   8
-                              :padding-horizontal 12
-                              :background-color   sv-color}
-                             style))}
-     [system-message-content message labels]]))
+(defn system-message-deleted-internal
+  [{:keys [label child theme timestamp]}]
+  [system-message-base
+   {:icon      {:icon    :i/delete
+                :color   :danger
+                :opacity 5}
+    :timestamp timestamp}
+   (if child
+     child
+     [text/text
+      {:size  :paragraph-2
+       :style {:color (text-color theme)}}
+      (or label (i18n/label :t/message-deleted))])])
+
+(def system-message-deleted (quo.theme/with-theme system-message-deleted-internal))
+
+(defn system-message-contact-internal
+  [{:keys [display-name photo-path customization-color theme timestamp]} label icon]
+  [system-message-base
+   {:icon      {:icon    icon
+                :color   (or customization-color :primary)
+                :opacity 5}
+    :timestamp timestamp}
+   [rn/view
+    {:flex-direction :row
+     :align-items    :center
+     :flex-wrap      :wrap}
+    [rn/view {:flex-direction :row :align-items :center}
+     [sm-user-avatar display-name photo-path]
+     [text/text
+      {:weight :semi-bold
+       :size   :paragraph-2}
+      display-name]]
+    [split-text label theme true]]])
+
+(def system-message-contact (quo.theme/with-theme system-message-contact-internal))
+
+(defn system-message-added
+  [data]
+  [system-message-contact data (i18n/label :t/contact-request-is-now-a-contact) :i/add-user])
+
+(defn system-message-removed
+  [{:keys [incoming?] :as data}]
+  [system-message-contact
+   data
+   (if incoming?
+     (i18n/label :t/contact-request-removed-you-as-contact)
+     (i18n/label :t/contact-request-removed-as-contact))
+   :i/sad])
+
+(defn system-message-contact-request-internal
+  [{:keys [display-name photo-path customization-color theme timestamp incoming?]}]
+  [system-message-base
+   {:icon      {:icon    :i/add-user
+                :color   (or customization-color :primary)
+                :opacity 5}
+    :timestamp timestamp}
+   [rn/view
+    {:flex-direction :row
+     :align-items    :center
+     :flex-wrap      :wrap}
+    (when-not incoming? [split-text "Contact request sent to" theme false])
+    [rn/view {:flex-direction :row :align-items :center}
+     [sm-user-avatar display-name photo-path]
+     [text/text
+      {:weight :semi-bold
+       :size   :paragraph-2}
+      display-name]]
+    (when incoming? [split-text "sent you a contact request" theme true])]])
+
+(def system-message-contact-request (quo.theme/with-theme system-message-contact-request-internal))
+
+(defn system-message-pinned-internal
+  [{:keys [pinned-by child customization-color theme timestamp]}]
+  [system-message-base
+   {:icon      {:icon    :i/pin
+                :color   (or customization-color :primary)
+                :opacity 5}
+    :timestamp timestamp}
+   [rn/view
+    [rn/view
+     {:flex-direction :row
+      :flex-wrap      :wrap}
+     [author/author {:primary-name pinned-by}]
+     [split-text (i18n/label :pinned-a-message) theme true]]
+    (when child child)]])
+
+(def system-message-pinned (quo.theme/with-theme system-message-pinned-internal))
 
 (defn system-message
-  [message]
-  [:f> f-system-message message])
+  [{:keys [type] :as data}]
+  [rn/view {:padding-horizontal 12 :padding-vertical 8 :flex 1}
+   (case type
+     :pinned          [system-message-pinned data]
+     :deleted         [system-message-deleted data]
+     :contact-request [system-message-contact-request data]
+     :added           [system-message-added data]
+     :removed         [system-message-removed data]
+     nil)])

@@ -5,7 +5,6 @@
     [quo.design-system.spacing :as spacing]
     [quo2.core :as quo2]
     [quo2.components.markdown.text :as quo2.text]
-    [quo2.components.tabs.tabs :as quo2.tabs]
     [quo2.foundations.colors :as quo2.colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
@@ -124,7 +123,7 @@
     (let [tab @selected-tab]
       [react/view {:flex 1}
        [react/view {:padding-horizontal 20 :padding-bottom 20}
-        [quo2.tabs/tabs
+        [quo2/tabs
          {:size           24
           :on-change      #(reset! selected-tab %)
           :default-active :tokens

@@ -89,3 +89,8 @@
          (reset! constants {:top-bar-height     (.-topBarHeight consts)
                             :bottom-tabs-height (.-bottomTabsHeight consts)
                             :status-bar-height  (.-statusBarHeight consts)})))
+
+(defn bind-component
+  [^js/Object this component-id]
+  (set! (. this -navigationEventListener)
+    (.. Navigation events (bindComponent this component-id))))

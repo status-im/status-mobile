@@ -13,8 +13,8 @@
                :value "Default"}
               {:key   :blur-bg
                :value "Blurred BG"}
-              {:key   :shell
-               :value "Shell"}]}
+              {:key   :black
+               :value "Black"}]}
    {:label "New Notifications?"
     :key   :new-notifications?
     :type  :boolean}

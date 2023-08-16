@@ -7,6 +7,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.shake :as react-native-shake]
+    [react-native.reanimated :as reanimated]
     [reagent.impl.batching :as batching]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]
     [status-im2.contexts.shell.jump-to.state :as shell.state]
@@ -46,6 +47,14 @@
   ;; Shell
   (async-storage/get-item :selected-stack-id #(shell.utils/change-selected-stack-id % nil nil))
   (async-storage/get-item :screen-height #(reset! shell.state/screen-height %))
+
+  ;; Note - We have to enable layout animations manually at app startup,
+  ;; otherwise, they will be enabled at runtime when they are used and will cause few bugs.
+  ;; https://github.com/status-im/status-mobile/issues/16693
+  ;; We can remove this call, once reanimated library is upgraded to v3.
+  ;; Also, we can't move this call to reanimated.cljs file,
+  ;; because that causes component tests to fail. (as function is not mocked in library jestUtils)
+  (reanimated/enable-layout-animations true)
 
   (dev/setup)
 

@@ -1,24 +1,24 @@
 (ns status-im2.contexts.chat.messages.list.view
   (:require [oops.core :as oops]
             [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
             [react-native.background-timer :as background-timer]
             [react-native.core :as rn]
             [react-native.hooks :as hooks]
             [react-native.platform :as platform]
+            [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
             [status-im.ui.screens.chat.group :as chat.group]
             [status-im.ui.screens.chat.message.gap :as message.gap]
             [status-im2.constants :as constants]
+            [status-im2.contexts.chat.composer.constants :as composer.constants]
             [status-im2.contexts.chat.messages.content.view :as message]
             [status-im2.contexts.chat.messages.list.state :as state]
             [status-im2.contexts.chat.messages.list.style :as style]
             [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
-            [status-im2.contexts.chat.composer.constants :as composer.constants]
-            [utils.re-frame :as rf]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -126,15 +126,17 @@
           loading-indicator-page-loading-height)]])))
 
 (defn list-header
-  [insets]
+  [insets able-to-send-message?]
   [rn/view
    {:background-color (colors/theme-colors colors/white colors/neutral-95)
     :margin-bottom    (- 0
                          (:top insets)
                          (when platform/ios? style/overscroll-cover-height))
-    :height           (+ composer.constants/composer-default-height
-                         (:bottom insets)
-                         spacing-between-composer-and-content
+    :height           (+ (if able-to-send-message?
+                           (+ composer.constants/composer-default-height
+                              spacing-between-composer-and-content
+                              (:bottom insets))
+                           (- 70 (:bottom insets)))
                          (when platform/ios? style/overscroll-cover-height))}])
 
 (defn f-list-footer-avatar
@@ -201,8 +203,7 @@
         online?              (rf/sub [:visibility-status-updates/online? chat-id])
         contact              (when-not group-chat
                                (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path           (when-not (empty? (:images contact))
-                               (rf/sub [:chats/photo-path chat-id]))
+        photo-path           (rf/sub [:chats/photo-path chat-id])
         border-animation     (reanimated/interpolate scroll-y
                                                      [30 125]
                                                      [14 0]
@@ -252,11 +253,7 @@
 (defn render-fn
   [{:keys [type value content-type] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
-  ;;TODO temporary hide mutual-state-updates https://github.com/status-im/status-mobile/issues/16254
-  (when-not (#{constants/content-type-system-message-mutual-event-sent
-               constants/content-type-system-message-mutual-event-accepted
-               constants/content-type-system-message-mutual-event-removed}
-             content-type)
+  (when (not= content-type constants/content-type-contact-request)
     [rn/view
      (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
      (cond
@@ -289,7 +286,7 @@
       {:key-fn                       list-key-fn
        :ref                          list-ref
        :header                       [:<>
-                                      [list-header insets]
+                                      [list-header insets (:able-to-send-message? context)]
                                       (when (= (:chat-type chat) constants/private-group-chat-type)
                                         [list-group-chat-header chat])]
        :footer                       [list-footer
@@ -322,7 +319,10 @@
                                            (reanimated/set-shared-value content-height y))))
        :on-end-reached               #(list-on-end-reached scroll-y)
        :on-scroll-to-index-failed    identity
-       :scroll-indicator-insets      {:top (- composer.constants/composer-default-height 16)}
+       :scroll-indicator-insets      {:top (if (:able-to-send-message? context)
+                                             (- composer.constants/composer-default-height 16)
+                                             0)}
+
        :keyboard-dismiss-mode        :interactive
        :keyboard-should-persist-taps :always
        :on-scroll-begin-drag         rn/dismiss-keyboard!

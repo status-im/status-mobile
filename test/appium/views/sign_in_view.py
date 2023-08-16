@@ -4,7 +4,7 @@ import os
 from selenium.common.exceptions import NoSuchElementException
 
 from tests import common_password, appium_root_project_path
-from tests.base_test_case import AbstractTestCase
+from tests.base_test_case import get_app_path
 from views.base_element import Button, EditBox, Text
 from views.base_view import BaseView
 
@@ -324,7 +324,7 @@ class SignInView(BaseView):
         self.get_multiaccount_by_position(1).click()
         self.password_input.set_value(password)
         self.driver.push_file(source_path=full_path_to_file,
-                              destination_path='%s%s' % (AbstractTestCase().app_path, import_file_name))
+                              destination_path='%s%s' % (get_app_path(), import_file_name))
         self.options_button.click()
         self.element_by_text('Import unencrypted').click()
         self.element_by_text('Import unencrypted').wait_for_invisibility_of_element(40)
@@ -345,7 +345,7 @@ class SignInView(BaseView):
         self.options_button.click()
         self.element_by_text('Export unencrypted').wait_and_click(40)
         self.element_by_text('Export unencrypted').wait_for_invisibility_of_element(40)
-        file_base_64 = self.driver.pull_file('%s/export.db' % AbstractTestCase().app_path)
+        file_base_64 = self.driver.pull_file('%s/export.db' % get_app_path())
         try:
             with open(full_path_to_file, "wb") as f:
                 f.write(base64.b64decode(file_base_64))

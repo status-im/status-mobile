@@ -1,6 +1,6 @@
 (ns quo2.components.list-items.community.view
   (:require [quo2.components.community.community-view :as community-view]
-            [quo2.components.counter.counter :as counter]
+            [quo2.components.counter.counter.view :as counter]
             [quo2.components.icon :as icons]
             [quo2.components.list-items.community.style :as style]
             [quo2.components.markdown.text :as text]
@@ -54,9 +54,9 @@
             :blur?    blur?}]
 
           (and (= type :engage) (= info :mention) (pos? unread-count))
-          [counter/counter
-           {:type              :default
-            :override-bg-color customization-color}
+          [counter/view
+           {:type                :default
+            :customization-color customization-color}
            unread-count]
 
           (and (= type :engage) (= info :notification))

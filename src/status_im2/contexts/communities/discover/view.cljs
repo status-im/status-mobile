@@ -27,8 +27,10 @@
                      (get mock-community-item-data :data))
         cover {:uri (get-in (:images item) [:banner :uri])}]
     (if (= view-type :card-view)
-      [quo/community-card-view-item (assoc item :width width :cover cover)
-       #(rf/dispatch [:communities/navigate-to-community (:id item)])]
+      [quo/community-card-view-item
+       {:community (assoc item :cover cover)
+        :width     width
+        :on-press  #(rf/dispatch [:communities/navigate-to-community (:id item)])}]
       [quo/community-list-item
        {:on-press      (fn []
                          (rf/dispatch [:communities/load-category-states (:id item)])
@@ -88,9 +90,18 @@
                        :label               (i18n/label :t/gated)
                        :accessibility-label :gated-communities-tab}]}]])
 
+(defn loading-community-item
+  [_ _ _ {:keys [width]}]
+  [quo/community-card-view-item
+   {:width    width
+    :loading? true}])
+
+(def loading-instances-to-show 3)
+
 (defn featured-list
   [communities view-type]
-  (let [view-size (reagent/atom 0)]
+  (let [view-size (reagent/atom 0)
+        loaded?   (and communities (pos? (count communities)))]
     (fn []
       [rn/view
        {:style     style/featured-list-container
@@ -105,8 +116,8 @@
            :shows-horizontal-scroll-indicator false
            :nestedScrollEnabled               true
            :separator                         [rn/view {:width 12}]
-           :data                              communities
-           :render-fn                         community-list-item
+           :data                              (if loaded? communities (range loading-instances-to-show))
+           :render-fn                         (if loaded? community-list-item loading-community-item)
            :render-data                       {:width     @view-size
                                                :view-type view-type}
            :content-container-style           style/flat-list-container}])])))
@@ -126,31 +137,37 @@
 (defn other-communities-list
   [{:keys [communities communities-ids view-type]}]
   [rn/view {:style style/other-communities-container}
-   (map-indexed
-    (fn [inner-index item]
-      (let [community-id (when communities-ids item)
-            community    (if communities
-                           item
-                           (rf/sub [:communities/home-item community-id]))
-            cover        {:uri (get-in (:images item) [:banner :uri])}]
-        [rn/view
-         {:key           (str inner-index (:id community))
-          :margin-bottom 16}
-         (if (= view-type :card-view)
-           [quo/community-card-view-item
-            (merge community
-                   (get mock-community-item-data :data)
-                   {:cover cover})
-            #(rf/dispatch [:communities/navigate-to-community (:id community)])]
-           [quo/community-list-item
-            {:on-press      (fn []
-                              (rf/dispatch [:communities/load-category-states (:id community)])
-                              (rf/dispatch [:dismiss-keyboard])
-                              (rf/dispatch [:communities/navigate-to-community (:id community)]))
-             :on-long-press #(js/alert "TODO: to be implemented")}
-            (merge community
-                   (get mock-community-item-data :data))])]))
-    (if communities communities communities-ids))])
+   (if (and communities (pos? (count communities)))
+     (map-indexed
+      (fn [inner-index item]
+        (let [community-id (when communities-ids item)
+              community    (if communities
+                             item
+                             (rf/sub [:communities/home-item community-id]))
+              cover        {:uri (get-in (:images item) [:banner :uri])}]
+          [rn/view
+           {:key           (str inner-index (:id community))
+            :margin-bottom 16}
+           (if (= view-type :card-view)
+             [quo/community-card-view-item
+              {:community (merge community
+                                 (get mock-community-item-data :data)
+                                 {:cover cover})
+               :on-press  #(rf/dispatch [:communities/navigate-to-community (:id community)])}]
+
+             [quo/community-list-item
+              {:on-press      (fn []
+                                (rf/dispatch [:communities/load-category-states (:id community)])
+                                (rf/dispatch [:dismiss-keyboard])
+                                (rf/dispatch [:communities/navigate-to-community (:id community)]))
+               :on-long-press #(js/alert "TODO: to be implemented")}
+              (merge community
+                     (get mock-community-item-data :data))])]))
+      (if communities communities communities-ids))
+     [:<>
+      [rn/view {:margin-bottom 16} [quo/community-card-view-item {:loading? true}]]
+      [rn/view {:margin-bottom 16} [quo/community-card-view-item {:loading? true}]]
+      [quo/community-card-view-item {:loading? true}]])])
 
 (defn communities-lists
   [selected-tab view-type]

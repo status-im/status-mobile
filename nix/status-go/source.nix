@@ -1,9 +1,10 @@
-{ utils, lib, fetchFromGitHub }:
+{ lib, fetchFromGitHub }:
 
 let
-  inherit (lib) strings traceValFn importJSON getConfig;
+  inherit (lib) strings traceValFn importJSON getEnvWithDefault;
 
-  srcOverride = getConfig "status-go.src-override" null;
+  # TODO: move to default?
+  srcOverride = getEnvWithDefault "STATUS_GO_SRC_OVERRIDE" null;
   # Warning message about using local sources
   localSrcWarn = (path: "Using local status-go sources from ${path}");
 
@@ -43,7 +44,7 @@ let
     rev = versionJSON.commit-sha1;
     shortRev = strings.substring 0 7 rev;
     rawVersion = versionJSON.version;
-    cleanVersion = utils.sanitizeVersion versionJSON.version;
+    cleanVersion = lib.sanitizeVersion versionJSON.version;
     # Need to pretend this is from status-im to let Go build it.
     goPackagePath = "github.com/status-im/${repo}";
     src = fetchFromGitHub {

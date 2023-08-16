@@ -6,12 +6,14 @@
 
 (defn container-outer
   []
-  {:style {:flex             1
-           :background-color (colors/theme-colors colors/white colors/neutral-95)
-           :justify-content  :space-between
-           :align-items      :center
-           :padding          16
-           :border-radius    20}})
+  {:style {:flex               1
+           :background-color   (colors/theme-colors colors/white colors/neutral-95)
+           :justify-content    :space-between
+           :align-items        :center
+           :padding-vertical   16
+           :padding-horizontal 20
+
+           :border-radius      20}})
 
 (def container-inner
   {:style {:flex-direction :column
@@ -105,26 +107,6 @@
                           colors/black
                           colors/white)})})
 
-(def button-paste
-  {:type  :outline
-   :size  24
-   :style {:margin-top 6}})
-
-(defn button-close
-  []
-  {:type                      :grey
-   :icon                      true
-   :accessibility-label       :new-contact-close-button
-   :size                      32
-   :override-background-color (colors/theme-colors
-                               colors/neutral-10
-                               colors/neutral-90)})
-
-(def button-qr
-  {:type :outline
-   :icon true
-   :size 40})
-
 (def found-user
   {:padding-top    16
    :flex-direction :column
@@ -166,14 +148,7 @@
            colors/neutral-50
            colors/neutral-40)})
 
-(defn button-view-profile
-  [state customization-color]
-  {:type                :primary
-   :customization-color customization-color
-   :size                40
-   :width               335
-   :style               {:margin-top    24
-                         :margin-bottom (+ (safe-area/get-bottom) 12)}
-   :accessibility-label :new-contact-button
-   :before              :i/profile
-   :disabled            (not= state :valid)})
+(def button-view-profile
+  {:margin-top    24
+   :width         "100%"
+   :margin-bottom (+ (safe-area/get-bottom) 12)})

@@ -110,11 +110,11 @@
    timestamp])
 
 (defn- activity-unread-dot
-  []
+  [customization-color]
   [rn/view
    {:accessibility-label :activity-unread-indicator
     :style               style/unread-dot-container}
-   [rn/view {:style style/unread-dot}]])
+   [rn/view {:style (style/unread-dot customization-color)}]])
 
 (defmulti footer-item-view (fn [item _ _] (:type item)))
 
@@ -129,8 +129,8 @@
      (-> button
          (assoc :size size)
          (assoc :type subtype)
-         (assoc :disabled (and replying? disable-when (disable-when @reply-input)))
-         (update :style merge common-style {:margin-right 8}))
+         (assoc :disabled? (and replying? disable-when (disable-when @reply-input)))
+         (update :container-style merge common-style {:margin-right 8}))
      label]))
 
 (defmethod footer-item-view :status
@@ -161,7 +161,8 @@
            timestamp
            title
            replying?
-           unread?]
+           unread?
+           customization-color]
     :as   props}]
   [rn/view
    {:accessibility-label :activity
@@ -179,7 +180,7 @@
        (when-not replying?
          [activity-timestamp timestamp])]
       (when (and unread? (not replying?))
-        [activity-unread-dot])]
+        [activity-unread-dot customization-color])]
      (when context
        [activity-context context replying?])]
     (when message

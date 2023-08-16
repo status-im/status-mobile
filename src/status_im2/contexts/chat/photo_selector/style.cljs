@@ -71,8 +71,6 @@
    :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)})
 
 (def image-count
-  {:width         24
-   :height        24
-   :border-radius 8
-   :top           8
-   :right         8})
+  {:position :absolute
+   :top      8
+   :right    8})

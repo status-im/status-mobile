@@ -22,7 +22,7 @@
 
 (defn enable-notification-buttons
   [{:keys [insets]}]
-  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))]
+  (let [profile-color (rf/sub [:onboarding-2/customization-color])]
     [rn/view {:style (style/buttons insets)}
      [quo/button
       {:on-press            (fn []
@@ -43,7 +43,7 @@
        :accessibility-label :enable-notifications-later-button
        :type                :grey
        :background          :blur
-       :style               {:margin-top 12}}
+       :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
 (defn enable-notifications

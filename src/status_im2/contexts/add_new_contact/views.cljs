@@ -2,10 +2,9 @@
   (:require
     [clojure.string :as string]
     [quo2.core :as quo]
-    [react-native.core :as rn]
     [react-native.clipboard :as clipboard]
+    [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.qr-scanner.core :as qr-scanner]
     [status-im2.contexts.add-new-contact.style :as style]
     [utils.debounce :as debounce]
@@ -15,8 +14,8 @@
 
 (defn found-contact
   [public-key]
-  (let [{:keys [primary-name compressed-key]
-         :as   contact} (rf/sub [:contacts/contact-by-identity public-key])]
+  (let [{:keys [primary-name compressed-key]} (rf/sub [:contacts/contact-by-identity public-key])
+        photo-path                            (rf/sub [:chats/photo-path public-key])]
     (when primary-name
       [rn/view style/found-user
        [quo/text (style/text-description)
@@ -24,7 +23,7 @@
        [rn/view (style/found-user-container)
         [quo/user-avatar
          {:full-name         primary-name
-          :profile-picture   (multiaccounts/displayed-photo contact)
+          :profile-picture   photo-path
           :size              :small
           :status-indicator? false}]
         [rn/view style/found-user-text
@@ -59,13 +58,16 @@
           [rn/view (style/container-outer)
            [rn/view style/container-inner
             [quo/button
-             (merge (style/button-close)
-                    {:on-press
-                     (fn []
-                       (reset! clipboard nil)
-                       (reset! default-value nil)
-                       (rf/dispatch [:contacts/clear-new-identity])
-                       (rf/dispatch [:navigate-back]))}) :i/close]
+             {:type :grey
+              :icon-only? true
+              :accessibility-label :new-contact-close-button
+              :size 32
+              :on-press
+              (fn []
+                (reset! clipboard nil)
+                (reset! default-value nil)
+                (rf/dispatch [:contacts/clear-new-identity])
+                (rf/dispatch [:navigate-back]))} :i/close]
             [quo/text (style/text-title)
              (i18n/label :t/add-a-contact)]
             [quo/text (style/text-subtitle)
@@ -87,18 +89,22 @@
                        :return-key-type :done})]
               (when show-paste-button?
                 [quo/button
-                 (merge style/button-paste
-                        {:on-press
-                         (fn []
-                           (reset! default-value @clipboard)
-                           (rf/dispatch
-                            [:contacts/set-new-identity @clipboard nil]))})
+                 {:type :outline
+                  :size 24
+                  :container-style {:margin-top 6}
+                  :on-press
+                  (fn []
+                    (reset! default-value @clipboard)
+                    (rf/dispatch
+                     [:contacts/set-new-identity @clipboard nil]))}
                  (i18n/label :t/paste)])]
              [quo/button
-              (merge style/button-qr
-                     {:on-press #(rf/dispatch
-                                  [::qr-scanner/scan-code
-                                   {:handler :contacts/qr-code-scanned}])})
+              {:type       :outline
+               :icon-only? true
+               :size       40
+               :on-press   #(rf/dispatch
+                             [::qr-scanner/scan-code
+                              {:handler :contacts/qr-code-scanned}])}
               :i/scan]]
             (when invalid?
               [rn/view style/container-invalid
@@ -108,12 +114,18 @@
             (when (= state :valid)
               [found-contact public-key])]
            [quo/button
-            (merge (style/button-view-profile state customization-color)
-                   {:on-press
-                    (fn []
-                      (reset! clipboard nil)
-                      (reset! default-value nil)
-                      (rf/dispatch [:contacts/clear-new-identity])
-                      (rf/dispatch [:navigate-back])
-                      (rf/dispatch [:chat.ui/show-profile public-key ens]))})
+            {:type :primary
+             :customization-color customization-color
+             :size 40
+             :container-style style/button-view-profile
+             :accessibility-label :new-contact-button
+             :icon-left :i/profile
+             :disabled? (not= state :valid)
+             :on-press
+             (fn []
+               (reset! clipboard nil)
+               (reset! default-value nil)
+               (rf/dispatch [:contacts/clear-new-identity])
+               (rf/dispatch [:navigate-back])
+               (rf/dispatch [:chat.ui/show-profile public-key ens]))}
             (i18n/label :t/view-profile)]]]]))))

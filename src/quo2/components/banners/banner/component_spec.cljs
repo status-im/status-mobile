@@ -5,7 +5,7 @@
 
 (defn render-banner
   [opts]
-  (rtl/render (reagent/as-element [banner/banner opts])))
+  (rtl/render (reagent/as-element [banner/view opts])))
 
 (js/global.test "basic render of banner component"
   (fn []

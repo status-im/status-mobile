@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.buttons.dynamic-button
-  (:require [quo2.components.buttons.dynamic-button :as quo2]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -41,7 +41,7 @@
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
-         [quo2/dynamic-button @state]]]])))
+         [quo/dynamic-button @state]]]])))
 
 (defn preview-dynamic-button
   []

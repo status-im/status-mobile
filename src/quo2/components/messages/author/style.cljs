@@ -4,7 +4,7 @@
 (def container
   {:flex-wrap      :wrap
    :flex-direction :row
-   :align-items    :baseline})
+   :align-items    :center})
 
 (def middle-dot-nickname
   {:color             colors/neutral-50

@@ -33,10 +33,11 @@
     (when show-button?
       [button/button
        {:size                24
-        :type                (if shell? :blur-bg-outline :outline)
+        :type                :outline
+        :background          (when shell? :blur)
         :on-press            on-press-button
         :accessibility-label :documentation-drawer-button
-        :after               button-icon}
+        :icon-right          button-icon}
        button-label])]])
 
 (def view (quo.theme/with-theme view-internal))

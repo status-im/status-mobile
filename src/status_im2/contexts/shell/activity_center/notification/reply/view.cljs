@@ -52,7 +52,7 @@
    child])
 
 (defn view
-  [{:keys [notification set-swipeable-height] :as props}]
+  [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [author chat-name community-id chat-id
                 message read timestamp]} notification
         community-chat?                  (not (string/blank? community-id))
@@ -65,30 +65,36 @@
                    (rf/dispatch [:hide-popover])
                    (rf/dispatch [:chat/navigate-to-chat chat-id]))}
       [quo/activity-log
-       {:title     (i18n/label :t/message-reply)
-        :on-layout set-swipeable-height
-        :icon      :i/reply
-        :timestamp (datetime/timestamp->relative timestamp)
-        :unread?   (not read)
-        :context   [[common/user-avatar-tag author]
-                    [quo/text {:style style/lowercase-text} (i18n/label :t/on)]
-                    (if community-chat?
-                      [quo/context-tag common/tag-params community-image community-name chat-name]
-                      [quo/group-avatar-tag chat-name common/tag-params])]
-        :message   {:body-number-of-lines 1
-                    :attachment           (cond
-                                            (= (:content-type message) constants/content-type-text)
-                                            :text
+       {:title               (i18n/label :t/message-reply)
+        :customization-color customization-color
+        :on-layout           set-swipeable-height
+        :icon                :i/reply
+        :timestamp           (datetime/timestamp->relative timestamp)
+        :unread?             (not read)
+        :context             [[common/user-avatar-tag author]
+                              [quo/text {:style style/lowercase-text} (i18n/label :t/on)]
+                              (if community-chat?
+                                [quo/context-tag common/tag-params community-image community-name
+                                 chat-name]
+                                [quo/group-avatar-tag chat-name common/tag-params])]
+        :message             {:body-number-of-lines 1
+                              :attachment           (cond
+                                                      (= (:content-type message)
+                                                         constants/content-type-text)
+                                                      :text
 
-                                            (= (:content-type message) constants/content-type-image)
-                                            :photo
+                                                      (= (:content-type message)
+                                                         constants/content-type-image)
+                                                      :photo
 
-                                            (= (:content-type message) constants/content-type-sticker)
-                                            :sticker
+                                                      (= (:content-type message)
+                                                         constants/content-type-sticker)
+                                                      :sticker
 
-                                            (= (:content-type message) constants/content-type-gif)
-                                            :gif
+                                                      (= (:content-type message)
+                                                         constants/content-type-gif)
+                                                      :gif
 
-                                            :else
-                                            nil)
-                    :body                 (get-message-content message)}}]]]))
+                                                      :else
+                                                      nil)
+                              :body                 (get-message-content message)}}]]]))

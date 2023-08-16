@@ -44,7 +44,7 @@
 
 ;;Solid
 
-
+(def neutral-2_5 "#FAFBFC")
 (def neutral-5 "#F5F6F8")
 (def neutral-10 "#F0F2F5")
 (def neutral-20 "#E7EAEE")
@@ -57,6 +57,8 @@
 (def neutral-90 "#131D2F")
 (def neutral-95 "#0D1625")
 (def neutral-100 "#09101C")
+
+(def neutral-50-opa-40 (alpha neutral-50 0.4))
 
 ;;80 with transparency
 (def neutral-80-opa-5 (alpha neutral-80 0.05))
@@ -292,3 +294,15 @@
 (defn dark?
   []
   (theme/dark?))
+
+;;;; Networks
+
+(def networks
+  {:ethereum "#758EEB"
+   :optimism "#E76E6E"
+   :arbitrum "#6BD5F0"
+   :zkSync   "#9FA0FE"
+   :hermez   "#EB8462"
+   :xDai     "#3FC0BD"
+   :polygon  "#AD71F3"
+   :unknown  "#EEF2F5"})

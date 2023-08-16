@@ -1,16 +1,16 @@
 (ns status-im2.subs.contact
   (:require [clojure.string :as string]
-            [utils.i18n :as i18n]
+            [quo2.theme :as theme]
             [re-frame.core :as re-frame]
             [status-im.contact.db :as contact.db]
             [status-im.ethereum.core :as ethereum]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
             [status-im.utils.gfycat.core :as gfycat]
-            [utils.image-server :as image-server]
-            [utils.collection]
             [status-im2.constants :as constants]
-            [quo2.theme :as theme]))
+            [utils.collection]
+            [utils.i18n :as i18n]
+            [utils.image-server :as image-server]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -32,28 +32,42 @@
    (get multiaccount :profile-pictures-visibility)))
 
 (defn- replace-contact-image-uri
-  [contact port contact-identity]
-  (let [theme          (theme/get-theme)
-        contact-images (:images contact)
-        contact-images (reduce (fn [acc image]
-                                 (let [image-name (:type image)
-                                       ; We pass the clock so that we reload the image if the image
-                                       ; is updated
-                                       clock      (:clock image)
-                                       uri        (image-server/get-contact-image-uri port
-                                                                                      contact-identity
-                                                                                      image-name
-                                                                                      clock
-                                                                                      theme)]
-                                   (assoc-in acc [(keyword image-name) :uri] uri)))
-                               contact-images
-                               (vals contact-images))]
-    (assoc contact :images contact-images)))
+  [contact port public-key font-file]
+  (let [theme (theme/get-theme)
+        {:keys [images ens-name]} contact
+        images
+        (reduce (fn [acc image]
+                  (let [image-name (:type image)
+                        clock      (:clock image)
+                        uri        (image-server/get-contact-image-uri-fn
+                                    {:port           port
+                                     :public-key     public-key
+                                     :image-name     image-name
+                                     ; We pass the clock so that we reload the
+                                     ; image if the image is updated
+                                     :clock          clock
+                                     :theme          theme
+                                     :override-ring? (when ens-name false)})]
+                    (assoc-in acc [(keyword image-name) :fn] uri)))
+                images
+                (vals images))
+
+        images (if (seq images)
+                 images
+                 {:thumbnail
+                  {:fn (image-server/get-initials-avatar-uri-fn
+                        {:port           port
+                         :public-key     public-key
+                         :override-ring? (when ens-name false)
+                         :theme          theme
+                         :font-file      font-file})}})]
+
+    (assoc contact :images images)))
 
 (defn- reduce-contacts-image-uri
-  [contacts port]
+  [contacts port font-file]
   (reduce-kv (fn [acc public-key contact]
-               (let [contact (replace-contact-image-uri contact port public-key)]
+               (let [contact (replace-contact-image-uri contact port public-key font-file)]
                  (assoc acc public-key contact)))
              {}
              contacts))
@@ -64,9 +78,10 @@
  :<- [::profile-pictures-visibility]
  :<- [:multiaccount/public-key]
  :<- [:mediaserver/port]
- (fn [[contacts profile-pictures-visibility public-key port]]
+ :<- [:initials-avatar-font-file]
+ (fn [[contacts profile-pictures-visibility public-key port font-file]]
    (let [contacts (contact.db/enrich-contacts contacts profile-pictures-visibility public-key)]
-     (reduce-contacts-image-uri contacts port))))
+     (reduce-contacts-image-uri contacts port font-file))))
 
 (re-frame/reg-sub
  :contacts/active
@@ -175,10 +190,10 @@
                contacts)))))
 
 (defn- enrich-contact
-  [_ contact-identity ens-name port]
+  [_ contact-identity ens-name port font-file]
   (let [contact (contact.db/enrich-contact
                  (contact.db/public-key-and-ens-name->new-contact contact-identity ens-name))]
-    (replace-contact-image-uri contact port contact-identity)))
+    (replace-contact-image-uri contact port contact-identity font-file)))
 
 (re-frame/reg-sub
  :contacts/current-contact
@@ -186,11 +201,12 @@
  :<- [:contacts/current-contact-identity]
  :<- [:contacts/current-contact-ens-name]
  :<- [:mediaserver/port]
- (fn [[contacts contact-identity ens-name port]]
+ :<- [:initials-avatar-font-file]
+ (fn [[contacts contact-identity ens-name port font-file]]
    (let [contact (get contacts contact-identity)]
      (cond-> contact
        (nil? contact)
-       (enrich-contact contact-identity ens-name port)))))
+       (enrich-contact contact-identity ens-name port font-file)))))
 
 (re-frame/reg-sub
  :contacts/contact-by-identity

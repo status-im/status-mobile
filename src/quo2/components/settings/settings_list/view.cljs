@@ -58,13 +58,11 @@
 
 (defn right-button
   [{:keys [title
-           on-press]}
-   override-theme]
+           on-press]}]
   [button/button
-   {:type           :outline
-    :override-theme override-theme
-    :on-press       on-press
-    :size           24}
+   {:type     :outline
+    :on-press on-press
+    :size     24}
    title])
 
 (defn communities-icons
@@ -132,6 +130,6 @@
        [toggle-button toggle-props])
      (when badge? [badge-icon override-theme])
      (when button-props
-       [right-button button-props override-theme])
+       [right-button button-props])
      (when communities-props (communities-icons communities-props override-theme))
      (when chevron? chevron-icon)]]])

@@ -58,52 +58,55 @@
       child)))
 
 (defn- outgoing-contact-request-view
-  [{:keys [notification set-swipeable-height]}]
+  [{:keys [notification set-swipeable-height customization-color]}]
   (let [{:keys [chat-id message last-message]}      notification
         {:keys [contact-request-state] :as message} (or message last-message)]
     (if (= contact-request-state constants/contact-request-message-state-accepted)
       [quo/activity-log
-       {:title     (i18n/label :t/contact-request-was-accepted)
-        :on-layout set-swipeable-height
-        :icon      :i/add-user
-        :timestamp (datetime/timestamp->relative (:timestamp notification))
-        :unread?   (not (:read notification))
-        :context   [[common/user-avatar-tag chat-id]
-                    (i18n/label :t/contact-request-is-now-a-contact)]}
+       {:title               (i18n/label :t/contact-request-was-accepted)
+        :customization-color customization-color
+        :on-layout           set-swipeable-height
+        :icon                :i/add-user
+        :timestamp           (datetime/timestamp->relative (:timestamp notification))
+        :unread?             (not (:read notification))
+        :context             [[common/user-avatar-tag chat-id]
+                              (i18n/label :t/contact-request-is-now-a-contact)]}
        :message {:body (get-in message [:content :text])}
        :items []]
       [quo/activity-log
-       {:title     (i18n/label :t/contact-request)
-        :on-layout set-swipeable-height
-        :icon      :i/add-user
-        :timestamp (datetime/timestamp->relative (:timestamp notification))
-        :unread?   (not (:read notification))
-        :context   [(i18n/label :t/contact-request-outgoing)
-                    [common/user-avatar-tag chat-id]]
-        :message   {:body (get-in message [:content :text])}
-        :items     (case contact-request-state
-                     constants/contact-request-message-state-pending
-                     [{:type    :status
-                       :subtype :pending
-                       :key     :status-pending
-                       :blur?   true
-                       :label   (i18n/label :t/pending)}]
+       {:title               (i18n/label :t/contact-request)
+        :customization-color customization-color
+        :on-layout           set-swipeable-height
+        :icon                :i/add-user
+        :timestamp           (datetime/timestamp->relative (:timestamp notification))
+        :unread?             (not (:read notification))
+        :context             [(i18n/label :t/contact-request-outgoing)
+                              [common/user-avatar-tag chat-id]]
+        :message             {:body (get-in message [:content :text])}
+        :items               (case contact-request-state
+                               constants/contact-request-message-state-pending
+                               [{:type    :status
+                                 :subtype :pending
+                                 :key     :status-pending
+                                 :blur?   true
+                                 :label   (i18n/label :t/pending)}]
 
-                     constants/contact-request-message-state-declined
-                     [{:type    :status
-                       :subtype :pending
-                       :key     :status-pending
-                       :blur?   true
-                       :label   (i18n/label :t/pending)}]
+                               constants/contact-request-message-state-declined
+                               [{:type    :status
+                                 :subtype :pending
+                                 :key     :status-pending
+                                 :blur?   true
+                                 :label   (i18n/label :t/pending)}]
 
-                     nil)}])))
+                               nil)}])))
 
 (defn- incoming-contact-request-view
-  [{:keys [notification set-swipeable-height]}]
+  [{:keys [notification set-swipeable-height customization-color]}]
   (let [{:keys [id author message last-message]} notification
         message                                  (or message last-message)]
     [quo/activity-log
      {:title (i18n/label :t/contact-request)
+      :customization-color customization-color
       :on-layout set-swipeable-height
       :icon :i/add-user
       :timestamp (datetime/timestamp->relative (:timestamp notification))

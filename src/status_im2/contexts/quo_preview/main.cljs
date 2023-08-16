@@ -3,7 +3,7 @@
   (:require
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
-    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
     [react-native.core :as rn]
     [status-im2.common.theme.core :as theme]
     [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]
@@ -16,6 +16,7 @@
     [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as wallet-user-avatar]
     [status-im2.contexts.quo-preview.banners.banner :as banner]
     [status-im2.contexts.quo-preview.buttons.button :as button]
+    [status-im2.contexts.quo-preview.buttons.composer-button :as composer-button]
     [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
@@ -24,6 +25,7 @@
     [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
     [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
+    [status-im2.contexts.quo-preview.graph.wallet-graph :as wallet-graph]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
     [status-im2.contexts.quo-preview.community.community-membership-list-view :as
@@ -45,17 +47,22 @@
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
     [status-im2.contexts.quo-preview.inputs.input :as input]
+    [status-im2.contexts.quo-preview.inputs.locked-input :as locked-input]
     [status-im2.contexts.quo-preview.inputs.recovery-phrase-input :as recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
     [status-im2.contexts.quo-preview.inputs.search-input :as search-input]
     [status-im2.contexts.quo-preview.inputs.title-input :as title-input]
+    [status-im2.contexts.quo-preview.numbered-keyboard.keyboard-key :as keyboard-key]
+    [status-im2.contexts.quo-preview.numbered-keyboard.numbered-keyboard :as numbered-keyboard]
     [status-im2.contexts.quo-preview.links.url-preview :as url-preview]
     [status-im2.contexts.quo-preview.links.url-preview-list :as url-preview-list]
     [status-im2.contexts.quo-preview.links.link-preview :as link-preview]
+    [status-im2.contexts.quo-preview.list-items.account-list-card :as account-list-card]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
+    [status-im2.contexts.quo-preview.list-items.token-value :as token-value]
     [status-im2.contexts.quo-preview.markdown.text :as text]
     [status-im2.contexts.quo-preview.markdown.list :as markdown-list]
     [status-im2.contexts.quo-preview.messages.author :as messages-author]
@@ -101,7 +108,15 @@
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
-    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]))
+    [status-im2.contexts.quo-preview.wallet.account-overview :as account-overview]
+    [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
+    [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
+    [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
+    [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
+    [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
+    [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
+    [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
+    [utils.re-frame :as rf]))
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -134,6 +149,9 @@
    :buttons           [{:name      :button
                         :options   {:topBar {:visible true}}
                         :component button/preview-button}
+                       {:name      :composer-button
+                        :options   {:topBar {:visible true}}
+                        :component composer-button/preview-composer-button}
                        {:name      :dynamic-button
                         :options   {:topBar {:visible true}}
                         :component dynamic-button/preview-dynamic-button}
@@ -200,7 +218,7 @@
                         :options   {:topBar {:visible true}}
                         :component action-drawers/preview-action-drawers}
                        {:name      :documentation-drawer
-                        :insets    {:top false}
+                        :options   {:topBar {:visible true}}
                         :component documenation-drawers/preview-documenation-drawers}
                        {:name      :drawer-buttons
                         :options   {:topBar {:visible true}}
@@ -217,6 +235,9 @@
    :gradient          [{:name      :gradient-cover
                         :options   {:topBar {:visible true}}
                         :component gradient-cover/preview-gradient-cover}]
+   :graph             [{:name      :wallet-graph
+                        :options   {:topBar {:visible true}}
+                        :component wallet-graph/preview-wallet-graph}]
    :info              [{:name      :info-message
                         :options   {:topBar {:visible true}}
                         :component info-message/preview-info-message}
@@ -226,6 +247,9 @@
    :inputs            [{:name      :input
                         :options   {:topBar {:visible true}}
                         :component input/preview-input}
+                       {:name      :locked-input
+                        :options   {:topBar {:visible true}}
+                        :component locked-input/preview-locked-input}
                        {:name      :profile-input
                         :options   {:topBar {:visible true}}
                         :component profile-input/preview-profile-input}
@@ -238,6 +262,14 @@
                        {:name      :title-input
                         :options   {:topBar {:visible true}}
                         :component title-input/preview-title-input}]
+   :numbered-keyboard [{:name      :keyboard-key
+                        :options   {:insets {:top? true}
+                                    :topBar {:visible true}}
+                        :component keyboard-key/preview-keyboard-key}
+                       {:name      :numbered-keyboard
+                        :options   {:insets {:top? true}
+                                    :topBar {:visible true}}
+                        :component numbered-keyboard/preview-numbered-keyboard}]
    :links             [{:name      :url-preview
                         :options   {:insets {:top? true}
                                     :topBar {:visible true}}
@@ -250,7 +282,10 @@
                         :options   {:insets {:top? true}
                                     :topBar {:visible true}}
                         :component link-preview/preview}]
-   :list-items        [{:name      :channel
+   :list-items        [{:name      :account-list-card
+                        :options   {:topBar {:visible true}}
+                        :component account-list-card/preview}
+                       {:name      :channel
                         :options   {:topBar {:visible true}}
                         :component channel/preview-channel}
                        {:name      :community-list
@@ -262,7 +297,10 @@
                         :component preview-lists/preview-preview-lists}
                        {:name      :user-list
                         :options   {:topBar {:visible true}}
-                        :component user-list/preview-user-list}]
+                        :component user-list/preview-user-list}
+                       {:name      :token-value
+                        :options   {:topBar {:visible true}}
+                        :component token-value/preview}]
    :loaders           [{:name      :skeleton
                         :options   {:topBar {:visible true}}
                         :component skeleton/preview-skeleton}]
@@ -389,51 +427,101 @@
    :text-combinations [{:name      :title
                         :options   {:topBar {:visible true}}
                         :component title/preview-title}]
-   :wallet            [{:name      :network-amount
+   :wallet            [{:name      :account-card
                         :options   {:topBar {:visible true}}
-                        :component network-amount/preview}]
+                        :component account-card/preview-account-card}
+                       {:name      :account-overview
+                        :options   {:topBar {:visible true}}
+                        :component account-overview/preview-account-overview}
+                       {:name      :network-amount
+                        :options   {:topBar {:visible true}}
+                        :component network-amount/preview}
+                       {:name      :network-bridge
+                        :options   {:topBar {:visible true}}
+                        :component network-bridge/preview}
+                       {:name      :progress-bar
+                        :options   {:topBar {:visible true}}
+                        :component progress-bar/preview}
+                       {:name      :summary-info
+                        :options   {:topBar {:visible true}}
+                        :component summary-info/preview}
+                       {:name      :token-input
+                        :options   {:topBar {:visible true}}
+                        :component token-input/preview}
+                       {:name      :wallet-overview
+                        :options   {:topBar {:visible true}}
+                        :component wallet-overview/preview-wallet-overview}]
    :keycard           [{:name      :keycard-component
                         :options   {:topBar {:visible true}}
                         :component keycard/preview-keycard}]})
 
 (def screens (flatten (map val screens-categories)))
 
+(defn navigation-bar
+  []
+  (let [logged-in?    (rf/sub [:multiaccount/logged-in?])
+        has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
+        root          (if has-profiles? :profiles :intro)]
+    [quo/page-nav
+     {:align-mid?   true
+      :mid-section  {:type      :text-only
+                     :main-text "Quo2 components preview"}
+      :left-section {:icon     :i/close
+                     :on-press (fn []
+                                 (cond
+                                   logged-in?
+                                   (rf/dispatch [:navigate-back])
+
+                                   :else
+                                   (do
+                                     (theme/set-theme :dark)
+                                     (rf/dispatch [:init-root root]))))}}]))
+
 (defn theme-switcher
   []
   [rn/view
-   {:style {:flex-direction  :row
-            :margin-vertical 8}}
+   {:style {:flex-direction     :row
+            :justify-content    :space-between
+            :padding-horizontal 24
+            :padding-vertical   12}}
    [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
    [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
+
+(defn category-view
+  []
+  (let [open? (reagent/atom false)]
+    (fn [category]
+      [rn/view {:style {:margin-vertical 8}}
+       [quo/dropdown {:selected @open? :on-change #(swap! open? not) :type :grey}
+        (clojure.core/name (key category))]
+       (when @open?
+         (for [{:keys [name]} (val category)]
+           ^{:key name}
+           [quo/button
+            {:type            :outline
+             :container-style {:margin-vertical 8}
+             :on-press        #(rf/dispatch [:navigate-to name])}
+            (clojure.core/name name)]))])))
 
 (defn main-screen
   []
   (fn []
-    [rn/scroll-view
-     {:flex               1
-      :padding-bottom     8
-      :padding-horizontal 16
-      :background-color   (colors/theme-colors colors/white colors/neutral-90)}
+    [:<>
+     [navigation-bar]
      [theme-switcher]
-     [quo/text {:size :heading-1} "Preview Quo2 Components"]
-     [rn/view
-      (map (fn [category]
-             ^{:key (get category 0)}
-             [rn/view {:style {:margin-vertical 8}}
-              [quo/text
-               {:weight :semi-bold
-                :size   :heading-2}
-               (clojure.core/name (key category))]
-              (for [{:keys [name]} (val category)]
-                ^{:key name}
-                [quo/button
-                 {:test-ID  (str "quo2-" name)
-                  :style    {:margin-vertical 8}
-                  :on-press #(re-frame/dispatch [:navigate-to name])}
-                 (clojure.core/name name)])])
-           (sort screens-categories))]]))
+     [rn/scroll-view
+      {:flex               1
+       :padding-bottom     8
+       :padding-horizontal 16
+       :background-color   (colors/theme-colors colors/white colors/neutral-90)}
+      [rn/view
+       (map (fn [category]
+              ^{:key (get category 0)}
+              [category-view category])
+            (sort screens-categories))]]]))
 
 (def main-screens
   [{:name      :quo2-preview
-    :options   {:topBar {:visible true}}
+    :options   {:topBar {:visible false}
+                :insets {:top? true}}
     :component main-screen}])

@@ -17,13 +17,15 @@
    :community-icon (resources/get-mock-image :status-logo)
    :color (rand-nth quo.colors/chat-colors)
    :tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}]
-   :tags [{:id 1 :tag-label (i18n/label :t/music) :resource (resources/get-image :music)}
+   :tags [{:id        1
+           :tag-label (i18n/label :t/music)
+           :emoji     (resources/get-image :music)}
           {:id        2
            :tag-label (i18n/label :t/lifestyle)
-           :resource  (resources/get-image :lifestyle)}
+           :emoji     (resources/get-image :lifestyle)}
           {:id        3
            :tag-label (i18n/label :t/podcasts)
-           :resource  (resources/get-image :podcasts)}]})
+           :emoji     (resources/get-image :podcasts)}]})
 
 (def descriptor
   [{:label   "Status:"
@@ -33,14 +35,18 @@
                :value "Gated"}
               {:key   :open
                :value "Open"}]}
-   {:label "Locked:"
+   {:label "Locked?"
     :key   :locked?
+    :type  :boolean}
+   {:label "Loading?"
+    :key   :loading?
     :type  :boolean}])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:status  :gated
-                             :locked? true})]
+  (let [state (reagent/atom {:status   :gated
+                             :locked?  true
+                             :loading? false})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
@@ -51,7 +57,9 @@
         [rn/view
          {:padding-vertical 60
           :justify-content  :center}
-         [community-card-view/community-card-view-item (merge @state community-data)]]]])))
+         [community-card-view/view
+          {:community (merge @state community-data)
+           :loading?  (:loading? @state)}]]]])))
 
 (defn preview-community-card
   []

@@ -51,7 +51,7 @@ class TestUpgradeApplication(SingleDeviceTestCase):
         unread_one_to_one, unread_public = home.get_chat(unread_one_to_one_name), home.get_chat(unread_public_name)
         if unread_one_to_one.new_messages_counter.text != chats[unread_one_to_one_name]['unread']:
             self.errors.append('New messages counter is not shown on chat element')
-        if not unread_public.new_messages_public_chat.is_element_displayed():
+        if not unread_public.new_messages_grey_dot.is_element_displayed():
             self.errors.append('Unread messages badge is not shown in public chat')
 
         home.just_fyi("Check images / add to contacts")

@@ -23,7 +23,6 @@ There are a few main files that define the whole build environment:
 * [`nix/shells.nix`](./shells.nix) - Definitions of other Nix shells used in builds
 * [`nix/targets.nix`](./targets.nix) - Hierarchy of main build targets
 * [`nix/pkgs.nix`](./pkgs.nix) - Definition of a custom `nixpkgs` repo
-* [`nix/config.nix`](./config.nix) - Default config values for instantiating `nixpkgs`
 * [`nix/overlay.nix`](./overlay.nix) - Overrides for `nixpkgs`, custom packages
 
 The [`default.nix`](../default.nix) and [`shell.nix`](../shell.nix) files at th repo root are just a gateway into the `nix` sub folder.
@@ -75,13 +74,6 @@ nix-build \
   --attr targets.mobile.android.release \
   --argstr secrets-file '/tmp/tmp-status-mobile-559a3a441/tmp.xAnrPuNtAP' \
   --option extra-sandbox-paths '/home/joe/.gradle/status-im.keystore /tmp/tmp-status-mobile-559a3a441/tmp.xAnrPuNtAP' \
-  --arg config '{ \
-    status-im.build-type="nightly";
-    status-im.build-number="2020022418";
-    status-im.android.keystore-path="/home/joe/.gradle/status-im.keystore";
-    status-im.android.abi-split="false";
-    status-im.android.abi-include="armeabi-v7a;arm64-v8a;x86";
-  }' \
   default.nix
 ```
 Some of those are required which is why just calling:

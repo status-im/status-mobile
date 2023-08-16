@@ -1,5 +1,5 @@
 (ns quo2.components.navigation.bottom-nav-tab.view
-  (:require [quo2.components.counter.counter :as counter]
+  (:require [quo2.components.counter.counter.view :as counter]
             [quo2.components.icons.icons :as icons]
             [quo2.components.navigation.bottom-nav-tab.styles :as styles]
             [quo2.foundations.colors :as colors]
@@ -31,7 +31,7 @@
   "
   [{:keys [icon new-notifications? notification-indicator counter-label
            on-press pass-through? icon-color-anim accessibility-label test-ID
-           customization-color]
+           customization-color on-long-press]
     :or   {customization-color :blue}}]
   (let [icon-animated-style       (reanimated/apply-animations-to-style
                                    {:tint-color icon-color-anim}
@@ -47,6 +47,7 @@
                                     :border-radius 10})]
     [rn/touchable-without-feedback
      {:test-ID             test-ID
+      :on-long-press       on-long-press ;;NOTE - this is temporary while supporting old wallet
       :on-press            on-press
       :on-press-in         #(toggle-background-color background-color false pass-through?)
       :on-press-out        #(toggle-background-color background-color true pass-through?)
@@ -79,10 +80,9 @@
           :source (icons/icon-source (keyword (str icon 24)))}])
       (when new-notifications?
         (if (= notification-indicator :counter)
-          [counter/counter
-           {:override-text-color colors/white
-            :override-bg-color   (colors/custom-color customization-color 60)
-            :style               styles/notification-counter}
+          [counter/view
+           {:customization-color customization-color
+            :container-style     styles/notification-counter}
            counter-label]
           [rn/view {:style (styles/notification-dot customization-color)}]))]]))
 

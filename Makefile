@@ -46,7 +46,10 @@ export NIX_USER_CONF_FILES = $(PWD)/nix/nix.conf
 # Location of symlinks to derivations that should not be garbage collected
 export _NIX_GCROOTS = /nix/var/nix/gcroots/per-user/$(USER)/status-mobile
 # Defines which variables will be kept for Nix pure shell, use semicolon as divider
-export _NIX_KEEP ?= TMPDIR,BUILD_ENV,STATUS_GO_SRC_OVERRIDE
+export _NIX_KEEP ?= TMPDIR,BUILD_ENV,\
+	BUILD_TYPE,BUILD_NUMBER,COMMIT_HASH,\
+	ANDROID_GRADLE_OPTS,ANDROID_ABI_SPLIT,ANDROID_ABI_INCLUDE,\
+	STATUS_GO_SRC_OVERRIDE,STATUS_GO_IPFS_GATEWAY_URL
 
 # Useful for Android release builds
 TMP_BUILD_NUMBER := $(shell ./scripts/version/gen_build_no.sh | cut -c1-10)

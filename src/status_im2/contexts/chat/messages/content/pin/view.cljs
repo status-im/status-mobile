@@ -28,10 +28,11 @@
 
 (defn pinned-message
   [{:keys [from quoted-message timestamp-str]}]
-  (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))]
+  (let [display-name        (first (rf/sub [:contacts/contact-two-names-by-identity from]))
+        customization-color (rf/sub [:profile/customization-color])]
     [quo/system-message
-     {:type          :pinned
-      :pinned-by     display-name
-      :child         [reply/quoted-message quoted-message false true]
-      :timestamp-str timestamp-str
-      :labels        {:pinned-a-message (i18n/label :t/pinned-a-message)}}]))
+     {:type                :pinned
+      :pinned-by           display-name
+      :customization-color customization-color
+      :child               [reply/quoted-message quoted-message false true]
+      :timestamp           timestamp-str}]))

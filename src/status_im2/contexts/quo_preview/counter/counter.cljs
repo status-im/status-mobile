@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.counter.counter
-  (:require [quo2.components.counter.counter :as quo2]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -14,12 +14,19 @@
               {:key   :secondary
                :value "Secondary"}
               {:key   :grey
-               :value "Gray"}
+               :value "Grey"}
               {:key   :outline
                :value "Outline"}]}
    {:label "Value"
     :key   :value
-    :type  :text}])
+    :type  :text}
+   {:label   "Customization color:"
+    :key     :customization-color
+    :type    :select
+    :options (map (fn [color]
+                    (let [k (get color :name)]
+                      {:key k :value k}))
+                  (quo/picker-colors))}])
 
 (defn cool-preview
   []
@@ -31,7 +38,7 @@
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
-         [quo2/counter @state (:value @state)]]]])))
+         [quo/counter @state (:value @state)]]]])))
 
 (defn preview-counter
   []

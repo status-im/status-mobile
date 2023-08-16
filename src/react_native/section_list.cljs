@@ -32,7 +32,7 @@
 
 (defn section-list
   "A wrapper for SectionList.
-   To render something on empty sections, use renderSectionFooter and conditionaly
+   To render something on empty sections, use renderSectionFooter and conditionally
    render on empty data
    See https://facebook.github.io/react-native/docs/sectionlist.html"
   [{:keys [sections render-section-header-fn render-section-footer-fn style] :as props}]

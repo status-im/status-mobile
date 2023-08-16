@@ -16,11 +16,16 @@
    :align-self    :flex-end
    :height        64})
 
-(def view-button-container
-  (merge button-container {:margin-bottom 34}))
+(defn view-button-container
+  [keyboard-shown?]
+  (merge button-container
+         (if platform/ios?
+           {:margin-bottom (if keyboard-shown? 0 34)}
+           {:margin-bottom (if keyboard-shown? 12 34)})))
 
 (def blur-button-container
-  (merge button-container (when platform/android? {:padding-bottom 12})))
+  (merge button-container
+         (when platform/android? {:padding-bottom 12})))
 
 (def page-container
   {:position :absolute
@@ -44,13 +49,10 @@
    :margin-bottom 16})
 
 (def content-container
-  {:flex               1
-   :padding-horizontal 20})
+  {:padding-horizontal 20})
 
 (def input-container
-  {:flex          1
-   :align-items   :flex-start
-   :margin-bottom 24})
+  {:align-items :flex-start})
 
 (def profile-input-container
   {:flex-direction  :row

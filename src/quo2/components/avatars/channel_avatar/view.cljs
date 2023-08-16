@@ -9,13 +9,14 @@
 
 (defn- initials
   [full-name size color]
-  (let [amount-initials (if (= size :size/l) 2 1)]
+  (let [amount-initials (if (= size :size/l) 2 1)
+        channel-name    (string/replace full-name "#" "")]
     [text/text
      {:accessibility-label :initials
       :size                :paragraph-2
       :weight              :semi-bold
       :style               {:color color}}
-     (utils.string/get-initials full-name amount-initials)]))
+     (utils.string/get-initials channel-name amount-initials)]))
 
 (defn- lock
   [locked? size]

@@ -41,7 +41,7 @@
   [rn/view {:style (style/container container-style)}
    [rn/view {:style style/index}
     (if (= type :step)
-      [step/step
+      [step/view
        {:in-blur-view?       blur?
         :customization-color customization-color
         :type                (if customization-color :complete :neutral)} step-number]

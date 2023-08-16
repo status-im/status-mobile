@@ -539,7 +539,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].send_message(muted_message)
         self.homes[1].just_fyi("Member 1 checks that chat is muted and message is received")
         chat = self.homes[1].get_chat(self.chat_name)
-        if chat.new_messages_counter.is_element_displayed(30):
+        if chat.new_messages_grey_dot.is_element_displayed(30):
             self.errors.append("New messages counter near chat name is shown after mute")
         try:
             after_mute_counter = int(self.homes[1].chats_tab.counter.text)
@@ -588,7 +588,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             initial_counter = 0
         self.chats[2].send_message(unmuted_message)
         self.homes[1].just_fyi("Member 1 checks that chat is unmuted and message is received")
-        if not chat.new_messages_counter.is_element_displayed(30):
+        if not chat.new_messages_grey_dot.is_element_displayed(30):
             self.errors.append("New messages counter near chat name is not shown after unmute")
         try:
             after_mute_counter = int(self.homes[1].chats_tab.counter.text)

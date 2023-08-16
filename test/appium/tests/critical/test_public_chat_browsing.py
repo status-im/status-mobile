@@ -309,24 +309,43 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in = SignInView(self.drivers[0])
         self.username = 'first user'
+        self.discovery_community_attributes = "Contributors' test community", 'test anything here', 'Web3', 'Software dev'
 
         self.home = self.sign_in.create_user(username=self.username)
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_community_button)
-        self.community_name = self.home.get_random_chat_name()
-        self.channel_name = 'general'
-        self.community = self.home.create_community(name=self.community_name, description='test description')
+        self.community_name = "closed community"
+        self.channel_name = "cats"
+        self.community = self.home.create_community(community_type="closed")
 
         self.home.get_chat(self.community_name, community=True).click()
         self.community_view = self.home.get_community_view()
         self.channel = self.community_view.get_channel(self.channel_name).click()
 
+    @marks.testrail_id(703503)
+    def test_community_discovery(self):
+        self.home.jump_to_communities_home()
+        self.home.discover_communities_button.click()
+        for text in self.discovery_community_attributes:
+            if not self.home.element_by_text(text).is_element_displayed(10):
+                self.errors.append("%s in not in Discovery!" % text)
+        self.home.element_by_text(self.discovery_community_attributes[0]).click()
+        element_templates = {
+            self.community_view.join_button: 'discovery_join_button.png',
+            self.community_view.get_channel_avatar(): 'discovery_general_channel.png',
+        }
+        for element, template in element_templates.items():
+            if element.is_element_differs_from_template(template):
+                element.save_new_screenshot_of_element('%s_different.png' % element.name)
+                self.errors.append("%s is different from expected %s!" % (element.name, template))
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702846)
     def test_community_navigate_to_channel_when_relaunch(self):
         text_message = 'some_text'
         if not self.channel.chat_message_input.is_element_displayed():
-            self.home.communities_tab.double_click()
-            self.home.get_chat(self.community_name, community=True).click()
-            self.community.get_chat(self.channel_name).click()
+            self.home.click_system_back_button_until_element_is_shown()
+            self.home.get_to_community_channel_from_home(self.community_name)
+
         self.channel.send_message(text_message)
         self.channel.reopen_app()
         if not self.channel.chat_element_by_text(text_message).is_element_displayed(30):
@@ -538,9 +557,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
-        self.community_name = self.home_1.get_random_chat_name()
+        self.community_name = "open community"
         self.channel_name = 'general'
-        self.home_1.create_community(name=self.community_name, description='community to test', require_approval=False)
+        self.home_1.create_community(community_type="open")
         self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
         self.channel_1.send_message(self.text_message)
 
@@ -551,7 +570,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         # self.chat_2 = self.home_2.get_chat(self.username_1).click()
         self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
         self.chat_2.send_message(self.text_message)
-        self.chat_2.element_by_text_part('View').click()
+        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
@@ -850,14 +869,14 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.send_message(message)
         self.home_1.just_fyi('Check new messages badge is shown for community')
         community_element_1 = self.home_1.get_chat(self.community_name, community=True)
-        if not community_element_1.new_messages_community.is_element_displayed(sec=30):
+        if not community_element_1.new_messages_grey_dot.is_element_displayed(sec=30):
             self.errors.append('New message community badge is not shown')
 
         community_1 = community_element_1.click()
         channel_1_element = community_1.get_channel(self.channel_name)
 
         self.home_1.just_fyi('Check new messages badge is shown for community')
-        if not community_element_1.new_messages_community.is_element_displayed():
+        if not community_element_1.new_messages_grey_dot.is_element_displayed():
             self.errors.append('New messages channel badge is not shown on channel')
         channel_1_element.click()
         self.errors.verify_no_errors()
@@ -966,12 +985,12 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.community_2.get_channel(self.channel_name).click()
         self.channel_2.send_message(self.text_message)
         community_1_element = self.community_1.get_chat(self.community_name)
-        if not community_1_element.new_messages_public_chat.is_element_displayed(90):
+        if not community_1_element.new_messages_grey_dot.is_element_displayed(90):
             self.errors.append('New messages counter is not shown in home > Commmunity element')
         mark_as_read_button = self.community_1.mark_all_messages_as_read_button
         community_1_element.long_press_until_element_is_shown(mark_as_read_button)
         mark_as_read_button.click()
-        if community_1_element.new_messages_public_chat.is_element_displayed():
+        if community_1_element.new_messages_grey_dot.is_element_displayed():
             self.errors.append(
                 'Unread messages badge is shown in community channel while there are no unread messages')
         # TODO: there should be one more check for community channel, which is still not ready
@@ -1062,6 +1081,56 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         #             "Channel did not open by clicking on a notification with the mention for the invited member")
         self.errors.verify_no_errors()
 
+    @marks.testrail_id(702809)
+    def test_community_markdown_support(self):
+        markdown = {
+            'bold text in asterics': '**',
+            'bold text in underscores': '__',
+            'italic text in asteric': '*',
+            'italic text in underscore': '_',
+            'inline code': '`',
+            'code blocks': '```',
+            'quote reply (one row)': '>',
+        }
+
+        for home in self.homes:
+            home.click_system_back_button_until_element_is_shown()
+            home.jump_to_communities_home()
+            community = home.get_chat(self.community_name, community=True).click()
+            community.get_channel(self.channel_name).click()
+
+        for message, symbol in markdown.items():
+            self.home_1.just_fyi('Checking that "%s" is applied (%s) in community channel' % (message, symbol))
+            message_to_send = symbol + message + symbol if 'quote' not in message else symbol + message
+            self.channel_2.send_message(message_to_send)
+            if not self.channel_2.chat_element_by_text(message).is_element_displayed():
+                self.errors.append(
+                    '%s is not displayed with markdown in community channel for the sender (device 2) \n' % message)
+
+            if not self.channel_1.chat_element_by_text(message).is_element_displayed():
+                self.errors.append(
+                    '%s is not displayed with markdown in community channel for the recipient (device 1) \n' % message)
+
+        for home in self.homes:
+            home.jump_to_messages_home()
+
+        chat_1 = self.home_1.get_chat(self.username_2).click()
+        chat_2 = self.home_2.get_chat(self.username_1).click()
+
+        for message, symbol in markdown.items():
+            self.home_1.just_fyi('Checking that "%s" is applied (%s) in 1-1 chat' % (message, symbol))
+            message_to_send = symbol + message + symbol if 'quote' not in message else symbol + message
+            chat_1.send_message(message_to_send)
+            if not chat_1.chat_element_by_text(message).is_element_displayed(30):
+                self.errors.append(
+                    '%s is not displayed with markdown in 1-1 chat for the sender (device 1) \n' % message)
+
+            if not chat_2.chat_element_by_text(message).is_element_displayed(30):
+                self.errors.append(
+                    '%s is not displayed with markdown in 1-1 chat for the recipient (device 2) \n' % message)
+
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702845)
     def test_community_leave(self):
         self.home_2.click_system_back_button_until_element_is_shown()
@@ -1073,4 +1142,75 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         community_to_leave.leave_community_button.click()
         if not community.is_element_disappeared():
             self.errors.append('Community is still shown in the list after leave')
+        self.errors.verify_no_errors()
+
+    @marks.xfail(reason="Can't invite user to closed community https://github.com/status-im/status-mobile/issues/16968",
+                 run=False)
+    @marks.testrail_id(702948)
+    def test_community_hashtag_links_to_community_channels(self):
+        for home in self.homes:
+            home.click_system_back_button_until_element_is_shown()
+        self.home_2.jump_to_messages_home()
+        self.home_1.jump_to_communities_home()
+
+        self.home_1.just_fyi("Device 1 creates a closed community")
+        self.home_1.create_community(community_type="closed")
+        community_name = "closed community"
+        self.community_1.send_invite_to_community(community_name, self.username_2)
+
+        self.home_2.just_fyi("Device 2 joins the community")
+        self.home_2.get_chat(self.username_1).click()
+        control_message_1_1_chat = "it is just a message text"
+        self.chat_2.send_message(control_message_1_1_chat)
+        self.chat_2.chat_element_by_text(community_name).view_community_button.click()
+        self.community_2.join_community()
+
+        dogs_channel, cats_channel = "dogs", "cats"
+        cats_message = "Where is a cat?"
+
+        self.home_1.just_fyi("Device 1 sends a message in the cats channel")
+        self.home_1.get_to_community_channel_from_home(community_name=community_name, channel_name=cats_channel)
+        self.channel_1.send_message(cats_message)
+        self.channel_1.click_system_back_button_until_element_is_shown(
+            element=self.community_1.get_channel(dogs_channel))
+
+        self.home_1.just_fyi("Device 1 sends a message with hashtag in the dogs channel")
+        self.community_1.get_channel(dogs_channel).click_until_presence_of_element(self.channel_1.chat_message_input)
+        message_with_hashtag = "#cats"
+        self.channel_1.send_message(message_with_hashtag)
+
+        self.home_2.just_fyi("Device 2 clicks on the message with hashtag in the community channel")
+        self.community_2.get_channel(dogs_channel).click_until_presence_of_element(self.channel_2.chat_message_input)
+        self.channel_2.chat_element_by_text(message_with_hashtag).message_body.wait_for_visibility_of_element(30)
+        self.channel_2.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
+            rel_x=0.2, rel_y=0.5)
+        if not self.channel_2.chat_element_by_text(cats_message).is_element_displayed(30):
+            self.errors.append("Receiver was not navigated to the cats channel")
+
+        self.home_1.just_fyi("Device 1 clicks on the message with hashtag in the community channel")
+        self.channel_1.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
+            rel_x=0.2, rel_y=0.5)
+        if not self.channel_1.chat_element_by_text(cats_message).is_element_displayed(30):
+            self.errors.append("Sender was not navigated to the cats channel")
+
+        [home.jump_to_messages_home() for home in self.homes]
+
+        self.home_2.just_fyi("Device 2 sends a message with hashtag in 1-1 chat")
+        self.home_2.get_chat(self.username_1).click()
+        self.chat_2.send_message(message_with_hashtag)
+
+        self.home_1.just_fyi("Device 1 clicks on the message with hashtag in 1-1 chat")
+        self.home_1.get_chat(self.username_2).click()
+        self.chat_1.chat_element_by_text(message_with_hashtag).message_body.wait_for_visibility_of_element(30)
+        self.chat_1.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
+            rel_x=0.2, rel_y=0.5)
+        if self.chat_1.chat_element_by_text(control_message_1_1_chat).is_element_disappeared():
+            self.errors.append("Receiver was navigated out of 1-1 chat")
+
+        self.home_2.just_fyi("Device 2 clicks on the message with hashtag in 1-1 chat")
+        self.chat_2.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
+            rel_x=0.2, rel_y=0.5)
+        if self.chat_2.chat_element_by_text(control_message_1_1_chat).is_element_disappeared():
+            self.errors.append("Sender was navigated out of 1-1 chat")
+
         self.errors.verify_no_errors()

@@ -11,10 +11,8 @@
     [status-im2.contexts.profile.config :as profile.config]
     [taoensso.timbre :as log]
     [status-im.notifications.core :as notifications]
-    [status-im2.contexts.profile.create.events :as profile.create]
     [status-im2.config :as config]
     [status-im.data-store.settings :as data-store.settings]
-    [status-im2.contexts.communities.discover.events :as contract-communities]
     [status-im.communities.core :as communities]
     [status-im2.common.log :as logging]
     [status-im2.contexts.shell.activity-center.events :as activity-center]
@@ -88,7 +86,6 @@
                      (re-frame/dispatch [:profile.login/get-chats-callback]))})
               (profile.config/get-node-config)
               (communities/fetch)
-              (contract-communities/fetch-contract-communities)
               (communities/fetch-collapsed-community-categories)
               (communities/check-and-delete-pending-request-to-join)
               (logging/set-log-level (:log-level settings))
@@ -132,19 +129,17 @@
               (switcher-cards-store/fetch-switcher-cards-rpc))))
 
 (rf/defn login-node-signal
-  [{{:keys [recovered-account?] :as db} :db :as cofx} {:keys [settings account error]}]
+  [{{:onboarding-2/keys [recovered-account? new-account?] :as db} :db :as cofx}
+   {:keys [settings account error]}]
   (log/debug "[signals] node.login" "error" error)
   (if error
     {:db (update db :profile/login #(-> % (dissoc :processing) (assoc :error error)))}
-    (let [{:keys [creating?]} (:profile/login db)]
-      (rf/merge cofx
-                {:db         (dissoc db :profile/login)
-                 :dispatch-n [[:logging/initialize-web3-client-version]
-                              (when (and creating? (not recovered-account?))
-                                [:wallet/set-initial-blocks-range])]}
-                (if (or creating? recovered-account?)
-                  (profile.create/login-new-profile recovered-account?)
-                  (login-existing-profile settings account))))))
+    (rf/merge cofx
+              {:db         (dissoc db :profile/login)
+               :dispatch-n [[:logging/initialize-web3-client-version]
+                            (when (and new-account? (not recovered-account?))
+                              [:wallet/set-initial-blocks-range])]}
+              (login-existing-profile settings account))))
 
 (rf/defn login-with-biometric-if-available
   {:events [:profile.login/login-with-biometric-if-available]}

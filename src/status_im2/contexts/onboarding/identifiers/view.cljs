@@ -59,7 +59,7 @@
          :background          :blur
          :on-press            #(rf/dispatch [:navigate-to-within-stack
                                              [:enable-notifications :new-to-status]])
-         :style               style/button}
+         :container-style     style/button}
         (i18n/label :t/skip)]]]]))
 
 (defn view [props] [:f> f-view props])

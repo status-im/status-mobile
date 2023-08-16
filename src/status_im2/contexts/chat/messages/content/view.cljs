@@ -65,6 +65,21 @@
         :contact?       added?
         :verified?      ens-verified}])))
 
+(defn system-message-contact-request
+  [{:keys [chat-id timestamp-str from]} type]
+  (let [display-name         (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+        contact              (rf/sub [:contacts/contact-by-address chat-id])
+        photo-path           (when (seq (:images contact)) (rf/sub [:chats/photo-path chat-id]))
+        customization-color  (rf/sub [:profile/customization-color])
+        {:keys [public-key]} (rf/sub [:profile/profile])]
+    [quo/system-message
+     {:type                type
+      :timestamp           timestamp-str
+      :display-name        display-name
+      :customization-color customization-color
+      :photo-path          photo-path
+      :incoming?           (not= public-key from)}]))
+
 (defn system-message-content
   [{:keys [content-type quoted-message] :as message-data}]
   (if quoted-message
@@ -81,9 +96,14 @@
       [not-implemented/not-implemented
        [old-message/community message-data]]
 
-      constants/content-type-contact-request
-      [not-implemented/not-implemented
-       [old-message/system-contact-request message-data]])))
+      constants/content-type-system-message-mutual-event-accepted
+      [system-message-contact-request message-data :added]
+
+      constants/content-type-system-message-mutual-event-removed
+      [system-message-contact-request message-data :removed]
+
+      constants/content-type-system-message-mutual-event-sent
+      [system-message-contact-request message-data :contact-request])))
 
 (declare on-long-press)
 
@@ -193,23 +213,28 @@
                                      :show-reactions? true
                                      :show-user-info? true}]])}]))
 
+(defn system-message?
+  [content-type]
+  (#{constants/content-type-system-text
+     constants/content-type-community
+     constants/content-type-system-message-mutual-event-accepted
+     constants/content-type-system-message-mutual-event-removed
+     constants/content-type-system-message-mutual-event-sent
+     constants/content-type-system-pinned-message}
+   content-type))
+
 (defn message
   [{:keys [pinned-by mentioned content-type last-in-group? deleted? deleted-for-me?]
-    :as   message-data} context keyboard-shown?]
-  (let [in-pinned-view? (:in-pinned-view? context)]
-    (if (or deleted? deleted-for-me?)
-      [rn/view {:style (style/message-container)}
-       [content.deleted/deleted-message message-data context]]
-      [rn/view
-       {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
-        :accessibility-label :chat-item}
-       (if (#{constants/content-type-system-text constants/content-type-community
-              constants/content-type-contact-request
-              constants/content-type-system-pinned-message}
-            content-type)
-         [system-message-content message-data]
-         [user-message-content
-          {:message-data    message-data
-           :context         context
-           :keyboard-shown? keyboard-shown?
-           :show-reactions? true}])])))
+    :as   message-data} {:keys [in-pinned-view?] :as context} keyboard-shown?]
+  [rn/view
+   {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
+    :accessibility-label :chat-item}
+   (if (or (system-message? content-type) deleted? deleted-for-me?)
+     (if (or deleted? deleted-for-me?)
+       [content.deleted/deleted-message message-data]
+       [system-message-content message-data])
+     [user-message-content
+      {:message-data    message-data
+       :context         context
+       :keyboard-shown? keyboard-shown?
+       :show-reactions? true}])])

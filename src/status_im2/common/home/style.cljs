@@ -1,4 +1,5 @@
-(ns status-im2.common.home.style)
+(ns status-im2.common.home.style
+  (:require [react-native.safe-area :as safe-area]))
 
 (def title-column
   {:flex-direction     :row
@@ -44,3 +45,16 @@
 
 (def top-nav-container
   {:height 56})
+
+(def header-height 245)
+
+(defn header-spacing
+  []
+  {:height (+ header-height (safe-area/get-top))})
+
+(defn empty-state-container
+  []
+  {:flex            1
+   :margin-top      (+ header-height (safe-area/get-top))
+   :margin-bottom   44
+   :justify-content :center})

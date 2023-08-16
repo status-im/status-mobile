@@ -73,10 +73,10 @@
         :on-change-text           on-change-seed-phrase}
        seed-phrase]]
      [quo/button
-      {:style    (style/continue-button keyboard-shown?)
-       :type     :primary
-       :disabled button-disabled?
-       :on-press on-submit}
+      {:container-style (style/continue-button keyboard-shown?)
+       :type            :primary
+       :disabled?       button-disabled?
+       :on-press        on-submit}
       (i18n/label :t/continue)]]))
 
 (defn keyboard-suggestions

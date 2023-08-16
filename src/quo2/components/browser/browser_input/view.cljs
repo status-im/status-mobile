@@ -67,7 +67,7 @@
   [:cursor-color :placeholder-text-color :editable :on-change-text :on-focus
    :on-blur :on-clear :value :disabled? :blur? :customization-color :theme])
 
-(defn browser-input-internal
+(defn- view-internal
   [{:keys [default-value]
     :or   {default-value ""}}]
   (let [state       (reagent/atom :default)
@@ -141,4 +141,4 @@
                           (when on-clear (on-clear)))
               :theme    theme}])]]))))
 
-(def browser-input (quo2.theme/with-theme browser-input-internal))
+(def view (quo2.theme/with-theme view-internal))

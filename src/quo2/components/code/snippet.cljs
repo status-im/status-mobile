@@ -87,11 +87,11 @@
         :line-number-width line-number-width}]]
      [rn/view {:style style/copy-button}
       [button/button
-       {:icon                      true
-        :type                      :grey
-        :size                      24
-        :on-press                  on-copy-press
-        :override-background-color (style/button-background-color)}
+       {:icon-only? true
+        :type       :grey
+        :background :blur
+        :size       24
+        :on-press   on-copy-press}
        :main-icons/copy]]]))
 
 (defn snippet

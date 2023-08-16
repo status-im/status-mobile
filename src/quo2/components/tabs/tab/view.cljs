@@ -1,7 +1,7 @@
 (ns quo2.components.tabs.tab.view
   (:require [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
-            [quo2.components.notifications.notification-dot :as notification-dot]
+            [quo2.components.common.notification-dot.view :as notification-dot]
             [quo2.components.tabs.tab.style :as style]
             [quo2.theme :as theme]
             [react-native.core :as rn]
@@ -60,7 +60,8 @@
            theme
            segmented?
            size
-           notification-dot?]
+           notification-dot?
+           customization-color]
     :or   {size 32}}
    children]
   (let [show-notification-dot? (and notification-dot? (= size 32))
@@ -78,8 +79,9 @@
                            (on-press id))}))
      [rn/view {:style style/container}
       (when show-notification-dot?
-        [notification-dot/notification-dot
-         {:style style/notification-dot}])
+        [notification-dot/view
+         {:style               style/notification-dot
+          :customization-color customization-color}])
       [rn/view
        {:style (merge
                 (style/tab

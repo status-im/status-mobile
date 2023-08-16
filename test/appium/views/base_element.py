@@ -92,6 +92,11 @@ class BaseElement(object):
         self.driver.info('Tap on found: %s' % self.name)
         return self.navigate()
 
+    def wait_and_click(self, sec=30):
+        self.driver.info("Wait for element `%s` for max %ss and click when it is available" % (self.name, sec))
+        self.wait_for_visibility_of_element(sec)
+        self.click()
+
     def click_until_presence_of_element(self, desired_element, attempts=4):
         counter = 0
         self.driver.info("Click until `%s` by `%s`: `%s` will be presented" % (
@@ -397,11 +402,6 @@ class Button(BaseElement):
 
     def __init__(self, driver, **kwargs):
         super(Button, self).__init__(driver, **kwargs)
-
-    def wait_and_click(self, sec=30):
-        self.driver.info("Wait for element `%s` for max %ss and click when it is available" % (self.name, sec))
-        self.wait_for_visibility_of_element(sec)
-        self.click()
 
     def click_until_absense_of_element(self, desired_element, attempts=3, timeout=1):
         counter = 0

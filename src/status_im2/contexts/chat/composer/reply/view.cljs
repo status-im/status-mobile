@@ -1,16 +1,16 @@
 (ns status-im2.contexts.chat.composer.reply.view
   (:require [clojure.string :as string]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.composer.constants :as constants]
-            [utils.i18n :as i18n]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [status-im2.constants :as constant]
+            [react-native.core :as rn]
+            [react-native.linear-gradient :as linear-gradient]
+            [react-native.reanimated :as reanimated]
             [status-im.ethereum.stateofus :as stateofus]
-            [utils.re-frame :as rf]
+            [status-im2.constants :as constant]
+            [status-im2.contexts.chat.composer.constants :as constants]
             [status-im2.contexts.chat.composer.reply.style :as style]
-            [react-native.linear-gradient :as linear-gradient]))
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn get-quoted-text-with-mentions
   [parsed-text]
@@ -63,8 +63,7 @@
 (defn reply-from
   [{:keys [from contact-name current-public-key]}]
   (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
-        contact      (rf/sub [:contacts/contact-by-address from])
-        photo-path   (when-not (empty? (:images contact)) (rf/sub [:chats/photo-path from]))]
+        photo-path   (rf/sub [:chats/photo-path from])]
     [rn/view {:style style/reply-from}
      [quo/user-avatar
       {:full-name         display-name
@@ -73,7 +72,7 @@
        :size              :xxxs}]
      [quo/text
       {:weight          :semi-bold
-       :size            :label
+       :size            :paragraph-2
        :number-of-lines 1
        :style           style/message-author-text}
       (format-reply-author from contact-name current-public-key)]]))
@@ -125,18 +124,15 @@
                                                  (i18n/label :t/photo))
                  constant/content-type-sticker (i18n/label :t/sticker)
                  constant/content-type-audio   (i18n/label :t/audio)
-                 ""))]
-        ])]
+                 ""))]])]
      (when (and in-chat-input? (not recording-audio?))
        [quo/button
-        {:width               24
+        {:icon-only?          true
          :size                24
          :accessibility-label :reply-cancel-button
          :on-press            #(rf/dispatch [:chat.ui/cancel-message-reply])
          :type                :outline}
-        [quo/icon :i/close
-         {:size  16
-          :color (colors/theme-colors colors/neutral-100 colors/neutral-40)}]])
+        :i/close])
      (when (and in-chat-input? recording-audio?)
        [linear-gradient/linear-gradient
         {:colors [(colors/theme-colors colors/white-opa-0 colors/neutral-90-opa-0)

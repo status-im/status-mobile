@@ -13,30 +13,31 @@
   (case type
     :text
     [quo/text
-     {:size   :paragraph-2
-      :weight :regular
-      :style  style/list-text} (i18n/label value)]
+     {:size            :paragraph-2
+      :weight          :regular
+      :container-style style/list-text} (i18n/label value)]
 
     :button-primary
     [quo/button
      {:type                :primary
       :customization-color :blue
       :size                24
-      :style               style/button-primary} (i18n/label value)]
+      :container-style     style/button-primary}
+     (i18n/label value)]
 
     :button-grey
     [quo/button
-     {:type  :grey
-      :size  24
-      :style style/button-grey}
+     {:type            :grey
+      :size            24
+      :container-style style/button-grey}
      (i18n/label value)]
 
     :button-grey-placeholder
     [quo/button
-     {:type   :grey
-      :size   24
-      :before :i/placeholder
-      :style  style/button-grey-placeholder}
+     {:type            :grey
+      :size            24
+      :before          :i/placeholder
+      :container-style style/button-grey-placeholder}
      (i18n/label value)]
 
     :context-tag

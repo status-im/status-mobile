@@ -67,12 +67,7 @@
          {:padding-vertical 60
           :flex-direction   :row
           :justify-content  :center}
-         (let [{:keys [profile-picture ring?]} @state
-               ring-bg                         (resources/get-mock-image :ring)
-               params                          (cond-> @state
-                                                 (and (not profile-picture) ring?)
-                                                 (assoc :ring-background ring-bg))]
-           [quo2/user-avatar params])]]])))
+         [quo2/user-avatar @state]]]])))
 
 (defn preview-user-avatar
   []

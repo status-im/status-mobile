@@ -15,10 +15,10 @@
 (defn- word-component
   [word _ _ {:keys [on-press]}]
   [button/button
-   {:type     :blur-bg
-    :size     32
-    :on-press #(on-press word)}
-
+   {:type       :grey
+    :background :blur
+    :size       32
+    :on-press   #(on-press word)}
    word])
 
 (defn- separator

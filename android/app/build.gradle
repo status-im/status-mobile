@@ -168,6 +168,7 @@ def getVersionCode = { ->
 
 def getVersionName = { ->
     new ByteArrayOutputStream().withStream { stdOut ->
+        // TODO: probably not used, cleanup
         if (project.hasProperty("releaseVersion")) {
             return project.releaseVersion
         }

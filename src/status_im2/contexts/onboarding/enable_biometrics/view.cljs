@@ -29,7 +29,7 @@
      [quo/button
       {:accessibility-label :enable-biometrics-button
        :on-press            #(rf/dispatch [:onboarding-2/enable-biometrics])
-       :before              :i/face-id
+       :icon-left           :i/face-id
        :customization-color profile-color}
       (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})]
      [quo/button
@@ -37,7 +37,7 @@
        :background          :blur
        :type                :grey
        :on-press            #(rf/dispatch [:onboarding-2/create-account-and-login])
-       :style               {:margin-top 12}}
+       :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 
 (defn enable-biometrics-parallax

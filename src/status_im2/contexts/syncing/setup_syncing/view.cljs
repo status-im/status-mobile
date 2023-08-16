@@ -38,7 +38,7 @@
 
 (defn view
   []
-  (let [profile-color (:color (rf/sub [:onboarding-2/profile]))
+  (let [profile-color (rf/sub [:profile/customization-color])
         valid-for-ms  (reagent/atom code-valid-for-ms)
         code          (reagent/atom nil)
         delay         (reagent/atom nil)
@@ -95,8 +95,9 @@
               :type                :primary
               :customization-color profile-color
               :size                40
-              :style               style/generate-button
-              :before              :i/reveal} (i18n/label :t/reveal-sync-code)])
+              :container-style     style/generate-button
+              :icon-left           :i/reveal}
+             (i18n/label :t/reveal-sync-code)])
           (when (sync-utils/valid-connection-string? @code)
             [rn/view
              {:style style/valid-cs-container}
@@ -118,16 +119,16 @@
                :default-shown? true
                :editable       false}]
              [quo/button
-              {:on-press (fn []
-                           (clipboard/set-string @code)
-                           (rf/dispatch [:toasts/upsert
-                                         {:icon       :i/correct
-                                          :icon-color colors/success-50
-                                          :text       (i18n/label
-                                                       :t/sharing-copied-to-clipboard)}]))
-               :type     :grey
-               :style    {:margin-top 12}
-               :before   :i/copy}
+              {:on-press        (fn []
+                                  (clipboard/set-string @code)
+                                  (rf/dispatch [:toasts/upsert
+                                                {:icon       :correct
+                                                 :icon-color colors/success-50
+                                                 :text       (i18n/label
+                                                              :t/sharing-copied-to-clipboard)}]))
+               :type            :grey
+               :container-style {:margin-top 12}
+               :icon-left       :i/copy}
               (i18n/label :t/copy-qr)]])]]
         [rn/view {:style style/sync-code}
          [quo/divider-label

@@ -1,4 +1,4 @@
-{ lib, utils, buildGoPackage
+{ callPackage, lib, buildGoPackage
 , androidPkgs, openjdk, gomobile, xcodeWrapper, removeReferencesTo
 , meta
 , source
@@ -13,6 +13,7 @@ let
   inherit (lib) concatStringsSep optionalString optional;
   isIOS = platform == "ios";
   isAndroid = platform == "android";
+  enforceXCodeAvailable = callPackage ./enforceXCodeAvailable.nix { };
 
 in buildGoPackage {
   pname = source.repo;
@@ -35,7 +36,7 @@ in buildGoPackage {
   ANDROID_HOME = optionalString isAndroid androidPkgs.sdk;
 
   # Ensure XCode is present for iOS, instead of failing at the end of the build.
-  preConfigure = optionalString isIOS utils.enforceXCodeAvailable;
+  preConfigure = optionalString isIOS enforceXCodeAvailable;
 
   buildPhase = ''
     runHook preBuild

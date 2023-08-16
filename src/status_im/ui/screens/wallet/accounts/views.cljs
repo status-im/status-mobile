@@ -4,7 +4,6 @@
             [quo.design-system.colors :as colors]
             [quo2.core :as quo2]
             [quo2.components.markdown.text :as quo2.text]
-            [quo2.components.tabs.tabs :as quo2.tabs]
             [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
@@ -283,7 +282,7 @@
           :margin-top                        12
           :margin-bottom                     20}
          [react/view {:flex-direction :row}
-          [quo2.tabs/tabs
+          [quo2/tabs
            {:default-active (:address (first accounts))
             :on-change      #(reset! selected-account-atom %)
             :data           accounts-data}]

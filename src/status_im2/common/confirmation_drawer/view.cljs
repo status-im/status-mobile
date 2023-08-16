@@ -1,22 +1,22 @@
 (ns status-im2.common.confirmation-drawer.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.confirmation-drawer.style :as style]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn avatar
   [group-chat color display-name photo-path]
   (if group-chat
     [quo/group-avatar
-     {:color color
-      :size  :small}]
+     {:customization-color color
+      :size                :x-small}]
     [quo/user-avatar
-     {:full-name        display-name
-      :profile-picture  photo-path
-      :size             :xxs
-      :status-indicator false}]))
+     {:full-name         display-name
+      :profile-picture   photo-path
+      :size              :xxs
+      :status-indicator? false}]))
 
 (defn extra-action-view
   [extra-action extra-text extra-action-selected?]
@@ -41,12 +41,7 @@
                                              (= contact-name-by-identity
                                                 nil)       name
                                              :else         contact-name-by-identity)
-            contact                        (when-not group-chat
-                                             (rf/sub [:contacts/contact-by-address
-                                                      id]))
-            photo-path                     (or profile-picture
-                                               (when-not (empty? (:images contact))
-                                                 (rf/sub [:chats/photo-path id])))]
+            photo-path                     (or profile-picture (rf/sub [:chats/photo-path id]))]
         [rn/view
          {:style               {:margin-horizontal 20}
           :accessibility-label accessibility-label}
@@ -63,14 +58,14 @@
          [extra-action-view extra-action extra-text extra-action-selected?]
          [rn/view {:style style/buttons-container}
           [quo/button
-           {:type     :grey
-            :style    {:flex 0.48} ;;WUT? 0.48 , whats that ?
-            :on-press #(rf/dispatch [:hide-bottom-sheet])}
+           {:type            :grey
+            :container-style {:flex 0.48} ;;WUT? 0.48 , whats that ?
+            :on-press        #(rf/dispatch [:hide-bottom-sheet])}
            (or close-button-text (i18n/label :t/close))]
           [quo/button
-           {:type     :danger
-            :style    {:flex 0.48}
-            :on-press #(do
-                         (when @extra-action-selected? (extra-action))
-                         (on-press))}
+           {:type            :danger
+            :container-style {:flex 0.48}
+            :on-press        #(do
+                                (when @extra-action-selected? (extra-action))
+                                (on-press))}
            button-text]]]))))

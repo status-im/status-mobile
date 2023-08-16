@@ -48,7 +48,7 @@
              :checked?  checked?
              :on-change #(swap! state update :checked? not)}
             text]]
-          [quo/button {:disabled (not checked?)}
+          [quo/button {:disabled? (not checked?)}
            "submit"]]]))))
 
 (defn preview-disclaimer

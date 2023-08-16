@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.counter.step
-  (:require [quo2.components.counter.step.view :as quo2]
+  (:require [quo2.core :as quo2]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]

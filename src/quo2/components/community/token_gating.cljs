@@ -4,6 +4,7 @@
             [react-native.core :as rn]
             [utils.i18n :as i18n]
             [clojure.string :as string]
+            [quo2.theme :as quo.theme]
             [quo2.components.community.style :as style]))
 
 (defn token-requirement-list-row
@@ -25,8 +26,8 @@
                         :img-src     img-src}]]))
                  tokens))])
 
-(defn token-requirement-list
-  [{:keys [tokens padding?]}]
+(defn- internal-view
+  [{:keys [tokens padding? theme]}]
   [:<>
    (if (> (count tokens) 1)
      (doall
@@ -35,11 +36,13 @@
          ^{:key token-requirement-index}
          [rn/view {:margin-bottom 12}
           (when-not (= token-requirement-index 0)
-            [rn/view {:style (style/token-row-or-border)}])
+            [rn/view {:style (style/token-row-or-border theme)}])
           (when-not (= token-requirement-index 0)
             [text/text
-             {:style (style/token-row-or-text padding?)
+             {:style (style/token-row-or-text padding? theme)
               :size  :label} (string/lower-case (i18n/label :t/or))])
           [token-requirement-list-row tokens padding?]])
        tokens))
      [token-requirement-list-row (first tokens) padding?])])
+
+(def token-requirement-list (quo.theme/with-theme internal-view))

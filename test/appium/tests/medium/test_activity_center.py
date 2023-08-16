@@ -161,9 +161,9 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
-        self.community_name = self.home_1.get_random_chat_name()
+        self.community_name = "open community"
         self.channel_name = 'general'
-        self.home_1.create_community(name=self.community_name, description='community to test', require_approval=False)
+        self.home_1.create_community(community_type="open")
         self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
         self.channel_1.send_message(self.text_message)
 
@@ -172,7 +172,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.get_to_community_channel_from_home(self.community_name)
 
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.chat_2.element_by_text_part('View').click()
+        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
@@ -317,9 +317,9 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         [home.jump_to_communities_home() for home in (self.home_1, self.home_2)]
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
-        community_name = 'commun_to_check_notif'
-        self.channel_name = self.home_1.get_random_chat_name()
-        self.home_1.create_community(name=community_name, description='community to test', require_approval=True)
+        community_name = 'closed community'
+        self.channel_name = "dogs"
+        self.home_1.create_community(community_type="closed")
         self.home_1.reopen_app()
         community_element = self.home_1.get_chat(community_name, community=True)
         self.community_1.share_community(community_element, self.username_2)
@@ -327,7 +327,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Request access to community")
         self.home_2.jump_to_messages_home()
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
-        self.chat_2.element_by_text_part('View').wait_and_click(sec=60)
+        self.chat_2.chat_element_by_text(community_name).view_community_button.wait_and_click(sec=60)
         self.community_2.join_community()
         [home.jump_to_communities_home() for home in (self.home_1, self.home_2)]
 

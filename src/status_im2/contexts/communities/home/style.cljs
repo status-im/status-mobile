@@ -1,10 +1,8 @@
 (ns status-im2.contexts.communities.home.style
   (:require [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
-            [react-native.safe-area :as safe-area]
-            [react-native.reanimated :as reanimated]))
-
-(def header-height 245)
+            [react-native.reanimated :as reanimated]
+            [react-native.safe-area :as safe-area]))
 
 (def tabs
   {:padding-horizontal 20
@@ -18,21 +16,10 @@
    :left     0
    :bottom   0})
 
-(defn empty-state-container
-  []
-  {:margin-top      (+ header-height (safe-area/get-top))
-   :margin-bottom   44
-   :flex            1
-   :justify-content :center})
-
 (def empty-state-placeholder
   {:height           120
    :width            120
    :background-color colors/danger-50})
-
-(defn header-spacing
-  []
-  {:height (+ header-height (safe-area/get-top))})
 
 (defn blur-banner-layer
   [animated-translation-y]

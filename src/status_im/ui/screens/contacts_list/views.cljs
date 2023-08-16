@@ -2,23 +2,25 @@
   (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.list.views :as list.views]
-            [status-im.ui.components.react :as react])
+            [status-im.ui.components.react :as react]
+            [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn contacts-list-item
   [{:keys [public-key] :as contact}]
-  (let [{:keys [primary-name secondary-name]} contact]
+  (let [{:keys [primary-name secondary-name customization-color]} contact]
     [quo/list-item
      {:title    primary-name
       :subtitle secondary-name
       :icon     [chat-icon.screen/profile-photo-plus-dot-view
-                 {:public-key public-key
-                  :photo-path (multiaccounts/displayed-photo contact)}]
+                 {:public-key          public-key
+                  :full-name           primary-name
+                  :customization-color (or customization-color :primary)
+                  :photo-path          (multiaccounts/displayed-photo contact)}]
       :chevron  true
       :on-press #(re-frame/dispatch [:chat.ui/show-profile public-key])}]))
 
