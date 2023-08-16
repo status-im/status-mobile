@@ -1,48 +1,26 @@
 (ns status-im2.contexts.quo-preview.colors.color-picker
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Color:"
-    :key     :color
+  [{:key     :selected
     :type    :select
     :options (map (fn [color]
                     (let [k (get color :name)]
                       {:key k :value k}))
                   (quo/picker-colors))}
-   {:label "Blur?"
-    :key   :blur
-    :type  :boolean}])
+   {:key  :blur?
+    :type :boolean}])
 
-(defn cool-preview
+(defn view
   []
-  (let [state (reagent/atom {:color "orange" :blur false})
-        blur  (reagent/cursor state [:blur])
-        color (reagent/cursor state [:color])]
+  (let [state (reagent/atom {:selected :orange
+                             :blur?    false})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
-        [(if @blur blur/view :<>)
-         [rn/view {:padding-vertical 60 :align-items :center}
-          [quo/color-picker
-           {:blur?     @blur
-            :selected  @color
-            :on-change #(reset! color %)}]]]]])))
-
-(defn preview-color-picker
-  []
-  [rn/view
-   {:background-color (colors/theme-colors
-                       colors/white
-                       colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container
+       {:state                 state
+        :descriptor            descriptor
+        :blur?                 (:blur? @state)
+        :show-blur-background? true}
+       [quo/color-picker (assoc @state :on-change #(swap! state assoc :selected %))]])))

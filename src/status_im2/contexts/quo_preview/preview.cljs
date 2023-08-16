@@ -1,216 +1,178 @@
 (ns status-im2.contexts.quo-preview.preview
-  (:require [clojure.string :as string]
+  (:require [camel-snake-kebab.core :as camel-snake-kebab]
+            [clojure.string :as string]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
+            [status-im2.contexts.quo-preview.style :as style]
             utils.number)
   (:require-macros status-im2.contexts.quo-preview.preview))
 
-(def container
-  {:flex-direction   :row
-   :padding-vertical 8
-   :flex             1
-   :align-items      :center})
-
-(defn touchable-style
-  []
-  {:flex               1
-   :align-items        :center
-   :justify-content    :center
-   :padding-horizontal 16
-   :height             44})
-
-(defn select-style
-  []
-  {:flex               1
-   :flex-direction     :row
-   :align-items        :center
-   :padding-horizontal 16
-   :height             44
-   :border-radius      4
-   :background-color   colors/neutral-20
-   :border-width       1
-   :border-color       colors/neutral-100})
-
-(defn select-option-style
-  [selected]
-  (merge (select-style)
-         {:margin-vertical 8
-          :justify-content :center}
-         (if selected
-           {:background-color colors/primary-50-opa-30}
-           {:background-color (colors/theme-colors colors/neutral-20 colors/white)})))
-
-(def label-style
-  {:flex          0.4
-   :padding-right 8})
-
-(defn label-view
+(defn- label-view
   [_ label]
-  [rn/view {:style label-style}
-   [rn/text
-    (when-let [label-color (colors/theme-colors colors/neutral-100 colors/white)]
-      {:style {:color label-color}})
+  [rn/view {:style style/label-container}
+   [rn/text {:style (style/label)}
     label]])
 
-(defn modal-container
-  []
-  {:flex               1
-   :justify-content    :center
-   :padding-horizontal 24
-   :background-color   "rgba(0,0,0,0.4)"})
+(defn- humanize
+  [k]
+  ;; We explicitly convert `k` to string because sometimes it's a number and
+  ;; Clojure would throw an exception.
+  (-> (if (keyword? k) k (str k))
+      camel-snake-kebab/->kebab-case-keyword
+      name
+      (string/replace "-" " ")
+      string/capitalize))
 
-(defn modal-view
-  []
-  {:padding-horizontal 16
-   :padding-vertical   8
-   :border-radius      8
-   :flex-direction     :column
-   :margin-vertical    100
-   :background-color   (colors/theme-colors colors/neutral-20 colors/white)})
+(defn- key->boolean-label
+  [k]
+  (let [label (humanize k)]
+    (if (string/ends-with? label "?")
+      label
+      (str label "?"))))
 
-(defn customizer-boolean
+(defn- key->text-label
+  [k]
+  (str (humanize k) ":"))
+
+(defn- customizer-boolean
   [{:keys [label state] :as args}]
-  (let [state* (reagent/cursor state [(:key args)])]
-    [rn/view {:style container}
+  (let [label       (or label (key->boolean-label (:key args)))
+        field-value (reagent/cursor state [(:key args)])
+        active?     @field-value]
+    [rn/view {:style style/field-row}
      [label-view state label]
-     [rn/view
-      {:style {:flex-direction   :row
-               :flex             0.6
-               :border-radius    4
-               :background-color (colors/theme-colors colors/neutral-20 colors/white)
-               :border-width     1
-               :border-color     (colors/theme-colors colors/neutral-100 colors/white)}}
-      [rn/touchable-opacity
-       {:style    (merge (touchable-style) {:background-color (when @state* colors/primary-50-opa-30)})
-        :on-press #(reset! state* true)}
-       [rn/text
+     [rn/view {:style (style/boolean-container)}
+      [rn/pressable
+       {:style    (style/boolean-button {:active? active? :left? true})
+        :on-press #(reset! field-value true)}
+       [rn/text {:style (style/field-text active?)}
         "True"]]
-      [rn/view
-       {:width            1
-        :margin-vertical  4
-        :background-color (colors/theme-colors colors/neutral-20 colors/white)}]
-      [rn/touchable-opacity
-       {:style    (merge (touchable-style)
-                         {:background-color (when (not @state*) colors/primary-50-opa-30)})
-        :on-press #(reset! state* false)}
-       [rn/text {}
+      [rn/pressable
+       {:style    (style/boolean-button {:active? (not active?) :left? false})
+        :on-press #(reset! field-value false)}
+       [rn/text {:style (style/field-text (not active?))}
         "False"]]]]))
 
-(defn customizer-text
+(defn- customizer-text
   [{:keys [label state limit suffix] :as args}]
-  (let [state* (reagent/cursor state [(:key args)])]
-    [rn/view {:style container}
+  (let [label       (or label (key->text-label (:key args)))
+        field-value (reagent/cursor state [(:key args)])]
+    [rn/view {:style style/field-row}
      [label-view state label]
-     [rn/view {:style {:flex 0.6}}
+     [rn/view {:style style/field-column}
       [rn/text-input
        (merge
-        {:value               @state*
+        {:value               @field-value
          :show-cancel         false
-         :style               {:border-radius 4
-                               :border-width  1
-                               :color         (colors/theme-colors colors/neutral-100 colors/white)
-                               :border-color  (colors/theme-colors colors/neutral-100 colors/white)}
-         :keyboard-appearance (theme/theme-value :light :dark)
-         :on-change-text      #(do
-                                 (reset! state* (if (and suffix (> (count %) (count @state*)))
-                                                  (str (string/replace % suffix "") suffix)
-                                                  %))
-                                 (reagent/flush))}
+         :style               (style/field-container false)
+         :keyboard-appearance (quo.theme/theme-value :light :dark)
+         :on-change-text      (fn [text]
+                                (reset! field-value (if (and suffix
+                                                             (> (count text) (count @field-value)))
+                                                      (str (string/replace text suffix "") suffix)
+                                                      text))
+                                (reagent/flush))}
         (when limit
           {:max-length limit}))]]]))
 
-(defn customizer-number
+(defn- customizer-number
   [{:keys [label state default] :as args}]
-  (let [state* (reagent/cursor state [(:key args)])]
-    [rn/view {:style container}
+  (let [label       (or label (key->text-label (:key args)))
+        field-value (reagent/cursor state [(:key args)])]
+    [rn/view {:style style/field-row}
      [label-view state label]
-     [rn/view {:style {:flex 0.6}}
+     [rn/view {:style style/field-column}
       [rn/text-input
        (merge
-        {:value               (str @state*)
+        {:value               (str @field-value)
          :show-cancel         false
-         :style               {:border-radius 4
-                               :border-width  1
-                               :color         (colors/theme-colors colors/neutral-100 colors/white)
-                               :border-color  (colors/theme-colors colors/neutral-100 colors/white)}
-         :keyboard-appearance (theme/theme-value :light :dark)
-         :on-change-text      (fn [v]
-                                (reset! state* (utils.number/parse-int v default))
+         :style               (style/field-container false)
+         :keyboard-appearance (quo.theme/theme-value :light :dark)
+         :on-change-text      (fn [text]
+                                (reset! field-value (utils.number/parse-int text default))
                                 (reagent/flush))})]]]))
 
-(defn value-for-key
+(defn- find-selected-option
   [id v]
-  (:value (first (filter #(= (:key %) id) v))))
+  (first (filter #(= (:key %) id) v)))
 
-(defn customizer-select
+(defn- customizer-select-modal
+  [{:keys [open options field-value]}]
+  [rn/modal
+   {:visible                @open
+    :on-request-close       #(reset! open false)
+    :status-bar-translucent true
+    :transparent            true
+    :animation              :slide}
+   [rn/view {:style (style/modal-overlay)}
+    [rn/view {:style (style/modal-container)}
+     [rn/scroll-view {:shows-vertical-scroll-indicator false}
+      (doall
+       (for [{k :key v :value} options
+             :let              [v (or v (humanize k))]]
+         ^{:key k}
+         [rn/pressable
+          {:style    (style/select-option (= @field-value k))
+           :on-press (fn []
+                       (reset! open false)
+                       (reset! field-value k))}
+          [rn/text {:style (style/field-text (= @field-value k))}
+           v]]))]
+     [rn/view {:style (style/footer)}
+      [rn/pressable
+       {:style    (style/select-button)
+        :on-press (fn []
+                    (reset! field-value nil)
+                    (reset! open false))}
+       [rn/text {:style (style/field-text false)}
+        "Clear"]]
+      [rn/view {:style {:width 16}}]
+      [rn/touchable-opacity
+       {:style    (style/select-button)
+        :on-press #(reset! open false)}
+       [rn/text {:style (style/field-text false)}
+        "Close"]]]]]])
+
+(defn- customizer-select-button
+  [{:keys [open selected-key]}]
+  [rn/pressable
+   {:style    (style/select-container)
+    :on-press #(reset! open true)}
+   [rn/text
+    {:style           (style/field-select)
+     :number-of-lines 1}
+    (if selected-key
+      (humanize selected-key)
+      "Select option")]
+   [rn/view
+    [quo/icon :i/chevron-right]]])
+
+(defn- customizer-select
   []
   (let [open (reagent/atom nil)]
     (fn [{:keys [label state options] :as args}]
-      (let [state*   (reagent/cursor state [(:key args)])
-            selected (value-for-key @state* options)]
-        [rn/view {:style container}
+      (let [label        (or label (key->text-label (:key args)))
+            field-value  (reagent/cursor state [(:key args)])
+            selected-key (:key (find-selected-option @field-value options))]
+        [rn/view {:style style/field-row}
          [label-view state label]
-         [rn/view {:style {:flex 0.6}}
-          [rn/modal
-           {:visible              @open
-            :on-request-close     #(reset! open false)
-            :statusBarTranslucent true
-            :transparent          true
-            :animation            :slide}
-           [rn/view {:style (modal-container)}
-            [rn/view {:style (modal-view)}
-             [rn/scroll-view
-              (doall
-               (for [{k :key v :value} options]
-                 ^{:key k}
-                 [rn/touchable-opacity
-                  {:style    (select-option-style (= @state* k))
-                   :on-press #(do
-                                (reset! open false)
-                                (reset! state* k))}
-                  [rn/text {:color (if (= @state* k) :link :secondary)}
-                   v]]))]
-             [rn/view
-              {:flex-direction   :row
-               :padding-top      20
-               :margin-top       10
-               :border-top-width 1
-               :border-top-color (colors/theme-colors colors/neutral-100 colors/white)}
-              [rn/touchable-opacity
-               {:style    (select-option-style false)
-                :on-press #(do
-                             (reset! state* nil)
-                             (reset! open false))}
-               [rn/text "Clear"]]
-              [rn/view {:width 16}]
-              [rn/touchable-opacity
-               {:style    (select-option-style false)
-                :on-press #(reset! open false)}
-               [rn/text "Close"]]]]]]
-
-          [rn/touchable-opacity
-           {:style    (select-style)
-            :on-press #(reset! open true)}
-           (if selected
-             [rn/text {:color :link} selected]
-             [rn/text "Select option"])
-           [rn/view
-            {:position        :absolute
-             :right           16
-             :top             0
-             :bottom          0
-             :justify-content :center}
-            [rn/text "↓"]]]]]))))
+         [rn/view {:style style/field-column}
+          [customizer-select-modal
+           {:open        open
+            :options     options
+            :field-value field-value}]
+          [customizer-select-button {:open open :selected-key selected-key}]]]))))
 
 (defn customizer
   [state descriptors]
   [rn/view
-   {:style              {:flex 1}
-    :padding-horizontal 16}
+   {:style {:flex-shrink        1
+            :padding-horizontal 20}}
    (doall
     (for [desc descriptors
           :let [descriptor (merge desc {:state state})]]
@@ -237,19 +199,6 @@
                                 {:key k :value (string/capitalize (name k))})))}
           opts)))
 
-(comment
-  [{:label "Show error:"
-    :key   :error
-    :type  :boolean}
-   {:label "Label:"
-    :key   :label
-    :type  :text}
-   {:label   "Type:"
-    :key     :type
-    :type    :select
-    :options [{:key :primary :value "Primary"}
-              {:key :secondary :value "Secondary"}]}])
-
 (defn blur-view
   [{:keys [show-blur-background? image height blur-view-props style]} children]
   [rn/view
@@ -262,8 +211,7 @@
                :overflow      :hidden}}
       [rn/image
        {:source (or image (resources/get-mock-image :community-cover))
-        :style  {:height "100%"
-                 :width  "100%"}}]
+        :style  {:height "100%" :width "100%"}}]
       [blur/view
        (merge {:style         {:position :absolute
                                :top      0
@@ -271,9 +219,7 @@
                                :left     0
                                :right    0}
                :blur-amount   10
-               :overlay-color (colors/theme-colors
-                               colors/white-opa-70
-                               colors/neutral-80-opa-80)}
+               :overlay-color (colors/theme-colors colors/white-opa-70 colors/neutral-80-opa-80)}
               blur-view-props)]])
    [rn/view
     {:style (merge {:position           :absolute
@@ -281,3 +227,33 @@
                     :padding-horizontal 16}
                    style)}
     children]])
+
+(defn preview-container
+  [{:keys [state descriptor blur?
+           component-container-style
+           blur-container-style blur-view-props blur-height show-blur-background?]
+    :or   {blur-height 200}}
+   component]
+  [rn/scroll-view
+   {:style                           (style/panel-basic)
+    :shows-vertical-scroll-indicator false}
+   [rn/pressable {:on-press rn/dismiss-keyboard!}
+    [rn/view {:style style/customizer-container}
+     [customizer state descriptor]]
+    [rn/view
+     (merge {:style style/component-container}
+            component-container-style)
+     (if blur?
+       [blur-view
+        {:show-blur-background? show-blur-background?
+         :height                blur-height
+         :style                 (merge {:width     "100%"
+                                        :flex-grow 1}
+                                       (when-not show-blur-background?
+                                         {:padding-horizontal 0
+                                          :top                0})
+                                       blur-container-style)
+         :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
+                                       blur-view-props)}
+        component]
+       component)]]])

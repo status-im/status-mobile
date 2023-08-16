@@ -256,7 +256,7 @@
   [description]
   [quo/text
    {:accessibility-label :community-description-text
-    :number-of-lines     2
+    :number-of-lines     4
     :ellipsize-mode      :tail
     :weight              :regular
     :size                :paragraph-1
