@@ -3,7 +3,6 @@
 
 (defn container
   [{:keys [container-size customization-color theme]}]
-  (println (/ container-size 2))
   {:width container-size
    :height container-size
    :align-items :center
