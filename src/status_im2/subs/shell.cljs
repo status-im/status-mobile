@@ -1,6 +1,7 @@
 (ns status-im2.subs.shell
   (:require [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.utils.http :as http]
             [status-im2.common.resources :as resources]
             [status-im2.config :as config]
             [status-im2.constants :as constants]
@@ -18,7 +19,7 @@
                       (first images)))})))
 
 (defn get-card-content
-  [{:keys [chat communities group-chat? primary-name]}]
+  [{:keys [chat communities group-chat? primary-name port]}]
   (let [{:keys [content-type content deleted? outgoing deleted-for-me?] :as last-message}
         (:last-message chat)]
     (merge
@@ -44,7 +45,9 @@
          ;; https://github.com/status-im/status-mobile/issues/14625
          (= content-type constants/content-type-image)
          {:content-type constants/content-type-image
-          :data         [{:source (resources/get-mock-image :photo2)}]}
+          :data         [{:source (if (seq (:image content))
+                                    (http/replace-port (:image content) port)
+                                    (resources/get-mock-image :photo2))}]}
 
          ;; Same for sticker, mock image is used
          (= content-type constants/content-type-sticker)
@@ -79,7 +82,7 @@
       :counter-label          (:unviewed-mentions-count chat)})))
 
 (defn one-to-one-chat-card
-  [contact names profile-picture chat id communities]
+  [contact names profile-picture chat id communities port]
   (let [display-name (first names)]
     {:title               display-name
      :avatar-params       {:full-name       display-name
@@ -87,11 +90,12 @@
      :customization-color (or (:customization-color contact) :primary)
      :content             (get-card-content
                            {:chat        chat
+                            :port        port
                             :communities communities})
      :id                  id}))
 
 (defn private-group-chat-card
-  [chat id communities primary-name]
+  [chat id communities primary-name port]
   {:title               (:chat-name chat)
    :avatar-params       {}
    :customization-color (or (:color chat) :primary)
@@ -99,6 +103,7 @@
                          {:chat         chat
                           :communities  communities
                           :group-chat?  true
+                          :port         port
                           :primary-name primary-name})
    :id                  id})
 
@@ -151,14 +156,16 @@
     (re-frame/subscribe [:contacts/contact-two-names-by-identity id])
     (re-frame/subscribe [:chats/photo-path id])
     (re-frame/subscribe [:chats/chat id])
-    (re-frame/subscribe [:communities])])
- (fn [[contact names profile-picture chat communities] [_ id]]
+    (re-frame/subscribe [:communities])
+    (re-frame/subscribe [:mediaserver/port])])
+ (fn [[contact names profile-picture chat communities port] [_ id]]
    (one-to-one-chat-card contact
                          names
                          profile-picture
                          chat
                          id
-                         communities)))
+                         communities
+                         port)))
 
 (re-frame/reg-sub
  :shell/private-group-chat-card
@@ -166,7 +173,8 @@
    [(re-frame/subscribe [:chats/chat id])
     (re-frame/subscribe [:communities])
     (re-frame/subscribe [:contacts/contacts])
-    (re-frame/subscribe [:profile/profile])])
+    (re-frame/subscribe [:profile/profile])
+    (re-frame/subscribe [:mediaserver/port])])
  (fn [[chat communities contacts current-multiaccount] [_ id]]
    (let [from         (get-in chat [:last-message :from])
          contact      (when from (multiaccounts/contact-by-identity contacts from))
@@ -175,7 +183,7 @@
                                 contact
                                 current-multiaccount
                                 from)))]
-     (private-group-chat-card chat id communities primary-name))))
+     (private-group-chat-card chat id communities primary-name port))))
 
 (re-frame/reg-sub
  :shell/community-card

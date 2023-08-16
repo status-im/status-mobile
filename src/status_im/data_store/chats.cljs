@@ -92,6 +92,7 @@
        :unviewed-messages-count (.-unviewedMessagesCount chat)
        :unviewed-mentions-count (.-unviewedMentionsCount chat)
        :last-message            {:content            {:text        (.-text chat)
+                                                      :image       (.-imageLocalUrl chat)
                                                       :parsed-text (types/js->clj (.-parsedText chat))
                                                       :response-to (.-responseTo chat)}
                                  :content-type       (.-contentType chat)

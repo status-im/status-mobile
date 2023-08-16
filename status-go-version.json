@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.163.9",
-    "commit-sha1": "f2f599fe867a0eba90aaa717a29bb6e99cb5749e",
-    "src-sha256": "0p282pv2lz5f2b0vhpcx0nj74dp5mf7hb41l12js2hxsp21sprmj"
+    "version": "bug/add-image-local-url-to-chat-preview-and-chats",
+    "commit-sha1": "813c2e0c831ede4c55c899b6bd20ed34f55b663f",
+    "src-sha256": "0q2ysaxaaz1wjl123p45qbr3853j4c60xal0bj0knskf4x7brjd7"
 }
