@@ -1,22 +1,11 @@
 (ns status-im2.contexts.syncing.syncing-devices-list.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [status-im2.contexts.syncing.syncing-devices-list.style :as style]
             [status-im2.contexts.syncing.device.view :as device]
+            [status-im2.contexts.syncing.syncing-devices-list.style :as style]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
-
-(defn navigation-bar
-  []
-  [rn/view {:style style/navigation-bar}
-   [quo/page-nav
-    {:align-mid?   true
-     :mid-section  {:type :text-only :main-text ""}
-     :left-section {:type            :photo
-                    :icon-background :blur
-                    :icon            :i/arrow-left
-                    :on-press        #(rf/dispatch [:navigate-back])}}]])
 
 (defn view
   []
@@ -29,7 +18,11 @@
                                                    #(if (:enabled? %) :paired-devices :unpaired-devices)
                                                    other-devices)]
     [rn/view {:style style/container-main}
-     [navigation-bar]
+     [quo/page-nav
+      {:type       :no-title
+       :background :blur
+       :icon-name  :i/arrow-left
+       :on-press   #(rf/dispatch [:navigate-back])}]
      [rn/view {:style style/page-container}
       [rn/view {:style style/title-container}
        [quo/text
