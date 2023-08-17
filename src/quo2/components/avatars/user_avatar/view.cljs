@@ -83,21 +83,23 @@
          :source
          (cond profile-picture-fn
                {:uri (profile-picture-fn
-                      {:length           amount-initials
-                       :full-name        full-name
-                       :font-size        (:font-size (text/text-style {:size
-                                                                       font-size}))
-                       :indicator-size   (when status-indicator?
-                                           (:status-indicator sizes))
-                       :indicator-border (when status-indicator?
-                                           (:status-indicator-border sizes))
-                       :indicator-color  indicator-color
-                       :override-theme   theme
-                       :background-color (style/customization-color customization-color theme)
-                       :color            (:color style/initials-avatar-text)
-                       :size             (:width outer-styles)
-                       :ring?            ring?
-                       :ring-width       (:ring-width sizes)})}
+                      {:length                   amount-initials
+                       :full-name                full-name
+                       :font-size                (:font-size (text/text-style {:size
+                                                                               font-size}))
+                       :indicator-size           (when status-indicator?
+                                                   (:status-indicator sizes))
+                       :indicator-border         (when status-indicator?
+                                                   (:status-indicator-border sizes))
+                       :indicator-center-to-edge (when status-indicator?
+                                                   (:status-indicator-center-to-edge sizes))
+                       :indicator-color          indicator-color
+                       :override-theme           theme
+                       :background-color         (style/customization-color customization-color theme)
+                       :color                    (:color style/initials-avatar-text)
+                       :size                     (:width outer-styles)
+                       :ring?                    ring?
+                       :ring-width               (:ring-width sizes)})}
                (:uri profile-picture)
                profile-picture
 
