@@ -33,7 +33,7 @@ The people identified for each sections are as follow:
 
 - Messaging @flexsurfer, followed by @alwx
 - Syncing & Onboarding @siddarthkay
-- Communities @ilmotta
+- Communities @ilmotta, followed by @ajayesivan
 - Activity Center & Shell @J-Son89, followed by @Parveshdhull
 - Wallet (once the vertical team is created) @J-Son89, followed by @briansztamfater
 
