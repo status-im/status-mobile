@@ -51,7 +51,7 @@
      [rn/view
       {:accessibility-label :left-icon-for-action
        :accessible          true
-       :style               style/left-icon}
+       :style               (style/left-icon sub-label)}
       [icon/icon icon
        {:color (or icon-color (get-icon-color danger? theme))
         :size  20}]]
