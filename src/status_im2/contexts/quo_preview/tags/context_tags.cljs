@@ -141,7 +141,7 @@
 
               :group-avatar [quo2/group-avatar-tag (:label @state)
                              {:blur?               (:blur? @state)
-                              :size                20
+                              :size                :x-small
                               :customization-color :purple}]
 
               :public-key   [quo2/public-key-tag
