@@ -9,7 +9,7 @@
             [utils.re-frame :as rf]))
 
 (def tag-params
-  {:size                   20
+  {:size                   :small
    :customization-color    :blue
    :style                  style/user-avatar-tag
    :text-style             style/user-avatar-tag-text
