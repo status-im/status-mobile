@@ -231,7 +231,7 @@
     [compressed-key "zQ3shWj4WaBdf2zYKCkXe6PHxDxNTzZyid1i75879Ue9cX9gA"
      public-key
      "0x048a6773339d11ccf5fd81677b7e54daeec544a1287bd92b725047ad6faa9a9b9f8ea86ed5a226d2a994f5f46d0b43321fd8de7b7997a166e67905c8c73cd37cea"
-     three-words-name "Rich Total Pondskater"]
+     primary-name "zQ3...9cX9gA"]
     (rf-test/run-test-async
      (initialize-app!)
      (rf-test/wait-for
@@ -254,6 +254,6 @@
              (rf-test/wait-for
                [:contacts/contact-built]
                (let [contact @(rf/subscribe [:contacts/current-contact])]
-                 (is (= three-words-name (:primary-name contact))))
+                 (is (= primary-name (:primary-name contact))))
                (logout!)
                (rf-test/wait-for [::logout/logout-method])))))))))
