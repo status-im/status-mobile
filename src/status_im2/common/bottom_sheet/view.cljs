@@ -90,6 +90,7 @@
                                      window-height
                                      theme
                                      padding-bottom-override
+                                     selected-item
                                      shell?))
             :on-layout #(reset! sheet-height (oops/oget % "nativeEvent" "layout" "height"))}
            (when gradient-cover?
