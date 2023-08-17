@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 from _pytest.outcomes import Failed
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -522,25 +524,33 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
     def test_group_chat_mute_chat(self):
         [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
 
-        self.homes[1].just_fyi("Member 1 mutes the chat")
-        self.homes[1].mute_chat_long_press(self.chat_name)
-        # ToDo: should be redone to some exact period mute after issue with adb commands execution is solved with
-        # SauceLabs or an option for 1 minute mute is added for e2e apk
-        # self.homes[1].mute_chat_long_press(self.chat_name, "mute-for-1-hour")
-        # device_time = self.homes[1].driver.device_time
-
-        self.homes[0].just_fyi("Admin sends a message")
-        muted_message = "Text message in the muted chat"
-        self.homes[0].get_chat(self.chat_name).click()
+        self.homes[1].just_fyi("Member 1 mutes the chat for 1 hour")
+        self.homes[1].mute_chat_long_press(self.chat_name, "mute-for-1-hour")
+        device_time = self.homes[1].driver.device_time
+        current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
+        expected_time = current_time + datetime.timedelta(minutes=60)
+        expected_text = "Muted until %s %s" % (
+            expected_time.strftime('%H:%M'), "today" if current_time.hour < 23 else "tomorrow")
+        chat = self.homes[1].get_chat(self.chat_name)
+        chat.long_press_element()
+        if self.homes[1].mute_chat_button.text != transl["unmute-chat"]:
+            pytest.fail("Chat is not muted")
+        if not self.homes[1].element_by_text(expected_text).is_element_displayed():
+            self.errors.append("Text '%s' is not shown for muted chat" % expected_text)
+        self.homes[1].click_system_back_button()
         try:
             initial_counter = int(self.homes[1].chats_tab.counter.text)
         except NoSuchElementException:
             initial_counter = 0
+
+        self.homes[0].just_fyi("Admin sends a message")
+        muted_message = "Text message in the muted chat"
+        self.homes[0].get_chat(self.chat_name).click()
         self.chats[0].send_message(muted_message)
+
         self.homes[1].just_fyi("Member 1 checks that chat is muted and message is received")
-        chat = self.homes[1].get_chat(self.chat_name)
         if chat.new_messages_grey_dot.is_element_displayed(30):
-            self.errors.append("New messages counter near chat name is shown after mute")
+            self.errors.append("New messages grey dot near chat name is shown after mute")
         try:
             after_mute_counter = int(self.homes[1].chats_tab.counter.text)
         except NoSuchElementException:
@@ -555,29 +565,17 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             self.errors.append(
                 "Message '%s' is not shown in chat for %s after mute" % (muted_message, self.usernames[1]))
         self.chats[1].click_system_back_button_until_element_is_shown()
+
+        self.chats[1].just_fyi("Change device time so chat will be unmuted by timer")
+        unmute_time = current_time + datetime.timedelta(minutes=61)
+        self.homes[1].driver.execute_script("mobile: shell",
+                                            {"command": "su root date %s" % unmute_time.strftime("%m%d%H%M%Y.%S")}
+                                            )
         chat.long_press_element()
-        if self.homes[1].mute_chat_button.text != transl["unmute-chat"]:
-            self.errors.append("Chat is not muted")
-        # expected_text = "Muted until %s today" % device_time + 1
-        expected_text = "Muted until you turn it back on"
-        if not self.homes[1].element_by_text(expected_text).is_element_displayed():
-            self.errors.append("Text '%s' is not shown for muted chat" % expected_text)
-        self.chats[1].just_fyi("Member 1 unmutes the chat")
-        # self.chats[1].just_fyi("Close app and change device time so chat will be unmuted by timer")
-        # self.homes[1].put_app_to_background()
-        # self.homes[1].driver.execute('mobile: shell', {
-        #     'command': 'date',
-        #     'args': [str(device_time + 1)]
-        # })
-        # self.homes[1].driver.launch_app()
-        # self.sign_in_views[1].sign_in()
-        # self.homes[1].chats_tab.click()
-        # chat.long_press_element()
-        # if self.homes[1].element_starts_with_text("Muted until").is_element_displayed():
-        #     self.errors.append("Chat is still muted after timeout")
-        #     self.errors.verify_no_errors()
-        # self.homes[1].click_system_back_button()
-        self.homes[1].mute_chat_button.click()  # ToDo: remove when ^ is enabled
+        if self.homes[1].element_starts_with_text("Muted until").is_element_displayed():
+            self.errors.append("Chat is still muted after timeout")
+            self.errors.verify_no_errors()
+        self.homes[1].click_system_back_button()
 
         unmuted_message = "Chat is unmuted now"
         self.homes[2].just_fyi("Member 2 sends a message")
