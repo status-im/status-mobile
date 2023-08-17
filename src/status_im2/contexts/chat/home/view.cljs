@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.home.view
   (:require [oops.core :as oops]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [re-frame.core :as re-frame]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
@@ -27,31 +27,32 @@
          (filter k)
          (sort-by :timestamp >))))
 
-(def empty-state-content
+(defn empty-state-content
+  [theme]
   #:tab{:contacts
         {:title       (i18n/label :t/no-contacts)
          :description (i18n/label :t/no-contacts-description)
          :image       (resources/get-image
-                       (theme/theme-value :no-contacts-light :no-contacts-dark))}
+                       (quo.theme/theme-value :no-contacts-light :no-contacts-dark theme))}
         :groups
         {:title       (i18n/label :t/no-group-chats)
          :description (i18n/label :t/no-group-chats-description)
          :image       (resources/get-image
-                       (theme/theme-value :no-group-chats-light :no-group-chats-dark))}
+                       (quo.theme/theme-value :no-group-chats-light :no-group-chats-dark theme))}
         :recent
         {:title       (i18n/label :t/no-messages)
          :description (i18n/label :t/no-messages-description)
          :image       (resources/get-image
-                       (theme/theme-value :no-messages-light :no-messages-dark))}})
+                       (quo.theme/theme-value :no-messages-light :no-messages-dark theme))}})
 
 (defn chats
-  [{:keys [selected-tab set-scroll-ref scroll-shared-value]}]
+  [{:keys [theme selected-tab set-scroll-ref scroll-shared-value]}]
   (let [unfiltered-items (rf/sub [:chats-stack-items])
         items            (filter-and-sort-items-by-tab selected-tab unfiltered-items)]
     (if (empty? items)
       [common.home/empty-state-image
        {:selected-tab selected-tab
-        :tab->content empty-state-content}]
+        :tab->content (empty-state-content theme)}]
       [reanimated/flat-list
        {:ref                               set-scroll-ref
         :key-fn                            #(or (:chat-id %) (:public-key %) (:id %))
@@ -81,12 +82,12 @@
      item]))
 
 (defn contacts
-  [{:keys [pending-contact-requests set-scroll-ref scroll-shared-value]}]
+  [{:keys [theme pending-contact-requests set-scroll-ref scroll-shared-value]}]
   (let [items (rf/sub [:contacts/active-sections])]
     (if (and (empty? items) (empty? pending-contact-requests))
       [common.home/empty-state-image
        {:selected-tab :tab/contacts
-        :tab->content empty-state-content}]
+        :tab->content (empty-state-content theme)}]
       [rn/section-list
        {:ref                               set-scroll-ref
         :key-fn                            :public-key
@@ -117,8 +118,8 @@
     :title       (i18n/label :t/invite-friends-to-status)
     :description (i18n/label :t/share-invite-link)}})
 
-(defn home
-  []
+(defn- f-view-internal
+  [{:keys [theme]}]
   (let [scroll-ref     (atom nil)
         set-scroll-ref #(reset! scroll-ref %)]
     (fn []
@@ -131,11 +132,13 @@
            [contacts
             {:pending-contact-requests pending-contact-requests
              :set-scroll-ref           set-scroll-ref
-             :scroll-shared-value      scroll-shared-value}]
+             :scroll-shared-value      scroll-shared-value
+             :theme                    theme}]
            [chats
             {:selected-tab        selected-tab
              :set-scroll-ref      set-scroll-ref
-             :scroll-shared-value scroll-shared-value}])
+             :scroll-shared-value scroll-shared-value
+             :theme               theme}])
          [:f> common.home.banner/animated-banner
           {:content             banner-data
            :customization-color customization-color
@@ -153,3 +156,9 @@
            :selected-tab        selected-tab
            :on-tab-change       (fn [tab] (rf/dispatch [:messages-home/select-tab tab]))
            :scroll-shared-value scroll-shared-value}]]))))
+
+(defn- internal-chats-home-view
+  [params]
+  [:f> f-view-internal params])
+
+(def view (quo.theme/with-theme internal-chats-home-view))
