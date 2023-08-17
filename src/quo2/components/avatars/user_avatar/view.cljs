@@ -96,7 +96,8 @@
                        :background-color (style/customization-color customization-color theme)
                        :color            (:color style/initials-avatar-text)
                        :size             (:width outer-styles)
-                       :ring?            ring?})}
+                       :ring?            ring?
+                       :ring-width       (:ring-width sizes)})}
                (:uri profile-picture)
                profile-picture
 

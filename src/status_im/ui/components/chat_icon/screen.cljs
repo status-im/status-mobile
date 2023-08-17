@@ -77,7 +77,8 @@
                 :indicator-color  "#000000"
                 :color            (get text-style :color)
                 :length           2
-                :ring?            (not (ens/is-valid-eth-name? full-name))})}
+                :ring?            (not (ens/is-valid-eth-name? full-name))
+                :ring-width       2})}
         {:size size}]
        [photos/photo photo-path {:size size}])
      (when-not community?
@@ -219,7 +220,8 @@
                              :indicator-color  "#000000"
                              :color            (get-in styles [:default-chat-icon-text :color])
                              :length           2
-                             :ring?            (not (ens/is-valid-eth-name? name))})}
+                             :ring?            (not (ens/is-valid-eth-name? name))
+                             :ring-width       2})}
                      photo-path)]
     [rn/view (:container styles)
      (if (and photo-path (seq photo-path))
