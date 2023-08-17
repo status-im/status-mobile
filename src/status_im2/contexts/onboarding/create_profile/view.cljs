@@ -144,7 +144,7 @@
          :on-scroll               (fn [event]
                                     (let [y (oops/oget event "nativeEvent.contentOffset.y")]
                                       (reset! content-scroll-y y)))
-         :scrollEventThrottle     64
+         :scroll-event-throttle   64
          :content-container-style {:flexGrow 1}}
         [rn/view
          {:on-layout (fn [event]
