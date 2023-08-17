@@ -10,12 +10,13 @@
     [react-native.core :as rn]
     [quo2.components.selectors.selectors.view :as selectors]
     [utils.i18n :as i18n]
-    [quo2.components.wallet.keypair.style :as style]))
+    [quo2.components.wallet.keypair.style :as style]
+    [clojure.string :as string]))
 
 (defn keypair-string
   [full-name]
-  (let [first-name (first (clojure.string/split full-name #" "))]
-    (str first-name "'s default keypair")))
+  (let [first-name (first (string/split full-name #" "))]
+    (i18n/label :t/keypair-title {:name first-name})))
 
 (defn details-string
   [address stored]
@@ -70,7 +71,9 @@
     [rn/view {:style (style/container selected? customization-color theme)}
      [rn/view {:style style/header-container}
       [avatar type full-name customization-color]
-      [rn/view {:style {:margin-left 8}}
+      [rn/view
+       {:style {:margin-left 8
+                :flex        1}}
        [title-view full-name action selected? type customization-color theme]
        [details-view address stored theme]]]
      [rn/flat-list

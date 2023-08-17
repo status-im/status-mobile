@@ -3,8 +3,7 @@
 
 (defn container
   [selected? customization-color theme]
-  {:width          335
-   :border-radius  20
+  {:border-radius  20
    :border-width   1
    :border-color   (if selected?
                      (colors/theme-colors (colors/custom-color customization-color 50)
@@ -24,4 +23,4 @@
   {:flex-direction  :row
    :align-items     :center
    :justify-content :space-between
-   :width           271})
+   :flex            1})

@@ -2286,6 +2286,11 @@
     "bridge": "Bridge"
 =======
     "on-device": "On device",
+<<<<<<< HEAD
     "on-keycard": "On Keycard"
 >>>>>>> 93b6969bd (quo2 wallet: keypair component)
+=======
+    "on-keycard": "On Keycard",
+    "keypair-title": "{{name}}'s default keypair"
+>>>>>>> 29b1f1710 (review)
 }

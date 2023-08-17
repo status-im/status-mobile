@@ -12,7 +12,7 @@
     :networks      [:ethereum :optimism]
     :state         :default
     :action        :none
-    :on-press      (fn [] (js/alert "Button pressed"))}])
+    :on-press      (h/mock-fn)}])
 
 (def default-details
   {:full-name "John Doe"
