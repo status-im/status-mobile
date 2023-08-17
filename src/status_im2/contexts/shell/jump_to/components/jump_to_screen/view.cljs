@@ -10,7 +10,7 @@
             [react-native.safe-area :as safe-area]
             [status-im2.contexts.shell.jump-to.state :as state]
             [status-im2.contexts.shell.jump-to.utils :as utils]
-            [status-im2.common.home.view :as common.home]
+            [status-im2.common.home.top-nav.view :as common.top-nav]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [status-im2.contexts.shell.jump-to.components.jump-to-screen.style :as style]
             [status-im2.contexts.shell.jump-to.components.bottom-tabs.view :as bottom-tabs]
@@ -109,7 +109,7 @@
                :background-color colors/neutral-100}}
       [jump-to-list switcher-cards shell-margin]
       [top-nav-blur-overlay top]
-      [common.home/top-nav
-       {:type  :black
-        :style {:margin-top top
-                :z-index    2}}]]]))
+      [common.top-nav/view
+       {:jump-to?        true
+        :container-style {:margin-top top
+                          :z-index    2}}]]]))

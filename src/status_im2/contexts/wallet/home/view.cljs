@@ -4,7 +4,7 @@
     [quo2.core :as quo]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.common.home.view :as common.home]
+    [status-im2.common.home.top-nav.view :as common.top-nav]
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
@@ -50,7 +50,7 @@
       [rn/view
        {:style {:margin-top top
                 :flex       1}}
-       [common.home/top-nav {:type :grey}]
+       [common.top-nav/view]
        [quo/wallet-overview temp/wallet-overview-state]
        [rn/pressable
         {:on-long-press #(rf/dispatch [:show-bottom-sheet {:content temp/wallet-temporary-navigation}])}

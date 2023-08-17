@@ -9,7 +9,8 @@
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [status-im2.common.home.banner.style :as style]
-            [status-im2.common.home.view :as common.home]
+            [status-im2.common.home.title-column.view :as title-column]
+            [status-im2.common.home.top-nav.view :as top-nav]
             [utils.re-frame :as rf]))
 
 (def card-banner-overflow-threshold 3)
@@ -44,8 +45,8 @@
   [{:keys [title-props card-props scroll-shared-value]}]
   (let [customization-color (rf/sub [:profile/customization-color])]
     [reanimated/view {:style (style/banner-card-hiding-layer scroll-shared-value)}
-     [common.home/top-nav {:type :grey}]
-     [common.home/title-column (assoc title-props :customization-color customization-color)]
+     [top-nav/view]
+     [title-column/view (assoc title-props :customization-color customization-color)]
      [rn/view {:style {:overflow @card-banner-overflow}}
       [reanimated/view {:style (style/animated-banner-card scroll-shared-value)}
        [quo/discover-card card-props]]]]))

@@ -7,8 +7,9 @@
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im2.common.contact-list.view :as contact-list]
             [status-im2.common.home.actions.view :as actions]
-            [status-im2.common.home.banner.view :as common.home.banner]
-            [status-im2.common.home.view :as common.home]
+            [status-im2.common.home.banner.view :as common.banner]
+            [status-im2.common.home.empty-state.view :as common.empty-state]
+            [status-im2.common.home.header-spacing.view :as common.header-spacing]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.chat.actions.view :as chat.actions.view]
             [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
@@ -50,21 +51,21 @@
   (let [unfiltered-items (rf/sub [:chats-stack-items])
         items            (filter-and-sort-items-by-tab selected-tab unfiltered-items)]
     (if (empty? items)
-      [common.home/empty-state-image
+      [common.empty-state/view
        {:selected-tab selected-tab
         :tab->content (empty-state-content theme)}]
       [reanimated/flat-list
        {:ref                               set-scroll-ref
         :key-fn                            #(or (:chat-id %) (:public-key %) (:id %))
         :content-inset-adjustment-behavior :never
-        :header                            [common.home/header-spacing]
+        :header                            [common.header-spacing/view]
         :get-item-layout                   get-item-layout
         :on-end-reached                    #(re-frame/dispatch [:chat/show-more-chats])
         :keyboard-should-persist-taps      :always
         :data                              items
         :render-fn                         chat-list-item/chat-list-item
         :scroll-event-throttle             8
-        :on-scroll                         #(common.home.banner/set-scroll-shared-value
+        :on-scroll                         #(common.banner/set-scroll-shared-value
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")
                                               :shared-value scroll-shared-value})}])))
 
@@ -85,7 +86,7 @@
   [{:keys [theme pending-contact-requests set-scroll-ref scroll-shared-value]}]
   (let [items (rf/sub [:contacts/active-sections])]
     (if (and (empty? items) (empty? pending-contact-requests))
-      [common.home/empty-state-image
+      [common.empty-state/view
        {:selected-tab :tab/contacts
         :tab->content (empty-state-content theme)}]
       [rn/section-list
@@ -94,7 +95,7 @@
         :get-item-layout                   get-item-layout
         :content-inset-adjustment-behavior :never
         :header                            [:<>
-                                            [common.home/header-spacing]
+                                            [common.header-spacing/view]
                                             (when (seq pending-contact-requests)
                                               [contact-request/contact-requests
                                                pending-contact-requests])]
@@ -103,7 +104,7 @@
         :render-section-header-fn          contact-list/contacts-section-header
         :render-fn                         contact-item-render
         :scroll-event-throttle             8
-        :on-scroll                         #(common.home.banner/set-scroll-shared-value
+        :on-scroll                         #(common.banner/set-scroll-shared-value
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")
                                               :shared-value scroll-shared-value})}])))
 
@@ -139,7 +140,7 @@
              :set-scroll-ref      set-scroll-ref
              :scroll-shared-value scroll-shared-value
              :theme               theme}])
-         [:f> common.home.banner/animated-banner
+         [:f> common.banner/animated-banner
           {:content             banner-data
            :customization-color customization-color
            :scroll-ref          scroll-ref
