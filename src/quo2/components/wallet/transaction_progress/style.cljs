@@ -61,12 +61,12 @@
    :margin-vertical   2})
 
 (def progress-box-arbitrum
-  {:flex 1
-   :height            12
-   :border-width      1
-   :border-radius     3
-   :margin-right 6
-   :margin-vertical   2})
+  {:flex            1
+   :height          12
+   :border-width    1
+   :border-radius   3
+   :margin-right    6
+   :margin-vertical 2})
 
 (def progress-box-arbitrum-abs
   {:position      :absolute

@@ -38,7 +38,7 @@
 (defn update-counter
   [network-state]
   (let [new-counter-value (-> @lcounter inc)]
-  (println new-counter-value "arjun")
+    (println new-counter-value "arjun")
     (if (or (and (= network-state :pending) (> new-counter-value 0))
             (and (= network-state :sending) (> new-counter-value 2))
             (and (= network-state :confirmed) (> new-counter-value 4))
@@ -46,7 +46,7 @@
             (and (= network-state :finalized) (> new-counter-value total-box))
             (and (= network-state :error) (> new-counter-value 2)))
       (stop-interval)
-      (swap! lcounter (fn [_] new-counter-value) ))))
+      (swap! lcounter (fn [_] new-counter-value)))))
 
 (defn start-interval
   [network-state]
@@ -77,8 +77,7 @@
               [progress-box/view
                {:state               (calculate-box-state network-state @lcounter n)
                 :customization-color :blue
-                :key                 n
-               }])))])
+                :key                 n}])))])
 
 (defn calculate-box-state-arbitrum
   [network-state network-type]
@@ -92,9 +91,9 @@
   [showHalf]
   (cond
     (and showHalf (< @lcounter 30)) (- total-box @lcounter)
-    showHalf                                    30
+    showHalf                        30
     (< @lcounter total-box)         (- total-box @lcounter)
-    :else                                       0))
+    :else                           0))
 
 (defn progress-boxes-arbitrum
   [network-state network-type]
@@ -155,11 +154,11 @@
 (defn network-type-text
   [network-type network-state]
   (cond
-    (and (= network-state :sending) (= network-type :arbitrum))     "Confirmed on"
-    (or (= network-state :sending) (= network-state :pending))      "Pending on"
-    (or (= network-state :confirmed) (= network-state :finalising)) "Confirmed on"
-    (= network-state :finalized)                                    "Finalized on"
-    (= network-state :error)                                        "Failed on"))
+    (and (= network-state :sending) (= network-type :arbitrum))     "Confirmed on "
+    (or (= network-state :sending) (= network-state :pending))      "Pending on "
+    (or (= network-state :confirmed) (= network-state :finalising)) "Confirmed on "
+    (= network-state :finalized)                                    "Finalized on "
+    (= network-state :error)                                        "Failed on "))
 
 (defn steps-text
   [network-type network-state]
@@ -207,6 +206,58 @@
                                                              colors/danger-50
                                                              colors/danger-60)]))
 
+(defn render-title
+  [network-state title override-theme]
+  [rn/view
+   {:style style/title-item-container}
+   [rn/view
+    {:style style/inner-container}
+    [load-icon "placeholder" (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)]
+    [rn/view
+     {:style style/title-container}
+     [render-text title override-theme]]
+    (when (= network-state :error)
+      [button/button
+       {:size      24
+        :icon-left :i/refresh
+        :type      :primary} "Retry"])]])
+
+(defn render-tag
+  [context-icon]
+  [rn/view
+   {:style style/padding-row}
+   [context-tag/context-tag {:blur? [false]}
+    (resources/get-mock-image context-icon)
+    "Doodle #120"]])
+
+(defn get-network-text
+  [network-type]
+  (cond
+    (= network-type :arbitrum) "Arbitrum"
+    (= network-type :mainnet)  "Mainnet"
+    (= network-type :optimism) "Optimism"))
+
+(defn render-status-row
+  [override-theme network-state network-type]
+  [rn/view
+   {:style style/item-container}
+   [rn/view
+    {:style (assoc style/progress-container
+                   :border-color
+                   (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
+    (let [[status-icon color] (get-status-icon network-type network-state)]
+      [load-icon status-icon color])
+    [rn/view
+     {:style style/title-container}
+     [render-text (str (network-type-text network-type network-state) (get-network-text network-type))
+      override-theme
+      :typography
+      :typography/font-regular :weight :regular :size :paragraph-2]]
+    [rn/view
+     [render-text (steps-text network-type network-state) override-theme :typography
+      :typography/font-regular :weight :regular :size :paragraph-2 :style
+      {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
+
 (defn transaction-progress
   [{:keys [title
            on-press
@@ -231,78 +282,16 @@
        :accessibility-label accessibility-label}
       [rn/view
        {:style style/box-style}
-       [rn/view
-        {:style style/title-item-container}
-        [rn/view
-         {:style style/inner-container}
-         [load-icon "placeholder" (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)]
-         [rn/view
-          {:style style/title-container}
-          [render-text title override-theme]]
-         (when (= network-state :error)
-           [button/button
-                          {:size      24
-                          :icon-left :i/refresh
-                          :type      :primary} "Retry"])]]
-       [rn/view
-        {:style style/padding-row}
-        [context-tag/context-tag {:blur? [false]}
-         (resources/get-mock-image context-icon)
-         "Doodle #120"]]
+       [render-title network-state title override-theme]
+       [render-tag context-icon]
        (when (= network-type :mainnet)
-         [rn/view
-          {:style style/item-container}
-          [rn/view
-           {:style (assoc style/progress-container
-                          :border-color
-                          (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
-           (let [[status-icon color] (get-status-icon network-type network-state)]
-             [load-icon status-icon color])
-           [rn/view
-            {:style style/title-container}
-            [render-text (str (network-type-text network-type network-state) " Mainnet") override-theme
-             :typography
-             :typography/font-regular :weight :regular :size :paragraph-2]]
-           [rn/view
-            [render-text (steps-text network-type network-state) override-theme :typography
-             :typography/font-regular :weight :regular :size :paragraph-2 :style
-             {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
+         [render-status-row override-theme network-state network-type])
        (when (= network-type :optimism-arbitrum)
-         [rn/view
-          {:style style/item-container}
-          [rn/view
-           {:style (assoc style/progress-container
-                          :border-color
-                          (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
-           (let [[status-icon color] (get-status-icon :arbitrum network-state)]
-             [load-icon status-icon color])
-           [rn/view
-            {:style style/title-container}
-            [render-text (str (network-type-text :arbitrum network-state) " Arbitrum") override-theme
-             :typography
-             :typography/font-regular :weight :regular :size :paragraph-2]]
-           [rn/view
-            [render-text (steps-text :arbitrum network-state) override-theme :typography
-             :typography/font-regular :weight :regular :size :paragraph-2 :style
-             {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
+         [render-status-row override-theme network-state :arbitrum])
        (when (= network-type :optimism-arbitrum)
          [progress-boxes-arbitrum network-state :arbitrum])
        (when (= network-type :optimism-arbitrum)
-         [rn/view
-          {:style (assoc style/item-container :padding-top 0)}
-          [rn/view
-           {:style (assoc style/progress-container :border-top-width 0)}
-           (let [[status-icon color] (get-status-icon :optimism network-state)]
-             [load-icon status-icon color])
-           [rn/view
-            {:style style/title-container}
-            [render-text (str (network-type-text :optimism network-state) " Optimism") override-theme
-             :typography
-             :typography/font-regular :weight :regular :size :paragraph-2]]
-           [rn/view
-            [render-text (steps-text :optimism network-state) override-theme :typography
-             :typography/font-regular :weight :regular :size :paragraph-2 :style
-             {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
+         [render-status-row override-theme network-state :optimism])
        (when (= network-type :optimism-arbitrum)
          [progress-boxes-arbitrum network-state :optimism])
        (when (= network-type :mainnet)
