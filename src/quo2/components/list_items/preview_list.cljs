@@ -1,61 +1,75 @@
 (ns quo2.components.list-items.preview-list
-  (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
+  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
+            [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.icon :as quo2.icons]
             [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
-            [react-native.hole-view :as hole-view]
-            [quo2.theme :as quo.theme]))
+            [react-native.hole-view :as hole-view]))
 
 (def params
-  {32 {:border-radius {:circular 16 :rounded 10}
-       :hole-radius   {:circular 18 :rounded 12}
+  {32 {:border-radius {:rounded 16 :squared 10}
+       :hole-radius   {:rounded 18 :squared 12}
        :margin-left   -8
        :hole-size     36
        :hole-x        22
        :hole-y        -2}
-   24 {:border-radius {:circular 12 :rounded 8}
-       :hole-radius   {:circular 13 :rounded 9}
+   24 {:border-radius {:rounded 12 :squared 8}
+       :hole-radius   {:rounded 13 :squared 9}
        :margin-left   -4
        :hole-size     26
        :hole-x        19
        :hole-y        -1}
-   20 {:border-radius {:circular 10 :rounded 8}
-       :hole-radius   {:circular 11 :rounded 9}
+   20 {:border-radius {:rounded 10 :squared 8}
+       :hole-radius   {:rounded 11 :squared 9}
        :margin-left   -4
        :hole-size     22
        :hole-x        15
        :hole-y        -1}
-   16 {:border-radius {:circular 8 :rounded 8}
-       :hole-radius   {:circular 9 :rounded 9}
+   16 {:border-radius {:rounded 8 :squared 8}
+       :hole-radius   {:rounded 9 :squared 9}
        :margin-left   -4
        :hole-size     18
        :hole-x        11
+       :hole-y        -1}
+   14 {:border-radius {:rounded 7 :squared 7}
+       :hole-radius   {:rounded 8 :squared 8}
+       :margin-left   -2
+       :hole-size     16
+       :hole-x        11
        :hole-y        -1}})
 
-;; TODO - Add avatar components for other types once implemented
+(def more-icon-for-sizes #{16 14})
+
 (defn avatar
   [item type size border-radius]
   (case type
-    :user                          [user-avatar/user-avatar
-                                    (merge {:ring?             false
-                                            :status-indicator? false
-                                            :size              (case size
-                                                                 32 :small
-                                                                 24 :xs
-                                                                 16 :xxxs)}
-                                           item)]
-    (:photo :collectible :network) [fast-image/fast-image
-                                    {:source (:source item)
-                                     :style  {:width         size
-                                              :height        size
-                                              :border-radius border-radius}}]))
+    :user                                                [user-avatar/user-avatar
+                                                          (merge {:ring?             false
+                                                                  :status-indicator? false
+                                                                  :size              (case size
+                                                                                       32 :small
+                                                                                       24 :xs
+                                                                                       20 :xxs
+                                                                                       16 :xxxs)}
+                                                                 item)]
+
+    :accounts                                            [account-avatar/view
+                                                          (merge item {:size size})]
+
+    (:communities :tokens :collectibles :network :dapps) [fast-image/fast-image
+                                                          {:source (:source item)
+                                                           :style  {:width         size
+                                                                    :height        size
+                                                                    :border-radius border-radius}}]
+    nil))
 
 (defn list-item
-  [index type size item list-size margin-left
+  [index type size item number margin-left
    hole-size hole-radius hole-x hole-y border-radius]
-  (let [last-item? (= index (- list-size 1))]
+  (let [last-item? (= index (- number 1))]
     [hole-view/hole-view
      {:style {:margin-left (if (= index 0) 0 margin-left)}
       :holes (if last-item?
@@ -67,14 +81,16 @@
                  :borderRadius hole-radius}])}
      [avatar item type size border-radius]]))
 
+;; This needs to be cleaned up once the "number tag" component is implemented
+;; https://github.com/status-im/status-mobile/issues/17045
 (defn get-overflow-color
-  [transparent? transparent-color light-color dark-color theme]
-  (if transparent?
-    transparent-color
+  [blur? blur-light-color blur-dark-color light-color dark-color theme]
+  (if blur?
+    (colors/theme-colors blur-light-color blur-dark-color theme)
     (colors/theme-colors light-color dark-color theme)))
 
 (defn overflow-label
-  [{:keys [label size transparent? border-radius margin-left theme more-than-99-label]}]
+  [{:keys [label size blur? border-radius margin-left theme more-than-99-label]}]
   [rn/view
    {:style {:width            size
             :height           size
@@ -83,16 +99,18 @@
             :justify-content  :center
             :align-items      :center
             :background-color (get-overflow-color
-                               transparent?
-                               colors/white-opa-10
+                               blur?
+                               colors/neutral-80-opa-5
+                               colors/white-opa-5
                                colors/neutral-20
-                               colors/neutral-70
+                               colors/neutral-90
                                theme)}}
-   (if (= size 16)
+   (if (some more-icon-for-sizes [size])
      [quo2.icons/icon :i/more
       {:size  12
        :color (get-overflow-color
-               transparent?
+               blur?
+               colors/neutral-80-opa-70
                colors/white-opa-70
                colors/neutral-50
                colors/neutral-40
@@ -101,9 +119,10 @@
       {:size   (if (= size 32) :paragraph-2 :label)
        :weight :medium
        :style  {:color       (get-overflow-color
-                              transparent?
+                              blur?
+                              colors/neutral-80-opa-70
                               colors/white-opa-70
-                              colors/neutral-60
+                              colors/neutral-50
                               colors/neutral-40
                               theme)
                 :margin-left -2}}
@@ -115,21 +134,21 @@
 (defn border-type
   [type]
   (case type
-    (:account :collectible :photo) :rounded
-    :circular))
+    (:accounts :collectibles) :squared
+    :rounded))
 
-(defn- preview-list-internal
+(defn- view-internal
   "[preview-list opts items]
    opts
-   {:type          :user/:community/:account/:token/:collectible/:dapp/:network
-    :size          32/24/16
-    :list-size     override items count in overflow label (optional)
-    :transparent?  overflow-label transparent?}
+   {:type          :user/:communities/:accounts/:tokens/:collectibles/:dapps/:network
+    :size          32/24/20/16/14
+    :number        number of items in the list (optional)
+    :blur?         overflow-label blur?}
    items           preview list items (only 4 items is required for preview)
   "
-  [{:keys [type size list-size transparent? theme more-than-99-label]} items]
+  [{:keys [type size number blur? theme more-than-99-label]} items]
   (let [items-arr     (into [] items)
-        list-size     (or list-size (count items))
+        number        (or number (count items))
         margin-left   (get-in params [size :margin-left])
         hole-size     (get-in params [size :hole-size])
         border-radius (get-in params [size :border-radius (border-type type)])
@@ -137,18 +156,18 @@
         hole-x        (get-in params [size :hole-x])
         hole-y        (get-in params [size :hole-y])]
     [rn/view {:style {:flex-direction :row}}
-     (for [index (range (if (> list-size 4) 3 list-size))]
-       ^{:key (str index list-size)}
-       [list-item index type size (get items-arr index) list-size
+     (for [index (range (if (> number 4) 3 number))]
+       ^{:key (str index number)}
+       [list-item index type size (get items-arr index) number
         margin-left hole-size hole-radius hole-x hole-y border-radius])
-     (when (> list-size 4)
+     (when (> number 4)
        [overflow-label
-        {:label              (- list-size 3)
+        {:label              (- number 3)
          :size               size
-         :transparent?       transparent?
+         :blur?              blur?
          :border-radius      border-radius
          :margin-left        margin-left
          :theme              theme
          :more-than-99-label more-than-99-label}])]))
 
-(def preview-list (quo.theme/with-theme preview-list-internal))
+(def view (quo.theme/with-theme view-internal))

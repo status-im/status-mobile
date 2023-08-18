@@ -11,7 +11,7 @@
   [{:keys [amount token theme]}]
   [rn/view {:style style/container}
    [rn/image
-    {:source (resources/tokens token)
+    {:source (resources/get-token token)
      :style  {:width 12 :height 12}}]
    [text/text
     {:weight :medium

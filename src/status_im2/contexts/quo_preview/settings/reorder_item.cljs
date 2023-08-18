@@ -23,7 +23,7 @@
            :title      "Status"}}
    {:id   3
     :type types/item
-    :data {:image      (quo2.resources/tokens :eth)
+    :data {:image      (quo2.resources/get-token :eth)
            :image-size 21
            :right-icon :i/world
            :title      "Ethereum"}}
