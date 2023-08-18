@@ -8,14 +8,14 @@
 
 (def sizes
   {:icon      {:size/xs-20 12
-               :size/sm-28   16
-               :size/md-32  16
-               :size/lg-48   20
+               :size/sm-28 16
+               :size/md-32 16
+               :size/lg-48 20
                :size/xl-80 32}
    :container {:size/xs-20 20
-               :size/sm-28   28
-               :size/md-32  32
-               :size/lg-48   48
+               :size/sm-28 28
+               :size/md-32 32
+               :size/lg-48 48
                :size/xl-80 80}})
 
 (defn- view-internal
