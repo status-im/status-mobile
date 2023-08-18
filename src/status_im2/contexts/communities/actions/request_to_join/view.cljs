@@ -67,7 +67,7 @@
               :on-press            (fn []
                                      (if can-join?
                                        (do
-                                         (rf/dispatch [:communities/join id])
+                                         (rf/dispatch [:communities/request-to-join id])
                                          (rf/dispatch [:navigate-back]))
                                        (do (and can-request-access?
                                                 (not pending?)

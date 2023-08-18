@@ -220,15 +220,6 @@
                                     (log/error "failed to import community" %)
                                     (re-frame/dispatch [::failed-to-import %]))}]})
 
-(rf/defn join
-  {:events [:communities/join]}
-  [_ community-id]
-  {:json-rpc/call [{:method      "wakuext_joinCommunity"
-                    :params      [community-id]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [::joined %])
-                    :on-error    #(log/error "failed to join community" community-id %)}]})
-
 (rf/defn request-to-join
   {:events [:communities/request-to-join]}
   [_ community-id]
