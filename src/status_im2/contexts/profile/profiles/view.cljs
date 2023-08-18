@@ -1,7 +1,6 @@
 (ns status-im2.contexts.profile.profiles.view
   (:require [native-module.core :as native-module]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [react-native.safe-area :as safe-area]
@@ -11,12 +10,11 @@
             [status-im2.constants :as constants]
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.profile.profiles.style :as style]
-            [status-im2.common.standard-authentication.auth-utils :as auth-utils]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [utils.security.core :as security]
-            [utils.transforms :as transforms]))
+            [utils.transforms :as transforms]
+            [status-im2.common.standard-authentication.password-input.view :as password-input]))
 
 (defonce push-animation-fn-atom (atom nil))
 (defonce pop-animation-fn-atom (atom nil))
@@ -166,61 +164,12 @@
   [props]
   [:f> f-profiles-section props])
 
-(defn forget-password-doc
-  []
-  [quo/documentation-drawers
-   {:title  (i18n/label :t/forgot-your-password-info-title)
-    :shell? true}
-   [rn/view
-    {:style style/forget-password-doc-container}
-    [quo/text {:size :paragraph-2} (i18n/label :t/forgot-your-password-info-description)]
-
-    [rn/view {:style style/forget-password-step-container}
-     [quo/step {:in-blur-view? true} 1]
-     [rn/view
-      {:style style/forget-password-step-content}
-      [quo/text {:size :paragraph-2 :weight :semi-bold}
-       (i18n/label :t/forgot-your-password-info-remove-app)]
-      [quo/text {:size :paragraph-2} (i18n/label :t/forgot-your-password-info-remove-app-description)]]]
-
-    [rn/view {:style style/forget-password-step-container}
-     [quo/step {:in-blur-view? true} 2]
-     [rn/view
-      {:style style/forget-password-step-content}
-      [quo/text {:size :paragraph-2 :weight :semi-bold}
-       (i18n/label :t/forgot-your-password-info-reinstall-app)]
-      [quo/text {:size :paragraph-2}
-       (i18n/label :t/forgot-your-password-info-reinstall-app-description)]]]
-
-    [rn/view {:style style/forget-password-step-container}
-     [quo/step {:in-blur-view? true} 3]
-     [rn/view
-      {:style style/forget-password-step-content}
-      [rn/view
-       {:style style/forget-password-step-title}
-       [quo/text {:size :paragraph-2} (str (i18n/label :t/sign-up) " ")]
-       [quo/text {:size :paragraph-2 :weight :semi-bold}
-        (i18n/label :t/forgot-your-password-info-signup-with-key)]]
-      [quo/text {:size :paragraph-2}
-       (i18n/label :t/forgot-your-password-info-signup-with-key-description)]]]
-
-    [rn/view {:style style/forget-password-step-container}
-     [quo/step {:in-blur-view? true} 4]
-     [rn/view
-      {:style style/forget-password-step-content}
-      [quo/text {:size :paragraph-2 :weight :semi-bold}
-       (i18n/label :t/forgot-your-password-info-create-new-password)]
-      [quo/text {:size :paragraph-2}
-       (i18n/label :t/forgot-your-password-info-create-new-password-description)]]]]])
-
-
 (defn login-section
   [{:keys [set-show-profiles]}]
-  (let [{:keys [error processing password]}        (rf/sub [:profile/login])
+  (let [{:keys [processing password]}              (rf/sub [:profile/login])
         {:keys [key-uid name customization-color]} (rf/sub [:profile/login-profile])
         sign-in-enabled?                           (rf/sub [:sign-in-enabled?])
         profile-picture                            (rf/sub [:profile/login-profiles-picture key-uid])
-        error                                      (auth-utils/get-error-message error)
         login-multiaccount                         #(rf/dispatch [:profile.login/login])]
     [rn/keyboard-avoiding-view
      {:style                  style/login-container
@@ -255,41 +204,9 @@
         :customization-color (or customization-color :primary)
         :profile-picture     profile-picture
         :card-style          style/login-profile-card}]
-      [quo/input
-       {:type              :password
-        :blur?             true
-        :disabled?         processing
-        :placeholder       (i18n/label :t/type-your-password)
-        :auto-focus        true
-        :error?            (seq error)
-        :label             (i18n/label :t/profile-password)
-        :on-change-text    (fn [password]
-                             (rf/dispatch [:set-in [:profile/login :password]
-                                           (security/mask-data password)])
-                             (rf/dispatch [:set-in [:profile/login :error] ""]))
-        :default-value     (security/safe-unmask-data password)
-        :on-submit-editing (when sign-in-enabled? login-multiaccount)}]
-      (when (seq error)
-        [rn/view {:style style/error-message}
-         [quo/info-message
-          {:type :error
-           :size :default
-           :icon :i/info}
-          error]
-         [rn/touchable-opacity
-          {:hit-slop       {:top 6 :bottom 20 :left 0 :right 0}
-           :disabled       processing
-           :active-opacity 1
-           :on-press       (fn []
-                             (rn/dismiss-keyboard!)
-                             (rf/dispatch [:show-bottom-sheet
-                                           {:content forget-password-doc :shell? true}]))}
-          [rn/text
-           {:style                 {:text-decoration-line :underline
-                                    :color                colors/danger-60}
-            :size                  :paragraph-2
-            :suppress-highlighting true}
-           (i18n/label :t/forgot-password)]]])]
+      [password-input/view
+       {:shell?           true
+        :default-password password}]]
      [quo/button
       {:size                40
        :type                :primary

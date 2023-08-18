@@ -1,5 +1,6 @@
 (ns status-im2.contexts.profile.login.events
   (:require
+    [clojure.string :as string]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
     [re-frame.core :as re-frame]
@@ -181,3 +182,30 @@
   (rf/merge cofx
             (navigation/init-root :profiles)
             (biometric/show-message code)))
+
+(rf/defn verify-database-password
+  {:events [:profile.login/verify-database-password]}
+  [{:keys [db]} entered-password]
+  (let [hashed-password (-> entered-password
+                            security/safe-unmask-data
+                            ethereum/sha3)
+        key-uid         (get-in db [:profile/login :key-uid])
+        callback        (fn [response]
+                          (let [valid? (string/blank? (.-error (js/JSON.parse response)))]
+                            (rf/dispatch [:profile.login/verified-database-password valid?])))]
+    (native-module/verify-database-password key-uid hashed-password callback)))
+
+(rf/defn verify-database-password-success
+  {:events [:profile.login/verified-database-password]}
+  [{:keys [db] :as cofx} valid?]
+  (if valid?
+    (do
+      {:db (update db
+                   :profile/login
+                   dissoc
+                   :processing :error)})
+    {:db (update db
+                 :profile/login
+                 #(-> %
+                      (dissoc :processing)
+                      (assoc :error "Invalid password")))}))

@@ -93,7 +93,7 @@
   - `on-complete`         Callback called when the sliding is complete
   - `disabled?`           Boolean that disables the button
                           (_and gestures_)
-  - `size`                `40`/`48`
+  - `size`                :size/s-40`/`:size/s-48`
   - `track-text`          Text that is shown on the track
   - `track-icon`          Key of the icon shown on the track
                           (e.g. `:face-id`)

@@ -34,8 +34,8 @@
 (defn get-dimensions
   [track-width size dimension-key]
   (let [default-dimensions (case size
-                             40 constants/small-dimensions
-                             48 constants/large-dimensions
+                             :size/s-40 constants/small-dimensions
+                             :size/s-48 constants/large-dimensions
                              constants/large-dimensions)]
     (-> default-dimensions
         (merge {:usable-track (calc-usable-track

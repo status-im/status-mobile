@@ -1,6 +1,7 @@
 (ns status-im2.contexts.syncing.events
   (:require [native-module.core :as native-module]
             [re-frame.core :as re-frame]
+            [clojure.string :as string]
             [status-im.data-store.settings :as data-store.settings]
             [status-im.node.core :as node]
             [status-im2.config :as config]
@@ -9,6 +10,7 @@
             [utils.re-frame :as rf]
             [utils.security.core :as security]
             [utils.transforms :as transforms]
+            [status-im2.contexts.syncing.utils :as sync-utils]
             [react-native.platform :as platform]))
 
 (rf/defn local-pairing-update-role
@@ -73,16 +75,17 @@
     (native-module/prepare-dir-and-update-config "" default-node-config-string callback)))
 
 (rf/defn preparations-for-connection-string
-  {:events [:syncing/get-connection-string-for-bootstrapping-another-device]}
-  [{:keys [db]} entered-password set-code]
-  (let [valid-password? (>= (count entered-password) constants/min-password-length)
-        show-sheet      (fn [connection-string]
-                          (set-code connection-string)
-                          (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
-                          (rf/dispatch [:hide-bottom-sheet]))]
-    (if valid-password?
-      (let [sha3-pwd   (native-module/sha3 (str (security/safe-unmask-data entered-password)))
-            key-uid    (get-in db [:profile/profile :key-uid])
+  {:events [:syncing/get-connection-string]}
+  [{:keys [db] :as cofx} entered-password on-valid-connection-string]
+  (let [error             (get-in db [:profile/login :error])
+        handle-connection (fn [response]
+                            (when (sync-utils/valid-connection-string? response)
+                              (on-valid-connection-string response)
+                              (rf/dispatch [:syncing/update-role constants/local-pairing-role-sender])
+                              (rf/dispatch [:hide-bottom-sheet])))]
+    (when-not (and error (string/blank? error))
+      (let [key-uid    (get-in db [:profile/login :key-uid])
+            sha3-pwd   (native-module/sha3 (str (security/safe-unmask-data entered-password)))
             config-map (.stringify js/JSON
                                    (clj->js {:senderConfig {:keyUID       key-uid
                                                             :keystorePath ""
@@ -91,5 +94,4 @@
                                              :serverConfig {:timeout 0}}))]
         (native-module/get-connection-string-for-bootstrapping-another-device
          config-map
-         #(show-sheet %)))
-      (show-sheet ""))))
+         handle-connection)))))

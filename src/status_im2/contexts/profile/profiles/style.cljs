@@ -53,12 +53,3 @@
 (def login-profile-card
   {:margin-bottom 20})
 
-(def error-message
-  {:margin-top     8
-   :flex-direction :row
-   :align-items    :center})
-
-(def forget-password-doc-container {:margin-right 16})
-(def forget-password-step-container {:flex-direction :row :margin-top 14})
-(def forget-password-step-content {:margin-left 10})
-(def forget-password-step-title {:flex-direction :row})
