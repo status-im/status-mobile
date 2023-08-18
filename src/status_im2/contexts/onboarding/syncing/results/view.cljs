@@ -52,7 +52,9 @@
      {:on-press            (fn []
                              (when on-press
                                (on-press))
-                             (rf/dispatch [:open-modal :enable-notifications]))
+                            ;;  (rf/dispatch [:open-modal :enable-notifications])
+                             (rf/dispatch [:navigate-to-within-stack [:enable-biometrics :new-to-status]])
+                             ) ;; !Here is the navigation to the notifications screen
       :accessibility-label :continue-button
       :customization-color profile-color
       :container-style     style/continue-button}

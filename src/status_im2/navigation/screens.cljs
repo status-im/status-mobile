@@ -157,7 +157,11 @@
      :options   {:theme      :dark
                  :layout     options/onboarding-transparent-layout
                  :animations transitions/push-animations-for-transparent-background
-                 :popGesture false}
+                 :popGesture false
+                ;;  :modalPresentationStyle :overCurrentContext
+                ;;  :hardwareBackButton     {:dismissModalOnPress false
+                ;;                           :popStackOnPress     false}
+                 }
      :component enable-biometrics/enable-biometrics}
 
     {:name      :generating-keys

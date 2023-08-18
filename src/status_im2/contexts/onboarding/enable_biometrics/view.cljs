@@ -11,6 +11,8 @@
             [status-im2.common.parallax.whitelist :as whitelist]
             [status-im2.common.biometric.events :as biometric]))
 
+;; ! Enable biometrics screen
+
 (defn page-title
   []
   [quo/title
@@ -36,7 +38,8 @@
       {:accessibility-label :maybe-later-button
        :background          :blur
        :type                :grey
-       :on-press            #(rf/dispatch [:onboarding-2/create-account-and-login])
+      ;;  :on-press            #(rf/dispatch [:onboarding-2/create-account-and-login])
+       :on-press #(rf/dispatch [:open-modal :enable-notifications])
        :container-style     {:margin-top 12}}
       (i18n/label :t/maybe-later)]]))
 

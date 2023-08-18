@@ -11,6 +11,8 @@
     [status-im2.contexts.onboarding.enable-notifications.style :as style]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]))
 
+;; !Enable notifications screen
+
 (defn page-title
   []
   [quo/title
