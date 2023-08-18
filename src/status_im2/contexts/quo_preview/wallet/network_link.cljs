@@ -7,22 +7,19 @@
 
 
 (def descriptor
-  [{:label   "State:"
-    :key     :state
+  [{:label   "Shape:"
+    :key     :shape
     :type    :select
-    :options [{:key   :pending
-               :value "pending"}
-              {:key   :confirmed
-               :value "confirmed"}
-              {:key   :finalized
-               :value "finalized"}
-              {:key   :error
-               :value "error"}]}])
+    :options [{:key   :linear
+               :value "Linear"}
+              {:key   :1x
+               :value "1x"}
+              {:key   :2x
+               :value "2x"}]}])
 
 (defn preview
   []
-  (let [state (reagent/atom {:state               :pending
-                             :customization-color :blue})]
+  (let [state (reagent/atom {:shape :linear})]
     (fn []
       [rn/view
        {:style {:flex               1
@@ -33,4 +30,4 @@
         {:style {:flex        1
                  :padding-top 40
                  :align-items :center}}
-        [quo/network-link @state]]])))
+        [quo/network-link (merge @state {:preview? true})]]])))
