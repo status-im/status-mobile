@@ -16,9 +16,9 @@
   ;; Updating image height on the fly (in preview screen) on Android does not work with fast-image
   ;; so we are using rn/image for preview screen
   (let [image-component (if (and platform/android? preview?) rn/image fast-image/fast-image)
-        key             (str "network-link-" (name shape) "-" (name theme))]
+        resource-key             (str "network-link-" (name shape) "-" (name theme))]
     [image-component
-     {:source      (resources/get-image (keyword key))
+     {:source      (resources/get-image (keyword resource-key))
       :style       {:width  73
                     :height (get height shape)}
       :resize-mode :contain}]))
