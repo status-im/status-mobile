@@ -130,7 +130,7 @@
 
 (rf/defn login-node-signal
   [{{:onboarding-2/keys [recovered-account? new-account?] :as db} :db :as cofx}
-   {:keys [settings account error]}]
+   {:keys [settings account ensUsernames error]}]
   (log/debug "[signals] node.login" "error" error)
   (if error
     {:db (update db :profile/login #(-> % (dissoc :processing) (assoc :error error)))}
@@ -138,7 +138,8 @@
               {:db         (dissoc db :profile/login)
                :dispatch-n [[:logging/initialize-web3-client-version]
                             (when (and new-account? (not recovered-account?))
-                              [:wallet/set-initial-blocks-range])]}
+                              [:wallet/set-initial-blocks-range])
+                            [:ens/update-usernames ensUsernames]]}
               (login-existing-profile settings account))))
 
 (rf/defn login-with-biometric-if-available
