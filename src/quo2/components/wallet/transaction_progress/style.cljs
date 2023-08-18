@@ -4,8 +4,7 @@
 (def title-container
   {:flex 1})
 
-(defn title
-  [override-theme]
+(def title
   {:line-height 18.2})
 
 (def icon
@@ -34,7 +33,7 @@
    :padding-right  6
    :flex-direction :row
    :padding-bottom 6
-   :flex-wrap      "wrap"})
+   :flex-wrap      :wrap})
 
 (def progress-container
   {:flex-direction     :row
@@ -62,11 +61,11 @@
    :margin-vertical   2})
 
 (def progress-box-arbitrum
-  {:width             "95%"
+  {:flex 1
    :height            12
    :border-width      1
    :border-radius     3
-   :margin-horizontal 0
+   :margin-right 6
    :margin-vertical   2})
 
 (def progress-box-arbitrum-abs

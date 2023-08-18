@@ -63,6 +63,7 @@
                              :network-state       :pending
                              :network-type        :mainnet
                              :start-interval-now  true
+                             :context-icon  :collectible
                              :on-press            (fn []
                                                     (js/alert "Transaction progress item pressed"))})]
     (fn []

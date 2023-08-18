@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.transaction-progress.view
   (:require [quo2.components.wallet.transaction-progress.style :as style]
-            [quo2.core :as quo2]
+            [quo2.components.icon :as icons]
+            [quo2.components.tags.context-tag.view :as context-tag]
             [quo2.components.selectors.selectors.view :as selectors]
             [quo2.components.buttons.button.view :as button]
             [quo2.components.wallet.progress-bar.view :as progress-box]
@@ -15,7 +16,7 @@
 (defn load-icon
   [icon color]
   [rn/view {:style style/icon}
-   [quo2/icon icon
+   [icons/icon icon
     {:color color}]])
 
 (def total-box 85)
@@ -138,7 +139,7 @@
     :or   {typography :main-semibold
            weight     :semi-bold
            size       :paragraph-1
-           style      (style/title override-theme)}}]
+           style      style/title}}]
   [text/text
    {:typography          typography
     :accessibility-label :title-name-text
@@ -212,6 +213,7 @@
            network-type
            network-state
            start-interval-now
+           context-icon
            override-theme]}]
   (let [count (reagent/atom 0)]
     (rn/use-effect
@@ -236,17 +238,17 @@
          [rn/view
           {:style style/title-container}
           [render-text title override-theme]]
-         (if (= network-state :error)
+         (when (= network-state :error)
            [button/button
-            {:size      24
-             :icon-left :i/refresh
-             :type      :primary} "Retry"])]]
+                          {:size      24
+                          :icon-left :i/refresh
+                          :type      :primary} "Retry"])]]
        [rn/view
         {:style style/padding-row}
-        [quo2/context-tag {:blur? [false]}
-         (resources/get-mock-image :collectible)
+        [context-tag/context-tag {:blur? [false]}
+         (resources/get-mock-image context-icon)
          "Doodle #120"]]
-       (if (= network-type :mainnet)
+       (when (= network-type :mainnet)
          [rn/view
           {:style style/item-container}
           [rn/view
@@ -264,7 +266,7 @@
             [render-text (steps-text network-type network-state) override-theme :typography
              :typography/font-regular :weight :regular :size :paragraph-2 :style
              {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
-       (if (= network-type :optimism-arbitrum)
+       (when (= network-type :optimism-arbitrum)
          [rn/view
           {:style style/item-container}
           [rn/view
@@ -282,9 +284,9 @@
             [render-text (steps-text :arbitrum network-state) override-theme :typography
              :typography/font-regular :weight :regular :size :paragraph-2 :style
              {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
-       (if (= network-type :optimism-arbitrum)
+       (when (= network-type :optimism-arbitrum)
          [progress-boxes-arbitrum network-state :arbitrum])
-       (if (= network-type :optimism-arbitrum)
+       (when (= network-type :optimism-arbitrum)
          [rn/view
           {:style (assoc style/item-container :padding-top 0)}
           [rn/view
@@ -300,7 +302,7 @@
             [render-text (steps-text :optimism network-state) override-theme :typography
              :typography/font-regular :weight :regular :size :paragraph-2 :style
              {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
-       (if (= network-type :optimism-arbitrum)
+       (when (= network-type :optimism-arbitrum)
          [progress-boxes-arbitrum network-state :optimism])
-       (if (= network-type :mainnet)
+       (when (= network-type :mainnet)
          [progress-boxes network-state])]]]))
