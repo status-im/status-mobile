@@ -9,13 +9,16 @@
 (def middle-dot "·")
 
 (defn author
-  [{:keys [primary-name secondary-name style short-chat-key time-str contact? verified? untrustworthy?]}]
+  [{:keys [primary-name secondary-name style short-chat-key time-str contact? verified? untrustworthy?
+           muted?]}]
   [rn/view {:style (merge style/container style)}
    [text/text
     {:weight          :semi-bold
      :size            :paragraph-2
      :number-of-lines 1
-     :style           {:color (colors/theme-colors colors/neutral-100 colors/white)}}
+     :style           {:color (if muted?
+                                colors/neutral-50
+                                (colors/theme-colors colors/neutral-100 colors/white))}}
     primary-name]
    (when (not (string/blank? secondary-name))
      [:<>
@@ -28,7 +31,9 @@
        {:weight          :medium
         :size            :paragraph-2
         :number-of-lines 1
-        :style           {:color (colors/theme-colors colors/neutral-60 colors/neutral-40)}}
+        :style           {:color (if muted?
+                                   colors/neutral-50
+                                   (colors/theme-colors colors/neutral-60 colors/neutral-40))}}
        secondary-name]])
    (when contact?
      [icons/icon :main-icons2/contact
@@ -53,7 +58,7 @@
        :number-of-lines 1
        :style           style/chat-key-text}
       short-chat-key])
-   (when (and (not verified?) time-str)
+   (when (and (not verified?) time-str short-chat-key)
      [text/text
       {:monospace       true
        :size            :label

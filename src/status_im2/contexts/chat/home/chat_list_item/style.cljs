@@ -3,8 +3,7 @@
 
 (defn container
   []
-  {:margin-top         8
-   :margin-horizontal  8
+  {:margin-horizontal  8
    :padding-vertical   8
    :padding-horizontal 12
    :border-radius      12
@@ -16,7 +15,7 @@
   {:color       (if muted?
                   colors/neutral-50
                   (colors/theme-colors colors/neutral-50 colors/neutral-40))
-   :margin-top  3
+   :border-width 1 :border-color :red
    :margin-left 8})
 
 (def chat-data-container

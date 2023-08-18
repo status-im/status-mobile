@@ -101,8 +101,7 @@
   [rn/view {:style style/notification-container}
    (if (= notification-indicator :counter)
      [quo/counter
-      {:outline             false
-       :customization-color customization-color}
+      {:customization-color customization-color}
       counter-label]
      [rn/view {:style (style/unread-dot customization-color)}])])
 
