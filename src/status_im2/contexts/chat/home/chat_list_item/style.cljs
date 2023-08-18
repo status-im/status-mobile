@@ -10,14 +10,6 @@
    :flex-direction     :row
    :align-items        :center})
 
-(defn timestamp
-  [muted?]
-  {:color       (if muted?
-                  colors/neutral-50
-                  (colors/theme-colors colors/neutral-50 colors/neutral-40))
-   :border-width 1 :border-color :red
-   :margin-left 8})
-
 (def chat-data-container
   {:flex         1
    :margin-left  8
