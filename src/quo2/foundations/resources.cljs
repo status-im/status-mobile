@@ -1,10 +1,16 @@
 (ns quo2.foundations.resources)
 
 (def ui
-  {:keycard-logo       (js/require "../resources/images/ui2/keycard-logo.png")
-   :keycard-chip-light (js/require "../resources/images/ui2/keycard-chip-light.png")
-   :keycard-chip-dark  (js/require "../resources/images/ui2/keycard-chip-dark.png")
-   :keycard-watermark  (js/require "../resources/images/ui2/keycard-watermark.png")})
+  {:keycard-logo              (js/require "../resources/images/ui2/keycard-logo.png")
+   :keycard-chip-light        (js/require "../resources/images/ui2/keycard-chip-light.png")
+   :keycard-chip-dark         (js/require "../resources/images/ui2/keycard-chip-dark.png")
+   :keycard-watermark         (js/require "../resources/images/ui2/keycard-watermark.png")
+   :network-link-1x-dark      (js/require "../resources/images/ui2/network-link-1x-dark.png")
+   :network-link-1x-light     (js/require "../resources/images/ui2/network-link-1x-light.png")
+   :network-link-2x-dark      (js/require "../resources/images/ui2/network-link-2x-dark.png")
+   :network-link-2x-light     (js/require "../resources/images/ui2/network-link-2x-light.png")
+   :network-link-linear-dark  (js/require "../resources/images/ui2/network-link-linear-dark.png")
+   :network-link-linear-light (js/require "../resources/images/ui2/network-link-linear-light.png")})
 
 (defn get-image
   [k]
