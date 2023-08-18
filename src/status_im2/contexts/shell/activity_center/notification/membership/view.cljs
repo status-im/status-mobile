@@ -67,7 +67,7 @@
         :context             [[common/user-avatar-tag author]
                               (i18n/label :t/added-you-to)
                               [quo/group-avatar-tag chat-name
-                               {:size                :size/x-small
+                               {:size                :size/xs-20
                                 :customization-color :purple}]]
         :items               (when-not (or accepted dismissed)
                                [{:type                :button

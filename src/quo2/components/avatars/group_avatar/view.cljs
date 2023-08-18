@@ -7,21 +7,21 @@
             [quo2.components.avatars.group-avatar.style :as style]))
 
 (def sizes
-  {:icon      {:size/x-small 12
-               :size/small   16
-               :size/medium  16
-               :size/large   20
-               :size/x-large 32}
-   :container {:size/x-small 20
-               :size/small   28
-               :size/medium  32
-               :size/large   48
-               :size/x-large 80}})
+  {:icon      {:size/xs-20 12
+               :size/sm-28   16
+               :size/md-32  16
+               :size/lg-48   20
+               :size/xl-80 32}
+   :container {:size/xs-20 20
+               :size/sm-28   28
+               :size/md-32  32
+               :size/lg-48   48
+               :size/xl-80 80}})
 
 (defn- view-internal
   [_]
   (fn [{:keys [size theme customization-color picture]
-        :or   {size                :size/x-small
+        :or   {size                :size/xs-20
                customization-color :blue}}]
     (println size)
     (let [container-size (get-in sizes [:container size])
