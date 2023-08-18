@@ -22,7 +22,7 @@
 (def total-box 85)
 (def interval-ms 50)
 
-(def app-state (reagent/atom {:counter 0}))
+(def lcounter (reagent/atom 0))
 (def interval-id (reagent/atom nil))
 
 (defn stop-interval
@@ -33,11 +33,12 @@
 
 (defn clear-counter
   []
-  (swap! app-state assoc :counter 0))
+  (reset! lcounter 0))
 
 (defn update-counter
   [network-state]
-  (let [new-counter-value (-> @app-state :counter inc)]
+  (let [new-counter-value (-> @lcounter inc)]
+  (println new-counter-value "arjun")
     (if (or (and (= network-state :pending) (> new-counter-value 0))
             (and (= network-state :sending) (> new-counter-value 2))
             (and (= network-state :confirmed) (> new-counter-value 4))
@@ -45,7 +46,7 @@
             (and (= network-state :finalized) (> new-counter-value total-box))
             (and (= network-state :error) (> new-counter-value 2)))
       (stop-interval)
-      (swap! app-state assoc :counter new-counter-value))))
+      (swap! lcounter (fn [_] new-counter-value) ))))
 
 (defn start-interval
   [network-state]
@@ -74,7 +75,7 @@
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view
-               {:state               (calculate-box-state network-state (@app-state :counter) n)
+               {:state               (calculate-box-state network-state @lcounter n)
                 :customization-color :blue
                 :key                 n
                }])))])
@@ -90,9 +91,9 @@
 (defn calculate-box-width
   [showHalf]
   (cond
-    (and showHalf (< (@app-state :counter) 30)) (- total-box (@app-state :counter))
+    (and showHalf (< @lcounter 30)) (- total-box @lcounter)
     showHalf                                    30
-    (< (@app-state :counter) total-box)         (- total-box (@app-state :counter))
+    (< @lcounter total-box)         (- total-box @lcounter)
     :else                                       0))
 
 (defn progress-boxes-arbitrum
@@ -165,8 +166,8 @@
   (cond
     (and (= network-type :mainnet)
          (not= network-state :finalized)
-         (not= network-state :error))       (str (if (< (@app-state :counter) 4)
-                                                   (@app-state :counter)
+         (not= network-state :error))       (str (if (< @lcounter 4)
+                                                   @lcounter
                                                    "4")
                                                  "/4")
     (= network-state :finalized)            "Epoch 181,329"
