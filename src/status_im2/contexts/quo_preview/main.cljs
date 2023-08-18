@@ -66,7 +66,6 @@
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
-    [status-im2.contexts.quo-preview.list-items.token-value :as token-value]
     [status-im2.contexts.quo-preview.markdown.text :as text]
     [status-im2.contexts.quo-preview.markdown.list :as markdown-list]
     [status-im2.contexts.quo-preview.messages.author :as messages-author]
