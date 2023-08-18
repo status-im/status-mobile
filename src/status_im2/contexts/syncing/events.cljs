@@ -88,7 +88,7 @@
                                                             :keystorePath ""
                                                             :password     sha3-pwd
                                                             :deviceType   utils.platform/os}
-                                             :serverConfig {:timeout 0}}))]
+                                             :serverConfig {:timeout constants/local-pairing-timeout}}))]
         (native-module/get-connection-string-for-bootstrapping-another-device
          config-map
          #(show-sheet %)))

@@ -271,6 +271,9 @@
   An example of a connection string is -> cs2:5vd6J6:Jfc:27xMmHKEYwzRGXcvTtuiLZFfXscMx4Mz8d9wEHUxDj4p7:EG7Z13QScfWBJNJ5cprszzDQ5fBVsYMirXo8MaQFJvpF:3 "
   "cs")
 
+(def ^:const local-pairing-timeout 120000)
+(def ^:const local-pairing-timeout-warning 60000)
+
 (def ^:const local-pairing-role-sender "sender")
 (def ^:const local-pairing-role-receiver "receiver")
 

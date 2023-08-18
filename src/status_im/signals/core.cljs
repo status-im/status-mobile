@@ -12,7 +12,8 @@
             [quo2.foundations.colors :as colors]
             [status-im2.contexts.profile.login.events :as profile.login]
             [utils.transforms :as transforms]
-            [status-im2.contexts.communities.discover.events]))
+            [status-im2.contexts.communities.discover.events]
+            [utils.i18n :as i18n]))
 
 (rf/defn summary
   [{:keys [db] :as cofx} peers-summary]
@@ -52,7 +53,8 @@
                                              (and (some? account) (some? password)))
         multiaccount-data               (when received-account?
                                           (merge account {:password password}))
-        navigate-to-syncing-devices?    (and (or connection-success? error-on-pairing?) receiver?)
+        navigate-to-syncing-devices?    (and (and connection-success? (not error-on-pairing?))
+                                             receiver?)
         user-in-syncing-devices-screen? (or (= (:view-id db) :syncing-progress)
                                             (= (:view-id db) :syncing-progress-intro))
         user-in-sign-in-intro-screen?   (= (:view-id db) :sign-in-intro)]
@@ -84,7 +86,10 @@
              {:dispatch [:toasts/upsert
                          {:icon       :i/alert
                           :icon-color colors/danger-50
-                          :text       error}]}))))
+                          :text       (condp = type
+                                        constants/local-pairing-event-connection-error
+                                        (i18n/label :t/error-this-sync-qr-code-has-expired)
+                                        error)}]}))))
 
 (rf/defn process
   {:events [:signals/signal-received]}

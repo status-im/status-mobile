@@ -227,49 +227,48 @@
   [:f> f-bottom-view insets translate-y])
 
 (defn- check-qr-code-and-navigate
-  [{:keys [event on-success-scan on-failed-scan]}]
+  [{:keys [event]}]
   (let [connection-string        (string/trim (oops/oget event "nativeEvent.codeStringValue"))
         valid-connection-string? (sync-utils/valid-connection-string? connection-string)]
     ;; debounce-and-dispatch used because the QR code scanner performs callbacks too fast
-    (if valid-connection-string?
-      (do
-        (on-success-scan)
-        (debounce/debounce-and-dispatch
-         [:syncing/input-connection-string-for-bootstrapping connection-string]
-         300))
-      (do
-        (on-failed-scan)
-        (debounce/debounce-and-dispatch
-         [:toasts/upsert
-          {:icon       :i/info
-           :icon-color colors/danger-50
-           :theme      :dark
-           :text       (i18n/label :t/error-this-is-not-a-sync-qr-code)}]
-         300)))))
+    (debounce/debounce-and-dispatch
+     (if valid-connection-string?
+       [:syncing/input-connection-string-for-bootstrapping connection-string]
+       [:toasts/upsert
+        {:icon       :i/info
+         :icon-color colors/danger-50
+         :theme      :dark
+         :text       (i18n/label :t/error-this-is-not-a-sync-qr-code)}])
+     300)))
 
 (defn- render-camera
-  [{:keys [torch-mode qr-view-finder scan-code? set-qr-code-succeeded set-rescan-timeout]}]
-  [:<>
-   [rn/view {:style style/camera-container}
-    [camera-kit/camera
-     {:style        style/camera-style
-      :camera-type  camera-kit/camera-type-back
-      :zoom-mode    :off
-      :torch-mode   torch-mode
-      :scan-barcode true
-      :on-read-code #(when scan-code?
-                       (check-qr-code-and-navigate {:event           %
-                                                    :on-success-scan set-qr-code-succeeded
-                                                    :on-failed-scan  set-rescan-timeout}))}]]
-   [hole-view/hole-view
-    {:style style/hole
-     :holes [(assoc qr-view-finder :borderRadius 16)]}
-    [blur/view
-     {:style            style/absolute-fill
-      :blur-amount      10
-      :blur-type        :transparent
-      :overlay-color    colors/neutral-80-opa-80
-      :background-color colors/neutral-80-opa-80}]]])
+  []
+  (let [scan-code?         (reagent/atom true)
+        set-rescan-timeout (fn []
+                             (reset! scan-code? false)
+                             (js/setTimeout #(reset! scan-code? true) 3000))]
+    (fn [{:keys [torch-mode qr-view-finder]}]
+      [:<>
+       [rn/view {:style style/camera-container}
+        [camera-kit/camera
+         {:style               style/camera-style
+          :camera-type         camera-kit/camera-type-back
+          :zoom-mode           :off
+          :torch-mode          torch-mode
+          :scan-barcode        @scan-code?
+          :scan-throttle-delay 3000
+          :on-read-code        (fn [event]
+                                 (set-rescan-timeout)
+                                 (check-qr-code-and-navigate {:event event}))}]]
+       [hole-view/hole-view
+        {:style style/hole
+         :holes [(assoc qr-view-finder :borderRadius 16)]}
+        [blur/view
+         {:style            style/absolute-fill
+          :blur-amount      10
+          :blur-type        :transparent
+          :overlay-color    colors/neutral-80-opa-80
+          :background-color colors/neutral-80-opa-80}]]])))
 
 (defn- reset-animations-and-navigate-fn
   [{:keys [render-camera? show-camera?] :as params}]
@@ -289,17 +288,12 @@
 
 (defn f-view
   [_]
-  (let [insets             (safe-area/get-insets)
-        active-tab         (reagent/atom 1)
-        qr-view-finder     (reagent/atom {})
-        render-camera?     (reagent/atom false)
-        torch?             (reagent/atom false)
-        scan-code?         (reagent/atom true)
-        set-rescan-timeout (fn []
-                             (reset! scan-code? false)
-                             (js/setTimeout #(reset! scan-code? true) 3000))]
-    (fn [{:keys [title show-bottom-view? background animated? qr-code-succeed?
-                 set-qr-code-succeeded]}]
+  (let [insets         (safe-area/get-insets)
+        active-tab     (reagent/atom 1)
+        qr-view-finder (reagent/atom {})
+        render-camera? (reagent/atom false)
+        torch?         (reagent/atom false)]
+    (fn [{:keys [title show-bottom-view? background animated?]}]
       (let [torch-mode              (if @torch? :on :off)
             flashlight-icon         (if @torch? :i/flashlight-on :i/flashlight-off)
             scan-qr-code-tab?       (= @active-tab 1)
@@ -308,8 +302,7 @@
                                          @preflight-check-passed?
                                          (boolean (not-empty @qr-view-finder)))
             camera-ready-to-scan?   (and (or (not animated?) @render-camera?)
-                                         show-camera?
-                                         (not qr-code-succeed?))
+                                         show-camera?)
             title-opacity           (reanimated/use-shared-value (if animated? 0 1))
             subtitle-opacity        (reanimated/use-shared-value (if animated? 0 1))
             content-opacity         (reanimated/use-shared-value (if animated? 0 1))
@@ -347,11 +340,8 @@
          background
          (when camera-ready-to-scan?
            [render-camera
-            {:torch-mode            torch-mode
-             :qr-view-finder        @qr-view-finder
-             :scan-code?            @scan-code?
-             :set-qr-code-succeeded set-qr-code-succeeded
-             :set-rescan-timeout    set-rescan-timeout}])
+            {:torch-mode     torch-mode
+             :qr-view-finder @qr-view-finder}])
          [rn/view {:style (style/root-container (:top insets))}
           [:f> header
            {:active-tab          active-tab
@@ -390,13 +380,8 @@
 
 (defn view
   [{:keys [screen-name] :as _props}]
-  (let [qr-code-succeed? (reagent/atom false)]
-    (navigation.util/create-class-and-bind
-     screen-name
-     {:component-did-appear (fn set-qr-code-failed [_this]
-                              (reset! qr-code-succeed? false))}
-     (fn [props]
-       (let [new-pops (assoc props
-                             :qr-code-succeed?      @qr-code-succeed?
-                             :set-qr-code-succeeded #(reset! qr-code-succeed? true))]
-         [:f> f-view new-pops])))))
+  (navigation.util/create-class-and-bind
+   screen-name
+   {}
+   (fn [props]
+     [:f> f-view props])))
