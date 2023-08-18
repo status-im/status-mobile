@@ -343,7 +343,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     def test_community_navigate_to_channel_when_relaunch(self):
         text_message = 'some_text'
         if not self.channel.chat_message_input.is_element_displayed():
-            self.home.click_system_back_button_until_element_is_shown()
+            self.home.navigate_back_to_home_view()
             self.home.get_to_community_channel_from_home(self.community_name)
 
         self.channel.send_message(text_message)
@@ -355,7 +355,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     def test_community_copy_and_paste_message_in_chat_input(self):
         message_texts = ['mmmeowesage_text', 'https://status.im']
         if not self.channel.chat_message_input.is_element_displayed():
-            self.home.click_system_back_button_until_element_is_shown()
+            self.home.navigate_back_to_home_view()
             self.home.get_to_community_channel_from_home(self.community_name)
 
         for message in message_texts:
@@ -371,7 +371,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702869)
     def test_community_undo_delete_message(self):
         if not self.channel.chat_message_input.is_element_displayed():
-            self.home.click_system_back_button_until_element_is_shown()
+            self.home.navigate_back_to_home_view()
             self.home.get_to_community_channel_from_home(self.community_name)
         message_to_delete = "message to delete and undo"
         self.channel.send_message(message_to_delete)
@@ -494,7 +494,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         if not pytest_config_global['pr_number']:
             self.home.just_fyi("Perform back up")
-            self.home.click_system_back_button_until_element_is_shown()
+            self.home.navigate_back_to_home_view()
             self.home.profile_button.click()
             profile.sync_settings_button.click()
             profile.backup_settings_button.click()
@@ -542,7 +542,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.public_key_2 = self.home_2.get_public_key_via_share_profile_tab()
         self.profile_1 = self.home_1.get_profile_view()
-        [home.click_system_back_button_until_element_is_shown() for home in self.homes]
+        [home.navigate_back_to_home_view() for home in self.homes]
         [home.chats_tab.click() for home in self.homes]
         self.home_1.add_contact(self.public_key_2)
         self.home_2.handle_contact_request(self.username_1)
@@ -554,7 +554,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
         # self.chat_2.send_message(self.text_message)
         # [home.click_system_back_button_until_element_is_shown() for home in self.homes]
-        self.home_1.click_system_back_button_until_element_is_shown()
+        self.home_1.navigate_back_to_home_view()
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
@@ -665,7 +665,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             else:
                 self.errors.append("Image options button is not shown for an image from gallery.")
 
-            self.channel_2.click_system_back_button_until_element_is_shown(element="chat")
+            self.channel_2.navigate_back_to_chat_view()
 
             self.channel_2.just_fyi("Can reply to gallery")
             self.channel_2.quote_message(image_description)
@@ -707,7 +707,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                         toast_element_text, self.channel_1.get_translation_by_key("photo-saved")))
         else:
             self.errors.append("Message about saving a photo is not shown.")
-        self.channel_1.click_system_back_button_until_element_is_shown(element="chat")
+        self.channel_1.navigate_back_to_chat_view()
 
         self.channel_1.just_fyi("Check that image is saved in gallery")
         self.channel_1.show_images_button.click()
@@ -725,7 +725,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.channel_2.wait_for_current_package_to_be('com.google.android.gm')
         except TimeoutException:
             self.errors.append("Can't share image")
-        self.channel_2.click_system_back_button_until_element_is_shown(element="chat")
+        self.channel_2.navigate_back_to_chat_view()
 
         self.channel_2.just_fyi("Can reply to images")
         self.channel_2.quote_message(image_description)
@@ -818,7 +818,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         }
         for home in self.home_1, self.home_2:
             if not home.chat_floating_screen.is_element_displayed():
-                home.click_system_back_button_until_element_is_shown()
+                home.navigate_back_to_home_view()
                 home.get_to_community_channel_from_home(self.community_name)
 
         for key, data in preview_urls.items():
@@ -935,7 +935,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         profile_1.element_by_text(self.username_2).click()
         self.chat_1.unblock_contact_button.click()
         self.chat_1.close_button.click()
-        self.chat_1.click_system_back_button_until_element_is_shown()
+        self.chat_1.navigate_back_to_home_view()
 
         self.home_2.just_fyi("Check that can send message in community after unblock")
         self.chat_2.send_message(message_unblocked)
@@ -979,7 +979,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(703086)
     def test_community_mark_all_messages_as_read(self):
         for home in self.home_1, self.home_2:
-            home.click_system_back_button_until_element_is_shown()
+            home.navigate_back_to_home_view()
             home.communities_tab.click()
         self.home_2.get_chat(self.community_name, community=True).click()
         self.community_2.get_channel(self.channel_name).click()
@@ -1003,9 +1003,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702786)
     def test_community_mentions_push_notification(self):
-        self.home_1.click_system_back_button_until_element_is_shown()
+        self.home_1.navigate_back_to_home_view()
         if not self.channel_2.chat_message_input.is_element_displayed():
-            self.channel_2.click_system_back_button_until_element_is_shown()
+            self.channel_2.navigate_back_to_home_view()
             self.home_2.communities_tab.click()
             self.home_2.get_chat(self.community_name, community=True).click()
             self.community_2.get_channel(self.channel_name).click()
@@ -1094,7 +1094,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         }
 
         for home in self.homes:
-            home.click_system_back_button_until_element_is_shown()
+            home.navigate_back_to_home_view()
             home.jump_to_communities_home()
             community = home.get_chat(self.community_name, community=True).click()
             community.get_channel(self.channel_name).click()
@@ -1133,7 +1133,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702845)
     def test_community_leave(self):
-        self.home_2.click_system_back_button_until_element_is_shown()
+        self.home_2.navigate_back_to_home_view()
         self.home_2.jump_to_communities_home()
         community = self.home_2.get_chat(self.community_name, community=True)
         community_to_leave = CommunityView(self.drivers[1])
@@ -1147,7 +1147,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702948)
     def test_community_hashtag_links_to_community_channels(self):
         for home in self.homes:
-            home.click_system_back_button_until_element_is_shown()
+            home.navigate_back_to_home_view()
         self.home_2.jump_to_messages_home()
         self.home_1.jump_to_communities_home()
 

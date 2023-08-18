@@ -178,7 +178,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.homes[0].just_fyi('Admin adds future members to contacts')
 
         for i in range(3):
-            self.homes[i].click_system_back_button_until_element_is_shown()
+            self.homes[i].navigate_back_to_home_view()
             self.homes[i].chats_tab.click()
 
         for i in range(1, 3):
@@ -194,7 +194,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             )
         )
         for i in range(1, 3):
-            self.homes[i].click_system_back_button_until_element_is_shown()
+            self.homes[i].navigate_back_to_home_view()
 
         self.homes[0].just_fyi('Admin creates group chat')
         self.chat_name = self.homes[0].get_random_chat_name()
@@ -209,7 +209,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702807)
     def test_group_chat_join_send_text_messages_push(self):
         message_to_admin = self.message_to_admin
-        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+        [self.homes[i].navigate_back_to_home_view() for i in range(3)]
         self.homes[1].get_chat(self.chat_name).click()
 
         self.chats[1].send_message(message_to_admin)
@@ -232,7 +232,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703202)
     def test_group_chat_reactions(self):
-        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+        [self.homes[i].navigate_back_to_home_view() for i in range(3)]
         [self.homes[i].get_chat(self.chat_name).click() for i in range(3)]
         message = "This is a test message to check some reactions."
         self.chats[0].just_fyi("Admin sends a message")
@@ -284,7 +284,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                 )
         except NoSuchElementException:
             self.errors.append("User profile was not opened from the list of reactions")
-        self.chats[0].click_system_back_button_until_element_is_shown(element="chat")
+        self.chats[0].navigate_back_to_chat_view()
 
         self.chats[1].just_fyi("Member_1 removes 'thumbs-up' reaction and adds 'sad' one")
         self.chats[1].add_remove_same_reaction(message=message, emoji="thumbs-up")
@@ -319,7 +319,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         for chat in self.chats[1], self.chats[2]:
             chat.just_fyi("Just making the session not to quit")
-            chat.click_system_back_button_until_element_is_shown()
+            chat.navigate_back_to_home_view()
 
         self.chats[0].just_fyi("Admin checks info about voted users after relogin")
         message_element.emojis_below_message(
@@ -345,7 +345,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703297)
     def test_group_chat_send_image_save_and_share(self):
-        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+        [self.homes[i].navigate_back_to_home_view() for i in range(3)]
         for i in range(3):
             self.homes[i].get_chat(self.chat_name).click()
 
@@ -373,9 +373,9 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             self.chats[0].wait_for_current_package_to_be('com.google.android.gm')
         except TimeoutException:
             self.errors.append("Admin can't share an image via Gmail.")
-        self.chats[0].click_system_back_button_until_element_is_shown(element="chat")
+        self.chats[0].navigate_back_to_chat_view()
 
-        self.chats[1].click_system_back_button_until_element_is_shown()
+        self.chats[1].navigate_back_to_home_view()
 
         self.chats[2].just_fyi("Member_2 opens the image and saves it")
         self.chats[2].chat_element_by_text(image_description).image_in_message.click()
@@ -390,22 +390,22 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
                         toast_element_text, self.chats[2].get_translation_by_key("photo-saved")))
         else:
             self.errors.append("Message about saving a photo is not shown for member_2.")
-        self.chats[2].click_system_back_button_until_element_is_shown(element="chat")
+        self.chats[2].navigate_back_to_chat_view()
 
         self.chats[2].just_fyi("Member_2 checks that image was saved in gallery")
         self.chats[2].show_images_button.click()
         self.chats[2].allow_button.click_if_shown()
         if not self.chats[2].get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
             self.errors.append("Image is not saved to gallery for member_2.")
-        self.chats[2].click_system_back_button_until_element_is_shown(element="chat")
+        self.chats[2].navigate_back_to_chat_view()
 
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702808)
     def test_group_chat_offline_pn(self):
-        self.homes[0].click_system_back_button_until_element_is_shown()
-        [self.homes[i].jump_to_messages_home() for i in range(3)]
         for i in range(1, 3):
+            self.homes[i].navigate_back_to_home_view()
+            self.homes[i].chats_tab.click()
             self.homes[i].groups_tab.click()
             self.homes[i].get_chat(self.chat_name).click()
 
@@ -443,7 +443,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
     @marks.xfail(reason="Pin feature is in development", run=False)
     @marks.testrail_id(702732)
     def test_group_chat_pin_messages(self):
-        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+        [self.homes[i].navigate_back_to_home_view() for i in range(3)]
         [self.homes[i].get_chat(self.chat_name).click() for i in range(3)]
 
         self.message_1, self.message_2, self.message_3, self.message_4 = \
@@ -522,7 +522,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703495)
     def test_group_chat_mute_chat(self):
-        [self.homes[i].click_system_back_button_until_element_is_shown() for i in range(3)]
+        [self.homes[i].navigate_back_to_home_view() for i in range(3)]
 
         self.homes[1].just_fyi("Member 1 mutes the chat for 1 hour")
         self.homes[1].mute_chat_long_press(self.chat_name, "mute-for-1-hour")
@@ -564,7 +564,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         if not self.chats[1].chat_element_by_text(muted_message).is_element_displayed(30):
             self.errors.append(
                 "Message '%s' is not shown in chat for %s after mute" % (muted_message, self.usernames[1]))
-        self.chats[1].click_system_back_button_until_element_is_shown()
+        self.chats[1].navigate_back_to_home_view()
 
         self.chats[1].just_fyi("Change device time so chat will be unmuted by timer")
         unmute_time = current_time + datetime.timedelta(minutes=61)

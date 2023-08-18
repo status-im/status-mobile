@@ -99,7 +99,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
                 'https://join.status.im/u/%s' % dummy_user["public_key"]).is_element_displayed():
             self.errors.append("Can't share public key of contact")
         for _ in range(2):
-            chat.click_system_back_button_until_element_is_shown()
+            chat.navigate_back_to_home_view()
 
     @marks.testrail_id(702252)
     def test_share_user_profile_url_public_chat(self):
@@ -115,7 +115,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
                 'https://join.status.im/%s' % self.public_chat_name).is_element_displayed():
             self.errors.append("Can't share link to public chat")
         for _ in range(2):
-            self.public_chat.click_system_back_button_until_element_is_shown()
+            self.public_chat.navigate_back_to_home_view()
         self.public_chat.get_back_to_home_view()
 
     @marks.testrail_id(702251)
@@ -134,7 +134,7 @@ class TestDeeplinkChatProfileOneDevice(MultipleSharedDeviceTestCase):
                 browser.element_by_text_part(expeceted_text_2).is_element_displayed()):
             self.errors.append("Can't share link to URL")
 
-        browser.click_system_back_button_until_element_is_shown()
+        browser.navigate_back_to_home_view()
 
         self.errors.verify_no_errors()
 

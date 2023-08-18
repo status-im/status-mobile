@@ -151,7 +151,7 @@ class TestPairingSyncMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         web_page = dapp.open_url('status.im')
         web_page.add_to_bookmarks()
         if not web_page.home_button.is_element_displayed():
-            web_page.click_system_back_button_until_element_is_shown()
+            web_page.navigate_back_to_home_view()
 
         self.home_1.just_fyi("Close the ENS banner")
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]

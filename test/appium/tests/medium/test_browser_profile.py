@@ -193,7 +193,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.share_via_messenger()
         if not self.home.element_by_text_part('Hey join me on Status: https://join.status.im/u/%s' % chat_key).is_element_displayed(20):
             self.errors.append("No expected message in input field when sharing via 'Invite friend'")
-        self.home.click_system_back_button_until_element_is_shown()
+        self.home.navigate_back_to_home_view()
 
         self.home.just_fyi("Check it via bottom sheet menu")
         self.home.plus_button.click()
@@ -201,7 +201,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         self.home.share_via_messenger()
         if not self.home.element_by_text_part('Hey join me on Status: https://join.status.im/u/%s' % chat_key).is_element_displayed(20):
             self.errors.append("No expected message in input field when sharing via 'bottom sheet'")
-        self.home.click_system_back_button_until_element_is_shown()
+        self.home.navigate_back_to_home_view()
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702160)
