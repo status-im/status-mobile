@@ -1,6 +1,7 @@
 (ns quo2.components.avatars.account-avatar.view
   (:require [clojure.string :as string]
             [quo2.components.avatars.account-avatar.style :as style]
+            [quo2.foundations.twemoji :as twemoji]
             [quo2.theme :as quo.theme]
             [react-native.core :as rn]))
 
@@ -25,10 +26,9 @@
      {:accessible          true
       :accessibility-label :account-avatar
       :style               (style/root-container opts)}
-     [rn/text
-      {:accessibility-label      :account-emoji
-       :adjusts-font-size-to-fit true
-       :style                    {:font-size emoji-size}}
+     [twemoji/twemoji
+      {:accessibility-label :account-emoji
+       :style               {:font-size emoji-size}}
       (string/trim emoji)]]))
 
 (def view (quo.theme/with-theme view-internal))

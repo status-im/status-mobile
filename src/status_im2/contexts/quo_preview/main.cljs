@@ -46,6 +46,7 @@
     [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
     [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
     [status-im2.contexts.quo-preview.foundations.shadows :as shadows]
+    [status-im2.contexts.quo-preview.foundations.typography :as typography]
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
     [status-im2.contexts.quo-preview.inputs.input :as input]
@@ -123,7 +124,9 @@
 
 (def screens-categories
   {:foundations       [{:name      :shadows
-                        :component shadows/preview-shadows}]
+                        :component shadows/preview-shadows}
+                       {:name      :typography
+                        :component typography/view}]
    :animated-list     [{:name      :animated-header-list
                         :component animated-header-list/mock-screen}]
    :avatar            [{:name      :group-avatar

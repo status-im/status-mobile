@@ -1,8 +1,8 @@
 (ns quo2.components.markdown.text
   (:require [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]
+            [quo2.foundations.twemoji :as twemoji]
             [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
             [reagent.core :as reagent]))
 
 (defn text-style
@@ -32,7 +32,7 @@
 (defn- text-view-internal
   [props & children]
   (let [style (text-style props)]
-    (into [rn/text
+    (into [twemoji/text
            (merge {:style style}
                   (dissoc props :style :size :align :weight :color :theme))]
           children)))

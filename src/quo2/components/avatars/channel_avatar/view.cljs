@@ -4,6 +4,7 @@
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
+            [quo2.foundations.twemoji :as twemoji]
             [react-native.core :as rn]
             utils.string))
 
@@ -54,8 +55,8 @@
     :style               (style/outer-container {:size size :color customization-color})}
    (if (string/blank? emoji)
      [initials full-name size customization-color]
-     [text/text
+     [twemoji/twemoji
       {:accessibility-label :emoji
-       :size                (if (= size :size/l) :paragraph-1 :label)}
+       :style               {:font-size (if (= size :size/l) 15 12)}}
       (string/trim emoji)])
    [lock locked? size]])
