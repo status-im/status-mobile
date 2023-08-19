@@ -51,7 +51,7 @@
 
 
 (defn show-button-background
-  [keyboard-height keyboard-shown]
+  [keyboard-height keyboard-shown content-scroll-y]
   (let [button-container-height 64
         keyboard-view-height    (+ keyboard-height button-container-height)]
     (when keyboard-shown
@@ -60,7 +60,7 @@
         (< (- @scroll-view-height button-container-height) @content-container-height)
 
         platform/ios?
-        (< (- @scroll-view-height keyboard-view-height) @content-container-height)
+        (< (- @scroll-view-height keyboard-view-height) (- @content-container-height content-scroll-y))
 
         :else
         false))))
@@ -93,6 +93,7 @@
 (defn- f-page
   [{:keys [onboarding-profile-data navigation-bar-top]}]
   (reagent/with-let [show-keyboard?                          (reagent/atom false)
+                     content-scroll-y                        (reagent/atom 0)
                      show-listener                           (oops/ocall rn/keyboard
                                                                          "addListener"
                                                                          (if platform/android?
@@ -129,7 +130,8 @@
                                                          :else           :success)
           {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
           show-background?                         (show-button-background keyboard-height
-                                                                           keyboard-shown)]
+                                                                           keyboard-shown
+                                                                           @content-scroll-y)]
       [rn/view {:style style/page-container}
        [navigation-bar/navigation-bar
         {:stack-id :new-to-status
@@ -137,7 +139,12 @@
        [rn/scroll-view
         {:on-layout               (fn [event]
                                     (let [height (oops/oget event "nativeEvent.layout.height")]
-                                      (reset! scroll-view-height height)))
+                                      (reset! scroll-view-height height)
+                                      (reset! content-scroll-y 0)))
+         :on-scroll               (fn [event]
+                                    (let [y (oops/oget event "nativeEvent.contentOffset.y")]
+                                      (reset! content-scroll-y y)))
+         :scroll-event-throttle   64
          :content-container-style {:flexGrow 1}}
         [rn/view
          {:on-layout (fn [event]

@@ -28,8 +28,8 @@
              :z-index (get shared-values
                            (get shell.constants/stacks-z-index-keywords stack-id))})}
    (case stack-id
-     :communities-stack [:f> communities/home]
-     :chats-stack       [:f> chat/home]
+     :communities-stack [:f> communities/view]
+     :chats-stack       [:f> chat/view]
      ;NOTE temporary while we support old wallet
      :wallet-stack      (if @state/load-new-wallet?
                           [wallet-new/view]

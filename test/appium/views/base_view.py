@@ -604,19 +604,28 @@ class BaseView(object):
         sign_in_view = self.get_sign_in_view()
         sign_in_view.sign_in(password)
 
-    def jump_to_messages_home(self):
+    def click_on_floating_jump_to(self):
         self.hide_keyboard_if_shown()
-        self.jump_to_button.click()
-        self.chats_tab.click_until_presence_of_element(self.jump_to_button)
+        if self.chat_floating_screen.is_element_displayed(1):
+            Button(self.driver, xpath='//*[@content-desc="%s"]//*[@content-desc="%s"]' %
+                                      (self.chat_floating_screen.accessibility_id, self.jump_to_button.accessibility_id)).click()
+        elif self.community_floating_screen.is_element_displayed(1):
+            Button(self.driver, xpath='//*[@content-desc="%s"]//*[@content-desc="%s"]' %
+                                      (self.community_floating_screen.accessibility_id,
+                                       self.jump_to_button.accessibility_id)).click()
+        else:
+            self.jump_to_button.click()
+
+    def jump_to_messages_home(self):
+        self.click_on_floating_jump_to()
+        self.chats_tab.click()
 
     def jump_to_communities_home(self):
-        self.hide_keyboard_if_shown()
-        self.jump_to_button.click()
-        self.communities_tab.click_until_presence_of_element(self.jump_to_button)
+        self.click_on_floating_jump_to()
+        self.communities_tab.click()
 
     def jump_to_card_by_text(self, text: str):
-        self.hide_keyboard_if_shown()
-        self.jump_to_button.click()
+        self.click_on_floating_jump_to()
         self.element_by_text(text).click()
 
     def reopen_app(self, password=common_password, sign_in=True):

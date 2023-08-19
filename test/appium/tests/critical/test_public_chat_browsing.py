@@ -437,9 +437,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(703133)
-    @marks.xfail(reason="Restoring communities issue: 16787; "
-                        "restoring contacts issue: 15500",
-                 run=False)
     def test_restore_multiaccount_with_waku_backup_remove_switch(self):
         self.home.jump_to_communities_home()
         profile = self.home.profile_button.click()
@@ -458,12 +455,16 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                 "Incorrect contacts number restored: %s instead of %s" % (contacts_number, len(waku_user.contacts)))
         else:
             for i in range(contacts_number):
-                self.home.click_system_back_button_until_element_is_shown()
-                contact_row = self.home.contact_details_row(index=i + 1)
-                shown_name_text = contact_row.username_text.text
-                if shown_name_text in waku_user.contacts:
-                    waku_user.contacts.remove(shown_name_text)
-                    continue
+                key = waku_user.contacts[i]
+                if not self.home.element_by_text(key).is_element_displayed(30):
+                    self.errors.append('%s was not restored as a contact from waku backup!' % key)
+                # Disabled for simple check as sometimes from waku-backup users restored with 3-random names
+                # self.home.click_system_back_button_until_element_is_shown()
+                # contact_row = self.home.contact_details_row(index=i + 1)
+                # shown_name_text = contact_row.username_text.text
+                # if shown_name_text in waku_user.contacts:
+                #     waku_user.contacts.remove(shown_name_text)
+                #     continue
                 # else:
                 #     contact_row.click()
                 #     shown_name_text = profile.default_username_text.text
@@ -477,9 +478,9 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
                 #             if chat.element_starts_with_text(name).is_element_displayed(sec=20):
                 #                 waku_user.contacts.remove(name)
                 #                 continue
-        if waku_user.contacts:
-            self.errors.append(
-                "Contact(s) was (were) not restored from backup: %s!" % ", ".join(waku_user.contacts))
+        # if waku_user.contacts:
+        #     self.errors.append(
+        #         "Contact(s) was (were) not restored from backup: %s!" % ", ".join(waku_user.contacts))
 
         self.home.just_fyi("Check restored communities")
         self.home.communities_tab.click()
@@ -564,10 +565,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.send_message(self.text_message)
 
         self.community_1, self.community_2 = self.home_1.get_community_view(), self.home_2.get_community_view()
-        self.community_1.send_invite_to_community(self.community_name, self.username_2)
+        self.community_1.share_community(self.community_name, self.username_2)
         self.home_1.get_to_community_channel_from_home(self.community_name)
 
-        # self.chat_2 = self.home_2.get_chat(self.username_1).click()
         self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
         self.chat_2.send_message(self.text_message)
         self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
@@ -978,9 +978,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703086)
     def test_community_mark_all_messages_as_read(self):
-        self.home_1.jump_to_communities_home()
-        self.channel_2.click_system_back_button_until_element_is_shown()
-        self.home_2.communities_tab.click()
+        for home in self.home_1, self.home_2:
+            home.click_system_back_button_until_element_is_shown()
+            home.communities_tab.click()
         self.home_2.get_chat(self.community_name, community=True).click()
         self.community_2.get_channel(self.channel_name).click()
         self.channel_2.send_message(self.text_message)
@@ -1144,8 +1144,6 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append('Community is still shown in the list after leave')
         self.errors.verify_no_errors()
 
-    @marks.xfail(reason="Can't invite user to closed community https://github.com/status-im/status-mobile/issues/16968",
-                 run=False)
     @marks.testrail_id(702948)
     def test_community_hashtag_links_to_community_channels(self):
         for home in self.homes:
@@ -1156,7 +1154,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Device 1 creates a closed community")
         self.home_1.create_community(community_type="closed")
         community_name = "closed community"
-        self.community_1.send_invite_to_community(community_name, self.username_2)
+        self.community_1.share_community(community_name, self.username_2)
 
         self.home_2.just_fyi("Device 2 joins the community")
         self.home_2.get_chat(self.username_1).click()
@@ -1165,31 +1163,40 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat_2.chat_element_by_text(community_name).view_community_button.click()
         self.community_2.join_community()
 
+        self.home_1.just_fyi("Device 1 accepts the community request")
+        self.home_1.jump_to_communities_home()
+        try:
+            self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
+        except TimeoutException:
+            self.errors.append("Unread indicator is not shown in notifications on membership request")
+        self.home_1.open_activity_center_button.click()
+        reply_element = self.home_1.get_element_from_activity_center_view(self.username_2)
+        reply_element.swipe_right_on_element()
+        self.home_1.activity_notification_swipe_button.click()
+        self.home_1.close_activity_centre.click()
+
         dogs_channel, cats_channel = "dogs", "cats"
         cats_message = "Where is a cat?"
 
         self.home_1.just_fyi("Device 1 sends a message in the cats channel")
         self.home_1.get_to_community_channel_from_home(community_name=community_name, channel_name=cats_channel)
         self.channel_1.send_message(cats_message)
-        self.channel_1.click_system_back_button_until_element_is_shown(
-            element=self.community_1.get_channel(dogs_channel))
+        self.channel_1.jump_to_communities_home()
+        self.home_1.get_to_community_channel_from_home(community_name=community_name, channel_name=dogs_channel)
 
         self.home_1.just_fyi("Device 1 sends a message with hashtag in the dogs channel")
-        self.community_1.get_channel(dogs_channel).click_until_presence_of_element(self.channel_1.chat_message_input)
         message_with_hashtag = "#cats"
         self.channel_1.send_message(message_with_hashtag)
 
         self.home_2.just_fyi("Device 2 clicks on the message with hashtag in the community channel")
-        self.community_2.get_channel(dogs_channel).click_until_presence_of_element(self.channel_2.chat_message_input)
-        self.channel_2.chat_element_by_text(message_with_hashtag).message_body.wait_for_visibility_of_element(30)
-        self.channel_2.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
-            rel_x=0.2, rel_y=0.5)
+        self.home_2.jump_to_communities_home()
+        self.home_2.get_to_community_channel_from_home(community_name, dogs_channel)
+        self.channel_2.chat_element_by_text(message_with_hashtag).click_on_link_inside_message_body()
         if not self.channel_2.chat_element_by_text(cats_message).is_element_displayed(30):
             self.errors.append("Receiver was not navigated to the cats channel")
 
         self.home_1.just_fyi("Device 1 clicks on the message with hashtag in the community channel")
-        self.channel_1.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
-            rel_x=0.2, rel_y=0.5)
+        self.channel_1.chat_element_by_text(message_with_hashtag).click_on_link_inside_message_body()
         if not self.channel_1.chat_element_by_text(cats_message).is_element_displayed(30):
             self.errors.append("Sender was not navigated to the cats channel")
 
@@ -1201,15 +1208,12 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Device 1 clicks on the message with hashtag in 1-1 chat")
         self.home_1.get_chat(self.username_2).click()
-        self.chat_1.chat_element_by_text(message_with_hashtag).message_body.wait_for_visibility_of_element(30)
-        self.chat_1.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
-            rel_x=0.2, rel_y=0.5)
+        self.chat_1.chat_element_by_text(message_with_hashtag).click_on_link_inside_message_body()
         if self.chat_1.chat_element_by_text(control_message_1_1_chat).is_element_disappeared():
             self.errors.append("Receiver was navigated out of 1-1 chat")
 
         self.home_2.just_fyi("Device 2 clicks on the message with hashtag in 1-1 chat")
-        self.chat_2.chat_element_by_text(message_with_hashtag).message_body.click_inside_element_by_coordinate(
-            rel_x=0.2, rel_y=0.5)
+        self.chat_2.chat_element_by_text(message_with_hashtag).click_on_link_inside_message_body()
         if self.chat_2.chat_element_by_text(control_message_1_1_chat).is_element_disappeared():
             self.errors.append("Sender was navigated out of 1-1 chat")
 
