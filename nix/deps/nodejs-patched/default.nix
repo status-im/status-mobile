@@ -10,6 +10,7 @@ stdenv.mkDerivation {
     "unpackPhase"
     "patchGradlePhase"
     "patchReactNativePhase"
+    "patchKeyChainLibraryPhase"
     "patchPodPhase"
     "installPhase"
   ];
@@ -65,6 +66,14 @@ stdenv.mkDerivation {
      substituteInPlace ./node_modules/react-native/scripts/ios-configure-glog.sh --replace \
         'src/config.h.in' \
         'src/config.h.in && rm src/config.h.in.bak'
+  '';
+
+#  Remove gradle-test-logger-plugin:
+#  https://github.com/oblador/react-native-keychain/issues/595
+#  TODO: remove this patch when we this library fixes above issue
+  patchKeyChainLibraryPhase = ''
+   sed -i -e '/classpath/d' \
+          -e '/apply plugin: "com\.adarshr\.test-logger"/d' ./node_modules/react-native-keychain/android/build.gradle
   '';
 
 #  Fix pod issue in react-native 0.67.5:
