@@ -8920,9 +8920,10 @@ react-native-image-resizer@^1.2.3:
   version "0.2.1"
   resolved "git+https://github.com/status-im/react-native-image-viewing.git#94af89356f2e4e08f462370c77e4778d7626ce2f"
 
-"react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#refs/tags/v.3.0.0-5-status":
-  version "3.0.0-rc.3"
-  resolved "git+https://github.com/status-im/react-native-keychain.git#9b0d9b283116947cf125e12b6d1d17203604f0d9"
+react-native-keychain@8.1.2:
+  version "8.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-8.1.2.tgz#34291ae472878e5124d081211af5ede7d810e64f"
+  integrity sha512-bhHEui+yMp3Us41NMoRGtnWEJiBE0g8tw5VFpq4mpmXAx6XJYahuM6K3WN5CsUeUl83hYysSL9oFZNKSTPSvYw==
 
 react-native-languages@^3.0.2:
   version "3.0.2"
