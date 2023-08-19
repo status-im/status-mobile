@@ -28,11 +28,11 @@
      :opacity opacity}]])
 
 (defn sm-timestamp
-  [timestamp]
+  [timestamp theme]
   [rn/view {:margin-left 8 :margin-top 2}
    [text/text
     {:size  :label
-     :style {:color          (time-color :time)
+     :style {:color          (time-color theme)
              :text-transform :none}}
     timestamp]])
 
@@ -61,7 +61,7 @@
         item])]))
 
 (defn system-message-base
-  [{:keys [icon timestamp]} child]
+  [{:keys [icon timestamp theme]} child]
   [rn/view
    {:flex-direction :row
     :flex           1}
@@ -72,7 +72,7 @@
      :margin-right   40 ;; dirty hack, flexbox won't work as expected
      :flex           1}
     child
-    [sm-timestamp timestamp]]])
+    [sm-timestamp timestamp theme]]])
 
 (defn system-message-deleted-internal
   [{:keys [label child theme timestamp]}]
@@ -80,7 +80,8 @@
    {:icon      {:icon    :i/delete
                 :color   :danger
                 :opacity 5}
-    :timestamp timestamp}
+    :timestamp timestamp
+    :theme     theme}
    (if child
      child
      [text/text
@@ -151,7 +152,8 @@
   [system-message-base
    {:icon      {:icon    :i/pin
                 :color   (or customization-color :primary)
-                :opacity 5}
+                :opacity 5
+                :size    20}
     :timestamp timestamp}
    [rn/view
     [rn/view
