@@ -44,10 +44,10 @@ extern "C" NSString* StatusgoImageServerTLSCert();
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 
-  self.moduleName = @"StatusIm";
   if (!self.bridge) {
     self.bridge = [self createBridgeWithDelegate:self launchOptions:launchOptions];
   }
+
   [ReactNativeNavigation bootstrapWithBridge:self.bridge];
 
   signal(SIGPIPE, SIG_IGN);
@@ -78,8 +78,6 @@ extern "C" NSString* StatusgoImageServerTLSCert();
   center.delegate = self;
 
   SDWebImageDownloaderConfig.defaultDownloaderConfig.operationClass = [StatusDownloaderOperation class];
-
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
 
   return YES;
 }
