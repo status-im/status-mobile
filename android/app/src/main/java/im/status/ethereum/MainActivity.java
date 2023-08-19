@@ -23,7 +23,8 @@ import android.provider.Settings;
 import android.os.Bundle;
 import android.os.Handler;
 import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactRootView;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -32,7 +33,6 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 import com.reactnativenavigation.NavigationActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import androidx.core.splashscreen.SplashScreen;
-import com.facebook.react.ReactActivity;
 
 import java.util.Properties;
 import im.status.ethereum.module.StatusThreadPoolExecutor;
@@ -46,6 +46,29 @@ public class MainActivity extends NavigationActivity
     private boolean keepSplash = true;
     private final int SPLASH_DELAY = 3200;
 
+     /**
+       * Returns the name of the main component registered from JavaScript. This is used to schedule
+       * rendering of the component.
+       */
+      protected String getMainComponentName() {
+        return "StatusIm";
+      }
+
+    /**
+       * Returns the instance of the {@link ReactActivityDelegate}. Here we use a util class {@link
+       * DefaultReactActivityDelegate} which allows you to easily enable Fabric and Concurrent React
+       * (aka React 18) with two boolean flags.
+       */
+    /** MainActivity.java:64: error: incompatible types: MainActivity cannot be converted to ReactActivity this, ^
+        protected ReactActivityDelegate createReactActivityDelegate() {
+            return new DefaultReactActivityDelegate(
+            this,
+            getMainComponentName(),
+            // If you opted-in for the New Architecture, we enable the Fabric Renderer.
+             DefaultNewArchitectureEntryPoint.getFabricEnabled()
+        );
+      }
+     */
     private static void registerUncaughtExceptionHandler(final Context context) {
         final Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
