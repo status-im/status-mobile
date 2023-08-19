@@ -34,6 +34,5 @@
      {:type                :pinned
       :pinned-by           display-name
       :customization-color customization-color
-      :child               [reply/quoted-message (assoc quoted-message :disable-identicon? true) false
-                            true]
+      :child               [reply/quoted-message quoted-message false true]
       :timestamp           timestamp-str}]))
