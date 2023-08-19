@@ -466,9 +466,9 @@ com.facebook.fresco:nativeimagetranscoder:2.5.0
 com.facebook.fresco:soloader:2.5.0
 com.facebook.fresco:ui-common:2.5.0
 com.facebook.infer.annotation:infer-annotation:0.18.0
-com.facebook.soloader:annotation:0.10.3
-com.facebook.soloader:nativeloader:0.10.3
-com.facebook.soloader:soloader:0.10.3
+com.facebook.soloader:annotation:0.10.4
+com.facebook.soloader:nativeloader:0.10.4
+com.facebook.soloader:soloader:0.10.4
 com.facebook.yoga:proguard-annotations:1.19.0
 com.fasterxml.jackson.core:jackson-annotations:2.11.1
 com.fasterxml.jackson.core:jackson-core:2.11.1

@@ -9,9 +9,6 @@ stdenv.mkDerivation {
   phases = [
     "unpackPhase"
     "patchGradlePhase"
-    "patchBuildIdPhase"
-    "patchHermesPhase"
-    "patchJavaPhase"
     "patchReactNativePhase"
     "patchPodPhase"
     "installPhase"
@@ -48,25 +45,6 @@ stdenv.mkDerivation {
       fi
       ${patchMavenSources} $modBuildGradle
     done
-  '';
-  # Do not add a BuildId to the generated libraries, for reproducibility
-  patchBuildIdPhase = ''
-    substituteInPlace ./node_modules/react-native/ReactAndroid/src/main/jni/Application.mk --replace \
-        '-Wl,--build-id' \
-        '-Wl,--build-id=none'
-  '';
-  # Fix bugs in Hermes usage:
-  # https://github.com/facebook/react-native/issues/25601#issuecomment-510856047
-  # - Make PR builds also count as release builds
-  # - Fix issue where hermes command is being called with same input/output file
-  patchHermesPhase = ''
-    substituteInPlace ./node_modules/react-native/react.gradle --replace \
-        'targetName.toLowerCase().contains("release")' \
-        '!targetName.toLowerCase().contains("debug")'
-  '';
-  # Patch Java files in modules which are not yet ported to AndroidX
-  patchJavaPhase = ''
-    ${nodejs}/bin/node ./node_modules/jetifier/bin/jetify
   '';
 
   installPhase = ''
