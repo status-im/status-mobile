@@ -102,12 +102,12 @@
               :on-press            #(dispatch-and-chill [:open-modal :share-shell] 1000)})
       :i/qr-code]
      [rn/view
-      [unread-indicator]
       [quo/button
        (merge button-common-props
               {:accessibility-label :open-activity-center-button
                :on-press            #(rf/dispatch [:activity-center/open])})
-       :i/activity-center]]]))
+       :i/activity-center]
+      [unread-indicator]]]))
 
 ;; TODO: should be moved to quo2 https://github.com/status-im/status-mobile/issues/16964
 (defn top-nav
