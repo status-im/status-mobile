@@ -6,7 +6,6 @@
             [status-im2.contexts.quo-preview.preview :as preview]
             [react-native.blur :as blur]))
 
-
 (def descriptor
   [{:label "Blur:"
     :key   :blur?
@@ -61,7 +60,10 @@
                              :card?       true
                              :label       :none
                              :status      :default
-                             :size        :default})
+                             :size        :default
+                             :title    "Label"
+                             :subtitle "Description"
+                             :icon     :i/placeholder})
         blur? (reagent/cursor state [:blur?])]
     (fn []
       [rn/view
@@ -78,11 +80,9 @@
            :overlay-color :transparent}])
        [rn/view
         {:style {:align-items      :center
-                 :padding-vertical 10}}
-        [quo/data-item @state
-         {:title    "Label"
-          :subtitle "Description"
-          :icon     :i/placeholder}]]])))
+                 :padding-vertical 10
+                 :margin-horizontal 20}}
+        [quo/data-item @state]]])))
 
 (defn preview-data-item
   []

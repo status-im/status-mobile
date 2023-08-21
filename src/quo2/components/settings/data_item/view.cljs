@@ -5,26 +5,26 @@
             [quo2.components.settings.data-item.style :as style]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [quo2.foundations.resources :as quo2.resources]
+            [quo2.foundations.resources :as resources]
             [react-native.fast-image :as fast-image]
             [quo2.components.avatars.account-avatar.view :as account-avatar]
             [quo2.components.list-items.preview-list :as preview-list]
-            [quo2.components.common.not-implemented :as not-implemented]))
+            [quo2.components.common.not-implemented :as not-implemented]
+            [utils.i18n :as i18n]))
 
-(defn- render-right-side
+(defn- right-side
   [label icon-right? icon-color]
-  [rn/view
-   {:style style/right-container}
+  [rn/view {:style style/right-container}
    (case label
      :preview [preview-list/preview-list
                {:type      :user
                 :size      24
                 :list-size 3}]
      :graph   [text/text "graph"]
-     :none    nil)
+     :none    nil
+     nil)
    (when icon-right?
-     [rn/view
-      {:style {:margin-left (if (or (= label :graph) (= label :none)) 12 8)}}
+     [rn/view {:style (style/right-icon label)}
       [icons/icon
        (if (= :none label)
          :i/copy
@@ -32,26 +32,24 @@
        {:color icon-color
         :size  20}]])])
 
-(defn- render-left-side
+(defn- left-side
   [theme title status size blur? description icon subtitle label icon-color]
-  [rn/view
-   [rn/view
-    {:style style/title-container}
+  [rn/view {:style style/left-side}
+   [rn/view {:style style/title-container}
     [text/text
      {:weight :regular
       :size   :paragraph-2
-      :style  (style/title theme)}
+      :style  style/title}
      title]
     (when (and (= :graph label) (not= :small size))
       [text/text
        {:weight :regular
         :size   :label
-        :style  (style/title theme)}
-       "Days"])]
+        :style  style/title}
+       (i18n/label :t/days)])]
    (if (= status :loading)
-     [rn/view {:style (style/loading-container size theme blur?)}]
-     [rn/view
-      {:style style/subtitle-container}
+     [rn/view {:style (style/loading-container size blur?)}]
+     [rn/view {:style style/subtitle-container}
       (when (not= :small size)
         [rn/view {:style (style/subtitle-icon-container description)}
          (case description
@@ -62,19 +60,17 @@
                       :size                16
                       :emoji               "🎮"
                       :type                :defaul}]
-           :network [fast-image/fast-image {:source (quo2.resources/tokens :eth) :style style/image}]
+           :network [fast-image/fast-image {:source (resources/tokens :eth) :style style/image}]
            :default nil
            nil)])
       [text/text
        {:weight :medium
         :size   :paragraph-2
-        :style  (style/description theme blur?)}
+        :style  (style/description blur?)}
        subtitle]])])
 
-(defn- view-internal
-  []
-  (fn [{:keys [blur? card? icon-right? label description status size theme on-press]}
-       {:keys [title subtitle icon]}]
+(def view-internal
+  (fn [{:keys [blur? card? icon-right? label description status size theme on-press title subtitle icon]}]
     (let [icon-color (cond
                        (or blur? (= :dark theme)) colors/white
                        (= :light theme)           colors/neutral-100)]
@@ -83,9 +79,9 @@
         [rn/pressable
          {:disabled (not icon-right?)
           :on-press on-press
-          :style    (style/container size card? theme blur?)}
-         [render-left-side theme title status size blur? description icon subtitle label icon-color]
+          :style    (style/container size card? blur?)}
+         [left-side theme title status size blur? description icon subtitle label icon-color]
          (when (and (= :default status) (not= :small size))
-           [render-right-side label icon-right? icon-color])]))))
+           [right-side label icon-right? icon-color])]))))
 
 (def view (quo.theme/with-theme view-internal))
