@@ -148,18 +148,11 @@
                        {:name      :slide-button
                         :component slide-button/preview-slide-button}
                        {:name      :predictive-keyboard
-<<<<<<< HEAD
-                        :component predictive-keyboard/preview-predictive-keyboard}]
-=======
-                        :options   {:topBar {:visible true}}
                         :component predictive-keyboard/preview-predictive-keyboard}
                        {:name      :wallet-button
-                        :options   {:topBar {:visible true}}
                         :component wallet-button/preview}
                        {:name      :wallet-ctas
-                        :options   {:topBar {:visible true}}
                         :component wallet-ctas/preview}]
->>>>>>> 56c80e746 (quo2: wallet button and CTAs)
    :browser           [{:name      :browser-input
                         :component browser-input/preview-browser-input}]
    :calendar          [{:name      :calendar
