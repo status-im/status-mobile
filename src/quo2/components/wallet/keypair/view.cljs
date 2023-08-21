@@ -39,14 +39,14 @@
 
 (defn title-view
   [full-name action selected? type customization-color on-options-press theme]
-  [rn/view {:style style/title-container}
+  [rn/view {:style style/title-container
+            :accessibility-label :title}
    [text/text {:weight :semi-bold}
     (if (= type :default-keypair) (keypair-string full-name) full-name)]
    (if (= action :selector)
      [selectors/radio
       {:checked?            selected?
-       :customization-color customization-color
-       :accessibility-label :radio-button}]
+       :customization-color customization-color}]
      [rn/pressable {:on-press on-options-press}
       [icon/icon :i/options
        {:color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
@@ -59,6 +59,7 @@
             :align-items    :center}}
    [text/text
     {:size  :paragraph-2
+     :accessibility-label :details
      :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
     (details-string address stored)]
    (when (= stored :on-keycard)

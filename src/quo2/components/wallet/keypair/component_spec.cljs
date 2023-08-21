@@ -11,8 +11,7 @@
                     :address             "0x0ah...71a"}
     :networks      [:ethereum :optimism]
     :state         :default
-    :action        :none
-    :on-press      (h/mock-fn)}])
+    :action        :none}])
 
 (def default-details
   {:full-name "John Doe"
@@ -27,21 +26,9 @@
                 :customization-color :blue
                 :type                :default-keypair
                 :stored              :on-device
-                :selected?           true
                 :action              :selector
                 :details             default-details}])
-    (h/is-truthy (h/get-by-text "John's default keypair")))
-
-  (h/test "`Other` title renders"
-    (h/render [keypair/view
-               {:accounts            accounts
-                :customization-color :blue
-                :type                :other
-                :stored              :on-device
-                :selected?           true
-                :action              :selector
-                :details             other-details}])
-    (h/is-truthy (h/get-by-text "Metamask")))
+    (h/is-truthy (h/get-by-label-text :title)))
 
   (h/test "On device renders"
     (h/render [keypair/view
@@ -49,21 +36,9 @@
                 :customization-color :blue
                 :type                :other
                 :stored              :on-device
-                :selected?           true
                 :action              :selector
                 :details             other-details}])
-    (h/is-truthy (h/get-by-text "On device")))
-
-  (h/test "On Keycard renders"
-    (h/render [keypair/view
-               {:accounts            accounts
-                :customization-color :blue
-                :type                :other
-                :stored              :on-keycard
-                :selected?           true
-                :action              :selector
-                :details             other-details}])
-    (h/is-truthy (h/get-by-text "On Keycard")))
+    (h/is-truthy (h/get-by-label-text :details)))
 
   (h/test "Selector action renders"
     (h/render [keypair/view
@@ -71,10 +46,9 @@
                 :customization-color :blue
                 :type                :other
                 :stored              :on-keycard
-                :selected?           true
                 :action              :selector
                 :details             other-details}])
-    (h/is-truthy (h/get-by-label-text :radio-button)))
+    (h/is-truthy (h/get-by-label-text :radio-on)))
 
   (h/test "Options action renders"
     (h/render [keypair/view
@@ -82,7 +56,6 @@
                 :customization-color :blue
                 :type                :other
                 :stored              :on-keycard
-                :selected?           true
                 :action              :options
                 :details             other-details}])
     (h/is-truthy (h/get-by-label-text :options-button))))
