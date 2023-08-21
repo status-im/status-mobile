@@ -13,12 +13,13 @@
            muted?]}]
   [rn/view {:style (merge style/container style)}
    [text/text
-    {:weight          :semi-bold
-     :size            :paragraph-2
-     :number-of-lines 1
-     :style           {:color (if muted?
-                                colors/neutral-50
-                                (colors/theme-colors colors/neutral-100 colors/white))}}
+    {:weight              :semi-bold
+     :size                :paragraph-2
+     :number-of-lines     1
+     :accessibility-label :author-primary-name
+     :style               {:color (if muted?
+                                    colors/neutral-50
+                                    (colors/theme-colors colors/neutral-100 colors/white))}}
     primary-name]
    (when (not (string/blank? secondary-name))
      [:<>
@@ -31,6 +32,7 @@
        {:weight          :medium
         :size            :paragraph-2
         :number-of-lines 1
+        :accessibility-label :author-secondary-name
         :style           {:color (if muted?
                                    colors/neutral-50
                                    (colors/theme-colors colors/neutral-60 colors/neutral-40))}}
