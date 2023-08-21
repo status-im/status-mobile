@@ -2280,5 +2280,7 @@
     "collectibles": "Collectibles",
     "no-collectibles-description": "Don't be a bored ape",
     "no-activity": "No activity",
-    "no-activity-description": "C'mon do something..."
+    "no-activity-description": "C'mon do something...",
+    "buy": "Buy",
+    "bridge": "Bridge"
 }

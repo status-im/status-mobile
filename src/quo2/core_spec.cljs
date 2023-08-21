@@ -8,6 +8,8 @@
     [quo2.components.buttons.composer-button.component-spec]
     [quo2.components.buttons.predictive-keyboard.component-spec]
     [quo2.components.buttons.slide-button.component-spec]
+    [quo2.components.buttons.wallet-button.component-spec]
+    [quo2.components.buttons.wallet-ctas.component-spec]
     [quo2.components.calendar.calendar.component-spec]
     [quo2.components.calendar.calendar-day.component-spec]
     [quo2.components.calendar.calendar.month-picker.component-spec]
