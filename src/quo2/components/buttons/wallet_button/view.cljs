@@ -8,10 +8,10 @@
     [reagent.core :as reagent]))
 
 (defn- view-internal
-  [_ _]
+  []
   (let [pressed? (reagent/atom false)]
     (fn
-      [{:keys [on-press on-long-press disabled? theme icon accessibility-label container-style]}]
+      [{:keys [on-press on-long-press disabled? theme icon accessibility-label container-style theme]}]
       [rn/pressable
        {:accessibility-label (or accessibility-label :wallet-button)
         :on-press            on-press
@@ -24,6 +24,6 @@
                                                  :disabled? disabled?})
                                     container-style)}
        [quo2.icons/icon icon
-        {:color (colors/theme-colors colors/neutral-100 colors/white)}]])))
+        {:color (colors/theme-colors colors/neutral-100 colors/white theme)}]])))
 
 (def view (theme/with-theme view-internal))

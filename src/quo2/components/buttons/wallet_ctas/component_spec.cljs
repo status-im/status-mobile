@@ -5,7 +5,7 @@
 (h/describe "Wallet CTAs test"
   (h/test "Buttons render"
     (h/render [wallet-ctas/view])
-    (h/is-truthy (h/get-by-text "Buy"))
     (h/is-truthy (h/get-by-text "Send"))
+    (h/is-truthy (h/get-by-text "Buy"))
     (h/is-truthy (h/get-by-text "Receive"))
     (h/is-truthy (h/get-by-text "Bridge"))))
