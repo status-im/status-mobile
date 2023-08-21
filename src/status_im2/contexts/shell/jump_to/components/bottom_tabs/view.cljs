@@ -1,8 +1,8 @@
 (ns status-im2.contexts.shell.jump-to.components.bottom-tabs.view
   (:require [utils.re-frame :as rf]
             [react-native.core :as rn]
-            [react-native.blur :as blur]
             [react-native.gesture :as gesture]
+            [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.shell.jump-to.utils :as utils]
             [status-im2.contexts.shell.jump-to.state :as state]
@@ -14,8 +14,8 @@
 (defn blur-overlay-params
   [style]
   {:style         style
-   :blur-amount   30
-   :blur-radius   25
+   :blur-amount   (if platform/android? 30 20)
+   :blur-radius   (if platform/android? 25 10)
    :blur-type     :transparent
    :overlay-color :transparent})
 
@@ -53,13 +53,15 @@
                                            (gesture/number-of-taps 2)
                                            (gesture/on-start
                                             (fn [_event]
-                                              (rf/dispatch [:messages-home/select-tab :tab/recent]))))]
+                                              (rf/dispatch [:messages-home/select-tab :tab/recent]))))
+        bottom-tabs-blur-overlay-style (style/bottom-tabs-blur-overlay (:bottom-tabs-height
+                                                                        shared-values))]
     (utils/load-stack @state/selected-stack-id)
     (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
     [reanimated/view
      {:style (style/bottom-tabs-container pass-through? (:bottom-tabs-height shared-values))}
      (when pass-through?
-       [blur/view (blur-overlay-params style/bottom-tabs-blur-overlay)])
+       [reanimated/blur-view (blur-overlay-params bottom-tabs-blur-overlay-style)])
      [rn/view {:style (style/bottom-tabs)}
       [gesture/gesture-detector {:gesture communities-double-tab-gesture}
        [bottom-tab :i/communities :communities-stack shared-values notifications-data]]
