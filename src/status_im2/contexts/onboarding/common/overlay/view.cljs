@@ -3,6 +3,7 @@
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [reagent.core :as reagent]
+            [react-native.platform :as platform]
             [status-im2.contexts.onboarding.common.overlay.style :as style]
             [status-im2.constants :as constants]))
 
@@ -61,7 +62,7 @@
       :style          (style/blur-container opacity)}
      [blur/view
       {:blur-amount   @blur-amount
-       :blur-radius   25
+       :blur-radius   (if platform/android? 25 10)
        :blur-type     :transparent
        :overlay-color :transparent
        :style         style/blur-style}]]))
