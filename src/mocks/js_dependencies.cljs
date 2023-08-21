@@ -368,6 +368,11 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 (def worklet-factory
   #js {:applyAnimationsToStyle (fn [])})
 
+(def twemoji
+  #js
+   {:Twemoji     #js {}
+    :TwemojiText #js {}})
+
 ;; Update i18n_resources.cljs
 (defn mock
   [module]
@@ -418,6 +423,7 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
     "react-native-transparent-video"                 react-native-transparent-video
     "react-native-orientation-locker"                react-native-orientation-locker
     "react-native-gifted-charts"                     react-native-gifted-charts
+    "../src/js/components/twemoji.js"                twemoji
     "../src/js/worklets/core.js"                     worklet-factory
     "../src/js/worklets/shell/bottom_tabs.js"        #js {}
     "../src/js/worklets/shell/home_stack.js"         #js {}
