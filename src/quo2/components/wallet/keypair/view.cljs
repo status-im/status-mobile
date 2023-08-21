@@ -39,8 +39,9 @@
 
 (defn title-view
   [full-name action selected? type customization-color on-options-press theme]
-  [rn/view {:style style/title-container
-            :accessibility-label :title}
+  [rn/view
+   {:style               style/title-container
+    :accessibility-label :title}
    [text/text {:weight :semi-bold}
     (if (= type :default-keypair) (keypair-string full-name) full-name)]
    (if (= action :selector)
@@ -58,9 +59,9 @@
    {:style {:flex-direction :row
             :align-items    :center}}
    [text/text
-    {:size  :paragraph-2
+    {:size                :paragraph-2
      :accessibility-label :details
-     :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+     :style               {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
     (details-string address stored)]
    (when (= stored :on-keycard)
      [rn/view {:style {:margin-left 4}}
