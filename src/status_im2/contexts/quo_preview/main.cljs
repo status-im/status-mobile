@@ -62,6 +62,7 @@
     [status-im2.contexts.quo-preview.links.link-preview :as link-preview]
     [status-im2.contexts.quo-preview.list-items.account-list-card :as account-list-card]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
+    [status-im2.contexts.quo-preview.list-items.dapp :as dapp]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
@@ -111,8 +112,8 @@
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
-    [status-im2.contexts.quo-preview.wallet.account-overview :as account-overview]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
+    [status-im2.contexts.quo-preview.wallet.account-overview :as account-overview]
     [status-im2.contexts.quo-preview.wallet.keypair :as keypair]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
@@ -248,6 +249,8 @@
                        {:name      :community-list
                         :options   {:insets {:top? true}}
                         :component community-list/view}
+                       {:name      :dapp
+                        :component dapp/preview}
                        {:name      :preview-lists
                         :component preview-lists/preview-preview-lists}
                        {:name      :user-list

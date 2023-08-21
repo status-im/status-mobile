@@ -62,6 +62,7 @@
     quo2.components.list-items.account-list-card.view
     quo2.components.list-items.channel
     quo2.components.list-items.community.view
+    quo2.components.list-items.dapp.view
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list
     quo2.components.list-items.token-value.view
@@ -110,8 +111,8 @@
     quo2.components.tags.tags
     quo2.components.tags.token-tag
     quo2.components.text-combinations.title.view
-    quo2.components.wallet.account-overview.view
     quo2.components.wallet.account-card.view
+    quo2.components.wallet.account-overview.view
     quo2.components.wallet.keypair.view
     quo2.components.wallet.network-amount.view
     quo2.components.wallet.network-bridge.view
@@ -235,6 +236,7 @@
 ;;;; List items
 (def account-list-card quo2.components.list-items.account-list-card.view/view)
 (def channel-list-item quo2.components.list-items.channel/list-item)
+(def dapp quo2.components.list-items.dapp.view/view)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list/preview-list)
 (def user-list quo2.components.list-items.user-list/user-list)
