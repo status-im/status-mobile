@@ -27,10 +27,13 @@
    :flex                1
    :accessibility-label :bottom-tabs})
 
-(def bottom-tabs-blur-overlay
-  {:position         :absolute
-   :left             0
-   :right            0
-   :bottom           0
-   :height           (utils/bottom-tabs-extended-container-height)
-   :background-color colors/neutral-100-opa-70})
+(defn bottom-tabs-blur-overlay
+  [height]
+  (reanimated/apply-animations-to-style
+   {:height height}
+   {:position         :absolute
+    :left             0
+    :right            0
+    :bottom           0
+    :height           (utils/bottom-tabs-container-height)
+    :background-color colors/neutral-100-opa-70-blur}))
