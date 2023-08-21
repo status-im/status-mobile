@@ -14,8 +14,7 @@
                     :address             "0x0ah...71a"}
     :networks      [:ethereum :optimism]
     :state         :default
-    :action        :none
-    :on-press      (fn [] (js/alert "Button pressed"))}
+    :action        :none}
    {:account-props {:customization-color :purple
                     :size                32
                     :emoji               "\uD83C\uDF7F"
@@ -24,8 +23,7 @@
                     :address             "0x0ah...72b"}
     :networks      [:ethereum :optimism]
     :state         :default
-    :action        :none
-    :on-press      (fn [] (js/alert "Button pressed"))}
+    :action        :none}
    {:account-props {:customization-color :army
                     :size                32
                     :emoji               "\uD83D\uDCC8"
@@ -34,8 +32,7 @@
                     :address             "0x0ah...73c"}
     :networks      [:ethereum :optimism]
     :state         :default
-    :action        :none
-    :on-press      (fn [] (js/alert "Button pressed"))}
+    :action        :none}
    {:account-props {:customization-color :orange
                     :size                32
                     :emoji               "\uD83C\uDFF0"
@@ -44,8 +41,7 @@
                     :address             "0x0ah...74e"}
     :networks      [:ethereum :optimism]
     :state         :default
-    :action        :none
-    :on-press      (fn [] (js/alert "Button pressed"))}
+    :action        :none}
    {:account-props {:customization-color :yellow
                     :size                32
                     :emoji               "\uD83C\uDFDD️"
@@ -54,8 +50,7 @@
                     :address             "0x0ah...75f"}
     :networks      [:ethereum :optimism]
     :state         :default
-    :action        :none
-    :on-press      (fn [] (js/alert "Button pressed"))}])
+    :action        :none}])
 
 (def descriptor
   [{:label   "Stored:"
