@@ -2281,16 +2281,9 @@
     "no-collectibles-description": "Don't be a bored ape",
     "no-activity": "No activity",
     "no-activity-description": "C'mon do something...",
-<<<<<<< HEAD
     "buy": "Buy",
-    "bridge": "Bridge"
-=======
+    "bridge": "Bridge",
     "on-device": "On device",
-<<<<<<< HEAD
-    "on-keycard": "On Keycard"
->>>>>>> 93b6969bd (quo2 wallet: keypair component)
-=======
     "on-keycard": "On Keycard",
     "keypair-title": "{{name}}'s default keypair"
->>>>>>> 29b1f1710 (review)
 }
