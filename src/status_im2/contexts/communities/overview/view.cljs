@@ -367,4 +367,4 @@
                  :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}
       {:position :absolute
-       :bottom   41}]]))
+       :bottom   34}]]))

@@ -61,6 +61,7 @@
         :active-opacity      1
         :hit-slop            {:top 5 :bottom 5 :left 5 :right 5}
         :pointer-events      :auto
+        :style               {:height 24}
         :accessibility-label type}
        [rn/view
         {:style (merge
