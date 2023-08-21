@@ -96,20 +96,18 @@ const TwemojiImage = ({ style, rawText, iconId }) => {
   }
 
   return (
-    <View style={{ paddingHorizontal: 2 }}>
-      <FastImage
-        style={{
-          width: fontSize,
-          height: fontSize,
-        }}
-        resizeMode={FastImage.resizeMode.contain}
-        source={{ uri: source, priority: FastImage.priority.high }}
-        onError={() => {
-          setErrorInFetching(true);
-        }}
-        {...style?.imageProps}
-      />
-    </View>
+    <FastImage
+      style={{
+        width: fontSize,
+        height: fontSize,
+      }}
+      resizeMode={FastImage.resizeMode.contain}
+      source={{ uri: source, priority: FastImage.priority.high }}
+      onError={() => {
+        setErrorInFetching(true);
+      }}
+      {...style?.imageProps}
+    />
   );
 };
 
