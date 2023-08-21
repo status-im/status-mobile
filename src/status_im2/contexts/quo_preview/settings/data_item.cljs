@@ -75,7 +75,7 @@
                            :left             0
                            :right            0
                            :bottom           0
-                           :height           80
+                           :height           75
                            :background-color colors/neutral-80-opa-70}
            :overlay-color :transparent}])
        [rn/view

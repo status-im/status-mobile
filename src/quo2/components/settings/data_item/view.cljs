@@ -9,8 +9,8 @@
             [react-native.fast-image :as fast-image]
             [quo2.components.avatars.account-avatar.view :as account-avatar]
             [quo2.components.list-items.preview-list :as preview-list]
-            [quo2.components.common.not-implemented :as not-implemented]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [quo2.components.common.not-implemented.view :as not-implemented]))
 
 (defn- right-side
   [label icon-right? icon-color]
@@ -75,7 +75,7 @@
                        (or blur? (= :dark theme)) colors/white
                        (= :light theme)           colors/neutral-100)]
       (if (= :graph label)
-        [not-implemented/not-implemented [not-implemented/not-implemented [text/text "not implemented"]]]
+        [not-implemented/not-implemented blur?]
         [rn/pressable
          {:disabled (not icon-right?)
           :on-press on-press
