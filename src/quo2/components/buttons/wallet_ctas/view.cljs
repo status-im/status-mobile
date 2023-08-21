@@ -10,8 +10,10 @@
 
 
 (defn action-button
-  [{:keys [icon text on-press theme]}]
-  [rn/view {:style style/button-container}
+  [{:keys [icon text on-press theme accessibility-label]}]
+  [rn/view
+   {:style               style/button-container
+    :accessibility-label accessibility-label}
    [wallet-button/view
     {:icon          icon
      :on-press      on-press
@@ -26,24 +28,28 @@
   [{:keys [theme buy-action send-action receive-action bridge-action]}]
   [rn/view {:style style/container}
    [action-button
-    {:icon     :i/add
-     :text     (i18n/label :t/buy)
-     :on-press buy-action
-     :theme    theme}]
+    {:icon                :i/add
+     :text                (i18n/label :t/buy)
+     :on-press            buy-action
+     :theme               theme
+     :accessibility-label :buy}]
    [action-button
-    {:icon     :i/send
-     :text     (i18n/label :t/send)
-     :on-press send-action
-     :theme    theme}]
+    {:icon                :i/send
+     :text                (i18n/label :t/send)
+     :on-press            send-action
+     :theme               theme
+     :accessibility-label :send}]
    [action-button
-    {:icon     :i/receive
-     :text     (i18n/label :t/receive)
-     :on-press receive-action
-     :theme    theme}]
+    {:icon                :i/receive
+     :text                (i18n/label :t/receive)
+     :on-press            receive-action
+     :theme               theme
+     :accessibility-label :receive}]
    [action-button
-    {:icon     :i/bridge
-     :text     (i18n/label :t/bridge)
-     :on-press bridge-action
-     :theme    theme}]])
+    {:icon                :i/bridge
+     :text                (i18n/label :t/bridge)
+     :on-press            bridge-action
+     :theme               theme
+     :accessibility-label :bridge}]])
 
 (def view (quo.theme/with-theme view-internal))
