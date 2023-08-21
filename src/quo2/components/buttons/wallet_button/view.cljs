@@ -11,7 +11,7 @@
   []
   (let [pressed? (reagent/atom false)]
     (fn
-      [{:keys [on-press on-long-press disabled? theme icon accessibility-label container-style theme]}]
+      [{:keys [on-press on-long-press disabled? icon accessibility-label container-style theme]}]
       [rn/pressable
        {:accessibility-label (or accessibility-label :wallet-button)
         :on-press            on-press
