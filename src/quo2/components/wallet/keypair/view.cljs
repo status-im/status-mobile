@@ -53,7 +53,7 @@
         :accessibility-label :options-button}]])])
 
 (defn details-view
-  [address stored on-options-press theme]
+  [address stored theme]
   [rn/view
    {:style {:flex-direction :row
             :align-items    :center}}
