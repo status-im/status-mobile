@@ -31,11 +31,10 @@
 
 (defn- text-view-internal
   [props & children]
-  (let [style (text-style props)]
-    (into [twemoji/text
-           (merge {:style style}
-                  (dissoc props :style :size :align :weight :color :theme))]
-          children)))
+  (let [style      (text-style props)
+        text-props (merge {:style style}
+                          (dissoc props :style :size :align :weight :color :theme))]
+    (into [twemoji/text text-props] children)))
 
 (def ^:private text-view (quo.theme/with-theme text-view-internal))
 
