@@ -83,9 +83,10 @@ fi
 gen_proj_list
 gen_deps_list
 # FIXME: Temporary fix for missing package.
-echo 'org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.6.10' >> "${DEPS_LIST}"
-echo 'com.android.tools.lint:lint-gradle:30.2.2' >> "${DEPS_LIST}"
-echo 'com.android.tools.build:gradle:7.0.4' >> "${DEPS_LIST}"
+echo 'com.squareup.okio:okio:1.13.0' >> "${DEPS_LIST}"
+echo 'org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.7.22' >> "${DEPS_LIST}"
+echo 'com.android.tools.lint:lint-gradle:30.4.2' >> "${DEPS_LIST}"
+echo 'com.android.tools.build:gradle:7.4.2' >> "${DEPS_LIST}"
 gen_deps_urls
 gen_deps_json
 

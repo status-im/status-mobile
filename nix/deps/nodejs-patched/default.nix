@@ -11,6 +11,7 @@ stdenv.mkDerivation {
     "patchGradlePhase"
     "patchReactNativePhase"
     "patchKeyChainLibraryPhase"
+    "patchReactNativeCameraKitLibraryPhase"
     "patchPodPhase"
     "installPhase"
   ];
@@ -75,6 +76,18 @@ stdenv.mkDerivation {
    sed -i -e '/classpath/d' \
           -e '/apply plugin: "com\.adarshr\.test-logger"/d' ./node_modules/react-native-keychain/android/build.gradle
   '';
+
+#  Fix for :react-native-camera-kit:compileDebugKotlin FAILED
+#  Error : CKCamera.kt: (183, 17): 'onScale' overrides nothing
+#  fix from : https://github.com/teslamotors/react-native-camera-kit/issues/535#issuecomment-1506229244
+#  note by library author : https://github.com/teslamotors/react-native-camera-kit/pull/551#issuecomment-1615305719
+#  TODO: remove this patch when we react-native-camera-kit releases a stable v14
+  patchReactNativeCameraKitLibraryPhase = ''
+    substituteInPlace ./node_modules/react-native-camera-kit/android/src/main/java/com/rncamerakit/CKCamera.kt --replace \
+      'override fun onScale(detector: ScaleGestureDetector?)' \
+      'override fun onScale(detector: ScaleGestureDetector)'
+  '';
+
 
 #  Fix pod issue in react-native 0.67.5:
 #  https://stackoverflow.com/questions/71248072/no-member-named-cancelbuttontintcolor-in-jsnativeactionsheetmanagerspecsh

@@ -384,7 +384,7 @@
                                                                :getBottomSpace     (fn [])})
     "react-native-screens"                           (clj->js {})
     "react-native-reanimated"                        react-native-reanimated
-    "react-native-redash/lib/module/v1"              react-native-redash
+    "react-native-redash"                            react-native-redash
     "react-native-redash"                            react-native-redash
     "react-native-fetch-polyfill"                    fetch
     "react-native-status-keycard"                    status-keycard
@@ -405,7 +405,7 @@
     "react-native-navigation"                        react-native-navigation
     "@react-native-community/push-notification-ios"  push-notification-ios
     "@react-native-community/blur"                   react-native-blur
-    "@react-native-community/cameraroll"             react-native-camera-roll
+    "@react-native-camera-roll/camera-roll"             react-native-camera-roll
     "react-native-camera-kit"                        react-native-camera-kit
     "react-native-permissions"                       react-native-permissions
     "rn-emoji-keyboard"                              rn-emoji-keyboard
@@ -432,7 +432,6 @@
     "../src/js/worklets/parallax.js"                 #js {}
     "../src/js/worklets/identifiers_highlighting.js" #js {}
     "./fleets.js"                                    default-fleets
-    "@walletconnect/client"                          wallet-connect-client
     "../translations/ar.json"                        (js/JSON.parse (slurp "./translations/ar.json"))
     "../translations/de.json"                        (js/JSON.parse (slurp "./translations/de.json"))
     "../translations/en.json"                        (js/JSON.parse (slurp "./translations/en.json"))
