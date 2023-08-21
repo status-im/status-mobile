@@ -56,6 +56,7 @@
     [quo2.components.tags.status-tags-component-spec]
     [quo2.components.wallet.account-overview.component-spec]
     [quo2.components.wallet.account-card.component-spec]
+    [quo2.components.wallet.keypair.component-spec]
     [quo2.components.wallet.network-amount.component-spec]
     [quo2.components.wallet.network-bridge.component-spec]
     [quo2.components.wallet.progress-bar.component-spec]

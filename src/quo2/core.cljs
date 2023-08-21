@@ -111,6 +111,7 @@
     quo2.components.text-combinations.title.view
     quo2.components.wallet.account-overview.view
     quo2.components.wallet.account-card.view
+    quo2.components.wallet.keypair.view
     quo2.components.wallet.network-amount.view
     quo2.components.wallet.network-bridge.view
     quo2.components.wallet.progress-bar.view
@@ -317,6 +318,7 @@
 ;;;; Wallet
 (def account-card quo2.components.wallet.account-card.view/view)
 (def account-overview quo2.components.wallet.account-overview.view/view)
+(def keypair quo2.components.wallet.keypair.view/view)
 (def network-amount quo2.components.wallet.network-amount.view/view)
 (def network-bridge quo2.components.wallet.network-bridge.view/view)
 (def progress-bar quo2.components.wallet.progress-bar.view/view)

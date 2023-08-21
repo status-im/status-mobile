@@ -2282,5 +2282,8 @@
     "no-activity": "No activity",
     "no-activity-description": "C'mon do something...",
     "buy": "Buy",
-    "bridge": "Bridge"
+    "bridge": "Bridge",
+    "on-device": "On device",
+    "on-keycard": "On Keycard",
+    "keypair-title": "{{name}}'s default keypair"
 }
