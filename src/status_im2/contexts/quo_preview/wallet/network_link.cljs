@@ -5,6 +5,13 @@
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
+(def networks
+  [{:key   :ethereum
+    :value "Ethereum"}
+   {:key   :optimism
+    :value "Optimism"}
+   {:key   :arbitrum
+    :vault "Arbitrum"}])
 
 (def descriptor
   [{:label   "Shape:"
@@ -15,11 +22,21 @@
               {:key   :1x
                :value "1x"}
               {:key   :2x
-               :value "2x"}]}])
+               :value "2x"}]}
+   {:label   "Source:"
+    :key     :source
+    :type    :select
+    :options networks}
+   {:label   "Destination:"
+    :key     :destination
+    :type    :select
+    :options networks}])
 
 (defn preview
   []
-  (let [state (reagent/atom {:shape :linear})]
+  (let [state (reagent/atom {:shape       :linear
+                             :source      :ethereum
+                             :destination :optimism})]
     (fn []
       [rn/view
        {:style {:flex               1
@@ -30,4 +47,4 @@
         {:style {:flex        1
                  :padding-top 40
                  :align-items :center}}
-        [quo/network-link (merge @state {:preview? true})]]])))
+        [quo/network-link @state]]])))
