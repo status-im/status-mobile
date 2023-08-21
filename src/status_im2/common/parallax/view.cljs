@@ -6,7 +6,7 @@
             [status-im2.common.parallax.style :as style]))
 
 (defn f-sensor-animated-video
-  [{:keys [offset stretch order source disable-parallax?]}]
+  [{:keys [offset stretch order source disable-parallax? enable-looping?]}]
   (let [double-stretch          (* 2 stretch)
         {window-width  :width
          window-height :height} (rn/get-window)
@@ -25,14 +25,15 @@
                                          image-style]}
        [transparent-video/view
         {:source source
-         :style  style/video}]])))
+         :style  style/video
+         :loop   enable-looping?}]])))
 
 (defn sensor-animated-video
   [props]
   [:f> f-sensor-animated-video props])
 
 (defn f-video
-  [{:keys [layers disable-parallax? offset stretch container-style]
+  [{:keys [layers disable-parallax? offset stretch container-style enable-looping?]
     :or   {offset  50
            stretch 0}}]
   [rn/view
@@ -44,7 +45,8 @@
                     :offset            offset
                     :stretch           stretch
                     :order             (inc idx)
-                    :disable-parallax? disable-parallax?}])
+                    :disable-parallax? disable-parallax?
+                    :enable-looping?   enable-looping?}])
                 layers)])
 
 (defn video
