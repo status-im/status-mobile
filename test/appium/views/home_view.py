@@ -33,14 +33,18 @@ class ChatElement(SilentButton):
         self.username = username_part
         self.community = community
         self.community_channel = community_channel
-        if self.community_channel is True:
+        if self.community_channel:
             super().__init__(
                 driver,
                 xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
-        else:
+        elif community:
             super().__init__(
                 driver,
                 xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)
+        else:
+            super().__init__(
+                driver,
+                xpath="//*[@content-desc='author-primary-name'][starts-with(@text,'%s')]/.." % username_part)
 
     def navigate(self):
         if self.community:
