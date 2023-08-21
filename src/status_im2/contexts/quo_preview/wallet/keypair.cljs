@@ -65,9 +65,6 @@
                :value "On device"}
               {:key   :on-keycard
                :value "On Keycard"}]}
-   {:label "Selected?:"
-    :key   :selected?
-    :type  :boolean}
    {:label   "Action:"
     :key     :action
     :type    :select
@@ -96,7 +93,7 @@
                              :customization-color :blue
                              :type                :default-keypair
                              :stored              :on-device
-                             :selected?           true
+                             :on-options-press    #(js/alert "Options pressed")
                              :action              :selector})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}

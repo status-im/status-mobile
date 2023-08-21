@@ -9,6 +9,7 @@
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
     [quo2.components.selectors.selectors.view :as selectors]
+    [reagent.core :as reagent]
     [utils.i18n :as i18n]
     [quo2.components.wallet.keypair.style :as style]
     [clojure.string :as string]))
@@ -37,7 +38,7 @@
       :border? true}]))
 
 (defn title-view
-  [full-name action selected? type customization-color theme]
+  [full-name action selected? type customization-color on-options-press theme]
   [rn/view {:style style/title-container}
    [text/text {:weight :semi-bold}
     (if (= type :default-keypair) (keypair-string full-name) full-name)]
@@ -46,12 +47,13 @@
       {:checked?            selected?
        :customization-color customization-color
        :accessibility-label :radio-button}]
-     [icon/icon :i/options
-      {:color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-       :accessibility-label :options-button}])])
+     [rn/pressable {:on-press on-options-press}
+      [icon/icon :i/options
+       {:color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+        :accessibility-label :options-button}]])])
 
 (defn details-view
-  [address stored theme]
+  [address stored on-options-press theme]
   [rn/view
    {:style {:flex-direction :row
             :align-items    :center}}
@@ -66,20 +68,24 @@
         :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]])])
 
 (defn- view-internal
-  [{:keys [theme accounts customization-color type details stored selected? action]}]
-  (let [{:keys [address full-name]} details]
-    [rn/view {:style (style/container selected? customization-color theme)}
-     [rn/view {:style style/header-container}
-      [avatar type full-name customization-color]
-      [rn/view
-       {:style {:margin-left 8
-                :flex        1}}
-       [title-view full-name action selected? type customization-color theme]
-       [details-view address stored theme]]]
-     [rn/flat-list
-      {:data      accounts
-       :render-fn account-list-card/view
-       :separator [rn/view {:style {:height 8}}]
-       :style     {:padding-horizontal 8}}]]))
+  []
+  (let [selected? (reagent/atom true)]
+    (fn [{:keys [theme accounts customization-color type details stored action on-options-press]}]
+      (let [{:keys [address full-name]} details]
+        [rn/pressable
+         {:style    (style/container @selected? customization-color theme)
+          :on-press #(when (= action :selector) (reset! selected? (not @selected?)))}
+         [rn/view {:style style/header-container}
+          [avatar type full-name customization-color]
+          [rn/view
+           {:style {:margin-left 8
+                    :flex        1}}
+           [title-view full-name action @selected? type customization-color on-options-press theme]
+           [details-view address stored theme]]]
+         [rn/flat-list
+          {:data      accounts
+           :render-fn account-list-card/view
+           :separator [rn/view {:style {:height 8}}]
+           :style     {:padding-horizontal 8}}]]))))
 
 (def view (quo.theme/with-theme view-internal))
