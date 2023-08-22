@@ -1,20 +1,20 @@
 (ns status-im2.contexts.onboarding.create-profile.view
-  (:require [quo2.core :as quo]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
+            [oops.core :as oops]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [status-im2.contexts.onboarding.create-profile.style :as style]
-            [utils.i18n :as i18n]
+            [react-native.blur :as blur]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
             [react-native.hooks :as hooks]
             [reagent.core :as reagent]
-            [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-            [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
-            [utils.re-frame :as rf]
-            [oops.core :as oops]
-            [react-native.blur :as blur]
             [status-im2.constants :as c]
-            [react-native.platform :as platform]))
+            [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
+            [status-im2.contexts.onboarding.create-profile.style :as style]
+            [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 ;; NOTE - validation should match with Desktop
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
@@ -51,7 +51,7 @@
 
 
 (defn show-button-background
-  [keyboard-height keyboard-shown]
+  [keyboard-height keyboard-shown content-scroll-y]
   (let [button-container-height 64
         keyboard-view-height    (+ keyboard-height button-container-height)]
     (when keyboard-shown
@@ -60,7 +60,7 @@
         (< (- @scroll-view-height button-container-height) @content-container-height)
 
         platform/ios?
-        (< (- @scroll-view-height keyboard-view-height) @content-container-height)
+        (< (- @scroll-view-height keyboard-view-height) (- @content-container-height content-scroll-y))
 
         :else
         false))))
@@ -93,6 +93,7 @@
 (defn- f-page
   [{:keys [onboarding-profile-data navigation-bar-top]}]
   (reagent/with-let [show-keyboard?                          (reagent/atom false)
+                     content-scroll-y                        (reagent/atom 0)
                      show-listener                           (oops/ocall rn/keyboard
                                                                          "addListener"
                                                                          (if platform/android?
@@ -129,7 +130,8 @@
                                                          :else           :success)
           {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
           show-background?                         (show-button-background keyboard-height
-                                                                           keyboard-shown)]
+                                                                           keyboard-shown
+                                                                           @content-scroll-y)]
       [rn/view {:style style/page-container}
        [navigation-bar/navigation-bar
         {:stack-id :new-to-status
@@ -137,7 +139,12 @@
        [rn/scroll-view
         {:on-layout               (fn [event]
                                     (let [height (oops/oget event "nativeEvent.layout.height")]
-                                      (reset! scroll-view-height height)))
+                                      (reset! scroll-view-height height)
+                                      (reset! content-scroll-y 0)))
+         :on-scroll               (fn [event]
+                                    (let [y (oops/oget event "nativeEvent.contentOffset.y")]
+                                      (reset! content-scroll-y y)))
+         :scroll-event-throttle   64
          :content-container-style {:flexGrow 1}}
         [rn/view
          {:on-layout (fn [event]
@@ -162,9 +169,12 @@
                                       [:show-bottom-sheet
                                        {:content
                                         (fn []
-                                          [method-menu/view on-change-profile-pic])
-                                        :theme :dark}]))
-              :image-picker-props  {:profile-picture     (when @profile-pic {:uri @profile-pic})
+                                          [method-menu/view on-change-profile-pic])}]))
+              :image-picker-props  {:profile-picture     (or
+                                                          @profile-pic
+                                                          (rf/sub
+                                                           [:profile/onboarding-placeholder-avatar
+                                                            @profile-pic]))
                                     :full-name           (if (seq @full-name)
                                                            @full-name
                                                            (i18n/label :t/your-name))

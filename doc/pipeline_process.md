@@ -30,7 +30,7 @@ Ready for testing PR should meet the following criteria:
 3. Wait for the review.
 4. Make sure that after review and before requesting manual QA your PR is rebased to current develop.
 5. Once the PR has been approved by reviewer(s) - label `request-manual-qa` should be applied to the PR
-6. Move PR to the E2E column when it is ready for testing. That will also trigger e2e tests run. QAs are monitoring PRs from E2E column and take it into test. 
+6. Move PR to the E2E column when it is ready for testing (**mandatory for all PRs**). That will also trigger e2e tests run. QAs are monitoring PRs from E2E column and take it into test. 
 
 After that - PR will be taken into manual testing by the QA team.
 
@@ -41,26 +41,36 @@ After that - PR will be taken into manual testing by the QA team.
 - QA engineer picks up one of PRs with the ```request-manual-qa``` label, drags the item to the ```IN TESTING``` column and assigns it to themselves.
 - During testing, QA will add comments describing the issues found, and also review automation tests results.
 Usually found issues are numbered as "Issue 1, Issue 2", etc.
-When the first round of testing is completed and all issues for this stage are found, tester can add the ```Tested - Issues``` label and drag the card to the ```CONTRIBUTOR``` column. These two actions are optional.
-- When manual testing of PR is fully completed and all issues are fixed, QA adds the ```Tested - OK``` label and drags the card to the ```MERGE``` column, after which developer merges PR into develop.
-  If manual testing was not carried out, developer drags PR to the ```MERGE``` column themselves.
+When the first round of testing is completed and all issues for this stage are found, the QA can add the ```Tested - Issues``` label and drag the card to the ```CONTRIBUTOR``` column. These two actions are optional.
+- When manual testing of the PR is fully completed and all the issues are fixed, the QA adds the ```Tested - OK``` label and drags the card to the ```Design review``` column (the cases when design review is necessary are described below).
+- If design review is not required, the QA drags the PR to the ```MERGE``` column. After that the developer merges PR into develop.
+- If design review has been done, the designer (```@Francesca-G```) drags the PR to the ```MERGE``` column.
+After that the developer merges PR into develop.
+- If manual testing/design review was not carried out, the developer drags PR to the ```MERGE``` column themselves.
 
-    **Notes:** 
-        - If your PR has a long story and started from `develop` branch several days ago, please rebase it to current develop before adding label
-        - if PR can be tested by developer (in case of small changes) and/or developer is sure that the changes made cannot introduce a regression, then PR can be merged without manual testing. Also, currently, PRs are not manually tested if the changes relate only the design (creation of components, etc.) and do not affect the functionality.
-        
+### Design review
+_**How do I know if a design review is needed?**_
+
+There are three cases here depending on the changes in the PR:
+1. **Functional PRs with UI changes:** after the ```Tested - OK``` label is added, the QA moves the PR to the ```Design review``` column + mentions ```@Francesca-G``` in comments. 
+2. **Component PRs:** can be moved directly to the ```Design review``` column by the developer when get a review from devs (manual testing step can be skipped) + the developer mentions ```@Francesca-G``` in comments.
+3. **Functional PRs changes in which are not related to UI (e.g. a crash fix):** skip the ```Design review``` step (the PR should only be manually tested by QA).
+
+There are three possible scenarios when the design review is completed:
+1. **Approved by design**  > the PR is moved to the ```MERGE``` column by Francesca
+2. **Some changes requested, but can be fixed as followups** > need to be negotiated with Francesca  > Francesca moves PR to the ```MERGE``` column and adds the ```Follow-up required``` label >  follow-ups should be added **by the dev** right after the PR is merged
+3. **Some changes requested, they should be fixed before merge** > Francesca reviews the PR again after the fixes and moves PR to the ```MERGE``` column from ```Design review```
+
+---
+**Notes:**
+- If your PR has a long story and started from `develop` branch several days ago, please rebase it to current develop before adding label
+- if PR can be tested by developer (in case of small changes) and/or developer is sure that the changes made cannot introduce a regression, then PR can be merged without manual testing. Also, currently, PRs are not manually tested if the changes relate only the design (creation of components, etc.) and do not affect the functionality.
+---        
+
 #### Why my PR is in `Contributor` column?
 PR can be moved to this column by the ```status-github-bot``` or by QA engineer with label `Tested-issues`.
 In the first case most often this happens due to conflicting files in PR.
 In the second case - after fixing of all found issues, the developer should ping the QA in the PR comments for retesting.
-
-
-#### Why is my PR in `To Rebase` column?
-PR is moved to the "To Rebase" column in two cases:
-- automatically by github bot if PR branch has conflicts that should be resolved
-- manually (by QAs) if PR branch is out-of-date with the base branch and requires rebasing to the latest develop
-
-If PR appeared in the "To Rebase" column dev who is working on the PR should resolve conflicts/rebase branch to the latest develop. After resolving conflicts/rebasing PR should be moved by developer to the right column depending on PR work progress.
 
 ## Merging a PR
 **Merge conditions:**
@@ -73,6 +83,7 @@ If PR appeared in the "To Rebase" column dev who is working on the PR should res
 
 
 6. In case of manual testing - the label ```Tested - OK``` from QA
+7. In case of design review - the approval from the designer
 
 
 You can merge your PR into develop - some useful clues you can find [here](https://notes.status.im/setup-e2e#3-Merging-PR) 

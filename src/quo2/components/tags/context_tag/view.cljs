@@ -1,6 +1,6 @@
 (ns quo2.components.tags.context-tag.view
   (:require [quo2.components.avatars.group-avatar.view :as group-avatar]
-            [quo2.components.avatars.user-avatar.style :as user-avatar-style]
+            [quo2.components.avatars.user-avatar.style :as user-avatar.style]
             [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
@@ -40,7 +40,7 @@
     (trim-public-key public-key)]])
 
 (defn context-tag
-  [{:keys [text-style blur? no-avatar-placeholder? text-container-style ellipsize-text?]
+  [{:keys [text-style blur? no-avatar-placeholder? text-container-style ellipsize-text? ring?]
     :as   props}
    photo
    name
@@ -52,7 +52,7 @@
                            :ellipsize-mode  :tail}
         empty-photo?      (nil? photo)
         avatar-size       :xxs
-        avatar-outer-size (get-in user-avatar-style/sizes [avatar-size :outer])]
+        avatar-outer-size (get-in user-avatar.style/sizes [avatar-size :outer])]
     [base-tag (update-in props [:style :padding-left] #(or % 3))
      (if (and empty-photo? no-avatar-placeholder?)
        [rn/view {:style {:width avatar-outer-size}}]
@@ -60,6 +60,7 @@
         {:full-name         name
          :profile-picture   photo
          :size              avatar-size
+         :ring?             ring?
          :status-indicator? false}])
      [rn/view {:style (or text-container-style style/context-tag-text-container)}
       (if ellipsize-text?

@@ -4,6 +4,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [oops.core :refer [oget]]
+            [react-native.platform :as platform]
             [status-im2.common.resources :as resources]
             [status-im.async-storage.core :as async-storage]
             [status-im2.contexts.shell.jump-to.state :as shell.state]
@@ -88,10 +89,9 @@
      (when dark-overlay?
        [blur/view
         {:style         style/background-blur-overlay
-         :blur-amount   30
-         :blur-radius   25
+         :blur-amount   (if platform/android? 30 20)
+         :blur-radius   (if platform/android? 25 10)
          :blur-type     :transparent
          :overlay-color :transparent}])]))
 
 (defn view [dark-overlay?] [:f> f-view dark-overlay?])
-

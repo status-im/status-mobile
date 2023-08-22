@@ -2,16 +2,16 @@
   (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
             [quo.design-system.spacing :as spacing]
+            [quo2.components.avatars.user-avatar.style :as user-avatar.style]
+            [quo2.theme :as theme]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ethereum.stateofus :as stateofus]
-            [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.profile-header.view :as profile-header]
-            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.profile.user.edit-picture :as edit]
             [status-im.ui.screens.profile.user.styles :as styles]
@@ -19,7 +19,9 @@
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.universal-links.utils :as universal-links]
             [status-im.utils.utils :as utils]
-            [status-im2.config :as config])
+            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
+            [status-im2.config :as config]
+            [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-chat-key
@@ -190,9 +192,12 @@
     (let [{:keys [public-key
                   compressed-key
                   ens-verified
-                  preferred-name]
+                  preferred-name
+                  key-uid]
            :as   account}
           @(re-frame/subscribe [:profile/multiaccount])
+          customization-color (or (:color @(re-frame/subscribe [:onboarding-2/profile]))
+                                  @(re-frame/subscribe [:profile/customization-color key-uid]))
           on-share #(re-frame/dispatch [:show-popover
                                         {:view     :share-chat-key
                                          :address  (or compressed-key
@@ -213,6 +218,8 @@
                               :on-edit   #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                                               {:content (edit/bottom-sheet
                                                                          has-picture)}])
+                              :color     (user-avatar.style/customization-color customization-color
+                                                                                (theme/get-theme))
                               :title     (multiaccounts/displayed-name account)
                               :photo     (multiaccounts/displayed-photo account)
                               :monospace (not ens-verified)

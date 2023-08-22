@@ -383,15 +383,12 @@ class BaseView(object):
         for _ in range(times):
             self.driver.press_keycode(4)
 
-    def click_system_back_button_until_element_is_shown(self, attempts=3, element='home'):
+    def navigate_back_to_home_view(self, attempts=3):
         counter = 0
-        if self.chat_floating_screen.is_element_displayed(2) or self.community_floating_screen.is_element_displayed(2):
+        while self.chat_floating_screen.is_element_displayed(2) \
+                or self.community_floating_screen.is_element_displayed(2):
             self.driver.press_keycode(4)
-        if element == 'home':
-            element = self.chats_tab
-        elif element == 'chat':
-            chat = self.get_chat_view()
-            element = chat.chat_message_input
+        element = self.chats_tab
         while not element.is_element_displayed(1) and counter <= attempts:
             self.driver.press_keycode(4)
             try:
@@ -400,7 +397,19 @@ class BaseView(object):
             except (NoSuchElementException, TimeoutException):
                 counter += 1
         else:
-            self.driver.info("Could not reach %s element by pressing back" % element.name)
+            self.driver.info("Could not reach home view by pressing system back button")
+
+    def navigate_back_to_chat_view(self, attempts=3):
+        counter = 0
+        element = self.get_chat_view().chat_message_input
+        while not element.is_element_displayed(1) and counter <= attempts:
+            self.driver.press_keycode(4)
+            try:
+                element.wait_for_element(2)
+                return
+            except (NoSuchElementException, TimeoutException):
+                counter += 1
+        self.driver.info("Could not reach chat view by pressing system back button")
 
     def get_app_from_background(self):
         self.driver.info('Get Status back from Recent apps')
@@ -604,19 +613,29 @@ class BaseView(object):
         sign_in_view = self.get_sign_in_view()
         sign_in_view.sign_in(password)
 
-    def jump_to_messages_home(self):
+    def click_on_floating_jump_to(self):
         self.hide_keyboard_if_shown()
-        self.jump_to_button.click()
-        self.chats_tab.click_until_presence_of_element(self.jump_to_button)
+        if self.chat_floating_screen.is_element_displayed(1):
+            Button(self.driver, xpath='//*[@content-desc="%s"]//*[@content-desc="%s"]' %
+                                      (self.chat_floating_screen.accessibility_id,
+                                       self.jump_to_button.accessibility_id)).click()
+        elif self.community_floating_screen.is_element_displayed(1):
+            Button(self.driver, xpath='//*[@content-desc="%s"]//*[@content-desc="%s"]' %
+                                      (self.community_floating_screen.accessibility_id,
+                                       self.jump_to_button.accessibility_id)).click()
+        else:
+            self.jump_to_button.click()
+
+    def jump_to_messages_home(self):
+        self.click_on_floating_jump_to()
+        self.chats_tab.click()
 
     def jump_to_communities_home(self):
-        self.hide_keyboard_if_shown()
-        self.jump_to_button.click()
-        self.communities_tab.click_until_presence_of_element(self.jump_to_button)
+        self.click_on_floating_jump_to()
+        self.communities_tab.click()
 
     def jump_to_card_by_text(self, text: str):
-        self.hide_keyboard_if_shown()
-        self.jump_to_button.click()
+        self.click_on_floating_jump_to()
         self.element_by_text(text).click()
 
     def reopen_app(self, password=common_password, sign_in=True):

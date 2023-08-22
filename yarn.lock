@@ -9012,9 +9012,9 @@ react-native-touch-id@^4.4.1:
   resolved "https://registry.yarnpkg.com/react-native-touch-id/-/react-native-touch-id-4.4.1.tgz#8b1bb2d04c30bac36bb9696d2d723e719c4a8b08"
   integrity sha512-1jTl8fC+0fxvqegy/XXTyo6vMvPhjzkoDdaqoYZx0OH8AT250NuXnNPyKktvigIcys3+2acciqOeaCall7lrvg==
 
-"react-native-transparent-video@git+https://github.com/status-im/react-native-transparent-video.git#refs/tags/0.0.9":
+"react-native-transparent-video@git+https://github.com/status-im/react-native-transparent-video.git#refs/tags/0.1.1":
   version "0.1.0"
-  resolved "git+https://github.com/status-im/react-native-transparent-video.git#97d8c773eae82851b170b53c9fc13020f74eefe7"
+  resolved "git+https://github.com/status-im/react-native-transparent-video.git#1327fc622f7521269f66299c3aca610494c76fe1"
 
 "react-native-webview@git+https://github.com/status-im/react-native-webview.git#refs/tags/v11.16.0-status":
   version "11.16.0"

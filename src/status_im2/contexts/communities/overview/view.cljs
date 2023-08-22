@@ -256,7 +256,7 @@
   [description]
   [quo/text
    {:accessibility-label :community-description-text
-    :number-of-lines     2
+    :number-of-lines     4
     :ellipsize-mode      :tail
     :weight              :regular
     :size                :paragraph-1
@@ -367,4 +367,4 @@
                  :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}
       {:position :absolute
-       :bottom   41}]]))
+       :bottom   34}]]))

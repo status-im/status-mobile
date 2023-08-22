@@ -30,7 +30,8 @@
     (pos? unread-mentions-count)
     [counter/view
      {:customization-color customization-color
-      :type                :default} unread-mentions-count]
+      :type                :default}
+     unread-mentions-count]
 
     unread-messages?
     [unread-grey-dot :unviewed-messages-public]))

@@ -21,9 +21,11 @@
 (defn- get-header-text-and-context
   [community membership-status]
   (let [community-name        (:name community)
+        permissions           (:permissions community)
         community-image       (get-in community [:images :thumbnail :uri])
         community-context-tag [quo/context-tag common/tag-params community-image
-                               community-name]]
+                               community-name]
+        open?                 (not= 3 (:access permissions))]
     (cond
       (= membership-status constants/activity-center-membership-status-idle)
       {:header-text (i18n/label :t/community-request-not-accepted)
@@ -40,15 +42,20 @@
                      community-context-tag]}
 
       (= membership-status constants/activity-center-membership-status-accepted)
-      {:header-text (i18n/label :t/community-request-accepted)
+      {:header-text (i18n/label (if open?
+                                  :t/join-open-community
+                                  :t/community-request-accepted))
        :context     [[quo/text {:style common-style/user-avatar-tag-text}
-                      (i18n/label :t/community-request-accepted-body-text)]
+                      (i18n/label (if open?
+                                    :t/joined-community
+                                    :t/community-request-accepted-body-text)
+                                  (when open? {:community community-name}))]
                      community-context-tag]}
 
       :else nil)))
 
 (defn view
-  [{:keys [notification set-swipeable-height] :as props}]
+  [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [community-id membership-status read
                 timestamp]}           notification
         community                     (rf/sub [:communities/community community-id])
@@ -56,9 +63,10 @@
                                                                    membership-status)]
     [swipeable props
      [quo/activity-log
-      {:title     header-text
-       :icon      :i/communities
-       :on-layout set-swipeable-height
-       :timestamp (datetime/timestamp->relative timestamp)
-       :unread?   (not read)
-       :context   context}]]))
+      {:title               header-text
+       :customization-color customization-color
+       :icon                :i/communities
+       :on-layout           set-swipeable-height
+       :timestamp           (datetime/timestamp->relative timestamp)
+       :unread?             (not read)
+       :context             context}]]))

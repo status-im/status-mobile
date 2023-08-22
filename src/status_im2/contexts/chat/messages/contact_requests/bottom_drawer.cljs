@@ -3,6 +3,7 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [quo2.core :as quo]
+    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [quo2.components.drawers.permission-context.view :as permission-context]
     [status-im2.constants :as constants]
     [react-native.core :as rn]
@@ -37,13 +38,13 @@
          (= contact-request-state
             constants/contact-request-state-sent)
          (i18n/label :t/contact-request-chat-pending))]]
-     [rn/view {:position :absolute :top -36 :align-self :center}
-      [quo/floating-shell-button
-       {:jump-to
-        {:on-press            (fn []
-                                (when config/shell-navigation-disabled?
-                                  (rf/dispatch [:chat/close true]))
-                                (rf/dispatch [:shell/navigate-to-jump-to]))
-         :customization-color customization-color
-         :label               (i18n/label :t/jump-to)}}
-       {}]]]))
+     [quo/floating-shell-button
+      {:jump-to
+       {:on-press            (fn []
+                               (when config/shell-navigation-disabled?
+                                 (rf/dispatch [:chat/close true]))
+                               (rf/dispatch [:shell/navigate-to-jump-to]))
+        :customization-color customization-color
+        :label               (i18n/label :t/jump-to)}}
+      {:position :absolute
+       :top      (- jump-to.constants/floating-shell-button-height)}]]))

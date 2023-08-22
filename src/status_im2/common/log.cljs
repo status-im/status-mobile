@@ -1,11 +1,11 @@
 (ns status-im2.common.log
   (:require [clojure.string :as string]
+            [native-module.core :as native-module]
             [re-frame.core :as re-frame]
+            [status-im.utils.types :as types]
             [status-im2.config :as config]
             [taoensso.timbre :as log]
-            [utils.re-frame :as rf]
-            [native-module.core :as native-module]
-            [status-im.utils.types :as types]))
+            [utils.re-frame :as rf]))
 
 (def logs-queue (atom #queue []))
 (def max-log-entries 1000)
@@ -28,6 +28,7 @@
                         :mobile-system? false
                         :log-level      level
                         :callback       handle-error}]
+    (log/merge-config! {:ns-whitelist ["*"]})
     (if (string/blank? level)
       (native-module/init-status-go-logging (merge logging-params {:log-level "WARN"}))
       (do
