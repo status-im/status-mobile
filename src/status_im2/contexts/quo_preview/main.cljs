@@ -144,7 +144,7 @@
    :banner            [{:name      :banner
                         :component banner/preview-banner}]
    :buttons           [{:name      :button
-                        :component button/preview-button}
+                        :component button/view}
                        {:name      :composer-button
                         :component composer-button/preview-composer-button}
                        {:name      :dynamic-button

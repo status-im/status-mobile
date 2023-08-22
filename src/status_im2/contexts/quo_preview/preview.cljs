@@ -233,7 +233,7 @@
            component-container-style
            blur-container-style blur-view-props blur-height show-blur-background?]
     :or   {blur-height 200}}
-   component]
+   & children]
   [rn/scroll-view
    {:style                           (style/panel-basic)
     :shows-vertical-scroll-indicator false}
@@ -255,5 +255,5 @@
                                        blur-container-style)
          :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
                                        blur-view-props)}
-        component]
-       component)]]])
+        children]
+       children)]]])
