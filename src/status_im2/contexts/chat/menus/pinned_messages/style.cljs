@@ -1,9 +1,9 @@
 (ns status-im2.contexts.chat.menus.pinned-messages.style
   (:require [quo2.foundations.colors :as colors]))
 
-(defn heading [community]
+(defn heading [community?]
   {:margin-horizontal 20
-   :margin-bottom     (when-not community 24)})
+   :margin-bottom     (when-not community? 24)})
 
 (defn heading-container
   []
