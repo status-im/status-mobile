@@ -238,8 +238,9 @@
    {:style                           (style/panel-basic)
     :shows-vertical-scroll-indicator false}
    [rn/pressable {:on-press rn/dismiss-keyboard!}
-    [rn/view {:style style/customizer-container}
-     [customizer state descriptor]]
+    (when descriptor
+      [rn/view {:style style/customizer-container}
+       [customizer state descriptor]])
     (if blur?
       [rn/view {:style (merge style/component-container component-container-style)}
        (into [blur-view
