@@ -1,8 +1,7 @@
 (ns status-im2.contexts.quo-preview.navigation.floating-shell-button
-  (:require [quo2.components.navigation.floating-shell-button :as quo2]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -43,11 +42,6 @@
     (= scroll-type :scroll-to-bottom)
     (assoc :scroll-to-bottom {:on-press #()})))
 
-(defn- f-shell-button
-  [state]
-  [quo2/floating-shell-button (mock-data state)
-   nil (reanimated/use-shared-value 1)])
-
 (defn cool-preview
   []
   (let [state (reagent/atom {:show-jump-to? true
@@ -59,7 +53,7 @@
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
-         [:f> f-shell-button @state]]]])))
+         [quo/floating-shell-button (mock-data @state) nil]]]])))
 
 (defn preview-floating-shell-button
   []

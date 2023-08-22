@@ -12,6 +12,10 @@
   {:flex-direction  :row
    :justify-content :space-between})
 
+(def container-info-bottom
+  {:flex-direction :row
+   :padding-top    4})
+
 (def network-dropdown
   {:border-color  colors/neutral-50
    :border-width  1
@@ -20,8 +24,10 @@
    :height        32})
 
 (defn color-metrics
-  [metrics]
-  (if (= metrics :positive) colors/success-50 colors/danger-50))
+  [metrics theme]
+  (if (= metrics :positive)
+    (colors/theme-colors colors/success-50 colors/success-60 theme)
+    (colors/theme-colors colors/danger-50 colors/danger-60 theme)))
 
 (defn color-text-heading
   [theme]
@@ -40,8 +46,8 @@
   {:color (color-text-paragraph theme)})
 
 (defn dot-separator
-  [metrics]
-  {:background-color  (color-metrics metrics)
+  [metrics theme]
+  {:background-color  (color-metrics metrics theme)
    :margin-horizontal 4
    :width             2
    :height            2})

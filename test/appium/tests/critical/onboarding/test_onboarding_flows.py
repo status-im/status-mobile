@@ -52,7 +52,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.profile.share_via_messenger()
         if not self.profile.element_by_text_part(public_key).is_element_displayed():
             self.errors.append("Can't share public key")
-        self.profile.click_system_back_button_until_element_is_shown()
+        self.profile.navigate_back_to_home_view()
 
         self.home.just_fyi("Check that can paste contact code in chat message input")
         self.profile.home_button.double_click()
@@ -80,7 +80,7 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         wallet.share_via_messenger()
         if not wallet.element_by_text_part(address).is_element_displayed():
             self.errors.append("Can't share address")
-        wallet.click_system_back_button_until_element_is_shown()
+        wallet.navigate_back_to_home_view()
 
         self.home.just_fyi("Check that can paste wallet address in chat message input")
         wallet.home_button.click()

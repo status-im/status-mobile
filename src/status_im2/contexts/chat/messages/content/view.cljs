@@ -134,9 +134,10 @@
                                  :message-sending
                                  :message-sent)
           :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90)
-          :style               {:border-radius 16
-                                :padding       8
-                                :opacity       (if (and outgoing (= outgoing-status :sending)) 0.5 1)}
+          :style               (style/user-message-content
+                                {:first-in-group? (:first-in-group? message-data)
+                                 :outgoing        outgoing
+                                 :outgoing-status outgoing-status})
           :on-press            (fn []
                                  (if (and platform/ios? keyboard-shown?)
                                    (rn/dismiss-keyboard!)

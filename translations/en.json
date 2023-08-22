@@ -2280,5 +2280,10 @@
     "collectibles": "Collectibles",
     "no-collectibles-description": "Don't be a bored ape",
     "no-activity": "No activity",
-    "no-activity-description": "C'mon do something..."
+    "no-activity-description": "C'mon do something...",
+    "buy": "Buy",
+    "bridge": "Bridge",
+    "on-device": "On device",
+    "on-keycard": "On Keycard",
+    "keypair-title": "{{name}}'s default keypair"
 }

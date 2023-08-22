@@ -37,7 +37,7 @@
               :label               (i18n/label :t/jump-to)
               :customization-color (rf/sub [:profile/customization-color])}}
    {:position :absolute
-    :bottom   (+ (utils/bottom-tabs-container-height) 12)}
+    :bottom   (utils/bottom-tabs-container-height)}
    (:home-stack-opacity shared-values)])
 
 (defn f-shell-stack
