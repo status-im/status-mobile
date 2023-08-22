@@ -23,5 +23,5 @@
          :i/copy
          :i/chevron-right)
        {:accessibility-label :icon-right
-        :color icon-color
-        :size  20}]])])
+        :color               icon-color
+        :size                20}]])])

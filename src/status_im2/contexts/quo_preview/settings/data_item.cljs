@@ -61,9 +61,9 @@
                              :label       :none
                              :status      :default
                              :size        :default
-                             :title    "Label"
-                             :subtitle "Description"
-                             :icon     :i/placeholder})
+                             :title       "Label"
+                             :subtitle    "Description"
+                             :icon        :i/placeholder})
         blur? (reagent/cursor state [:blur?])]
     (fn []
       [rn/view
@@ -79,8 +79,8 @@
                            :background-color colors/neutral-80-opa-70}
            :overlay-color :transparent}])
        [rn/view
-        {:style {:align-items      :center
-                 :padding-vertical 10
+        {:style {:align-items       :center
+                 :padding-vertical  10
                  :margin-horizontal 20}}
         [quo/data-item @state]]])))
 

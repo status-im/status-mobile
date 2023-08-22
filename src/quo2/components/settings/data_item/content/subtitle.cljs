@@ -1,4 +1,4 @@
-(ns quo2.components.settings.data-item.content.subtitle 
+(ns quo2.components.settings.data-item.content.subtitle
   (:require [react-native.core :as rn]
             [quo2.components.settings.data-item.style :as style]
             [quo2.components.markdown.text :as text]
@@ -14,17 +14,19 @@
      (when (not= :small size)
        [rn/view {:style (style/subtitle-icon-container description)}
         (case description
-          :icon    [icons/icon icon {:accessibility-label :description-icon
-                                     :size 16 
-                                     :color icon-color}]
+          :icon    [icons/icon icon
+                    {:accessibility-label :description-icon
+                     :size                16
+                     :color               icon-color}]
           :account [account-avatar/view
                     {:customization-color (get-in colors/customization yellow-color)
                      :size                16
                      :emoji               "🎮"
                      :type                :defaul}]
-          :network [rn/image {:accessibility-label :description-image
-                              :source (resources/tokens :eth) 
-                              :style style/image}]
+          :network [rn/image
+                    {:accessibility-label :description-image
+                     :source              (resources/tokens :eth)
+                     :style               style/image}]
           :default nil
           nil)])
      [text/text

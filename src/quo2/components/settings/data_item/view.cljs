@@ -8,7 +8,8 @@
             [quo2.components.settings.data-item.content.right-side :as right-side]))
 
 (def view-internal
-  (fn [{:keys [blur? card? icon-right? label description status size theme on-press title subtitle icon]}]
+  (fn [{:keys [blur? card? icon-right? label description status size theme on-press title subtitle
+               icon]}]
     (let [icon-color (cond
                        (or blur? (= :dark theme)) colors/white
                        (= :light theme)           colors/neutral-100)]
@@ -16,9 +17,9 @@
         [not-implemented/not-implemented blur?]
         [rn/pressable
          {:accessibility-label :data-item
-          :disabled (not icon-right?)
-          :on-press on-press
-          :style    (style/container size card? blur?)}
+          :disabled            (not icon-right?)
+          :on-press            on-press
+          :style               (style/container size card? blur?)}
          [left-side/view theme title status size blur? description icon subtitle label icon-color]
          (when (and (= :default status) (not= :small size))
            [right-side/view label icon-right? icon-color])]))))

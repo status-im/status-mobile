@@ -3,7 +3,7 @@
 
 (defn container
   [size card? blur?]
-  {:flex 1
+  {:flex               1
    :flex-direction     :row
    :justify-content    :space-between
    :padding-vertical   (when (= size :default) 8)
@@ -11,16 +11,18 @@
    :border-radius      16
    :border-width       (when (and card? (not= size :small)) 1)
    :border-color       (if
-                        blur?            colors/white-opa-10
-                        (colors/theme-colors colors/neutral-10
-                                             colors/neutral-80))})
+                         blur?
+                         colors/white-opa-10
+                         (colors/theme-colors colors/neutral-10
+                                              colors/neutral-80))})
 
 (defn loading-container
   [size blur?]
   {:width            (if (= size :default) 132 72)
    :height           (if (= size :default) 16 10)
    :background-color (if
-                       blur?            colors/white-opa-5
+                       blur?
+                       colors/white-opa-5
                        (colors/theme-colors colors/neutral-5
                                             colors/neutral-90))
    :border-radius    (if (= size :default) 6 3)
@@ -48,18 +50,19 @@
    :align-items    :center})
 
 (def image
-  {:width 16 
+  {:width  16
    :height 16})
 
 (defn description
   [blur?]
   {:color (if
-            blur? colors/white
+            blur?
+            colors/white
             (colors/theme-colors colors/neutral-100
                                  colors/white))})
-(defn right-icon 
+(defn right-icon
   [label]
   {:margin-left (if (or (= label :graph) (= label :none)) 12 8)})
 
-(def left-side 
+(def left-side
   {:flex 1})
