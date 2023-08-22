@@ -10,16 +10,16 @@
   [{:label   "Size"
     :key     :size
     :type    :select
-    :options [{:key   20
-               :value 20}
-              {:key   28
-               :value 28}
-              {:key   32
-               :value 32}
-              {:key   48
-               :value 48}
-              {:key   80
-               :value 80}]}
+    :options [{:key   :size/s-20
+               :value "20"}
+              {:key   :size/s-28
+               :value "28"}
+              {:key   :size/s-32
+               :value "32"}
+              {:key   :size/s-48
+               :value "48"}
+              {:key   :size/s-80
+               :value "80"}]}
    {:label "Avatar"
     :key   :picture?
     :type  :boolean}
@@ -31,7 +31,7 @@
   []
   (let [state (reagent/atom {:theme               :light
                              :customization-color :blue
-                             :size                20
+                             :size                :size/s-20
                              :picture?            false})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}

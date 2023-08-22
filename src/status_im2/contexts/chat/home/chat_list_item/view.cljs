@@ -211,7 +211,7 @@
          (assoc :ring? false))])
     [quo/group-avatar
      {:customization-color color
-      :size                :small}]))
+      :size                :size/s-32}]))
 
 (defn notification
   [{:keys [muted group-chat unviewed-messages-count unviewed-mentions-count]}]

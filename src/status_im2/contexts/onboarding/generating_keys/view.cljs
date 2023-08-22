@@ -125,7 +125,8 @@
      :container-style   {:top  40
                          :left 20}
      :layers            (:generate-keys resources/parallax-video)
-     :disable-parallax? true}]
+     :disable-parallax? true
+     :enable-looping?   false}]
    [:f> f-page-title insets]])
 
 (defn f-simple-page

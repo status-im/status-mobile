@@ -1,5 +1,6 @@
 (ns quo2.foundations.colors
   (:require [clojure.string :as string]
+            [react-native.platform :as platform]
             [quo2.theme :as theme]))
 
 (defn alpha
@@ -126,12 +127,13 @@
 (def neutral-5-opa-70-blur (alpha neutral-5 0.7))
 (def neutral-10-opa-10-blur (alpha neutral-10 0.1))
 (def neutral-10-opa-40-blur (alpha neutral-10 0.4))
-(def neutral-80-opa-80-blur (alpha "#192438" 0.8))
+;; https://github.com/status-im/status-mobile/issues/14903
+(def neutral-80-opa-80-blur (if platform/android? (alpha "#192438" 0.8) "#1E2430CC"))
 (def neutral-90-opa-10-blur (alpha neutral-90 0.1))
 (def neutral-90-opa-40-blur (alpha neutral-90 0.4))
 (def neutral-90-opa-70-blur (alpha neutral-90 0.7))
 (def neutral-95-opa-70-blur neutral-95-opa-70)
-(def neutral-100-opa-70-blur neutral-100-opa-70)
+(def neutral-100-opa-70-blur (if platform/android? neutral-100-opa-70 "#0D1014B3"))
 
 ;;;;Black
 

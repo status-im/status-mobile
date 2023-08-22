@@ -1,7 +1,7 @@
 (ns status-im2.contexts.communities.home.view
   (:require [oops.core :as oops]
             [quo2.core :as quo]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [status-im2.common.home.banner.view :as common.home.banner]
@@ -37,7 +37,9 @@
    {:id :pending :label (i18n/label :t/pending) :accessibility-label :pending-tab}
    {:id :opened :label (i18n/label :t/opened) :accessibility-label :opened-tab}])
 
-(def empty-state-content
+
+(defn empty-state-content
+  [theme]
   {:joined
    {:title       (i18n/label :t/no-communities)
     :description [:<>
@@ -45,18 +47,21 @@
                    (i18n/label :t/no-communities-description-strikethrough)]
                   " "
                   (i18n/label :t/no-communities-description)]
-    :image       (resources/get-image (theme/theme-value :no-communities-light
-                                                         :no-communities-dark))}
+    :image       (resources/get-image (quo.theme/theme-value :no-communities-light
+                                                             :no-communities-dark
+                                                             theme))}
    :pending
    {:title       (i18n/label :t/no-pending-communities)
     :description (i18n/label :t/no-pending-communities-description)
-    :image       (resources/get-image (theme/theme-value :no-pending-communities-light
-                                                         :no-pending-communities-dark))}
+    :image       (resources/get-image (quo.theme/theme-value :no-pending-communities-light
+                                                             :no-pending-communities-dark
+                                                             theme))}
    :opened
    {:title       (i18n/label :t/no-opened-communities)
     :description (i18n/label :t/no-opened-communities-description)
-    :image       (resources/get-image (theme/theme-value :no-opened-communities-light
-                                                         :no-opened-communities-dark))}})
+    :image       (resources/get-image (quo.theme/theme-value :no-opened-communities-light
+                                                             :no-opened-communities-dark
+                                                             theme))}})
 
 (def ^:private banner-data
   {:title-props
@@ -70,8 +75,8 @@
     :banner              (resources/get-image :discover)
     :accessibility-label :communities-home-discover-card}})
 
-(defn home
-  []
+(defn- f-view-internal
+  [{:keys [theme]}]
   (let [flat-list-ref     (atom nil)
         set-flat-list-ref #(reset! flat-list-ref %)]
     (fn []
@@ -87,7 +92,7 @@
          (if (empty? selected-items)
            [common.home/empty-state-image
             {:selected-tab selected-tab
-             :tab->content empty-state-content}]
+             :tab->content (empty-state-content theme)}]
            [reanimated/flat-list
             {:ref                               set-flat-list-ref
              :key-fn                            :id
@@ -109,3 +114,9 @@
            :selected-tab        selected-tab
            :on-tab-change       (fn [tab] (rf/dispatch [:communities/select-tab tab]))
            :scroll-shared-value scroll-shared-value}]]))))
+
+(defn- internal-communities-home-view
+  [params]
+  [:f> f-view-internal params])
+
+(def view (quo.theme/with-theme internal-communities-home-view))

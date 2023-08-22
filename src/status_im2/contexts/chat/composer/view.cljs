@@ -66,62 +66,64 @@
     (effects/link-previews props state animations subs)
     (effects/images props state animations subs)
     [:<>
-     [sub-view/shell-button state animations subs]
      (when chat-screen-loaded?
        [mentions/view props state animations max-height cursor-pos
         (:images subs)
         (:link-previews? subs)
         (:reply subs)
         (:edit subs)])
-     [gesture/gesture-detector
-      {:gesture (drag-gesture/drag-gesture props state animations subs dimensions keyboard-shown)}
-      [reanimated/view
-       {:style     (style/sheet-container insets state animations)
-        :on-layout #(handler/layout % state blur-height)}
-       [sub-view/bar]
-       (when chat-screen-loaded?
-         [:<>
-          [reply/view state]
-          [edit/view state]])
-       [reanimated/touchable-opacity
-        {:active-opacity      1
-         :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
-         :style               (style/input-container (:height animations) max-height)
-         :accessibility-label :message-input-container}
-        [rn/selectable-text-input
-         {:ref        #(reset! (:selectable-input-ref props) %)
-          :menu-items @(:menu-items state)
-          :style      (style/input-view state)}
-         [rn/text-input
-          {:ref                      #(reset! (:input-ref props) %)
-           :default-value            @(:text-value state)
-           :on-focus                 #(handler/focus props state animations dimensions)
-           :on-blur                  #(handler/blur state animations dimensions subs)
-           :on-content-size-change   #(handler/content-size-change %
-                                                                   state
-                                                                   animations
-                                                                   subs
-                                                                   dimensions
-                                                                   (or keyboard-shown (:edit subs)))
-           :on-scroll                #(handler/scroll % props state animations dimensions)
-           :on-change-text           #(handler/change-text % props state)
-           :on-selection-change      #(handler/selection-change % props state)
-           :on-selection             #(selection/on-selection % props state)
-           :keyboard-appearance      (theme/theme-value :light :dark)
-           :max-height               max-height
-           :max-font-size-multiplier 1
-           :multiline                true
-           :placeholder              (i18n/label :t/type-something)
-           :placeholder-text-color   (colors/theme-colors colors/neutral-30 colors/neutral-50)
-           :style                    (style/input-text props state subs max-height)
-           :max-length               constants/max-text-size
-           :accessibility-label      :chat-message-input}]]
+     [rn/view
+      {:style style/composer-sheet-and-jump-to-container}
+      [sub-view/shell-button state]
+      [gesture/gesture-detector
+       {:gesture (drag-gesture/drag-gesture props state animations subs dimensions keyboard-shown)}
+       [reanimated/view
+        {:style     (style/sheet-container insets state animations)
+         :on-layout #(handler/layout % state blur-height)}
+        [sub-view/bar]
         (when chat-screen-loaded?
           [:<>
-           [gradients/view props state animations show-bottom-gradient?]
-           [link-preview/view]
-           [images/images-list]])]
-       [actions/view props state animations window-height insets subs]]]]))
+           [reply/view state]
+           [edit/view state]])
+        [reanimated/touchable-opacity
+         {:active-opacity      1
+          :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
+          :style               (style/input-container (:height animations) max-height)
+          :accessibility-label :message-input-container}
+         [rn/selectable-text-input
+          {:ref        #(reset! (:selectable-input-ref props) %)
+           :menu-items @(:menu-items state)
+           :style      (style/input-view state)}
+          [rn/text-input
+           {:ref                      #(reset! (:input-ref props) %)
+            :default-value            @(:text-value state)
+            :on-focus                 #(handler/focus props state animations dimensions)
+            :on-blur                  #(handler/blur state animations dimensions subs)
+            :on-content-size-change   #(handler/content-size-change %
+                                                                    state
+                                                                    animations
+                                                                    subs
+                                                                    dimensions
+                                                                    (or keyboard-shown (:edit subs)))
+            :on-scroll                #(handler/scroll % props state animations dimensions)
+            :on-change-text           #(handler/change-text % props state)
+            :on-selection-change      #(handler/selection-change % props state)
+            :on-selection             #(selection/on-selection % props state)
+            :keyboard-appearance      (theme/theme-value :light :dark)
+            :max-height               max-height
+            :max-font-size-multiplier 1
+            :multiline                true
+            :placeholder              (i18n/label :t/type-something)
+            :placeholder-text-color   (colors/theme-colors colors/neutral-30 colors/neutral-50)
+            :style                    (style/input-text props state subs max-height)
+            :max-length               constants/max-text-size
+            :accessibility-label      :chat-message-input}]]
+         (when chat-screen-loaded?
+           [:<>
+            [gradients/view props state animations show-bottom-gradient?]
+            [link-preview/view]
+            [images/images-list]])]
+        [actions/view props state animations window-height insets subs]]]]]))
 
 (defn composer
   [insets]

@@ -21,7 +21,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         self.public_key_1 = self.home_1.get_public_key()
         self.public_key_2 = self.home_2.get_public_key_via_share_profile_tab()
-        [home.click_system_back_button_until_element_is_shown() for home in self.homes]
+        [home.navigate_back_to_home_view() for home in self.homes]
         [home.chats_tab.click() for home in self.homes]
 
     @marks.testrail_id(702850)
@@ -40,7 +40,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
 
         chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact_button)
         chat.profile_add_to_contacts_button.click()
-        self.home_2.click_system_back_button_until_element_is_shown()
+        self.home_2.navigate_back_to_home_view()
 
         self.device_1.just_fyi("Device 1: check there is no PN when receiving new message to activity centre")
         self.device_1.open_notification_bar()
@@ -121,7 +121,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
             self.errors.append("Contact was not added to contact list after accepting contact request (as receiver)")
 
         self.device_2.just_fyi('Device1 check that contact appeared in contact list mutually')
-        self.home_2.click_system_back_button_until_element_is_shown()
+        self.home_2.navigate_back_to_home_view()
         self.home_2.chats_tab.click()
         self.home_2.contacts_tab.click()
         if not self.home_2.contact_details_row(username=self.username_1).is_element_displayed(20):
@@ -144,7 +144,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         self.public_key_2 = self.home_2.get_public_key()
-        self.home_2.click_system_back_button_until_element_is_shown()
+        self.home_2.navigate_back_to_home_view()
         [home.chats_tab.click() for home in self.homes]
 
         self.home_1.add_contact(self.public_key_2)
@@ -157,7 +157,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.chat_1.send_message(self.one_to_one_message)
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
         self.chat_2.send_message(self.text_message)
-        [home.click_system_back_button_until_element_is_shown() for home in self.homes]
+        [home.navigate_back_to_home_view() for home in self.homes]
 
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()

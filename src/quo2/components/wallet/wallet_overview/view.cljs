@@ -42,38 +42,38 @@
    [network-dropdown-temporary]])
 
 (defn- view-metrics
-  [metrics currency-change percentage-change]
+  [{:keys [metrics currency-change percentage-change theme]}]
   [rn/view
    {:style {:flex-direction :row
             :align-items    :center}}
    [text/text
     {:weight :medium
      :size   :paragraph-2
-     :style  {:color (style/color-metrics metrics)}}
+     :style  {:color (style/color-metrics metrics theme)}}
     percentage-change]
    [rn/view
-    {:style (style/dot-separator metrics)}]
+    {:style (style/dot-separator metrics theme)}]
    [text/text
     {:weight :medium
      :size   :paragraph-2
-     :style  {:color        (style/color-metrics metrics)
+     :style  {:color        (style/color-metrics metrics theme)
               :margin-right 4}}
     currency-change]
    [icons/icon
     (if (= metrics :positive) :i/positive :i/negative)
-    {:color (style/color-metrics metrics)
+    {:color (style/color-metrics metrics theme)
      :size  16}]])
 
 (defn- view-info-bottom
   [{:keys [state time-frame metrics date begin-date end-date
            currency-change percentage-change theme]}]
-  [rn/view {:flex-direction :row}
+  [rn/view {:style style/container-info-bottom}
    (when (= state :loading)
      [rn/view
       {:style {:flex-direction :row
                :align-items    :center}}
       (loading-bars [{:width 32 :height 10 :margin 8}
-                     {:width 32 :height 10 :margin 4}
+                     {:width 32 :height 10 :margin 2}
                      {:width 62 :height 10 :margin 4}
                      {:width 10 :height 10 :margin 0}]
                     theme)])
@@ -107,7 +107,11 @@
                  :margin-right 8}}
        (time-frame time-frames)]
       (when (and (= state :default) (not= metrics :none))
-        [view-metrics metrics currency-change percentage-change])])])
+        [view-metrics
+         {:metrics           metrics
+          :currency-change   currency-change
+          :percentage-change percentage-change
+          :theme             theme}])])])
 
 (defn- view-internal
   [props]

@@ -371,13 +371,13 @@ class ProfileView(BaseView):
         chat.public_key_edit_box.send_keys(public_key)
         chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_add_to_contacts_button)
         chat.profile_add_to_contacts_button.click()
-        self.click_system_back_button_until_element_is_shown()
+        self.navigate_back_to_home_view()
 
     def switch_push_notifications(self):
         self.driver.info("Enabling push notifications via Profile")
         self.profile_notifications_button.scroll_and_click()
         self.profile_notifications_toggle_button.click()
-        self.click_system_back_button_until_element_is_shown()
+        self.navigate_back_to_home_view()
 
     def add_custom_network(self, rpc_url: str, name: str, symbol: str, netwrok_id:str):
         self.driver.info("## Add custom network", device=False)

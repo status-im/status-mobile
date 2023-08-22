@@ -20,6 +20,8 @@
     [status-im2.contexts.quo-preview.buttons.slide-button :as slide-button]
     [status-im2.contexts.quo-preview.buttons.dynamic-button :as dynamic-button]
     [status-im2.contexts.quo-preview.buttons.predictive-keyboard :as predictive-keyboard]
+    [status-im2.contexts.quo-preview.buttons.wallet-button :as wallet-button]
+    [status-im2.contexts.quo-preview.buttons.wallet-ctas :as wallet-ctas]
     [status-im2.contexts.quo-preview.calendar.calendar :as calendar]
     [status-im2.contexts.quo-preview.calendar.calendar-day :as calendar-day]
     [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
@@ -110,6 +112,7 @@
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
     [status-im2.contexts.quo-preview.wallet.account-overview :as account-overview]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
+    [status-im2.contexts.quo-preview.wallet.keypair :as keypair]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
     [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
@@ -146,7 +149,11 @@
                        {:name      :slide-button
                         :component slide-button/preview-slide-button}
                        {:name      :predictive-keyboard
-                        :component predictive-keyboard/preview-predictive-keyboard}]
+                        :component predictive-keyboard/preview-predictive-keyboard}
+                       {:name      :wallet-button
+                        :component wallet-button/preview}
+                       {:name      :wallet-ctas
+                        :component wallet-ctas/preview}]
    :browser           [{:name      :browser-input
                         :component browser-input/preview-browser-input}]
    :calendar          [{:name      :calendar
@@ -331,6 +338,9 @@
                         :component account-card/preview-account-card}
                        {:name      :account-overview
                         :component account-overview/preview-account-overview}
+                       {:name      :keypair
+                        :options   {:topBar {:visible true}}
+                        :component keypair/preview}
                        {:name      :network-amount
                         :component network-amount/preview}
                        {:name      :network-bridge

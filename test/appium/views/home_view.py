@@ -403,7 +403,7 @@ class HomeView(BaseView):
         chat.profile_add_to_contacts_button.click()
         if nickname:
             chat.set_nickname(nickname)
-        self.click_system_back_button_until_element_is_shown()
+        self.navigate_back_to_home_view()
 
     def create_group_chat(self, user_names_to_add: list, group_chat_name: str = 'new_group_chat'):
         self.driver.info("## Creating group chat '%s'" % group_chat_name, device=False)
@@ -428,9 +428,10 @@ class HomeView(BaseView):
             chat.click_system_back_button()
         chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_add_to_contacts_button)
         chat.profile_add_to_contacts_button.click()
-        self.click_system_back_button_until_element_is_shown()
+        self.navigate_back_to_home_view()
 
-    def create_community_e2e(self, name: str, description="some_description", set_image=False, file_name='sauce_logo.png',
+    def create_community_e2e(self, name: str, description="some_description", set_image=False,
+                             file_name='sauce_logo.png',
                              require_approval=True):
         self.driver.info("## Creating community '%s', set image is set to '%s'" % (name, str(set_image)), device=False)
         self.plus_community_button.click()

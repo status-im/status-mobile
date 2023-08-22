@@ -13,6 +13,8 @@
     quo2.components.buttons.dynamic-button.view
     quo2.components.buttons.predictive-keyboard.view
     quo2.components.buttons.slide-button.view
+    quo2.components.buttons.wallet-button.view
+    quo2.components.buttons.wallet-ctas.view
     quo2.components.browser.browser-input.view
     quo2.components.calendar.calendar.view
     quo2.components.calendar.calendar-day.view
@@ -70,7 +72,7 @@
     quo2.components.messages.author.view
     quo2.components.messages.gap
     quo2.components.messages.system-message
-    quo2.components.navigation.floating-shell-button
+    quo2.components.navigation.floating-shell-button.view
     quo2.components.navigation.page-nav
     quo2.components.notifications.activity-log.view
     quo2.components.notifications.activity-logs-photos.view
@@ -109,6 +111,7 @@
     quo2.components.text-combinations.title.view
     quo2.components.wallet.account-overview.view
     quo2.components.wallet.account-card.view
+    quo2.components.wallet.keypair.view
     quo2.components.wallet.network-amount.view
     quo2.components.wallet.network-bridge.view
     quo2.components.wallet.progress-bar.view
@@ -135,6 +138,8 @@
 (def dynamic-button quo2.components.buttons.dynamic-button.view/view)
 (def predictive-keyboard quo2.components.buttons.predictive-keyboard.view/view)
 (def slide-button quo2.components.buttons.slide-button.view/view)
+(def wallet-button quo2.components.buttons.wallet-button.view/view)
+(def wallet-ctas quo2.components.buttons.wallet-ctas.view/view)
 
 ;;;; Browser
 (def browser-input quo2.components.browser.browser-input.view/view)
@@ -238,7 +243,7 @@
 (def static-skeleton quo2.components.loaders.skeleton.view/view)
 
 ;;;; Navigation
-(def floating-shell-button quo2.components.navigation.floating-shell-button/floating-shell-button)
+(def floating-shell-button quo2.components.navigation.floating-shell-button.view/view)
 (def page-nav quo2.components.navigation.page-nav/page-nav)
 
 ;;;; Markdown
@@ -313,6 +318,7 @@
 ;;;; Wallet
 (def account-card quo2.components.wallet.account-card.view/view)
 (def account-overview quo2.components.wallet.account-overview.view/view)
+(def keypair quo2.components.wallet.keypair.view/view)
 (def network-amount quo2.components.wallet.network-amount.view/view)
 (def network-bridge quo2.components.wallet.network-bridge.view/view)
 (def progress-bar quo2.components.wallet.progress-bar.view/view)
