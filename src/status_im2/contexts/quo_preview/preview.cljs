@@ -139,15 +139,15 @@
         "Close"]]]]]])
 
 (defn- customizer-select-button
-  [{:keys [open selected-key]}]
+  [{:keys [open selected-option]}]
   [rn/pressable
    {:style    (style/select-container)
     :on-press #(reset! open true)}
    [rn/text
     {:style           (style/field-select)
      :number-of-lines 1}
-    (if selected-key
-      (humanize selected-key)
+    (if selected-option
+      (or (:value selected-option) (humanize (:key selected-option)))
       "Select option")]
    [rn/view
     [quo/icon :i/chevron-right]]])
@@ -156,9 +156,9 @@
   []
   (let [open (reagent/atom nil)]
     (fn [{:keys [label state options] :as args}]
-      (let [label        (or label (key->text-label (:key args)))
-            field-value  (reagent/cursor state [(:key args)])
-            selected-key (:key (find-selected-option @field-value options))]
+      (let [label           (or label (key->text-label (:key args)))
+            field-value     (reagent/cursor state [(:key args)])
+            selected-option (find-selected-option @field-value options)]
         [rn/view {:style style/field-row}
          [label-view state label]
          [rn/view {:style style/field-column}
@@ -166,7 +166,7 @@
            {:open        open
             :options     options
             :field-value field-value}]
-          [customizer-select-button {:open open :selected-key selected-key}]]]))))
+          [customizer-select-button {:open open :selected-option selected-option}]]]))))
 
 (defn customizer
   [state descriptors]
