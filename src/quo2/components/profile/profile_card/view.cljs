@@ -8,7 +8,8 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.buttons.button.view :as button]
             [quo2.components.profile.profile-card.style :as style]
-            [quo2.components.avatars.user-avatar.view :as user-avatar]))
+            [quo2.components.avatars.user-avatar.view :as user-avatar]
+            [quo2.components.common.emoji-hash.view :as emoji-hash]))
 
 (defn- f-profile-card-component
   [{:keys [keycard-account? profile-picture name hash
@@ -96,10 +97,9 @@
           {:weight :monospace
            :style  style/user-hash} hash])
        (when (and show-emoji-hash? emoji-hash)
-         [text/text
-          {:weight          :monospace
-           :number-of-lines 1
-           :style           style/emoji-hash} emoji-hash])]]]))
+         [emoji-hash/view
+          {:emoji-hash      emoji-hash
+           :container-style style/emoji-hash}])]]]))
 
 (defn profile-card
   [props]

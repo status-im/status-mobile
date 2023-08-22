@@ -11,7 +11,8 @@
             [utils.image-server :as image-server]
             [react-native.navigation :as navigation]
             [clojure.string :as string]
-            [utils.address :as address]))
+            [utils.address :as address]
+            [quo2.components.common.emoji-hash.view :as emoji-hash]))
 
 (defn header
   []
@@ -106,7 +107,9 @@
           :on-long-press    #(rf/dispatch [:share/copy-text-and-show-toast
                                            {:text-to-copy      emoji-hash-string
                                             :post-copy-message (i18n/label :t/emoji-hash-copied)}])}
-         [rn/text {:style style/emoji-hash-content} emoji-hash-string]]]]
+         [emoji-hash/view
+          {:emoji-hash      emoji-hash
+           :container-style style/emoji-hash-content}]]]]
       [rn/view {:style style/emoji-share-button-container}
        [quo/button
         {:icon-only?          true

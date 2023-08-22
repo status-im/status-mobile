@@ -3,7 +3,6 @@
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [quo2.core :as quo]
-            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
@@ -40,28 +39,25 @@
     :type  :text}
    {:label "Hash"
     :key   :hash
-    :type  :text}
-   {:label "Emoji hash"
-    :key   :emoji-hash
     :type  :text}])
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:keycard-account? false
-                             :name "Matt Grote"
-                             :on-options-press nil
-                             :on-card-press nil
+  (let [state (reagent/atom {:keycard-account?     false
+                             :name                 "Matt Grote"
+                             :on-options-press     nil
+                             :on-card-press        nil
                              :show-options-button? true
-                             :show-logged-in? true
-                             :show-user-hash? false
-                             :login-card? false
-                             :last-item? true
-                             :on-press-sign nil
-                             :customization-color :turquoise
-                             :profile-picture (resources/get-mock-image :user-picture-male5)
-                             :show-emoji-hash? false
-                             :hash "zQ3k83euenmcikw7474hfu73t5N"
-                             :emoji-hash "😄😂🫣🍑😇🤢😻🥷🏻🦸🏻‍♀️🦸🏻🦸🏻‍♂️🦹🏻‍♀️🧑🏻‍🎄🎅🏻"})]
+                             :show-logged-in?      true
+                             :show-user-hash?      true
+                             :login-card?          false
+                             :last-item?           true
+                             :on-press-sign        nil
+                             :customization-color  :turquoise
+                             :show-emoji-hash?     true
+                             :hash                 "zQ3k83euenmcikw7474hfu73t5N"
+                             :emoji-hash           ["😄" "😂" "🫣" "🍑" "😇" "🤢" "😻" "🥷🏻" "🦸🏻‍♀️"
+                                                    "🌶️" "💃" "🚌" "🧑🏻‍🎄" "🪗"]})]
     (fn []
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}

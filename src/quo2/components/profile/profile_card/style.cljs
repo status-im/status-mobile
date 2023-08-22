@@ -27,8 +27,7 @@
   {:color colors/white})
 
 (def emoji-hash
-  {:margin-top     12
-   :letter-spacing 1.5})
+  {:margin-top 12})
 
 (def user-hash
   {:margin-top 2

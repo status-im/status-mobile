@@ -86,12 +86,9 @@
    :top      16})
 
 (def emoji-hash-content
-  {:color          colors/white
-   :align-self     :flex-start
-   :padding-top    4
-   :padding-bottom 12
-   :padding-left   12
-   :font-size      14})
+  {:margin-top    2
+   :margin-left   12
+   :margin-bottom 8})
 
 (def tabs-container
   {:padding-horizontal screen-padding

@@ -1,5 +1,6 @@
 (ns status-im2.contexts.onboarding.identifiers.profile-card.view
   (:require [quo2.core :as quo]
+            [quo2.components.common.emoji-hash.view :as emoji-hash]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.masked-view :as masked-view]
@@ -51,11 +52,9 @@
        hash]
       [reanimated/view
        {:style [emoji-hash-style]}
-       [quo/text
-        {:weight          :monospace
-         :number-of-lines 1
-         :style           style/emoji-hash}
-        emoji-hash]]]]))
+       [emoji-hash/view
+        {:emoji-hash      emoji-hash
+         :container-style style/emoji-hash}]]]]))
 
 (defn profile-card
   [props]

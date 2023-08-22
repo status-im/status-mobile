@@ -1,6 +1,5 @@
 (ns status-im2.contexts.onboarding.identifiers.view
   (:require [react-native.core :as rn]
-            [clojure.string :as string]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [quo2.core :as quo]
@@ -28,8 +27,7 @@
         {:keys [emoji-hash display-name compressed-key
                 public-key]} (rf/sub [:profile/profile])
         {:keys [color]}      (rf/sub [:onboarding-2/profile])
-        photo-path           (rf/sub [:chats/photo-path public-key])
-        emoji-string         (string/join emoji-hash)]
+        photo-path           (rf/sub [:chats/photo-path public-key])]
     (carousel.animation/use-initialize-animation progress paused? true is-dragging? drag-amount)
     (rn/use-effect
      (fn []
@@ -50,7 +48,7 @@
         {:profile-picture     photo-path
          :name                display-name
          :hash                compressed-key
-         :emoji-hash          emoji-string
+         :emoji-hash          emoji-hash
          :customization-color color
          :progress            progress}]
        [quo/button
