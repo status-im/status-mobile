@@ -3,7 +3,6 @@
             [quo2.core :as quo]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
-            [status-im2.contexts.wallet.common.tabs.view :as common]
             [status-im2.contexts.wallet.common.temp :as temp]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
@@ -50,17 +49,21 @@
                         {:render-fn               quo/token-value
                          :data                    temp/tokens
                          :content-container-style {:padding-horizontal 8}}]
-         :collectibles [common/empty-tab
-                        {:title       (i18n/label :t/no-collectibles)
-                         :description (i18n/label :t/no-collectibles-description)}]
-         :activity     [common/empty-tab
-                        {:title       (i18n/label :t/no-activity)
-                         :description (i18n/label :t/empty-tab-description)}]
-         :permissions  [common/empty-tab
-                        {:title       (i18n/label :t/no-permissions)
-                         :description (i18n/label :t/empty-tab-description)}]
-         :dapps        [common/empty-tab
-                        {:title       (i18n/label :t/no-dapps)
-                         :description (i18n/label :t/empty-tab-description)}]
+         :collectibles [quo/empty-state
+                        {:title        (i18n/label :t/no-collectibles)
+                         :description  (i18n/label :t/no-collectibles-description)
+                         :placeholder? true}]
+         :activity     [quo/empty-state
+                        {:title        (i18n/label :t/no-activity)
+                         :description  (i18n/label :t/empty-tab-description)
+                         :placeholder? true}]
+         :permissions  [quo/empty-state
+                        {:title        (i18n/label :t/no-permissions)
+                         :description  (i18n/label :t/no-collectibles-description)
+                         :placeholder? true}]
+         :dapps        [quo/empty-state
+                        {:title        (i18n/label :t/no-dapps)
+                         :description  (i18n/label :t/no-collectibles-description)
+                         :placeholder? true}]
          [rn/view {:style style/wip}
           [quo/text "[WIP]"]])])))

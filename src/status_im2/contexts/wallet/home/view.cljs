@@ -8,8 +8,7 @@
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [status-im2.contexts.wallet.common.temp :as temp]
-    [status-im2.contexts.wallet.common.tabs.view :as common]))
+    [status-im2.contexts.wallet.common.temp :as temp]))
 
 (def tabs-data
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
@@ -46,10 +45,11 @@
                         {:render-fn               quo/token-value
                          :data                    temp/tokens
                          :content-container-style {:padding-horizontal 8}}]
-         :collectibles [common/empty-tab
-                        {:title       (i18n/label :t/no-collectibles)
-                         :description (i18n/label :t/no-collectibles-description)}]
-         [common/empty-tab
-          {:title       (i18n/label :t/no-activity)
-           :description (i18n/label :t/empty-tab-description)}])])))
-
+         :collectibles [quo/empty-state
+                        {:title        (i18n/label :t/no-collectibles)
+                         :description  (i18n/label :t/no-collectibles-description)
+                         :placeholder? true}]
+         [quo/empty-state
+          {:title        (i18n/label :t/no-activity)
+           :description  (i18n/label :t/empty-tab-description)
+           :placeholder? true}])])))

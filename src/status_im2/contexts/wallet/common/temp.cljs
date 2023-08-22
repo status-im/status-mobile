@@ -73,4 +73,3 @@
    :account-name        "Account 1"
    :account             :default
    :customization-color :blue})
-

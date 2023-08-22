@@ -2,8 +2,11 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def container
-  {:padding     12
-   :align-items :center})
+  {:padding         12
+   :align-items     :center
+   :justify-content :center
+   :flex            1
+   :margin-bottom   44})
 
 (def image
   {:width  80
@@ -24,3 +27,8 @@
     {:color colors/white}))
 
 (def button-container {:margin-top 20})
+
+(def image-placeholder
+  {:width            80
+   :height           80
+   :background-color colors/danger})
