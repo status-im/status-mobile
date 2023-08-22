@@ -29,13 +29,13 @@
         :style           style/middle-dot-nickname}
        middle-dot]
       [text/text
-       {:weight          :medium
-        :size            :paragraph-2
-        :number-of-lines 1
+       {:weight              :medium
+        :size                :paragraph-2
+        :number-of-lines     1
         :accessibility-label :author-secondary-name
-        :style           {:color (if muted?
-                                   colors/neutral-50
-                                   (colors/theme-colors colors/neutral-60 colors/neutral-40))}}
+        :style               {:color (if muted?
+                                       colors/neutral-50
+                                       (colors/theme-colors colors/neutral-60 colors/neutral-40))}}
        secondary-name]])
    (when contact?
      [icons/icon :main-icons2/contact
