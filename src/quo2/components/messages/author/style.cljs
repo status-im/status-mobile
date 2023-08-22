@@ -22,6 +22,7 @@
   {:margin-left 4})
 
 (defn time-text
-  [ens?]
+  [verified?]
   {:color       colors/neutral-50
-   :margin-left (if ens? 8 4)})
+   :padding-top 1
+   :margin-left (if verified? 8 4)})
