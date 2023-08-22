@@ -200,7 +200,7 @@
           opts)))
 
 (defn blur-view
-  [{:keys [show-blur-background? image height blur-view-props style]} children]
+  [{:keys [show-blur-background? image height blur-view-props style]} & children]
   [rn/view
    {:style {:flex             1
             :padding-vertical 16}}
@@ -221,12 +221,12 @@
                :blur-amount   10
                :overlay-color (colors/theme-colors colors/white-opa-70 colors/neutral-80-opa-80)}
               blur-view-props)]])
-   [rn/view
-    {:style (merge {:position           :absolute
-                    :top                32
-                    :padding-horizontal 16}
-                   style)}
-    children]])
+   (into [rn/view
+          {:style (merge {:position           :absolute
+                          :top                32
+                          :padding-horizontal 16}
+                         style)}]
+         children)])
 
 (defn preview-container
   [{:keys [state descriptor blur?
@@ -240,20 +240,23 @@
    [rn/pressable {:on-press rn/dismiss-keyboard!}
     [rn/view {:style style/customizer-container}
      [customizer state descriptor]]
-    [rn/view
-     (merge {:style style/component-container}
-            component-container-style)
-     (if blur?
-       [blur-view
-        {:show-blur-background? show-blur-background?
-         :height                blur-height
-         :style                 (merge {:width     "100%"
-                                        :flex-grow 1}
-                                       (when-not show-blur-background?
-                                         {:padding-horizontal 0
-                                          :top                0})
-                                       blur-container-style)
-         :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
-                                       blur-view-props)}
-        children]
-       children)]]])
+    (if blur?
+      [rn/view
+       (merge {:style style/component-container}
+              component-container-style)
+       (into [blur-view
+              {:show-blur-background? show-blur-background?
+               :height                blur-height
+               :style                 (merge {:width     "100%"
+                                              :flex-grow 1}
+                                             (when-not show-blur-background?
+                                               {:padding-horizontal 0
+                                                :top                0})
+                                             blur-container-style)
+               :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
+                                             blur-view-props)}]
+             children)]
+      (into [rn/view
+             (merge {:style style/component-container}
+                    component-container-style)]
+            children))]])
