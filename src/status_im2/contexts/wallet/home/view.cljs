@@ -8,26 +8,13 @@
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [status-im2.contexts.wallet.home.temp :as temp]))
+    [status-im2.contexts.wallet.common.temp :as temp]
+    [status-im2.contexts.wallet.common.tabs.view :as common]))
 
 (def tabs-data
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
-
-(defn collectibles
-  []
-  [rn/view {:style style/empty-container}
-   [rn/view {:style style/image-placeholder}]
-   [quo/text {:weight :semi-bold :style {:margin-top 12}} (i18n/label :t/no-collectibles)]
-   [quo/text {:size :paragraph-2 :style {:margin-top 2}} (i18n/label :t/no-collectibles-description)]])
-
-(defn activity
-  []
-  [rn/view {:style style/empty-container}
-   [rn/view {:style style/image-placeholder}]
-   [quo/text {:weight :semi-bold :style {:margin-top 12}} (i18n/label :t/no-activity)]
-   [quo/text {:size :paragraph-2 :style {:margin-top 2}} (i18n/label :t/no-activity-description)]])
 
 (defn view
   []
@@ -59,6 +46,10 @@
                         {:render-fn               quo/token-value
                          :data                    temp/tokens
                          :content-container-style {:padding-horizontal 8}}]
-         :collectibles [collectibles]
-         [activity])])))
+         :collectibles [common/empty-tab
+                        {:title       (i18n/label :t/no-collectibles)
+                         :description (i18n/label :t/no-collectibles-description)}]
+         [common/empty-tab
+          {:title       (i18n/label :t/no-activity)
+           :description (i18n/label :t/empty-tab-description)}])])))
 
