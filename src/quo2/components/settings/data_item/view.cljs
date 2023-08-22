@@ -15,7 +15,8 @@
       (if (= :graph label)
         [not-implemented/not-implemented blur?]
         [rn/pressable
-         {:disabled (not icon-right?)
+         {:accessibility-label :data-item
+          :disabled (not icon-right?)
           :on-press on-press
           :style    (style/container size card? blur?)}
          [left-side/view theme title status size blur? description icon subtitle label icon-color]

@@ -22,5 +22,6 @@
        (if (= :none label)
          :i/copy
          :i/chevron-right)
-       {:color icon-color
+       {:accessibility-label :icon-right
+        :color icon-color
         :size  20}]])])
