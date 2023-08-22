@@ -8,16 +8,21 @@
   "Opts:
     :emoji-hash - vector consist of emojis -> [😄 😂 🫣 🍑 😇 🤢 😻 🥷🏻 🦸🏻‍♀️ 🌶️ 💃 🚌 🧑🏻‍🎄 🪗]
 
+    :size - number (optional) - 16 [default] 
+
     :container-style - map (optional)
 
+    :emoji-container-style - map (optional)
+
     :theme - keyword -> :light/:dark"
-  [{:keys [emoji-hash container-style]}]
-  (into [rn/view {:style (merge style/root-container container-style)}]
-        (map #(with-meta [rn/view {:style style/emoji-container}
-                          [twemoji/twemoji
-                           {:image-style {:height 15
-                                          :width  15}} %]]
-                         {:key %})
-             emoji-hash)))
+  [{:keys [emoji-hash size container-style emoji-container-style]}]
+  (let [emoji-size (or size 16)]
+    (into [rn/view {:style (merge style/root-container container-style)}]
+          (map #(with-meta [rn/view {:style (merge style/emoji-container emoji-container-style)}
+                            [twemoji/twemoji
+                             {:image-style {:height emoji-size
+                                            :width  emoji-size}} %]]
+                           {:key %})
+               emoji-hash))))
 
 (def view (quo.theme/with-theme view-internal))

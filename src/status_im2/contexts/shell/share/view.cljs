@@ -108,8 +108,9 @@
                                            {:text-to-copy      emoji-hash-string
                                             :post-copy-message (i18n/label :t/emoji-hash-copied)}])}
          [emoji-hash/view
-          {:emoji-hash      emoji-hash
-           :container-style style/emoji-hash-content}]]]]
+          {:emoji-hash            emoji-hash
+           :container-style       style/emoji-hash-content
+           :emoji-container-style {:margin-left -1}}]]]]
       [rn/view {:style style/emoji-share-button-container}
        [quo/button
         {:icon-only?          true

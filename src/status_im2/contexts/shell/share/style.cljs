@@ -70,10 +70,9 @@
 
 (def emoji-hash-label
   {:color          colors/white-opa-40
-   :margin-top     8
+   :margin-top     2
    :padding-bottom (if platform/ios? 2 0)
    :padding-left   12})
-
 
 (def share-button-container
   {:position :absolute
