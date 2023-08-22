@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 // Supports Unicode 14.0
