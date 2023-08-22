@@ -241,9 +241,7 @@
     [rn/view {:style style/customizer-container}
      [customizer state descriptor]]
     (if blur?
-      [rn/view
-       (merge {:style style/component-container}
-              component-container-style)
+      [rn/view {:style (merge style/component-container component-container-style)}
        (into [blur-view
               {:show-blur-background? show-blur-background?
                :height                blur-height
@@ -256,7 +254,5 @@
                :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
                                              blur-view-props)}]
              children)]
-      (into [rn/view
-             (merge {:style style/component-container}
-                    component-container-style)]
+      (into [rn/view {:style (merge style/component-container component-container-style)}]
             children))]])
