@@ -21,6 +21,15 @@ const removeVS16s = (rawEmoji) => (rawEmoji.indexOf(zeroWidthJoiner) < 0 ? rawEm
 
 const defaultFontSize = 14;
 
+// helper functions
+const isString = (value) => {
+  return typeof value === 'string';
+};
+
+const isObject = (value) => {
+  return typeof value === 'object';
+};
+
 /**
  * Given an HEX codepoint, returns UTF16 surrogate pairs.
  *
@@ -92,11 +101,17 @@ const TwemojiImage = ({ style, rawText, iconId }) => {
   const fontSize = style?.textStyle?.fontSize ?? defaultFontSize;
 
   if (errorInFetching) {
-    return <Text style={{ fontSize }}>{rawText}</Text>;
+    return (
+      <Text accessibilityLabel={rawText} style={{ fontSize }}>
+        {rawText}
+      </Text>
+    );
   }
 
   return (
     <FastImage
+      accessible={true}
+      accessibilityLabel={rawText}
       style={{
         width: fontSize,
         height: fontSize,
@@ -157,22 +172,21 @@ const parseString = (text, style) => {
   return result;
 };
 
-const isString = (value) => {
-  return typeof value === 'string';
-};
-
 const flatten = (array) => {
-  let newArray = [];
+  let parsedChildren = [],
+    hasObjectType = false;
 
   array.forEach((item) => {
     if (Array.isArray(item)) {
-      newArray = newArray.concat(item);
+      parsedChildren = parsedChildren.concat(item);
     } else {
-      newArray.push(item);
+      parsedChildren.push(item);
     }
   });
 
-  return newArray;
+  hasObjectType = parsedChildren.some((x) => isObject(x));
+
+  return { parsedChildren, hasObjectType };
 };
 
 const parseChildren = (source, style) => {
@@ -193,9 +207,9 @@ const parseChildren = (source, style) => {
  */
 export const Twemoji = ({ children, imageProps, ...props }) => {
   const textStyle = StyleSheet.flatten(props.style);
-  const parsedChildren = parseChildren(children, { imageProps, textStyle });
+  const { parsedChildren } = parseChildren(children, { imageProps, textStyle });
 
-  if (parsedChildren.length && typeof parsedChildren[0] === 'object') {
+  if (parsedChildren.length && isObject(parsedChildren[0])) {
     return parsedChildren[0];
   }
 
@@ -208,11 +222,22 @@ export const Twemoji = ({ children, imageProps, ...props }) => {
  */
 export const TwemojiText = ({ children, imageProps, ...props }) => {
   const textStyle = StyleSheet.flatten(props.style);
-  const parsedChildren = parseChildren(children, { imageProps, textStyle });
+  const { parsedChildren, hasObjectType } = parseChildren(children, { imageProps, textStyle });
+
+  // If there in no Twemoji in the text, render it as it is.
+  if (!hasObjectType) {
+    return <Text {...props}>{parsedChildren.join('')}</Text>;
+  }
+
   return (
     <Text {...props}>
       {/* Hack to retain the line height and to render emoji (images) within the line height*/}
-      <Text style={{ color: 'transparent', fontSize: 0.1 }} selectable={false}>
+      <Text
+        key={'twemoji-line-height-retainer'}
+        accessible={false}
+        selectable={false}
+        style={{ color: 'transparent', fontSize: 0.1 }}
+      >
         {' '}
       </Text>
       {parsedChildren}

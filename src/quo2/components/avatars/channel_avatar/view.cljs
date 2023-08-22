@@ -56,7 +56,6 @@
    (if (string/blank? emoji)
      [initials full-name size customization-color]
      [twemoji/twemoji
-      {:accessibility-label :emoji
-       :style               {:font-size (if (= size :size/l) 15 12)}}
+      {:style {:font-size (if (= size :size/l) 15 12)}}
       (string/trim emoji)])
    [lock locked? size]])

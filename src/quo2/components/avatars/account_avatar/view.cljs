@@ -5,6 +5,8 @@
             [quo2.theme :as quo.theme]
             [react-native.core :as rn]))
 
+(def default-emoji "🍑")
+
 (defn- view-internal
   "Opts:
    
@@ -19,7 +21,7 @@
     :theme - keyword -> :light/:dark"
   [{:keys [size emoji]
     :or   {size  style/default-size
-           emoji "🍑"}
+           emoji default-emoji}
     :as   opts}]
   (let [emoji-size (style/get-emoji-size size)]
     [rn/view
@@ -27,8 +29,7 @@
       :accessibility-label :account-avatar
       :style               (style/root-container opts)}
      [twemoji/twemoji
-      {:accessibility-label :account-emoji
-       :style               {:font-size emoji-size}}
+      {:style {:font-size emoji-size}}
       (string/trim emoji)]]))
 
 (def view (quo.theme/with-theme view-internal))

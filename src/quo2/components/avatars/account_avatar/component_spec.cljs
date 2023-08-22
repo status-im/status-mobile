@@ -8,14 +8,13 @@
   (h/test "default render"
     (h/render [account-avatar/view])
     (h/is-truthy (h/query-by-label-text :account-avatar))
-    (h/is-truthy (h/query-by-label-text :account-emoji)))
+    (h/is-truthy (h/query-by-label-text account-avatar/default-emoji)))
 
   (h/test "with emoji"
     (let [emoji "💸"]
       (h/render [account-avatar/view {:emoji emoji :size 80}])
       (h/is-truthy (h/query-by-label-text :account-avatar))
-      (h/is-truthy (h/query-by-label-text :account-emoji))
-      (h/is-truthy (h/query-by-text emoji))))
+      (h/is-truthy (h/query-by-label-text emoji))))
 
   (h/test "size 80 with emoji, with type - default"
     (let [opts {:emoji               "🏝️"
@@ -29,10 +28,7 @@
                     :width           (:size opts)
                     :borderRadius    (style/get-border-radius (:size opts))
                     :backgroundColor (colors/custom-color-by-theme (:customization-color opts) 50 60)})
-      (h/is-truthy (h/query-by-label-text :account-emoji))
-      (h/has-style (h/query-by-label-text :account-emoji)
-                   {:fontSize (style/get-emoji-size (:size opts))})
-      (h/is-truthy (h/query-by-text (:emoji opts)))))
+      (h/is-truthy (h/query-by-label-text (:emoji opts)))))
 
   (h/test "size 48 with emoji, with type - watch only"
     (let [opts {:emoji               "💵"
@@ -48,10 +44,7 @@
         :borderRadius    (style/get-border-radius (:size opts))
         :borderWidth     1
         :backgroundColor (colors/custom-color-by-theme (:customization-color opts) 50 50 10 10)})
-      (h/is-truthy (h/query-by-label-text :account-emoji))
-      (h/has-style (h/query-by-label-text :account-emoji)
-                   {:fontSize (style/get-emoji-size (:size opts))})
-      (h/is-truthy (h/query-by-text (:emoji opts)))))
+      (h/is-truthy (h/query-by-label-text (:emoji opts)))))
 
   (h/test "size 28 with emoji, with type - default"
     (let [opts {:emoji               "🏝️"
@@ -65,10 +58,7 @@
                     :width           (:size opts)
                     :borderRadius    (style/get-border-radius (:size opts))
                     :backgroundColor (colors/custom-color-by-theme (:customization-color opts) 50 60)})
-      (h/is-truthy (h/query-by-label-text :account-emoji))
-      (h/has-style (h/query-by-label-text :account-emoji)
-                   {:fontSize (style/get-emoji-size (:size opts))})
-      (h/is-truthy (h/query-by-text (:emoji opts)))))
+      (h/is-truthy (h/query-by-label-text (:emoji opts)))))
 
   (h/test "size 16 with emoji, with type - watch only"
     (let [opts {:emoji               "🎉"
@@ -84,7 +74,4 @@
         :borderRadius    (style/get-border-radius (:size opts))
         :borderWidth     0.8
         :backgroundColor (colors/custom-color-by-theme (:customization-color opts) 50 50 10 10)})
-      (h/is-truthy (h/query-by-label-text :account-emoji))
-      (h/has-style (h/query-by-label-text :account-emoji)
-                   {:fontSize (style/get-emoji-size (:size opts))})
-      (h/is-truthy (h/query-by-text (:emoji opts))))))
+      (h/is-truthy (h/query-by-label-text (:emoji opts))))))
