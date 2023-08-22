@@ -11,7 +11,7 @@
   (if group-chat
     [quo/group-avatar
      {:customization-color color
-      :size                :x-small}]
+      :size                :size/s-20}]
     [quo/user-avatar
      {:full-name         display-name
       :profile-picture   photo-path
