@@ -30,9 +30,9 @@
      {:accessibility-label :pinned-messages-menu}
      [:<>
       [quo/text
-       {:size   :heading-1
+       {:size   :heading-2
         :weight :semi-bold
-        :style  style/heading}
+        :style  (style/heading community)}
        (i18n/label :t/pinned-messages)]
       (when community
         [rn/view {:style (style/heading-container)}
