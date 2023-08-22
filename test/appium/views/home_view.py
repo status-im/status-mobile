@@ -546,6 +546,7 @@ class HomeView(BaseView):
     def get_public_key_via_share_profile_tab(self):
         self.driver.info("Getting public key via Share tab")
         self.show_qr_code_button.click()
+        self.link_to_profile_text.wait_for_visibility_of_element()
         self.link_to_profile_text.click()
         c_text = self.driver.get_clipboard_text()
         self.click_system_back_button()

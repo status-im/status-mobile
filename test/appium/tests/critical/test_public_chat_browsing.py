@@ -984,24 +984,29 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_2.get_chat(self.community_name, community=True).click()
         self.community_2.get_channel(self.channel_name).click()
         self.channel_2.send_message(self.text_message)
-        community_1_element = self.community_1.get_chat(self.community_name)
+        community_1_element = self.community_1.get_chat(self.community_name, community=True)
         if not community_1_element.new_messages_grey_dot.is_element_displayed(90):
-            self.errors.append('New messages counter is not shown in home > Commmunity element')
+            self.errors.append('New messages counter is not shown in home > Community element')
+        community_1_element.click()
+        channel_1_element = self.community_1.get_chat(self.channel_name, community_channel=True)
+        if not channel_1_element.new_messages_grey_dot.is_element_displayed():
+            self.errors.append("New messages counter is not shown in community channel element")
+        self.community_1.click_system_back_button()
         mark_as_read_button = self.community_1.mark_all_messages_as_read_button
         community_1_element.long_press_until_element_is_shown(mark_as_read_button)
         mark_as_read_button.click()
         if community_1_element.new_messages_grey_dot.is_element_displayed():
             self.errors.append(
-                'Unread messages badge is shown in community channel while there are no unread messages')
-        # TODO: there should be one more check for community channel, which is still not ready
-
-        #     self.community_1.click_system_back_button_until_element_is_shown()
-        #     community_1_element = self.home_1.get_chat(self.community_name, community=True)
-        #     if community_1_element.new_messages_community.is_element_displayed():
-        #         self.errors.append('New messages community badge is shown on community after marking messages as read')
+                'Unread messages badge is shown in community element while there are no unread messages')
+        community_1_element.click()
+        if channel_1_element.new_messages_grey_dot.is_element_displayed():
+            self.errors.append(
+                "New messages badge is shown in community channel element while there are no unread messages")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702786)
+    @marks.xfail(
+        reason="Issue with username in PN, issue #6 in https://github.com/status-im/status-mobile/issues/15500")
     def test_community_mentions_push_notification(self):
         self.home_1.navigate_back_to_home_view()
         if not self.channel_2.chat_message_input.is_element_displayed():
@@ -1030,6 +1035,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         else:
             self.errors.append("Push notification with the mention was not received by admin")
 
+        self.channel_1.click_system_back_button()
+
         if message_received:
             self.channel_1.just_fyi("Set reaction for the message with a mention")
             self.channel_1.set_reaction(message=self.username_1, emoji="sad")
@@ -1039,46 +1046,45 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             except (Failed, NoSuchElementException):
                 self.errors.append("Message reaction is not shown for the sender")
 
-        # ToDo: this part is skipped because of an issue - sent messages stuck without any status for a long time
-        # and can not be edited during that time
-        # self.device_2.just_fyi("Sender edits the message with a mention")
-        # self.channel_2.chat_element_by_text(self.username_1).wait_for_sent_state()
-        # self.channel_2.chat_element_by_text(self.username_1).long_press_element_by_coordinate(rel_y=0)
-        # try:
-        #     self.channel_2.element_by_translation_id("edit-message").click()
-        #     for i in range(29, 32):
-        #         self.channel_2.driver.press_keycode(i)
-        #     self.channel_2.send_message_button.click()
-        #     edited_message = self.username_1 + " abc"
-        #     if not self.channel_2.chat_element_by_text(edited_message).is_element_displayed():
-        #         self.errors.append("Edited message is not shown correctly for the sender")
-        #     if not self.channel_1.chat_element_by_text(edited_message).is_element_displayed():
-        #         self.errors.append("Edited message is not shown correctly for the (receiver) admin")
-        # except NoSuchElementException:
-        #     self.errors.append("Can not edit a message with a mention")
+        self.device_2.just_fyi("Sender edits the message with a mention")
+        self.channel_2.chat_element_by_text(self.username_1).wait_for_sent_state()
+        self.channel_2.chat_element_by_text(self.username_1).long_press_element_by_coordinate(rel_y=0)
+        try:
+            self.channel_2.element_by_translation_id("edit-message").click()
+            for i in range(29, 32):
+                self.channel_2.driver.press_keycode(i)
+            self.channel_2.send_message_button.click()
+            edited_message = self.username_1 + " abc"
+            if not self.channel_2.chat_element_by_text(edited_message).is_element_displayed():
+                self.errors.append("Edited message is not shown correctly for the sender")
+            if not self.channel_1.chat_element_by_text(edited_message).is_element_displayed():
+                self.errors.append("Edited message is not shown correctly for the (receiver) admin")
+        except NoSuchElementException:
+            self.errors.append("Can not edit a message with a mention")
 
-        # ToDo: enable when https://github.com/status-im/status-mobile/issues/14956 is fixed
-        # self.home_2.click_system_back_button_until_element_is_shown()
-        # if not self.channel_1.chat_message_input.is_element_displayed():
-        #     self.channel_1.click_system_back_button_until_element_is_shown()
-        #     self.home_1.communities_tab.click()
-        #     self.home_1.get_chat(self.community_name, community=True).click()
-        #     self.community_1.get_channel(self.channel_name).click()
-        #
-        # self.device_1.just_fyi("Admin sends a message with a mention")
-        # self.channel_1.mention_user(self.username_2)
-        # self.channel_1.send_message_button.click()
-        # self.device_2.just_fyi("Invited member gets push notification with the mention and tap it")
-        # self.device_2.open_notification_bar()
-        # if not self.home_2.get_pn(self.username_2):
-        #     self.device_2.driver.fail("Push notification with the mention was not received by the invited member")
-        # self.device_2.click_upon_push_notification_by_text(self.username_2)
-        # if not self.channel_2.chat_element_by_text(self.username_2).is_element_displayed():
-        #     if self.channel_2.chat_message_input.is_element_displayed():
-        #         self.device_2.driver.fail("Message with the mention is not shown in the chat for the invited member")
-        #     else:
-        #         self.device_2.driver.fail(
-        #             "Channel did not open by clicking on a notification with the mention for the invited member")
+        self.home_2.navigate_back_to_home_view()
+        if not self.channel_1.chat_message_input.is_element_displayed():
+            self.channel_1.navigate_back_to_home_view()
+            self.home_1.communities_tab.click()
+            self.home_1.get_chat(self.community_name, community=True).click()
+            self.community_1.get_channel(self.channel_name).click()
+
+        self.device_1.just_fyi("Admin sends a message with a mention")
+        self.channel_1.mention_user(self.username_2)
+        self.channel_1.send_message_button.click()
+        self.device_2.just_fyi("Invited member gets push notification with the mention and tap it")
+        self.device_2.open_notification_bar()
+        push_notification_element = self.home_2.get_pn(self.username_2)
+        if push_notification_element:
+            push_notification_element.click()
+            if not self.channel_2.chat_element_by_text(self.username_2).is_element_displayed():
+                if self.channel_2.chat_message_input.is_element_displayed():
+                    self.errors.append("Message with the mention is not shown in the chat for the invited member")
+                else:
+                    self.errors.append(
+                        "Channel did not open by clicking on a notification with the mention for the invited member")
+        else:
+            self.errors.append("Push notification with the mention was not received by the invited member")
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702809)

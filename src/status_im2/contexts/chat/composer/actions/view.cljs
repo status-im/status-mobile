@@ -65,16 +65,16 @@
     :i/arrow-up]])
 
 (defn send-button
-  [props {:keys [text-value] :as state} animations window-height images? edit]
-  (let [btn-opacity (reanimated/use-shared-value 0)
-        z-index     (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
+  [props {:keys [text-value] :as state} animations window-height images? edit btn-opacity]
+  (let [z-index (reagent/atom (if (and (empty? @text-value) (not images?)) 0 1))]
     [:f> f-send-button props state animations window-height images? btn-opacity z-index edit]))
 
 (defn disabled-audio-button
-  []
-  [quo/composer-button
-   {:on-press #(js/alert "to be implemented")
-    :icon     :i/audio}])
+  [opacity]
+  [reanimated/view {:style (reanimated/apply-animations-to-style {:opacity opacity} {})}
+   [quo/composer-button
+    {:on-press #(js/alert "to be implemented")
+     :icon     :i/audio}]])
 
 (defn audio-button
   [{:keys [record-reset-fn input-ref]}
@@ -169,8 +169,8 @@
     [quo/composer-button
      {:on-press        #(go-to-camera images-count)
       :icon            :i/camera
-      :container-style {:margin-right 12}}
-    ]))
+      :container-style {:margin-right 12}}]))
+
 
 (defn open-photo-selector
   [{:keys [input-ref]}
@@ -212,16 +212,18 @@
 
 (defn view
   [props state animations window-height insets {:keys [edit images]}]
-  [rn/view {:style style/actions-container}
-   [rn/view
-    {:style {:flex-direction :row
-             :display        (if @(:recording? state) :none :flex)}}
-    [camera-button]
-    [image-button props animations insets]
-    [reaction-button]
-    [format-button]]
-   [:f> send-button props state animations window-height images edit]
-   (when (and (not edit) (not images))
-     ;; TODO(alwx): needs to be replaced with an `audio-button` later.
-     ;; See https://github.com/status-im/status-mobile/issues/16084 for more details.
-     [disabled-audio-button])])
+  (let [send-btn-opacity  (reanimated/use-shared-value 0)
+        audio-btn-opacity (reanimated/interpolate send-btn-opacity [0 1] [1 0])]
+    [rn/view {:style style/actions-container}
+     [rn/view
+      {:style {:flex-direction :row
+               :display        (if @(:recording? state) :none :flex)}}
+      [camera-button]
+      [image-button props animations insets]
+      [reaction-button]
+      [format-button]]
+     [:f> send-button props state animations window-height images edit send-btn-opacity]
+     (when (and (not edit) (not images))
+       ;; TODO(alwx): needs to be replaced with an `audio-button` later.
+       ;; See https://github.com/status-im/status-mobile/issues/16084 for more details.
+       [:f> disabled-audio-button audio-btn-opacity])]))
