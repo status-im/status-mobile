@@ -1,26 +1,21 @@
 (ns status-im2.contexts.quo-preview.drawers.action-drawers
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [utils.re-frame :as rf]))
 
 (def descriptor
-  [{:label "Muted?"
-    :key   :muted?
-    :type  :boolean}
-   {:label "Mark as read disabled?"
-    :key   :mark-as-read-disabled?
-    :type  :boolean}
-   {:label "Show red options?"
-    :key   :show-red-options?
-    :type  :boolean}
-   {:label   "Drawer theme"
-    :key     :theme
+  [{:key  :muted?
+    :type :boolean}
+   {:key  :mark-as-read-disabled?
+    :type :boolean}
+   {:key  :show-red-options?
+    :type :boolean}
+   {:key     :theme
     :type    :select
-    :options [{:key :dark :value "Dark"}
-              {:key :light :value "Light"}
+    :options [{:key :dark}
+              {:key :light}
               {:key nil :value "System"}]}])
 
 (def options-with-consequences
@@ -30,7 +25,7 @@
     :add-divider? true
     :on-press     #(js/alert "clear history")}])
 
-(defn render-action-sheet
+(defn action-sheet
   [state]
   [quo/action-drawer
    (cond->
@@ -58,31 +53,17 @@
      (:show-red-options? @state)
      (conj options-with-consequences))])
 
-(defn cool-preview
+(defn view
   []
   (let [state (reagent/atom {:muted?            true
                              :show-red-options? true})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 400}
-        [preview/customizer state descriptor]
-        [quo/button
-         {:container-style {:margin-horizontal 40}
-          :on-press        #(rf/dispatch [:show-bottom-sheet
-                                          {:content (fn [] [render-action-sheet state])
-                                           :theme   (:theme @state)}])}
-         "See in bottom sheet"]
-        [rn/view {:padding-vertical 60}
-         [render-action-sheet state]]]])))
-
-(defn preview-action-drawers
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :nestedScrollEnabled          true
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       (fn [_ index] (str "actions-drawers-" index))}]])
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/button
+        {:container-style {:margin-horizontal 40}
+         :on-press        #(rf/dispatch [:show-bottom-sheet
+                                         {:content (fn [] [action-sheet state])
+                                          :theme   (:theme @state)}])}
+        "See in bottom sheet"]
+       [rn/view {:padding-vertical 60}
+        [action-sheet state]]])))

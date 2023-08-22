@@ -24,50 +24,36 @@
                    (when shadow? shadow-style))}]])
 
 (def descriptor
-  [{:label "Shadows enabled?"
-    :key   :shadow?
-    :type  :boolean}])
+  [{:key  :shadow?
+    :type :boolean}])
 
-(defn cool-preview
+(defn view
   []
   (let [state   (reagent/atom {:shadow? true})
         shadow? (reagent/cursor state [:shadow?])]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:style {:padding-bottom 150}}
-        [preview/customizer state descriptor]
-        [quo/text
-         {:style {:margin-left  :auto
-                  :margin-right :auto
-                  :align-items  :center}}
-         "Normal Scales"]
-        [demo-box @shadow? "Shadow 1" (shadows/get 1)]
-        [demo-box @shadow? "Shadow 2" (shadows/get 2)]
-        [demo-box @shadow? "Shadow 3" (shadows/get 3)]
-        [demo-box @shadow? "Shadow 4" (shadows/get 4)]
-        [quo/text
-         {:style {:margin-left  :auto
-                  :margin-right :auto
-                  :align-items  :center}}
-         "Inverted Scales"]
-        [demo-box @shadow? "Shadow 1" (shadows/get 1 (quo.theme/get-theme) :inverted)]
-        [demo-box @shadow? "Shadow 2" (shadows/get 2 (quo.theme/get-theme) :inverted)]
-        [demo-box @shadow? "Shadow 3" (shadows/get 3 (quo.theme/get-theme) :inverted)]
-        [demo-box @shadow? "Shadow 4" (shadows/get 4 (quo.theme/get-theme) :inverted)]
-        [quo/text
-         {:style {:margin-left  :auto
-                  :margin-right :auto
-                  :align-items  :center}}
-         "Inverted Scales"]
-        [demo-box @shadow? "Inner Shadow" shadows/inner-shadow]]])))
-
-(defn preview-shadows
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/neutral-30 colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/text
+        {:style {:margin-left  :auto
+                 :margin-right :auto
+                 :align-items  :center}}
+        "Normal Scales"]
+       [demo-box @shadow? "Shadow 1" (shadows/get 1)]
+       [demo-box @shadow? "Shadow 2" (shadows/get 2)]
+       [demo-box @shadow? "Shadow 3" (shadows/get 3)]
+       [demo-box @shadow? "Shadow 4" (shadows/get 4)]
+       [quo/text
+        {:style {:margin-left  :auto
+                 :margin-right :auto
+                 :align-items  :center}}
+        "Inverted Scales"]
+       [demo-box @shadow? "Shadow 1" (shadows/get 1 (quo.theme/get-theme) :inverted)]
+       [demo-box @shadow? "Shadow 2" (shadows/get 2 (quo.theme/get-theme) :inverted)]
+       [demo-box @shadow? "Shadow 3" (shadows/get 3 (quo.theme/get-theme) :inverted)]
+       [demo-box @shadow? "Shadow 4" (shadows/get 4 (quo.theme/get-theme) :inverted)]
+       [quo/text
+        {:style {:margin-left  :auto
+                 :margin-right :auto
+                 :align-items  :center}}
+        "Inverted Scales"]
+       [demo-box @shadow? "Inner Shadow" shadows/inner-shadow]])))

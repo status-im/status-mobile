@@ -7,27 +7,23 @@
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Title"
-    :key   :title
-    :type  :text}
-   {:label "Show button"
-    :key   :show-button?
-    :type  :boolean}
-   {:label "Button label"
-    :key   :button-label
-    :type  :text}
-   {:label "Shell"
-    :key   :shell?
-    :type  :boolean}])
+  [{:key  :title
+    :type :text}
+   {:key  :show-button?
+    :type :boolean}
+   {:key  :button-label
+    :type :text}
+   {:key  :shell?
+    :type :boolean}])
 
 (defn documentation-content
-  [override-theme]
-  [quo/text {:style {:color (colors/theme-colors colors/neutral-100 colors/white override-theme)}}
+  [theme]
+  [quo/text {:style {:color (colors/theme-colors colors/neutral-100 colors/white theme)}}
    "Group chats are conversations of more than two people. To invite someone to a group chat, you need to have them on your Status contact list."])
 
 (defn documentation-content-full
-  [override-theme]
-  (let [text-color (colors/theme-colors colors/neutral-100 colors/white override-theme)
+  [theme]
+  (let [text-color (colors/theme-colors colors/neutral-100 colors/white theme)
         text-style {:color text-color :margin-bottom 10}]
     [rn/view
      [quo/text {:style text-style}
@@ -75,7 +71,7 @@
      [quo/text {:style text-style}
       "Group chats are always end-to-end encrypted with secure cryptographic keys. Only the group chat members will have access to the messages in it. Status doesn't have the keys and can't access any messages by design."]]))
 
-(defn render-documenation-drawer
+(defn documenation-drawer
   [title show-button? button-label expanded? shell?]
   [quo/documentation-drawers
    {:title           title
@@ -88,45 +84,26 @@
      [documentation-content-full (when shell? :dark)]
      [documentation-content (when shell? :dark)])])
 
-(defn cool-preview
+(defn view
   []
-  (let
-    [state
-     (reagent/atom
-      {:title        "Create a group chat"
-       :button-label "Read more"})
-     title (reagent/cursor state [:title])
-     show-button? (reagent/cursor state [:show-button?])
-     button-label (reagent/cursor state [:button-label])
-     shell? (reagent/cursor state [:shell?])
-     expanded? (reagent/atom false)]
+  (let [state        (reagent/atom {:title        "Create a group chat"
+                                    :button-label "Read more"})
+        title        (reagent/cursor state [:title])
+        show-button? (reagent/cursor state [:show-button?])
+        button-label (reagent/cursor state [:button-label])
+        shell?       (reagent/cursor state [:shell?])
+        expanded?    (reagent/atom false)]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
-        [rn/view {:padding-vertical 60}
-         [quo/button
-          {:container-style {:margin-horizontal 40
-                             :margin-bottom     20}
-           :on-press        #(rf/dispatch [:show-bottom-sheet
-                                           {:content     (constantly [render-documenation-drawer @title
-                                                                      @show-button?
-                                                                      @button-label expanded? @shell?])
-                                            :expandable? @show-button?
-                                            :shell?      @shell?
-                                            :expanded?   @expanded?}])}
-          "Open drawer"]
-         [render-documenation-drawer @title @show-button? @button-label expanded?]]]])))
-
-(defn preview-documenation-drawers
-  []
-  [rn/view
-   {:background-color (colors/theme-colors
-                       colors/white
-                       colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/button
+        {:container-style {:margin-horizontal 40
+                           :margin-bottom     20}
+         :on-press        #(rf/dispatch [:show-bottom-sheet
+                                         {:content     (constantly [documenation-drawer @title
+                                                                    @show-button?
+                                                                    @button-label expanded? @shell?])
+                                          :expandable? @show-button?
+                                          :shell?      @shell?
+                                          :expanded?   @expanded?}])}
+        "Open drawer"]
+       [documenation-drawer @title @show-button? @button-label expanded?]])))

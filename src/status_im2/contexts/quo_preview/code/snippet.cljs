@@ -1,7 +1,5 @@
 (ns status-im2.contexts.quo-preview.code.snippet
-  (:require [quo2.components.code.snippet :as snippet]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -69,25 +67,21 @@
              :text     go-example}})
 
 (def descriptor
-  [{:label   "Language:"
-    :key     :language
+  [{:key     :language
     :type    :select
-    :options [{:key   :clojure
-               :value :clojure}
-              {:key   :go
-               :value :go}]}
-   {:label   "Max lines:"
-    :key     :max-lines
+    :options [{:key :clojure}
+              {:key :go}]}
+   {:key     :max-lines
     :type    :select
     :options (map (fn [n]
                     {:key   n
                      :value (str n " lines")})
                   (range 0 41 5))}
-   {:label "Syntax highlight:"
+   {:label "Syntax highlight?"
     :key   :syntax
     :type  :boolean}])
 
-(defn cool-preview
+(defn view
   []
   (let [state (reagent/atom {:language  :clojure
                              :max-lines 40
@@ -99,25 +93,9 @@
                         (js/parseInt max-lines)
                         (when-not (js/Number.isNaN max-lines)
                           max-lines))]
-        [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-         [rn/view {:style {:padding-bottom 150}}
-          [preview/customizer state descriptor]
-          [rn/view
-           {:style {:padding-vertical   60
-                    :padding-horizontal 16}}
-           [snippet/snippet
-            {:language      language
-             :max-lines     max-lines
-             :on-copy-press #(js/alert %)}
-            text]]]]))))
-
-(defn preview-code-snippet
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+        [preview/preview-container {:state state :descriptor descriptor}
+         [quo/snippet
+          {:language      language
+           :max-lines     max-lines
+           :on-copy-press #(js/alert %)}
+          text]]))))

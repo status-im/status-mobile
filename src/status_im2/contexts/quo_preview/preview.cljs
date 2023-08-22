@@ -189,8 +189,7 @@
   ([]
    (customization-color-option {}))
   ([opts]
-   (merge {:label   "Custom color:"
-           :key     :customization-color
+   (merge {:key     :customization-color
            :type    :select
            :options (->> colors/customization
                          keys
