@@ -123,7 +123,7 @@
             [gradients/view props state animations show-bottom-gradient?]
             [link-preview/view]
             [images/images-list]])]
-        [actions/view props state animations window-height insets subs]]]]]))
+        [:f> actions/view props state animations window-height insets subs]]]]]))
 
 (defn composer
   [insets]
