@@ -2,7 +2,7 @@
   (:require [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [quo2.components.switchers.card-content.style :as style]
-            [quo2.components.notifications.notification-dot :as notification-dot]
+            [quo2.components.common.notification-dot.view :as notification-dot]
             [quo2.components.counter.counter.view :as counter]
             [quo2.components.markdown.text :as text]
             [quo2.components.list-items.preview-list :as preview-list]
@@ -70,7 +70,8 @@
     [rn/view {:style style/notification-container}
      (case status
        :unread
-       [notification-dot/notification-dot]
+       [notification-dot/view
+        {:customization-color customization-color}]
 
        :mention
        [counter/view
