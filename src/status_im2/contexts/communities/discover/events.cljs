@@ -37,6 +37,7 @@
                  :other    (select-keys (:communities cc) other)})}))
 
 (rf/defn fetch-contract-communities
+  {:events [:fetch-contract-communities]}
   [_]
   {:json-rpc/call [{:method     "wakuext_curatedCommunities"
                     :params     []

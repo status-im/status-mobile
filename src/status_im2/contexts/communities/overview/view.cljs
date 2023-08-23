@@ -175,7 +175,7 @@
         node-offline?   (and can-join? (not joined) pending?)]
     [:<>
      (when-not (or joined pending? invite-only? unknown-access?)
-       (if token-permissions
+       (if (seq token-permissions)
          [token-gates community]
          [quo/button
           {:on-press            #(rf/dispatch [:open-modal :community-requests-to-join community])

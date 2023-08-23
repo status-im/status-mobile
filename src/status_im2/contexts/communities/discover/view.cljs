@@ -6,25 +6,15 @@
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im.ui.components.react :as react]
             [status-im2.common.scroll-page.view :as scroll-page]
             [status-im2.contexts.communities.discover.style :as style]
             [utils.re-frame :as rf]))
 
-(def mock-community-item-data ;; TODO: remove once communities are loaded with this data.
-  {:data {:community-color "#0052FF"
-          :status          :gated
-          :locked?         true
-          :tokens          [{:id    1
-                             :group [{:id         1
-                                      :token-icon (resources/get-mock-image :status-logo)}]}]}})
-
 (defn community-list-item
   [community-item _ _ {:keys [width view-type]}]
-  (let [item  (merge community-item
-                     (get mock-community-item-data :data))
+  (let [item  community-item
         cover {:uri (get-in (:images item) [:banner :uri])}]
     (if (= view-type :card-view)
       [quo/community-card-view-item
@@ -150,9 +140,7 @@
             :margin-bottom 16}
            (if (= view-type :card-view)
              [quo/community-card-view-item
-              {:community (merge community
-                                 (get mock-community-item-data :data)
-                                 {:cover cover})
+              {:community (assoc community :cover cover)
                :on-press  #(rf/dispatch [:communities/navigate-to-community (:id community)])}]
 
              [quo/community-list-item
@@ -161,8 +149,7 @@
                                 (rf/dispatch [:dismiss-keyboard])
                                 (rf/dispatch [:communities/navigate-to-community (:id community)]))
                :on-long-press #(js/alert "TODO: to be implemented")}
-              (merge community
-                     (get mock-community-item-data :data))])]))
+              community])]))
       (if communities communities communities-ids))
      [:<>
       [rn/view {:margin-bottom 16} [quo/community-card-view-item {:loading? true}]]
@@ -243,9 +230,12 @@
 
 (defn discover
   []
-  (let [featured-communities (rf/sub [:communities/featured-contract-communities])]
-    [rn/view
-     {:style (style/discover-screen-container (colors/theme-colors
-                                               colors/white
-                                               colors/neutral-95))}
-     [discover-screen-content featured-communities]]))
+  (rf/dispatch [:fetch-contract-communities])
+  (fn []
+    (let [featured-communities (rf/sub
+                                [:communities/featured-contract-communities])]
+      [rn/view
+       {:style (style/discover-screen-container (colors/theme-colors
+                                                 colors/white
+                                                 colors/neutral-95))}
+       [discover-screen-content featured-communities]])))
