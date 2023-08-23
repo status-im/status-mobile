@@ -6,7 +6,8 @@
             [quo2.components.graph.wallet-graph.style :as style]
             [quo2.foundations.colors :as colors]
             [quo2.components.markdown.text :as text]
-            [quo2.components.graph.wallet-graph.utils :as utils]))
+            [quo2.components.graph.wallet-graph.utils :as utils]
+            [react-native.safe-area :as safe-area]))
 
 (defn- max-data-points
   [time-frame]
@@ -37,11 +38,12 @@
         :style               style/illustration}
        [text/text {:style {:color colors/white}}
         "Illustration here"]]
+      [rn/view
       [linear-gradient/linear-gradient
        {:colors gradient-colors
         :start  {:x 0 :y 1}
         :end    {:x 0 :y 0}
-        :style  style/gradient-background}
+        :style  style/gradient-background}]
        [rn/view {:accessibility-label :line-chart}
         [charts/line-chart
          {:height                  96

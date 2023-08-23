@@ -69,10 +69,11 @@
       [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
        [rn/view {:padding-bottom 150}
         [preview/customizer state descriptor]
-        [quo/wallet-graph
-         {:data       (generate-data (:time-frame @state))
-          :state      (:state @state)
-          :time-frame (:time-frame @state)}]]])))
+        [rn/view {:margin-top 300}
+         [quo/wallet-graph
+          {:data       (generate-data (:time-frame @state))
+           :state      (:state @state)
+           :time-frame (:time-frame @state)}]]]])))
 
 (defn preview-wallet-graph
   []
