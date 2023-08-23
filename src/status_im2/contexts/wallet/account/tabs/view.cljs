@@ -4,8 +4,7 @@
     [react-native.core :as rn]
     [status-im2.contexts.wallet.account.style :as style]
     [status-im2.contexts.wallet.common.temp :as temp]
-    [utils.i18n :as i18n]
-    [status-im2.contexts.wallet.account.style :as style]))
+    [utils.i18n :as i18n]))
 
 (defn view
   [selected-tab]
