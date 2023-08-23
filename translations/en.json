@@ -391,7 +391,7 @@
     "custom-networks": "Custom networks",
     "dapp": "ÐApp",
     "dapp-would-like-to-connect-wallet": "would like to connect to",
-    "dapps": "ÐApps",
+    "dapps": "dApps",
     "dapps-permissions": "DApp permissions",
     "data": "Data",
     "datetime-ago": "ago",
@@ -2001,7 +2001,7 @@
     "no-pinned-messages-desc": "This chat doesn't have any pinned messages.",
     "no-pinned-messages-community-desc": "This channel doesn't have any pinned messages.",
     "shell-placeholder-subtitle": "Open tabs of your communities, messages,\nwallet account and browser windows",
-    "invite-friends-to-status": "Invite friends to status",
+    "invite-friends-to-status": "Invite friends to Status",
     "share-invite-link": "Share an invite link",
     "pending-requests": "Pending requests",
     "received": "Received",
@@ -2280,10 +2280,13 @@
     "collectibles": "Collectibles",
     "no-collectibles-description": "Don't be a bored ape",
     "no-activity": "No activity",
-    "no-activity-description": "C'mon do something...",
+    "empty-tab-description": "C'mon do something...",
     "buy": "Buy",
     "bridge": "Bridge",
     "on-device": "On device",
     "on-keycard": "On Keycard",
-    "keypair-title": "{{name}}'s default keypair"
+    "keypair-title": "{{name}}'s default keypair",
+    "about": "About",
+    "no-permissions": "No permissions",
+    "no-dapps": "No connected dApps"
 }

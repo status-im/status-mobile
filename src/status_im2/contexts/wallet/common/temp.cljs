@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.home.temp
+(ns status-im2.contexts.wallet.common.temp
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [utils.re-frame :as rf]))
@@ -36,7 +36,8 @@
     :percentage-value    "€0.00"
     :customization-color :blue
     :type                :empty
-    :emoji               "🍑"}
+    :emoji               "🍑"
+    :on-press            #(rf/dispatch [:navigate-to :wallet-accounts])}
    {:customization-color :blue
     :on-press            #(js/alert "Button pressed")
     :type                :add-account}])
@@ -66,3 +67,9 @@
                           :fiat-value        "€0.00"
                           :percentage-change "0.00"
                           :fiat-change       "€0.00"}}])
+
+(def account-overview-state
+  {:current-value       "€0.00"
+   :account-name        "Account 1"
+   :account             :default
+   :customization-color :blue})

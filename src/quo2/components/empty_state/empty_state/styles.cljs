@@ -24,3 +24,8 @@
     {:color colors/white}))
 
 (def button-container {:margin-top 20})
+
+(def image-placeholder
+  {:width            80
+   :height           80
+   :background-color colors/danger})
