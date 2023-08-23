@@ -40,6 +40,10 @@
    :justify-content :center
    :padding-bottom  20})
 
+(def box { :background-color :red
+          :height 100
+          :width 100})
+
 (def empty-title
   {:padding-bottom 2
    :color          colors/white})

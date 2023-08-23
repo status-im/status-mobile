@@ -1,11 +1,13 @@
 (ns status-im2.contexts.shell.activity-center.tabs.empty-tab.view
-  (:require [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [quo2.core :as quo]
-            [status-im2.contexts.shell.activity-center.style :as style]
-            [utils.i18n :as i18n]
-            [status-im2.contexts.shell.activity-center.notification-types :as types]
-            [status-im2.common.resources :as resources]))
+  (:require
+    [react-native.blur :as blur]
+    [utils.re-frame :as rf]
+    [react-native.core :as rn]
+    [quo2.core :as quo]
+    [status-im2.contexts.shell.activity-center.style :as style]
+    [utils.i18n :as i18n]
+    [status-im2.contexts.shell.activity-center.notification-types :as types]
+    [status-im2.common.resources :as resources]))
 
 (def empty-tab-description
   {types/no-type              (i18n/label :t/empty-notifications-all-tab)
@@ -23,8 +25,11 @@
   (let [filter-type (rf/sub [:activity-center/filter-type])
         description (get empty-tab-description filter-type nil)]
     [rn/view {:style style/empty-container}
-     [quo/empty-state
-      {:blur?       true
-       :image       (resources/get-image :no-notifications-dark)
-       :title       (i18n/label :t/empty-notifications-title-unread)
-       :description description}]]))
+     [blur/view {:overlayColor :transparent} [rn/view {:style style/box}]]
+     ;[quo/empty-state
+     ; {:blur?       true
+     ;  :placeholder? true
+     ;  :image       (resources/get-image :no-notifications-dark)
+     ;  :title       (i18n/label :t/empty-notifications-title-unread)
+     ;  :description description}]
+     ]))
