@@ -243,15 +243,19 @@
   (rf/merge
    cofx
    {:json-rpc/call [{:method      "wakuext_editMessage"
-                     :params      [{:id           message-id
-                                    :text         text
-                                    :content-type (if (message-content/emoji-only-content?
-                                                       {:text text :response-to quoted-message})
-                                                    constants/content-type-emoji
-                                                    constants/content-type-text)}]
+                     :params      [{:id            message-id
+                                    :text          text
+                                    :content-type  (if (message-content/emoji-only-content?
+                                                        {:text        text
+                                                         :response-to quoted-message})
+                                                     constants/content-type-emoji
+                                                     constants/content-type-text)
+                                    :link-previews (map #(select-keys % [:url :title :description :thumbnail])
+                                                        (get-in db [:chat/link-previews :unfurled]))}]
                      :js-response true
                      :on-error    #(log/error "failed to edit message " %)
                      :on-success  (fn [result]
+                                    (prn result "awpdkoawpodkawd")
                                     (re-frame/dispatch [:sanitize-messages-and-process-response
                                                         result]))}]}
    (link-preview/reset-unfurled)
