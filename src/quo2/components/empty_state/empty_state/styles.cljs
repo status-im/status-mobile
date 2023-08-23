@@ -2,8 +2,8 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def container
-  {:padding         12
-   :align-items     :center})
+  {:padding     12
+   :align-items :center})
 
 (def image
   {:width  80

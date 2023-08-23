@@ -15,24 +15,24 @@
                     :data                    temp/tokens
                     :content-container-style {:padding-horizontal 8}}]
     :collectibles [quo/empty-state
-                   {:title        (i18n/label :t/no-collectibles)
-                    :description  (i18n/label :t/no-collectibles-description)
-                    :placeholder? true
+                   {:title           (i18n/label :t/no-collectibles)
+                    :description     (i18n/label :t/no-collectibles-description)
+                    :placeholder?    true
                     :container-style style/empty-container-style}]
     :activity     [quo/empty-state
-                   {:title        (i18n/label :t/no-activity)
-                    :description  (i18n/label :t/empty-tab-description)
-                    :placeholder? true
+                   {:title           (i18n/label :t/no-activity)
+                    :description     (i18n/label :t/empty-tab-description)
+                    :placeholder?    true
                     :container-style style/empty-container-style}]
     :permissions  [quo/empty-state
-                   {:title        (i18n/label :t/no-permissions)
-                    :description  (i18n/label :t/no-collectibles-description)
-                    :placeholder? true
+                   {:title           (i18n/label :t/no-permissions)
+                    :description     (i18n/label :t/no-collectibles-description)
+                    :placeholder?    true
                     :container-style style/empty-container-style}]
     :dapps        [quo/empty-state
-                   {:title        (i18n/label :t/no-dapps)
-                    :description  (i18n/label :t/no-collectibles-description)
-                    :placeholder? true
+                   {:title           (i18n/label :t/no-dapps)
+                    :description     (i18n/label :t/no-collectibles-description)
+                    :placeholder?    true
                     :container-style style/empty-container-style}]
     [rn/view {:style style/wip}
      [quo/text "[WIP]"]]))

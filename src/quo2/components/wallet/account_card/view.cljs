@@ -94,9 +94,9 @@
                :style  (style/metrics watch-only? theme)} account-amount]
              [rn/view {:style {:margin-left 4}}
               [icon/icon :positive
-               {:color (if (and watch-only? (not (colors/dark?)))
-                         colors/neutral-50
-                         colors/white-opa-70)
+               {:color (colors/theme-colors (if watch-only? colors/neutral-50 colors/white-opa-70)
+                                            colors/white-opa-70
+                                            theme)
                 :size  16}]]])])])))
 
 (defn- add-account-view

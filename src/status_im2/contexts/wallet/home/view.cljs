@@ -46,12 +46,12 @@
                          :data                    temp/tokens
                          :content-container-style {:padding-horizontal 8}}]
          :collectibles [quo/empty-state
-                        {:title        (i18n/label :t/no-collectibles)
-                         :description  (i18n/label :t/no-collectibles-description)
-                         :placeholder? true
+                        {:title           (i18n/label :t/no-collectibles)
+                         :description     (i18n/label :t/no-collectibles-description)
+                         :placeholder?    true
                          :container-style style/empty-container-style}]
          [quo/empty-state
-          {:title        (i18n/label :t/no-activity)
-           :description  (i18n/label :t/empty-tab-description)
-           :placeholder? true
+          {:title           (i18n/label :t/no-activity)
+           :description     (i18n/label :t/empty-tab-description)
+           :placeholder?    true
            :container-style style/empty-container-style}])])))
