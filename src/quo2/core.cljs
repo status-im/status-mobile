@@ -114,6 +114,7 @@
     quo2.components.wallet.keypair.view
     quo2.components.wallet.network-amount.view
     quo2.components.wallet.network-bridge.view
+    quo2.components.wallet.network-link.view
     quo2.components.wallet.progress-bar.view
     quo2.components.wallet.summary-info.view
     quo2.components.wallet.token-input.view
@@ -323,5 +324,6 @@
 (def network-bridge quo2.components.wallet.network-bridge.view/view)
 (def progress-bar quo2.components.wallet.progress-bar.view/view)
 (def summary-info quo2.components.wallet.summary-info.view/view)
+(def network-link quo2.components.wallet.network-link.view/view)
 (def token-input quo2.components.wallet.token-input.view/view)
 (def wallet-overview quo2.components.wallet.wallet-overview.view/view)
