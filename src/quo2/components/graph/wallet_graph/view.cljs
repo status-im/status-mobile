@@ -37,11 +37,12 @@
         :style               style/illustration}
        [text/text {:style {:color colors/white}}
         "Illustration here"]]
-      [linear-gradient/linear-gradient
-       {:colors gradient-colors
-        :start  {:x 0 :y 1}
-        :end    {:x 0 :y 0}
-        :style  style/gradient-background}
+      [rn/view
+       [linear-gradient/linear-gradient
+        {:colors gradient-colors
+         :start  {:x 0 :y 1}
+         :end    {:x 0 :y 0}
+         :style  style/gradient-background}]
        [rn/view {:accessibility-label :line-chart}
         [charts/line-chart
          {:height                  96
