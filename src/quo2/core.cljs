@@ -41,6 +41,7 @@
     quo2.components.drawers.drawer-buttons.view
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
+    quo2.components.dropdowns.network-dropdown.view
     quo2.components.empty-state.empty-state.view
     quo2.components.gradient.gradient-cover.view
     quo2.components.graph.wallet-graph.view
@@ -193,6 +194,7 @@
 
 ;;;; Dropdowns
 (def dropdown quo2.components.dropdowns.dropdown/dropdown)
+(def network-dropdown quo2.components.dropdowns.network-dropdown.view/view)
 
 ;;;; Empty State
 (def empty-state quo2.components.empty-state.empty-state.view/empty-state)

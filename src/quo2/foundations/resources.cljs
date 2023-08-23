@@ -28,3 +28,7 @@
   {:ethereum (js/require "../resources/images/tokens/mainnet/ETH-network.png")
    :optimism (js/require "../resources/images/tokens/mainnet/OP.png")
    :arbitrum (js/require "../resources/images/tokens/mainnet/ARB.png")})
+
+(defn get-network
+  [n]
+  (get networks n))
