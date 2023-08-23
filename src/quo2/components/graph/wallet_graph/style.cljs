@@ -1,6 +1,5 @@
 (ns quo2.components.graph.wallet-graph.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.safe-area :as safe-area]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (def gradient-background
   {:height   294
