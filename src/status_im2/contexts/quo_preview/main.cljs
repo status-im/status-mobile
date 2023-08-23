@@ -45,6 +45,7 @@
     [status-im2.contexts.quo-preview.drawers.drawer-buttons :as drawer-buttons]
     [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
     [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
+    [status-im2.contexts.quo-preview.dropdowns.network-dropdown :as network-dropdown]
     [status-im2.contexts.quo-preview.foundations.shadows :as shadows]
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
@@ -200,7 +201,9 @@
                        {:name      :permission-drawers
                         :component permission-drawers/preview-permission-drawers}]
    :dropdowns         [{:name      :dropdown
-                        :component dropdown/preview-dropdown}]
+                        :component dropdown/preview-dropdown}
+                       {:name      :network-dropdown
+                        :component network-dropdown/preview-dropdown}]
    :empty-state       [{:name      :empty-state
                         :component empty-state/preview-empty-state}]
    :gradient          [{:name      :gradient-cover

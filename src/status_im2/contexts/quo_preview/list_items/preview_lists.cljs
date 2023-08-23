@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.list-items.preview-lists
   (:require [quo2.components.list-items.preview-list :as quo2]
             [quo2.foundations.colors :as colors]
+            [quo2.foundations.resources :as quo.resources]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
@@ -23,7 +24,9 @@
     :options [{:key   :user
                :value "User"}
               {:key   :photo
-               :value "Photo"}]}
+               :value "Photo"}
+              {:key   :network
+               :value "Network"}]}
    {:label   "List Size"
     :key     :list-size
     :default 10
@@ -44,6 +47,11 @@
    {:source (resources/get-mock-image :photo2)}
    {:source (resources/get-mock-image :photo3)}])
 
+(def networks-list
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}])
+
 (defn cool-preview
   []
   (let [state (reagent/atom {:type               :user
@@ -60,8 +68,9 @@
           :align-items      :center}
          [quo2/preview-list @state
           (case @type
-            :user  user-list
-            :photo photos-list)]]]])))
+            :user    user-list
+            :photo   photos-list
+            :network networks-list)]]]])))
 
 (defn preview-preview-lists
   []
