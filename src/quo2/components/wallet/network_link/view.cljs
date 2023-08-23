@@ -82,4 +82,4 @@
     :1x     [link-1x props]
     :2x     [link-2x props]))
 
-(def view (quo.theme/with-theme view-internal)) ;;
+(def view (quo.theme/with-theme view-internal))
