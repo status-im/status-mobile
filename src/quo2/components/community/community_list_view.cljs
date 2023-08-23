@@ -16,25 +16,26 @@
            unread-messages?
            unread-mentions-count
            customization-color]}]
-  (cond
-    muted?
-    [icons/icon :i/muted
-     {:container-style {:align-items     :center
-                        :justify-content :center}
-      :resize-mode     :center
-      :size            20
-      :color           (colors/theme-colors
-                        colors/neutral-50
-                        colors/neutral-40
-                        theme)}]
-    (pos? unread-mentions-count)
-    [counter/view
-     {:customization-color customization-color
-      :type                :default}
-     unread-mentions-count]
+  [rn/view {:style style/notification-container}
+   (cond
+     muted?
+     [icons/icon :i/muted
+      {:container-style {:align-items     :center
+                         :justify-content :center}
+       :resize-mode     :center
+       :size            20
+       :color           (colors/theme-colors
+                         colors/neutral-50
+                         colors/neutral-40
+                         theme)}]
+     (pos? unread-mentions-count)
+     [counter/view
+      {:customization-color customization-color
+       :type                :default}
+      unread-mentions-count]
 
-    unread-messages?
-    [unread-grey-dot :unviewed-messages-public]))
+     unread-messages?
+     [unread-grey-dot :unviewed-messages-public])])
 
 (defn- communities-list-view-item-internal
   [{:keys [theme customization-color] :as props}
