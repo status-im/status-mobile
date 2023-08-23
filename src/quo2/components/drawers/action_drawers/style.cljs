@@ -23,10 +23,11 @@
    :margin-horizontal 12
    :flex-direction    :row})
 
-(def left-icon
+(defn left-icon
+  [sub-label?]
   {:height        20
-   :margin-top    :auto
-   :margin-bottom :auto
+   :margin-top    (if sub-label? 10 :auto)
+   :margin-bottom (when-not sub-label? :auto)
    :margin-right  12
    :width         20})
 

@@ -189,7 +189,7 @@
 
 (defn view-profile-entry
   [chat-id]
-  (entry {:icon                :i/friend
+  (entry {:icon                :i/profile
           :label               (i18n/label :t/view-profile)
           :on-press            #(show-profile-action chat-id)
           :danger?             false
