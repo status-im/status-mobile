@@ -14,14 +14,27 @@
                        (or blur? (= :dark theme)) colors/white
                        (= :light theme)           colors/neutral-100)]
       (if (= :graph label)
-        [not-implemented/not-implemented blur?]
+        [not-implemented/view {:blur? blur?}]
         [rn/pressable
          {:accessibility-label :data-item
           :disabled            (not icon-right?)
           :on-press            on-press
-          :style               (style/container size card? blur?)}
-         [left-side/view theme title status size blur? description icon subtitle label icon-color]
+          :style               (style/container size card? blur? theme)}
+         [left-side/view
+          {:theme       theme
+           :title       title
+           :status      status
+           :size        size
+           :blur?       blur?
+           :description description
+           :icon        icon
+           :subtitle    subtitle
+           :label       label
+           :icon-color  icon-color}]
          (when (and (= :default status) (not= :small size))
-           [right-side/view label icon-right? icon-color])]))))
+           [right-side/view
+            {:label       label
+             :icon-right? icon-right?
+             :icon-color  icon-color}])]))))
 
 (def view (quo.theme/with-theme view-internal))

@@ -6,7 +6,7 @@
   "date item tests"
   (h/test "title is visible"
     (h/render [quo/data-item
-               {:on-press    #(js/alert (str "pressed"))
+               {:on-press    (h/mock-fn)
                 :blur?       false
                 :description :account
                 :icon-right? false
@@ -19,9 +19,9 @@
                 :icon        :i/placeholder}])
     (h/is-truthy (h/get-by-text "Label")))
 
-  (h/test "data item doesn't have border width if card? is false"
+  (h/test "data item renders correctly if card? is false"
     (h/render [quo/data-item
-               {:on-press    #(js/alert (str "pressed"))
+               {:on-press    (h/mock-fn)
                 :blur?       false
                 :description :account
                 :icon-right? false
@@ -35,9 +35,9 @@
     (h/has-style (h/query-by-label-text :data-item)
                  {:borderWidth nil}))
 
-  (h/test "data item doesn't have border width if size is small"
+  (h/test "data item renders correctly if card? is true and size is small"
     (h/render [quo/data-item
-               {:on-press    #(js/alert (str "pressed"))
+               {:on-press    (h/mock-fn)
                 :blur?       false
                 :description :account
                 :icon-right? false
@@ -51,9 +51,9 @@
     (h/has-style (h/query-by-label-text :data-item)
                  {:borderWidth nil}))
 
-  (h/test "data item has border width if card? is true"
+  (h/test "data item renders correctly if card? is true"
     (h/render [quo/data-item
-               {:on-press    #(js/alert (str "pressed"))
+               {:on-press    (h/mock-fn)
                 :blur?       false
                 :description :account
                 :icon-right? false
@@ -69,7 +69,7 @@
 
   (h/test "subtitle is visible when status is not loading"
     (h/render [quo/data-item
-               {:on-press    #(js/alert (str "pressed"))
+               {:on-press    (h/mock-fn)
                 :blur?       false
                 :description :account
                 :icon-right? false
@@ -84,7 +84,7 @@
 
   (h/test "right icon is not visible when icon-right? is false"
     (h/render [quo/data-item
-               {:on-press    #(js/alert (str "pressed"))
+               {:on-press    (h/mock-fn)
                 :blur?       false
                 :description :account
                 :icon-right? false
@@ -99,7 +99,7 @@
 
   (h/test "right icon is visible when icon-right? is true"
     (h/render [quo/data-item
-               {:on-press    #(js/alert (str "pressed"))
+               {:on-press    (h/mock-fn)
                 :blur?       false
                 :description :account
                 :icon-right? true
@@ -114,7 +114,7 @@
 
   (h/test "description icon is visible when description is icon"
     (h/render [quo/data-item
-               {:on-press    #(js/alert (str "pressed"))
+               {:on-press    (h/mock-fn)
                 :blur?       false
                 :description :icon
                 :icon-right? true
@@ -129,7 +129,7 @@
 
   (h/test "description image is visible when description is network"
     (h/render [quo/data-item
-               {:on-press    #(js/alert (str "pressed"))
+               {:on-press    (h/mock-fn)
                 :blur?       false
                 :description :network
                 :icon-right? true
@@ -144,7 +144,7 @@
 
   (h/test "description emoji is visible when description is account"
     (h/render [quo/data-item
-               {:on-press    #(js/alert (str "pressed"))
+               {:on-press    (h/mock-fn)
                 :blur?       false
                 :description :account
                 :icon-right? true

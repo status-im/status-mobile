@@ -8,7 +8,7 @@
             [quo2.components.icon :as icons]))
 
 (defn view
-  [theme size description icon icon-color blur? subtitle]
+  [{:keys [theme size description icon icon-color blur? subtitle]}]
   (let [yellow-color [:yellow (if (= theme :dark) 60 50)]]
     [rn/view {:style style/subtitle-container}
      (when (not= :small size)
@@ -32,5 +32,5 @@
      [text/text
       {:weight :medium
        :size   :paragraph-2
-       :style  (style/description blur?)}
+       :style  (style/description blur? theme)}
       subtitle]]))

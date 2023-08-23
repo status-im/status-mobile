@@ -6,7 +6,7 @@
             [quo2.components.list-items.preview-list :as preview-list]))
 
 (defn view
-  [label icon-right? icon-color]
+  [{:keys [label icon-right? icon-color]}]
   [rn/view {:style style/right-container}
    (case label
      :preview [preview-list/preview-list

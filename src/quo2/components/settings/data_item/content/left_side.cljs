@@ -6,9 +6,23 @@
             [quo2.components.settings.data-item.content.title :as left-title]))
 
 (defn view
-  [theme title status size blur? description icon subtitle label icon-color]
+  [{:keys [theme title status size blur? description icon subtitle label icon-color]}]
   [rn/view {:style style/left-side}
-   [left-title/view title label size]
+   [left-title/view
+    {:title title
+     :label label
+     :size  size
+     :theme theme}]
    (if (= status :loading)
-     [left-loading/view size blur?]
-     [left-subtitle/view theme size description icon icon-color blur? subtitle])])
+     [left-loading/view
+      {:size  size
+       :blur? blur?
+       :theme theme}]
+     [left-subtitle/view
+      {:theme       theme
+       :size        size
+       :description description
+       :icon        icon
+       :icon-color  icon-color
+       :blur?       blur?
+       :subtitle    subtitle}])])

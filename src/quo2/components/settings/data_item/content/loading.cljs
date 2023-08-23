@@ -3,5 +3,5 @@
             [quo2.components.settings.data-item.style :as style]))
 
 (defn view
-  [size blur?]
-  [rn/view {:style (style/loading-container size blur?)}])
+  [{:keys [size blur? theme]}]
+  [rn/view {:style (style/loading-container size blur? theme)}])

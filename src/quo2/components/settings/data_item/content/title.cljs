@@ -5,16 +5,16 @@
             [utils.i18n :as i18n]))
 
 (defn view
-  [title label size]
+  [{:keys [title label size theme]}]
   [rn/view {:style style/title-container}
    [text/text
     {:weight :regular
      :size   :paragraph-2
-     :style  style/title}
+     :style  (style/title theme)}
     title]
    (when (and (= :graph label) (not= :small size))
      [text/text
       {:weight :regular
        :size   :label
-       :style  style/title}
+       :style  (style/title theme)}
       (i18n/label :t/days)])])
