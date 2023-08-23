@@ -8,35 +8,27 @@
 (def descriptor
   [{:key     :state
     :type    :select
-    :options [{:key   :default
-               :value "Default"}
-              {:key   :disabled
-               :value "Disabled"}]}
+    :options [{:key :default}
+              {:key :disabled}]}
    {:key     :blur?
     :type    :select
-    :options [{:key   true
-               :value "True"}
-              {:key   false
-               :value "False"}]}
+    :options [{:key true}
+              {:key false}]}
    {:key     :amount
     :type    :select
-    :options [{:key   1
-               :value 1}
-              {:key   2
-               :value 2}
-              {:key   3
-               :value 3}]}])
+    :options [{:key 1}
+              {:key 2}
+              {:key 3}]}])
 
 (def ^:private networks-list
   [{:source (quo.resources/get-network :ethereum)}
    {:source (quo.resources/get-network :optimism)}
    {:source (quo.resources/get-network :arbitrum)}])
 
-(defn preview-dropdown
+(defn view
   []
   (let [component-state (reagent/atom {:state :default :blur? false :amount 3})]
     (fn []
-
       [preview/preview-container
        {:state                 component-state
         :descriptor            descriptor

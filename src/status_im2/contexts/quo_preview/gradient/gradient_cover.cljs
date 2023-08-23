@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.gradient.gradient-cover
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [quo2.theme :as quo.theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]
@@ -43,7 +42,7 @@
     :key   :blur?
     :type  :boolean}])
 
-(defn cool-preview
+(defn view
   []
   (let [state               (reagent/atom {:customization-color :blue :blur? false})
         blur?               (reagent/cursor state [:blur?])
@@ -54,8 +53,7 @@
                         (when @blur?
                           (quo.theme/set-theme :dark)))
                       [@blur?])
-       [:<>
-        [preview/customizer state descriptor]
+       [preview/preview-container {:state state :descriptor descriptor}
         [rn/view
          {:style {:height        332
                   :margin-top    24
@@ -75,13 +73,6 @@
                        :padding-vertical 40}
            :blur-type :dark}
           [quo/gradient-cover @state]]]
-        [rn/view
-         {:style {:padding-vertical   20
-                  :padding-horizontal 16}}
-         [quo/color-picker
-          {:blur?     @blur?
-           :selected  @customization-color
-           :on-change #(reset! customization-color %)}]]
         [quo/button
          {:container-style {:margin-horizontal 40}
           :on-press        #(rf/dispatch [:show-bottom-sheet
@@ -89,16 +80,3 @@
                                            :gradient-cover?     true
                                            :customization-color @customization-color}])}
          "See in bottom sheet"]])]))
-
-(defn preview-gradient-cover
-  []
-  [rn/view
-   {:background-color (colors/theme-colors
-                       colors/white
-                       colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

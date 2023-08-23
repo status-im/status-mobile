@@ -139,15 +139,15 @@
         "Close"]]]]]])
 
 (defn- customizer-select-button
-  [{:keys [open selected-key]}]
+  [{:keys [open selected-option]}]
   [rn/pressable
    {:style    (style/select-container)
     :on-press #(reset! open true)}
    [rn/text
     {:style           (style/field-select)
      :number-of-lines 1}
-    (if selected-key
-      (humanize selected-key)
+    (if selected-option
+      (or (:value selected-option) (humanize (:key selected-option)))
       "Select option")]
    [rn/view
     [quo/icon :i/chevron-right]]])
@@ -156,9 +156,9 @@
   []
   (let [open (reagent/atom nil)]
     (fn [{:keys [label state options] :as args}]
-      (let [label        (or label (key->text-label (:key args)))
-            field-value  (reagent/cursor state [(:key args)])
-            selected-key (:key (find-selected-option @field-value options))]
+      (let [label           (or label (key->text-label (:key args)))
+            field-value     (reagent/cursor state [(:key args)])
+            selected-option (find-selected-option @field-value options)]
         [rn/view {:style style/field-row}
          [label-view state label]
          [rn/view {:style style/field-column}
@@ -166,7 +166,7 @@
            {:open        open
             :options     options
             :field-value field-value}]
-          [customizer-select-button {:open open :selected-key selected-key}]]]))))
+          [customizer-select-button {:open open :selected-option selected-option}]]]))))
 
 (defn customizer
   [state descriptors]
@@ -189,8 +189,7 @@
   ([]
    (customization-color-option {}))
   ([opts]
-   (merge {:label   "Custom color:"
-           :key     :customization-color
+   (merge {:key     :customization-color
            :type    :select
            :options (->> colors/customization
                          keys
@@ -200,7 +199,7 @@
           opts)))
 
 (defn blur-view
-  [{:keys [show-blur-background? image height blur-view-props style]} children]
+  [{:keys [show-blur-background? image height blur-view-props style]} & children]
   [rn/view
    {:style {:flex             1
             :padding-vertical 16}}
@@ -221,39 +220,39 @@
                :blur-amount   10
                :overlay-color (colors/theme-colors colors/white-opa-70 colors/neutral-80-opa-80)}
               blur-view-props)]])
-   [rn/view
-    {:style (merge {:position           :absolute
-                    :top                32
-                    :padding-horizontal 16}
-                   style)}
-    children]])
+   (into [rn/view
+          {:style (merge {:position           :absolute
+                          :top                32
+                          :padding-horizontal 16}
+                         style)}]
+         children)])
 
 (defn preview-container
   [{:keys [state descriptor blur?
            component-container-style
            blur-container-style blur-view-props blur-height show-blur-background?]
     :or   {blur-height 200}}
-   component]
+   & children]
   [rn/scroll-view
    {:style                           (style/panel-basic)
     :shows-vertical-scroll-indicator false}
    [rn/pressable {:on-press rn/dismiss-keyboard!}
-    [rn/view {:style style/customizer-container}
-     [customizer state descriptor]]
-    [rn/view
-     (merge {:style style/component-container}
-            component-container-style)
-     (if blur?
-       [blur-view
-        {:show-blur-background? show-blur-background?
-         :height                blur-height
-         :style                 (merge {:width     "100%"
-                                        :flex-grow 1}
-                                       (when-not show-blur-background?
-                                         {:padding-horizontal 0
-                                          :top                0})
-                                       blur-container-style)
-         :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
-                                       blur-view-props)}
-        component]
-       component)]]])
+    (when descriptor
+      [rn/view {:style style/customizer-container}
+       [customizer state descriptor]])
+    (if blur?
+      [rn/view {:style (merge style/component-container component-container-style)}
+       (into [blur-view
+              {:show-blur-background? show-blur-background?
+               :height                blur-height
+               :style                 (merge {:width     "100%"
+                                              :flex-grow 1}
+                                             (when-not show-blur-background?
+                                               {:padding-horizontal 0
+                                                :top                0})
+                                             blur-container-style)
+               :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
+                                             blur-view-props)}]
+             children)]
+      (into [rn/view {:style (merge style/component-container component-container-style)}]
+            children))]])

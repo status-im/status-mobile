@@ -1,38 +1,28 @@
 (ns status-im2.contexts.quo-preview.info.information-box
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Type:"
-    :key     :type
+  [{:key     :type
     :type    :select
-    :options [{:key   :default
-               :value "Default"}
-              {:key   :informative
-               :value "Informative"}
-              {:key   :error
-               :value "Error"}]}
-   {:label "Closable?"
-    :key   :closable?
-    :type  :boolean}
-   {:label "Message"
-    :key   :message
-    :type  :text}
-   {:label "Button Label"
-    :key   :button-label
-    :type  :text}])
+    :options [{:key :default}
+              {:key :informative}
+              {:key :error}]}
+   {:key  :closable?
+    :type :boolean}
+   {:key  :message
+    :type :text}
+   {:key  :button-label
+    :type :text}])
 
-(defn cool-preview
+(defn view
   []
-  (let [state     (reagent/atom
-                   {:type         :default
-                    :closable?    true
-                    :message      (str "If you registered a stateofus.eth name "
-                                       "you might be eligible to connect $ENS")
-                    :button-label "Button"})
+  (let [state     (reagent/atom {:type         :default
+                                 :closable?    true
+                                 :message      (str "If you registered a stateofus.eth name "
+                                                    "you might be eligible to connect $ENS")
+                                 :button-label "Button"})
         closable? (reagent/cursor state [:closable?])
         closed?   (reagent/cursor state [:closed?])
         on-close  (fn []
@@ -40,26 +30,10 @@
                     (js/setTimeout (fn [] (reset! closed? false))
                                    2000))]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view
-        [preview/customizer state descriptor]
-        [rn/view
-         {:style {:padding-vertical 20
-                  :align-items      :center}}
-         [quo/information-box
-          (merge {:icon     :i/info
-                  :style    {:width 335}
-                  :on-close (when @closable? on-close)}
-                 @state)
-          (:message @state)]]]])))
-
-(defn preview-information-box
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/information-box
+        (merge {:icon     :i/info
+                :style    {:width 335}
+                :on-close (when @closable? on-close)}
+               @state)
+        (:message @state)]])))

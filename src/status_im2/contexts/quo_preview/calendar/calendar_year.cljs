@@ -1,39 +1,16 @@
 (ns status-im2.contexts.quo-preview.calendar.calendar-year
-  (:require [status-im2.contexts.quo-preview.preview :as preview]
-            [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
-            [quo2.core :as quo]))
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Selected?"
-    :key   :selected?
-    :type  :boolean}
-   {:label "Disabled?"
-    :key   :disabled?
-    :type  :boolean}])
+  [{:key :selected? :type :boolean}
+   {:key :disabled? :type :boolean}])
 
-(defn cool-preview
+(defn view
   []
-  (let [state (reagent/atom {:selected? false :disabled? false})]
-    (fn
-      []
-      [rn/touchable-without-feedback
-       {:on-press rn/dismiss-keyboard!}
-       [rn/view
-        [preview/customizer state descriptor]
-        [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
-         [quo/calendar-year @state "2023"]]]])))
-
-(defn preview-calendar-year
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+  (let [state (reagent/atom {:selected? false
+                             :disabled? false})]
+    (fn []
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/calendar-year @state "2023"]])))

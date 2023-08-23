@@ -1,7 +1,5 @@
 (ns status-im2.contexts.quo-preview.graph.wallet-graph
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -20,26 +18,17 @@
         (recur (dec n) new-prices new-price volatility)))))
 
 (def descriptor
-  [{:label   "State:"
-    :key     :state
+  [{:key     :state
     :type    :select
-    :options [{:key   :positive
-               :value "Positive"}
-              {:key   :negative
-               :value "Negative"}]}
-   {:label   "Time frame:"
-    :key     :time-frame
+    :options [{:key :positive}
+              {:key :negative}]}
+   {:key     :time-frame
     :type    :select
-    :options [{:key   :empty
-               :value "Empty"}
-              {:key   :1-week
-               :value "1 Week"}
-              {:key   :1-month
-               :value "1 Month"}
-              {:key   :3-months
-               :value "3 Months"}
-              {:key   :1-year
-               :value "1 Year"}
+    :options [{:key :empty}
+              {:key :1-week}
+              {:key :1-month}
+              {:key :3-months}
+              {:key :1-year}
               {:key   :all-time
                :value "All time (500 years data)"}]}])
 
@@ -61,31 +50,16 @@
                       0.005)]
     (generate-crypto-token-prices data-points volatility)))
 
-(defn cool-preview
+(defn view
   []
   (let [state (reagent/atom {:state      :positive
                              :time-frame :1-week})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
-        [rn/view {:margin-top 300}
-         [quo/wallet-graph
-          {:data       (generate-data (:time-frame @state))
-           :state      (:state @state)
-           :time-frame (:time-frame @state)}]]]])))
-
-(defn preview-wallet-graph
-  []
-  [rn/view
-   {:style
-    {:background-color (colors/theme-colors
-                        colors/white
-                        colors/neutral-95)
-     :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str
-     :scroll-enabled               false}]])
+      [preview/preview-container
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-horizontal 0 :margin-top 200}}
+       [quo/wallet-graph
+        {:data       (generate-data (:time-frame @state))
+         :state      (:state @state)
+         :time-frame (:time-frame @state)}]])))

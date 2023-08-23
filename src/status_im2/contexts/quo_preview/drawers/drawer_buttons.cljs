@@ -1,20 +1,16 @@
 (ns status-im2.contexts.quo-preview.drawers.drawer-buttons
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Top Heading"
-    :key   :top-heading
-    :type  :text}
-   {:label "Top Sub heading"
-    :key   :top-sub-heading
-    :type  :text}
-   {:label "Bottom heading"
-    :key   :bottom-heading
-    :type  :text}])
+  [{:key  :top-heading
+    :type :text}
+   {:key  :top-sub-heading
+    :type :text}
+   {:key  :bottom-heading
+    :type :text}])
 
 (defn text-with-link
   []
@@ -35,40 +31,20 @@
      :weight   :semi-bold}
     "Terms of Use"]])
 
-(defn render-drawer-buttons
-  [state]
-  [rn/view
-   {:height           300
-    :background-color (colors/theme-colors colors/white colors/neutral-95)}
-   [quo/drawer-buttons
-    {:container-style {:margin-left  40
-                       :margin-right 24}
-     :top-card        {:on-press #(js/alert "top card clicked")
-                       :heading  (:top-heading @state)}
-     :bottom-card     {:on-press #(js/alert "bottom card clicked")
-                       :heading  (:bottom-heading @state)}}
-    (:top-sub-heading @state) [text-with-link]]])
-
-(defn cool-preview
+(defn view
   []
-  (let [state (reagent/atom {:top-heading     "Sign in "
+  (let [state (reagent/atom {:top-heading     "Sign in"
                              :top-sub-heading "You already use Status"
-                             :bottom-heading  "I’m new to Status"})]
+                             :bottom-heading  "I'm new to Status"})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 400}
-        [preview/customizer state descriptor]
-        [rn/view {:padding-vertical 60}
-         [render-drawer-buttons state]]]])))
-
-(defn preview-drawer-buttons
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :nestedScrollEnabled          true
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       :id}]])
+      [preview/preview-container
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:margin-top 40}}
+       [quo/drawer-buttons
+        {:top-card    {:on-press #(js/alert "top card clicked")
+                       :heading  (:top-heading @state)}
+         :bottom-card {:on-press #(js/alert "bottom card clicked")
+                       :heading  (:bottom-heading @state)}}
+        (:top-sub-heading @state)
+        [text-with-link]]])))
