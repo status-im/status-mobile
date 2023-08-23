@@ -48,8 +48,10 @@
          :collectibles [quo/empty-state
                         {:title        (i18n/label :t/no-collectibles)
                          :description  (i18n/label :t/no-collectibles-description)
-                         :placeholder? true}]
+                         :placeholder? true
+                         :container-style style/empty-container-style}]
          [quo/empty-state
           {:title        (i18n/label :t/no-activity)
            :description  (i18n/label :t/empty-tab-description)
-           :placeholder? true}])])))
+           :placeholder? true
+           :container-style style/empty-container-style}])])))

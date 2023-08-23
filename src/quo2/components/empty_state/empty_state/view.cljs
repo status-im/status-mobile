@@ -7,11 +7,11 @@
             [quo2.theme :as theme]))
 
 (defn- empty-state-internal
-  [{:keys        [customization-color image title description blur? placeholder?]
+  [{:keys        [customization-color image title description blur? placeholder? container-style]
     upper-button :upper-button
     lower-button :lower-button
     :or          {customization-color :blue}}]
-  [rn/view {:style styles/container}
+  [rn/view {:style (merge styles/container container-style)}
    (if placeholder?
      [rn/view {:style styles/image-placeholder}]
      [fast-image/fast-image

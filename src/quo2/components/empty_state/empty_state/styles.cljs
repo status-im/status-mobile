@@ -3,10 +3,7 @@
 
 (def container
   {:padding         12
-   :align-items     :center
-   :justify-content :center
-   :flex            1
-   :margin-bottom   44})
+   :align-items     :center})
 
 (def image
   {:width  80
