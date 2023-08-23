@@ -1,4 +1,5 @@
 app
+react-native-async-storage_async-storage
 react-native-background-timer
 react-native-blob-util
 react-native-camera-kit
@@ -9,6 +10,7 @@ react-native-community_masked-view
 react-native-community_netinfo
 react-native-community_slider
 react-native-config
+react-native-dialogs
 react-native-fast-image
 react-native-fs
 react-native-gesture-handler
