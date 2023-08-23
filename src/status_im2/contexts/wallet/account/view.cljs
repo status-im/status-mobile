@@ -6,7 +6,8 @@
             [status-im2.contexts.wallet.common.temp :as temp]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im2.contexts.wallet.account.style :as style]))
+            [status-im2.contexts.wallet.account.style :as style]
+            [status-im2.contexts.wallet.account.tabs.view :as tabs]))
 
 (def tabs-data
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
@@ -15,7 +16,6 @@
    {:id :permissions :label (i18n/label :t/permissions) :accessibility-label :permissions}
    {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps}
    {:id :about :label (i18n/label :t/about) :accessibility-label :about}])
-
 
 (defn view
   []
@@ -44,26 +44,4 @@
          :data           tabs-data
          :on-change      #(reset! selected-tab %)
          :scrollable?    true}]
-       (case @selected-tab
-         :assets       [rn/flat-list
-                        {:render-fn               quo/token-value
-                         :data                    temp/tokens
-                         :content-container-style {:padding-horizontal 8}}]
-         :collectibles [quo/empty-state
-                        {:title        (i18n/label :t/no-collectibles)
-                         :description  (i18n/label :t/no-collectibles-description)
-                         :placeholder? true}]
-         :activity     [quo/empty-state
-                        {:title        (i18n/label :t/no-activity)
-                         :description  (i18n/label :t/empty-tab-description)
-                         :placeholder? true}]
-         :permissions  [quo/empty-state
-                        {:title        (i18n/label :t/no-permissions)
-                         :description  (i18n/label :t/no-collectibles-description)
-                         :placeholder? true}]
-         :dapps        [quo/empty-state
-                        {:title        (i18n/label :t/no-dapps)
-                         :description  (i18n/label :t/no-collectibles-description)
-                         :placeholder? true}]
-         [rn/view {:style style/wip}
-          [quo/text "[WIP]"]])])))
+       [tabs/view @selected-tab]])))
