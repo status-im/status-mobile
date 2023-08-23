@@ -25,7 +25,7 @@
      [quo/preview-list
       {:type   :user
        :number (count user-list)
-       :size   24}
+       :size   :size/s-24}
       user-list]
      [quo/text
       {:accessibility-label :communities-screen-title

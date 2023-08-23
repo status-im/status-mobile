@@ -26,15 +26,15 @@
    {:label   "Size:"
     :key     :size
     :type    :select
-    :options [{:key   32
+    :options [{:key   :size/s-32
                :value "32"}
-              {:key   24
+              {:key   :size/s-24
                :value "24"}
-              {:key   20
+              {:key   :size/s-20
                :value "20"}
-              {:key   16
+              {:key   :size/s-16
                :value "16"}
-              {:key   14
+              {:key   :size/s-14
                :value "14"}]}
    {:label "Number"
     :key   :number
@@ -107,7 +107,7 @@
 (defn view
   []
   (let [state (reagent/atom {:type               :accounts
-                             :size               32
+                             :size               :size/s-32
                              :number             4
                              :more-than-99-label "99+"})
         type  (reagent/cursor state [:type])

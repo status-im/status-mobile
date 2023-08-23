@@ -68,7 +68,7 @@
        [quo/preview-list
         {:type               :collectibles
          :more-than-99-label (i18n/label :counter-99-plus)
-         :size               24}
+         :size               :size/s-24}
         data]
 
        constants/content-type-sticker
