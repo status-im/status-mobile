@@ -36,7 +36,7 @@
                                colors/neutral-20
                                colors/neutral-90
                                theme)}}
-   (if (some more-icon-for-sizes [size])
+   (if (more-icon-for-sizes size)
      [quo2.icons/icon :i/more
       {:size  12
        :color (get-overflow-color
@@ -93,12 +93,13 @@
 
 (defn- list-item
   [{:keys [index type size-key item number]}]
-  (let [last-item?  (= index (- number 1))
-        margin-left (get-in properties/sizes [size-key :margin-left])
-        hole-size   (get-in properties/sizes [size-key :hole-size])
-        hole-radius (get-in properties/sizes [size-key :hole-radius (properties/border-type type)])
-        hole-x      (get-in properties/sizes [size-key :hole-x])
-        hole-y      (get-in properties/sizes [size-key :hole-y])]
+  (let [last-item?                               (= index (dec number))
+        border-type                              (properties/border-type type)
+        {margin-left               :margin-left
+         hole-size                 :hole-size
+         hole-x                    :hole-x
+         hole-y                    :hole-y
+         {hole-radius border-type} :hole-radius} (properties/sizes size-key)]
     [hole-view/hole-view
      {:style {:margin-left (if (= index 0) 0 margin-left)}
       :holes (if last-item?
@@ -124,7 +125,6 @@
   "
   [{:keys [type size number blur? theme more-than-99-label]} items]
   (let [size-key      (if (contains? properties/sizes size) size :size/s-24)
-        items-arr     (into [] items)
         number        (or number (count items))
         margin-left   (get-in properties/sizes [size-key :margin-left])
         border-radius (get-in properties/sizes [size-key :border-radius (properties/border-type type)])]
@@ -135,7 +135,7 @@
         {:index    index
          :type     type
          :size-key size-key
-         :item     (get items-arr index)
+         :item     (get (vec items) index)
          :number   number}])
      (when (> number 4)
        [overflow-label

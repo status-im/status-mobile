@@ -1,10 +1,10 @@
 (ns quo2.components.list-items.preview-list.properties)
 
+(def ^:private types-for-squared-border #{:accounts :collectibles})
+
 (defn border-type
   [type]
-  (case type
-    (:accounts :collectibles) :squared
-    :rounded))
+  (if (types-for-squared-border type) :squared :rounded))
 
 (def sizes
   {:size/s-32 {:size             32

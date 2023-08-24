@@ -6,8 +6,7 @@
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Type:"
-    :key     :type
+  [{:key     :type
     :type    :select
     :options [{:key   :user
                :value "User"}
@@ -23,8 +22,7 @@
                :value "Accounts"}
               {:key   :network
                :value "Network"}]}
-   {:label   "Size:"
-    :key     :size
+   {:key     :size
     :type    :select
     :options [{:key   :size/s-32
                :value "32"}
@@ -36,12 +34,10 @@
                :value "16"}
               {:key   :size/s-14
                :value "14"}]}
-   {:label "Number"
-    :key   :number
-    :type  :text}
-   {:label "blur"
-    :key   :blur?
-    :type  :boolean}])
+   {:key  :number
+    :type :text}
+   {:key  :blur?
+    :type :boolean}])
 
 (def user-list
   [{:full-name           "A Y"

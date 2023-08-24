@@ -52,7 +52,6 @@
 (def mock-images
   {:diamond              (js/require "../resources/images/mock2/diamond.png")
    :coinbase             (js/require "../resources/images/mock2/coinbase.png")
-   :coin-gecko           (js/require "../resources/images/mock2/coin-gecko.png")
    :collectible          (js/require "../resources/images/mock2/collectible.png")
    :contact              (js/require "../resources/images/mock2/contact.png")
    :community-banner     (js/require "../resources/images/mock2/community-banner.png")
