@@ -24,7 +24,7 @@
     (oops/ocall! scroll-ref "scrollToOffset" #js {:offset 0})))
 
 (defn- banner-card-blur-layer
-  [scroll-shared-value]
+  [scroll-shared-value child]
   (let [open-sheet? (-> (rf/sub [:bottom-sheet]) :sheets seq)]
     [reanimated/view {:style (style/banner-card-blur-layer scroll-shared-value)}
      [blur/view
@@ -33,12 +33,13 @@
        :blur-type     (theme/theme-value (if platform/ios? :light :xlight) :dark)
        :overlay-color (if open-sheet?
                         (colors/theme-colors colors/white colors/neutral-95-opa-70)
-                        (theme/theme-value nil colors/neutral-95-opa-70))}]]))
+                        (theme/theme-value nil colors/neutral-95-opa-70))}
+      child]]))
 
 (defn- banner-card-hiding-layer
   [{:keys [title-props card-props scroll-shared-value]}]
   (let [customization-color (rf/sub [:profile/customization-color])]
-    [rn/view {:style (style/banner-card-hiding-layer)}
+    [reanimated/view {:style (style/banner-card-hiding-layer scroll-shared-value)}
      [common.home/top-nav {:type :grey}]
      [common.home/title-column (assoc title-props :customization-color customization-color)]
      [rn/view {:style style/animated-banner-card-container}
@@ -65,8 +66,8 @@
 (defn animated-banner
   [{:keys [scroll-ref tabs selected-tab on-tab-change scroll-shared-value content customization-color]}]
   [:<>
-   [:f> banner-card-blur-layer scroll-shared-value]
-   [:f> banner-card-hiding-layer (assoc content :scroll-shared-value scroll-shared-value)]
+   [:f> banner-card-blur-layer scroll-shared-value
+    [:f> banner-card-hiding-layer (assoc content :scroll-shared-value scroll-shared-value)]]
    [:f> banner-card-tabs-layer
     {:scroll-shared-value scroll-shared-value
      :selected-tab        selected-tab

@@ -17,6 +17,10 @@
   [scroll-shared-value]
   (reanimated/interpolate scroll-shared-value [0 max-scroll] [0 (- max-scroll)] :clamp))
 
+(defn- animated-card-translation-y-reverse
+  [scroll-shared-value]
+  (reanimated/interpolate scroll-shared-value [0 max-scroll] [0 (+ max-scroll)] :clamp))
+
 (defn banner-card-blur-layer
   [scroll-shared-value]
   (reanimated/apply-animations-to-style
@@ -30,13 +34,15 @@
     :height   (+ (safe-area/get-top) 244)}))
 
 (defn banner-card-hiding-layer
-  []
-  {:z-index     2
-   :position    :absolute
-   :top         0
-   :right       0
-   :left        0
-   :padding-top (safe-area/get-top)})
+  [scroll-shared-value]
+  (reanimated/apply-animations-to-style
+   {:transform [{:translate-y (animated-card-translation-y-reverse scroll-shared-value)}]}
+   {:z-index     2
+    :position    :absolute
+    :top         0
+    :right       0
+    :left        0
+    :padding-top (safe-area/get-top)}))
 
 (def animated-banner-card-container {:overflow :hidden})
 
