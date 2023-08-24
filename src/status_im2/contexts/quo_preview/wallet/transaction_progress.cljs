@@ -66,7 +66,7 @@
                              :network-state       :pending
                              :network-type        :mainnet
                              :start-interval-now  true
-                             :btn-title           :Retry
+                             :btn-title           "Retry"
                              :tag-name            "Doodle #120"
                              :tag-photo           (resources/get-mock-image :collectible)
                              :on-press            (fn []

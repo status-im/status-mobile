@@ -62,12 +62,12 @@
 
 (defn progress-box-arbitrum
   [override-theme]
-  {:flex            1
-   :height          12
-   :border-width    1
-   :border-radius   3
-   :margin-right    6
-   :margin-vertical 2
+  {:flex             1
+   :height           12
+   :border-width     1
+   :border-radius    3
+   :margin-right     6
+   :margin-vertical  2
    :background-color (colors/theme-colors colors/neutral-5 colors/neutral-70 override-theme)
    :border-color     (colors/theme-colors colors/neutral-10 colors/neutral-80 override-theme)})
 

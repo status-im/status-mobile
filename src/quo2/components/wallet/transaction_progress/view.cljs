@@ -81,18 +81,18 @@
 (defn calculate-box-state-arbitrum
   [network-state network-type]
   (cond
-    (and (= network-type :arbitrum) (= network-state :sending)) :confirmed
-    (or (= network-state :pending) (= network-state :sending))  :pending
     (= network-state :error)                                    :error
-    :else                                                       :confirmed))
+    (and (= network-type :arbitrum) (= network-state :sending)) :confirmed
+    (or (= network-state :confirmed) (= network-state :finalising) (= network-state :finalized))  :confirmed
+    :else                                                       :pending))
 
 (defn calculate-box-width
   [showHalf?]
   (cond
     (and showHalf? (< @lcounter 30)) (- total-box @lcounter)
     showHalf?                        30
-    (< @lcounter total-box)         (- total-box @lcounter)
-    :else                           0))
+    (< @lcounter total-box)          (- total-box @lcounter)
+    :else                            0))
 
 (defn progress-boxes-arbitrum
   [override-theme network-state network-type]
@@ -102,7 +102,7 @@
     {:state               (calculate-box-state-arbitrum network-state network-type)
      :customization-color :blue}]
    [rn/view
-    {:style            (style/progress-box-arbitrum override-theme)}
+    {:style (style/progress-box-arbitrum override-theme)}
     [rn/view
      (assoc
       (let [box-style (cond
@@ -123,7 +123,8 @@
                         :else                         (assoc {:style style/progress-box-arbitrum-abs}
                                                              :background-color
                                                              (colors/theme-colors colors/neutral-5
-                                                                                  colors/neutral-70 override-theme)))]
+                                                                                  colors/neutral-70
+                                                                                  override-theme)))]
         box-style)
       :align-self "flex-end"
       :border-color
@@ -181,25 +182,25 @@
     (and (= network-type :arbitrum)
          (= network-state :sending))   ["positive-state"
                                         (colors/theme-colors colors/success-50
-                                                             colors/success-60 
+                                                             colors/success-60
                                                              override-theme)]
     (or (= network-state :pending)
         (= network-state :sending))    ["pending-state"
                                         (colors/theme-colors colors/neutral-50
-                                                             colors/neutral-60 
+                                                             colors/neutral-60
                                                              override-theme)]
     (or (= network-state :confirmed)
         (= network-state :finalising)) ["positive-state"
                                         (colors/theme-colors colors/success-50
-                                                             colors/success-60 
+                                                             colors/success-60
                                                              override-theme)]
     (= network-state :finalized)       ["diamond"
                                         (colors/theme-colors colors/success-50
-                                                             colors/success-60 
+                                                             colors/success-60
                                                              override-theme)]
     (= network-state :error)           ["negative-state"
                                         (colors/theme-colors colors/danger-50
-                                                             colors/danger-60 
+                                                             colors/danger-60
                                                              override-theme)]))
 
 (defn render-title
@@ -260,34 +261,34 @@
            network-state
            start-interval-now
            override-theme
-           tag-photo 
+           tag-photo
            tag-name
            btn-title]}]
   (rn/use-effect
+   (fn []
+     (when start-interval-now
+       (start-interval network-state))
+     (clear-counter)
      (fn []
-       (when start-interval-now
-         (start-interval network-state))
-       (clear-counter)
-       (fn []
-         (stop-interval)))
-     [network-state])
+       (stop-interval)))
+   [network-state])
+  [rn/view
+   [rn/touchable-without-feedback
+    {:on-press            on-press
+     :accessibility-label accessibility-label}
     [rn/view
-     [rn/touchable-without-feedback
-      {:on-press            on-press
-       :accessibility-label accessibility-label}
-      [rn/view
-       {:style style/box-style}
-       [render-title network-state title override-theme btn-title]
-       [render-tag tag-photo tag-name]
-       (when (= network-type :mainnet)
-         [render-status-row override-theme network-state network-type])
-       (when (= network-type :optimism-arbitrum)
-         [render-status-row override-theme network-state :arbitrum])
-       (when (= network-type :optimism-arbitrum)
-         [progress-boxes-arbitrum override-theme network-state :arbitrum])
-       (when (= network-type :optimism-arbitrum)
-         [render-status-row override-theme network-state :optimism])
-       (when (= network-type :optimism-arbitrum)
-         [progress-boxes-arbitrum override-theme network-state :optimism])
-       (when (= network-type :mainnet)
-         [progress-boxes network-state])]]])
+     {:style style/box-style}
+     [render-title network-state title override-theme btn-title]
+     [render-tag tag-photo tag-name]
+     (when (= network-type :mainnet)
+       [render-status-row override-theme network-state network-type])
+     (when (= network-type :optimism-arbitrum)
+       [render-status-row override-theme network-state :arbitrum])
+     (when (= network-type :optimism-arbitrum)
+       [progress-boxes-arbitrum override-theme network-state :arbitrum])
+     (when (= network-type :optimism-arbitrum)
+       [render-status-row override-theme network-state :optimism])
+     (when (= network-type :optimism-arbitrum)
+       [progress-boxes-arbitrum override-theme network-state :optimism])
+     (when (= network-type :mainnet)
+       [progress-boxes network-state])]]])
