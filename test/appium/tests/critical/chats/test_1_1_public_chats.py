@@ -51,7 +51,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.drivers[0].fail('No message is shown after sending ETH in 1-1 chat for sender')
         sender_message.transaction_status.wait_for_element_text(sender_message.address_requested)
 
-        chat_2 = self.home_2.get_chat(self.sender['username']).click()
+        chat_2 = self.home_2.get_one_to_one_chat(self.sender['username']).click()
         receiver_message = chat_2.get_incoming_transaction(self.account_name_1)
         timestamp_sender = sender_message.timestamp_command_message.text
         if not receiver_message.is_element_displayed():
@@ -101,7 +101,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.wallet_2.wait_balance_is_changed()
         self.wallet_2.find_transaction_in_history(amount=amount)
         self.wallet_2.home_button.click()
-        self.home_2.get_chat(self.sender['username']).click()
+        self.home_2.get_one_to_one_chat(self.sender['username']).click()
         [message.transaction_status.wait_for_element_text(message.confirmed, 60) for message in
          (sender_message, receiver_message)]
 
@@ -112,7 +112,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
     def test_1_1_chat_command_decline_eth_push_changing_state(self):
         [home.driver.background_app(3) for home in (self.home_1, self.home_2)]
         self.home_1.home_button.double_click()
-        self.home_1.get_chat(username=self.recipient_username).click()
+        self.home_1.get_one_to_one_chat(username=self.recipient_username).click()
 
         self.home_1.just_fyi('Decline transaction before sharing address and check that state is changed')
         self.chat_1.commands_button.click()
@@ -125,7 +125,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.home_1.click_system_home_button()
 
         self.home_2.home_button.double_click()
-        chat_2 = self.home_2.get_chat(self.sender['username']).click()
+        chat_2 = self.home_2.get_one_to_one_chat(self.sender['username']).click()
         chat_2_receiver_message = chat_2.get_incoming_transaction()
         chat_2_receiver_message.decline_transaction.click()
         self.home_1.open_notification_bar()
@@ -165,7 +165,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.home_1.driver.close_app()
 
         self.home_2.just_fyi('Request %s STT in 1-1 chat and check it is visible for sender and receiver' % amount)
-        chat_2 = self.home_2.get_chat(username=self.sender['username']).click()
+        chat_2 = self.home_2.get_one_to_one_chat(username=self.sender['username']).click()
         chat_2.commands_button.click()
         request_transaction = chat_2.request_command.click()
         request_transaction.amount_edit_box.set_value(amount)
@@ -182,7 +182,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.device_1.driver.launch_app()
         self.device_1.sign_in()
         self.home_1.connection_offline_icon.wait_for_invisibility_of_element(30)
-        self.home_1.get_chat(self.recipient_username).click()
+        self.home_1.get_one_to_one_chat(self.recipient_username).click()
         chat_1_sender_message = self.chat_1.get_outgoing_transaction()
         if not chat_1_sender_message.is_element_displayed():
             self.drivers[0].fail('No outgoing transaction in 1-1 chat is shown for sender after requesting STT')
@@ -198,8 +198,8 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             home.toggle_airplane_mode()
             home.home_button.double_click()
             home.connection_offline_icon.wait_for_invisibility_of_element(100)
-        self.home_2.get_chat(self.sender['username']).click()
-        self.home_1.get_chat(self.recipient_username).click()
+        self.home_2.get_one_to_one_chat(self.sender['username']).click()
+        self.home_1.get_one_to_one_chat(self.recipient_username).click()
         [message.transaction_status.wait_for_element_text(message.confirmed, wait_time=120) for message in
          (chat_1_sender_message, chat_2_request_message)]
 
@@ -227,7 +227,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         self.chat_1 = self.home_1.add_contact(self.public_key_2)
         self.chat_1.send_message('hey')
         self.home_2.home_button.double_click()
-        self.chat_2 = self.home_2.get_chat(self.default_username_1).click()
+        self.chat_2 = self.home_2.get_one_to_one_chat(self.default_username_1).click()
 
     @marks.testrail_id(6316)
     def test_1_1_chat_audio_message_with_push(self):
@@ -250,7 +250,7 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
         listen_time = 5
 
         self.device_2.home_button.click()
-        self.home_2.get_chat(self.default_username_1).click()
+        self.home_2.get_one_to_one_chat(self.default_username_1).click()
         chat_2.play_audio_message(listen_time)
         if chat_2.audio_message_in_chat_timer.text not in ("00:05", "00:06", "00:07", "00:08"):
             self.errors.append("Listened 5 seconds but timer shows different listened time in audio message")
@@ -262,16 +262,16 @@ class TestOneToOneChatMultipleSharedDevices(MultipleSharedDeviceTestCase):
     def test_1_1_chat_delete_via_delete_button_relogin(self):
         self.home_1.driver.quit()
         self.home_2.home_button.click()
-        self.home_2.get_chat(username=self.default_username_1).click()
+        self.home_2.get_one_to_one_chat(username=self.default_username_1).click()
 
         self.home_2.just_fyi("Deleting chat via delete button and check it will not reappear after relaunching app")
         self.chat_2.delete_chat()
         self.chat_2.get_back_to_home_view()
 
-        if self.home_2.get_chat_from_home_view(self.default_username_1).is_element_displayed():
+        if self.home_2.get_one_to_one_chat(self.default_username_1).is_element_displayed():
             self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % self.default_username_1)
         self.home_2.reopen_app()
-        if self.home_2.get_chat_from_home_view(self.default_username_1).is_element_displayed():
+        if self.home_2.get_one_to_one_chat(self.default_username_1).is_element_displayed():
             self.errors.append(
                 'Deleted chat %s is shown after re-login, but the chat has been deleted' % self.default_username_1)
         self.errors.verify_no_errors()
@@ -310,7 +310,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
 
     @marks.testrail_id(702186)
     def test_keycard_command_send_tx_eth_1_1_chat(self):
-        self.home_2.get_chat(self.sender['username']).click()
+        self.home_2.get_one_to_one_chat(self.sender['username']).click()
         self.chat_2.send_message("hey on kk!")
         self.chat_2.home_button.click()
 
@@ -318,7 +318,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         account_name = self.chat_1.status_account_name
 
         self.chat_1.just_fyi('Send %s ETH in 1-1 chat and check it for sender and receiver: Address requested' % amount)
-        self.home_1.get_chat(self.nick).click()
+        self.home_1.get_one_to_one_chat(self.nick).click()
         self.chat_1.send_message("hello again!")
         self.chat_1.commands_button.click()
         send_transaction = self.chat_1.send_command.click()
@@ -333,7 +333,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
             self.chat_1.driver.fail('No message is shown after sending ETH in 1-1 chat for sender')
         sender_message.transaction_status.wait_for_element_text(sender_message.address_requested)
 
-        self.home_2.get_chat(self.sender['username']).click()
+        self.home_2.get_one_to_one_chat(self.sender['username']).click()
         receiver_message = self.chat_2.get_incoming_transaction()
         timestamp_sender = sender_message.timestamp_command_message.text
         if not receiver_message.is_element_displayed(30):
@@ -378,7 +378,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
     def test_contact_add_remove_mention_default_username_nickname_public_chat(self):
         [home.home_button.double_click() for home in [self.home_1, self.home_2]]
         self.chat_1.just_fyi('check that can mention user with 3-random name in public chat')
-        self.home_1.get_chat('#%s' % self.pub_chat_name).click()
+        self.home_1.get_one_to_one_chat('#%s' % self.pub_chat_name).click()
 
         self.chat_1.just_fyi('Set nickname for user without adding him to contacts, check it in public chat')
         chat_element = self.chat_1.chat_element_by_text(self.message)
@@ -495,7 +495,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
             self.errors.append("Not connected to history node after enabling fetching on mobile data")
         self.home_2.click_system_back_button()
         self.home_2.mobile_connection_on_icon.wait_for_visibility_of_element(10)
-        self.home_2.get_chat('#%s' % public_chat_name).click()
+        self.home_2.get_one_to_one_chat('#%s' % public_chat_name).click()
         if not public_2.chat_element_by_text(public_chat_message).is_element_displayed(180):
             self.errors.append("Chat history was not fetched with mobile data fetching ON")
 
@@ -560,7 +560,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         self.home_2.home_button.wait_for_element(30)
         if not self.home_2.element_by_text_part(self.pub_chat_name).is_element_displayed():
             self.errors.append("Public chat was removed from home after migration to kk")
-        self.home_2.get_chat(self.sender['username']).click()
+        self.home_2.get_one_to_one_chat(self.sender['username']).click()
         if self.chat_2.add_to_contacts.is_element_displayed():
             self.errors.append("User was removed from contacts after migration to kk")
         self.errors.verify_no_errors()
@@ -622,7 +622,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         wallet_1 = self.home_1.wallet_button.click()
         wallet_1.wait_balance_is_changed()
         wallet_1.home_button.click()
-        self.home_1.get_chat(self.ens).click()
+        self.home_1.get_one_to_one_chat(self.ens).click()
         self.chat_1.commands_button.click()
         amount = self.chat_1.get_unique_amount()
 
@@ -641,7 +641,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         chat_1_sender_message.transaction_status.wait_for_element_text(chat_1_sender_message.confirmed)
 
         self.chat_2.just_fyi("Check that message is fetched for receiver")
-        self.home_2.get_chat(self.sender['username']).click()
+        self.home_2.get_one_to_one_chat(self.sender['username']).click()
         chat_2_reciever_message = self.chat_2.get_incoming_transaction(transaction_value=amount)
         chat_2_reciever_message.transaction_status.wait_for_element_text(chat_2_reciever_message.confirmed,
                                                                          wait_time=60)
@@ -652,7 +652,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi('Mention user by ENS in 1-1 chat')
         message, message_ens_owner = '%s hey!' % self.ens, '%s hey!' % self.reciever['ens']
-        self.home_1.get_chat(self.ens).click()
+        self.home_1.get_one_to_one_chat(self.ens).click()
         self.chat_1.send_message(message)
 
         self.home_1.just_fyi('Set nickname and mention user by nickname in 1-1 chat')
@@ -667,7 +667,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.chat_1.home_button.double_click()
         if not self.chat_1.element_by_text(updated_message).is_element_displayed():
             self.errors.append('"%s" is not show in chat preview on home screen!' % message)
-        self.home_1.get_chat(russian_nickname).click()
+        self.home_1.get_one_to_one_chat(russian_nickname).click()
 
         self.chat_1.just_fyi('Check redirect to user profile on mention by nickname tap')
         self.chat_1.chat_element_by_text(updated_message).click()
@@ -678,7 +678,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.chat_1.profile_send_message_button.click()
 
         self.chat_2.just_fyi("Check message with mention for ENS owner")
-        self.home_2.get_chat(self.sender['username']).click()
+        self.home_2.get_one_to_one_chat(self.sender['username']).click()
         if not self.chat_2.chat_element_by_text(message_ens_owner).is_element_displayed():
             self.errors.append('Expected %s message is not shown for ENS owner' % message_ens_owner)
 
@@ -745,7 +745,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         profile_2.switch_network('Goerli with upstream RPC')
 
         self.home_1.just_fyi('Install free sticker pack and use it in 1-1 chat on Goerli')
-        self.home_1.get_chat(self.ens).click()
+        self.home_1.get_one_to_one_chat(self.ens).click()
         self.chat_1.chat_message_input.clear()
         self.chat_1.install_sticker_pack_by_name()
         self.chat_1.sticker_icon.click()
@@ -766,7 +766,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         # self.home_2.just_fyi('Check that can install stickers by tapping on sticker message')
         # TODO: disabled because of #13683 (rechecked 04.10.22, valid)
         self.home_2.home_button.double_click()
-        self.home_2.get_chat(self.sender['username']).click()
+        self.home_2.get_one_to_one_chat(self.sender['username']).click()
         # self.chat_2.chat_item.click()
         # self.chat_2.element_by_text_part('Free').wait_and_click(40)
         # if self.chat_2.element_by_text_part('Free').is_element_displayed():
@@ -853,10 +853,10 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_2.handle_contact_request(self.username_1)
 
         self.profile_1.just_fyi("Sending message to contact via Messages > Recent")
-        self.chat_1 = self.home_1.get_chat(self.username_2).click()
+        self.chat_1 = self.home_1.get_one_to_one_chat(self.username_2).click()
         self.chat_1.send_message('hey')
         self.home_2.navigate_back_to_home_view()
-        self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        self.chat_2 = self.home_2.get_one_to_one_chat(self.username_1).click()
         self.message_1, self.message_2, self.message_3, self.message_4 = \
             "Message 1", "Message 2", "Message 3", "Message 4"
 
@@ -1120,7 +1120,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
         self.chat_1.just_fyi("Go back to chat view and checking that profile photo is updated")
         if not self.chat_2.chat_message_input.is_element_displayed():
-            self.home_2.get_chat(self.username_1).click()
+            self.home_2.get_one_to_one_chat(self.username_1).click()
         if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member3.png",
                                                                                                    diff=6):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
@@ -1138,7 +1138,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.device_2.put_app_to_background()
         self.device_2.open_notification_bar()
         if not self.chat_1.chat_message_input.is_element_displayed():
-            self.home_1.get_chat(self.username_2).click()
+            self.home_1.get_one_to_one_chat(self.username_2).click()
         self.chat_1.send_message(message)
 
         self.device_1.just_fyi("Device 1 puts app on background to receive emoji push notification")
@@ -1350,7 +1350,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi('Device2 checks "Sending" status when sending message from offline')
         if not self.chat_2.chat_message_input.is_element_displayed():
             self.home_2.chats_tab.click()
-            self.home_2.get_chat(self.username_1).click()
+            self.home_2.get_one_to_one_chat(self.username_1).click()
         self.chat_2.send_message(message_1)
         status = self.chat_2.chat_element_by_text(message_1).status
         if not (status == 'Sending' or status == 'Sent'):
@@ -1363,7 +1363,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
                 home.driver.launch_app()
                 SignInView(home.driver).sign_in()
                 home.chats_tab.click()
-                home.get_chat(self.username_2 if i == 0 else self.username_1).click()
+                home.get_one_to_one_chat(self.username_2 if i == 0 else self.username_1).click()
 
         self.home_1.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
         if not self.chat_1.chat_element_by_text(message_1).is_element_displayed(120):
@@ -1381,11 +1381,11 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_1.navigate_back_to_home_view()
         self.home_1.chats_tab.click()
         self.home_1.just_fyi("Mute chat")
-        self.home_1.mute_chat_long_press(self.username_2)
+        self.home_1.mute_chat_long_press(self.home_1.get_one_to_one_chat(self.username_2))
 
         muted_message = "should be muted"
         self.chat_2.send_message(muted_message)
-        chat = self.home_1.get_chat(self.username_2)
+        chat = self.home_1.get_one_to_one_chat(self.username_2)
         if chat.new_messages_counter.is_element_displayed(30) or self.home_1.chats_tab.counter.is_element_displayed(10):
             self.errors.append("New messages counter is shown after mute")
         if not chat.chat_preview.text.startswith(muted_message):
@@ -1423,11 +1423,11 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_2.chats_tab.click()
 
         self.home_2.just_fyi("Deleting chat via delete button and check it will not reappear after relaunching app")
-        self.home_2.delete_chat_long_press(username=self.username_1)
-        if self.home_2.get_chat_from_home_view(self.username_1).is_element_displayed():
+        self.home_2.delete_chat_long_press(self.home_2.get_one_to_one_chat(self.username_1))
+        if self.home_2.get_one_to_one_chat(self.username_1).is_element_displayed():
             self.errors.append('Deleted %s chat is shown, but the chat has been deleted' % self.username_1)
         self.home_2.reopen_app()
-        if self.home_2.get_chat_from_home_view(self.username_1).is_element_displayed(15):
+        if self.home_2.get_one_to_one_chat(self.username_1).is_element_displayed(15):
             self.errors.append(
                 'Deleted chat %s is shown after re-login, but the chat has been deleted' % self.username_1)
         self.errors.verify_no_errors()

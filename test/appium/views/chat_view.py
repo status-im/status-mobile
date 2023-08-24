@@ -417,11 +417,6 @@ class CommunityView(HomeView):
         self.checkbox_button.enable()
         self.join_community_button.scroll_and_click()
 
-    def get_channel(self, channel_name: str):
-        self.driver.info("Getting  %s channel element in community" % channel_name)
-        chat_element = self.get_chat(username=channel_name, community_channel=True, wait_time=30)
-        return chat_element
-
     def add_channel(self, name: str, description="Some new channel"):
         self.driver.info("Adding channel in community")
         self.plus_button.click()
@@ -430,7 +425,7 @@ class CommunityView(HomeView):
         self.channel_descripton.set_value(description)
         chat_view = ChatView(self.driver)
         chat_view.confirm_create_in_community_button.click()
-        self.get_chat(name).click()
+        self.get_community_channel(name).click()
         return chat_view
 
     def leave_community(self):

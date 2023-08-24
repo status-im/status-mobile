@@ -29,22 +29,22 @@ class ActivityTabButton(Button):
 
 
 class ChatElement(SilentButton):
-    def __init__(self, driver, username_part, community=False, community_channel=False):
+    def __init__(self, driver, username_part, one_to_one=False, community=False, community_channel=False):
         self.username = username_part
         self.community = community
         self.community_channel = community_channel
-        if self.community_channel:
-            super().__init__(
-                driver,
-                xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
-        elif community:
-            super().__init__(
-                driver,
-                xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)
-        else:
+        if one_to_one:
             super().__init__(
                 driver,
                 xpath="//*[@content-desc='author-primary-name'][starts-with(@text,'%s')]/.." % username_part)
+        elif self.community_channel:
+            super().__init__(
+                driver,
+                xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
+        else:
+            super().__init__(
+                driver,
+                xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)
 
     def navigate(self):
         if self.community:
@@ -337,29 +337,31 @@ class HomeView(BaseView):
             except TimeoutException:
                 break
 
-    def get_chat(self, username, community=False, community_channel=False, wait_time=10):
-        if community:
-            self.driver.info("Looking for community: '%s'" % username)
-        else:
-            self.driver.info("Looking for chat: '%s'" % username)
-        chat_element = ChatElement(self.driver, username[:25], community=community, community_channel=community_channel)
-        if not chat_element.is_element_displayed(wait_time) and community is False and community_channel is False:
-            if self.notifications_unread_badge.is_element_displayed(30):
-                chat_in_ac = ActivityCenterElement(self.driver, username[:25])
-                self.open_activity_center_button.click_until_presence_of_element(chat_in_ac)
-                chat_in_ac.wait_for_element(20)
-                chat_in_ac.click()
-        return chat_element
+    def get_one_to_one_chat(self, username: str):
+        self.driver.info("Looking for 1-1 chat: '%s'" % username)
+        return ChatElement(self.driver, username[:25], one_to_one=True)
+        # if not chat_element.is_element_displayed(wait_time):
+        #     if self.notifications_unread_badge.is_element_displayed(30):
+        #         chat_in_ac = ActivityCenterElement(self.driver, username[:25])
+        #         self.open_activity_center_button.click_until_presence_of_element(chat_in_ac)
+        #         chat_in_ac.wait_for_element(20)
+        #         chat_in_ac.click()
+
+    def get_community(self, community_name: str):
+        self.driver.info("Looking for community: '%s'" % community_name)
+        return ChatElement(self.driver, community_name, community=True)
+
+    def get_community_channel(self, channel_name: str):
+        self.driver.info("Looking for community channel: '%s'" % channel_name)
+        return ChatElement(self.driver, channel_name, community_channel=True)
+
+    def get_group_chat(self, chat_name: str):
+        self.driver.info("Looking for group chat: '%s'" % chat_name)
+        return ChatElement(self.driver, chat_name)
 
     def get_to_community_channel_from_home(self, community_name, channel_name='general'):
-        community_view = self.get_community_view()
-        self.get_chat(community_name, community=True).click()
-        return community_view.get_channel(channel_name).click()
-
-    def get_chat_from_home_view(self, username):
-        self.driver.info("Looking for chat: '%s'" % username)
-        chat_element = ChatElement(self.driver, username[:25])
-        return chat_element
+        self.get_community(community_name).click()
+        return self.get_community_channel(channel_name).click()
 
     def get_element_from_activity_center_view(self, message_body):
         self.driver.info("Looking for activity center element: '%s'" % message_body)
@@ -505,29 +507,30 @@ class HomeView(BaseView):
             status_test_dapp.deny_button.click_until_absense_of_element(status_test_dapp.deny_button)
         return status_test_dapp
 
-    def delete_chat_long_press(self, username):
-        self.driver.info("Deleting chat '%s' by long press" % username)
-        self.get_chat(username).long_press_element()
+    def delete_chat_long_press(self, chat_element: ChatElement):
+        self.driver.info("Deleting chat '%s' by long press" % chat_element.username)
+        chat_element.long_press_element()
         self.delete_chat_button.click()
         self.delete_chat_button.click()
 
-    def leave_chat_long_press(self, username):
-        self.driver.info("Leaving chat '%s' by long press" % username)
-        self.get_chat(username).long_press_element()
+    def leave_chat_long_press(self, chat_element: ChatElement):
+        self.driver.info("Leaving chat '%s' by long press" % chat_element.username)
+        chat_element.long_press_element()
         from views.chat_view import ChatView
         ChatView(self.driver).leave_chat_button.click()
         ChatView(self.driver).leave_button.click()
 
-    def clear_chat_long_press(self, username):
-        self.driver.info("Clearing history in chat '%s' by long press" % username)
-        self.get_chat(username).long_press_element()
+    def clear_chat_long_press(self, chat_element: ChatElement):
+        self.driver.info("Clearing history in chat '%s' by long press" % chat_element.username)
+        chat_element.long_press_element()
         self.clear_history_button.click()
         from views.chat_view import ChatView
         ChatView(self.driver).clear_button.click()
 
-    def mute_chat_long_press(self, chat_name, mute_period="mute-till-unmute", community=False, community_channel=False):
-        self.driver.info("Muting chat with %s" % chat_name)
-        self.get_chat(username=chat_name, community=community, community_channel=community_channel).long_press_element()
+    def mute_chat_long_press(self, chat_element: ChatElement, mute_period="mute-till-unmute", community=False,
+                             community_channel=False):
+        self.driver.info("Muting chat with %s" % chat_element.username)
+        chat_element.long_press_element()
         if community:
             self.mute_community_button.click()
         elif community_channel:

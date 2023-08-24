@@ -153,9 +153,9 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.one_to_one_message = 'one-t-one message'
 
         self.home_2.just_fyi("Send message to contact (need for jump to) test")
-        self.chat_1 = self.home_1.get_chat(self.username_2).click()
+        self.chat_1 = self.home_1.get_one_to_one_chat(self.username_2).click()
         self.chat_1.send_message(self.one_to_one_message)
-        self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        self.chat_2 = self.home_2.get_one_to_one_chat(self.username_1).click()
         self.chat_2.send_message(self.text_message)
         [home.navigate_back_to_home_view() for home in self.homes]
 
@@ -171,10 +171,10 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.community_1.share_community(self.community_name, self.username_2)
         self.home_1.get_to_community_channel_from_home(self.community_name)
 
-        self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        self.chat_2 = self.home_2.get_one_to_one_chat(self.username_1).click()
         self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
-        self.channel_2 = self.community_2.get_channel(self.channel_name).click()
+        self.channel_2 = self.community_2.get_community_channel(self.channel_name).click()
 
     @marks.testrail_id(702936)
     def test_navigation_jump_to(self):
@@ -199,8 +199,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         message_to_reply, reply_to_message_from_sender = 'something to reply to', 'this is a reply'
         self.home_1.navigate_back_to_home_view()
         self.home_1.communities_tab.click()
-        self.home_1.get_chat(self.community_name, community=True).click()
-        self.community_1.get_channel(self.channel_name).click()
+        self.home_1.get_to_community_channel_from_home(self.community_name)
         self.channel_1.send_message(message_to_reply)
 
         self.home_1.navigate_back_to_home_view()
@@ -211,7 +210,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Checking unread indicators")
         self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
-        community_element_1 = self.home_1.get_chat(self.community_name, community=True)
+        community_element_1 = self.home_1.get_community(self.community_name)
         for unread_counter in community_element_1.new_messages_counter, self.home_1.communities_tab.counter:
             if not unread_counter.is_element_displayed(60):
                 self.errors.append('New message counter badge is not shown!')
@@ -280,8 +279,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         if not self.channel_2.chat_message_input.is_element_displayed():
             self.channel_2.navigate_back_to_home_view()
             self.home_2.communities_tab.click()
-            self.home_2.get_chat(self.community_name, community=True).click()
-            self.home_2.get_chat(self.channel_name, community_channel=True).click()
+            self.home_2.get_to_community_channel_from_home(self.community_name)
         self.home_1.navigate_back_to_home_view()
         self.home_1.communities_tab.click()
 
@@ -291,7 +289,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
         self.home_1.just_fyi("Checking unread indicators")
         self.home_1.notifications_unread_badge.wait_for_visibility_of_element(120)
-        community_element_1 = self.home_1.get_chat(self.community_name, community=True)
+        community_element_1 = self.home_1.get_community(self.community_name)
         for unread_counter in community_element_1.new_messages_counter, self.home_1.communities_tab.counter:
             if not unread_counter.is_element_displayed(60):
                 self.errors.append('New message counter badge is not shown while mentioned!')
@@ -320,7 +318,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Clearing history")
         self.home_2.navigate_back_to_home_view()
         self.home_2.chats_tab.click()
-        self.home_2.clear_chat_long_press(self.username_1)
+        self.home_2.clear_chat_long_press(self.home_2.get_one_to_one_chat(self.username_1))
 
         [home.navigate_back_to_home_view() for home in (self.home_1, self.home_2)]
         self.home_1.just_fyi("Open community to message")
@@ -334,7 +332,7 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_2.just_fyi("Request access to community")
         self.home_2.navigate_back_to_home_view()
         self.home_2.chats_tab.click()
-        self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        self.chat_2 = self.home_2.get_one_to_one_chat(self.username_1).click()
         self.chat_2.chat_element_by_text(community_name).view_community_button.wait_and_click(sec=60)
         self.community_2.join_community()
         for home in self.home_1, self.home_2:

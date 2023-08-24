@@ -62,7 +62,7 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             group_invite_pn.click()
         else:
             self.homes[1].click_system_back_button(2)
-            self.homes[1].get_chat(self.chat_name).click()
+            self.homes[1].get_group_chat(self.chat_name).click()
 
         self.homes[1].just_fyi("Check system messages in group chat for admin and member")
         create_system_message = self.chats[0].create_system_message(self.usernames[0], self.chat_name)
@@ -84,7 +84,7 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
     @marks.testrail_id(700732)
     def test_group_chat_add_new_member(self):
         [self.homes[i].home_button.double_click() for i in range(3)]
-        self.homes[0].get_chat(self.chat_name).click()
+        self.homes[0].get_group_chat(self.chat_name).click()
         self.chats[0].add_members_to_group_chat([self.usernames[2]])
 
         self.chats[2].just_fyi("Check there will be PN and no unread in AC for a new member")
@@ -97,10 +97,10 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.homes[2].click_system_back_button()
 
         self.homes[2].just_fyi("Check new group appeared in chat list for a new member")
-        if not self.homes[2].get_chat(self.chat_name).is_element_displayed(60):
+        if not self.homes[2].get_group_chat(self.chat_name).is_element_displayed(60):
             self.drivers[2].fail("New group chat hasn't appeared in chat list")
 
-        self.homes[2].get_chat(self.chat_name).click()
+        self.homes[2].get_group_chat(self.chat_name).click()
 
         for message in (self.message_to_admin, self.message_before_adding):
             if self.chats[2].chat_element_by_text(message).is_element_displayed():
@@ -114,10 +114,10 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.homes[0].create_group_chat([self.usernames[1]], chat_name)
 
         self.homes[1].just_fyi("Check that new group chat from contact is highlited")
-        chat_2_element = self.homes[1].get_chat(chat_name)
+        chat_2_element = self.homes[1].get_group_chat(chat_name)
         if chat_2_element.no_message_preview.is_element_differs_from_template('highligted_preview_group.png', 0):
             self.errors.append("Preview message is not hightligted or text is not shown! ")
-        chat_2 = self.homes[1].get_chat(chat_name).click()
+        chat_2 = self.homes[1].get_group_chat(chat_name).click()
         chat_2.home_button.click()
         if not chat_2_element.no_message_preview.is_element_differs_from_template('highligted_preview_group.png', 0):
             self.errors.append("Preview message is still hightligted after opening! ")
@@ -128,10 +128,10 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.drivers[2].quit()
         [self.homes[i].home_button.double_click() for i in range(2)]
         self.homes[0].home_button.double_click()
-        self.homes[1].get_chat(self.chat_name).click()
+        self.homes[1].get_group_chat(self.chat_name).click()
 
         self.homes[0].just_fyi("Admin deleted chat via long press")
-        self.homes[0].leave_chat_long_press(self.chat_name)
+        self.homes[0].leave_chat_long_press(self.homes[0].get_group_chat(self.chat_name))
 
         self.homes[1].just_fyi('Check that leave system message is presented after user left the group chat')
         if not self.chats[1].chat_element_by_text(left_system_message).is_element_displayed():
@@ -140,7 +140,7 @@ class TestGroupChatMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.homes[0].just_fyi("Member sends some message, admin relogins and check chat does not reappear")
         self.chats[1].send_message(self.message_to_admin)
         self.homes[0].relogin()
-        if self.homes[0].get_chat_from_home_view(self.chat_name).is_element_displayed():
+        if self.homes[0].get_one_to_one_chat(self.chat_name).is_element_displayed():
             self.drivers[0].fail('Deleted %s is present after relaunch app' % self.chat_name)
 
 
@@ -210,7 +210,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
     def test_group_chat_join_send_text_messages_push(self):
         message_to_admin = self.message_to_admin
         [self.homes[i].navigate_back_to_home_view() for i in range(3)]
-        self.homes[1].get_chat(self.chat_name).click()
+        self.homes[1].get_group_chat(self.chat_name).click()
 
         self.chats[1].send_message(message_to_admin)
 
@@ -222,7 +222,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         else:
             self.errors.append("No PN was received on new message for message in group chat")
             self.homes[0].click_system_back_button()
-            self.homes[0].get_chat(self.chat_name).click()
+            self.homes[0].get_group_chat(self.chat_name).click()
 
         self.chats[1].just_fyi('Check message status and message delivery')
         self.chats[1].chat_element_by_text(message_to_admin).wait_for_status_to_be('Delivered', timeout=120)
@@ -233,7 +233,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
     @marks.testrail_id(703202)
     def test_group_chat_reactions(self):
         [self.homes[i].navigate_back_to_home_view() for i in range(3)]
-        [self.homes[i].get_chat(self.chat_name).click() for i in range(3)]
+        [self.homes[i].get_group_chat(self.chat_name).click() for i in range(3)]
         message = "This is a test message to check some reactions."
         self.chats[0].just_fyi("Admin sends a message")
         self.chats[0].send_message(message)
@@ -306,7 +306,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         self.chats[0].just_fyi("Admin relogins")
         self.chats[0].reopen_app()
-        self.homes[0].get_chat(self.chat_name).click()
+        self.homes[0].get_group_chat(self.chat_name).click()
 
         self.chats[0].just_fyi("Admin checks reactions count after relogin")
         message_element = self.chats[0].chat_element_by_text(message)
@@ -347,7 +347,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
     def test_group_chat_send_image_save_and_share(self):
         [self.homes[i].navigate_back_to_home_view() for i in range(3)]
         for i in range(3):
-            self.homes[i].get_chat(self.chat_name).click()
+            self.homes[i].get_group_chat(self.chat_name).click()
 
         self.chats[1].just_fyi("Member_1 sends an image")
         image_description = "test image"
@@ -407,7 +407,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             self.homes[i].navigate_back_to_home_view()
             self.homes[i].chats_tab.click()
             self.homes[i].groups_tab.click()
-            self.homes[i].get_chat(self.chat_name).click()
+            self.homes[i].get_group_chat(self.chat_name).click()
 
         message_1, message_2 = 'message from old member', 'message from new member'
 
@@ -431,7 +431,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             self.drivers[0].launch_app()
             SignInView(self.drivers[0]).sign_in()
         self.homes[0].chats_tab.click()
-        self.homes[0].get_chat(self.chat_name).click()
+        self.homes[0].get_group_chat(self.chat_name).click()
 
         self.homes[0].just_fyi("check that messages are shown for every member")
         for i in range(3):
@@ -444,7 +444,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702732)
     def test_group_chat_pin_messages(self):
         [self.homes[i].navigate_back_to_home_view() for i in range(3)]
-        [self.homes[i].get_chat(self.chat_name).click() for i in range(3)]
+        [self.homes[i].get_group_chat(self.chat_name).click() for i in range(3)]
 
         self.message_1, self.message_2, self.message_3, self.message_4 = \
             "Message 1", "Message 2", "Message 3", "Message 4"
@@ -525,13 +525,13 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         [self.homes[i].navigate_back_to_home_view() for i in range(3)]
 
         self.homes[1].just_fyi("Member 1 mutes the chat for 1 hour")
-        self.homes[1].mute_chat_long_press(self.chat_name, "mute-for-1-hour")
+        self.homes[1].mute_chat_long_press(self.homes[1].get_group_chat(self.chat_name), "mute-for-1-hour")
         device_time = self.homes[1].driver.device_time
         current_time = datetime.datetime.strptime(device_time, "%Y-%m-%dT%H:%M:%S%z")
         expected_time = current_time + datetime.timedelta(minutes=60)
         expected_text = "Muted until %s %s" % (
             expected_time.strftime('%H:%M'), "today" if current_time.hour < 23 else "tomorrow")
-        chat = self.homes[1].get_chat(self.chat_name)
+        chat = self.homes[1].get_group_chat(self.chat_name)
         chat.long_press_element()
         if self.homes[1].mute_chat_button.text != transl["unmute-chat"]:
             pytest.fail("Chat is not muted")
@@ -545,7 +545,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         self.homes[0].just_fyi("Admin sends a message")
         muted_message = "Text message in the muted chat"
-        self.homes[0].get_chat(self.chat_name).click()
+        self.homes[0].get_group_chat(self.chat_name).click()
         self.chats[0].send_message(muted_message)
 
         self.homes[1].just_fyi("Member 1 checks that chat is muted and message is received")
@@ -579,7 +579,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         unmuted_message = "Chat is unmuted now"
         self.homes[2].just_fyi("Member 2 sends a message")
-        self.homes[2].get_chat(self.chat_name).click()
+        self.homes[2].get_group_chat(self.chat_name).click()
         try:
             initial_counter = int(self.homes[1].chats_tab.counter.text)
         except NoSuchElementException:

@@ -345,7 +345,7 @@ class TestChatMediumMultipleDevice(MultipleSharedDeviceTestCase):
             self.chat_1.put_app_to_background()
             self.device_1.open_notification_bar()
             self.chat_2.get_back_to_home_view(2)
-            self.home_2.get_chat_from_home_view(self.default_username_1).click()
+            self.home_2.get_one_to_one_chat(self.default_username_1).click()
 
         def device_2_sends_sticker():
             self.chat_2.just_fyi("Sending Sticker in chat")
@@ -866,7 +866,7 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
             self.errors.append('New messages counter is shown on Home button for already seen message')
         if self.home_1.get_chat(self.sender['username']).new_messages_counter.text == '1':
             self.errors.append('New messages counter is shown on chat element for already seen message')
-        self.home_1.delete_chat_long_press(self.sender['username'])
+        self.home_1.delete_chat_long_press(self.home_1.get_one_to_one_chat(self.sender['username']))
 
         self.home_1.just_fyi("Checking preview of message and chat highlighting")
         self.chat_2.send_message(message_3)
