@@ -40,6 +40,7 @@
 (defn title-text
   [disabled? blur? theme]
   {:text-align-vertical :bottom
+   :padding 0
    :color               (if disabled?
                           (get-disabled-color blur? theme)
                           (colors/theme-colors colors/neutral-100 colors/white theme))})
@@ -50,7 +51,6 @@
 
 (def container
   {:flex-direction  :row
-   :flex            1
    :justify-content :center
    :align-items     :center})
 

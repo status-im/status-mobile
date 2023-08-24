@@ -10,6 +10,34 @@
     [utils.re-frame :as rf]
     [status-im2.contexts.wallet.common.temp :as temp]))
 
+(defn new-chat
+  []
+  [quo/action-drawer
+   [[{:icon                :i/add
+      :accessibility-label :start-a-new-chat
+      :label               (i18n/label :t/add-account)
+      :sub-label               (i18n/label :t/add-account-description)
+      :on-press            #(rf/dispatch [:navigate-to :wallet-create-account])}
+     {:icon                :i/reveal
+      :accessibility-label :add-a-contact
+      :label               (i18n/label :t/add-address)
+      :sub-label           (i18n/label :t/add-address-description)
+      :add-divider?        true
+      :on-press            #(rf/dispatch [:open-modal :new-contact])}]]])
+
+(def account-cards
+  [{:name                "Account 1"
+    :balance             "€0.00"
+    :percentage-value    "€0.00"
+    :customization-color :blue
+    :type                :empty
+    :emoji               "🍑"
+    :on-press            #(rf/dispatch [:navigate-to :wallet-accounts])}
+   {:customization-color :blue
+    :on-press            #(rf/dispatch
+                            [:show-bottom-sheet {:content new-chat}])
+    :type                :add-account}])
+
 (def tabs-data
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
@@ -30,7 +58,7 @@
         [quo/wallet-graph {:time-frame :empty}]]
        [rn/flat-list
         {:style      style/accounts-list
-         :data       temp/account-cards
+         :data       account-cards
          :horizontal true
          :separator  [rn/view {:style {:width 12}}]
          :render-fn  quo/account-card}]

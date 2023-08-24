@@ -24,7 +24,7 @@
     :icon-top  :icon-keyword
     :icon-left :icon-keyword
     :icon-right  :icon-keyword}
-    :customization-color keyword or hexstring 
+    :customization-color keyword or hexstring
     :theme :light/:dark
    only icon
    [button {:icon-only? true} :i/close-circle]"

@@ -30,18 +30,6 @@
    :currency-change   "€0.00"
    :percentage-change "0.00%"})
 
-(def account-cards
-  [{:name                "Account 1"
-    :balance             "€0.00"
-    :percentage-value    "€0.00"
-    :customization-color :blue
-    :type                :empty
-    :emoji               "🍑"
-    :on-press            #(rf/dispatch [:navigate-to :wallet-accounts])}
-   {:customization-color :blue
-    :on-press            #(js/alert "Button pressed")
-    :type                :add-account}])
-
 (def tokens
   [{:token               :snt
     :state               :default
