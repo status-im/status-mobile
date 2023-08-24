@@ -17,7 +17,7 @@
     [quo2.components.colors.color-picker.component-spec]
     [quo2.components.counter.counter.component-spec]
     [quo2.components.counter.step.component-spec]
-    [quo2.components.dividers.divider-label-component-spec]
+    [quo2.components.dividers.divider-label.component-spec]
     [quo2.components.dividers.strength-divider.component-spec]
     [quo2.components.drawers.action-drawers.component-spec]
     [quo2.components.drawers.documentation-drawers.component-spec]

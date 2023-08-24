@@ -4,26 +4,48 @@
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:type :text :key :label}
-   {:type :text :key :counter-value}
-   {:type :boolean :key :increase-padding-top?}
-   {:type :boolean :key :blur?}
-   {:key     :chevron-position
+  [{:key  :label
+    :type :text}
+   {:key     :chevron
     :type    :select
-    :options [{:key :left}
-              {:key :right}]}])
+    :options [{:key   :left
+               :value "Left"}
+              {:key   :right
+               :value "Right"}
+              {:key   nil
+               :value "None"}]}
+   {:key     :chevron-icon
+    :type    :select
+    :options [{:key   :i/chevron-down
+               :value "Chevron Down"}
+              {:key   :i/chevron-right
+               :value "Chevron Right"}]}
+   {:key  :tight?
+    :type :boolean}
+   {:key  :counter?
+    :type :boolean}
+   {:key  :counter-value
+    :type :text}
+   {:key  :blur?
+    :type :boolean}])
 
 (defn view
   []
-  (let [state (reagent/atom {:blur?                 false
-                             :chevron-position      :left
-                             :counter-value         "0"
-                             :increase-padding-top? true
-                             :label                 "Welcome"})]
+  (let [state (reagent/atom {:label         "Welcome"
+                             :chevron       nil
+                             :chevron-icon  nil
+                             :tight?        true
+                             :counter?      false
+                             :counter-value 0
+                             :blur?         false})]
     (fn []
       [preview/preview-container
        {:state                 state
         :descriptor            descriptor
         :blur?                 (:blur? @state)
         :show-blur-background? true}
-       [quo/divider-label @state]])))
+       [quo/divider-label
+        (assoc @state
+               :on-press
+               #(js/alert "Divider label pressed!"))
+        (:label @state)]])))

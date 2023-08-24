@@ -47,8 +47,8 @@
   [{:keys [title]}]
   (when-not (= title no-title)
     [quo/divider-label
-     {:label           title
-      :container-style style/divider}]))
+     {:container-style style/divider}
+     title]))
 
 (defn key-fn
   [item index]
