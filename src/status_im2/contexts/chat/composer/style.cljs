@@ -116,6 +116,4 @@
   (reanimated/apply-animations-to-style
    {:transform [{:translate-y translate-y}]
     :opacity   opacity}
-   {:position   :absolute
-    :top        0
-    :align-self :center}))
+   {:z-index 1}))
