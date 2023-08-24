@@ -527,7 +527,7 @@ class HomeView(BaseView):
 
     def mute_chat_long_press(self, chat_name, mute_period="mute-till-unmute", community=False, community_channel=False):
         self.driver.info("Muting chat with %s" % chat_name)
-        self.get_chat(username=chat_name, community_channel=community_channel).long_press_element()
+        self.get_chat(username=chat_name, community=community, community_channel=community_channel).long_press_element()
         if community:
             self.mute_community_button.click()
         elif community_channel:

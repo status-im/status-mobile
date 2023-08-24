@@ -398,7 +398,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             expected_time.strftime('%H:%M'),
             "today" if current_time.hour < 23 else "tomorrow"
         )
-        self.home.get_chat(self.community_name).long_press_element()
+        self.home.get_chat(self.community_name, community=True).long_press_element()
         if not self.home.element_by_text(expected_text).is_element_displayed():
             self.errors.append("Text '%s' is not shown for muted community" % expected_text)
         self.home.click_system_back_button()
@@ -429,7 +429,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         if not self.home.element_by_text(expected_text).is_element_displayed():
             self.errors.append("Text '%s' is not shown for a muted community channel" % expected_text)
         self.home.click_system_back_button()
-
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
         self.home.get_chat(self.community_name, community=True).long_press_element()
