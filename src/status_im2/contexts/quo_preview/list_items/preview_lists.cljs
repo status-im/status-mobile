@@ -43,11 +43,13 @@
   [{:full-name           "A Y"
     :customization-color :blue}
    {:full-name           "B Z"
+    :profile-picture     (resources/get-mock-image :user-picture-male4)
     :customization-color :army}
    {:full-name           "X R"
     :customization-color :orange}
    {:full-name           "T R"
-    :customization-color :purple}])
+    :profile-picture     (resources/get-mock-image :user-picture-male5)
+    :customization-color :army}])
 
 (def accounts-list
   [{:customization-color :purple
