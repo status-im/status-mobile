@@ -5,7 +5,19 @@
     [quo2.core :as quo]
     [re-frame.core :as rf]
     [react-native.safe-area :as safe-area]
+    [status-im2.common.resources :as resources]
     [utils.i18n :as i18n]))
+
+(defn create-item-array
+  [n {:keys [right-icon? image? subtitle?]}]
+  (vec (for [i (range n)]
+         {:title      (str "Item " i)
+          :subtitle   (when subtitle? "subtitle")
+          :chevron?   true
+          :right-icon (when right-icon? :i/globe)
+          :left-icon  :i/browser
+          :image-size (if image? 32 0)
+          :image      (when image? (resources/get-mock-image :diamond))})))
 
 (defn view
   []
@@ -19,22 +31,25 @@
        :mid-section           {:type :text-only :main-text ""}
        :left-section          {:type     :grey
                                :icon     :i/close
+                               :icon-background :photo
                                :on-press #(rf/dispatch [:navigate-back])}
        :right-section-buttons [{:type     :grey
                                 :icon     :i/info
+                                :icon-background :photo
                                 :on-press #(rf/dispatch [:open-modal :how-to-pair])}]}]
      [quo/gradient-cover {:customization-color :blue
                           :container-style     {:position :absolute
                                                 :top      (- top)
                                                 :left     0
-                                                :right    0}}]
+                                                :right    0
+                                                :z-index -1}}]
      [rn/view {:style {:padding-horizontal 20
                        :padding-top        12}}
       [quo/account-avatar {:customization-color :blue
                            :size                80
                            :emoji               "\uD83D\uDC8E"
                            :type                :default}]
-      ;; TODO: button need to be blur
+      ;; TODO: button need to be blur, and accept
       [quo/button {:size            32
                    :type            :grey
                    :background :photo
@@ -65,4 +80,14 @@
                        :padding-top 12
                        :padding-bottom 8
                        :border-bottom-width 1}}]
+     [quo/category
+      {:list-type :settings
+       :label     :origin
+       :data      (create-item-array 5 {:label       "Label"
+                                        :size        "5"
+                                        :blur?       false
+                                        :right-icon? true
+                                        :image?      true
+                                        :subtitle?   true
+                                        :list-type   :settings})}]
      ]))
