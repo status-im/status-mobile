@@ -5,8 +5,7 @@
   [blur? theme]
   {:border-color :red
    :border-width 1
-   :color        (if
-                   blur?
+   :color        (if blur?
                    colors/white
                    (colors/theme-colors colors/neutral-100
                                         colors/white

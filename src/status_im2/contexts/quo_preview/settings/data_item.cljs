@@ -69,7 +69,7 @@
         blur? (reagent/cursor state [:blur?])]
     (fn []
       [rn/view
-       [rn/view {:flex 1}
+       [rn/view {:style {:flex 1}}
         [preview/customizer state descriptor]]
        (when @blur?
          [blur/view

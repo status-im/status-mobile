@@ -10,8 +10,7 @@
    :padding-horizontal (when (= size :default) 12)
    :border-radius      16
    :border-width       (when (and card? (not= size :small)) 1)
-   :border-color       (if
-                         blur?
+   :border-color       (if blur?
                          colors/white-opa-10
                          (colors/theme-colors colors/neutral-10
                                               colors/neutral-80
@@ -21,8 +20,7 @@
   [size blur? theme]
   {:width            (if (= size :default) 132 72)
    :height           (if (= size :default) 16 10)
-   :background-color (if
-                       blur?
+   :background-color (if blur?
                        colors/white-opa-5
                        (colors/theme-colors colors/neutral-5
                                             colors/neutral-90
@@ -59,8 +57,7 @@
 
 (defn description
   [blur? theme]
-  {:color (if
-            blur?
+  {:color (if blur?
             colors/white
             (colors/theme-colors colors/neutral-100
                                  colors/white

@@ -4,15 +4,114 @@
             [quo2.components.settings.data-item.style :as style]
             [quo2.foundations.colors :as colors]
             [quo2.components.common.not-implemented.view :as not-implemented]
-            [quo2.components.settings.data-item.content.left-side :as left-side]
-            [quo2.components.settings.data-item.content.right-side :as right-side]))
+            [quo2.components.icon :as icons]
+            [quo2.components.markdown.text :as text]
+            [quo2.components.list-items.preview-list :as preview-list]
+            [quo2.foundations.resources :as resources]
+            [quo2.components.avatars.account-avatar.view :as account-avatar]
+            [utils.i18n :as i18n]))
+
+(defn- left-loading
+  [{:keys [size blur? theme]}]
+  [rn/view {:style (style/loading-container size blur? theme)}])
+
+(defn- left-subtitle
+  [{:keys [theme size description icon icon-color blur? subtitle emoji-color emoji]}]
+  (let [background-color (colors/theme-colors
+                          (colors/custom-color emoji-color 50)
+                          (colors/custom-color emoji-color 60)
+                          theme)]
+    [rn/view {:style style/subtitle-container}
+     (when (not= :small size)
+       [rn/view {:style (style/subtitle-icon-container description)}
+        (case description
+          :icon    [icons/icon icon
+                    {:accessibility-label :description-icon
+                     :size                16
+                     :color               icon-color}]
+          :account [account-avatar/view
+                    {:customization-color background-color
+                     :size                16
+                     :emoji               emoji
+                     :type                :defaul}]
+          :network [rn/image
+                    {:accessibility-label :description-image
+                     :source              (resources/tokens :eth)
+                     :style               style/image}]
+          :default nil
+          nil)])
+     [text/text
+      {:weight :medium
+       :size   :paragraph-2
+       :style  (style/description blur? theme)}
+      subtitle]]))
+
+(defn- left-title
+  [{:keys [title label size theme]}]
+  [rn/view {:style style/title-container}
+   [text/text
+    {:weight :regular
+     :size   :paragraph-2
+     :style  (style/title theme)}
+    title]
+   (when (and (= :graph label) (not= :small size))
+     [text/text
+      {:weight :regular
+       :size   :label
+       :style  (style/title theme)}
+      (i18n/label :t/days)])])
+
+(defn- left-side
+  [{:keys [theme title status size blur? description icon subtitle label icon-color emoji-color emoji]}]
+  [rn/view {:style style/left-side}
+   [left-title
+    {:title title
+     :label label
+     :size  size
+     :theme theme}]
+   (if (= status :loading)
+     [left-loading
+      {:size  size
+       :blur? blur?
+       :theme theme}]
+     [left-subtitle
+      {:theme       theme
+       :size        size
+       :description description
+       :icon        icon
+       :icon-color  icon-color
+       :blur?       blur?
+       :subtitle    subtitle
+       :emoji-color emoji-color
+       :emoji emoji}])])
+
+(defn- right-side
+  [{:keys [label icon-right? icon-color]}]
+  [rn/view {:style style/right-container}
+   (case label
+     :preview [preview-list/preview-list
+               {:type      :user
+                :size      24
+                :list-size 3}]
+     :graph   [text/text "graph"]
+     :none    nil
+     nil)
+   (when icon-right?
+     [rn/view {:style (style/right-icon label)}
+      [icons/icon
+       (if (= :none label)
+         :i/copy
+         :i/chevron-right)
+       {:accessibility-label :icon-right
+        :color               icon-color
+        :size                20}]])])
 
 (def view-internal
   (fn [{:keys [blur? card? icon-right? label description status size theme on-press title subtitle
                icon emoji-color emoji]}]
-    (let [icon-color (cond
-                       (or blur? (= :dark theme)) colors/white
-                       (= :light theme)           colors/neutral-100)]
+    (let [icon-color (if (or blur? (= :dark theme))
+                       colors/white
+                       colors/neutral-100)]
       (if (= :graph label)
         [not-implemented/view {:blur? blur?}]
         [rn/pressable
@@ -20,7 +119,7 @@
           :disabled            (not icon-right?)
           :on-press            on-press
           :style               (style/container size card? blur? theme)}
-         [left-side/view
+         [left-side
           {:theme       theme
            :title       title
            :status      status
@@ -34,7 +133,7 @@
            :emoji-color emoji-color
            :emoji emoji}]
          (when (and (= :default status) (not= :small size))
-           [right-side/view
+           [right-side
             {:label       label
              :icon-right? icon-right?
              :icon-color  icon-color}])]))))
