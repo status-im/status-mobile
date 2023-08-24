@@ -83,7 +83,7 @@
        :blur?       blur?
        :subtitle    subtitle
        :emoji-color emoji-color
-       :emoji emoji}])])
+       :emoji       emoji}])])
 
 (defn- right-side
   [{:keys [label icon-right? icon-color]}]
@@ -131,7 +131,7 @@
            :label       label
            :icon-color  icon-color
            :emoji-color emoji-color
-           :emoji emoji}]
+           :emoji       emoji}]
          (when (and (= :default status) (not= :small size))
            [right-side
             {:label       label
