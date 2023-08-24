@@ -167,36 +167,6 @@
       :accessibility-label :chat-message-text}
      preview-text]))
 
-
-(defn verified-or-contact-icon
-  [{:keys [ens-verified added?]}]
-  (if ens-verified
-    [rn/view {:style {:margin-left 5 :margin-top 4}}
-     [quo/icon :i/verified
-      {:no-color true
-       :size     12
-       :color    (colors/theme-colors colors/success-50 colors/success-60)}]]
-    (when added?
-      [rn/view {:style {:margin-left 5 :margin-top 4}}
-       [quo/icon :i/contact
-        {:no-color true
-         :size     12
-         :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]])))
-
-(defn name-view
-  [display-name contact timestamp muted?]
-  [rn/view {:style {:flex-direction :row}}
-   [quo/text
-    {:weight              :semi-bold
-     :accessibility-label :chat-name-text
-     :style               {:color (when muted? colors/neutral-50)}}
-    display-name]
-   [verified-or-contact-icon contact]
-   [quo/text
-    {:size  :label
-     :style (style/timestamp muted?)}
-    (datetime/to-short-str timestamp)]])
-
 (defn avatar-view
   [{:keys [contact chat-id full-name color muted?]}]
   (if contact ; `contact` is passed when it's not a group chat
@@ -244,13 +214,14 @@
         unviewed-messages-count])]))
 
 (defn chat-list-item
-  [{:keys [chat-id group-chat color name timestamp last-message muted]
+  [{:keys [chat-id group-chat color name last-message timestamp muted]
     :as   item}]
-  (let [display-name (if group-chat
-                       name
-                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id])))
-        contact      (when-not group-chat
-                       (rf/sub [:contacts/contact-by-address chat-id]))]
+  (let [[primary-name secondary-name]
+        (if group-chat
+          [name ""]
+          (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+        {:keys [ens-verified added?] :as contact} (when-not group-chat
+                                                    (rf/sub [:contacts/contact-by-address chat-id]))]
     [rn/touchable-opacity
      {:style         (style/container)
       :on-press      (open-chat chat-id)
@@ -259,10 +230,17 @@
      [avatar-view
       {:contact   contact
        :chat-id   chat-id
-       :full-name display-name
+       :full-name primary-name
        :color     color
        :muted?    muted}]
      [rn/view {:style style/chat-data-container}
-      [name-view display-name contact timestamp muted]
+      [quo/author
+       {:primary-name   primary-name
+        :secondary-name secondary-name
+        :size           15
+        :verified?      ens-verified
+        :contact?       added?
+        :muted?         muted
+        :time-str       (datetime/to-short-str timestamp)}]
       [last-message-preview group-chat last-message muted]]
      [notification item]]))

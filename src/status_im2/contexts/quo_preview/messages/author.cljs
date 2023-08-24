@@ -4,8 +4,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [utils.address :as address]))
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Primary name"
@@ -36,8 +35,6 @@
   []
   (let [state (reagent/atom {:primary-name    "Alisher Yakupov"
                              :seconadary-name ""
-                             :short-chat-key  (address/get-shortened-compressed-key
-                                               "zQ3ssgRy5TtB47MMiMKMKaGyaawkCgMqqbrnAUYrZJ1sgt5N")
                              :time-str        "09:30"
                              :contact?        false
                              :verified?       false

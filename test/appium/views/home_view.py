@@ -33,14 +33,18 @@ class ChatElement(SilentButton):
         self.username = username_part
         self.community = community
         self.community_channel = community_channel
-        if self.community_channel is True:
+        if self.community_channel:
             super().__init__(
                 driver,
                 xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
-        else:
+        elif community:
             super().__init__(
                 driver,
                 xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)
+        else:
+            super().__init__(
+                driver,
+                xpath="//*[@content-desc='author-primary-name'][starts-with(@text,'%s')]/.." % username_part)
 
     def navigate(self):
         if self.community:
@@ -523,7 +527,7 @@ class HomeView(BaseView):
 
     def mute_chat_long_press(self, chat_name, mute_period="mute-till-unmute", community=False, community_channel=False):
         self.driver.info("Muting chat with %s" % chat_name)
-        self.get_chat(username=chat_name, community_channel=community_channel).long_press_element()
+        self.get_chat(username=chat_name, community=community, community_channel=community_channel).long_press_element()
         if community:
             self.mute_community_button.click()
         elif community_channel:

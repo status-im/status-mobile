@@ -398,7 +398,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             expected_time.strftime('%H:%M'),
             "today" if current_time.hour < 23 else "tomorrow"
         )
-        self.home.get_chat(self.community_name).long_press_element()
+        self.home.get_chat(self.community_name, community=True).long_press_element()
         if not self.home.element_by_text(expected_text).is_element_displayed():
             self.errors.append("Text '%s' is not shown for muted community" % expected_text)
         self.home.click_system_back_button()
@@ -429,7 +429,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         if not self.home.element_by_text(expected_text).is_element_displayed():
             self.errors.append("Text '%s' is not shown for a muted community channel" % expected_text)
         self.home.click_system_back_button()
-
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
         self.home.get_chat(self.community_name, community=True).long_press_element()
@@ -913,8 +912,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Messages from blocked user is not cleared in public chat ")
         self.chat_1.navigate_back_to_home_view()
         self.home_1.chats_tab.click()
-        if self.home_1.element_by_text(self.username_2).is_element_displayed():
-            self.errors.append("1-1 chat from blocked user is not removed!")
+        if not self.home_1.element_by_translation_id( "no-messages").is_element_displayed():
+            self.errors.append("1-1 chat from blocked user is not removed and messages home is not empty!")
         self.chat_1.toggle_airplane_mode()
 
         # workaround for app closed after airplane mode
@@ -929,7 +928,10 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.chat_1.just_fyi('Check that new messages from blocked user are not delivered')
         self.chat_1.toggle_airplane_mode()
-        self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
+        # self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
+        self.home_1.communities_tab.click()
+        self.home_1.get_chat(self.community_name, community=True).click()
+        self.home_1.get_chat(self.channel_name, community_channel=True).click()
         for message in message_to_disappear, message_blocked:
             if self.chat_1.chat_element_by_text(message).is_element_displayed(30):
                 self.errors.append(
@@ -977,6 +979,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
 
         if unblocked:
             self.home_2.just_fyi("Check message in 1-1 chat after unblock")
+            self.home_2.chats_tab.click()
             self.home_2.get_chat(self.username_1).click()
             self.chat_2.send_message(message_unblocked)
             try:
