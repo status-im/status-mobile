@@ -8,8 +8,11 @@
             [quo2.components.icon :as icons]))
 
 (defn view
-  [{:keys [theme size description icon icon-color blur? subtitle]}]
-  (let [yellow-color [:yellow (if (= theme :dark) 60 50)]]
+  [{:keys [theme size description icon icon-color blur? subtitle emoji-color emoji]}]
+  (let [background-color (colors/theme-colors
+                          (colors/custom-color emoji-color 50)
+                          (colors/custom-color emoji-color 60)
+                          theme)]
     [rn/view {:style style/subtitle-container}
      (when (not= :small size)
        [rn/view {:style (style/subtitle-icon-container description)}
@@ -19,9 +22,9 @@
                      :size                16
                      :color               icon-color}]
           :account [account-avatar/view
-                    {:customization-color (get-in colors/customization yellow-color)
+                    {:customization-color background-color
                      :size                16
-                     :emoji               "🎮"
+                     :emoji               emoji
                      :type                :defaul}]
           :network [rn/image
                     {:accessibility-label :description-image

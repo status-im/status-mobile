@@ -6,7 +6,7 @@
             [quo2.components.settings.data-item.content.title :as left-title]))
 
 (defn view
-  [{:keys [theme title status size blur? description icon subtitle label icon-color]}]
+  [{:keys [theme title status size blur? description icon subtitle label icon-color emoji-color emoji]}]
   [rn/view {:style style/left-side}
    [left-title/view
     {:title title
@@ -25,4 +25,6 @@
        :icon        icon
        :icon-color  icon-color
        :blur?       blur?
-       :subtitle    subtitle}])])
+       :subtitle    subtitle
+       :emoji-color emoji-color
+       :emoji emoji}])])

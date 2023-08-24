@@ -63,7 +63,9 @@
                              :size        :default
                              :title       "Label"
                              :subtitle    "Description"
-                             :icon        :i/placeholder})
+                             :icon        :i/placeholder
+                             :emoji "🎮"
+                             :emoji-color :yellow})
         blur? (reagent/cursor state [:blur?])]
     (fn []
       [rn/view

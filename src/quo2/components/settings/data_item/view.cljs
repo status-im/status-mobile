@@ -9,7 +9,7 @@
 
 (def view-internal
   (fn [{:keys [blur? card? icon-right? label description status size theme on-press title subtitle
-               icon]}]
+               icon emoji-color emoji]}]
     (let [icon-color (cond
                        (or blur? (= :dark theme)) colors/white
                        (= :light theme)           colors/neutral-100)]
@@ -30,7 +30,9 @@
            :icon        icon
            :subtitle    subtitle
            :label       label
-           :icon-color  icon-color}]
+           :icon-color  icon-color
+           :emoji-color emoji-color
+           :emoji emoji}]
          (when (and (= :default status) (not= :small size))
            [right-side/view
             {:label       label
