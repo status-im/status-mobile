@@ -1,12 +1,11 @@
 (ns quo2.components.community.banner.style
   (:require [quo2.foundations.colors :as colors]
-            [quo2.foundations.shadows :as shadows]
-            [react-native.platform :as platform]))
+            [quo2.foundations.shadows :as shadows]))
 
 (defn community-card
   [theme]
   (assoc
-   (shadows/get (if platform/ios? 2 4) theme)
+   (shadows/get 2 theme)
    :border-radius     16
    :justify-content   :space-between
    :background-color  (colors/theme-colors colors/white colors/neutral-90 theme)

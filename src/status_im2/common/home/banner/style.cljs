@@ -44,8 +44,6 @@
     :left        0
     :padding-top (safe-area/get-top)}))
 
-(def animated-banner-card-container {:overflow :hidden})
-
 (defn animated-banner-card
   [scroll-shared-value]
   (reanimated/apply-animations-to-style
