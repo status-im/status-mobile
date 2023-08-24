@@ -38,7 +38,6 @@
 (defn update-counter
   [network-state]
   (let [new-counter-value (-> @lcounter inc)]
-    (println new-counter-value "arjun")
     (if (or (and (= network-state :pending) (> new-counter-value 0))
             (and (= network-state :sending) (> new-counter-value 2))
             (and (= network-state :confirmed) (> new-counter-value 4))
@@ -88,24 +87,22 @@
     :else                                                       :confirmed))
 
 (defn calculate-box-width
-  [showHalf]
+  [showHalf?]
   (cond
-    (and showHalf (< @lcounter 30)) (- total-box @lcounter)
-    showHalf                        30
+    (and showHalf? (< @lcounter 30)) (- total-box @lcounter)
+    showHalf?                        30
     (< @lcounter total-box)         (- total-box @lcounter)
     :else                           0))
 
 (defn progress-boxes-arbitrum
-  [network-state network-type]
+  [override-theme network-state network-type]
   [rn/view
    {:style style/progress-box-container}
    [progress-box/view
     {:state               (calculate-box-state-arbitrum network-state network-type)
      :customization-color :blue}]
    [rn/view
-    {:style            style/progress-box-arbitrum
-     :background-color (colors/theme-colors colors/white colors/neutral-5 colors/neutral-70)
-     :border-color     (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80)}
+    {:style            (style/progress-box-arbitrum override-theme)}
     [rn/view
      (assoc
       (let [box-style (cond
@@ -115,23 +112,22 @@
                                                              (colors/theme-colors
                                                               (colors/custom-color :blue 50)
                                                               (colors/custom-color :blue 60)
-                                                              quo.theme))
+                                                              override-theme))
                         (= network-state :finalized)  (assoc {:style style/progress-box-arbitrum-abs}
                                                              :right (str (calculate-box-width false) "%")
                                                              :background-color
                                                              (colors/theme-colors
                                                               (colors/custom-color :blue 50)
                                                               (colors/custom-color :blue 60)
-                                                              quo.theme))
+                                                              override-theme))
                         :else                         (assoc {:style style/progress-box-arbitrum-abs}
                                                              :background-color
-                                                             (colors/theme-colors colors/white
-                                                                                  colors/neutral-5
-                                                                                  colors/neutral-70)))]
+                                                             (colors/theme-colors colors/neutral-5
+                                                                                  colors/neutral-70 override-theme)))]
         box-style)
       :align-self "flex-end"
       :border-color
-      (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))]]])
+      (colors/theme-colors colors/neutral-10 colors/neutral-80 override-theme))]]])
 
 (defn render-text
   [title override-theme &
@@ -180,39 +176,39 @@
     (not= network-type :mainnet)            "0/1"))
 
 (defn get-status-icon
-  [network-type network-state]
+  [override-theme network-type network-state]
   (cond
     (and (= network-type :arbitrum)
          (= network-state :sending))   ["positive-state"
-                                        (colors/theme-colors colors/white
-                                                             colors/success-50
-                                                             colors/success-60)]
+                                        (colors/theme-colors colors/success-50
+                                                             colors/success-60 
+                                                             override-theme)]
     (or (= network-state :pending)
         (= network-state :sending))    ["pending-state"
-                                        (colors/theme-colors colors/white
-                                                             colors/neutral-50
-                                                             colors/neutral-60)]
+                                        (colors/theme-colors colors/neutral-50
+                                                             colors/neutral-60 
+                                                             override-theme)]
     (or (= network-state :confirmed)
         (= network-state :finalising)) ["positive-state"
-                                        (colors/theme-colors colors/white
-                                                             colors/success-50
-                                                             colors/success-60)]
+                                        (colors/theme-colors colors/success-50
+                                                             colors/success-60 
+                                                             override-theme)]
     (= network-state :finalized)       ["diamond"
-                                        (colors/theme-colors colors/white
-                                                             colors/success-50
-                                                             colors/success-60)]
+                                        (colors/theme-colors colors/success-50
+                                                             colors/success-60 
+                                                             override-theme)]
     (= network-state :error)           ["negative-state"
-                                        (colors/theme-colors colors/danger
-                                                             colors/danger-50
-                                                             colors/danger-60)]))
+                                        (colors/theme-colors colors/danger-50
+                                                             colors/danger-60 
+                                                             override-theme)]))
 
 (defn render-title
-  [network-state title override-theme]
+  [network-state title override-theme btn-title]
   [rn/view
    {:style style/title-item-container}
    [rn/view
     {:style style/inner-container}
-    [load-icon "placeholder" (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)]
+    [load-icon "placeholder" (colors/theme-colors colors/neutral-50 colors/neutral-60 override-theme)]
     [rn/view
      {:style style/title-container}
      [render-text title override-theme]]
@@ -220,15 +216,13 @@
       [button/button
        {:size      24
         :icon-left :i/refresh
-        :type      :primary} "Retry"])]])
+        :type      :primary} btn-title])]])
 
 (defn render-tag
-  [context-icon]
+  [tag-photo tag-name]
   [rn/view
    {:style style/padding-row}
-   [context-tag/context-tag {:blur? [false]}
-    (resources/get-mock-image context-icon)
-    "Doodle #120"]])
+   [context-tag/context-tag {:blur? [false]} tag-photo tag-name]])
 
 (defn get-network-text
   [network-type]
@@ -244,8 +238,8 @@
    [rn/view
     {:style (assoc style/progress-container
                    :border-color
-                   (colors/theme-colors colors/white colors/neutral-10 colors/neutral-80))}
-    (let [[status-icon color] (get-status-icon network-type network-state)]
+                   (colors/theme-colors colors/neutral-10 colors/neutral-80 override-theme))}
+    (let [[status-icon color] (get-status-icon override-theme network-type network-state)]
       [load-icon status-icon color])
     [rn/view
      {:style style/title-container}
@@ -256,19 +250,20 @@
     [rn/view
      [render-text (steps-text network-type network-state) override-theme :typography
       :typography/font-regular :weight :regular :size :paragraph-2 :style
-      {:color (colors/theme-colors colors/white colors/neutral-50 colors/neutral-60)}]]]])
+      {:color (colors/theme-colors colors/neutral-50 colors/neutral-60 override-theme)}]]]])
 
-(defn transaction-progress
+(defn view
   [{:keys [title
            on-press
            accessibility-label
            network-type
            network-state
            start-interval-now
-           context-icon
-           override-theme]}]
-  (let [count (reagent/atom 0)]
-    (rn/use-effect
+           override-theme
+           tag-photo 
+           tag-name
+           btn-title]}]
+  (rn/use-effect
      (fn []
        (when start-interval-now
          (start-interval network-state))
@@ -282,17 +277,17 @@
        :accessibility-label accessibility-label}
       [rn/view
        {:style style/box-style}
-       [render-title network-state title override-theme]
-       [render-tag context-icon]
+       [render-title network-state title override-theme btn-title]
+       [render-tag tag-photo tag-name]
        (when (= network-type :mainnet)
          [render-status-row override-theme network-state network-type])
        (when (= network-type :optimism-arbitrum)
          [render-status-row override-theme network-state :arbitrum])
        (when (= network-type :optimism-arbitrum)
-         [progress-boxes-arbitrum network-state :arbitrum])
+         [progress-boxes-arbitrum override-theme network-state :arbitrum])
        (when (= network-type :optimism-arbitrum)
          [render-status-row override-theme network-state :optimism])
        (when (= network-type :optimism-arbitrum)
-         [progress-boxes-arbitrum network-state :optimism])
+         [progress-boxes-arbitrum override-theme network-state :optimism])
        (when (= network-type :mainnet)
-         [progress-boxes network-state])]]]))
+         [progress-boxes network-state])]]])

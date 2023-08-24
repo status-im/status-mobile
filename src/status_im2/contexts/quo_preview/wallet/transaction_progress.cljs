@@ -10,6 +10,9 @@
   [{:label "Title:"
     :key   :title
     :type  :text}
+   {:label "Tag name:"
+    :key   :tag-name
+    :type  :text}
    {:label   "Network Type:"
     :key     :network-type
     :type    :select
@@ -58,12 +61,14 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:title               "Title"
+  (let [state (reagent/atom {:title               :Title
                              :accessibility-label :transaction-progress-item
                              :network-state       :pending
                              :network-type        :mainnet
                              :start-interval-now  true
-                             :context-icon        :collectible
+                             :btn-title           :Retry
+                             :tag-name            "Doodle #120"
+                             :tag-photo           (resources/get-mock-image :collectible)
                              :on-press            (fn []
                                                     (js/alert "Transaction progress item pressed"))})]
     (fn []
@@ -75,7 +80,7 @@
         {:padding-vertical   100
          :padding-horizontal 20
          :align-items        :center}
-        [:f> quo/transaction-progress (get-props @state)]]])))
+        [:f> quo/view (get-props @state)]]])))
 
 (defn preview
   []
