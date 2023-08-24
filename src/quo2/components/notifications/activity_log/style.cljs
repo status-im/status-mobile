@@ -44,6 +44,7 @@
 (def timestamp
   {:text-transform :none
    :margin-left    8
+   :margin-top     4
    :color          colors/neutral-40})
 
 (defn unread-dot
@@ -65,10 +66,8 @@
    :flex-wrap       :wrap})
 
 (def top-section-container
-  {:align-items    :center
-   :flex-direction :row})
+  {:flex-direction :row})
 
 (def title-container
   {:flex           1
-   :flex-direction :row
-   :align-items    :center})
+   :flex-direction :row})

@@ -13,7 +13,7 @@
   (merge default-container-style
          {:min-height         24
           :padding-horizontal 8
-          :padding-vertical   1}))
+          :padding-vertical   3}))
 
 (def large-container-style
   (merge default-container-style

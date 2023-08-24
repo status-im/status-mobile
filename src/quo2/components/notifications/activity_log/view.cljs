@@ -52,7 +52,7 @@
 (defn- activity-context
   [context replying?]
   (let [first-line-offset (if replying? 4 0)
-        gap-between-lines 4]
+        gap-between-lines 5]
     (into [rn/view {:style (assoc style/context-container :margin-top first-line-offset)}]
           (mapcat
            (fn [detail]
@@ -176,9 +176,9 @@
     [rn/view
      [rn/view {:style style/top-section-container}
       [rn/view {:style style/title-container}
-       [activity-title title replying?]
-       (when-not replying?
-         [activity-timestamp timestamp])]
+       [activity-title title replying?]]
+      (when-not replying?
+        [activity-timestamp timestamp])
       (when (and unread? (not replying?))
         [activity-unread-dot customization-color])]
      (when context
