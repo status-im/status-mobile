@@ -12,7 +12,7 @@
 (def ^:const composer-default-height (+ bar-container-height input-height actions-container-height))
 
 ;(def ^:const line-height (:line-height typography/paragraph-1))
-(def ^:const line-height 20.75)
+(def ^:const line-height 20)
 
 (def ^:const multiline-minimized-height (+ input-height (if platform/ios? 18 line-height)))
 
