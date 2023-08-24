@@ -237,6 +237,7 @@
       [quo/author
        {:primary-name   primary-name
         :secondary-name secondary-name
+        :size           15
         :verified?      ens-verified
         :contact?       added?
         :muted?         muted
