@@ -2,7 +2,8 @@
   (:require
     [quo2.foundations.colors :as colors]
     [quo2.foundations.typography :as typography]
-    [react-native.reanimated :as reanimated]))
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.composer.constants :as constants]))
 
 (defn top-gradient-style
   [opacity z-index]
@@ -24,7 +25,7 @@
    :style  (top-gradient-style opacity z-index)})
 
 (def bottom-gradient-style
-  {:height   (:line-height typography/paragraph-1)
+  {:height   constants/line-height
    :position :absolute
    :bottom   0
    :left     0
