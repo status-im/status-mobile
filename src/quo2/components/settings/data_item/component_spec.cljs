@@ -16,7 +16,9 @@
                 :size        :default
                 :title       "Label"
                 :subtitle    "Description"
-                :icon        :i/placeholder}])
+                :icon        :i/placeholder
+                :emoji "🎮"
+                :emoji-color :yellow}])
     (h/is-truthy (h/get-by-text "Label")))
 
   (h/test "data item renders correctly if card? is false"
@@ -31,7 +33,9 @@
                 :size        :default
                 :title       "Label"
                 :subtitle    "Description"
-                :icon        :i/placeholder}])
+                :icon        :i/placeholder
+                :emoji "🎮"
+                :emoji-color :yellow}])
     (h/has-style (h/query-by-label-text :data-item)
                  {:borderWidth nil}))
 
@@ -47,7 +51,9 @@
                 :size        :small
                 :title       "Label"
                 :subtitle    "Description"
-                :icon        :i/placeholder}])
+                :icon        :i/placeholder
+                :emoji "🎮"
+                :emoji-color :yellow}])
     (h/has-style (h/query-by-label-text :data-item)
                  {:borderWidth nil}))
 
@@ -63,7 +69,9 @@
                 :size        :default
                 :title       "Label"
                 :subtitle    "Description"
-                :icon        :i/placeholder}])
+                :icon        :i/placeholder
+                :emoji "🎮"
+                             :emoji-color :yellow}])
     (h/has-style (h/query-by-label-text :data-item)
                  {:borderWidth 1}))
 
@@ -79,7 +87,9 @@
                 :size        :default
                 :title       "Label"
                 :subtitle    "Description"
-                :icon        :i/placeholder}])
+                :icon        :i/placeholder
+                :emoji "🎮"
+                             :emoji-color :yellow}])
     (h/is-truthy (h/get-by-text "Description")))
 
   (h/test "right icon is not visible when icon-right? is false"
@@ -94,7 +104,9 @@
                 :size        :default
                 :title       "Label"
                 :subtitle    "Description"
-                :icon        :i/placeholder}])
+                :icon        :i/placeholder
+                :emoji "🎮"
+                             :emoji-color :yellow}])
     (h/is-falsy (h/query-by-label-text :icon-right)))
 
   (h/test "right icon is visible when icon-right? is true"
@@ -109,7 +121,9 @@
                 :size        :default
                 :title       "Label"
                 :subtitle    "Description"
-                :icon        :i/placeholder}])
+                :icon        :i/placeholder
+                :emoji "🎮"
+                             :emoji-color :yellow}])
     (h/is-truthy (h/query-by-label-text :icon-right)))
 
   (h/test "description icon is visible when description is icon"
@@ -124,7 +138,9 @@
                 :size        :default
                 :title       "Label"
                 :subtitle    "Description"
-                :icon        :i/placeholder}])
+                :icon        :i/placeholder
+                :emoji "🎮"
+                             :emoji-color :yellow}])
     (h/is-truthy (h/query-by-label-text :description-icon)))
 
   (h/test "description image is visible when description is network"
@@ -139,7 +155,9 @@
                 :size        :default
                 :title       "Label"
                 :subtitle    "Description"
-                :icon        :i/placeholder}])
+                :icon        :i/placeholder
+                :emoji "🎮"
+                             :emoji-color :yellow}])
     (h/is-truthy (h/query-by-label-text :description-image)))
 
   (h/test "description emoji is visible when description is account"
@@ -154,5 +172,7 @@
                 :size        :default
                 :title       "Label"
                 :subtitle    "Description"
-                :icon        :i/placeholder}])
+                :icon        :i/placeholder
+                :emoji "🎮"
+                             :emoji-color :yellow}])
     (h/is-truthy (h/query-by-label-text :account-emoji))))
