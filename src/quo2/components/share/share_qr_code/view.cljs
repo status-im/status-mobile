@@ -8,8 +8,7 @@
             [react-native.core :as rn]))
 
 (defn view
-  [{:keys [source link-title
-           url-on-press url-on-long-press qr-url share-on-press]}]
+  [{:keys [source link-title url-on-press url-on-long-press qr-url share-on-press]}]
   [blur/ios-view
    {:style     style/qr-code-container
     :blur-type :light}
