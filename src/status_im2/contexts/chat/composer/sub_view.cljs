@@ -48,10 +48,10 @@
          :label               (i18n/label :t/jump-to)
          :style               {:align-self :center}}}
        {}]]
-     [quo/floating-shell-button
-      (when @messages.list/show-floating-scroll-down-button
-        {:scroll-to-bottom {:on-press messages.list/scroll-to-bottom}})
-      {}]]))
+     (when @messages.list/show-floating-scroll-down-button
+       [quo/floating-shell-button
+        {:scroll-to-bottom {:on-press messages.list/scroll-to-bottom}}
+        style/scroll-to-bottom-button])]))
 
 (defn shell-button
   [state animations subs]
