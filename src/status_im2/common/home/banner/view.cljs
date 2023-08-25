@@ -3,6 +3,7 @@
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
+            [reagent.core :as reagent]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [react-native.platform :as platform]
@@ -10,6 +11,9 @@
             [status-im2.common.home.banner.style :as style]
             [status-im2.common.home.view :as common.home]
             [utils.re-frame :as rf]))
+
+(def card-banner-overflow-threshold 3)
+(def card-banner-overflow (reagent/atom :visible))
 
 (defn- reset-banner-animation
   [scroll-shared-value]
@@ -42,7 +46,7 @@
     [reanimated/view {:style (style/banner-card-hiding-layer scroll-shared-value)}
      [common.home/top-nav {:type :grey}]
      [common.home/title-column (assoc title-props :customization-color customization-color)]
-     [rn/view {:style style/animated-banner-card-container}
+     [rn/view {:style {:overflow @card-banner-overflow}}
       [reanimated/view {:style (style/animated-banner-card scroll-shared-value)}
        [quo/discover-card card-props]]]]))
 
@@ -78,4 +82,7 @@
 
 (defn set-scroll-shared-value
   [{:keys [shared-value scroll-input]}]
-  (reanimated/set-shared-value shared-value scroll-input))
+  (reanimated/set-shared-value shared-value scroll-input)
+  (let [new-overflow (if (<= scroll-input card-banner-overflow-threshold) :visible :hidden)]
+    (when-not (= new-overflow @card-banner-overflow)
+      (reset! card-banner-overflow new-overflow))))
