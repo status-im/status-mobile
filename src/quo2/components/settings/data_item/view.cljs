@@ -16,35 +16,30 @@
   [rn/view {:style (style/loading-container size blur? theme)}])
 
 (defn- left-subtitle
-  [{:keys [theme size description icon icon-color blur? subtitle emoji-color emoji]}]
-  (let [background-color (colors/theme-colors
-                          (colors/custom-color emoji-color 50)
-                          (colors/custom-color emoji-color 60)
-                          theme)]
-    [rn/view {:style style/subtitle-container}
-     (when (not= :small size)
-       [rn/view {:style (style/subtitle-icon-container description)}
-        (case description
-          :icon    [icons/icon icon
-                    {:accessibility-label :description-icon
-                     :size                16
-                     :color               icon-color}]
-          :account [account-avatar/view
-                    {:customization-color background-color
-                     :size                16
-                     :emoji               emoji
-                     :type                :defaul}]
-          :network [rn/image
-                    {:accessibility-label :description-image
-                     :source              (resources/tokens :eth)
-                     :style               style/image}]
-          :default nil
-          nil)])
-     [text/text
-      {:weight :medium
-       :size   :paragraph-2
-       :style  (style/description blur? theme)}
-      subtitle]]))
+  [{:keys [theme size description icon icon-color blur? subtitle customization-color emoji]}]
+  [rn/view {:style style/subtitle-container}
+   (when (not= :small size)
+     [rn/view {:style (style/subtitle-icon-container description)}
+      (case description
+        :icon    [icons/icon icon
+                  {:accessibility-label :description-icon
+                   :size                16
+                   :color               icon-color}]
+        :account [account-avatar/view
+                  {:customization-color customization-color
+                   :size                16
+                   :emoji               emoji
+                   :type                :default}]
+        :network [rn/image
+                  {:accessibility-label :description-image
+                   :source              (resources/tokens :eth)
+                   :style               style/image}]
+        nil)])
+   [text/text
+    {:weight :medium
+     :size   :paragraph-2
+     :style  (style/description blur? theme)}
+    subtitle]])
 
 (defn- left-title
   [{:keys [title label size theme]}]
@@ -62,7 +57,8 @@
       (i18n/label :t/days)])])
 
 (defn- left-side
-  [{:keys [theme title status size blur? description icon subtitle label icon-color emoji-color emoji]}]
+  [{:keys [theme title status size blur? description icon subtitle label icon-color customization-color
+           emoji]}]
   [rn/view {:style style/left-side}
    [left-title
     {:title title
@@ -75,15 +71,15 @@
        :blur? blur?
        :theme theme}]
      [left-subtitle
-      {:theme       theme
-       :size        size
-       :description description
-       :icon        icon
-       :icon-color  icon-color
-       :blur?       blur?
-       :subtitle    subtitle
-       :emoji-color emoji-color
-       :emoji       emoji}])])
+      {:theme               theme
+       :size                size
+       :description         description
+       :icon                icon
+       :icon-color          icon-color
+       :blur?               blur?
+       :subtitle            subtitle
+       :customization-color customization-color
+       :emoji               emoji}])])
 
 (defn- right-side
   [{:keys [label icon-right? icon-color]}]
@@ -107,8 +103,7 @@
         :size                20}]])])
 
 (def view-internal
-  (fn [{:keys [blur? card? icon-right? label description status size theme on-press title subtitle
-               icon emoji-color emoji]}]
+  (fn [{:keys [blur? card? icon-right? label status size theme on-press] :as props}]
     (let [icon-color (if (or blur? (= :dark theme))
                        colors/white
                        colors/neutral-100)]
@@ -119,19 +114,7 @@
           :disabled            (not icon-right?)
           :on-press            on-press
           :style               (style/container size card? blur? theme)}
-         [left-side
-          {:theme       theme
-           :title       title
-           :status      status
-           :size        size
-           :blur?       blur?
-           :description description
-           :icon        icon
-           :subtitle    subtitle
-           :label       label
-           :icon-color  icon-color
-           :emoji-color emoji-color
-           :emoji       emoji}]
+         [left-side props]
          (when (and (= :default status) (not= :small size))
            [right-side
             {:label       label

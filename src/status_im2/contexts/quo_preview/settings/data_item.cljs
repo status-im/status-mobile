@@ -53,19 +53,19 @@
 
 (defn cool-preview
   []
-  (let [state (reagent/atom {:on-press    #(js/alert (str "pressed"))
-                             :blur?       false
-                             :description :account
-                             :icon-right? false
-                             :card?       true
-                             :label       :none
-                             :status      :default
-                             :size        :default
-                             :title       "Label"
-                             :subtitle    "Description"
-                             :icon        :i/placeholder
-                             :emoji       "🎮"
-                             :emoji-color :yellow})
+  (let [state (reagent/atom {:on-press            #(js/alert (str "pressed"))
+                             :blur?               false
+                             :description         :account
+                             :icon-right?         false
+                             :card?               true
+                             :label               :none
+                             :status              :default
+                             :size                :default
+                             :title               "Label"
+                             :subtitle            "Description"
+                             :icon                :i/placeholder
+                             :emoji               "🎮"
+                             :customization-color :yellow})
         blur? (reagent/cursor state [:blur?])]
     (fn []
       [rn/view
