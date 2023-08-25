@@ -85,6 +85,7 @@
     [status-im2.contexts.quo-preview.profile.collectible :as collectible]
     [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
     [status-im2.contexts.quo-preview.profile.select-profile :as select-profile]
+    [status-im2.contexts.quo-preview.profile.showcase-nav :as showcase-nav]
     [status-im2.contexts.quo-preview.reactions.react :as react]
     [status-im2.contexts.quo-preview.record-audio.record-audio :as record-audio]
     [status-im2.contexts.quo-preview.selectors.disclaimer :as disclaimer]
@@ -294,7 +295,9 @@
                        {:name      :collectible
                         :component collectible/preview-collectible}
                        {:name      :select-profile
-                        :component select-profile/preview-select-profile}]
+                        :component select-profile/preview-select-profile}
+                       {:name      :showcase-nav
+                        :component showcase-nav/view}]
    :reactions         [{:name      :react
                         :component react/preview-react}]
    :record-audio      [{:name      :record-audio

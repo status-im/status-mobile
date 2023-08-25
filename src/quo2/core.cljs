@@ -87,6 +87,7 @@
     quo2.components.password.tips.view
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
+    quo2.components.profile.showcase-nav.view
     quo2.components.reactions.reaction
     quo2.components.record-audio.record-audio.view
     quo2.components.record-audio.soundtrack.view
@@ -273,6 +274,7 @@
 ;;;; Profile
 (def profile-card quo2.components.profile.profile-card.view/profile-card)
 (def select-profile quo2.components.profile.select-profile.view/view)
+(def showcase-nav quo2.components.profile.showcase-nav.view/view)
 
 ;;;; Reactions
 (def reaction quo2.components.reactions.reaction/reaction)
