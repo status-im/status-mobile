@@ -114,7 +114,8 @@
     quo2.components.wallet.progress-bar.view
     quo2.components.wallet.summary-info.view
     quo2.components.wallet.token-input.view
-    quo2.components.wallet.wallet-overview.view))
+    quo2.components.wallet.wallet-overview.view
+    quo2.components.wallet.wallet-activity.view))
 
 (def separator quo2.components.common.separator.view/separator)
 
@@ -316,3 +317,4 @@
 (def summary-info quo2.components.wallet.summary-info.view/view)
 (def token-input quo2.components.wallet.token-input.view/view)
 (def wallet-overview quo2.components.wallet.wallet-overview.view/view)
+(def wallet-activity quo2.components.wallet.wallet-activity.view/view)

@@ -101,7 +101,7 @@
       [react/nested-text
        {:style           {:color colors/gray}
         :ellipsize-mode  :middle
-        :number-of-lines 1} (i18n/label :t/to) " "
+        :number-of-lines 1} (i18n/label :t/To) " "
        [{:style {:color colors/black}} (displayed-name contact)]]
       [react/text {:style {:margin-top 6 :color colors/gray}}
        (str fee " " fee-display-symbol " " (string/lower-case (i18n/label :t/network-fee)))])]
@@ -497,9 +497,9 @@
             [react/view
              [network-item]
              [separator]])
-          [contact-item (i18n/label :t/from) from]
+          [contact-item (i18n/label :t/From) from]
           [separator]
-          [contact-item (i18n/label :t/to) contact]
+          [contact-item (i18n/label :t/To) contact]
           (when-not cancel?
             [separator])
           (when-not cancel?

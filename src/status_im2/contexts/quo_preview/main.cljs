@@ -116,6 +116,7 @@
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
     [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
+    [status-im2.contexts.quo-preview.wallet.wallet-activity :as wallet-activity]
     [utils.re-frame :as rf]))
 
 (def screens-categories
@@ -450,7 +451,10 @@
                         :component token-input/preview}
                        {:name      :wallet-overview
                         :options   {:topBar {:visible true}}
-                        :component wallet-overview/preview-wallet-overview}]
+                        :component wallet-overview/preview-wallet-overview}
+                       {:name      :wallet-activity
+                        :options   {:topBar {:visible true}}
+                        :component wallet-activity/preview-wallet-activity}]
    :keycard           [{:name      :keycard-component
                         :options   {:topBar {:visible true}}
                         :component keycard/preview-keycard}]})

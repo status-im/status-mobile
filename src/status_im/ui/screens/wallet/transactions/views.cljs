@@ -245,13 +245,13 @@
   [react/view {:style styles/details-block}
    [details-list-row :t/block block]
    [details-list-row :t/hash hash]
-   [details-list-row :t/from
+   [details-list-row :t/From
     [{:accessibility-label (if from-wallet :sender-name-text :sender-address-text)}
      (or from-wallet from-contact from)]
     (when (or from-wallet from-contact)
       [{:accessibility-label :sender-address-text}
        from])]
-   [details-list-row :t/to
+   [details-list-row :t/To
     [{:accessibility-label (if to-wallet :recipient-name-text :recipient-address-text)}
      (or to-wallet to-contact to)]
     (when (or to-wallet to-contact)
