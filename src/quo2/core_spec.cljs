@@ -45,6 +45,7 @@
     [quo2.components.onboarding.small-option-card.component-spec]
     [quo2.components.password.tips.component-spec]
     [quo2.components.profile.select-profile.component-spec]
+    [quo2.components.profile.showcase-nav.component-spec]
     [quo2.components.record-audio.record-audio.component-spec]
     [quo2.components.record-audio.soundtrack.component-spec]
     [quo2.components.selectors.disclaimer.component-spec]
