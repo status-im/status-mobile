@@ -6,8 +6,8 @@
             [quo2.components.common.not-implemented.view :as not-implemented]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
-            [quo2.components.list-items.preview-list :as preview-list]
-            [quo2.foundations.resources :as resources]
+            [quo2.components.list-items.preview-list.view :as preview-list]
+            [quo2.foundations.resources :as quo.resources]
             [quo2.components.avatars.account-avatar.view :as account-avatar]
             [utils.i18n :as i18n]))
 
@@ -32,7 +32,7 @@
                    :type                :default}]
         :network [rn/image
                   {:accessibility-label :description-image
-                   :source              (resources/tokens :eth)
+                   :source              (quo.resources/tokens :eth)
                    :style               style/image}]
         nil)])
    [text/text
@@ -82,13 +82,14 @@
        :emoji               emoji}])])
 
 (defn- right-side
-  [{:keys [label icon-right? icon-color]}]
+  [{:keys [label icon-right? icon-color communities-list]}]
   [rn/view {:style style/right-container}
    (case label
-     :preview [preview-list/preview-list
-               {:type      :user
-                :size      24
-                :list-size 3}]
+     :preview [preview-list/view
+               {:type   :communities
+                :number 3
+                :size   :size/s-24}
+               communities-list]
      :graph   [text/text "graph"]
      :none    nil
      nil)
@@ -103,7 +104,7 @@
         :size                20}]])])
 
 (def view-internal
-  (fn [{:keys [blur? card? icon-right? label status size theme on-press] :as props}]
+  (fn [{:keys [blur? card? icon-right? label status size theme on-press communities-list] :as props}]
     (let [icon-color (if (or blur? (= :dark theme))
                        colors/neutral-40
                        colors/neutral-50)]
@@ -117,8 +118,9 @@
          [left-side props]
          (when (and (= :default status) (not= :small size))
            [right-side
-            {:label       label
-             :icon-right? icon-right?
-             :icon-color  icon-color}])]))))
+            {:label            label
+             :icon-right?      icon-right?
+             :icon-color       icon-color
+             :communities-list communities-list}])]))))
 
 (def view (quo.theme/with-theme view-internal))

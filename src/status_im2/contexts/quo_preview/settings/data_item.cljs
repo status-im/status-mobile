@@ -4,6 +4,7 @@
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]
+            [status-im2.common.resources :as resources]
             [react-native.blur :as blur]))
 
 (def descriptor
@@ -51,6 +52,11 @@
               {:key   :small
                :value "Small"}]}])
 
+(def communities-list
+  [{:source (resources/get-mock-image :coinbase)}
+   {:source (resources/get-mock-image :decentraland)}
+   {:source (resources/get-mock-image :rarible)}])
+
 (defn cool-preview
   []
   (let [state (reagent/atom {:on-press            #(js/alert (str "pressed"))
@@ -65,7 +71,8 @@
                              :subtitle            "Description"
                              :icon                :i/placeholder
                              :emoji               "🎮"
-                             :customization-color :yellow})
+                             :customization-color :yellow
+                             :communities-list    communities-list})
         blur? (reagent/cursor state [:blur?])]
     (fn []
       [rn/view
