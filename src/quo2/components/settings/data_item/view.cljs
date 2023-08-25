@@ -105,8 +105,8 @@
 (def view-internal
   (fn [{:keys [blur? card? icon-right? label status size theme on-press] :as props}]
     (let [icon-color (if (or blur? (= :dark theme))
-                       colors/white
-                       colors/neutral-100)]
+                       colors/neutral-40
+                       colors/neutral-50)]
       (if (= :graph label)
         [not-implemented/view {:blur? blur?}]
         [rn/pressable

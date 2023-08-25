@@ -29,7 +29,8 @@
    :margin-vertical  (if (= size :default) 4 3)})
 
 (def subtitle-container
-  {:flex-direction :row})
+  {:flex-direction :row
+   :margin-bottom  1})
 
 (def right-container
   {:flex-direction :row
