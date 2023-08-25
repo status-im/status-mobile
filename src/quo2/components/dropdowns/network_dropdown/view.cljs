@@ -2,7 +2,7 @@
   (:require [quo2.theme :as quo.theme]
             [quo2.components.dropdowns.network-dropdown.style :as style]
             [react-native.core :as rn]
-            [quo2.components.list-items.preview-list :as preview-list]
+            [quo2.components.list-items.preview-list.view :as preview-list]
             [reagent.core :as reagent]))
 
 (defn- internal-view
@@ -17,10 +17,10 @@
         :on-press            on-press
         :on-press-in         (fn [] (reset! pressed? true))
         :on-press-out        (fn [] (reset! pressed? false))}
-       [preview-list/preview-list
+       [preview-list/view
         {:type      :network
          :list-size (count networks)
-         :size      20}
+         :size      :size/s-20}
         networks]])))
 
 (def view (quo.theme/with-theme internal-view))

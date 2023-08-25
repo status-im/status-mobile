@@ -34,7 +34,7 @@
                    :align-items    :center
                    :flex           1}}
           [rn/image
-           {:source (resources/tokens token)
+           {:source (resources/get-token token)
             :style  {:width  32
                      :height 32}}]
           [rn/view {:style {:margin-left 8}}

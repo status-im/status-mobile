@@ -64,7 +64,7 @@
     quo2.components.list-items.community.view
     quo2.components.list-items.dapp.view
     quo2.components.list-items.menu-item
-    quo2.components.list-items.preview-list
+    quo2.components.list-items.preview-list.view
     quo2.components.list-items.token-value.view
     quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
@@ -239,7 +239,7 @@
 (def channel-list-item quo2.components.list-items.channel/list-item)
 (def dapp quo2.components.list-items.dapp.view/view)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
-(def preview-list quo2.components.list-items.preview-list/preview-list)
+(def preview-list quo2.components.list-items.preview-list.view/view)
 (def user-list quo2.components.list-items.user-list/user-list)
 (def community-list-item quo2.components.list-items.community.view/view)
 (def token-value quo2.components.list-items.token-value.view/view)

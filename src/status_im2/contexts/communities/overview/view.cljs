@@ -23,9 +23,9 @@
   (when (seq user-list)
     [rn/view style/preview-user
      [quo/preview-list
-      {:type      :user
-       :list-size (count user-list)
-       :size      24}
+      {:type   :user
+       :number (count user-list)
+       :size   :size/s-24}
       user-list]
      [quo/text
       {:accessibility-label :communities-screen-title
