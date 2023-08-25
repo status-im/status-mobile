@@ -325,7 +325,6 @@
                         :options   {:topBar {:visible true}}
                         :component category/preview}
                        {:name      :data-item
-                        :options   {:topBar {:visible true}}
                         :component data-item/preview-data-item}]
    :share             [{:name      :qr-code
                         :component qr-code/preview-qr-code}
