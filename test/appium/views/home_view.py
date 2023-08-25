@@ -36,7 +36,7 @@ class ChatElement(SilentButton):
         if self.community_channel:
             super().__init__(
                 driver,
-                xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
+                xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/.." % username_part)
         elif community:
             super().__init__(
                 driver,

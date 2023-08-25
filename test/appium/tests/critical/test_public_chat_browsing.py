@@ -1146,8 +1146,16 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                 self.home_1.contact_details_row(username=self.username_2).click()
                 self.chat_1.profile_send_message_button.click()
             else:
-                self.home_1.add_contact(self.public_key_2)
-                self.home_2.handle_contact_request(self.username_1)
+                self.home_1.navigate_back_to_home_view()
+                self.chat_1.profile_button.click()
+                self.profile_1.contacts_button.wait_and_click()
+                self.profile_1.blocked_users_button.wait_and_click()
+                self.profile_1.element_by_text(self.username_2).click()
+                self.chat_1.unblock_contact_button.click()
+                self.chat_1.close_button.click()
+                self.chat_1.navigate_back_to_home_view()
+                self.home_1.chats_tab.click()
+                self.home_1.get_chat(self.username_2).click()
             self.chat_1.send_message("just a message")
 
         self.home_2.get_chat(self.username_1).click()
