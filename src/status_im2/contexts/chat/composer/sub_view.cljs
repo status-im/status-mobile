@@ -51,9 +51,7 @@
      (when @messages.list/show-floating-scroll-down-button
        [quo/floating-shell-button
         {:scroll-to-bottom {:on-press messages.list/scroll-to-bottom}}
-        {:position :absolute
-         :right    0
-         :left     0}])]))
+        style/scroll-to-bottom-button])]))
 
 (defn shell-button
   [state animations subs]
