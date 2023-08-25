@@ -3,17 +3,17 @@
 
 (def sizes
   {:big    {:dimensions              80
-            :status-indicator        20
+            :status-indicator        12
             :status-indicator-border 4
             :font-size               :heading-1
             :ring-width              4}
    :medium {:dimensions              48
-            :status-indicator        12
+            :status-indicator        8
             :status-indicator-border 2
             :font-size               :heading-2
             :ring-width              2}
    :small  {:dimensions              32
-            :status-indicator        12
+            :status-indicator        8
             :status-indicator-border 2
             :font-size               :paragraph-2
             :ring-width              2}
