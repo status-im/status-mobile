@@ -12,7 +12,8 @@
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [utils.string :as utils.string]))
+            [utils.string :as utils.string]
+            [clojure.set :as set]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -239,23 +240,33 @@
                                 :text         (i18n/label :t/update-to-see-sticker {"locale" "en"})})))
 
 (rf/defn send-edited-message
-  [{:keys [db] :as cofx} text {:keys [message-id quoted-message chat-id]}]
-  (rf/merge
-   cofx
-   {:json-rpc/call [{:method      "wakuext_editMessage"
-                     :params      [{:id           message-id
-                                    :text         text
-                                    :content-type (if (message-content/emoji-only-content?
-                                                       {:text text :response-to quoted-message})
-                                                    constants/content-type-emoji
-                                                    constants/content-type-text)}]
-                     :js-response true
-                     :on-error    #(log/error "failed to edit message " %)
-                     :on-success  (fn [result]
-                                    (re-frame/dispatch [:sanitize-messages-and-process-response
-                                                        result]))}]}
-   (link-preview/reset-unfurled)
-   (cancel-message-edit)))
+  [{:keys [db]
+    :as   cofx} text {:keys [message-id quoted-message chat-id]}]
+  (let [rename-data-uri-fn #(update %
+                                    :thumbnail
+                                    (fn [thumbnail]
+                                      (set/rename-keys thumbnail {:data-uri :dataUri})))]
+    (rf/merge
+     cofx
+     {:json-rpc/call [{:method      "wakuext_editMessage"
+                       :params      [{:id            message-id
+                                      :text          text
+                                      :content-type  (if (message-content/emoji-only-content?
+                                                          {:text        text
+                                                           :response-to quoted-message})
+                                                       constants/content-type-emoji
+                                                       constants/content-type-text)
+                                      :link-previews (map #(-> %
+                                                               (select-keys [:url :title :description :thumbnail])
+                                                               rename-data-uri-fn)
+                                                          (get-in db [:chat/link-previews :unfurled]))}]
+                       :js-response true
+                       :on-error    #(log/error "failed to edit message " %)
+                       :on-success  (fn [result]
+                                      (re-frame/dispatch [:sanitize-messages-and-process-response
+                                                          result]))}]}
+     (link-preview/reset-unfurled)
+     (cancel-message-edit))))
 
 (rf/defn send-current-message
   "Sends message from current chat input"
