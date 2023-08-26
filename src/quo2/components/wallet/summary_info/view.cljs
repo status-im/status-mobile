@@ -15,7 +15,7 @@
    [rn/image
     {:style  {:width  14
               :height 14}
-     :source (resources/networks network)}]
+     :source (resources/get-network network)}]
    [text/text
     {:size   :paragraph-2
      :weight :medium

@@ -1,75 +1,127 @@
 (ns status-im2.contexts.quo-preview.list-items.preview-lists
-  (:require [quo2.components.list-items.preview-list :as quo2]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
+  (:require [quo2.core :as quo]
+            [quo2.foundations.resources :as quo.resources]
             [reagent.core :as reagent]
-            [utils.i18n :as i18n]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Size:"
-    :key     :size
-    :type    :select
-    :options [{:key   32
-               :value "32"}
-              {:key   24
-               :value "24"}
-              {:key   16
-               :value "16"}]}
-   {:label   "Type:"
-    :key     :type
+  [{:key     :type
     :type    :select
     :options [{:key   :user
                :value "User"}
-              {:key   :photo
-               :value "Photo"}]}
-   {:label   "List Size"
-    :key     :list-size
-    :default 10
-    :type    :text}])
+              {:key   :communities
+               :value "Communities"}
+              {:key   :collectibles
+               :value "Collectibles"}
+              {:key   :tokens
+               :value "Tokens"}
+              {:key   :dapps
+               :value "dApps"}
+              {:key   :accounts
+               :value "Accounts"}
+              {:key   :network
+               :value "Network"}]}
+   {:key     :size
+    :type    :select
+    :options [{:key   :size/s-32
+               :value "32"}
+              {:key   :size/s-24
+               :value "24"}
+              {:key   :size/s-20
+               :value "20"}
+              {:key   :size/s-16
+               :value "16"}
+              {:key   :size/s-14
+               :value "14"}]}
+   {:key  :number
+    :type :text}
+   {:key  :blur?
+    :type :boolean}])
 
-;; Mocked list items
 (def user-list
-  [{:full-name "ABC DEF"}
-   {:full-name "GHI JKL"}
-   {:full-name "MNO PQR"}
-   {:full-name "STU VWX"}])
+  [{:full-name           "A Y"
+    :customization-color :blue}
+   {:full-name           "B Z"
+    :profile-picture     (resources/get-mock-image :user-picture-male4)
+    :customization-color :army}
+   {:full-name           "X R"
+    :customization-color :orange}
+   {:full-name           "T R"
+    :profile-picture     (resources/get-mock-image :user-picture-male5)
+    :customization-color :army}])
 
-(def photos-list
-  [{:source (resources/get-mock-image :photo1)}
+(def accounts-list
+  [{:customization-color :purple
+    :emoji               "🍑"
+    :type                :default}
+   {:customization-color :army
+    :emoji               "🍓"
+    :type                :default}
+   {:customization-color :orange
+    :emoji               "🍑"
+    :type                :default}
+   {:customization-color :blue
+    :emoji               "🍓"
+    :type                :default}])
+
+(def tokens-list
+  [{:source (quo.resources/get-token :snt)}
+   {:source (quo.resources/get-token :eth)}
+   {:source (quo.resources/get-token :knc)}
+   {:source (quo.resources/get-token :mana)}
+   {:source (quo.resources/get-token :rare)}])
+
+(def communities-list
+  [{:source (resources/get-mock-image :coinbase)}
+   {:source (resources/get-mock-image :decentraland)}
+   {:source (resources/get-mock-image :rarible)}
+   {:source (resources/get-mock-image :photo1)}
+   {:source (resources/get-mock-image :photo2)}
+   {:source (resources/get-mock-image :photo3)}])
+
+(def collectibles-list
+  [{:source (resources/get-mock-image :collectible)}
    {:source (resources/get-mock-image :photo2)}
    {:source (resources/get-mock-image :photo3)}
    {:source (resources/get-mock-image :photo1)}
    {:source (resources/get-mock-image :photo2)}
    {:source (resources/get-mock-image :photo3)}])
 
-(defn cool-preview
-  []
-  (let [state (reagent/atom {:type               :user
-                             :size               32
-                             :list-size          10
-                             :more-than-99-label (i18n/label :counter-99-plus)})
-        type  (reagent/cursor state [:type])]
-    (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
-        [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
-         [quo2/preview-list @state
-          (case @type
-            :user  user-list
-            :photo photos-list)]]]])))
+(def dapps-list
+  [{:source (quo.resources/get-dapp :coingecko)}
+   {:source (quo.resources/get-dapp :aave)}
+   {:source (quo.resources/get-dapp :1inch)}
+   {:source (quo.resources/get-dapp :zapper)}
+   {:source (quo.resources/get-dapp :uniswap)}])
 
-(defn preview-preview-lists
+(def networks-list
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}
+   {:source (quo.resources/get-network :zksync)}
+   {:source (quo.resources/get-network :polygon)}])
+
+(defn view
   []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+  (let [state (reagent/atom {:type               :accounts
+                             :size               :size/s-32
+                             :number             4
+                             :more-than-99-label "99+"})
+        type  (reagent/cursor state [:type])
+        blur? (reagent/cursor state [:blur?])]
+    (fn []
+      [preview/preview-container
+       {:state                 state
+        :descriptor            descriptor
+        :blur?                 true
+        :show-blur-background? @blur?}
+       [quo/preview-list @state
+        (case @type
+          :user         user-list
+          :communities  communities-list
+          :accounts     accounts-list
+          :tokens       tokens-list
+          :collectibles collectibles-list
+          :dapps        dapps-list
+          :network      networks-list)]])))

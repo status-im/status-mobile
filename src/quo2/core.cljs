@@ -33,7 +33,7 @@
     quo2.components.counter.counter.view
     quo2.components.counter.step.view
     quo2.components.dividers.date
-    quo2.components.dividers.divider-label
+    quo2.components.dividers.divider-label.view
     quo2.components.dividers.new-messages
     quo2.components.dividers.strength-divider.view
     quo2.components.drawers.action-drawers.view
@@ -41,6 +41,7 @@
     quo2.components.drawers.drawer-buttons.view
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
+    quo2.components.dropdowns.network-dropdown.view
     quo2.components.empty-state.empty-state.view
     quo2.components.gradient.gradient-cover.view
     quo2.components.graph.wallet-graph.view
@@ -61,8 +62,9 @@
     quo2.components.list-items.account-list-card.view
     quo2.components.list-items.channel
     quo2.components.list-items.community.view
+    quo2.components.list-items.dapp.view
     quo2.components.list-items.menu-item
-    quo2.components.list-items.preview-list
+    quo2.components.list-items.preview-list.view
     quo2.components.list-items.token-value.view
     quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
@@ -85,6 +87,7 @@
     quo2.components.password.tips.view
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
+    quo2.components.profile.showcase-nav.view
     quo2.components.reactions.reaction
     quo2.components.record-audio.record-audio.view
     quo2.components.record-audio.soundtrack.view
@@ -109,11 +112,12 @@
     quo2.components.tags.tags
     quo2.components.tags.token-tag
     quo2.components.text-combinations.title.view
-    quo2.components.wallet.account-overview.view
     quo2.components.wallet.account-card.view
+    quo2.components.wallet.account-overview.view
     quo2.components.wallet.keypair.view
     quo2.components.wallet.network-amount.view
     quo2.components.wallet.network-bridge.view
+    quo2.components.wallet.network-link.view
     quo2.components.wallet.progress-bar.view
     quo2.components.wallet.summary-info.view
     quo2.components.wallet.token-input.view
@@ -179,7 +183,7 @@
 (def step quo2.components.counter.step.view/view)
 
 ;;;; Dividers
-(def divider-label quo2.components.dividers.divider-label/divider-label)
+(def divider-label quo2.components.dividers.divider-label.view/view)
 (def new-messages quo2.components.dividers.new-messages/new-messages)
 (def divider-date quo2.components.dividers.date/date)
 (def strength-divider quo2.components.dividers.strength-divider.view/view)
@@ -192,6 +196,7 @@
 
 ;;;; Dropdowns
 (def dropdown quo2.components.dropdowns.dropdown/dropdown)
+(def network-dropdown quo2.components.dropdowns.network-dropdown.view/view)
 
 ;;;; Empty State
 (def empty-state quo2.components.empty-state.empty-state.view/empty-state)
@@ -232,8 +237,9 @@
 ;;;; List items
 (def account-list-card quo2.components.list-items.account-list-card.view/view)
 (def channel-list-item quo2.components.list-items.channel/list-item)
+(def dapp quo2.components.list-items.dapp.view/view)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
-(def preview-list quo2.components.list-items.preview-list/preview-list)
+(def preview-list quo2.components.list-items.preview-list.view/view)
 (def user-list quo2.components.list-items.user-list/user-list)
 (def community-list-item quo2.components.list-items.community.view/view)
 (def token-value quo2.components.list-items.token-value.view/view)
@@ -268,6 +274,7 @@
 ;;;; Profile
 (def profile-card quo2.components.profile.profile-card.view/profile-card)
 (def select-profile quo2.components.profile.select-profile.view/view)
+(def showcase-nav quo2.components.profile.showcase-nav.view/view)
 
 ;;;; Reactions
 (def reaction quo2.components.reactions.reaction/reaction)
@@ -323,5 +330,6 @@
 (def network-bridge quo2.components.wallet.network-bridge.view/view)
 (def progress-bar quo2.components.wallet.progress-bar.view/view)
 (def summary-info quo2.components.wallet.summary-info.view/view)
+(def network-link quo2.components.wallet.network-link.view/view)
 (def token-input quo2.components.wallet.token-input.view/view)
 (def wallet-overview quo2.components.wallet.wallet-overview.view/view)

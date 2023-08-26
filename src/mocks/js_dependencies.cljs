@@ -10,14 +10,14 @@
 ;; (-> reanimated/slide-out-up-animation (.damping 20) .springify (.stiffness 300))
 (js/eval
  "
-var globalThis
-if (typeof window === \"undefined\") {
-  globalThis = global
-} else {
-  globalThis = window
-}
-globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return () => globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__}})
-")
+ var globalThis
+ if (typeof window === \"undefined\") {
+   globalThis = global
+ } else {
+   globalThis = window
+ }
+ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return () => globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__}})
+ ")
 
 (def action-button #js {:default #js {:Item #js {}}})
 (def config #js {:default #js {}})
@@ -139,15 +139,17 @@ globalThis.__STATUS_MOBILE_JS_IDENTITY_PROXY__ = new Proxy({}, {get() { return (
 (def react-native-share #js {:default {}})
 (def react-native-svg
   #js
-   {:ClipPath #js {:render identity}
-    :Circle   #js {:render identity}
-    :Defs     #js {:render identity}
-    :G        #js {:render identity}
-    :Path     #js {:render identity}
-    :Rect     #js {:render identity}
-    :SvgUri   #js {:render identity}
-    :SvgXml   #js {:render identity}
-    :default  #js {:render identity}})
+   {:ClipPath       #js {:render identity}
+    :Circle         #js {:render identity}
+    :Defs           #js {:render identity}
+    :G              #js {:render identity}
+    :Path           #js {:render identity}
+    :Rect           #js {:render identity}
+    :SvgUri         #js {:render identity}
+    :SvgXml         #js {:render identity}
+    :LinearGradient #js {:render identity}
+    :Stop           #js {:render identity}
+    :default        #js {:render identity}})
 (def react-native-webview #js {:default {}})
 (def react-native-audio-toolkit
   #js

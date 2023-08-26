@@ -252,3 +252,8 @@
    :margin-top       margin-top})
 
 (def loading-card-content-container {:margin-top 36})
+
+(def notification-container
+  {:width       20
+   :display     :flex
+   :align-items :center})

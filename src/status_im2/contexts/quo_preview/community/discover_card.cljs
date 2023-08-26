@@ -1,42 +1,17 @@
 (ns status-im2.contexts.quo-preview.community.discover-card
-  (:require [quo.previews.preview :as preview]
-            [quo.react-native :as rn]
-            [quo2.components.community.banner.view :as discover-card]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
-            [utils.i18n :as i18n]))
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Joined:"
-    :key   :joined?
-    :type  :boolean}])
+  [{:key :title :type :text}
+   {:key :description :type :text}])
 
-(defn cool-preview
+(defn view
   []
-  (let [state (reagent/atom {:joined? :false})]
+  (let [state (reagent/atom {:title       "Discover"
+                             :description "Your favourite communities"
+                             :joined?     false})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [rn/view
-         {:flex    1
-          :padding 16}
-         [preview/customizer state descriptor]]
-        [rn/view
-         {:padding-vertical 60
-          :justify-content  :center}
-         [discover-card/view
-          {:joined?     (:joined? @state)
-           :title       (i18n/label :t/discover)
-           :description (i18n/label :t/favorite-communities)}]]]])))
-
-(defn preview-discoverd-card
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/neutral-5
-                                           colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/discover-card @state]])))

@@ -3,4 +3,4 @@
 
 (defn contacts-section-header
   [{:keys [title]}]
-  [quo/divider-label {:label title}])
+  [quo/divider-label title])

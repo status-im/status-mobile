@@ -27,3 +27,4 @@ The team members for the initial wallet team are:
 - @ulisesmac
 - @erikseppanen
 - @mmilad75
+- @tumanov-alex

@@ -47,7 +47,7 @@
 
 (defn- user-account
   [{:keys [state name balance percentage-value loading? amount customization-color type emoji metrics?
-           theme]}]
+           theme on-press]}]
   (let [watch-only?        (= :watch-only type)
         empty?             (= :empty type)
         account-amount     (if (= :empty state) "€0.00" amount)
@@ -59,44 +59,45 @@
         :type                type
         :theme               theme
         :metrics?            metrics?}]
-      [:<>
-       [rn/view {:style (style/card customization-color watch-only? metrics? theme)}
-        [rn/view {:style style/profile-container}
-         [rn/view {:style {:padding-bottom 2 :margin-right 2}}
-          [text/text {:style style/emoji} emoji]]
-         [rn/view {:style style/watch-only-container}
+      [rn/pressable
+       {:style    (style/card customization-color watch-only? metrics? theme)
+        :on-press on-press}
+       [rn/view {:style style/profile-container}
+        [rn/view {:style {:padding-bottom 2 :margin-right 2}}
+         [text/text {:style style/emoji} emoji]]
+        [rn/view {:style style/watch-only-container}
+         [text/text
+          {:size   :paragraph-2
+           :weight :medium
+           :style  (style/account-name watch-only? theme)}
+          account-name]
+         (when watch-only? [icon/icon :reveal {:color colors/neutral-50 :size 12}])]]
+       [text/text
+        {:size   :heading-2
+         :weight :semi-bold
+         :style  (style/account-value watch-only? theme)}
+        balance]
+       (when metrics?
+         [rn/view {:style style/metrics-container}
           [text/text
-           {:size   :paragraph-2
-            :weight :medium
-            :style  (style/account-name watch-only? theme)}
-           account-name]
-          (when watch-only? [icon/icon :reveal {:color colors/neutral-50 :size 12}])]]
-        [text/text
-         {:size   :heading-2
-          :weight :semi-bold
-          :style  (style/account-value watch-only? theme)}
-         balance]
-        (when metrics?
-          [rn/view {:style style/metrics-container}
-           [text/text
-            {:weight              :semi-bold
-             :size                :paragraph-2
-             :accessibility-label :metrics
-             :style               (style/metrics watch-only? theme)}
-            account-percentage]
-           (when (not empty?)
-             [:<>
-              [rn/view (style/separator watch-only? theme)]
-              [text/text
-               {:weight :semi-bold
-                :size   :paragraph-2
-                :style  (style/metrics watch-only? theme)} account-amount]
-              [rn/view {:style {:margin-left 4}}
-               [icon/icon :positive
-                {:color (if (and watch-only? (not (colors/dark?)))
-                          colors/neutral-50
-                          colors/white-opa-70)
-                 :size  16}]]])])]])))
+           {:weight              :semi-bold
+            :size                :paragraph-2
+            :accessibility-label :metrics
+            :style               (style/metrics watch-only? theme)}
+           account-percentage]
+          (when (not empty?)
+            [:<>
+             [rn/view (style/separator watch-only? theme)]
+             [text/text
+              {:weight :semi-bold
+               :size   :paragraph-2
+               :style  (style/metrics watch-only? theme)} account-amount]
+             [rn/view {:style {:margin-left 4}}
+              [icon/icon :positive
+               {:color (colors/theme-colors (if watch-only? colors/neutral-50 colors/white-opa-70)
+                                            colors/white-opa-70
+                                            theme)
+                :size  16}]]])])])))
 
 (defn- add-account-view
   [{:keys [on-press customization-color theme metrics?]}]

@@ -33,14 +33,18 @@ class ChatElement(SilentButton):
         self.username = username_part
         self.community = community
         self.community_channel = community_channel
-        if self.community_channel is True:
+        if self.community_channel:
             super().__init__(
                 driver,
-                xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
-        else:
+                xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/.." % username_part)
+        elif community:
             super().__init__(
                 driver,
                 xpath="//*[@content-desc='chat-name-text'][starts-with(@text,'%s')]/.." % username_part)
+        else:
+            super().__init__(
+                driver,
+                xpath="//*[@content-desc='author-primary-name'][starts-with(@text,'%s')]/.." % username_part)
 
     def navigate(self):
         if self.community:
@@ -145,13 +149,10 @@ class ActivityCenterElement(SilentButton):
         return Button(self.driver, xpath=self.locator + '//*[@content-desc="activity-message-body"]')
 
     def handle_cr(self, element_accessibility: str):
-        try:
-            accept_element = Button(self.driver,
-                                    xpath=self.locator + '/*[@content-desc="%s"]' % element_accessibility).find_element()
-        except NoSuchElementException:
-            return ''
-        if accept_element:
-            accept_element.click()
+        Button(
+            self.driver,
+            xpath=self.locator + '/*[@content-desc="%s"]' % element_accessibility
+        ).wait_for_rendering_ended_and_click()
 
     def accept_contact_request(self):
         self.handle_cr("accept-contact-request")
@@ -379,7 +380,7 @@ class HomeView(BaseView):
             chat_element.cancel_contact_request()
         else:
             self.driver.fail("Illegal option for CR!")
-        self.close_activity_centre.click()
+        self.close_activity_centre.wait_for_rendering_ended_and_click()
         self.chats_tab.wait_for_visibility_of_element()
 
     def get_username_below_start_new_chat_button(self, username_part):
@@ -523,7 +524,7 @@ class HomeView(BaseView):
 
     def mute_chat_long_press(self, chat_name, mute_period="mute-till-unmute", community=False, community_channel=False):
         self.driver.info("Muting chat with %s" % chat_name)
-        self.get_chat(username=chat_name, community_channel=community_channel).long_press_element()
+        self.get_chat(username=chat_name, community=community, community_channel=community_channel).long_press_element()
         if community:
             self.mute_community_button.click()
         elif community_channel:

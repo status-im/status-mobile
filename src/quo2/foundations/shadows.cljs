@@ -36,12 +36,12 @@
                                   :shadow-radius  16}
                                2 {:shadow-color   (colors/alpha colors/neutral-100 0.08)
                                   :shadow-offset  {:width 0 :height 4}
-                                  :elevation      2
+                                  :elevation      6
                                   :shadow-opacity 1
                                   :shadow-radius  16}
                                3 {:shadow-color   (colors/alpha colors/neutral-100 0.12)
                                   :shadow-offset  {:width 0 :height 12}
-                                  :elevation      5
+                                  :elevation      8
                                   :shadow-opacity 1
                                   :shadow-radius  16}
                                4 {:shadow-color   (colors/alpha colors/neutral-100 0.16)

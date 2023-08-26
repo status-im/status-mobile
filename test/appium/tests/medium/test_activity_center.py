@@ -66,7 +66,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
                     "Unread indicator on contacts tab or on activity center is shown after declining contact request!")
 
         self.device_1.just_fyi("Check that it is still pending contact after declining on sender device")
-        self.home_2.jump_to_messages_home()
+        self.home_2.navigate_back_to_home_view()
         self.home_2.open_activity_center_button.click()
         self.home_2.activity_unread_filter_button.click()
         if not self.home_2.element_by_text_part(
@@ -80,7 +80,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
     @marks.testrail_id(702851)
     def test_activity_center_contact_request_accept_swipe_mark_all_as_read(self):
         self.device_2.just_fyi('Creating a new user on Device2')
-        self.home_2.jump_to_messages_home()
+        self.home_2.navigate_back_to_home_view()
         self.home_2.profile_button.click()
         self.profile_2.logout()
         new_username = "new user"
@@ -197,12 +197,14 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702947)
     def test_activity_center_reply_read_unread_delete_filter_swipe(self):
         message_to_reply, reply_to_message_from_sender = 'something to reply to', 'this is a reply'
-        self.home_1.jump_to_communities_home()
+        self.home_1.navigate_back_to_home_view()
+        self.home_1.communities_tab.click()
         self.home_1.get_chat(self.community_name, community=True).click()
         self.community_1.get_channel(self.channel_name).click()
         self.channel_1.send_message(message_to_reply)
 
-        self.home_1.jump_to_communities_home()
+        self.home_1.navigate_back_to_home_view()
+        self.home_1.communities_tab.click()
         self.channel_2.chat_element_by_text(message_to_reply).wait_for_visibility_of_element(120)
         self.channel_2.quote_message(message_to_reply)
         self.channel_2.send_message(reply_to_message_from_sender)
@@ -224,6 +226,8 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         if not reply_element.unread_indicator.is_element_displayed():
             self.errors.append("No unread dot is shown on activity center element!")
 
+        self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
+
         self.home_1.just_fyi("Swiping to 'Replies' on activity center and check unread there")
         self.home_1.mention_activity_tab_button.click()
         if reply_element.is_element_displayed(2):
@@ -234,6 +238,8 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         if not reply_element.is_element_displayed():
             self.errors.append("Filter on replies tab is not working in Activity centre!")
 
+        self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
+
         self.home_1.just_fyi("Mark it as read and check filter")
         reply_element.swipe_right_on_element()
         self.home_1.activity_notification_swipe_button.click()
@@ -242,6 +248,8 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.home_1.activity_unread_filter_button.click()
         if not reply_element.is_element_displayed(2):
             self.errors.append("Read filter is not displayed read message!")
+
+        self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
 
         self.home_1.just_fyi("Mark it as unread and check filter via right swipe")
         reply_element.swipe_right_on_element()
@@ -253,9 +261,12 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         reply_element.click()
         if not self.channel_1.chat_element_by_text(reply_to_message_from_sender).is_element_displayed():
             self.errors.append("Was not redirected to chat after tapping on reply!")
-        self.home_1.jump_to_communities_home()
+        self.home_1.navigate_back_to_home_view()
+        self.home_1.communities_tab.click()
         if self.home_1.notifications_unread_badge.is_element_displayed():
             self.errors.append("Notification was not marked as read after opening it in community channel!")
+
+        self.home_2.chats_tab.is_element_displayed()  # just saving device 2 session from expiration
 
         self.home_1.just_fyi("Delete it from unread via left swipe")
         self.home_1.open_activity_center_button.click()
@@ -275,8 +286,12 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702957)
     def test_activity_center_mentions(self):
         if not self.channel_2.chat_message_input.is_element_displayed():
-            self.channel_2.jump_to_card_by_text('# %s' % self.channel_name)
-        self.home_1.jump_to_communities_home()
+            self.channel_2.navigate_back_to_home_view()
+            self.home_2.communities_tab.click()
+            self.home_2.get_chat(self.community_name, community=True).click()
+            self.home_2.get_chat(self.channel_name, community_channel=True).click()
+        self.home_1.navigate_back_to_home_view()
+        self.home_1.communities_tab.click()
 
         self.device_2.just_fyi("Invited member sends a message with a mention")
         self.channel_2.mention_user(self.username_1)
@@ -311,10 +326,12 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
     @marks.testrail_id(702958)
     def test_activity_center_admin_notification_accept_swipe(self):
         self.home_2.just_fyi("Clearing history")
-        self.home_2.jump_to_messages_home()
+        self.home_2.navigate_back_to_home_view()
+        self.home_2.chats_tab.click()
         self.home_2.clear_chat_long_press(self.username_1)
 
-        [home.jump_to_communities_home() for home in (self.home_1, self.home_2)]
+        [home.navigate_back_to_home_view() for home in (self.home_1, self.home_2)]
+
         self.home_1.just_fyi("Open community to message")
         self.home_1.communities_tab.click()
         community_name = 'closed community'
@@ -324,11 +341,14 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.community_1.share_community(community_name, self.username_2)
 
         self.home_2.just_fyi("Request access to community")
-        self.home_2.jump_to_messages_home()
+        self.home_2.navigate_back_to_home_view()
+        self.home_2.chats_tab.click()
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
         self.chat_2.chat_element_by_text(community_name).view_community_button.wait_and_click(sec=60)
         self.community_2.join_community()
-        [home.jump_to_communities_home() for home in (self.home_1, self.home_2)]
+        for home in self.home_1, self.home_2:
+            home.navigate_back_to_home_view()
+            home.communities_tab.click()
 
         self.home_1.just_fyi("Checking unread indicators")
         try:

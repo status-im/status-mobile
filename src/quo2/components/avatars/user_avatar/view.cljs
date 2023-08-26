@@ -99,6 +99,10 @@
                        :ring?            ring?})}
                (:uri profile-picture)
                profile-picture
+
+               (number? profile-picture)
+               profile-picture
+
                :else {:uri profile-picture})}])]))
 
 (def user-avatar (quo2.theme/with-theme user-avatar-internal))

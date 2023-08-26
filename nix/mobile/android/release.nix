@@ -30,6 +30,9 @@ let
   # Pass secretsFile for POKT_TOKEN to jsbundle build
   builtJsBundle = jsbundle { inherit secretsFile; };
 
+  # Map ANDROID_ABI_INCLUDE to status-go targets
+  androidAbiIncludeSplit = lib.splitString ";" androidAbiInclude;
+
 
   envFileName =
     if androidAbiInclude == "x86"                  then ".env.e2e"
@@ -77,19 +80,24 @@ in stdenv.mkDerivation rec {
   ANDROID_ABI_SPLIT = androidAbiSplit;
   ANDROID_ABI_INCLUDE = androidAbiInclude;
 
-  # Android SDK/NDK for use by Gradle
-  ANDROID_SDK_ROOT = "${androidPkgs.sdk}";
-  ANDROID_NDK_ROOT = "${androidPkgs.ndk}";
-
   # Fix for ERR_OSSL_EVP_UNSUPPORTED error.
   NODE_OPTIONS = "--openssl-legacy-provider";
 
-  # Used by the Android Gradle build script in android/build.gradle
-  STATUS_GO_ANDROID_LIBDIR = status-go;
-
   phases = [
-    "unpackPhase" "secretsPhase" "buildPhase" "checkPhase" "installPhase"
+    "shellHook" "unpackPhase" "secretsPhase" "buildPhase" "checkPhase" "installPhase"
   ];
+
+  # We use shellHook as a single place to setup env vars for both build derivation and shell
+  shellHook = ''
+    # Used by the Android Gradle build script in android/build.gradle
+    export STATUS_GO_ANDROID_LIBDIR=${ status-go { abis = androidAbiIncludeSplit; } }
+
+    # Android SDK/NDK for use by Gradle
+    export ANDROID_SDK_ROOT="${androidPkgs.sdk}"
+    export ANDROID_NDK_ROOT="${androidPkgs.ndk}"
+
+    export STATUS_NIX_MAVEN_REPO="${deps.gradle}"
+  '';
 
   unpackPhase = ''
     cp -ar $src/. ./

@@ -45,7 +45,7 @@
         {:style {:flex-direction :row
                  :align-items    :center}}
         [rn/image
-         {:source (resources/networks network)
+         {:source (resources/get-network network)
           :style  style/network-icon}]
         [text/text
          {:size   :label

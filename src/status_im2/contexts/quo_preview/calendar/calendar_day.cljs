@@ -1,45 +1,21 @@
 (ns status-im2.contexts.quo-preview.calendar.calendar-day
-  (:require [status-im2.contexts.quo-preview.preview :as preview]
-            [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
-            [quo2.core :as quo]))
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "State:"
-    :key     :state
+  [(preview/customization-color-option)
+   {:key     :state
     :type    :select
-    :options [{:key   :default
-               :value "Default"}
-              {:key   :selected
-               :value "Selected"}
-              {:key   :disabled
-               :value "Disabled"}
-              {:key   :today
-               :value "Today"}]}])
+    :options [{:key :default}
+              {:key :selected}
+              {:key :disabled}
+              {:key :today}]}])
 
-(defn cool-preview
+(defn view
   []
-  (let [state (reagent/atom
-               {:state :default})]
-    (fn
-      []
-      [rn/touchable-without-feedback
-       {:on-press rn/dismiss-keyboard!}
-       [rn/view
-        [preview/customizer state descriptor]
-        [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
-         [quo/calendar-day (assoc @state :customization-color :blue) 12]]]])))
-
-(defn preview-calendar-day
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+  (let [state (reagent/atom {:state               :default
+                             :customization-color :blue})]
+    (fn []
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/calendar-day @state 12]])))

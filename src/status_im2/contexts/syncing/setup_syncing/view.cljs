@@ -131,9 +131,7 @@
                :icon-left       :i/copy}
               (i18n/label :t/copy-qr)]])]]
         [rn/view {:style style/sync-code}
-         [quo/divider-label
-          {:label                 (i18n/label :t/have-a-sync-code?)
-           :increase-padding-top? true}]
+         [quo/divider-label {:tight? false} (i18n/label :t/have-a-sync-code?)]
          [quo/action-drawer
           [[{:icon     :i/scan
              :on-press #(rf/dispatch [:navigate-to :scan-sync-code-page])

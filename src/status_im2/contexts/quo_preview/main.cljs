@@ -45,6 +45,7 @@
     [status-im2.contexts.quo-preview.drawers.drawer-buttons :as drawer-buttons]
     [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
     [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
+    [status-im2.contexts.quo-preview.dropdowns.network-dropdown :as network-dropdown]
     [status-im2.contexts.quo-preview.foundations.shadows :as shadows]
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
@@ -61,6 +62,7 @@
     [status-im2.contexts.quo-preview.links.link-preview :as link-preview]
     [status-im2.contexts.quo-preview.list-items.account-list-card :as account-list-card]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
+    [status-im2.contexts.quo-preview.list-items.dapp :as dapp]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
@@ -83,6 +85,7 @@
     [status-im2.contexts.quo-preview.profile.collectible :as collectible]
     [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
     [status-im2.contexts.quo-preview.profile.select-profile :as select-profile]
+    [status-im2.contexts.quo-preview.profile.showcase-nav :as showcase-nav]
     [status-im2.contexts.quo-preview.reactions.react :as react]
     [status-im2.contexts.quo-preview.record-audio.record-audio :as record-audio]
     [status-im2.contexts.quo-preview.selectors.disclaimer :as disclaimer]
@@ -110,11 +113,12 @@
     [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
-    [status-im2.contexts.quo-preview.wallet.account-overview :as account-overview]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
+    [status-im2.contexts.quo-preview.wallet.account-overview :as account-overview]
     [status-im2.contexts.quo-preview.wallet.keypair :as keypair]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
+    [status-im2.contexts.quo-preview.wallet.network-link :as network-link]
     [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
@@ -123,105 +127,107 @@
 
 (def screens-categories
   {:foundations       [{:name      :shadows
-                        :component shadows/preview-shadows}]
+                        :component shadows/view}]
    :animated-list     [{:name      :animated-header-list
                         :component animated-header-list/mock-screen}]
    :avatar            [{:name      :group-avatar
-                        :component group-avatar/preview-group-avatar}
+                        :component group-avatar/view}
                        {:name      :icon-avatar
-                        :component icon-avatar/preview-icon-avatar}
+                        :component icon-avatar/view}
                        {:name      :user-avatar
-                        :component user-avatar/preview-user-avatar}
+                        :component user-avatar/view}
                        {:name      :wallet-user-avatar
-                        :component wallet-user-avatar/preview-wallet-user-avatar}
+                        :component wallet-user-avatar/view}
                        {:name      :channel-avatar
-                        :component channel-avatar/preview-channel-avatar}
+                        :component channel-avatar/view}
                        {:name      :account-avatar
-                        :component account-avatar/preview-account-avatar}]
+                        :component account-avatar/view}]
    :banner            [{:name      :banner
-                        :component banner/preview-banner}]
+                        :component banner/view}]
    :buttons           [{:name      :button
-                        :component button/preview-button}
+                        :component button/view}
                        {:name      :composer-button
-                        :component composer-button/preview-composer-button}
+                        :component composer-button/view}
                        {:name      :dynamic-button
-                        :component dynamic-button/preview-dynamic-button}
+                        :component dynamic-button/view}
                        {:name      :slide-button
-                        :component slide-button/preview-slide-button}
+                        :component slide-button/view}
                        {:name      :predictive-keyboard
-                        :component predictive-keyboard/preview-predictive-keyboard}
+                        :component predictive-keyboard/view}
                        {:name      :wallet-button
-                        :component wallet-button/preview}
+                        :component wallet-button/view}
                        {:name      :wallet-ctas
-                        :component wallet-ctas/preview}]
+                        :component wallet-ctas/view}]
    :browser           [{:name      :browser-input
                         :component browser-input/preview-browser-input}]
    :calendar          [{:name      :calendar
-                        :component calendar/preview-calendar}
+                        :component calendar/view}
                        {:name      :calendar-day
-                        :component calendar-day/preview-calendar-day}
+                        :component calendar-day/view}
                        {:name      :calendar-year
-                        :component calendar-year/preview-calendar-year}]
+                        :component calendar-year/view}]
    :code              [{:name      :snippet
-                        :component code-snippet/preview-code-snippet}]
+                        :component code-snippet/view}]
    :colors            [{:name      :color-picker
                         :component color-picker/view}]
    :community         [{:name      :community-card-view
-                        :component community-card/preview-community-card}
+                        :component community-card/view}
                        {:name      :community-membership-list-view
-                        :component community-membership-list-view/preview-community-list-view}
+                        :component community-membership-list-view/view}
                        {:name      :discover-card
-                        :component discover-card/preview-discoverd-card}
+                        :component discover-card/view}
                        {:name      :token-gating
                         :options   {:insets {:bottom? true}}
-                        :component token-gating/preview-token-gating}
+                        :component token-gating/view}
                        {:name      :channel-actions
                         :options   {:insets {:bottom? true}}
-                        :component channel-actions/preview-channel-actions}]
+                        :component channel-actions/view}]
    :counter           [{:name      :counter
-                        :component counter/preview-counter}
+                        :component counter/view}
                        {:name      :step
-                        :component step/preview-step}]
+                        :component step/view}]
    :dividers          [{:name      :divider-label
                         :component divider-label/view}
                        {:name      :new-messages
-                        :component new-messages/preview-new-messages}
+                        :component new-messages/view}
                        {:name      :divider-date
-                        :component divider-date/preview-divider-date}
+                        :component divider-date/view}
                        {:name      :strength-divider
-                        :component strength-divider/preview-strength-divider}]
+                        :component strength-divider/view}]
    :drawers           [{:name      :action-drawers
-                        :component action-drawers/preview-action-drawers}
+                        :component action-drawers/view}
                        {:name      :documentation-drawer
-                        :component documenation-drawers/preview-documenation-drawers}
+                        :component documenation-drawers/view}
                        {:name      :drawer-buttons
-                        :component drawer-buttons/preview-drawer-buttons}
+                        :component drawer-buttons/view}
                        {:name      :permission-drawers
-                        :component permission-drawers/preview-permission-drawers}]
+                        :component permission-drawers/view}]
    :dropdowns         [{:name      :dropdown
-                        :component dropdown/preview-dropdown}]
+                        :component dropdown/view}
+                       {:name      :network-dropdown
+                        :component network-dropdown/view}]
    :empty-state       [{:name      :empty-state
-                        :component empty-state/preview-empty-state}]
+                        :component empty-state/view}]
    :gradient          [{:name      :gradient-cover
-                        :component gradient-cover/preview-gradient-cover}]
+                        :component gradient-cover/view}]
    :graph             [{:name      :wallet-graph
-                        :component wallet-graph/preview-wallet-graph}]
+                        :component wallet-graph/view}]
    :info              [{:name      :info-message
-                        :component info-message/preview-info-message}
+                        :component info-message/view}
                        {:name      :information-box
-                        :component information-box/preview-information-box}]
+                        :component information-box/view}]
    :inputs            [{:name      :input
-                        :component input/preview-input}
+                        :component input/view}
                        {:name      :locked-input
-                        :component locked-input/preview-locked-input}
+                        :component locked-input/view}
                        {:name      :profile-input
-                        :component profile-input/preview-profile-input}
+                        :component profile-input/view}
                        {:name      :recovery-phrase-input
-                        :component recovery-phrase-input/preview-recovery-phrase-input}
+                        :component recovery-phrase-input/view}
                        {:name      :search-input
-                        :component search-input/preview-search-input}
+                        :component search-input/view}
                        {:name      :title-input
-                        :component title-input/preview-title-input}]
+                        :component title-input/view}]
    :numbered-keyboard [{:name      :keyboard-key
                         :options   {:insets {:top? true}}
                         :component keyboard-key/preview-keyboard-key}
@@ -238,14 +244,16 @@
                         :options   {:insets {:top? true}}
                         :component link-preview/view}]
    :list-items        [{:name      :account-list-card
-                        :component account-list-card/preview}
+                        :component account-list-card/view}
                        {:name      :channel
-                        :component channel/preview-channel}
+                        :component channel/view}
                        {:name      :community-list
                         :options   {:insets {:top? true}}
                         :component community-list/view}
+                       {:name      :dapp
+                        :component dapp/preview}
                        {:name      :preview-lists
-                        :component preview-lists/preview-preview-lists}
+                        :component preview-lists/view}
                        {:name      :user-list
                         :component user-list/preview-user-list}
                        {:name      :token-value
@@ -287,7 +295,9 @@
                        {:name      :collectible
                         :component collectible/preview-collectible}
                        {:name      :select-profile
-                        :component select-profile/preview-select-profile}]
+                        :component select-profile/preview-select-profile}
+                       {:name      :showcase-nav
+                        :component showcase-nav/view}]
    :reactions         [{:name      :react
                         :component react/preview-react}]
    :record-audio      [{:name      :record-audio
@@ -345,6 +355,8 @@
                         :component network-amount/preview}
                        {:name      :network-bridge
                         :component network-bridge/preview}
+                       {:name      :network-link
+                        :component network-link/preview}
                        {:name      :progress-bar
                         :component progress-bar/preview}
                        {:name      :summary-info
@@ -354,7 +366,7 @@
                        {:name      :wallet-overview
                         :component wallet-overview/preview-wallet-overview}]
    :keycard           [{:name      :keycard-component
-                        :component keycard/preview-keycard}]})
+                        :component keycard/view}]})
 
 (defn- navigation-bar
   []

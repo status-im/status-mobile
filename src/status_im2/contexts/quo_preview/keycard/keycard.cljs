@@ -1,37 +1,17 @@
 (ns status-im2.contexts.quo-preview.keycard.keycard
-  (:require [status-im2.contexts.quo-preview.preview :as preview]
-            [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
-            [quo2.core :as quo]))
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Holder"
-    :key   :holder-name
-    :type  :text}
-   {:label "Locked?"
-    :key   :locked?
-    :type  :boolean}])
+  [{:key :holder-name :type :text}
+   {:key :locked? :type :boolean}])
 
-(defn cool-preview
+(defn view
   []
-  (let [state (reagent/atom {:holder-name nil
+  (let [state (reagent/atom {:holder-name ""
                              :locked?     true})]
     (fn
       []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view [preview/customizer state descriptor]
-        [quo/keycard
-         {:holder-name? (:holder-name @state)
-          :locked?      (:locked? @state)}]]])))
-
-(defn preview-keycard
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/keycard @state]])))

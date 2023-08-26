@@ -9,7 +9,9 @@
 
 (defn- loading-state
   [color]
-  [:<>
+  [rn/view
+   {:style {:height      130
+            :align-items :center}}
    [rn/view
     (style/loading-bar-margin-bottom {:color         color
                                       :width         104
@@ -99,7 +101,9 @@
      {:style style/account-overview-wrapper}
      (if (= :loading state)
        [loading-state (colors/theme-colors colors/neutral-5 colors/neutral-90 theme)]
-       [:<>
+       [rn/view
+        {:style {:height      130
+                 :align-items :center}}
         [account-details account-name account theme]
         [text/text
          {:weight :semi-bold

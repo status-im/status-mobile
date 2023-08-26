@@ -21,7 +21,7 @@
         item                (merge item unviewed-counts)]
     [quo/communities-membership-list-item
      {:customization-color customization-color
-      :style               {:padding-horizontal 18}
+      :style               {:padding-horizontal 20}
       :on-press            #(debounce/dispatch-and-chill [:navigate-to :community-overview id] 500)
       :on-long-press       #(rf/dispatch
                              [:show-bottom-sheet
@@ -99,6 +99,7 @@
              :content-inset-adjustment-behavior :never
              :header                            [common.home/header-spacing]
              :render-fn                         item-render
+             :style                             {:margin-top -1}
              :data                              selected-items
              :scroll-event-throttle             8
              :on-scroll                         #(common.home.banner/set-scroll-shared-value

@@ -5,7 +5,7 @@
   {:padding-top        24
    :padding-horizontal 20
    :padding-bottom     20
-   :height             78
+   :height             130
    :align-items        :center
    :justify-content    :center})
 
