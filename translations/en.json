@@ -2288,5 +2288,6 @@
     "keypair-title": "{{name}}'s default keypair",
     "about": "About",
     "no-permissions": "No permissions",
-    "no-dapps": "No connected dApps"
+    "no-dapps": "No connected dApps",
+    "days": "Days"
 }

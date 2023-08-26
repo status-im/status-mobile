@@ -92,6 +92,7 @@
     [status-im2.contexts.quo-preview.selectors.filter :as filter]
     [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
+    [status-im2.contexts.quo-preview.settings.data-item :as data-item]
     [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
     [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
@@ -321,7 +322,10 @@
                        {:name      :reorder-item
                         :component reorder-item/preview-reorder-item}
                        {:name      :category
-                        :component category/preview}]
+                        :options   {:topBar {:visible true}}
+                        :component category/preview}
+                       {:name      :data-item
+                        :component data-item/preview-data-item}]
    :share             [{:name      :qr-code
                         :component qr-code/preview-qr-code}
                        {:name      :share-qr-code

@@ -96,6 +96,7 @@
     quo2.components.selectors.reactions.view
     quo2.components.selectors.selectors.view
     quo2.components.settings.accounts.view
+    quo2.components.settings.data-item.view
     quo2.components.settings.privacy-option
     quo2.components.settings.reorder-item.view
     quo2.components.settings.settings-list.view
@@ -297,6 +298,7 @@
 (def settings-list quo2.components.settings.settings-list.view/settings-list)
 (def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
 (def category quo2.components.settings.category.view/category)
+(def data-item quo2.components.settings.data-item.view/view)
 
 ;;;; Share
 (def qr-code quo2.components.share.qr-code.view/qr-code)
