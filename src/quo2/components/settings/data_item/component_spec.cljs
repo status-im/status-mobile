@@ -1,12 +1,6 @@
 (ns quo2.components.settings.data-item.component-spec
   (:require [test-helpers.component :as h]
-            [status-im2.common.resources :as resources]
             [quo2.core :as quo]))
-
-(def communities-list
-  [{:source (resources/get-mock-image :coinbase)}
-   {:source (resources/get-mock-image :decentraland)}
-   {:source (resources/get-mock-image :rarible)}])
 
 (h/describe
   "date item tests"
@@ -24,8 +18,7 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow
-                :communities-list    communities-list}])
+                :customization-color :yellow}])
     (h/is-truthy (h/get-by-text "Label")))
 
   (h/test "data item renders correctly if card? is false"
@@ -42,8 +35,7 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow
-                :communities-list    communities-list}])
+                :customization-color :yellow}])
     (h/has-style (h/query-by-label-text :data-item)
                  {:borderWidth nil}))
 
@@ -61,8 +53,7 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow
-                :communities-list    communities-list}])
+                :customization-color :yellow}])
     (h/has-style (h/query-by-label-text :data-item)
                  {:borderWidth nil}))
 
@@ -80,8 +71,7 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow
-                :communities-list    communities-list}])
+                :customization-color :yellow}])
     (h/has-style (h/query-by-label-text :data-item)
                  {:borderWidth 1}))
 
@@ -99,8 +89,7 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow
-                :communities-list    communities-list}])
+                :customization-color :yellow}])
     (h/is-truthy (h/get-by-text "Description")))
 
   (h/test "right icon is not visible when icon-right? is false"
@@ -117,8 +106,7 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow
-                :communities-list    communities-list}])
+                :customization-color :yellow}])
     (h/is-falsy (h/query-by-label-text :icon-right)))
 
   (h/test "right icon is visible when icon-right? is true"
@@ -135,8 +123,7 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow
-                :communities-list    communities-list}])
+                :customization-color :yellow}])
     (h/is-truthy (h/query-by-label-text :icon-right)))
 
   (h/test "description icon is visible when description is icon"
@@ -153,8 +140,7 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow
-                :communities-list    communities-list}])
+                :customization-color :yellow}])
     (h/is-truthy (h/query-by-label-text :description-icon)))
 
   (h/test "description image is visible when description is network"
@@ -171,8 +157,7 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow
-                :communities-list    communities-list}])
+                :customization-color :yellow}])
     (h/is-truthy (h/query-by-label-text :description-image)))
 
   (h/test "description emoji is visible when description is account"
@@ -189,6 +174,5 @@
                 :subtitle            "Description"
                 :icon                :i/placeholder
                 :emoji               "🎮"
-                :customization-color :yellow
-                :communities-list    communities-list}])
+                :customization-color :yellow}])
     (h/is-truthy (h/query-by-label-text :account-emoji))))
