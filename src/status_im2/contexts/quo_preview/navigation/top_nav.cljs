@@ -8,35 +8,23 @@
             [quo2.theme :as quo.theme]))
 
 (def descriptor
-  [{:label   "Notification"
-    :key     :notification
+  [{:key     :notification
     :type    :select
     :options [{:key   :mention
                :value "Mention"}
               {:key   :notification
                :value "Notification"}
               {:key   :seen
-               :value "Seen"}
-              {:key   :false
-               :value "False"}]}
-   {:label "Blur?"
-    :key   :blur?
-    :type  :boolean}
-   {:label "Jump To?"
-    :key   :jump-to?
-    :type  :boolean}
-   {:label "Notification Count"
-    :key   :notification-count
-    :type  :number}
-   {:label   "Customization color:"
-    :key     :customization-color
-    :type    :select
-    :options (map (fn [color]
-                    (let [k (get color :name)]
-                      {:key k :value k}))
-                  (quo/picker-colors))}])
+               :value "Seen"}]}
+   {:key  :blur?
+    :type :boolean}
+   {:key  :jump-to?
+    :type :boolean}
+   {:key  :notification-count
+    :type :number}
+   (preview/customization-color-option)])
 
-(defn cool-preview
+(defn preview
   []
   (let [state (reagent/atom {:noticication-count  0
                              :customization-color :blue})]
@@ -72,7 +60,7 @@
                                   :right    0
                                   :bottom   0}}])
            [quo/top-nav
-            {:container-style          {:flex 1}
+            {:container-style          {:flex 1 :z-index 2}
              :max-unread-notifications 99
              :blur?                    blur?
              :notification             notification
@@ -86,13 +74,3 @@
              :activity-center-on-press #(js/alert "activity-center pressed")
              :qr-code-on-press         #(js/alert "qr pressed")}]]]]))))
 
-(defn preview-top-nav
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

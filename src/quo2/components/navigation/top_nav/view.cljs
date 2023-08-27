@@ -5,7 +5,32 @@
             [quo2.components.counter.counter.view :as counter]
             [quo2.components.navigation.top-nav.style :as style]
             [quo2.theme :as quo.theme]
+            [react-native.hole-view :as hole-view]
             [quo2.components.common.notification-dot.view :as notification-dot]))
+
+(def notification-dot-hole
+  [{:x            37
+    :y            -2
+    :width        9
+    :height       9
+    :borderRadius 4}])
+
+(defn unread-counter-hole
+  [notification-count]
+  (let [x     (case (count (str notification-count))
+                (1 2) 33
+                29)
+        width (case (count (str notification-count))
+                1 16
+                2 20
+                28)]
+    (if (pos? (js/Number notification-count))
+      [{:x            x
+        :y            -5
+        :width        width
+        :height       16
+        :borderRadius 6}]
+      nil)))
 
 (defn- get-button-common-props
   [{:keys [jump-to? theme blur?]}]
@@ -65,6 +90,8 @@
   [{:keys [theme
            jump-to?
            blur?
+           notification
+           notification-count
            activity-center-on-press
            scan-on-press
            qr-code-on-press
@@ -95,11 +122,16 @@
               :on-press            qr-code-on-press})
       :i/qr-code]
      [rn/view
-      [button/button
-       (merge button-common-props
-              {:accessibility-label :open-activity-center-button
-               :on-press            activity-center-on-press})
-       :i/activity-center]
+      [hole-view/hole-view
+       {:holes (case notification
+                 (:seen :notification)    notification-dot-hole
+                 (:mention :mention-seen) (unread-counter-hole notification-count)
+                 nil)}
+       [button/button
+        (merge button-common-props
+               {:accessibility-label :open-activity-center-button
+                :on-press            activity-center-on-press})
+        :i/activity-center]]
       [notification-highlight props]]]))
 
 (defn view-internal
@@ -118,13 +150,12 @@
    :blur? true/false
    :jump-to? true/false
    :theme :light/:dark
-   :notification :mention/:false/:notification (TODO :mention-seen temporarily used while resolving https://github.com/status-im/status-mobile/issues/17102 )
+   :notification :mention/:seen/:notification (TODO :mention-seen temporarily used while resolving https://github.com/status-im/status-mobile/issues/17102 )
    :avatar-props qu2/user-avatar props
    :avatar-on-press callback
    :scan-on-press callback
    :activity-center-on-press callback
    :qr-code-on-press callback
-   :notification-on-press callback
    :notification-count number
    :max-unread-notifications used to specify max number for counter
    :for-qa-only-cellular-network used for testing purposed
