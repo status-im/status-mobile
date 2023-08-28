@@ -39,7 +39,6 @@
         :size                80
         :emoji               "\uD83D\uDC8E"
         :type                :default}]
-      ;; TODO: check and fix button blur
       [quo/button
        {:size            32
         :type            :grey
@@ -47,7 +46,6 @@
         :icon-only?      true
         :on-press        #(js/alert "pressed")
         :container-style style/reaction-button-container} :i/reaction]]
-     ;; TODO: title-input needs to have icon
      [quo/title-input
       {:color           :red
        :placeholder     "Type something here"
@@ -59,18 +57,13 @@
      [rn/view
       {:style {:padding-vertical   12
                :padding-horizontal 20}}
-      ;; TODO: implement label component
       [quo/text
        {:size   :paragraph-2
         :weight :medium
         :style  {:color          (colors/theme-colors colors/neutral-50 colors/neutral-40)
                  :padding-bottom 4}} (i18n/label :t/colour)]
-      ;; TODO: update color picker component
       [quo/color-picker {:selected :orange}]]
-     ;; TODO: implement divider-line component
      [rn/view {:style (style/divider-line theme)}]
-     ;; TODO: update settings-list component to accept avatar, and subtitle,
-     ;; text inside button not vertically centered, and should be able to accept button with icon
      [quo/category
       {:list-type :settings
        :label     (i18n/label :t/origin)
