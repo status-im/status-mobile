@@ -30,6 +30,7 @@
                                               iter
                                               key
                                               keys
+                                              list
                                               new
                                               ns
                                               resolve

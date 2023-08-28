@@ -63,7 +63,7 @@
                 list-item)])
 
 (defn- render-instruction
-  [{:keys [title image list]}]
+  [{title :title image :image coll :list}]
   [rn/view
    (when title
      [quo/text
@@ -83,7 +83,7 @@
     (map-indexed (fn [i item]
                    ^{:key i}
                    [render-item (inc i) item])
-                 list)]])
+                 coll)]])
 
 (defn- map-instructions
   [idx instructions instructions-count]

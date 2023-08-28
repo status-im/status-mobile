@@ -69,7 +69,7 @@
                          (contains? test-var-syms (symbol the-ns name)))))))))
 
 (defn execute-cli
-  [{:keys [test-syms help list repl] :as _opts}]
+  [{:keys [test-syms help repl] :as opts}]
   (let [test-env
         (-> (ct/empty-env)
             ;; can't think of a proper way to let CLI specify custom reporter? :report-fn is mostly
@@ -88,7 +88,7 @@
          "  --test=<ns-to-test>,<fqn-symbol-to-test> (run test for namespace or single var, separated by comma)")
         (println "  --repl (start node without automatically running tests)"))
 
-      list
+      (:list opts)
       (doseq [[the-ns ns-info]
               (->> (env/get-tests)
                    (sort-by first))]
