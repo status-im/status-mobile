@@ -5,12 +5,11 @@
             [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
             [react-native.core :as rn]
+            [react-native.hooks :as hooks]
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
-            [react-native.hooks :as hooks]
             [reagent.core :as reagent]
             [status-im2.constants :as c]
-            [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
             [status-im2.contexts.onboarding.create-profile.style :as style]
             [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
             [utils.i18n :as i18n]
@@ -133,9 +132,11 @@
                                                                            keyboard-shown
                                                                            @content-scroll-y)]
       [rn/view {:style style/page-container}
-       [navigation-bar/navigation-bar
-        {:stack-id :new-to-status
-         :top      navigation-bar-top}]
+       [quo/page-nav
+        {:margin-top navigation-bar-top
+         :background :blur
+         :icon-name  :i/arrow-left
+         :on-press   #(rf/dispatch [:navigate-back])}]
        [rn/scroll-view
         {:on-layout               (fn [event]
                                     (let [height (oops/oget event "nativeEvent.layout.height")]

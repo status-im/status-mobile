@@ -1,35 +1,21 @@
 (ns status-im2.contexts.syncing.setup-syncing.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [utils.datetime :as datetime]
-            [status-im2.contexts.syncing.setup-syncing.style :as style]
-            [utils.re-frame :as rf]
             [react-native.clipboard :as clipboard]
-            [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]
-            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
+            [react-native.core :as rn]
             [react-native.hooks :as hooks]
-            [status-im2.contexts.syncing.utils :as sync-utils]))
+            [reagent.core :as reagent]
+            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
+            [status-im2.common.resources :as resources]
+            [status-im2.contexts.syncing.setup-syncing.style :as style]
+            [status-im2.contexts.syncing.sheets.enter-password.view :as enter-password]
+            [status-im2.contexts.syncing.utils :as sync-utils]
+            [utils.datetime :as datetime]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (def code-valid-for-ms 120000)
 (def one-min-ms 60000)
-
-(defn navigation-bar
-  []
-  [rn/view {:style style/navigation-bar}
-   [quo/page-nav
-    {:align-mid?            true
-     :mid-section           {:type :text-only :main-text ""}
-     :left-section          {:type     :grey
-                             :icon     :i/close
-                             :on-press #(rf/dispatch [:navigate-back])}
-     :right-section-buttons [{:type     :grey
-                              :label    (i18n/label :t/how-to-pair)
-                              :icon     :i/info
-                              :on-press #(rf/dispatch [:open-modal :how-to-pair])}]}]])
 
 (defn f-use-interval
   [clock cleanup-clock delay]
@@ -67,7 +53,14 @@
       [rn/view {:style style/container-main}
        [:f> f-use-interval clock cleanup-clock @delay]
        [rn/scroll-view {}
-        [navigation-bar]
+        [quo/page-nav
+         {:type       :no-title
+          :icon-name  :i/close
+          :background :blur
+          :on-press   #(rf/dispatch [:navigate-back])
+          :right-side [{:icon-left :i/info
+                        :label     (i18n/label :t/how-to-pair)
+                        :on-press  #(rf/dispatch [:open-modal :how-to-pair])}]}]
         [rn/view {:style style/page-container}
          [rn/view {:style style/title-container}
           [quo/text

@@ -12,6 +12,6 @@
    :align-items     :center
    :justify-content :space-between})
 
-(def context-tag
+(def community-tag
   {:margin-right :auto
    :margin-top   8})

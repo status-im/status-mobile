@@ -378,19 +378,15 @@
         has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
         root          (if has-profiles? :profiles :intro)]
     [quo/page-nav
-     {:align-mid?   true
-      :mid-section  {:type      :text-only
-                     :main-text "Quo2 components preview"}
-      :left-section {:icon     :i/close
-                     :on-press (fn []
-                                 (cond
-                                   logged-in?
-                                   (rf/dispatch [:navigate-back])
-
-                                   :else
-                                   (do
-                                     (theme/set-theme :dark)
-                                     (rf/dispatch [:init-root root]))))}}]))
+     {:type       :title
+      :title      "Quo2 components preview"
+      :text-align :left
+      :icon-name  :i/close
+      :on-press   #(if logged-in?
+                     (rf/dispatch [:navigate-back])
+                     (do
+                       (theme/set-theme :dark)
+                       (rf/dispatch [:init-root root])))}]))
 
 (defn- theme-switcher
   []

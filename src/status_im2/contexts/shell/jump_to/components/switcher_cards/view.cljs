@@ -1,17 +1,17 @@
 (ns status-im2.contexts.shell.jump-to.components.switcher-cards.view
   (:require [clojure.string :as string]
-            [utils.i18n :as i18n]
             [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [status-im2.config :as config]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
+            [status-im2.config :as config]
             [status-im2.constants :as constants]
+            [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
             [status-im2.contexts.shell.jump-to.animation :as animation]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [status-im2.contexts.shell.jump-to.components.switcher-cards.style :as style]
-            [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]))
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn- channel-card
   [{:keys [emoji channel-name customization-color]}]
@@ -82,13 +82,14 @@
          :style  style/gif}]
 
        constants/content-type-audio
-       [quo/audio-tag data {:override-theme :dark}]
+       [quo/context-tag {:type :audio :duration data}]
 
        constants/content-type-community
-       [quo/community-tag
-        (:avatar data)
-        (:community-name data)
-        {:override-theme :dark}]
+       [quo/context-tag
+        {:type           :community
+         :size           24
+         :community-logo (:avatar data)
+         :community-name (:community-name data)}]
 
        (constants/content-type-link) ;; Components not available
        ;; Code snippet content type is not supported yet

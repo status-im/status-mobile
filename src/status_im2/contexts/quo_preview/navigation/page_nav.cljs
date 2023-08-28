@@ -1,132 +1,299 @@
 (ns status-im2.contexts.quo-preview.navigation.page-nav
-  (:require [quo2.components.navigation.page-nav :as quo2]
+  (:require [clojure.string :as string]
+            [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as quo.theme]
+            [react-native.blur :as blur]
             [react-native.core :as rn]
             [reagent.core :as reagent]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
-(def ^:private descriptor
-  [{:label   "Page nav variation"
-    :key     :selected-variation
+(def ^:private main-descriptor
+  [{:label   "Type"
+    :key     :type
     :type    :select
-    :options [{:key   :text-only?
-               :value "Text only"}
-              {:key   :align-left?
-               :value "Align Left"}
-              {:key   :align-left-top-down-text?
-               :value "Align left top down text?"}
-              {:key   :align-left-with-icon?
-               :value "Align Left with icon ?"}
-              {:key   :one-icon-align-left?
-               :value "One icon on the left ?"}
-              {:key   :one-icon-align-right?
-               :value "One icon on the right ?"}
-              {:key   :two-icons?
-               :value "Two icons ?"}
-              {:key   :user-icon?
-               :value "User icon ?"}
-              {:key   :empty?
-               :value "Empty ?"}]}
-   {:label   "Number of right icons"
-    :key     :number-of-right-icons
+    :options [{:key   :no-title
+               :value "No Title"}
+              {:key   :title
+               :value "Title"}
+              {:key   :dropdown
+               :value "Dropdown"}
+              {:key   :token
+               :value "Token"}
+              {:key   :channel
+               :value "Channel"}
+              {:key   :title-description
+               :value "Title + Description"}
+              {:key   :wallet-networks
+               :value "Wallet Networks"}
+              {:key   :community
+               :value "Community"}
+              {:key   :network
+               :value "Network"}]}
+   {:label   "Background"
+    :key     :background
     :type    :select
-    :options [{:key   1
-               :value 1}
-              {:key   2
-               :value 2}
-              {:key   3
-               :value 3}]}])
+    :options (map (fn [bg-type]
+                    {:key   bg-type
+                     :value (string/capitalize (name bg-type))})
+                  [:white :neutral-5 :neutral-90 :neutral-95 :neutral-100 :photo :blur])}
+   {:label   "Icon"
+    :key     :icon-name
+    :type    :select
+    :options [{:key   :i/placeholder
+               :value "Placeholder"}
+              {:key   :i/arrow-left
+               :value "Arrow left"}]}])
 
-(def ^:private selected-variation
-  (reagent/atom {:selected-variation    :text-only?
-                 :number-of-right-icons 1}))
+
+(def right-side-options
+  (let [options [{:icon-name :i/save :on-press #(js/alert "SAVE")}
+                 {:icon-name :i/mark-as-read :on-press #(js/alert "MARK AS READ")}
+                 {:icon-name :i/mention :on-press #(js/alert "A MENTION!")}]]
+    [{:key   []
+      :value "No actions"}
+     {:key   (take 1 options)
+      :value "1 action"}
+     {:key   (take 2 options)
+      :value "2 actions"}
+     {:key   (take 3 options)
+      :value "3 actions"}]))
+
+(def account-switcher
+  {:key   :account-switcher
+   :value "Account-switcher"})
+
+(def no-title-descriptor
+  [{:label   "Right Side"
+    :key     :right-side
+    :type    :select
+    :options (conj right-side-options account-switcher)}])
+
+(def title-descriptor
+  [{:label   "Right Side"
+    :key     :right-side
+    :type    :select
+    :options (conj right-side-options account-switcher)}
+   {:label "Title"
+    :key   :title
+    :type  :text}
+   {:label   "Text Align"
+    :key     :text-align
+    :type    :select
+    :options [{:key   :left
+               :value "Left"}
+              {:key   :center
+               :value "Center"}]}])
+
+(def dropdown-descriptor
+  [{:label "Dropdown Selected?"
+    :key   :dropdown-selected?
+    :type  :boolean}
+   {:label "Dropdown Text"
+    :key   :dropdown-text
+    :type  :text}])
+
+(def token-descriptor
+  [{:label   "Right Side"
+    :key     :right-side
+    :type    :select
+    :options (conj right-side-options account-switcher)}
+
+   {:label   "Token Logo"
+    :key     :token-logo
+    :type    :select
+    :options [{:key   (resources/get-mock-image :status-logo)
+               :value "Status logo"}
+              {:key   (resources/get-mock-image :rarible)
+               :value "Rarible"}]}
+
+   {:label "Token Name"
+    :key   :token-name
+    :type  :text}
+   {:label "Token Abbreviation"
+    :key   :token-abbreviation
+    :type  :text}])
+
+(def channel-descriptor
+  [{:label   "Right Side"
+    :key     :right-side
+    :type    :select
+    :options right-side-options}
+
+   {:label   "Channel Emoji"
+    :key     :channel-emoji
+    :type    :select
+    :options [{:key   "🍇"
+               :value "🍇"}
+              {:key   "🍑"
+               :value "🍑"}]}
+
+   {:label "Channel Name"
+    :key   :channel-name
+    :type  :text}
+   {:label   "Channel Icon"
+    :key     :channel-icon
+    :type    :select
+    :options [{:key   :i/locked
+               :value "Locked"}
+              {:key   :i/unlocked
+               :value "Unlocked"}]}])
+
+(def title-description-descriptor
+  [{:label   "Right Side"
+    :key     :right-side
+    :type    :select
+    :options (butlast right-side-options)}
+   {:label "title"
+    :key   :title
+    :type  :text}
+   {:label "description"
+    :key   :description
+    :type  :text}
+   {:label   "Picture"
+    :key     :picture
+    :type    :select
+    :options [{:key   nil
+               :value "No picture"}
+              {:key   (resources/get-mock-image :photo1)
+               :value "Photo 1"}
+              {:key   (resources/get-mock-image :photo2)
+               :value "Photo 2"}]}])
+
+(def wallet-networks-descriptor
+  [{:label   "Right Side"
+    :key     :right-side
+    :type    :select
+    :options (conj (take 2 right-side-options) account-switcher)}])
+
+(def community-descriptor
+  [{:label   "Right Side"
+    :key     :right-side
+    :type    :select
+    :options right-side-options}
+   {:label   "Community Logo"
+    :key     :community-logo
+    :type    :select
+    :options [{:key   (resources/get-mock-image :diamond)
+               :value "Diamond"}
+              {:key   (resources/get-mock-image :coinbase)
+               :value "Coinbase"}]}
+   {:label "Community name"
+    :key   :community-name
+    :type  :text}])
+
+(def network-descriptor
+  [{:label   "Right Side"
+    :key     :right-side
+    :type    :select
+    :options right-side-options}
+   {:label   "Network Logo"
+    :key     :network-logo
+    :type    :select
+    :options [{:key   (resources/get-mock-image :diamond)
+               :value "Diamond"}
+              {:key   (resources/get-mock-image :coinbase)
+               :value "Coinbase"}]}
+   {:label "Network name"
+    :key   :network-name
+    :type  :text}])
+
+(defn- photo-bg
+  [background]
+  (when (#{:photo :blur} background)
+    [rn/image
+     {:style  {:position :absolute
+               :top      0
+               :bottom   0
+               :left     0
+               :right    0
+               :width    "100%"
+               :height   200}
+      :source (resources/get-mock-image :photo2)}]))
+
+(defn- blur-bg
+  [background]
+  (when (= :blur background)
+    [rn/view
+     {:style {:position :absolute
+              :top      0
+              :bottom   0
+              :left     0
+              :right    0
+              :width    "100%"
+              :height   200}}
+     [blur/view
+      {:style       {:width  "100%"
+                     :height 20}
+       :blur-type   :light
+       :blur-amount 20}]]))
 
 (defn- cool-preview
-  []
-  (let
-    [right-icon {:background-color (if (colors/dark?)
-                                     colors/neutral-80
-                                     colors/neutral-20)
-                 :icon             :i/placeholder
-                 :icon-color       nil}
-     base-props
-     {:horizontal-description? true
-      :one-icon-align-left? true
-      :align-mid? false
-      :page-nav-color :transparent
-      :page-nav-background-uri ""
-      :mid-section
-      {:type :text-with-description
-       :icon :i/placeholder
-       :main-text "Status"
-       :left-icon :i/placeholder
-       :right-icon :i/placeholder
-       :description "SNT"
-       :description-color "black"
-       :description-icon :i/placeholder
-       :description-user-icon
-       "https://i.picsum.photos/id/810/200/300.jpg?hmac=HgwlXd-OaLOAqhGyCiZDUb_75EgUI4u0GtS7nfgxd8s"}
-      :left-section
-      {:icon                  :i/unlocked
-       :icon-background-color (if (colors/dark?)
-                                colors/neutral-80
-                                colors/neutral-20)}}
-     create-variation #(merge %1 %2 {:mid-section (merge (:mid-section %1) (:mid-section %2))})
-     variations
-     {:text-only?                base-props
-      :align-left?               (create-variation base-props {:align-mid? true})
-      :one-icon-align-left?      (create-variation base-props
-                                                   {:one-icon-align-left? true
-                                                    :mid-section          {:type
-                                                                           :text-with-one-icon}})
-      :one-icon-align-right?     (create-variation base-props
-                                                   {:one-icon-align-left? false
-                                                    :mid-section          {:type
-                                                                           :text-with-one-icon}})
-      :two-icons?                (create-variation base-props
-                                                   {:mid-section {:type :text-with-two-icons}})
-      :user-icon?                (create-variation base-props
-                                                   {:align-mid?              true
-                                                    :horizontal-description? false
-                                                    :mid-section             {:type
-                                                                              :text-with-one-icon}})
-      :empty?                    (create-variation base-props
-                                                   {:mid-section-main-text   ""
-                                                    :mid-section-description ""})
-      :align-left-with-icon?     (create-variation base-props
-                                                   {:align-mid?  true
-                                                    :mid-section {:type :text-with-one-icon}})
-      :align-left-top-down-text? (create-variation base-props
-                                                   {:align-mid?              true
-                                                    :horizontal-description? false
-                                                    :mid-section             {:type
-                                                                              :text-with-description}})}
-     state (reagent/atom
-            (-> (get variations (:selected-variation @selected-variation))
-                (assoc :right-section-buttons
-                       (repeat (:number-of-right-icons @selected-variation) right-icon))))]
+  [{:keys [theme]}]
+  (let [state (reagent/atom
+               {:type               :title-description
+                :background         (if (= theme :light) :white :neutral-90)
+                :icon-name          :i/placeholder
+                :on-press           #(js/alert "Left icon pressed!")
+                :right-side         [{:icon-name :i/save :on-press #(js/alert "SAVE")}
+                                     {:icon-name :i/mark-as-read :on-press #(js/alert "MARK AS READ")}
+                                     {:icon-name :i/mention :on-press #(js/alert "A MENTION!")}]
+                :title              "Page title"
+                :text-align         :center
+                :dropdown-on-change #(js/alert "Dropdown pressed!")
+                :dropdown-selected? false
+                :dropdown-text      "Recent"
+                :token-logo         (resources/get-mock-image :status-logo)
+                :token-name         "Status"
+                :token-abbreviation "SNT"
+                :channel-emoji      "🍇"
+                :channel-name       "general"
+                :channel-icon       :i/locked
+                :description        "Description"
+                :picture            (resources/get-mock-image :photo1)
+                :community-name     "Rarible"
+                :community-logo     (resources/get-mock-image :coinbase)
+                :network-name       "Mainnet"
+                :network-logo       (resources/get-mock-image :diamond)})]
     (fn []
-      [rn/view
-       {:margin-bottom 50
-        :padding       16}
-       [rn/view {:flex 1}
-        [preview/customizer selected-variation descriptor]]
+      [rn/view {:style {:margin-bottom 50 :padding-vertical 16}}
+       [rn/view {:style {:flex 1}}
+        [preview/customizer state
+         (concat main-descriptor
+                 (case (:type @state)
+                   :no-title          no-title-descriptor
+                   :title             title-descriptor
+                   :dropdown          dropdown-descriptor
+                   :token             token-descriptor
+                   :channel           channel-descriptor
+                   :title-description title-description-descriptor
+                   :wallet-networks   wallet-networks-descriptor
+                   :community         community-descriptor
+                   :network           network-descriptor
+                   nil))]]
        [rn/view
-        {:padding-vertical 30
-         :flex-direction   :row
-         :justify-content  :center}
-        [quo2/page-nav @state]]])))
-
-(def ^:private trackable-cool-preview (reagent/track cool-preview selected-variation))
+        {:style {:background-color (case (:background @state)
+                                     :white       colors/white
+                                     :neutral-5   colors/neutral-5
+                                     :neutral-90  colors/neutral-90
+                                     :neutral-95  colors/neutral-95
+                                     :neutral-100 colors/neutral-100
+                                     nil)
+                 :padding-vertical 40
+                 :height           200
+                 :width            "100%"}}
+        [photo-bg (:background @state)]
+        [blur-bg (:background @state)]
+        [quo/page-nav @state]]])))
 
 (defn preview-page-nav
   []
   [rn/view
-   {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-90)
-    :flex             1}
+   {:style {:background-color (colors/theme-colors colors/white colors/neutral-90)
+            :flex             1}}
    [rn/flat-list
     {:flex                         1
      :keyboard-should-persist-taps :always
-     :header                       [@trackable-cool-preview]
+     :header                       [(quo.theme/with-theme cool-preview)]
      :key-fn                       str}]])

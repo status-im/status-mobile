@@ -1,16 +1,14 @@
 (ns status-im2.contexts.onboarding.create-password.view
-  (:require
-    [oops.core :refer [ocall]]
-    [quo2.core :as quo]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-    [status-im2.contexts.onboarding.create-password.style :as style]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.security.core :as security]
-    [utils.string :as utils.string]))
+  (:require [oops.core :refer [ocall]]
+            [quo2.core :as quo]
+            [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
+            [reagent.core :as reagent]
+            [status-im2.contexts.onboarding.create-password.style :as style]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]
+            [utils.security.core :as security]
+            [utils.string :as utils.string]))
 
 (defn header
   []
@@ -214,13 +212,13 @@
        :accessible false}
       [rn/view {:style style/flex-fill}
        [rn/keyboard-avoiding-view {:style style/flex-fill}
-        [navigation-bar/navigation-bar
-         {:stack-id              :new-to-status
-          :top                   top
-          :right-section-buttons [{:type            :grey
-                                   :icon-background :blur
-                                   :icon            :i/info
-                                   :on-press        on-press-info}]}]
+        [quo/page-nav
+         {:margin-top top
+          :background :blur
+          :icon-name  :i/arrow-left
+          :on-press   #(rf/dispatch [:navigate-back-within-stack :new-to-status])
+          :right-side [{:icon-name :i/info
+                        :on-press  on-press-info}]}]
         [password-form]
         [rn/view {:style {:height (if-not @keyboard-shown? bottom 0)}}]]]]]
     (finally

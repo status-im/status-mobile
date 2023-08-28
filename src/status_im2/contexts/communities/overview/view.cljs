@@ -297,14 +297,11 @@
 
 (defn page-nav-right-section-buttons
   [id]
-  [{:icon                :i/options
-    :type                :grey
-    :icon-background     :photo
+  [{:icon-name           :i/options
     :accessibility-label :community-options-for-community
     :on-press            #(rf/dispatch
                            [:show-bottom-sheet
-                            {:content (fn []
-                                        [options/community-options-bottom-sheet id])}])}])
+                            {:content (fn [] [options/community-options-bottom-sheet id])}])}])
 
 (defn pick-first-category-by-height
   [scroll-height first-channel-height categories-heights]

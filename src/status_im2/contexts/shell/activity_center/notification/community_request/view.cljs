@@ -22,10 +22,14 @@
   [community membership-status]
   (let [community-name        (:name community)
         permissions           (:permissions community)
+        open?                 (not= 3 (:access permissions))
         community-image       (get-in community [:images :thumbnail :uri])
-        community-context-tag [quo/context-tag common/tag-params community-image
-                               community-name]
-        open?                 (not= 3 (:access permissions))]
+        community-context-tag [quo/context-tag
+                               {:type           :community
+                                :size           24
+                                :blur?          true
+                                :community-logo community-image
+                                :community-name community-name}]]
     (cond
       (= membership-status constants/activity-center-membership-status-idle)
       {:header-text (i18n/label :t/community-request-not-accepted)
