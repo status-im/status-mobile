@@ -180,9 +180,9 @@
     [rn/view
      [rn/view {:style style/top-section-container}
       [rn/view {:style style/title-container}
-       [activity-title title replying?]]
-      (when-not replying?
-        [activity-timestamp timestamp])
+       [activity-title title replying?]
+       (when-not replying?
+         [activity-timestamp timestamp])]
       (when (and unread? (not replying?))
         [activity-unread-dot customization-color])]
      (when context

@@ -39,12 +39,14 @@
 
 (defn title
   []
-  {:color colors/white})
+  {:flex-shrink 1
+   :color       colors/white})
 
 (def timestamp
   {:text-transform :none
    :margin-left    8
    :margin-top     4
+   :flex-shrink    0
    :color          colors/neutral-40})
 
 (defn unread-dot
