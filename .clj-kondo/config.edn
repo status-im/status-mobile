@@ -32,10 +32,14 @@
                                               key
                                               keys
                                               list
+                                              max
                                               meta
+                                              methods
+                                              min
                                               new
                                               ns
                                               range
+                                              replace
                                               resolve
                                               seq
                                               str

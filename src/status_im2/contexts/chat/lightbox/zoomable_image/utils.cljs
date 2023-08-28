@@ -200,9 +200,9 @@
 
 (defn get-focal
   [focal size screen-size]
-  (let [min (/ (- screen-size size) 2)
-        max (+ min size)]
-    (if (or (> focal max) (< focal min))
+  (let [min-size (/ (- screen-size size) 2)
+        max-size (+ min-size size)]
+    (if (or (> focal max-size) (< focal min-size))
       (/ screen-size 2)
       focal)))
 

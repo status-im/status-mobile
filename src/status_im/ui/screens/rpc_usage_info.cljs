@@ -19,9 +19,9 @@
  :rpc-usage/data
  :<- [:rpc-usage/raw-data]
  :<- [:rpc-usage/filter]
- (fn [[{:keys [total methods]} method-filter]]
+ (fn [[{total :total rpc-methods :methods} method-filter]]
    (let [data
-         (->> methods
+         (->> rpc-methods
               (map (fn [[k v]]
                      [(name k) v]))
               (filter (fn [[k]]
