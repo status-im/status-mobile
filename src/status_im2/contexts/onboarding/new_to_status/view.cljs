@@ -98,37 +98,21 @@
       :style style/doc-content}
      (i18n/label :t/getting-started-generate-keys-on-keycard-description)]]])
 
-(defn navigation-bar
-  [top]
-  [rn/view
-   {:style {:height     56
-            :margin-top top}}
-   [quo/page-nav
-    {:align-mid?            true
-     :mid-section           {:type :text-only :main-text ""}
-     :left-section          {:type            :grey
-                             :icon-background :blur
-                             :icon            :i/arrow-left
-                             :on-press        navigate-back}
-     :right-section-buttons (cond-> [{:type            :grey
-                                      :icon            :i/info
-                                      :icon-background :blur
-                                      :on-press        #(rf/dispatch
-                                                         [:show-bottom-sheet
-                                                          {:content getting-started-doc
-                                                           :shell?  true}])}]
-
-                              config/quo-preview-enabled?
-                              (conj {:type            :grey
-                                     :icon            :i/reveal-whitelist
-                                     :icon-background :blur
-                                     :on-press        #(rf/dispatch [:navigate-to
-                                                                     :quo2-preview])}))}]])
-
 (defn new-to-status
   []
   (let [{:keys [top]} (safe-area/get-insets)]
-    [:<>
-     [rn/view {:style style/content-container}
-      [navigation-bar top]
-      [sign-in-options]]]))
+    [rn/view {:style style/content-container}
+     [quo/page-nav
+      {:margin-top top
+       :type       :no-title
+       :background :blur
+       :icon-name  :i/arrow-left
+       :on-press   navigate-back
+       :right-side [{:icon-name :i/info
+                     :on-press  #(rf/dispatch [:show-bottom-sheet
+                                               {:content getting-started-doc
+                                                :shell?  true}])}
+                    (when config/quo-preview-enabled?
+                      {:icon-name :i/reveal-whitelist
+                       :on-press  #(rf/dispatch [:navigate-to :quo2-preview])})]}]
+     [sign-in-options]]))
