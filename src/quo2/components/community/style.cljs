@@ -4,18 +4,14 @@
 
 (defn community-card
   [radius theme]
-  {:shadow-offset    {:width  0
-                      :height 2}
-   :shadow-radius    radius
-   :shadow-opacity   1
-   :shadow-color     colors/shadow
-   :elevation        1
+  (assoc
+   (shadows/get 2 theme)
    :border-radius    radius
    :justify-content  :space-between
    :background-color (colors/theme-colors
                       colors/white
                       colors/neutral-90
-                      theme)})
+                      theme)))
 
 (def detail-container
   {:flex 1})

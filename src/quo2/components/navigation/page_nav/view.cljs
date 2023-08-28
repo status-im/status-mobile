@@ -28,8 +28,7 @@
              :icon-only?          true
              :size                32
              :on-press            on-press
-             :accessibility-label accessibility-label
-             :background          (when (#{:photo :blur} background) background)}
+             :accessibility-label accessibility-label}
             icon-name])]
         children))
 
