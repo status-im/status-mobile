@@ -40,7 +40,7 @@
 (defn title-text
   [disabled? blur? theme]
   {:text-align-vertical :bottom
-   :padding 0
+   :padding             0
    :color               (if disabled?
                           (get-disabled-color blur? theme)
                           (colors/theme-colors colors/neutral-100 colors/white theme))})

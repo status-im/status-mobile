@@ -1,93 +1,86 @@
 (ns status-im2.contexts.wallet.create-account.view
   (:require
     [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
     [react-native.core :as rn]
     [quo2.core :as quo]
     [re-frame.core :as rf]
     [react-native.safe-area :as safe-area]
-    [status-im2.common.resources :as resources]
-    [utils.i18n :as i18n]))
+    [status-im2.contexts.wallet.common.temp :as temp]
+    [utils.i18n :as i18n]
+    [status-im2.contexts.wallet.create-account.style :as style]))
 
-(defn create-item-array
-  [n {:keys [right-icon? image? subtitle?]}]
-  (vec (for [i (range n)]
-         {:title      (str "Item " i)
-          :subtitle   (when subtitle? "subtitle")
-          :chevron?   true
-          :right-icon (when right-icon? :i/globe)
-          :left-icon  :i/browser
-          :image-size (if image? 32 0)
-          :image      (when image? (resources/get-mock-image :diamond))})))
-
-(defn view
-  []
-  (let [top (safe-area/get-top)]
+(defn- view-internal
+  [{:keys [theme]}]
+  (let [top    (safe-area/get-top)
+        bottom (safe-area/get-bottom)]
     [rn/view
      {:style {:flex       1
               :margin-top top}}
      [quo/page-nav
-      {
-       :align-mid?            true
+      {:align-mid?            true
        :mid-section           {:type :text-only :main-text ""}
-       :left-section          {:type     :grey
-                               :icon     :i/close
+       :left-section          {:type            :grey
+                               :icon            :i/close
                                :icon-background :photo
-                               :on-press #(rf/dispatch [:navigate-back])}
-       :right-section-buttons [{:type     :grey
-                                :icon     :i/info
+                               :on-press        #(rf/dispatch [:navigate-back])}
+       :right-section-buttons [{:type            :grey
+                                :icon            :i/info
                                 :icon-background :photo
-                                :on-press #(rf/dispatch [:open-modal :how-to-pair])}]}]
-     [quo/gradient-cover {:customization-color :blue
-                          :container-style     {:position :absolute
-                                                :top      (- top)
-                                                :left     0
-                                                :right    0
-                                                :z-index -1}}]
-     [rn/view {:style {:padding-horizontal 20
-                       :padding-top        12}}
-      [quo/account-avatar {:customization-color :blue
-                           :size                80
-                           :emoji               "\uD83D\uDC8E"
-                           :type                :default}]
-      ;; TODO: button need to be blur, and accept
-      [quo/button {:size            32
-                   :type            :grey
-                   :background :photo
-                   :icon-only?      true
-                   :on-press        #(js/alert "pressed")
-                   :container-style {:position :absolute
-                                     :bottom   0
-                                     :left     80}} :i/reaction]]
+                                :on-press        #(rf/dispatch [:open-modal :how-to-pair])}]}]
+     [quo/gradient-cover
+      {:customization-color :blue
+       :container-style     (style/gradient-cover-container top)}]
+     [rn/view
+      {:style {:padding-horizontal 20
+               :padding-top        12}}
+      [quo/account-avatar
+       {:customization-color :blue
+        :size                80
+        :emoji               "\uD83D\uDC8E"
+        :type                :default}]
+      ;; TODO: check and fix button blur
+      [quo/button
+       {:size            32
+        :type            :grey
+        :background      :photo
+        :icon-only?      true
+        :on-press        #(js/alert "pressed")
+        :container-style style/reaction-button-container} :i/reaction]]
      ;; TODO: title-input needs to have icon
-     [quo/title-input {:color       :red
-                       :placeholder "Type something here"
-                       :max-length  24
-                       :blur?       true
-                       :disabled?   false
-                       :default-value "Account 2"
-                       :container-style {:padding-horizontal 20
-                                         :padding-top 12
-                                         :padding-bottom 16}}]
-     [rn/view {:style {:padding-vertical 12
-                       :padding-horizontal 20}}
-      [quo/text {:size   :paragraph-2
-                 :weight :medium
-                 :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)
-                          :padding-bottom 4}} (i18n/label :t/colour)]
+     [quo/title-input
+      {:color           :red
+       :placeholder     "Type something here"
+       :max-length      24
+       :blur?           true
+       :disabled?       false
+       :default-value   "Account 2"
+       :container-style style/title-input-container}]
+     [rn/view
+      {:style {:padding-vertical   12
+               :padding-horizontal 20}}
+      ;; TODO: implement label component
+      [quo/text
+       {:size   :paragraph-2
+        :weight :medium
+        :style  {:color          (colors/theme-colors colors/neutral-50 colors/neutral-40)
+                 :padding-bottom 4}} (i18n/label :t/colour)]
+      ;; TODO: update color picker component
       [quo/color-picker {:selected :orange}]]
      ;; TODO: implement divider-line component
-     [rn/view {:style {:border-color (colors/theme-colors colors/neutral-10 colors/neutral-90)
-                       :padding-top 12
-                       :padding-bottom 8
-                       :border-bottom-width 1}}]
+     [rn/view {:style (style/divider-line theme)}]
+     ;; TODO: update settings-list component to accept avatar, and subtitle,
+     ;; text inside button not vertically centered, and should be able to accept button with icon
      [quo/category
       {:list-type :settings
-       :label     :origin
-       :data      (create-item-array 5 {:label       "Label"
-                                        :size        "5"
-                                        :blur?       false
-                                        :right-icon? true
-                                        :image?      true
-                                        :subtitle?   true
-                                        :list-type   :settings})}]
-     ]))
+       :label     (i18n/label :t/origin)
+       :data      temp/create-account-state}]
+     [quo/slide-button
+      {:track-text          "We gotta slide"
+       :track-icon          :face-id
+       :customization-color :blue
+       :on-complete         (fn []
+                              (js/alert "I don't wanna slide anymore"))
+       :container-style     (style/slide-button-container bottom)}]]))
+
+(def view (quo.theme/with-theme view-internal))

@@ -13,6 +13,6 @@
       :colors              [color-top color-bottom]
       :start               {:x 0 :y 0}
       :end                 {:x 0 :y 1}
-      :style              (merge style/root-container container-style)}]))
+      :style               (merge style/root-container container-style)}]))
 
 (def view (quo.theme/with-theme view-internal))

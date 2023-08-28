@@ -1,6 +1,7 @@
 (ns status-im2.contexts.wallet.common.temp
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
+            [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn wallet-temporary-navigation
@@ -61,3 +62,11 @@
    :account-name        "Account 1"
    :account             :default
    :customization-color :blue})
+
+(def create-account-state
+  [{:title        "Alisher's default keypair"
+    :button-props {:title (i18n/label :t/edit)}
+    :left-icon    :i/placeholder}
+   {:title        (i18n/label :t/derivation-path)
+    :button-props {:title (i18n/label :t/edit)}
+    :left-icon    :i/derivated-path}])

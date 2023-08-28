@@ -26,7 +26,8 @@
                  track-icon
                  disabled?
                  customization-color
-                 size]}]
+                 size
+                 container-style]}]
       (let [x-pos             (reanimated/use-shared-value 0)
             dimensions        (partial utils/get-dimensions
                                        (or @track-width constants/default-width)
@@ -49,7 +50,8 @@
                                             sliding-complete?)}
          [reanimated/view
           {:test-ID   :slide-button-track
-           :style     (style/track disabled? customization-color (dimensions :track-height))
+           :style     (merge (style/track disabled? customization-color (dimensions :track-height))
+                             container-style)
            :on-layout (when-not (some? @track-width)
                         on-track-layout)}
           [reanimated/view {:style (style/track-cover interpolate-track)}
