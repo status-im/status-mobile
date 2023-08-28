@@ -195,7 +195,7 @@
    view-type]
   (fn []
     [rn/view
-     {:style style/render-communities-container}
+     {:style (style/render-communities-container)}
      [discover-communities-header
       {:selected-tab               selected-tab
        :view-type                  view-type
