@@ -17,10 +17,7 @@
 
 (defn <-link-preview-rpc
   [preview]
-  (update preview
-          :thumbnail
-          (fn [thumbnail]
-            (set/rename-keys thumbnail {:dataUri :data-uri}))))
+  (update preview :thumbnail set/rename-keys {:dataUri :data-uri}))
 
 (defn <-rpc
   [message]
