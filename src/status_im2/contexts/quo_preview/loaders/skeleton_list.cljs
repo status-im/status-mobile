@@ -1,43 +1,23 @@
 (ns status-im2.contexts.quo-preview.loaders.skeleton-list
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Content:"
-    :key     :content
+  [{:key     :content
     :type    :select
-    :options [{:key   :list-items
-               :value "List items"}
-              {:key   :notifications
-               :value "Notifications"}
-              {:key   :messages
-               :value "Messages"}]}
+    :options [{:key :list-items}
+              {:key :notifications}
+              {:key :messages}]}
    {:key :blur? :type :boolean}
    {:key :animated? :type :boolean}])
 
-(defn cool-preview
+(defn view
   []
   (let [state (reagent/atom {:content       :messages
                              :blur?         false
                              :animated?     true
                              :parent-height 600})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
-        [rn/view
-         [quo/skeleton-list @state]]]])))
-
-(defn preview-skeleton
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/skeleton-list @state]])))

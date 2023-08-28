@@ -259,7 +259,7 @@
                         :component user-list/preview-user-list}]
    :loaders           [{:name      :skeleton-list
                         :options   {:topBar {:visible true}}
-                        :component skeleton-list/preview-skeleton}]
+                        :component skeleton-list/view}]
    :markdown          [{:name      :texts
                         :component text/preview-text}
                        {:name      :markdown-list
