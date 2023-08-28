@@ -57,8 +57,7 @@
   {:align-items     :center
    :justify-content :center})
 
-(defn render-communities-container
-  []
+(def render-communities-container
   {:margin-top (if platform/ios? 57 104)})
 
 (defn blur-tabs-header
