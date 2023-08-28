@@ -2293,5 +2293,6 @@
     "add-address": "Add address to watch",
     "add-address-description": "Watch a public address or ENS name",
     "colour": "Colour",
-    "origin": "Origin"
+    "origin": "Origin",
+    "slide-create": "Slide to create account"
 }

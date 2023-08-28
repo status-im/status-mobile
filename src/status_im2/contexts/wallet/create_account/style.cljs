@@ -9,6 +9,10 @@
    :right    0
    :z-index  -1})
 
+(def account-avatar-container
+  {:padding-horizontal 20
+   :padding-top        12})
+
 (def reaction-button-container
   {:position :absolute
    :bottom   0
@@ -18,6 +22,15 @@
   {:padding-horizontal 20
    :padding-top        12
    :padding-bottom     16})
+
+(def color-picker-container
+  {:padding-vertical   12
+   :padding-horizontal 20})
+
+(defn color-label
+  [theme]
+  {:color          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+   :padding-bottom 4})
 
 (defn divider-line
   [theme]

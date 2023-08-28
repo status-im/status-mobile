@@ -1,8 +1,10 @@
 (ns status-im2.contexts.wallet.common.temp
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn wallet-temporary-navigation
   []
@@ -63,8 +65,14 @@
    :account             :default
    :customization-color :blue})
 
-(def create-account-state
-  [{:title        "Alisher's default keypair"
+(defn keypair-string
+  [full-name]
+  (let [first-name (first (string/split full-name #" "))]
+    (i18n/label :t/keypair-title {:name first-name})))
+
+(defn create-account-state
+  [name]
+  [{:title        (keypair-string name)
     :button-props {:title (i18n/label :t/edit)}
     :left-icon    :i/placeholder}
    {:title        (i18n/label :t/derivation-path)
