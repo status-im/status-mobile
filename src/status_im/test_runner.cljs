@@ -64,16 +64,16 @@
 
     (->> (env/get-test-vars)
          (filter (fn [the-var]
-                   (let [{:keys [name ns]} (meta the-var)]
-                     (or (contains? test-namespaces ns)
-                         (contains? test-var-syms (symbol ns name)))))))))
+                   (let [{name :name the-ns :ns} (meta the-var)]
+                     (or (contains? test-namespaces the-ns)
+                         (contains? test-var-syms (symbol the-ns name)))))))))
 
 (defn execute-cli
   [{:keys [test-syms help list repl] :as _opts}]
   (let [test-env
         (-> (ct/empty-env)
-            ;; can't think of a proper way to let CLI specify custom reporter?
-            ;; :report-fn is mostly for UI purposes, CLI should be fine with default report
+            ;; can't think of a proper way to let CLI specify custom reporter? :report-fn is mostly
+            ;; for UI purposes, CLI should be fine with default report
             #_(assoc :report-fn
                      (fn [m]
                        (tap> [:test m (ct/get-current-env)])
@@ -89,10 +89,10 @@
         (println "  --repl (start node without automatically running tests)"))
 
       list
-      (doseq [[ns ns-info]
+      (doseq [[the-ns ns-info]
               (->> (env/get-tests)
                    (sort-by first))]
-        (println "Namespace:" ns)
+        (println "Namespace:" the-ns)
         (doseq [var  (:vars ns-info)
                 :let [m (meta var)]]
           (println (str "  " (:ns m) "/" (:name m))))
