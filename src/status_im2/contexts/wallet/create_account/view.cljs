@@ -26,8 +26,7 @@
                                :on-press        #(rf/dispatch [:navigate-back])}
        :right-section-buttons [{:type            :grey
                                 :icon            :i/info
-                                :icon-background :photo
-                                :on-press        #(rf/dispatch [:open-modal :how-to-pair])}]}]
+                                :icon-background :photo}]}]
      [quo/gradient-cover
       {:customization-color :blue
        :container-style     (style/gradient-cover-container top)}]
