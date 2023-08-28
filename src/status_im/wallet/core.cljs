@@ -1084,12 +1084,12 @@
    (-> (js/Promise.all
         (clj->js
          [(js/Promise.
-           (fn [resolve reject]
+           (fn [resolve-fn reject]
              (json-rpc/call {:method     "accounts_getAccounts"
-                             :on-success resolve
+                             :on-success resolve-fn
                              :on-error   reject})))
           (js/Promise.
-           (fn [resolve _]
+           (fn [resolve-fn _]
              (json-rpc/call
               {:method "wallet_addEthereumChain"
                :params
@@ -1104,24 +1104,24 @@
                  :chainId                (int network-id)
                  :enabled                false
                  :fallbackURL            (get-in network [:config :UpstreamConfig :URL])}]
-               :on-success resolve
-               :on-error (fn [_] (resolve nil))})))
+               :on-success resolve-fn
+               :on-error (fn [_] (resolve-fn nil))})))
           (js/Promise.
-           (fn [resolve _]
+           (fn [resolve-fn _]
              (json-rpc/call {:method     "wallet_getTokens"
                              :params     [(int network-id)]
-                             :on-success resolve
+                             :on-success resolve-fn
                              :on-error   (fn [_]
-                                           (resolve nil))})))
+                                           (resolve-fn nil))})))
           (js/Promise.
-           (fn [resolve reject]
+           (fn [resolve-fn reject]
              (json-rpc/call {:method     "wallet_getCustomTokens"
-                             :on-success resolve
+                             :on-success resolve-fn
                              :on-error   reject})))
           (js/Promise.
-           (fn [resolve reject]
+           (fn [resolve-fn reject]
              (json-rpc/call {:method     "wallet_getSavedAddresses"
-                             :on-success resolve
+                             :on-success resolve-fn
                              :on-error   reject})))]))
        (.then (fn [[accounts _ tokens custom-tokens favourites]]
                 (callback accounts

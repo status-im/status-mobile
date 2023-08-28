@@ -27,6 +27,7 @@
                                               identity
                                               iter
                                               key
+                                              resolve
                                               str
                                               subs
                                               symbol
