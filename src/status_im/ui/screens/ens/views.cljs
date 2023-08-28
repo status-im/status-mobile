@@ -182,8 +182,7 @@
   (let [input-ref (atom nil)]
     (fn [_ state placeholder]
       [react/view {:flex-direction :row :justify-content :center}
-       ;;NOTE required so that the keyboards shows up when navigating
-       ;;back from checkout screen
+       ;;NOTE required so that the keyboards shows up when navigating back from checkout screen
        ;; TODO: navigation-events were deprecated
        ;; [:> navigation/navigation-events
        ;;  {:on-did-focus
@@ -220,8 +219,7 @@
     [react/keyboard-avoiding-view {:flex 1}
      [react/scroll-view
       {:style                        {:flex 1}
-       ;;NOTE required so that switching custom-domain
-       ;;works on first tap and persists keyboard
+       ;;NOTE required so that switching custom-domain works on first tap and persists keyboard
        ;;instead of dismissing keyboard and requiring two taps
        :keyboard-should-persist-taps :always}
       [react/view {:style {:flex 1}}
@@ -556,9 +554,8 @@
            {:title   (i18n/label :t/key)
             :content public-key}]])
        [react/view {:style {:margin-top 16 :margin-bottom 32}}
-        ;;TODO this is temporary fix for accounts with failed txs
-        ;;we still need this for regular ens names (not pending) but we need to detach public key in the
-        ;;contract
+        ;;TODO this is temporary fix for accounts with failed txs we still need this for regular ens
+        ;;names (not pending) but we need to detach public key in the contract
         (when pending?
           [quo/list-item
            {:title    (i18n/label :t/ens-remove-username)
@@ -699,13 +696,13 @@
 (views/defview in-progress-registrations
   [registrations]
   [react/view {:style {:margin-top 8}}
-   (for [[hash {:keys [state username]}] registrations
-         :when                           (or (= state :submitted) (= state :failure))]
-     ^{:key hash}
+   (for [[tx-hash {:keys [state username]}] registrations
+         :when                              (or (= state :submitted) (= state :failure))]
+     ^{:key tx-hash}
      [name-item
       {:name     username
        :action   (when-not (= state :submitted)
-                   #(re-frame/dispatch [:clear-ens-registration hash]))
+                   #(re-frame/dispatch [:clear-ens-registration tx-hash]))
        :subtitle (case state
                    :submitted (i18n/label :t/ens-registration-in-progress)
                    :failure   (i18n/label :t/ens-registration-failure)

@@ -273,24 +273,24 @@
         (catch on-failure))))
 
 (defn sign
-  [{:keys [pin path hash on-success on-failure]}]
+  [{pin :pin path :path card-hash :hash on-success :on-success on-failure :on-failure}]
   (log/debug "keycard sign" "path" path)
-  (when (and pin hash)
+  (when (and pin card-hash)
     (if path
       (.. status-keycard
-          (signWithPath pin path hash)
+          (signWithPath pin path card-hash)
           (then on-success)
           (catch on-failure))
       (.. status-keycard
-          (sign pin hash)
+          (sign pin card-hash)
           (then on-success)
           (catch on-failure)))))
 
 (defn sign-typed-data
-  [{:keys [hash on-success on-failure]}]
-  (when hash
+  [{card-hash :hash on-success :on-success on-failure :on-failure}]
+  (when card-hash
     (.. status-keycard
-        (signPinless hash)
+        (signPinless card-hash)
         (then on-success)
         (catch on-failure))))
 

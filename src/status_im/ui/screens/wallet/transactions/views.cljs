@@ -39,7 +39,8 @@
 (defn render-transaction
   [{:keys [label contact address contact-accessibility-label
            currency-text amount-text
-           time-formatted on-touch-fn type hash]}
+           time-formatted on-touch-fn type]
+    :as   transaction}
    _ _ {:keys [keycard-account?]}]
   [:<>
    [quo/list-item
@@ -62,17 +63,17 @@
                                 time-formatted)
       :chevron             true}
      (when type (transaction-type->icon (keyword type))))]
-   ;; Disabling for now as we have added nonce which is more reliable, until we
-   ;; address the ux issues
+   ;; Disabling for now as we have added nonce which is more reliable, until we address the ux
+   ;; issues
    (when (and false
               (not keycard-account?)
               (= type :pending))
      [react/view {:flex-direction :row :padding 16 :justify-content :space-between}
       [quo/button
-       {:on-press #(re-frame/dispatch [:signing.ui/increase-gas-pressed hash])}
+       {:on-press #(re-frame/dispatch [:signing.ui/increase-gas-pressed (:hash transaction)])}
        (i18n/label :t/increase-gas)]
       [quo/button
-       {:on-press #(re-frame/dispatch [:signing.ui/cancel-transaction-pressed hash])}
+       {:on-press #(re-frame/dispatch [:signing.ui/cancel-transaction-pressed (:hash transaction)])}
        (i18n/label :t/cancel)]])])
 
 (defn chain-explorer-link
@@ -236,15 +237,15 @@
         (str extra-value)]]])))
 
 (defn details-list
-  [{:keys [block hash
-           from from-wallet from-contact
+  [{:keys [block from from-wallet from-contact
            to to-wallet to-contact
            gas-limit gas-price-gwei gas-price-eth gas-used
            fee-cap-gwei tip-cap-gwei
-           cost nonce data]}]
+           cost nonce data]
+    :as   tx}]
   [react/view {:style styles/details-block}
    [details-list-row :t/block block]
-   [details-list-row :t/hash hash]
+   [details-list-row :t/hash (:hash tx)]
    [details-list-row :t/from
     [{:accessibility-label (if from-wallet :sender-name-text :sender-address-text)}
      (or from-wallet from-contact from)]
@@ -267,18 +268,18 @@
    [details-list-row :t/data data]])
 
 (defn details-action
-  [hash url]
+  [tx-hash url]
   [{:label  (i18n/label :t/copy-transaction-hash)
-    :action #(react/copy-to-clipboard hash)}
+    :action #(react/copy-to-clipboard tx-hash)}
    {:label  (i18n/label :t/open-on-block-explorer)
     :action #(.openURL ^js react/linking url)}])
 
 (defview transaction-details-view
-  [hash address]
+  [tx-hash address]
   (letsubs [{:keys [url type confirmations confirmations-progress
                     date amount-text currency-text]
              :as   transaction}
-            [:wallet.transactions.details/screen hash address]]
+            [:wallet.transactions.details/screen tx-hash address]]
     [react/view {:flex 1}
      ;;TODO options should be replaced by bottom sheet ,and topbar should be used here
      [topbar/topbar
@@ -286,7 +287,7 @@
        :right-accessories (when transaction
                             [{:icon     :main-icons/more
                               :on-press #(list-selection/show {:options
-                                                               (details-action hash url)})}])}]
+                                                               (details-action tx-hash url)})}])}]
      [react/scroll-view {:flex 1}
       [details-header date type amount-text currency-text]
       [details-confirmations confirmations confirmations-progress (= :failed type)]
@@ -295,6 +296,6 @@
 
 (defview transaction-details
   []
-  (letsubs [{:keys [hash address]} [:get-screen-params]]
-    (when (and hash address)
-      [transaction-details-view hash address])))
+  (letsubs [{tx-hash :hash address :address} [:get-screen-params]]
+    (when (and tx-hash address)
+      [transaction-details-view tx-hash address])))

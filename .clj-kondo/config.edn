@@ -25,6 +25,7 @@
                                               count
                                               delay
                                               empty?
+                                              hash
                                               identity
                                               iter
                                               key

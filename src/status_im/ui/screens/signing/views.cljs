@@ -76,7 +76,7 @@
 
 (defn header
   [{:keys [in-progress?] :as sign}
-   {:keys [contact amount approve? cancel? hash]}
+   {:keys [contact amount approve? cancel?] :as tx}
    display-symbol fee fee-display-symbol]
   [react/view styles/header
    (when sign
@@ -94,7 +94,7 @@
                   :else
                   (i18n/label :t/sending))
             (if cancel?
-              (str " " (utils/get-shortened-address hash))
+              (str " " (utils/get-shortened-address (:hash tx)))
               (str " " amount " " display-symbol)))]
       [react/text {:style {:typography :title-bold}} (i18n/label :t/contract-interaction)])
     (if sign

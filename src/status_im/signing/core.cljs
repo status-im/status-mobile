@@ -200,10 +200,10 @@
              :symbol   (:symbol token)}))))))
 
 (defn parse-tx-obj
-  [db {:keys [from to value data cancel? hash]}]
+  [db {:keys [from to value data cancel?] :as tx}]
   (merge {:from    {:address from}
           :cancel? cancel?
-          :hash    hash}
+          :hash    (:hash tx)}
          (if (nil? to)
            {:contact {:name (i18n/label :t/new-contract)}}
            (let [eth-value  (when value (money/bignumber value))
@@ -562,10 +562,10 @@
 
 (re-frame/reg-fx
  :signing/get-transaction-by-hash-fx
- (fn [[hash handler]]
+ (fn [[tx-hash handler]]
    (json-rpc/call
     {:method     "eth_getTransactionByHash"
-     :params     [hash]
+     :params     [tx-hash]
      :on-success handler})))
 
 (rf/defn cancel-transaction-pressed

@@ -450,7 +450,7 @@
 (def import-keys get-keys)
 
 (defn sign
-  [{:keys [pin hash data path typed? on-success on-failure]}]
+  [{:keys [pin data path typed? on-success on-failure] :as card}]
   (with-pin pin
             on-failure
             #(let [address
@@ -469,7 +469,7 @@
                  (let [params (types/clj->json
                                {:account  address
                                 :password password
-                                :data     (or data (str "0x" hash))})]
+                                :data     (or data (str "0x" (:hash card)))})]
                    (native-module/sign-message
                     params
                     (fn [res]

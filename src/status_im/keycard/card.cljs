@@ -504,11 +504,11 @@
         (error-object->map response)]))}))
 
 (defn sign-typed-data
-  [{:keys [hash]}]
+  [{card-hash :hash}]
   (log/debug "[keycard] sign-typed-data")
   (keycard/sign-typed-data
    card
-   {:hash hash
+   {:hash card-hash
     :on-success
     (fn [response]
       (log/debug "[keycard response succ] sign-typed-data")
