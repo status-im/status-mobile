@@ -17,7 +17,9 @@
        {:container-style style/device-container
         :title           name
         :override-theme  :dark
-        :left-icon       (if (= device-type :mobile) :i/mobile :i/desktop)}
+        :left-icon       (cond (#{:mobile :ios :android} (keyword device-type))
+                               :i/mobile
+                               :else :i/desktop)}
        (and show-button? unpaired?) (assoc :button-props
                                            {:title    (i18n/label :t/pair)
                                             :on-press #(js/alert "feature not added yet")})
