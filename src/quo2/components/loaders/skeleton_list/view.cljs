@@ -39,20 +39,17 @@
 
     (rn/use-effect
      (fn []
+       (when-not animated?
+         (reanimated/cancel-animation translate-x))
+       (reanimated/animate-shared-value-with-repeat translate-x window-width 1000 :linear -1 false)
        #(when-not animated?
-          (reanimated/cancel-animation translate-x))
-       (reanimated/animate-shared-value-with-repeat
-        translate-x
-        window-width
-        1000
-        :linear
-        -1
-        false)
-       [animated?]))
+          (reanimated/cancel-animation translate-x)))
+     [animated?])
+
 
     [masked-view/masked-view
-     {:style       {:height skeleton-height}
-      :maskElement (reagent/as-element (static-skeleton-view data))}
+     {:style        {:height skeleton-height}
+      :mask-element (reagent/as-element [static-skeleton-view data])}
      [rn/view
       {:style {:flex             1
                :background-color color}}
@@ -81,21 +78,19 @@
                                   (= theme :dark)             colors/neutral-90
                                   :else                       colors/neutral-5)
         component               (if animated? animated-skeleton-view static-skeleton-view)]
-
     [rn/view
      {:style               {:padding 8}
       :accessibility-label :skeleton-list}
-     (doall
-      (for [parent-index (range number-of-skeletons)]
-        ^{:key parent-index}
-        [component
-         (merge props
-                {:index           (mod parent-index 4)
-                 :parent-index    parent-index
-                 :color           color
-                 :translate-x     translate-x
-                 :skeleton-height skeleton-height
-                 :style           animated-gradient-style})]))]))
+     (for [parent-index (range number-of-skeletons)]
+       ^{:key parent-index}
+       [component
+        (merge props
+               {:index           (mod parent-index 4)
+                :parent-index    parent-index
+                :color           color
+                :translate-x     translate-x
+                :skeleton-height skeleton-height
+                :style           animated-gradient-style})])]))
 
 (defn- internal-view
   [props]
