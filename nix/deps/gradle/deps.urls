@@ -473,6 +473,7 @@ https://dl.google.com/dl/android/maven2/com/google/mlkit/barcode-scanning/17.0.2
 https://dl.google.com/dl/android/maven2/com/google/mlkit/common/18.0.0/common-18.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/mlkit/vision-common/17.0.0/vision-common-17.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/mlkit/vision-interfaces/16.0.0/vision-interfaces-16.0.0.pom
+https://dl.google.com/dl/android/maven2/com/google/prefab/cli/2.0.0/cli-2.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/testing/platform/core-proto/0.0.8-alpha04/core-proto-0.0.8-alpha04.pom
 https://dl.google.com/dl/android/maven2/com/google/testing/platform/core-proto/0.0.8-alpha07/core-proto-0.0.8-alpha07.pom
 https://dl.google.com/dl/android/maven2/com/google/testing/platform/core-proto/0.0.8-alpha08/core-proto-0.0.8-alpha08.pom
@@ -1055,14 +1056,11 @@ https://repo.maven.apache.org/maven2/org/jetbrains/annotations/13.0/annotations-
 https://repo.maven.apache.org/maven2/org/jetbrains/dokka/dokka-core/1.4.32/dokka-core-1.4.32.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/intellij/deps/trove4j/1.0.20181211/trove4j-1.0.20181211.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/intellij/deps/trove4j/1.0.20200330/trove4j-1.0.20200330.pom
-https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/atomicfu-jvm/0.16.3/atomicfu-jvm-0.16.3.pom
-https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/atomicfu/0.16.3/atomicfu-0.16.3.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-android/1.5.2/kotlinx-coroutines-android-1.5.2.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.4.1/kotlinx-coroutines-core-jvm-1.4.1.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.5.0/kotlinx-coroutines-core-jvm-1.5.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.5.2/kotlinx-coroutines-core-jvm-1.5.2.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.4.1/kotlinx-coroutines-core-1.4.1.pom
-https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.5.2/kotlinx-coroutines-core-1.5.2.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-metadata-jvm/0.1.0/kotlinx-metadata-jvm-0.1.0.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/jvm/org.jetbrains.kotlin.jvm.gradle.plugin/1.7.22/org.jetbrains.kotlin.jvm.gradle.plugin-1.7.22.pom
 https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-android-extensions/1.6.20/kotlin-android-extensions-1.6.20.pom

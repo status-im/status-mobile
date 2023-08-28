@@ -90,6 +90,7 @@ echo 'com.squareup.okhttp3:okhttp:3.12.1' >> "${DEPS_LIST}"
 echo 'org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.7.22' >> "${DEPS_LIST}"
 echo 'com.android.tools.lint:lint-gradle:30.4.2' >> "${DEPS_LIST}"
 echo 'com.android.tools.build:gradle:7.4.2' >> "${DEPS_LIST}"
+echo 'com.google.prefab:cli:2.0.0' >> "${DEPS_LIST}"
 gen_deps_urls
 gen_deps_json
 

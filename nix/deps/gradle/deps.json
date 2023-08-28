@@ -7125,6 +7125,17 @@
   },
 
   {
+    "path": "com/google/prefab/cli/2.0.0",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "cli-2.0.0.pom": {
+        "sha1": "c551056d34273f78ce483e40a36516c46bf2de35",
+        "sha256": "sha256-SFZAGiY7OcU5Szahbg2ZYozwXGgAigzalpHHK7EB4d8="
+      }
+    }
+  },
+
+  {
     "path": "com/google/testing/platform/core-proto/0.0.8-alpha04",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
@@ -8545,6 +8556,14 @@
       "react-android-0.72.3.pom": {
         "sha1": "f40df82d179bfe37f0aa93f762211f894013ef53",
         "sha256": "sha256-T1cxP6xjlo9yz+pxhIZZuAaRvelwXAspvdQqmsKMQZ8="
+      },
+      "react-android-0.72.3.module": {
+        "sha1": "a0725319b69ba9c5a30217d6faf37c36a3f4280c",
+        "sha256": "sha256-pZHU/ilQdsiPBHfsxJ8GBWDJLV68gUTh89e9kl9+Sxg="
+      },
+      "react-android-0.72.3-release.aar": {
+        "sha1": "3d1c58848ed374f0664317a0627f1afd12398133",
+        "sha256": "sha256-Kph3mGlnRKgSd6BkPQ6nz651/aq+DoKQcvVl8cQj3nQ="
       }
     }
   },
@@ -15131,32 +15150,6 @@
   },
 
   {
-    "path": "org/jetbrains/kotlinx/atomicfu-jvm/0.16.3",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "atomicfu-jvm-0.16.3.pom": {
-        "sha1": "d2998b7424ad282ed29f71cec8ee99ed8159069e",
-        "sha256": "sha256-AXDVtkrdbDgBWymIP0N1HoXzrPoJ+GDx4NxGCWfZ3GA="
-      },
-      "atomicfu-jvm-0.16.3.jar": {
-        "sha1": "94e988a2e1365361e619ad57639a493cdcaefdf6",
-        "sha256": "sha256-b9jw/kKN0q+OQldC5FX9XtODYBEcl8wfwW8QYQk+5c8="
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlinx/atomicfu/0.16.3",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "atomicfu-0.16.3.pom": {
-        "sha1": "6e713226565126814aa9364f7ca3d23cc8e82bb2",
-        "sha256": "sha256-Am7E/9ubEBOrpU1/yW//hKPUH2OAxF+g7ag+whV3e2A="
-      }
-    }
-  },
-
-  {
     "path": "org/jetbrains/kotlinx/kotlinx-coroutines-android/1.5.2",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -15227,17 +15220,6 @@
       "kotlinx-coroutines-core-1.4.1.jar": {
         "sha1": "936067d1e0195f638396f60e71da745bb14a35ca",
         "sha256": "sha256-bS+HdktmOPJ6/xLtOA20tjydRrpV3DJoOmUFmPpaPiI="
-      }
-    }
-  },
-
-  {
-    "path": "org/jetbrains/kotlinx/kotlinx-coroutines-core/1.5.2",
-    "repo": "https://repo.maven.apache.org/maven2",
-    "files": {
-      "kotlinx-coroutines-core-1.5.2.pom": {
-        "sha1": "a7c7e93534ced240c9b3df6530ef5e40339c8a23",
-        "sha256": "sha256-9wPjHqf4URl1mWZF94WbNR6gNokDCMRWL0dI6Y8Mx+I="
       }
     }
   },
