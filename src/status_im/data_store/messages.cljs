@@ -15,7 +15,7 @@
                       :community-id      :communityId
                       :clock-value       :clock})))
 
-(defn- <-link-preview-rpc
+(defn <-link-preview-rpc
   [preview]
   (update preview
           :thumbnail
