@@ -28,6 +28,7 @@
                                               iter
                                               key
                                               keys
+                                              new
                                               resolve
                                               str
                                               subs

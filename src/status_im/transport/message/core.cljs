@@ -202,10 +202,10 @@
         message-type            (.-messageType message-js)
         from                    (.-from message-js)
         mentioned               (.-mentioned message-js)
-        new                     (.-new message-js)
+        new-message             (.-new message-js)
         current                 (= current-chat-id chat-id)
         should-update-unviewed? (and (not current)
-                                     new
+                                     new-message
                                      (not (= message-type
                                              constants/message-type-private-group-system-message))
                                      (not (= from (get-in db [:profile/profile :public-key]))))
@@ -300,8 +300,7 @@
            (get-in db [:transport/message-envelopes message-id])]
     (when-let [{:keys [from]} (get-in db [:messages chat-id message-id])]
       (check-confirmations cofx status chat-id message-id))
-    ;; We don't have a message-envelope for this, might be that the confirmation
-    ;; came too early
+    ;; We don't have a message-envelope for this, might be that the confirmation came too early
     {:db (update-in db [:transport/message-confirmations message-id] conj status)}))
 
 (rf/defn update-envelopes-status
