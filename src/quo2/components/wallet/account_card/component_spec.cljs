@@ -6,8 +6,8 @@
 (def empty-username "Account 1")
 
 (defn get-test-data
-  [type watch-only? empty? loading? metrics?]
-  {:name                (if empty? empty-username username)
+  [type watch-only? empty-type? loading? metrics?]
+  {:name                (if empty-type? empty-username username)
    :balance             "€1,000.00"
    :percentage-value    "50%"
    :amount              "€500.00"

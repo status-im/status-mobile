@@ -24,6 +24,7 @@
                                               comparator
                                               count
                                               delay
+                                              empty?
                                               identity
                                               iter
                                               key
