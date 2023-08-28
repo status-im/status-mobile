@@ -1,14 +1,12 @@
 (ns status-im2.contexts.onboarding.welcome.view
-  (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [re-frame.core :as re-frame]
-    [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.onboarding.welcome.style :as style]))
+  (:require [quo2.core :as quo]
+            [re-frame.core :as re-frame]
+            [react-native.core :as rn]
+            [react-native.safe-area :as safe-area]
+            [status-im2.constants :as constants]
+            [status-im2.contexts.onboarding.welcome.style :as style]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn page-title
   []
@@ -21,22 +19,6 @@
       :title-accessibility-label    :welcome-title
       :subtitle                     (i18n/label :t/welcome-to-web3-sub-title)
       :subtitle-accessibility-label :welcome-sub-title}]))
-
-(defn navigation-bar
-  [root]
-  [quo/page-nav
-   {:horizontal-description? false
-    :one-icon-align-left?    true
-    :align-mid?              false
-    :page-nav-color          :transparent
-    :left-section            {:icon                  :i/arrow-left
-                              ;TODO this is wrong - page nav needs updating
-                              ;https://github.com/status-im/status-mobile/issues/16535
-                              ; should be type:grey, and page nav can use background instead.
-                              :icon-background-color colors/white-opa-5
-                              :type                  :grey
-                              :on-press              #(rf/dispatch [:navigate-back-within-stack
-                                                                    root])}}])
 
 (defn dispatch-visibility-status-update
   [status-type]
@@ -51,7 +33,11 @@
     [rn/view {:style (style/page-container insets)}
      (when (nil? status-type)
        (dispatch-visibility-status-update constants/visibility-status-automatic))
-     [navigation-bar :enable-notifications]
+     [quo/page-nav
+      {:type       :no-title
+       :background :blur
+       :icon-name  :i/arrow-left
+       :on-press   #(rf/dispatch [:navigate-back-within-stack :enable-notifications])}]
      [page-title]
      [rn/view {:style style/page-illustration}
       [quo/text

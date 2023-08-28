@@ -7,7 +7,6 @@
             [reagent.core :as reagent]
             [status-im.ethereum.mnemonic :as mnemonic]
             [status-im2.constants :as constants]
-            [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
             [status-im2.contexts.onboarding.enter-seed-phrase.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
@@ -160,7 +159,9 @@
   (let [{navigation-bar-top :top} (safe-area/get-insets)]
     [rn/view {:style style/full-layout}
      [rn/keyboard-avoiding-view {:style style/page-container}
-      [navigation-bar/navigation-bar
-       {:stack-id :new-to-status
-        :top      navigation-bar-top}]
+      [quo/page-nav
+       {:margin-top navigation-bar-top
+        :background :blur
+        :icon-name  :i/arrow-left
+        :on-press   #(rf/dispatch [:navigate-back-within-stack :new-to-status])}]
       [screen]]]))

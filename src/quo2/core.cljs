@@ -75,7 +75,7 @@
     quo2.components.messages.gap
     quo2.components.messages.system-message
     quo2.components.navigation.floating-shell-button.view
-    quo2.components.navigation.page-nav
+    quo2.components.navigation.page-nav.view
     quo2.components.notifications.activity-log.view
     quo2.components.notifications.activity-logs-photos.view
     quo2.components.notifications.count-down-circle
@@ -251,7 +251,7 @@
 
 ;;;; Navigation
 (def floating-shell-button quo2.components.navigation.floating-shell-button.view/view)
-(def page-nav quo2.components.navigation.page-nav/page-nav)
+(def page-nav quo2.components.navigation.page-nav.view/page-nav)
 
 ;;;; Markdown
 (def markdown-list quo2.components.markdown.list.view/view)
