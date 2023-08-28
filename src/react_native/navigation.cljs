@@ -14,36 +14,40 @@
   (.setRoot ^js Navigation (clj->js root)))
 
 (defn set-stack-root
-  [stack comp]
-  (.setStackRoot ^js Navigation stack (clj->js comp)))
+  [stack component]
+  (.setStackRoot ^js Navigation stack (clj->js component)))
 
 (defn push
   [arg1 arg2]
   (.push ^js Navigation arg1 (clj->js arg2)))
 
-(defn pop [comp] (.pop ^js Navigation comp))
+(defn pop
+  [component]
+  (.pop ^js Navigation component))
 
 (defn show-modal
-  [arg]
-  (.showModal ^js Navigation (clj->js arg)))
+  [component]
+  (.showModal ^js Navigation (clj->js component)))
 
-(defn dismiss-modal [comp] (.dismissModal ^js Navigation comp))
+(defn dismiss-modal
+  [component]
+  (.dismissModal ^js Navigation component))
 
 (defn show-overlay
-  [comp]
-  (.showOverlay Navigation (clj->js comp)))
+  [component]
+  (.showOverlay Navigation (clj->js component)))
 
 (defn pop-to
-  [comp]
-  (.popTo Navigation (clj->js comp)))
+  [component]
+  (.popTo Navigation (clj->js component)))
 
 (defn pop-to-root
   [tab]
   (.popToRoot Navigation (clj->js tab)))
 
 (defn dissmiss-overlay
-  [comp]
-  (.catch (.dismissOverlay Navigation comp) #()))
+  [component]
+  (.catch (.dismissOverlay Navigation component) #()))
 
 (defn reg-app-launched-listener
   [handler]

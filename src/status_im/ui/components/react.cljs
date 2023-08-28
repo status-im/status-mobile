@@ -288,7 +288,7 @@
   (vec (conj children props scroll-view-class)))
 
 (views/defview with-activity-indicator
-  [{:keys [timeout style enabled? preview]} comp]
+  [{:keys [timeout style enabled? preview]} component]
   (views/letsubs
     [loading (reagent/atom true)]
     {:component-did-mount (fn []
@@ -304,7 +304,7 @@
                        {:justify-content :center
                         :align-items     :center})}
            [activity-indicator {:animating true}]])
-      comp)))
+      component)))
 
 (defn hw-back-add-listener
   [callback]
