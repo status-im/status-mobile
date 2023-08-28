@@ -2287,18 +2287,11 @@
     "about": "About",
     "no-permissions": "No permissions",
     "no-dapps": "No connected dApps",
-<<<<<<< HEAD
-    "days": "Days"
-=======
+    "days": "Days",
     "add-account": "Add account",
     "add-account-description": "Create new or import existing account",
     "add-address": "Add address to watch",
     "add-address-description": "Watch a public address or ENS name",
-<<<<<<< HEAD
-    "colour": "Colour"
->>>>>>> a372cb916 (feat: wallet create account)
-=======
     "colour": "Colour",
     "origin": "Origin"
->>>>>>> 402700233 (feat: create wallet account)
 }
