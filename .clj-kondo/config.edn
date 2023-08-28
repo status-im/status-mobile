@@ -38,7 +38,8 @@
                                               subs
                                               symbol
                                               time
-                                              val]}
+                                              val
+                                              var]}
                 :invalid-arity     {:skip-args [status-im.utils.fx/defn utils.re-frame/defn]}
                 ;; TODO remove number when this is fixed
                 ;; https://github.com/borkdude/clj-kondo/issues/867

@@ -93,8 +93,8 @@
               (->> (env/get-tests)
                    (sort-by first))]
         (println "Namespace:" the-ns)
-        (doseq [var  (:vars ns-info)
-                :let [m (meta var)]]
+        (doseq [the-var (:vars ns-info)
+                :let    [m (meta the-var)]]
           (println (str "  " (:ns m) "/" (:name m))))
         (println "---------------------------------"))
 
