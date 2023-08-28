@@ -7,6 +7,7 @@
 ;; https://github.com/tailrecursion/cljs-priority-map/blob/master/src/cljs/tailrecursion/priority_map.cljs
 ;; fixing `vals` and `keys` function
 
+#_{:clj-kondo/ignore [:shadowed-var]}
 (deftype PersistentPriorityMap [priority->set-of-items item->priority meta keyfn ^:mutable __hash]
   IPrintWithWriter
     (-pr-writer [coll writer opts]
