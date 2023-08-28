@@ -12,15 +12,15 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:start-date nil :end-date nil})
-        range (reagent/atom {:start-date nil :end-date nil})]
+  (let [state  (reagent/atom {:start-date nil :end-date nil})
+        period (reagent/atom {:start-date nil :end-date nil})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}
        [quo/calendar
-        {:start-date (:start-date @range)
-         :end-date   (:end-date @range)
+        {:start-date (:start-date @period)
+         :end-date   (:end-date @period)
          :on-change  (fn [new-range]
                        (reset! state
                          {:start-date (datetime/format-date (:start-date new-range))
                           :end-date   (datetime/format-date (:end-date new-range))})
-                       (reset! range new-range))}]])))
+                       (reset! period new-range))}]])))
