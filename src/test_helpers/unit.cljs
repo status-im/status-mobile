@@ -26,8 +26,8 @@
   []
   (rf/reg-event-db
    :test/assoc-in
-   (fn [db [_ keys value]]
-     (assoc-in db keys value))))
+   (fn [db [_ path value]]
+     (assoc-in db path value))))
 
 (defn spy-event-fx
   "Re-register event effect using id `id`, but conj to `state` the event

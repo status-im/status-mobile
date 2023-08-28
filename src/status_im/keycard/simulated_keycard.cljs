@@ -429,19 +429,19 @@
   (with-pin pin
             on-failure
             (if @derived-acc
-              (let [[id keys] (multiaccount->keys @derived-acc)]
+              (let [[id account-keys] (multiaccount->keys @derived-acc)]
                 (swap! state assoc-in
                   [:application-info :key-uid]
-                  (:key-uid keys))
+                  (:key-uid account-keys))
                 (native-module/multiaccount-store-derived
                  id
-                 (:key-uid keys)
+                 (:key-uid account-keys)
                  [constants/path-wallet-root
                   constants/path-eip1581
                   constants/path-whisper
                   constants/path-default-wallet]
                  account-password
-                 #(on-success keys)))
+                 #(on-success account-keys)))
               #(on-success
                 {:key-uid               (get-in @state [:application-info :key-uid])
                  :instance-uid          (get-in @state [:application-info :instance-uid])

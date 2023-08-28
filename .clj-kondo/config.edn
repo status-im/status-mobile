@@ -27,6 +27,7 @@
                                               identity
                                               iter
                                               key
+                                              keys
                                               resolve
                                               str
                                               subs
