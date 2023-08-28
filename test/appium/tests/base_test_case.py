@@ -413,7 +413,7 @@ class SauceSharedMultipleDeviceTestCase(AbstractTestCase):
                 session_id = driver.session_id
                 try:
                     sauce.jobs.update_job(username=sauce_username, job_id=session_id, name=cls.__name__)
-                except (RemoteDisconnected, SauceException):
+                except (RemoteDisconnected, SauceException, requests.exceptions.ConnectionError):
                     pass
                 try:
                     driver.quit()

@@ -552,6 +552,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.text_message = 'hello'
 
         # self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
+        self.home_1.get_chat(self.username_2).wait_for_visibility_of_element()
         self.chat_1 = self.home_1.get_chat(self.username_2).click()
         self.chat_1.send_message('hey')
         self.chat_2 = self.home_2.get_chat(self.username_1).click()
@@ -912,7 +913,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("Messages from blocked user is not cleared in public chat ")
         self.chat_1.navigate_back_to_home_view()
         self.home_1.chats_tab.click()
-        if not self.home_1.element_by_translation_id( "no-messages").is_element_displayed():
+        if not self.home_1.element_by_translation_id("no-messages").is_element_displayed():
             self.errors.append("1-1 chat from blocked user is not removed and messages home is not empty!")
         self.chat_1.toggle_airplane_mode()
 
@@ -1025,6 +1026,30 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         reason="Issue with username in PN, issue #6 in https://github.com/status-im/status-mobile/issues/15500")
     def test_community_mentions_push_notification(self):
         self.home_1.navigate_back_to_home_view()
+        self.home_1.chats_tab.click()
+        self.home_1.contacts_tab.click()
+        if not self.home_1.contact_details_row(username=self.username_2).is_element_displayed():
+            # if test_community_contact_block_unblock_offline failed we need to add users to contacts again
+            self.home_1.navigate_back_to_home_view()
+            self.chat_1.profile_button.click()
+            self.profile_1.contacts_button.wait_and_click()
+            if self.profile_1.blocked_users_button.is_element_displayed():
+                self.profile_1.element_by_text(self.username_2).click()
+                self.chat_1.unblock_contact_button.click()
+                self.chat_1.profile_add_to_contacts_button.click()
+                self.chat_1.close_button.click()
+            else:
+                self.profile_1.add_new_contact_button.click()
+                self.chat_1.public_key_edit_box.click()
+                self.chat_1.public_key_edit_box.send_keys(self.public_key_2)
+                self.chat_1.view_profile_new_contact_button.click_until_presence_of_element(
+                    self.chat_1.profile_add_to_contacts_button)
+                self.chat_1.profile_add_to_contacts_button.click()
+            self.chat_1.navigate_back_to_home_view()
+            self.home_2.navigate_back_to_home_view()
+            self.home_2.handle_contact_request(self.username_1)
+
+        self.home_1.navigate_back_to_home_view()
         if not self.channel_2.chat_message_input.is_element_displayed():
             self.channel_2.navigate_back_to_home_view()
             self.home_2.communities_tab.click()
@@ -1136,28 +1161,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         for home in self.homes:
             home.navigate_back_to_home_view()
             home.chats_tab.click()
+            home.recent_tab.click()
 
-        if self.home_1.get_chat(self.username_2).is_element_displayed():
-            self.home_1.get_chat(self.username_2).click()
-        else:
-            # if test_community_contact_block_unblock_offline failed we need to add users to contacts again
-            self.home_1.contacts_tab.click()
-            if self.home_1.contact_details_row(username=self.username_2).is_element_displayed():
-                self.home_1.contact_details_row(username=self.username_2).click()
-                self.chat_1.profile_send_message_button.click()
-            else:
-                self.home_1.navigate_back_to_home_view()
-                self.chat_1.profile_button.click()
-                self.profile_1.contacts_button.wait_and_click()
-                self.profile_1.blocked_users_button.wait_and_click()
-                self.profile_1.element_by_text(self.username_2).click()
-                self.chat_1.unblock_contact_button.click()
-                self.chat_1.close_button.click()
-                self.chat_1.navigate_back_to_home_view()
-                self.home_1.chats_tab.click()
-                self.home_1.get_chat(self.username_2).click()
-            self.chat_1.send_message("just a message")
-
+        self.home_1.get_chat(self.username_2).click()
         self.home_2.get_chat(self.username_1).click()
 
         for message, symbol in markdown.items():

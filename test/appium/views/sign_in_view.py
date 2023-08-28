@@ -142,7 +142,6 @@ class SignInView(BaseView):
         self.sign_in_intro_button = Button(self.driver, accessibility_id="already-use-status-button")
         self.i_m_new_in_status_button = Button(self.driver, accessibility_id="new-to-status-button")
 
-        self.password_input = EditBox(self.driver, accessibility_id="password-input")
         self.migration_password_input = EditBox(self.driver, accessibility_id="enter-password-input")
         self.login_button = LogInButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
