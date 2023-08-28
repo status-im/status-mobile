@@ -130,6 +130,10 @@
          (assoc :size size)
          (assoc :type subtype)
          (assoc :disabled? (and replying? disable-when (disable-when @reply-input)))
+         (assoc :inner-style
+                {:justify-content :center
+                 :padding-bottom  0
+                 :padding-top     0})
          (update :container-style merge common-style {:margin-right 8}))
      label]))
 
