@@ -28,7 +28,7 @@
 (defn message-container
   [attachment]
   {:border-radius      12
-   :margin-top         12
+   :margin-top         10
    :padding-horizontal 12
    :padding-vertical   (if (#{:photo :gif} attachment) 12 8)
    :background-color   colors/white-opa-5})
