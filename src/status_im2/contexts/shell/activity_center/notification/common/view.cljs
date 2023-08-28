@@ -8,24 +8,14 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(def tag-params
-  {:size                   :size/s-20
-   :customization-color    :blue
-   :style                  style/user-avatar-tag
-   :text-style             style/user-avatar-tag-text
-   :no-avatar-placeholder? true})
-
 (defn user-avatar-tag
   [user-id]
   (let [{:keys [primary-name] :as contact} (rf/sub [:contacts/contact-by-identity user-id])]
-    [quo/user-avatar-tag
-     {:color      :purple
-      :size       :small
-      :style      style/user-avatar-tag
-      :text-style style/user-avatar-tag-text
-      :ring?      false}
-     primary-name
-     (multiaccounts/displayed-photo contact)]))
+    [quo/context-tag
+     {:blur?           true
+      :size            24
+      :full-name       primary-name
+      :profile-picture (multiaccounts/displayed-photo contact)}]))
 
 (defn- render-swipe-action
   [{:keys [active-swipeable

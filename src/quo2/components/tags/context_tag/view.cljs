@@ -1,106 +1,215 @@
 (ns quo2.components.tags.context-tag.view
-  (:require [quo2.components.avatars.group-avatar.view :as group-avatar]
-            [quo2.components.avatars.user-avatar.style :as user-avatar.style]
+  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
+            [quo2.components.avatars.group-avatar.view :as group-avatar]
             [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.icon :as icons]
+            [quo2.components.list-items.preview-list.view :as preview-list]
             [quo2.components.markdown.text :as text]
             [quo2.components.tags.context-tag.style :as style]
+            [quo2.foundations.colors :as colors]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]))
 
-(defn trim-public-key
+(defn- tag-skeleton
+  [{:keys [theme size text] :or {size 24}} logo-component]
+  [rn/view {:style (style/tag-container size)}
+   logo-component
+   [rn/view {:style (style/tag-spacing size)}
+    [text/text
+     {:style  (style/text theme)
+      :weight :medium
+      :size   (if (= size 24) :paragraph-2 :paragraph-1)}
+     text]]])
+
+(defn- communities-tag
+  [{:keys [theme size community-logo community-name blur? channel? channel-name]}]
+  (let [text-size (if (= size 24) :paragraph-2 :paragraph-1)
+        icon-size (if (= size 24) 16 20)]
+    [rn/view {:style (style/tag-container size)}
+     [rn/image {:style (style/circle-logo size) :source community-logo}]
+     [rn/view {:style (style/tag-spacing size)}
+      [text/text
+       {:style  (style/text theme)
+        :weight :medium
+        :size   text-size}
+       community-name]]
+     (when channel?
+       [:<>
+        [icons/icon :i/chevron-right
+         {:color (style/context-tag-icon-color theme blur?)
+          :size  icon-size}]
+        [text/text
+         {:style  (style/text theme)
+          :weight :medium
+          :size   text-size}
+         (str "# " channel-name)]])]))
+
+(defn- trim-public-key
   [pk]
-  (str (subs pk 0 6) "..." (subs pk (- (count pk) 3))))
+  (str (subs pk 0 5) "..." (subs pk (- (count pk) 3))))
 
-(defn base-tag
-  [{:keys [override-theme style blur?]} & children]
-  (into
-   [rn/view {:style (merge (style/base-tag override-theme blur?) style)}]
-   children))
-
-(defn group-avatar-tag
-  [label opts]
-  [base-tag
-   (-> opts
-       (select-keys [:override-theme :style :blur?])
-       (assoc-in [:style :padding-left] 3)
-       (assoc-in [:style :padding-vertical] 2))
-   [group-avatar/view opts]
+(defn- address-tag
+  [{:keys [theme size address]}]
+  [rn/view {:style (style/address size)}
    [text/text
-    {:weight :medium
-     :size   :paragraph-2
-     :style  (:text-style opts)}
-    (str " " label)]])
+    {:style  (style/text theme)
+     :weight :monospace ;; TODO: fix this style (issue #17009)
+     :size   (if (= size 24) :paragraph-2 :paragraph-1)}
+    (trim-public-key address)]])
 
-(defn public-key-tag
-  [params public-key]
-  [base-tag params
-   [text/text
-    {:weight :monospace
-     :size   :paragraph-2}
-    (trim-public-key public-key)]])
+(defn- icon-tag
+  [{:keys [theme size icon blur? context]}]
+  [rn/view {:style (style/icon size)}
+   [icons/icon icon
+    {:color (style/context-tag-icon-color theme blur?)
+     :size  (if (= size 24) 12 20)}]
+   [rn/view {:style (style/icon-spacing size)}
+    [text/text
+     {:style  (style/text theme)
+      :weight :medium
+      :size   (if (= size 24) :paragraph-2 :paragraph-1)}
+     context]]])
 
-(defn context-tag
-  [{:keys [text-style blur? no-avatar-placeholder? text-container-style ellipsize-text? ring?]
-    :as   props}
-   photo
-   name
-   channel-name]
-  (let [text-props        {:weight          :medium
-                           :size            :paragraph-2
-                           :style           (assoc text-style :justify-content :center)
-                           :number-of-lines 1
-                           :ellipsize-mode  :tail}
-        empty-photo?      (nil? photo)
-        avatar-size       :xxs
-        avatar-outer-size (get-in user-avatar.style/sizes [avatar-size :outer])]
-    [base-tag (update-in props [:style :padding-left] #(or % 3))
-     (if (and empty-photo? no-avatar-placeholder?)
-       [rn/view {:style {:width avatar-outer-size}}]
-       [user-avatar/user-avatar
-        {:full-name         name
-         :profile-picture   photo
-         :size              avatar-size
-         :ring?             ring?
-         :status-indicator? false}])
-     [rn/view {:style (or text-container-style style/context-tag-text-container)}
-      (if ellipsize-text?
-        [rn/view {:style {:flex 1}}
-         [text/text text-props name]]
-        [text/text text-props (str " " name)])
-      (when channel-name
-        [:<>
-         [icons/icon
-          :i/chevron-right
-          {:color (style/context-tag-icon-color blur?)
-           :size  16}]
-         [text/text text-props (str "# " channel-name)]])]]))
+(defn- view-internal
+  [{:keys [theme type size state blur? customization-color profile-picture full-name users
+           group-name token-logo amount token-name network-logo network-name networks
+           account-name emoji collectible collectible-name collectible-number duration]
+    :or   {customization-color :blue
+           type                :default
+           state               :default}
+    :as   props}]
+  [rn/view
+   {:style (style/container {:theme               theme
+                             :type                type
+                             :size                size
+                             :state               state
+                             :blur?               blur?
+                             :customization-color customization-color})}
+   (case type
+     :default
+     [tag-skeleton {:theme theme :size size :text full-name}
+      [user-avatar/user-avatar
+       {:full-name         full-name
+        :profile-picture   profile-picture
+        :size              (if (= size 24) :xxs 28)
+        :status-indicator? false}]]
 
-(defn user-avatar-tag
-  [params username photo]
-  [context-tag params photo username])
+     :multiuser
+     [preview-list/view {:type :user :size 20}
+      users]
 
-(defn audio-tag
-  [duration params]
-  [base-tag (merge {:style style/audio-tag-container} params)
-   [rn/view {:style style/audio-tag-icon-container}
-    [icons/icon
-     :i/play
-     {:color style/audio-tag-icon-color
-      :size  12}]]
-   [text/text
-    {:weight :medium
-     :size   :paragraph-2
-     :style  {:margin-left 4
-              :color       (style/audio-tag-text-color (:override-theme params))}}
-    duration]])
+     :multinetwork
+     [preview-list/view {:type :network :size 20}
+      (map #(hash-map :profile-picture %) networks)]
 
-(defn community-tag
-  [avatar community-name {:keys [override-theme] :as params}]
-  [context-tag
-   (merge {:style                style/community-tag
-           :text-style           (style/community-tag-text override-theme)
-           :text-container-style style/community-tag-text-container
-           :ellipsize-text?      true}
-          params)
-   avatar
-   community-name])
+     :audio
+     [tag-skeleton {:theme theme :text (str duration)}
+      [rn/view {:style style/audio-tag-icon-container}
+       [icons/icon :i/play {:color style/audio-tag-icon-color :size 12}]]]
+
+     :group
+     [tag-skeleton {:theme theme :size size :text group-name}
+      [group-avatar/view
+       {:icon-name           :i/members
+        :size                (if (= size 24) :size/s-20 :size/s-28)
+        :customization-color (colors/custom-color customization-color 50)}]]
+
+     (:channel :community)
+     [communities-tag (assoc props :channel? (= type :channel))]
+
+     :token
+     [tag-skeleton {:theme theme :size size :text (str amount " " token-name)}
+      [rn/image {:style (style/circle-logo size) :source token-logo}]]
+
+     :network
+     [tag-skeleton {:theme theme :size size :text network-name}
+      [rn/image {:style (style/circle-logo size) :source network-logo}]]
+
+     :collectible
+     [tag-skeleton
+      {:theme theme
+       :size  size
+       :text  (str collectible-name " #" collectible-number)}
+      [rn/image {:style (style/rounded-logo size) :source collectible}]]
+
+     :account
+     [tag-skeleton {:theme theme :size size :text account-name}
+      [account-avatar/view
+       {:customization-color customization-color
+        :emoji               emoji
+        :size                (if (= size 24) 20 28)}]]
+
+     :address
+     [address-tag props]
+
+     :icon
+     [icon-tag props]
+
+     nil)])
+
+(def view
+  "Properties:
+  type, state, blur? & customization-color
+
+  Depending on the `type` selected, different properties are accepted:
+  - `:default` or `nil`:
+    - size
+    - profile-picture
+    - full-name
+
+  - `:multiuser`:
+    - users (vector of {:profile-picture pic, :full-name \"a name\"})
+
+  - `:group`
+    - size
+    - group-name
+
+  - `:community`
+      - size
+      - community-logo (valid rn/image :source value)
+      - community-name
+
+  - `:channel`
+    - size
+    - community-logo (valid rn/image :source value)
+    - community-name
+    - channel-name
+
+  - `:token`
+    - size
+    - token-logo (valid rn/image :source value)
+    - amount
+    - token-name
+
+  - `:network`
+    - size
+    - network-logo (valid rn/image :source value)
+    - network-name
+
+  - `:multinetworks`
+    - networks (vector of {:network-logo pic, :network-name \"a name\"})
+
+  - `:account`
+    - size
+    - account-name
+    - emoji (string containing an emoji)
+
+  - `:collectible`
+    - size
+    - collectible (valid rn/image :source value)
+    - collectible-name
+    - collectible-number
+
+  - `:address`
+    - size
+    - address (string)
+
+  - `:icon`
+    - size
+    - icon
+    - context (string)
+
+  - `:audio`
+    - duration (string)
+  "
+  (quo.theme/with-theme view-internal))

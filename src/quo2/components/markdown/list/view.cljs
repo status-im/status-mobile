@@ -1,12 +1,12 @@
 (ns quo2.components.markdown.list.view
-  (:require [react-native.core :as rn]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.counter.step.view :as step]
-            [quo2.components.markdown.list.style :as style]
+  (:require [quo2.components.counter.step.view :as step]
             [quo2.components.icon :as icon]
+            [quo2.components.markdown.list.style :as style]
+            [quo2.components.markdown.text :as text]
+            [quo2.components.tags.context-tag.view :as context-tag]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
-            [quo2.components.tags.context-tag.view :as context-tag]))
+            [react-native.core :as rn]))
 
 (defn get-colors
   [theme blur?]
@@ -27,7 +27,11 @@
        :size                :paragraph-2}
       description]
      [rn/view {:style {:margin-left 4}}
-      [context-tag/context-tag {:blur? blur?} tag-picture tag-name]]
+      [context-tag/view
+       {:blur?           blur?
+        :size            24
+        :profile-picture tag-picture
+        :full-name       tag-name}]]
      [text/text
       {:style               {:margin-left 4}
        :accessibility-label :list-item-description-after-tag

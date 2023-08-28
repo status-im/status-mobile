@@ -16,11 +16,11 @@
         [rn/view {:padding-horizontal 20}
          [quo/text {:size :heading-1 :weight :semi-bold}
           (i18n/label :t/enter-password)]
-         [quo/user-avatar-tag
-          {:size  :small
-           :style {:margin-top 8 :margin-bottom 20}}
-          (multiaccounts/displayed-name account)
-          (multiaccounts/displayed-photo account)]
+         [rn/view {:style {:margin-top 8 :margin-bottom 20}}
+          [quo/context-tag
+           {:size            24
+            :profile-picture (multiaccounts/displayed-photo account)
+            :full-name       (multiaccounts/displayed-name account)}]]
          [quo/input
           {:type           :password
            :label          (i18n/label :t/profile-password)
