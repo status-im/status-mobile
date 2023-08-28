@@ -152,8 +152,7 @@
   [system-message-base
    {:icon      {:icon    :i/pin
                 :color   (or customization-color :primary)
-                :opacity 5
-                :size    20}
+                :opacity 5}
     :timestamp timestamp}
    [rn/view
     [rn/view
