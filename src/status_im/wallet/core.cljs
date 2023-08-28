@@ -91,8 +91,8 @@
   (navigation/navigate-to cofx :wallet-transaction-details {:hash hash :address address}))
 
 (defn dups
-  [seq]
-  (for [[id freq] (frequencies seq)
+  [coll]
+  (for [[id freq] (frequencies coll)
         :when     (> freq 1)]
     id))
 

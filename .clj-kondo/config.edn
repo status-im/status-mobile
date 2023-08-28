@@ -33,6 +33,7 @@
                                               new
                                               ns
                                               resolve
+                                              seq
                                               str
                                               subs
                                               symbol
