@@ -163,10 +163,10 @@
 (def card-easing (animation/bezier 0.77 0 0.175 1))
 
 (defn- circle-animation
-  [animation-value to delay]
+  [animation-value to delay-ms]
   (animation/timing animation-value
                     {:toValue  to
-                     :delay    delay
+                     :delay    delay-ms
                      :duration 1000
                      :easing   circle-easing}))
 

@@ -8,15 +8,20 @@
             [utils.transforms :as transforms]))
 
 (defn- on-error-retry
-  [call-method {:keys [method number-of-retries delay on-error] :as arg}]
+  [call-method
+   {method            :method
+    number-of-retries :number-of-retries
+    delay-ms          :delay
+    on-error          :on-error
+    :as               arg}]
   (if (pos? number-of-retries)
     (fn [error]
-      (let [updated-delay (if delay
-                            (min 2000 (* 2 delay))
+      (let [updated-delay (if delay-ms
+                            (min 2000 (* 2 delay-ms))
                             50)]
         (log/debug "[on-error-retry]"  method
                    "number-of-retries" number-of-retries
-                   "delay"             delay
+                   "delay"             delay-ms
                    "error"             error)
         (background-timer/set-timeout #(call-method (-> arg
                                                         (update :number-of-retries dec)
