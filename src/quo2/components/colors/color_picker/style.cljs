@@ -2,6 +2,7 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def color-picker-container
+<<<<<<< HEAD
   {:flex-direction  :row
    :flex-wrap       :wrap
    :justify-content :space-between})
@@ -9,6 +10,9 @@
 (def flex-break
   {:flex-basis "100%"
    :height     10})
+=======
+  {:flex-direction  :row})
+>>>>>>> ec9752cfe (quo2: color picker)
 
 (def color-button-common
   {:width         48

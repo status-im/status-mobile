@@ -8,7 +8,7 @@
 ;; TODO: using :no-color this to keep alignment of colors correct while b & w is being developed.
 ;; https://github.com/status-im/status-mobile/issues/15442
 (def color-list
-  [:blue :yellow :turquoise :copper :sky :camel :orange :army :pink :purple :magenta :no-color])
+  [:blue :yellow :purple :turquoise :magenta :sky :orange :army :flamingo :camel :copper :no-color])
 
 (defn picker-colors
   [blur?]
@@ -36,7 +36,7 @@
   (let [border? (and (not blur?) (and secondary-color (not selected?)))]
     (if (= :no-color name)
       [empty-color-item]
-      [rn/touchable-opacity
+      [rn/pressable
        {:style               (style/color-button color selected?)
         :accessibility-label :color-picker-item
         :on-press            #(on-press name)}
@@ -64,14 +64,15 @@
     (fn [{:keys [blur? on-change selected]}]
       (when (and (not (nil? selected)) (not= @internal-selected selected))
         (reset! internal-selected selected))
-      [rn/view {:style style/color-picker-container}
+      [rn/scroll-view {:style style/color-picker-container
+                       :horizontal true
+                       :shows-horizontal-scroll-indicator false}
        (doall (map-indexed (fn [index color]
                              [:<> {:key (color :name)}
                               [color-item
                                (merge color
                                       {:selected? (= (color :name) @internal-selected)
                                        :on-press  #(on-change-handler internal-selected % on-change)
-                                       :blur?     blur?})]
-                              (when (= index 5) [rn/view {:style style/flex-break}])])
+                                       :blur?     blur?})]])
                            (picker-colors blur?)))])))
 
