@@ -9,4 +9,4 @@
    {:id    id
     :title (i18n/label :t/community-rules)}
 
-   [community-rules/view community-rules/rules]])
+   [community-rules/view community-rules/standard-rules]])

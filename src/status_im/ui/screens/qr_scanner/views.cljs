@@ -59,9 +59,15 @@
        "Ok"]]]))
 
 (defn corner
-  [border1 border2 corner]
+  [border1 border2 corner-radius]
   [react/view
-   (assoc {:border-color colors/white-persist :width 60 :height 60} border1 5 border2 5 corner 32)])
+   {:style (assoc {:border-color colors/white-persist :width 60 :height 60}
+                  border1
+                  5
+                  border2
+                  5
+                  corner-radius
+                  32)}])
 
 (defn- viewfinder
   [size]

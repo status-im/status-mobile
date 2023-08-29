@@ -28,7 +28,7 @@
 
 (defn pinned-messages
   [chat-id]
-  (let [pinned-messages        (rf/sub [:chats/pinned-sorted-list chat-id])
+  (let [pinned                 (rf/sub [:chats/pinned-sorted-list chat-id])
         render-data            (rf/sub [:chats/current-chat-message-list-view-context :in-pinned-view])
         current-chat           (rf/sub [:chat-by-id chat-id])
         {:keys [community-id]} current-chat
@@ -58,9 +58,9 @@
          [rn/text
           {:style (style/chat-name-text)}
           (str "# " (:chat-name current-chat))]])]
-     (if (pos? (count pinned-messages))
+     (if (pos? (count pinned))
        [rn/flat-list
-        {:data        pinned-messages
+        {:data        pinned
          :render-data render-data
          :render-fn   message-render-fn
          :footer      [rn/view {:style (style/list-footer bottom-inset)}]

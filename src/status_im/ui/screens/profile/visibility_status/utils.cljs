@@ -83,8 +83,8 @@
       (= public-key (rf/sub [:multiaccount/public-key]))))
 
 (defn visibility-status-update
-  [public-key my-icon?]
-  (if my-icon?
+  [public-key icon?]
+  (if icon?
     (rf/sub [:multiaccount/current-user-visibility-status])
     (rf/sub [:visibility-status-updates/visibility-status-update public-key])))
 
@@ -100,12 +100,12 @@
 
 (defn icon-visibility-status-dot
   [public-key container-size]
-  (let [my-icon?                 (my-icon? public-key)
-        visibility-status-update (visibility-status-update public-key my-icon?)
-        size                     (icon-dot-size container-size)
-        margin                   -2
-        dot-color                (icon-dot-color visibility-status-update)
-        new-ui?                  true]
+  (let [icon?     (my-icon? public-key)
+        status    (visibility-status-update public-key icon?)
+        size      (icon-dot-size container-size)
+        margin    -2
+        dot-color (icon-dot-color status)
+        new-ui?   true]
     (merge (styles/visibility-status-dot {:color   dot-color
                                           :size    size
                                           :new-ui? new-ui?})
@@ -116,7 +116,7 @@
 
 (defn visibility-status-order
   [public-key]
-  (let [my-icon?                 (my-icon? public-key)
-        visibility-status-update (visibility-status-update public-key my-icon?)
-        dot-color                (icon-dot-color visibility-status-update)]
+  (let [icon?     (my-icon? public-key)
+        status    (visibility-status-update public-key icon?)
+        dot-color (icon-dot-color status)]
     (if (= dot-color colors/color-online) 0 1)))

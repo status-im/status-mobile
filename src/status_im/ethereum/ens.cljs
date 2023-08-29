@@ -69,13 +69,13 @@
                   #(cb (* (js/Number (native-module/hex-to-number %)) 1000))}))
 
 (defn register-prepare-tx
-  [chain-id from ens-name pubkey cb]
+  [chain-id from ens-name public-key cb]
   (json-rpc/call {:method     "ens_registerPrepareTx"
-                  :params     [chain-id {:from from} ens-name pubkey]
+                  :params     [chain-id {:from from} ens-name public-key]
                   :on-success cb}))
 
 (defn set-pub-key-prepare-tx
-  [chain-id from ens-name pubkey cb]
+  [chain-id from ens-name public-key cb]
   (json-rpc/call {:method     "ens_setPubKeyPrepareTx"
-                  :params     [chain-id {:from from} ens-name pubkey]
+                  :params     [chain-id {:from from} ens-name public-key]
                   :on-success cb}))

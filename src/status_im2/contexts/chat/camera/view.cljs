@@ -18,7 +18,8 @@
   [flash uri]
   (let [current-flash @flash]
     (when platform/android?
-      (reset! flash false) ; On Android, setting flash needs to be delayed until camera has initialized
+      ;; On Android, setting flash needs to be delayed until camera has initialized
+      (reset! flash false)
       (js/setTimeout #(reset! flash current-flash) 300))
     (reset! uri nil)))
 
@@ -116,7 +117,7 @@
         top-landscape          (/ (- height (* width 0.75) (:bottom insets)) 2)
         portrait?              (= @current-orientation orientation/portrait)
         rotate                 (reanimated/use-shared-value "0deg")
-        retake                 #(retake flash uri)
+        on-press               #(retake flash uri)
         use-photo              (fn []
                                  (rf/dispatch [:photo-selector/camera-roll-pick {:uri @uri}])
                                  (rf/dispatch [:navigate-back]))]
@@ -144,7 +145,7 @@
        [zoom-buttons top insets rotate])
      [rn/view {:style (style/confirmation-container insets @uri)}
       [quo/text
-       {:on-press retake
+       {:on-press on-press
         :style    {:font-size 17
                    :color     colors/white}}
        (i18n/label :t/retake)]

@@ -220,8 +220,7 @@
                                                         url
                                                         @webview-ref/webview-ref)
                                                        (block-resources-access-and-notify-user url))
-        ;; Extract event data here due to
-        ;; https://reactjs.org/docs/events.html#event-pooling
+        ;; Extract event data here due to https://reactjs.org/docs/events.html#event-pooling
         :on-message                                 #(re-frame/dispatch [:browser/bridge-message-received
                                                                          (.. ^js % -nativeEvent -data)])
         :on-load                                    #(re-frame/dispatch [:browser/loading-started])
@@ -245,16 +244,16 @@
 (views/defview browser
   []
   (views/letsubs [window-width [:dimensions/window-width]
-                  {:keys [browser-id dapp? dapp name unsafe? ignore-unsafe secure?] :as browser}
+                  {:keys [browser-id dapp? dapp name unsafe? ignore-unsafe secure?] :as current-browser}
                   [:get-current-browser]
                   {:keys [url error? loading? url-editing? show-tooltip show-permission resolving?]}
                   [:browser/options]
                   dapps-account [:dapps-account]
                   network-id [:chain-id]
                   {:keys [webview-allow-permission-requests?]} [:profile/profile]]
-    (let [can-go-back?    (browser/can-go-back? browser)
-          can-go-forward? (browser/can-go-forward? browser)
-          url-original    (browser/get-current-url browser)]
+    (let [can-go-back?    (browser/can-go-back? current-browser)
+          can-go-forward? (browser/can-go-forward? current-browser)
+          url-original    (browser/get-current-url current-browser)]
       [react/view {:style styles/browser}
        [toolbar-content url url-original secure? url-editing? unsafe?]
        [components/separator-dark]

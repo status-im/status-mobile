@@ -163,8 +163,8 @@
       name))
 
 (defn get-current-network
-  [{:networks/keys [current-network networks]}]
-  (get networks current-network))
+  [m]
+  (get (:networks/networks m) (:networks/current-network m)))
 
 (defn chain-keyword
   [db]

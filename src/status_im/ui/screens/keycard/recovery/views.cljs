@@ -80,7 +80,7 @@
 
 (defview pin
   []
-  (letsubs [pin           [:keycard/pin]
+  (letsubs [card-pin      [:keycard/pin]
             status        [:keycard/pin-status]
             error-label   [:keycard/pin-error-label]
             small-screen? [:dimensions/small-screen?]
@@ -114,7 +114,7 @@
                     :text-align :center}}
            (i18n/label :t/enter-your-code)]]]
         [pin.views/pin-view
-         {:pin           pin
+         {:pin           card-pin
           :retry-counter retry-counter
           :small-screen? small-screen?
           :status        status

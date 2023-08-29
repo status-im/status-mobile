@@ -100,8 +100,8 @@
                        {:id    :desktop
                         :label (i18n/label :t/desktop)}]]
     (fn []
-      (let [instructions       (get props @platform)
-            instructions-count (count instructions)]
+      (let [sync-instructions  (get props @platform)
+            instructions-count (count sync-instructions)]
         [rn/view {:style style/container-outer}
          [quo/text
           {:size   :heading-1
@@ -119,4 +119,4 @@
            (map-indexed (fn [idx item]
                           ^{:key idx}
                           [map-instructions idx item instructions-count])
-                        instructions))]]))))
+                        sync-instructions))]]))))

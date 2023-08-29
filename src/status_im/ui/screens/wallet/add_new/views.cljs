@@ -127,7 +127,7 @@
 
 (defview pin
   []
-  (letsubs [pin           [:keycard/pin]
+  (letsubs [card-pin      [:keycard/pin]
             status        [:keycard/pin-status]
             error-label   [:keycard/pin-error-label]
             retry-counter [:keycard/retry-counter]]
@@ -140,7 +140,7 @@
        [{:label    (i18n/label :t/cancel)
          :on-press #(re-frame/dispatch [:keycard/new-account-pin-sheet-hide])}]}]
      [pin.views/pin-view
-      {:pin               pin
+      {:pin               card-pin
        :status            status
        :retry-counter     retry-counter
        :title-label       :t/current-pin
@@ -148,7 +148,7 @@
        :error-label       error-label
        :step              :export-key}]]))
 
-(defview add-account
+(defview add-account-view
   []
   (letsubs [{:keys [type account] :as add-account} [:add-account]
             add-account-disabled?                  [:add-account-disabled?]

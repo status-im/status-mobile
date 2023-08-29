@@ -389,11 +389,11 @@
   []
   (log/debug "[native-module] get-device-model-info")
   ;;NOTE: we have to check for status module because of tests
-  (when-let [^js status (status)]
-    {:model     (.-model status)
-     :brand     (.-brand status)
-     :build-id  (.-buildId status)
-     :device-id (.-deviceId status)}))
+  (when-let [^js status-module (status)]
+    {:model     (.-model status-module)
+     :brand     (.-brand status-module)
+     :build-id  (.-buildId status-module)
+     :device-id (.-deviceId status-module)}))
 
 (defn get-installation-name
   []

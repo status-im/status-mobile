@@ -100,7 +100,7 @@
      #(component-will-unmount props))
    [max-height]))
 
-(defn edit
+(defn use-edit
   [{:keys [input-ref]}
    {:keys [text-value saved-cursor-position]}
    {:keys [edit]}]
@@ -114,7 +114,7 @@
          (reset! saved-cursor-position (count edit-text)))))
    [(:message-id edit)]))
 
-(defn reply
+(defn use-reply
   [{:keys [input-ref]}
    {:keys [container-opacity]}
    {:keys [reply]}]
@@ -179,7 +179,7 @@
      (reset! sending-links? link-previews?))
    [link-previews?]))
 
-(defn images
+(defn use-images
   [{:keys [sending-images? input-ref]}
    {:keys [text-value maximized?]}
    {:keys [container-opacity height saved-height last-height]}

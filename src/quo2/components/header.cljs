@@ -37,7 +37,7 @@
    :align-items     :center
    :justify-content :center})
 
-(def left
+(def left-style
   {:position        :absolute
    :left            0
    :top             0
@@ -45,7 +45,7 @@
    :justify-content :center
    :align-items     :flex-start})
 
-(def right
+(def right-style
   {:position        :absolute
    :right           0
    :top             0
@@ -176,7 +176,7 @@
             {:style          content
              :pointer-events :box-none}
             [rn/view
-             {:style          left
+             {:style          left-style
               :on-layout      (handle-layout :left get-layout)
               :pointer-events :box-none}
              [header-actions
@@ -194,7 +194,7 @@
                :component   title-component}]]
 
             [rn/view
-             {:style          right
+             {:style          right-style
               :on-layout      (handle-layout :right get-layout)
               :pointer-events :box-none}
              [header-actions

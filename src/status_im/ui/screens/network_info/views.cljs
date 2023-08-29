@@ -15,10 +15,6 @@
     :on-success callback
     :on-error   #(js/alert (str "can't fetch latest block" %))}))
 
-(defn last-loaded-block-number
-  []
-  @(re-frame/subscribe [:ethereum/current-block]))
-
 (defn to-date
   [timestamp]
   (datetime/timestamp->long-date
@@ -37,7 +33,7 @@
              (get-block
               (str "0x"
                    (native-module/number-to-hex
-                    (last-loaded-block-number)))
+                    @(re-frame/subscribe [:ethereum/current-block])))
               (fn [res]
                 (reset! last-loaded-block res))))))]
     (fn []

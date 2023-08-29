@@ -53,7 +53,7 @@
              :weight              :semi-bold
              :size                :paragraph-1}
             (i18n/label :t/community-rules)]
-           [community-rules/view community-rules/rules]
+           [community-rules/view community-rules/standard-rules]
            [quo/disclaimer
             {:accessibility-label :rules-disclaimer-checkbox
              :container-style     {:margin-top 20}

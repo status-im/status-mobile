@@ -12,10 +12,10 @@
                 contact-request-state
                 group-chat
                 able-to-send-message?]
-         :as   chat} (rf/sub [:chats/current-chat-chat-view])]
+         :as   current-chat} (rf/sub [:chats/current-chat-chat-view])]
     [messages.list/messages-list
      {:cover-bg-color :turquoise
-      :chat           chat
+      :chat           current-chat
       :header-comp    (fn [{:keys [scroll-y]}]
                         [messages.navigation/navigation-view {:scroll-y scroll-y}])
       :footer-comp    (fn [{:keys [insets]}]

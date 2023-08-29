@@ -137,7 +137,7 @@
     :options   {:topBar {:title {:text (i18n/label :t/membership-title)}}
                 :insets {:top?    true
                          :bottom? true}}
-    :component membership/membership}
+    :component membership/membership-view}
 
    ;;WALLET
 
@@ -153,7 +153,7 @@
    {:name      :add-new-account
     ;;TODO dynamic title
     :options   {:insets {:top? true}}
-    :component add-account/add-account}
+    :component add-account/add-account-view}
    {:name      :add-new-account-pin
     ;;TODO dynamic title
     :options   {:insets {:top? true}}
@@ -295,11 +295,11 @@
    {:name      :messages-from-contacts-only
     :options   {:topBar {:title {:text (i18n/label :t/accept-new-chats-from)}}
                 :insets {:top? true}}
-    :component messages-from-contacts-only/messages-from-contacts-only}
+    :component messages-from-contacts-only/messages-from-contacts-only-view}
    {:name      :appearance
     :options   {:topBar {:title {:text (i18n/label :t/appearance)}}
                 :insets {:top? true}}
-    :component appearance/appearance}
+    :component appearance/appearance-view}
    {:name      :privacy-and-security-profile-pic-show-to
     :options   {:topbar {:title {:text (i18n/label :t/show-profile-pictures-to)}}
                 :insets {:top? true}}

@@ -25,7 +25,7 @@
       :subtitle secondary-name
       :icon     [chat-icon/contact-icon-contacts-tab row]}]))
 
-(defn- on-toggle
+(defn- on-toggle-default
   [allow-new-users? checked? public-key]
   (cond
 
@@ -64,7 +64,7 @@
 
 (defn- group-toggle-contact
   [contact _ _ allow-new-users?]
-  [toggle-item allow-new-users? :is-contact-selected? contact on-toggle])
+  [toggle-item allow-new-users? :is-contact-selected? contact on-toggle-default])
 
 (defn- group-toggle-participant
   [contact _ _ allow-new-users?]
@@ -79,7 +79,7 @@
     :render-fn                    render-fn
     :keyboard-should-persist-taps :always}])
 
-(defn no-contacts
+(defn no-contacts-view
   [{:keys [no-contacts]}]
   [react/view {:style styles/no-contacts}
    [react/text
@@ -175,7 +175,7 @@
            {:contacts    (filter-contacts @search-value contacts)
             :render-data allow-new-users?
             :render-fn   toggle-fn}]
-          [no-contacts {:no-contacts no-contacts-label}])]])))
+          [no-contacts-view {:no-contacts no-contacts-label}])]])))
 
 ;; Start group chat
 (views/defview contact-toggle-list

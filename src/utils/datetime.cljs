@@ -136,10 +136,10 @@
 
 (defn today?
   [datetime]
-  (let [now (t/now)]
-    (and (= (t/year now) (t/year datetime))
-         (= (t/month now) (t/month datetime))
-         (= (t/day now) (t/day datetime)))))
+  (let [time-now (t/now)]
+    (and (= (t/year time-now) (t/year datetime))
+         (= (t/month time-now) (t/month datetime))
+         (= (t/day time-now) (t/day datetime)))))
 
 (defn tomorrow?
   [datetime]
@@ -151,9 +151,9 @@
 (defn within-last-n-days?
   "Returns true if `datetime` is within last `n` days (inclusive on both ends)."
   [datetime n]
-  (let [now   (t/now)
-        start (t/at-midnight (t/minus now (t/days n)))
-        end   (t/plus now (t/millis 1))]
+  (let [time-now (t/now)
+        start    (t/at-midnight (t/minus time-now (t/days n)))
+        end      (t/plus time-now (t/millis 1))]
     (t/within? start end datetime)))
 
 ;;;; Timestamp formatters
@@ -247,9 +247,9 @@
                    :time-intervals name}))))
 (defn seconds-ago
   [date-time]
-  (let [now (t/now)]
-    (if (<= (.getTime ^js date-time) (.getTime ^js now))
-      (t/in-seconds (t/interval date-time now))
+  (let [time-now (t/now)]
+    (if (<= (.getTime ^js date-time) (.getTime ^js time-now))
+      (t/in-seconds (t/interval date-time time-now))
       0)))
 
 (defn time-ago
@@ -265,15 +265,15 @@
 
 (defn time-ago-long
   [date-time]
-  (let [seconds-ago (seconds-ago date-time)
-        unit        (first (drop-while #(and (>= seconds-ago (:limit %))
-                                             (:limit %))
-                                       units))
-        diff        (-> (/ seconds-ago (:in-second unit))
-                        Math/floor
-                        int)
+  (let [time-ago-seconds (seconds-ago date-time)
+        unit             (first (drop-while #(and (>= time-ago-seconds (:limit %))
+                                                  (:limit %))
+                                            units))
+        diff             (-> (/ time-ago-seconds (:in-second unit))
+                             Math/floor
+                             int)
 
-        name        (i18n/label-pluralize diff (:name unit))]
+        name             (i18n/label-pluralize diff (:name unit))]
     (i18n/label :t/datetime-ago-format
                 {:ago            (i18n/label :t/datetime-ago)
                  :number         diff

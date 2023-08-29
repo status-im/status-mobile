@@ -15,7 +15,7 @@
                                             value
                                             {}))
 
-(views/defview messages-from-contacts-only
+(views/defview messages-from-contacts-only-view
   []
   (views/letsubs [{:keys [messages-from-contacts-only]} [:profile/profile]]
     [react/view {:margin-top 8}

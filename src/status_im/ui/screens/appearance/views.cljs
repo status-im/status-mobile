@@ -19,7 +19,7 @@
     [react/text {:style {:margin-top 8}}
      (i18n/label label)]]])
 
-(views/defview appearance
+(views/defview appearance-view
   []
   (views/letsubs [{:keys [appearance]} [:profile/profile]]
     [:<>
