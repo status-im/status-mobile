@@ -255,7 +255,7 @@
                                                      constants/content-type-text)
                                     :link-previews (map #(-> %
                                                              (select-keys [:url :title :description :thumbnail])
-                                                             data-store-messages/<-link-preview-rpc)
+                                                             data-store-messages/->link-preview-rpc)
                                                         (get-in db [:chat/link-previews :unfurled]))}]
                      :js-response true
                      :on-error    #(log/error "failed to edit message " %)

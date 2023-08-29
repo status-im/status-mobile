@@ -15,9 +15,13 @@
                       :community-id      :communityId
                       :clock-value       :clock})))
 
-(defn <-link-preview-rpc
+(defn- <-link-preview-rpc
   [preview]
   (update preview :thumbnail set/rename-keys {:dataUri :data-uri}))
+
+(defn ->link-preview-rpc
+  [preview]
+  (update preview :thumbnail set/rename-keys {:data-uri :dataUri}))
 
 (defn <-rpc
   [message]
