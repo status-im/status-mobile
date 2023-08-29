@@ -82,7 +82,7 @@
 
 (defn content-type-community-invite?
   [content-type community-id]
-  (and (= constants/content-type-text content-type)
+  (and (= constants/content-type-community content-type)
        (not (string/blank? community-id))))
 
 (defn message-content-text
