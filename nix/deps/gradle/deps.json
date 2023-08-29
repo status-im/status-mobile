@@ -3660,6 +3660,17 @@
   },
 
   {
+    "path": "com/android/tools/build/aapt2/7.4.2-8841542",
+    "repo": "https://dl.google.com/dl/android/maven2",
+    "files": {
+      "aapt2-7.4.2-8841542.pom": {
+        "sha1": "85e8154d8b9574e620b6427d357ea59ff2fef3b5",
+        "sha256": "sha256-9gY2kGJqgVcd1T3UOzYM+xoPug/eGBRUF+cA6Fu9ZRw="
+      }
+    }
+  },
+
+  {
     "path": "com/android/tools/build/aaptcompiler/4.1.0",
     "repo": "https://dl.google.com/dl/android/maven2",
     "files": {
