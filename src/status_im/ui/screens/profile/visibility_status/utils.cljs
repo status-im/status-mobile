@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.profile.visibility-status.utils
-  (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
+  (:require [quo.design-system.colors :as colors]
             [quo2.foundations.colors :as quo2.colors]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
@@ -77,14 +76,6 @@
   [{:keys [status-type] :or {status-type constants/visibility-status-inactive}}]
   (:color (get visibility-status-type-data status-type)))
 
-(defn visibility-status-update
-  [public-key]
-  (let [my-icon? (or (string/blank? public-key)
-                     (= public-key (rf/sub [:multiaccount/public-key])))]
-    (if my-icon?
-      (rf/sub [:multiaccount/current-user-visibility-status])
-      (rf/sub [:visibility-status-updates/visibility-status-update public-key]))))
-
 (defn icon-dot-accessibility-label
   [dot-color]
   (if (= dot-color quo2.colors/success-50)
@@ -97,7 +88,7 @@
 
 (defn icon-visibility-status-dot
   [public-key container-size]
-  (let [status    (visibility-status-update public-key)
+  (let [status    (rf/sub [:visibility-status-updates/visibility-status-update public-key])
         size      (icon-dot-size container-size)
         margin    -2
         dot-color (icon-dot-color status)
@@ -112,6 +103,6 @@
 
 (defn visibility-status-order
   [public-key]
-  (let [status    (visibility-status-update public-key)
+  (let [status    (rf/sub [:visibility-status-updates/visibility-status-update public-key])
         dot-color (icon-dot-color status)]
     (if (= dot-color colors/color-online) 0 1)))
