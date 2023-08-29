@@ -2294,5 +2294,7 @@
     "add-address-description": "Watch a public address or ENS name",
     "colour": "Colour",
     "origin": "Origin",
-    "slide-create": "Slide to create account"
+    "slide-create": "Slide to create account",
+    "user-keypair": "{{name}}'s Keypair",
+    "trip-accounts": "Trip accounts"
 }
