@@ -77,7 +77,7 @@
   [{:keys [status-type] :or {status-type constants/visibility-status-inactive}}]
   (:color (get visibility-status-type-data status-type)))
 
-(defn my-icon?
+(defn my-public-key?
   [public-key]
   (or (string/blank? public-key)
       (= public-key (rf/sub [:multiaccount/public-key]))))
@@ -100,8 +100,7 @@
 
 (defn icon-visibility-status-dot
   [public-key container-size]
-  (let [icon?     (my-icon? public-key)
-        status    (visibility-status-update public-key icon?)
+  (let [status    (visibility-status-update public-key (my-public-key? public-key))
         size      (icon-dot-size container-size)
         margin    -2
         dot-color (icon-dot-color status)
@@ -116,7 +115,6 @@
 
 (defn visibility-status-order
   [public-key]
-  (let [icon?     (my-icon? public-key)
-        status    (visibility-status-update public-key icon?)
+  (let [status    (visibility-status-update public-key (my-public-key? public-key))
         dot-color (icon-dot-color status)]
     (if (= dot-color colors/color-online) 0 1)))
