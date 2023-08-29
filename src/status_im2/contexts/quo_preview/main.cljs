@@ -66,7 +66,6 @@
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
-    [status-im2.contexts.quo-preview.list-items.token-value :as token-value]
     [status-im2.contexts.quo-preview.markdown.text :as text]
     [status-im2.contexts.quo-preview.markdown.list :as markdown-list]
     [status-im2.contexts.quo-preview.messages.author :as messages-author]
@@ -111,7 +110,7 @@
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.title.title :as title]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
-    [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
+    [status-im2.contexts.quo-preview.loaders.skeleton-list :as skeleton-list]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
@@ -256,11 +255,11 @@
                        {:name      :preview-lists
                         :component preview-lists/view}
                        {:name      :user-list
-                        :component user-list/preview-user-list}
-                       {:name      :token-value
-                        :component token-value/preview}]
-   :loaders           [{:name      :skeleton
-                        :component skeleton/preview-skeleton}]
+                        :options   {:topBar {:visible true}}
+                        :component user-list/preview-user-list}]
+   :loaders           [{:name      :skeleton-list
+                        :options   {:topBar {:visible true}}
+                        :component skeleton-list/view}]
    :markdown          [{:name      :texts
                         :component text/preview-text}
                        {:name      :markdown-list
