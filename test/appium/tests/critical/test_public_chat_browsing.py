@@ -1021,40 +1021,54 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                 "New messages badge is shown in community channel element while there are no unread messages")
         self.errors.verify_no_errors()
 
+@pytest.mark.xdist_group(name="new_five_2")
+@marks.new_ui_critical
+class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
+
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.username_1, self.username_2 = "user_1", "user_2"
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True,
+                                                                                   'username': self.username_1}),
+                                                      (self.device_2.create_user, {'username': self.username_2}))))
+        self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.public_key_2 = self.home_2.get_public_key_via_share_profile_tab()
+        self.profile_1 = self.home_1.get_profile_view()
+        [home.navigate_back_to_home_view() for home in self.homes]
+        [home.chats_tab.click() for home in self.homes]
+        self.home_1.add_contact(self.public_key_2)
+        self.home_2.handle_contact_request(self.username_1)
+        self.text_message = 'hello'
+
+        self.chat_1 = self.home_1.get_chat(self.username_2).click()
+        self.chat_1.send_message('hey')
+        self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        self.home_1.navigate_back_to_home_view()
+
+        self.home_1.just_fyi("Open community to message")
+        self.home_1.communities_tab.click()
+        self.community_name = "open community"
+        self.channel_name = 'general'
+        self.home_1.create_community(community_type="open")
+        self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
+        self.channel_1.send_message(self.text_message)
+
+        self.community_1, self.community_2 = self.home_1.get_community_view(), self.home_2.get_community_view()
+        self.community_1.share_community(self.community_name, self.username_2)
+        self.home_1.get_to_community_channel_from_home(self.community_name)
+
+        self.home_2.just_fyi("Send message to contact (need for blocking contact) test")
+        self.chat_2.send_message(self.text_message)
+        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
+        self.community_2.join_community()
+        self.channel_2 = self.community_2.get_channel(self.channel_name).click()
+
     @marks.testrail_id(702786)
     @marks.xfail(
         reason="Issue with username in PN, issue #6 in https://github.com/status-im/status-mobile/issues/15500")
     def test_community_mentions_push_notification(self):
         self.home_1.navigate_back_to_home_view()
-        self.home_1.chats_tab.click()
-        self.home_1.contacts_tab.click()
-        if not self.home_1.contact_details_row(username=self.username_2).is_element_displayed():
-            # if test_community_contact_block_unblock_offline failed we need to add users to contacts again
-            self.home_1.navigate_back_to_home_view()
-            self.chat_1.profile_button.click()
-            self.profile_1.contacts_button.wait_and_click()
-            if self.profile_1.blocked_users_button.is_element_displayed():
-                self.profile_1.element_by_text(self.username_2).click()
-                self.chat_1.unblock_contact_button.click()
-                self.chat_1.profile_add_to_contacts_button.click()
-                self.chat_1.close_button.click()
-            else:
-                self.profile_1.add_new_contact_button.click()
-                self.chat_1.public_key_edit_box.click()
-                self.chat_1.public_key_edit_box.send_keys(self.public_key_2)
-                self.chat_1.view_profile_new_contact_button.click_until_presence_of_element(
-                    self.chat_1.profile_add_to_contacts_button)
-                self.chat_1.profile_add_to_contacts_button.click()
-            self.chat_1.navigate_back_to_home_view()
-            self.home_2.navigate_back_to_home_view()
-            self.home_2.handle_contact_request(self.username_1)
-
-        self.home_1.navigate_back_to_home_view()
-        if not self.channel_2.chat_message_input.is_element_displayed():
-            self.channel_2.navigate_back_to_home_view()
-            self.home_2.communities_tab.click()
-            self.home_2.get_chat(self.community_name, community=True).click()
-            self.community_2.get_channel(self.channel_name).click()
 
         self.device_2.just_fyi("Invited member sends a message with a mention")
         self.channel_2.send_message("hi")

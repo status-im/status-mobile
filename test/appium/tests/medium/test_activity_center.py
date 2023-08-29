@@ -283,6 +283,45 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
 
         self.errors.verify_no_errors()
 
+
+@pytest.mark.xdist_group(name="new_six_2")
+@marks.new_ui_critical
+class TestActivityMultipleDevicePRTwo(MultipleSharedDeviceTestCase):
+
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+        self.username_1, self.username_2 = 'user1', 'user2'
+        self.loop.run_until_complete(
+            run_in_parallel(((self.device_1.create_user, {'username': self.username_1}),
+                             (self.device_2.create_user, {'username': self.username_2}))))
+        self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
+        self.public_key_2 = self.home_2.get_public_key()
+        self.home_2.navigate_back_to_home_view()
+        [home.chats_tab.click() for home in self.homes]
+
+        self.home_1.add_contact(self.public_key_2)
+        self.home_2.handle_contact_request(self.username_1)
+        self.text_message = 'hello'
+
+        self.home_1.just_fyi("Open community to message")
+        self.home_1.communities_tab.click()
+        self.community_name = "open community"
+        self.channel_name = 'general'
+        self.home_1.create_community(community_type="open")
+        self.channel_1 = self.home_1.get_to_community_channel_from_home(self.community_name)
+        self.channel_1.send_message(self.text_message)
+
+        self.community_1, self.community_2 = self.home_1.get_community_view(), self.home_2.get_community_view()
+        self.community_1.share_community(self.community_name, self.username_2)
+        self.home_1.get_to_community_channel_from_home(self.community_name)
+
+        self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
+        self.community_2.join_community()
+        self.channel_2 = self.community_2.get_channel(self.channel_name).click()
+
     @marks.testrail_id(702957)
     def test_activity_center_mentions(self):
         if not self.channel_2.chat_message_input.is_element_displayed():
