@@ -300,6 +300,7 @@ dependencies {
     implementation 'com.facebook.fresco:fresco:2.5.0'
     implementation 'com.facebook.fresco:animated-gif:2.5.0'
     implementation "com.squareup.okhttp3:okhttp-tls:4.9.2"
+    implementation("com.google.prefab:cli:2.0.0")
 }
 
 

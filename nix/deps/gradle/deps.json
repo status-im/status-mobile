@@ -7131,6 +7131,10 @@
       "cli-2.0.0.pom": {
         "sha1": "c551056d34273f78ce483e40a36516c46bf2de35",
         "sha256": "sha256-SFZAGiY7OcU5Szahbg2ZYozwXGgAigzalpHHK7EB4d8="
+      },
+      "cli-2.0.0-all.jar": {
+        "sha1": "f2702b5ca13df54e3ca92f29d6b403fb6285d8df",
+        "sha256": "sha256-2b2J9oRGuCvgOKrndHca2Fki0LN1IJsXYlonNLUxfik="
       }
     }
   },

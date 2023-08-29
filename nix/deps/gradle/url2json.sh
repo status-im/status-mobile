@@ -36,7 +36,7 @@ function match_repo_url() {
 
 function pom_has_nodeps_jar() {
     grep '<shadedClassifierName>nodeps</shadedClassifierName>' "${1}" \
-        >/dev/null 2>&1 
+        >/dev/null 2>&1
 }
 
 function fetch_and_template_file() {
@@ -123,5 +123,6 @@ echo -ne "
 pom_has_nodeps_jar "${POM_PATH}" && fetch_and_template_file "${PKG_NAME}-nodeps.jar"
 [[ "${PKG_NAME}" == react-android-* ]] && fetch_and_template_file "${PKG_NAME}.module"
 [[ "${PKG_NAME}" == react-android-* ]] && fetch_and_template_file "${PKG_NAME}-release.aar"
+[[ "${PKG_NAME}" == cli-* ]] && fetch_and_template_file "${PKG_NAME}-all.jar"
 
 echo -e '\n    }\n  },'
