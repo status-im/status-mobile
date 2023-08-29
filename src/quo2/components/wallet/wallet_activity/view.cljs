@@ -55,7 +55,7 @@
        {:weight :medium
         :size   :label
         :style  (style/transaction-counter theme)}
-       (str "x" counter "")]])
+       (str "x" counter)]])
    [rn/view
     [text/text
      {:weight :regular
