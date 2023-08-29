@@ -14,6 +14,12 @@ declare -a REPOS=(
   "https://jitpack.io"
 )
 
+# Special rule set for changes introduced by react-native 0.72
+# mapping package name patterns to file types
+declare -A RULE_SET
+RULE_SET["react-android-*"]="*.module *-release.aar *-debug.aar"
+RULE_SET["cli-*"]="*-all.jar"
+
 function nix_prefetch() {
     nix store prefetch-file --json "${1}" 2>/dev/null
 }
@@ -60,6 +66,20 @@ function fetch_and_template_file() {
 
 function fetch_and_template_file_no_fail() {
     fetch_and_template_file "${1}" 2>/dev/null || true
+}
+
+function handle_react_native_new_dependencies() {
+    for pattern in "${!RULE_SET[@]}"; do
+        if [[ "${PKG_NAME}" == ${pattern} ]]; then
+            files_to_fetch_string="${RULE_SET[${pattern}]}"
+            IFS=' ' read -ra files_to_fetch <<< "$files_to_fetch_string"
+            for file_pattern in "${files_to_fetch[@]}"; do
+                # Substitute '*' with the package name to generate the actual file name
+                actual_file=$(echo "${file_pattern}" | sed "s/\*/${PKG_NAME}/g")
+                fetch_and_template_file "${actual_file}"
+            done
+        fi
+    done
 }
 
 if [[ -z "${1}" ]]; then
@@ -121,9 +141,6 @@ echo -ne "
 [[ "${OBJ_TYPE}" =~ aar* ]]      && fetch_and_template_file "${PKG_NAME}.aar"
 [[ "${OBJ_TYPE}" == "aar.asc" ]] && fetch_and_template_file "${PKG_NAME}.${OBJ_TYPE}"
 pom_has_nodeps_jar "${POM_PATH}" && fetch_and_template_file "${PKG_NAME}-nodeps.jar"
-[[ "${PKG_NAME}" == react-android-* ]] && fetch_and_template_file "${PKG_NAME}.module"
-[[ "${PKG_NAME}" == react-android-* ]] && fetch_and_template_file "${PKG_NAME}-release.aar"
-[[ "${PKG_NAME}" == react-android-* ]] && fetch_and_template_file "${PKG_NAME}-debug.aar"
-[[ "${PKG_NAME}" == cli-* ]] && fetch_and_template_file "${PKG_NAME}-all.jar"
+handle_react_native_new_dependencies
 
 echo -e '\n    }\n  },'
