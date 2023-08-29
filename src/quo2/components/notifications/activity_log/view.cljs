@@ -52,7 +52,7 @@
 (defn- activity-context
   [context replying?]
   (let [first-line-offset (if replying? 4 0)
-        gap-between-lines 4]
+        gap-between-lines 5]
     (into [rn/view {:style (assoc style/context-container :margin-top first-line-offset)}]
           (mapcat
            (fn [detail]
@@ -130,6 +130,10 @@
          (assoc :size size)
          (assoc :type subtype)
          (assoc :disabled? (and replying? disable-when (disable-when @reply-input)))
+         (assoc :inner-style
+                {:justify-content :center
+                 :padding-bottom  0
+                 :padding-top     0})
          (update :container-style merge common-style {:margin-right 8}))
      label]))
 

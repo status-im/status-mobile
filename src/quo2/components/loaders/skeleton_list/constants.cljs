@@ -1,4 +1,4 @@
-(ns quo2.components.loaders.skeleton.constants)
+(ns quo2.components.loaders.skeleton-list.constants)
 
 (def ^:const layout-dimensions
   {:messages      {:height      56
