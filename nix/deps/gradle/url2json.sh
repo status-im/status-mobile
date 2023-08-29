@@ -123,6 +123,7 @@ echo -ne "
 pom_has_nodeps_jar "${POM_PATH}" && fetch_and_template_file "${PKG_NAME}-nodeps.jar"
 [[ "${PKG_NAME}" == react-android-* ]] && fetch_and_template_file "${PKG_NAME}.module"
 [[ "${PKG_NAME}" == react-android-* ]] && fetch_and_template_file "${PKG_NAME}-release.aar"
+[[ "${PKG_NAME}" == react-android-* ]] && fetch_and_template_file "${PKG_NAME}-debug.aar"
 [[ "${PKG_NAME}" == cli-* ]] && fetch_and_template_file "${PKG_NAME}-all.jar"
 
 echo -e '\n    }\n  },'

@@ -8579,6 +8579,10 @@
       "react-android-0.72.3-release.aar": {
         "sha1": "3d1c58848ed374f0664317a0627f1afd12398133",
         "sha256": "sha256-Kph3mGlnRKgSd6BkPQ6nz651/aq+DoKQcvVl8cQj3nQ="
+      },
+      "react-android-0.72.3-debug.aar": {
+        "sha1": "753dcb10579a06570819a980133bb5042d82a6a5",
+        "sha256": "sha256-/fbW8a59yTDvKy7Tnxj4qI1UOmgCEI/+LHEJGafqT/g="
       }
     }
   },
