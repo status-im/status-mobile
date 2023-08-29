@@ -68,14 +68,14 @@
     quo2.components.list-items.token-value.view
     quo2.components.list-items.user-list
     quo2.components.loaders.skeleton
-    quo2.components.loaders.skeleton.view
+    quo2.components.loaders.skeleton-list.view
     quo2.components.markdown.list.view
     quo2.components.markdown.text
     quo2.components.messages.author.view
     quo2.components.messages.gap
     quo2.components.messages.system-message
     quo2.components.navigation.floating-shell-button.view
-    quo2.components.navigation.page-nav
+    quo2.components.navigation.page-nav.view
     quo2.components.notifications.activity-log.view
     quo2.components.notifications.activity-logs-photos.view
     quo2.components.notifications.count-down-circle
@@ -96,6 +96,7 @@
     quo2.components.selectors.reactions.view
     quo2.components.selectors.selectors.view
     quo2.components.settings.accounts.view
+    quo2.components.settings.data-item.view
     quo2.components.settings.privacy-option
     quo2.components.settings.reorder-item.view
     quo2.components.settings.settings-list.view
@@ -246,11 +247,11 @@
 
 ;;;; Loaders
 (def skeleton quo2.components.loaders.skeleton/skeleton)
-(def static-skeleton quo2.components.loaders.skeleton.view/view)
+(def skeleton-list quo2.components.loaders.skeleton-list.view/view)
 
 ;;;; Navigation
 (def floating-shell-button quo2.components.navigation.floating-shell-button.view/view)
-(def page-nav quo2.components.navigation.page-nav/page-nav)
+(def page-nav quo2.components.navigation.page-nav.view/page-nav)
 
 ;;;; Markdown
 (def markdown-list quo2.components.markdown.list.view/view)
@@ -297,6 +298,7 @@
 (def settings-list quo2.components.settings.settings-list.view/settings-list)
 (def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
 (def category quo2.components.settings.category.view/category)
+(def data-item quo2.components.settings.data-item.view/view)
 
 ;;;; Share
 (def qr-code quo2.components.share.qr-code.view/qr-code)
@@ -313,11 +315,8 @@
 (def permission-tag quo2.components.tags.permission-tag/tag)
 (def status-tag quo2.components.tags.status-tags/status-tag)
 (def token-tag quo2.components.tags.token-tag/tag)
-(def user-avatar-tag quo2.components.tags.context-tag.view/user-avatar-tag)
-(def context-tag quo2.components.tags.context-tag.view/context-tag)
-(def group-avatar-tag quo2.components.tags.context-tag.view/group-avatar-tag)
-(def audio-tag quo2.components.tags.context-tag.view/audio-tag)
-(def community-tag quo2.components.tags.context-tag.view/community-tag)
+
+(def context-tag quo2.components.tags.context-tag.view/view)
 
 ;;;; Title
 (def title quo2.components.text-combinations.title.view/title)

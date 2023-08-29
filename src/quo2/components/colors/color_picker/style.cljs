@@ -2,8 +2,7 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def color-picker-container
-  {:flex            1
-   :flex-direction  :row
+  {:flex-direction  :row
    :flex-wrap       :wrap
    :justify-content :space-between})
 

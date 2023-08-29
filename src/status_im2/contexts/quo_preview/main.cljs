@@ -66,7 +66,6 @@
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
-    [status-im2.contexts.quo-preview.list-items.token-value :as token-value]
     [status-im2.contexts.quo-preview.markdown.text :as text]
     [status-im2.contexts.quo-preview.markdown.list :as markdown-list]
     [status-im2.contexts.quo-preview.messages.author :as messages-author]
@@ -92,6 +91,7 @@
     [status-im2.contexts.quo-preview.selectors.filter :as filter]
     [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
+    [status-im2.contexts.quo-preview.settings.data-item :as data-item]
     [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
     [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
@@ -110,7 +110,7 @@
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.title.title :as title]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
-    [status-im2.contexts.quo-preview.loaders.skeleton :as skeleton]
+    [status-im2.contexts.quo-preview.loaders.skeleton-list :as skeleton-list]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
@@ -255,11 +255,11 @@
                        {:name      :preview-lists
                         :component preview-lists/view}
                        {:name      :user-list
-                        :component user-list/preview-user-list}
-                       {:name      :token-value
-                        :component token-value/preview}]
-   :loaders           [{:name      :skeleton
-                        :component skeleton/preview-skeleton}]
+                        :options   {:topBar {:visible true}}
+                        :component user-list/preview-user-list}]
+   :loaders           [{:name      :skeleton-list
+                        :options   {:topBar {:visible true}}
+                        :component skeleton-list/view}]
    :markdown          [{:name      :texts
                         :component text/preview-text}
                        {:name      :markdown-list
@@ -321,7 +321,10 @@
                        {:name      :reorder-item
                         :component reorder-item/preview-reorder-item}
                        {:name      :category
-                        :component category/preview}]
+                        :options   {:topBar {:visible true}}
+                        :component category/preview}
+                       {:name      :data-item
+                        :component data-item/preview-data-item}]
    :share             [{:name      :qr-code
                         :component qr-code/preview-qr-code}
                        {:name      :share-qr-code
@@ -374,19 +377,15 @@
         has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
         root          (if has-profiles? :profiles :intro)]
     [quo/page-nav
-     {:align-mid?   true
-      :mid-section  {:type      :text-only
-                     :main-text "Quo2 components preview"}
-      :left-section {:icon     :i/close
-                     :on-press (fn []
-                                 (cond
-                                   logged-in?
-                                   (rf/dispatch [:navigate-back])
-
-                                   :else
-                                   (do
-                                     (theme/set-theme :dark)
-                                     (rf/dispatch [:init-root root]))))}}]))
+     {:type       :title
+      :title      "Quo2 components preview"
+      :text-align :left
+      :icon-name  :i/close
+      :on-press   #(if logged-in?
+                     (rf/dispatch [:navigate-back])
+                     (do
+                       (theme/set-theme :dark)
+                       (rf/dispatch [:init-root root])))}]))
 
 (defn- theme-switcher
   []

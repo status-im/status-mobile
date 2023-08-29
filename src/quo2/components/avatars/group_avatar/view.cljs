@@ -1,6 +1,6 @@
 (ns quo2.components.avatars.group-avatar.view
   (:require [quo2.components.icon :as icon]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
@@ -20,9 +20,11 @@
 
 (defn- view-internal
   [_]
-  (fn [{:keys [size theme customization-color picture]
+  (fn [{:keys [size theme customization-color picture icon-name]
         :or   {size                :size/s-20
-               customization-color :blue}}]
+               customization-color :blue
+               picture             nil
+               icon-name           :i/group}}]
     (let [container-size (get-in sizes [size :container])
           icon-size      (get-in sizes [size :icon])]
       [rn/view
@@ -34,8 +36,8 @@
           {:source picture
            :style  {:width  container-size
                     :height container-size}}]
-         [icon/icon :i/members
+         [icon/icon icon-name
           {:size  icon-size
            :color colors/white-opa-70}])])))
 
-(def view (theme/with-theme view-internal))
+(def view (quo.theme/with-theme view-internal))

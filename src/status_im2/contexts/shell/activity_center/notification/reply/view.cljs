@@ -74,9 +74,18 @@
         :context             [[common/user-avatar-tag author]
                               [quo/text {:style style/lowercase-text} (i18n/label :t/on)]
                               (if community-chat?
-                                [quo/context-tag common/tag-params community-image community-name
-                                 chat-name]
-                                [quo/group-avatar-tag chat-name common/tag-params])]
+                                [quo/context-tag
+                                 {:type           :channel
+                                  :blur?          true
+                                  :size           24
+                                  :community-logo community-image
+                                  :community-name community-name
+                                  :channel-name   chat-name}]
+                                [quo/context-tag
+                                 {:type       :group
+                                  :group-name chat-name
+                                  :blur?      true
+                                  :size       24}])]
         :message             {:body-number-of-lines 1
                               :attachment           (cond
                                                       (= (:content-type message)

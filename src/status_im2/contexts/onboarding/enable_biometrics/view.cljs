@@ -2,14 +2,13 @@
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
-            [status-im2.contexts.onboarding.enable-biometrics.style :as style]
-            [status-im2.contexts.onboarding.common.navigation-bar.view :as navigation-bar]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.common.resources :as resources]
+            [status-im2.common.biometric.events :as biometric]
             [status-im2.common.parallax.view :as parallax]
             [status-im2.common.parallax.whitelist :as whitelist]
-            [status-im2.common.biometric.events :as biometric]))
+            [status-im2.common.resources :as resources]
+            [status-im2.contexts.onboarding.enable-biometrics.style :as style]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn page-title
   []
@@ -48,7 +47,7 @@
       {:layers  (:biometrics resources/parallax-video)
        :stretch stretch}]
      [rn/view
-      [navigation-bar/navigation-bar {:disable-back-button? true}]
+      [quo/page-nav {:background :blur}]
       [page-title]]]))
 
 (defn enable-biometrics-simple
@@ -56,7 +55,7 @@
   (let [width (:width (rn/get-window))]
     [:<>
      [rn/view {:flex 1}
-      [navigation-bar/navigation-bar {:disable-back-button? true}]
+      [quo/page-nav {:background :blur}]
       [page-title]
       [rn/view {:style {:flex 1}}
        [rn/image

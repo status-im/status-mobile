@@ -1,25 +1,30 @@
 (ns quo2.foundations.shadows
   (:refer-clojure :exclude [get])
   (:require [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]))
+            [quo2.theme :as quo.theme]
+            [react-native.platform :as platform]))
 
 (def ^:private shadows
-  (let [dark-normal           {1 {:shadow-color   (colors/alpha colors/neutral-100 0.5)
+  (let [dark-normal           {1 {:shadow-color   (when platform/ios?
+                                                    (colors/alpha colors/neutral-100 0.5))
                                   :shadow-offset  {:width 0 :height 4}
                                   :elevation      3
                                   :shadow-opacity 1
                                   :shadow-radius  20}
-                               2 {:shadow-color   (colors/alpha colors/neutral-100 0.64)
+                               2 {:shadow-color   (when platform/ios?
+                                                    (colors/alpha colors/neutral-100 0.64))
                                   :shadow-offset  {:width 0 :height 4}
                                   :elevation      4
                                   :shadow-opacity 1
                                   :shadow-radius  20}
-                               3 {:shadow-color   (colors/alpha colors/neutral-100 0.64)
+                               3 {:shadow-color   (when platform/ios?
+                                                    (colors/alpha colors/neutral-100 0.64))
                                   :shadow-offset  {:width 0 :height 12}
                                   :elevation      8
                                   :shadow-opacity 1
                                   :shadow-radius  20}
-                               4 {:shadow-color   (colors/alpha colors/neutral-100 0.72)
+                               4 {:shadow-color   (when platform/ios?
+                                                    (colors/alpha colors/neutral-100 0.72))
                                   :shadow-offset  {:width 0 :height 16}
                                   :shadow-opacity 1
                                   :shadow-radius  20
@@ -29,22 +34,26 @@
                                   (update-in [:medium :shadow-offset :height] -)
                                   (update-in [:intense :shadow-offset :height] -)
                                   (update-in [:strong :shadow-offset :height] -))
-        light-normal          {1 {:shadow-color   (colors/alpha colors/neutral-100 0.04)
+        light-normal          {1 {:shadow-color   (when platform/ios?
+                                                    (colors/alpha colors/neutral-100 0.04))
                                   :shadow-offset  {:width 0 :height 4}
                                   :elevation      1
                                   :shadow-opacity 1
                                   :shadow-radius  16}
-                               2 {:shadow-color   (colors/alpha colors/neutral-100 0.08)
+                               2 {:shadow-color   (when platform/ios?
+                                                    (colors/alpha colors/neutral-100 0.08))
                                   :shadow-offset  {:width 0 :height 4}
                                   :elevation      6
                                   :shadow-opacity 1
                                   :shadow-radius  16}
-                               3 {:shadow-color   (colors/alpha colors/neutral-100 0.12)
+                               3 {:shadow-color   (when platform/ios?
+                                                    (colors/alpha colors/neutral-100 0.12))
                                   :shadow-offset  {:width 0 :height 12}
                                   :elevation      8
                                   :shadow-opacity 1
                                   :shadow-radius  16}
-                               4 {:shadow-color   (colors/alpha colors/neutral-100 0.16)
+                               4 {:shadow-color   (when platform/ios?
+                                                    (colors/alpha colors/neutral-100 0.16))
                                   :shadow-offset  {:width 0 :height 16}
                                   :shadow-opacity 1
                                   :shadow-radius  16

@@ -355,7 +355,7 @@
     (if chat-screen-loaded?
       [:f> f-messages-list-content props]
       [rn/view {:style {:flex 1}}
-       [quo/static-skeleton
+       [quo/skeleton-list
         {:content       :messages
          :parent-height content-height}]])))
 

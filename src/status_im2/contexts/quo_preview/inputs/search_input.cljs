@@ -19,15 +19,21 @@
 
 (defn example-tags
   [blur?]
-  [[quo/context-tag {:blur? [blur?]}
-    (resources/get-mock-image :user-picture-male5)
-    "alisher.eth"]
-   [quo/context-tag {:blur? [blur?]}
-    (resources/get-mock-image :user-picture-male4)
-    "Pedro"]
-   [quo/context-tag {:blur? [blur?]}
-    (resources/get-mock-image :user-picture-female2)
-    "Freya Odinson"]])
+  [[quo/context-tag
+    {:blur?           blur?
+     :size            24
+     :profile-picture (resources/get-mock-image :user-picture-male5)
+     :full-name       "alisher.eth"}]
+   [quo/context-tag
+    {:blur?           blur?
+     :size            24
+     :profile-picture (resources/get-mock-image :user-picture-male4)
+     :full-name       "Pedro"}]
+   [quo/context-tag
+    {:blur?           blur?
+     :size            24
+     :profile-picture (resources/get-mock-image :user-picture-female2)
+     :full-name       "Freya Odinson"}]])
 
 (defn view
   []

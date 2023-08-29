@@ -1,7 +1,10 @@
 (ns status-im2.contexts.wallet.common.temp
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [status-im2.contexts.wallet.common.utils :as utils]))
 
 (defn wallet-temporary-navigation
   []
@@ -29,18 +32,6 @@
    :end-date          "25 May"
    :currency-change   "€0.00"
    :percentage-change "0.00%"})
-
-(def account-cards
-  [{:name                "Account 1"
-    :balance             "€0.00"
-    :percentage-value    "€0.00"
-    :customization-color :blue
-    :type                :empty
-    :emoji               "🍑"
-    :on-press            #(rf/dispatch [:navigate-to :wallet-accounts])}
-   {:customization-color :blue
-    :on-press            #(js/alert "Button pressed")
-    :type                :add-account}])
 
 (def tokens
   [{:token               :snt
@@ -73,3 +64,17 @@
    :account-name        "Account 1"
    :account             :default
    :customization-color :blue})
+
+(defn keypair-string
+  [full-name]
+  (let [first-name (utils/get-first-name full-name)]
+    (i18n/label :t/keypair-title {:name first-name})))
+
+(defn create-account-state
+  [name]
+  [{:title        (keypair-string name)
+    :button-props {:title (i18n/label :t/edit)}
+    :left-icon    :i/placeholder}
+   {:title        (i18n/label :t/derivation-path)
+    :button-props {:title (i18n/label :t/edit)}
+    :left-icon    :i/derivated-path}])

@@ -10,10 +10,11 @@
 (def featured-communities-header
   {:flex-direction  :row
    :height          30
-   :padding-top     8
-   :margin-bottom   8
+   :padding-top     6
+   :margin-bottom   7
    :padding-right   20
    :margin-left     20
+   :align-items     :center
    :justify-content :space-between})
 
 (def featured-communities-title-container
@@ -57,7 +58,7 @@
    :justify-content :center})
 
 (def render-communities-container
-  {:margin-top 100})
+  {:margin-top (if platform/ios? 57 104)})
 
 (defn blur-tabs-header
   []
