@@ -252,7 +252,7 @@
     (when (or from-wallet from-contact)
       [{:accessibility-label :sender-address-text}
        from])]
-   [details-list-row :t/to
+   [details-list-row :t/To
     [{:accessibility-label (if to-wallet :recipient-name-text :recipient-address-text)}
      (or to-wallet to-contact to)]
     (when (or to-wallet to-contact)

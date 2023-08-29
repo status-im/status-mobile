@@ -70,11 +70,11 @@
              (assoc acc
                     tx-hash
                     (enrich-transaction transaction contacts native-currency))) ;;TODO this doesn't
-                                                                                ;;look good for
-                                                                                ;;performance, we
-                                                                                ;;need to calculate
-                                                                                ;;this only once for
-                                                                                ;;each transaction
+           ;;look good for
+           ;;performance, we
+           ;;need to calculate
+           ;;this only once for
+           ;;each transaction
            {}
            transactions)))
 
@@ -125,13 +125,13 @@
      (case type
        :inbound
        (assoc transaction
-              :label                       (i18n/label :t/from)
+              :label                       (i18n/label :t/From)
               :contact-accessibility-label :sender-text
               :address-accessibility-label :sender-address-text
               :contact                     from-contact
               :address                     from)
        (assoc transaction
-              :label                       (i18n/label :t/to)
+              :label                       (i18n/label :t/To)
               :contact-accessibility-label :recipient-name-text
               :address-accessibility-label :recipient-address-text
               :contact                     to-contact
