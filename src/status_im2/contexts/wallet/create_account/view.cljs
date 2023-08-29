@@ -10,12 +10,14 @@
     [status-im2.contexts.wallet.create-account.style :as style]
     [utils.re-frame :as rf]))
 
+(def diamond-emoji "\uD83D\uDC8E")
+
 (defn- view-internal
   []
   (let [top                  (safe-area/get-top)
         bottom               (safe-area/get-bottom)
-        color                (reagent/atom :blue)
-        emoji                (reagent/atom "\uD83D\uDC8E") ; diamond emoji
+        account-color        (reagent/atom :blue)
+        emoji                (reagent/atom diamond-emoji)
         {:keys [public-key]} (rf/sub [:profile/profile])
         display-name         (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))]
     (fn [{:keys [theme]}]
@@ -29,12 +31,12 @@
          :icon-name  :i/close
          :on-press   #(rf/dispatch [:navigate-back])}]
        [quo/gradient-cover
-        {:customization-color @color
+        {:customization-color @account-color
          :container-style     (style/gradient-cover-container top)}]
        [rn/view
         {:style style/account-avatar-container}
         [quo/account-avatar
-         {:customization-color @color
+         {:customization-color @account-color
           :size                80
           :emoji               @emoji
           :type                :default}]
@@ -61,8 +63,8 @@
           :style  (style/color-label theme)}
          (i18n/label :t/colour)]
         [quo/color-picker
-         {:selected  @color
-          :on-change #(reset! color %)}]]
+         {:selected  @account-color
+          :on-change #(reset! account-color %)}]]
        [rn/view {:style (style/divider-line theme)}]
        [quo/category
         {:list-type :settings
@@ -71,9 +73,9 @@
        [quo/slide-button
         {:track-text          (i18n/label :t/slide-create)
          :track-icon          :face-id
-         :customization-color @color
+         :customization-color @account-color
          :on-complete         (fn []
-                                (js/alert "I don't wanna slide anymore"))
+                                (js/alert "Functionality not implemented"))
          :container-style     (style/slide-button-container bottom)}]])))
 
 (def view (quo.theme/with-theme view-internal))

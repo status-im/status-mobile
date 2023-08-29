@@ -1,10 +1,10 @@
 (ns status-im2.contexts.wallet.common.temp
   (:require
-    [clojure.string :as string]
     [quo2.core :as quo]
     [react-native.core :as rn]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [status-im2.contexts.wallet.common.utils :as utils]))
 
 (defn wallet-temporary-navigation
   []
@@ -67,7 +67,7 @@
 
 (defn keypair-string
   [full-name]
-  (let [first-name (first (string/split full-name #" "))]
+  (let [first-name (utils/get-first-name full-name)]
     (i18n/label :t/keypair-title {:name first-name})))
 
 (defn create-account-state
