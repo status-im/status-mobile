@@ -12,9 +12,7 @@
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [utils.string :as utils.string]
-            [clojure.set :as set]
-            [status-im.data-store.messages :as data-store-messages]))
+            [utils.string :as utils.string]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -254,8 +252,7 @@
                                                      constants/content-type-emoji
                                                      constants/content-type-text)
                                     :link-previews (map #(-> %
-                                                             (select-keys [:url :title :description :thumbnail])
-                                                             data-store-messages/->link-preview-rpc)
+                                                             (select-keys [:url :title :description :thumbnail]))
                                                         (get-in db [:chat/link-previews :unfurled]))}]
                      :js-response true
                      :on-error    #(log/error "failed to edit message " %)
