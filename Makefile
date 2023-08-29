@@ -224,6 +224,7 @@ release-android: keystore build-android ##@build Build signed Android APK
 	@scripts/sign-android.sh result/app-release-unsigned.apk
 
 release-ios: export TARGET := ios
+release-ios: export IOS_STATUS_GO_TARGETS := ios/arm64
 release-ios: export BUILD_ENV ?= prod
 release-ios: watchman-clean ios-clean jsbundle ##@build Build release for iOS release
 	xcodebuild \
@@ -279,6 +280,7 @@ run-android: ##@run Build Android APK and start it on the device
 
 SIMULATOR=iPhone 11 Pro
 run-ios: export TARGET := ios
+run-ios: export IOS_STATUS_GO_TARGETS := iossimulator/amd64
 run-ios: ##@run Build iOS app and start it in a simulator/device
 ifneq ("$(SIMULATOR)", "")
 	npx react-native run-ios --simulator="$(SIMULATOR)"
@@ -290,6 +292,7 @@ show-ios-devices: ##@other shows connected ios device and its name
 	xcrun xctrace list devices
 
 run-ios-device: export TARGET := ios
+run-ios-device: export IOS_STATUS_GO_TARGETS := ios/arm64
 run-ios-device: ##@run iOS app and start it on a connected device by its name
 ifndef DEVICE_NAME
 	$(error Usage: make run-ios-device DEVICE_NAME=your-device-name)

@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.7.12'
+library 'status-jenkins-lib@set_ios_status_go_targets'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
