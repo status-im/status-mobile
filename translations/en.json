@@ -25,8 +25,6 @@
     "add": "Add",
     "added": "added",
     "add-a-watch-account": "Add a watch-only address",
-    "add-account": "Add an account",
-    "add-account-description": "You can import any type of Ethereum account to add it to your Status wallet",
     "add-account-incorrect-password": "Password seems to be incorrect. Enter the password you use to unlock the app.",
     "add-an-account": "Add an account",
     "add-bootnode": "Add bootnode",
@@ -2289,5 +2287,12 @@
     "about": "About",
     "no-permissions": "No permissions",
     "no-dapps": "No connected dApps",
-    "days": "Days"
+    "days": "Days",
+    "add-account": "Add account",
+    "add-account-description": "Create new or import existing account",
+    "add-address": "Add address to watch",
+    "add-address-description": "Watch a public address or ENS name",
+    "colour": "Colour",
+    "origin": "Origin",
+    "slide-create": "Slide to create account"
 }

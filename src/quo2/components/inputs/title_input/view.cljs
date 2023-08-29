@@ -19,7 +19,8 @@
            placeholder
            max-length
            default-value
-           theme]
+           theme
+           container-style]
     :or   {max-length    0
            auto-focus    false
            default-value ""}}]
@@ -31,7 +32,7 @@
                       (on-change-text v)))]
     (fn [{:keys [customization-color disabled?]}]
       [rn/view
-       {:style style/container}
+       {:style (merge style/container container-style)}
        [rn/view {:style style/text-input-container}
         [rn/text-input
          {:style
