@@ -136,7 +136,7 @@
 
 (def view
   "Properties:
-      - transaction - type of transaction
+      - :transaction - type of transaction`. Possible values:
         - :receive
         - :send
         - :swap
@@ -144,6 +144,26 @@
         - :buy
         - :destroy
         - :mint
-      - timestamp - when transaction occured (string)
+   
+      - :status - transaction status. Possible values:
+        - :pending
+        - :confirmed
+        - :finalised
+        - :failed
+   
+      - :counter - amount of transactions shown by instance of the component
+   
+      - :timestamp - when transaction occured (string)
+      - :blur?
+      
+      - :first - props for context tag component that will be first on the first line
+      - :second - props for context tag component that will be second on the first line
+      - :third - props for context tag component that will be first on the second line
+      - :fourth - props for context tag component that will be second on the second line
+   
+      - :second-prefix - translation keyword to be used with label before second context tag
+      - :third-prefix - translation keyword to be used with label before third context tag
+      - :fourth-prefix - translation keyword to be used with label before fourth context tag
+   
   "
   (quo.theme/with-theme view-internal))
