@@ -38,7 +38,7 @@
   [customization-color pressed? theme]
   (when pressed?
     (if customization-color
-      (colors/custom-color-by-theme customization-color 50 60)
+      (colors/custom-color (or customization-color :blue) 60)
       (colors/theme-colors colors/primary-50 colors/primary-60 theme))))
 
 (defn container-outer

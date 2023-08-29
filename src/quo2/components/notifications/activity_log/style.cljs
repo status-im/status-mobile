@@ -28,7 +28,7 @@
 (defn message-container
   [attachment]
   {:border-radius      12
-   :margin-top         12
+   :margin-top         10
    :padding-horizontal 12
    :padding-vertical   (if (#{:photo :gif} attachment) 12 8)
    :background-color   colors/white-opa-5})
@@ -39,11 +39,14 @@
 
 (defn title
   []
-  {:color colors/white})
+  {:flex-shrink 1
+   :color       colors/white})
 
 (def timestamp
   {:text-transform :none
    :margin-left    8
+   :margin-top     4
+   :flex-shrink    0
    :color          colors/neutral-40})
 
 (defn unread-dot
@@ -65,10 +68,8 @@
    :flex-wrap       :wrap})
 
 (def top-section-container
-  {:align-items    :center
-   :flex-direction :row})
+  {:flex-direction :row})
 
 (def title-container
   {:flex           1
-   :flex-direction :row
-   :align-items    :center})
+   :flex-direction :row})
