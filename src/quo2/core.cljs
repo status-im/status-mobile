@@ -107,6 +107,7 @@
     quo2.components.tabs.segmented-tab
     quo2.components.tabs.tabs.view
     quo2.components.tags.context-tag.view
+    quo2.components.tags.number-tag.view
     quo2.components.tags.permission-tag
     quo2.components.tags.status-tags
     quo2.components.tags.tag
@@ -315,8 +316,8 @@
 (def permission-tag quo2.components.tags.permission-tag/tag)
 (def status-tag quo2.components.tags.status-tags/status-tag)
 (def token-tag quo2.components.tags.token-tag/tag)
-
 (def context-tag quo2.components.tags.context-tag.view/view)
+(def number-tag quo2.components.tags.number-tag.view/view)
 
 ;;;; Title
 (def title quo2.components.text-combinations.title.view/title)
