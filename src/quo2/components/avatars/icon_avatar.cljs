@@ -4,9 +4,8 @@
             [quo2.theme :as quo.theme]
             [react-native.core :as rn]))
 
-(def sizes
-  {:big    48
-   :medium 32
+(def ^:private sizes
+  {:medium 32
    :small  20})
 
 (defn icon-avatar-internal
@@ -16,8 +15,7 @@
         circle-color   (colors/custom-color color 50 opacity)
         icon-color     (colors/custom-color-by-theme color 50 60)
         icon-size      (case size
-                         :big    20
-                         :medium 16
+                         :medium 20
                          :small  12)]
     [rn/view
      {:style {:width            component-size
