@@ -76,7 +76,7 @@
     [sm-timestamp timestamp theme]]])
 
 (defn system-message-deleted-internal
-  [{:keys [label child theme timestamp ]}]
+  [{:keys [label child theme timestamp]}]
   [system-message-base
    {:icon      {:icon    :i/delete
                 :color   :danger
