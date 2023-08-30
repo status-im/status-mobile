@@ -98,8 +98,8 @@
      :community-name   "Coinbase"}
 
     :link
-    {:source (resources/get-mock-image :status-logo)
-     :text   "Rolling St..."}
+    {:icon :placeholder
+     :text "Rolling St..."}
 
     :code
     {:language :clojure

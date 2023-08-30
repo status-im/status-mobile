@@ -5,7 +5,7 @@
             [quo2.components.common.notification-dot.view :as notification-dot]
             [quo2.components.counter.counter.view :as counter]
             [quo2.components.markdown.text :as text]
-            [quo2.components.list-items.preview-list :as preview-list]
+            [quo2.components.list-items.preview-list.view :as preview-list]
             [quo2.components.tags.context-tag.view :as tag]
             [quo2.components.code.snippet :as snippet]
             [utils.i18n :as i18n]))
@@ -26,11 +26,11 @@
       text]
 
      :photo
-     [preview-list/preview-list
-      {:type               :photo
+     [preview-list/view
+      {:type               :collectibles
        :more-than-99-label (i18n/label :t/counter-99-plus)
-       :size               24
-       :override-theme     :dark} photos]
+       :size               :size/s-24}
+      photos]
 
      :sticker
      [fast-image/fast-image
@@ -45,16 +45,20 @@
        :style               style/gif}]
 
      :audio
-     [tag/audio-tag duration {:override-theme :dark}]
+     [tag/view {:type     :audio
+                :duration duration}]
 
      :community
-     [tag/community-tag
-      community-avatar
-      community-name
-      {:override-theme :dark}]
+     [tag/view {:type           :community
+                :community-name community-name
+                :community-logo community-avatar
+                :size           24}]
 
      :link
-     [tag/context-tag nil (:source content) (:text content)]
+     [tag/view {:type    :icon
+                :icon    (:icon content)
+                :context (:text content)
+                :size    24}]
 
      :code
      [snippet/snippet
