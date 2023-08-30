@@ -5,9 +5,7 @@
   [theme]
   {:border-radius 16
    :border-width  1
-   :border-color  (colors/theme-colors colors/neutral-10
-                                       colors/neutral-80
-                                       theme)})
+   :border-color  (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)})
 
 (defn title
   [color]
@@ -24,9 +22,7 @@
    :margin             (when (= :derivation-path type) 8)
    :border-radius      12
    :border-width       (when (= :derivation-path type) 1)
-   :border-color       (colors/theme-colors colors/neutral-10
-                                            colors/neutral-80
-                                            theme)
+   :border-color       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
    :padding-bottom     (if (not= :private-key type) 8 12)})
 
 (def icon-container
@@ -34,9 +30,7 @@
 
 (defn stored-title
   [theme]
-  {:color        (colors/theme-colors colors/neutral-50
-                                      colors/neutral-40
-                                      theme)
+  {:color        (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
    :margin-right 4})
 
 (def row-subtitle-container

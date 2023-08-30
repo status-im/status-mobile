@@ -7,22 +7,15 @@
             [status-im2.common.resources :as resources]))
 
 (def descriptor
-  [{:label   "Type:"
-    :type    :select
+  [{:type    :select
     :key     :type
-    :options [{:key   :default-keypair
-               :value "Default Keypair"}
-              {:key   :recovery-phrase
-               :value "Recovery Phrase"}
-              {:key   :private-key
-               :value "Private Key"}]}
-   {:label   "Stored:"
-    :type    :select
+    :options [{:key :default-keypair}
+              {:key :recovery-phrase}
+              {:key :private-key}]}
+   {:type    :select
     :key     :stored
-    :options [{:key   :on-device
-               :value "On Device"}
-              {:key   :on-keycard
-               :value "On Keycard"}]}])
+    :options [{:key :on-device}
+              {:key :on-keycard}]}])
 
 (defn cool-preview
   []
@@ -41,7 +34,7 @@
                  :margin-horizontal 20}}
         [quo/account-origin @state]]])))
 
-(defn preview
+(defn view
   []
   [rn/view
    {:style {:background-color (colors/theme-colors colors/white colors/neutral-90)

@@ -69,8 +69,8 @@
 (defn- list-view
   [{:keys [type stored profile-picture user-name theme secondary-color]}]
   (let [stored-name (if (= :on-device stored)
-                      (i18n/label "on-device")
-                      (i18n/label "on-keycard"))]
+                      (i18n/label :t/on-device)
+                      (i18n/label :t/on-device))]
     [row-view
      {:type            type
       :stored          stored
@@ -91,9 +91,7 @@
 
 (def view-internal
   (fn [{:keys [type theme derivation-path on-press] :as props}]
-    (let [secondary-color (colors/theme-colors colors/neutral-50
-                                               colors/neutral-40
-                                               theme)]
+    (let [secondary-color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
       [rn/view {:style (style/container theme)}
        [text/text
         {:weight :regular

@@ -362,7 +362,7 @@
    :wallet            [{:name      :account-card
                         :component account-card/preview-account-card}
                        {:name      :account-origin
-                        :component account-origin/preview}
+                        :component account-origin/view}
                        {:name      :account-overview
                         :component account-overview/preview-account-overview}
                        {:name      :keypair

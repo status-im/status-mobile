@@ -1,10 +1,8 @@
 (ns quo2.components.wallet.account-origin.component-spec
   (:require [test-helpers.component :as h]
-            [quo2.core :as quo]
-            [utils.i18n :as i18n]))
+            [quo2.core :as quo]))
 
-(h/describe
-  "account origin tests"
+(h/describe "account origin tests"
   (h/test "component renders"
     (h/render [quo/account-origin
                {:type            :recovery-phrase
@@ -12,7 +10,7 @@
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
                 :user-name       "Alisher Yakupov"
                 :on-press        (h/mock-fn)}])
-    (h/is-truthy (h/get-by-text (i18n/label "origin"))))
+    (h/is-truthy (h/get-by-text (h/get-by-translation-text :t/origin))))
 
   (h/test "recovery phrase icon is visible when :type is :recovery-phrase"
     (h/render [quo/account-origin
@@ -66,7 +64,7 @@
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
                 :user-name       "Alisher Yakupov"
                 :on-press        (h/mock-fn)}])
-    (h/is-truthy (h/get-by-text (i18n/label "on-device"))))
+    (h/is-truthy (h/get-by-text (h/get-by-translation-text :t/on-device))))
 
   (h/test "on-keycard text is visible when :stored is :on-keycard"
     (h/render [quo/account-origin
@@ -75,7 +73,7 @@
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
                 :user-name       "Alisher Yakupov"
                 :on-press        (h/mock-fn)}])
-    (h/is-truthy (h/get-by-text (i18n/label "on-keycard"))))
+    (h/is-truthy (h/get-by-text (h/get-by-translation-text :t/on-keycard))))
 
   (h/test "on-press is called when :type is :recovery-phrase"
     (let [on-press (h/mock-fn)]
