@@ -52,4 +52,5 @@
    :margin-right    12})
 
 (def tag-container
-  {:margin-top 8})
+  {:margin-top  8
+   :margin-left -1})
