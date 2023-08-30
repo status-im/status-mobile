@@ -297,3 +297,9 @@
                                      token_criteria
                                      (or check-criteria token_criteria))))
                                 token-permissions)}))
+
+(re-frame/reg-sub
+ :community/images
+ :<- [:communities]
+ (fn [communities [_ id]]
+   (get-in communities [id :images])))

@@ -8,9 +8,17 @@
             [status-im2.contexts.chat.menus.pinned-messages.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [react-native.gesture :as gesture]))
+            [react-native.gesture :as gesture]
+            [react-native.fast-image :as fast-image]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
+
+(defn community-avatar
+  [community-images]
+  (when community-images
+    (:uri (or (:thumbnail community-images)
+              (:large community-images)
+              (first community-images)))))
 
 (defn message-render-fn
   [{:keys [deleted? deleted-for-me?] :as message} _ _ context]
@@ -25,17 +33,23 @@
         current-chat           (rf/sub [:chat-by-id chat-id])
         {:keys [community-id]} current-chat
         community              (rf/sub [:communities/community community-id])
-        bottom-inset           (safe-area/get-bottom)]
+        bottom-inset           (safe-area/get-bottom)
+        community-images       (rf/sub [:community/images community-id])]
     [gesture/scroll-view
      {:accessibility-label :pinned-messages-menu}
      [:<>
       [quo/text
-       {:size   :heading-1
+       {:size   :heading-2
         :weight :semi-bold
-        :style  style/heading}
+        :style  (style/heading community)}
        (i18n/label :t/pinned-messages)]
       (when community
         [rn/view {:style (style/heading-container)}
+         [fast-image/fast-image
+          {:source (community-avatar community-images)
+           :style  {:width         20
+                    :height        20
+                    :border-radius 20}}]
          [rn/text {:style (style/heading-text)} (:name community)]
          [quo/icon
           :i/chevron-right
