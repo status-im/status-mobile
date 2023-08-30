@@ -11,7 +11,7 @@
             [utils.i18n :as i18n]))
 
 (defn content-view
-  [{:keys                           [type content]
+  [{:keys                           [type content customization-color]
     {:keys [text duration photos community-avatar
             community-name source]} :content}]
   [rn/view {:style {:flex 1 :max-width 108}}
@@ -46,8 +46,9 @@
 
      :audio
      [tag/view
-      {:type     :audio
-       :duration duration}]
+      {:type                :audio
+       :duration            duration
+       :customization-color customization-color}]
 
      :community
      [tag/view
@@ -91,7 +92,7 @@
 (defn view
   [type status customization-color content]
   [rn/view {:style (style/content-container status)}
-   [content-view {:type type :content content}]
+   [content-view {:type type :content content :customization-color customization-color}]
    [notification-indicator
     {:status              status
      :customization-color customization-color
