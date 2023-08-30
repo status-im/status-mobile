@@ -11,7 +11,7 @@
 
 (def small-container-style
   (merge default-container-style
-         {:min-height         24
+         {:min-height         26
           :padding-horizontal 8
           :padding-vertical   3}))
 
@@ -44,6 +44,7 @@
                                     :background-color background-color)}
        [rn/view
         {:flex-direction :row
+         :align-items    :center
          :flex           1}
         [rn/view
          {:style {:justify-content :center
@@ -56,7 +57,7 @@
         [text/text
          {:size   paragraph-size
           :weight :medium
-          :style  {:padding-left 5
+          :style  {:padding-left (if icon 5 0)
                    :color        text-color}} label]]])))
 
 (defn- positive
