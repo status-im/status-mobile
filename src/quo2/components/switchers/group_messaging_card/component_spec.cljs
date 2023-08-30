@@ -100,7 +100,7 @@
                 :content {:community-avatar coinbase-community
                           :community-name   "Coinbase"}}])
     (h/is-truthy (h/get-by-text (utils/subtitle :community nil)))
-    (h/is-truthy (h/get-by-label-text :user-avatar))
+    (h/is-truthy (h/get-by-label-text :group-avatar))
     (h/is-truthy (h/get-by-text "Coinbase")))
 
   (h/test "Status: Read, Type: Link, Avatar: true"
@@ -109,8 +109,8 @@
                 :status  :read
                 :type    :link
                 :title   "Title"
-                :content {:source link-icon
-                          :text   "Rolling St..."}}])
+                :content {:icon :placeholder
+                          :text "Rolling St..."}}])
     (h/is-truthy (h/get-by-text (utils/subtitle :link nil)))
-    (h/is-truthy (h/get-by-label-text :user-avatar))
+    (h/is-truthy (h/get-by-label-text :group-avatar))
     (h/is-truthy (h/get-by-text "Rolling St..."))))
