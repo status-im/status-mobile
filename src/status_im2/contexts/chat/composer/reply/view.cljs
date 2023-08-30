@@ -61,7 +61,7 @@
     (i18n/label :t/message-deleted)]])
 
 (defn reply-from
-  [{:keys [from contact-name current-public-key]}]
+  [{:keys [from contact-name current-public-key pin?]}]
   (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
         photo-path   (rf/sub [:chats/photo-path from])]
     [rn/view {:style style/reply-from}
@@ -73,7 +73,7 @@
        :ring?             false}]
      [quo/text
       {:weight          :semi-bold
-       :size            :paragraph-2
+       :size            (if pin? :label :paragraph-2)
        :number-of-lines 1
        :style           style/message-author-text}
       (format-reply-author from contact-name current-public-key)]]))
@@ -100,7 +100,8 @@
          [reply-deleted-message]]
         [rn/view {:style (style/quoted-message pin?)}
          [reply-from
-          {:from               from
+          {:pin?               pin?
+           :from               from
            :contact-name       contact-name
            :current-public-key current-public-key}]
          (when (not-empty text)

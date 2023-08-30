@@ -12,7 +12,7 @@
   [{:keys [primary-name secondary-name style short-chat-key time-str contact? verified? untrustworthy?
            muted? size]
     :or   {size 13}}]
-  [rn/view {:style (merge style/container style)}
+  [rn/view {:style (merge style/container style {:height (if (= size 15) 21.75 18.2)})}
    [text/text
     {:weight              :semi-bold
      :size                (if (= size 15) :paragraph-1 :paragraph-2)

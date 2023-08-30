@@ -15,7 +15,7 @@
 
 (defn time-color
   [theme]
-  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
+  (colors/theme-colors colors/neutral-40 colors/neutral-50 theme))
 
 (defn sm-icon
   [{:keys [icon color opacity]}]
@@ -28,11 +28,11 @@
      :opacity opacity}]])
 
 (defn sm-timestamp
-  [timestamp]
+  [timestamp theme]
   [rn/view {:margin-left 8 :margin-top 2}
    [text/text
     {:size  :label
-     :style {:color          (time-color :time)
+     :style {:color          (time-color theme)
              :text-transform :none}}
     timestamp]])
 
@@ -61,10 +61,11 @@
         item])]))
 
 (defn system-message-base
-  [{:keys [icon timestamp]} child]
+  [{:keys [icon timestamp theme]} child]
   [rn/view
    {:flex-direction :row
-    :flex           1}
+    :flex           1
+    :align-items    :center}
    [sm-icon icon]
    [rn/view
     {:align-self     :center
@@ -72,7 +73,7 @@
      :margin-right   40 ;; dirty hack, flexbox won't work as expected
      :flex           1}
     child
-    [sm-timestamp timestamp]]])
+    [sm-timestamp timestamp theme]]])
 
 (defn system-message-deleted-internal
   [{:keys [label child theme timestamp]}]
@@ -80,7 +81,8 @@
    {:icon      {:icon    :i/delete
                 :color   :danger
                 :opacity 5}
-    :timestamp timestamp}
+    :timestamp timestamp
+    :theme     theme}
    (if child
      child
      [text/text
@@ -156,7 +158,8 @@
    [rn/view
     [rn/view
      {:flex-direction :row
-      :flex-wrap      :wrap}
+      :flex-wrap      :wrap
+      :height         18.2}
      [author/author {:primary-name pinned-by}]
      [split-text (i18n/label :pinned-a-message) theme true]]
     (when child child)]])
