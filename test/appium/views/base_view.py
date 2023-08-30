@@ -240,6 +240,7 @@ class BaseView(object):
         self.driver = driver
         self.send_message_button = SendMessageButton(self.driver)
         self.send_contact_request_button = Button(self.driver, translation_id="send-request")
+        self.password_input = EditBox(self.driver, accessibility_id="password-input")
 
         # Old UI Tabs
         self.home_button = HomeButton(self.driver)

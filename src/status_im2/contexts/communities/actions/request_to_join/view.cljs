@@ -3,17 +3,25 @@
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [reagent.core :as reagent]
+            [status-im2.common.password-authentication.view :as password-authentication]
             [status-im2.contexts.communities.actions.community-rules-list.view :as community-rules]
             [status-im2.contexts.communities.actions.request-to-join.style :as style]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [utils.requests :as requests]))
+            [utils.re-frame :as rf]))
 
 (defn request-to-join-text
   [open?]
   (if open?
     (i18n/label :t/join-open-community)
     (i18n/label :t/request-to-join)))
+
+(defn join-community-and-navigate-back
+  [id]
+  (rf/dispatch [:password-authentication/show
+                {:content (fn [] [password-authentication/view])}
+                {:label    (i18n/label :t/join-open-community)
+                 :on-press #(rf/dispatch [:communities/request-to-join-with-password id %])}])
+  (rf/dispatch [:navigate-back]))
 
 (defn request-to-join
   []
@@ -22,12 +30,8 @@
       (let [{:keys [permissions
                     name
                     id
-                    images
-                    can-join?
-                    can-request-access?
-                    requested-to-join-at]} (rf/sub [:get-screen-params])
-            pending?                       (rf/sub [:communities/my-pending-request-to-join id])
-            open?                          (not= 3 (:access permissions))]
+                    images]} (rf/sub [:get-screen-params])
+            open?            (not= 3 (:access permissions))]
         [rn/view {:flex 1}
          [gesture/scroll-view {:style {:flex 1}}
           [rn/view style/page-container
@@ -65,17 +69,7 @@
              (i18n/label :t/cancel)]
             [quo/button
              {:accessibility-label :join-community-button
-              :on-press            (fn []
-                                     (if can-join?
-                                       (do
-                                         (rf/dispatch [:communities/request-to-join id])
-                                         (rf/dispatch [:navigate-back]))
-                                       (do (and can-request-access?
-                                                (not pending?)
-                                                (requests/can-request-access-again?
-                                                 requested-to-join-at))
-                                           (rf/dispatch [:communities/request-to-join id])
-                                           (rf/dispatch [:navigate-back]))))
+              :on-press            #(join-community-and-navigate-back id)
               :disabled?           (not @agreed-to-rules?)
               :container-style     {:flex 1}}
              (request-to-join-text open?)]]

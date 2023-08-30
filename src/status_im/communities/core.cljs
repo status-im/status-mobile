@@ -81,6 +81,7 @@
               {:pinMessageAllMembersEnabled :pin-message-all-members-enabled?})
       (update :members walk/stringify-keys)
       (update :chats <-chats-rpc)
+      (update :token-permissions seq)
       (update :categories <-categories-rpc)
       (assoc :token-images
              (reduce (fn [acc {sym :symbol image :image}]
