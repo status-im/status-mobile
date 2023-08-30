@@ -465,155 +465,30 @@ task hemroidBuild(type: Exec) {
     executable execPath
 }
 
-// Define a custom resolvable configuration
-configurations {
-    resolvableDebugImplementation.extendsFrom debugImplementation
-    resolvableDebugImplementation.canBeResolved = true
-    resolvableDebugImplementation.attributes.attribute(com.android.build.api.attributes.BuildTypeAttr.ATTRIBUTE,
-        project.objects.named(com.android.build.api.attributes.BuildTypeAttr, 'debug'))
+// Add this task definition at the bottom of your build.gradle file
+task printAllDependencies {
+    doLast {
+        println "Listing all dependencies for project..."
 
-    resolvableReleaseImplementation.extendsFrom releaseImplementation
-    resolvableReleaseImplementation.canBeResolved = true
-    resolvableReleaseImplementation.attributes.attribute(com.android.build.api.attributes.BuildTypeAttr.ATTRIBUTE,
-        project.objects.named(com.android.build.api.attributes.BuildTypeAttr, 'release'))
-}
+        // Iterate through all configurations
+        configurations.all { config ->
+            int dependencyCount = 0
 
-def generateDepsJsonForVariant(String variant) {
-    def depsJson = new groovy.json.JsonBuilder()
-    depsJson {
-        dependencies([])
-    }
-    def root = depsJson.content
-
-    def configuration = configurations."${variant}RuntimeClasspath"
-
-    def allArtifacts = []
-    configuration.allDependencies.each { dep ->
-        try {
-            def artifacts = dep.resolve()
-            allArtifacts += artifacts
-        } catch (Exception e) {
-            println "Failed to resolve dependency ${dep}, skipping: ${e.message}"
-        }
-    }
-
-    allArtifacts.each { artifact ->
-        if (artifact != null) { // Adding null check
-            def identifier = artifact.moduleVersion.id
-
-            if (identifier != null && (identifier.group != 'status-im' || identifier.name != 'react-native-status')) {
-                def dependency = [
-                    group: identifier.group,
-                    name: identifier.name,
-                    version: identifier.version,
-                    file: artifact.file.name
-                ]
-                root.dependencies << dependency
+            // Count the dependencies for this configuration
+            config.allDependencies.each { dependency ->
+                dependencyCount++
             }
-        } else {
-            println "Encountered null artifact, skipping."
+
+            // Print the configuration name and dependency count
+            println "Configuration: ${config.name} (Total Dependencies: ${dependencyCount})"
+
+            // Iterate through all dependencies in the current configuration
+            config.allDependencies.each { dependency ->
+                println "  - ${dependency.group}:${dependency.name}:${dependency.version}"
+            }
         }
     }
-
-    def jsonStr = depsJson.toPrettyString()
-    println "${variant.capitalize()} Dependencies JSON:\n${jsonStr}"
-
-    def outputFile = new File("${buildDir}/${variant}Deps.json")
-    outputFile.text = jsonStr
 }
-
-
-// Define the custom task
-// Common method to handle the generation of DepsJson
-// def generateDepsJsonForVariant(String variant) {
-//     println "Generating dependencies JSON for variant: $variant"
-//
-//     def depsJson = new groovy.json.JsonBuilder()
-//     depsJson {
-//         dependencies([])
-//     }
-//     def root = depsJson.content
-//
-//     try {
-//
-//             def resolvedArtifacts = configurations."${variant}RuntimeClasspath".resolvedConfiguration.resolvedArtifacts
-//             println "Resolved Artifacts for ${variant.capitalize()}:\n${resolvedArtifacts}"
-//             resolvedArtifacts.each { artifact ->
-//             def identifier = artifact.moduleVersion.id
-//
-//             println "Processing artifact for $variant: ${identifier.group}:${identifier.name}:${identifier.version}"
-//
-//             if (identifier.group != 'status-im' || identifier.name != 'react-native-status') {
-//                 def dependency = [
-//                     group: identifier.group,
-//                     name: identifier.name,
-//                     version: identifier.version,
-//                     file: artifact.file.name
-//                 ]
-//                 root.dependencies << dependency
-//             } else {
-//                 println "Skipping react-native-status for $variant"
-//             }
-//         }
-//     } catch (Exception e) {
-//         println "Failed to resolve all dependencies for $variant, but proceeding with what we have: ${e.message}"
-//         e.printStackTrace()
-//     }
-//
-//     def jsonStr = depsJson.toPrettyString()
-//     println "${variant.capitalize()} Dependencies JSON:\n${jsonStr}"
-//
-//     // Ensure the directory exists
-//     def outputDir = new File("${buildDir}")
-//     outputDir.mkdirs()
-//
-//     def outputFile = new File("${buildDir}/${variant}Deps.json")
-//     outputFile.text = jsonStr
-// }
-
-task generateDebugDepsJson {
-    doLast {
-        generateDepsJsonForVariant("debug")
-    }
-}
-
-task generateReleaseDepsJson {
-    doLast {
-        generateDepsJsonForVariant("release")
-    }
-}
-
-task mergeDepsJson {
-    dependsOn generateDebugDepsJson, generateReleaseDepsJson
-
-    doLast {
-        def outputFilePath = "$buildDir/deps.json"
-        def outputFile = new File(outputFilePath)
-
-        def debugDepsFile = new File("$buildDir/debugDeps.json")
-        def releaseDepsFile = new File("$buildDir/releaseDeps.json")
-
-        def debugDeps = new JsonSlurper().parse(debugDepsFile)
-        def releaseDeps = new JsonSlurper().parse(releaseDepsFile)
-
-        // Merging dependencies and removing duplicates
-        def allDeps = (debugDeps.dependencies + releaseDeps.dependencies).unique()
-
-        def mergedDepsJson = new groovy.json.JsonBuilder()
-        mergedDepsJson {
-            dependencies allDeps
-        }
-
-        // Writing to file
-        outputFile.text = mergedDepsJson.toPrettyString()
-
-        // Logging to console
-        println("Merged Dependencies JSON:")
-        println(mergedDepsJson.toPrettyString())
-    }
-}
-
-
 
 
 preBuild.dependsOn hemroidBuild
