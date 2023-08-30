@@ -26,13 +26,16 @@
                                                :profile-picture profile-picture}]
     :recovery-phrase [icons/icon 
                       :i/seed
-                      {:color secondary-color}]
+                      {:accessibility-label :recovery-phrase-icon
+                       :color secondary-color}]
     :private-key [icons/icon 
                   :i/key
-                  {:color secondary-color}]
+                  {:accessibility-label :private-key-icon
+                   :color secondary-color}]
     :derivation-path [icons/icon 
                       :i/derivated-path
-                      {:color secondary-color}]
+                      {:accessibility-label :derivation-path-icon
+                       :color secondary-color}]
     nil))
 
 (defn- row-view
@@ -55,7 +58,8 @@
         {:color secondary-color}])]]
    (when (= :derivation-path type)
    [rn/pressable 
-    {:on-press on-press
+    {:accessibility-label :derivation-path-button
+     :on-press on-press
      :style style/right-icon-container}
     [icons/icon
      :i/options
