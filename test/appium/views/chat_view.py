@@ -5,9 +5,9 @@ from time import sleep
 
 import dateutil.parser
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
 
-from tests import emojis
+from tests import emojis, common_password
 from views.base_element import Button, EditBox, Text, BaseElement, SilentButton
 from views.base_view import BaseView
 from views.home_view import HomeView
@@ -410,12 +410,15 @@ class CommunityView(HomeView):
         # Communities initial page
         self.community_description_text = Text(self.driver, accessibility_id="community-description-text")
 
-    def join_community(self):
+    def join_community(self, password=common_password):
         self.driver.info("Joining community")
         self.join_button.click()
         self.checkbox_button.scroll_to_element()
         self.checkbox_button.enable()
         self.join_community_button.scroll_and_click()
+        self.password_input.set_value(password)
+        Button(self.driver,
+               xpath="//*[@content-desc='password-input']/../following-sibling::*//*[@text='Join Community']").click()
 
     def get_channel(self, channel_name: str):
         self.driver.info("Getting  %s channel element in community" % channel_name)
@@ -986,7 +989,16 @@ class ChatView(BaseView):
     def send_message(self, message: str = 'test message', wait_chat_input_sec=5):
         self.driver.info("Sending message '%s'" % BaseElement(self.driver).exclude_emoji(message))
         self.chat_message_input.wait_for_element(wait_chat_input_sec)
-        self.chat_message_input.send_keys(message)
+        for _ in range(3):
+            try:
+                self.chat_message_input.send_keys(message)
+                break
+            except StaleElementReferenceException:
+                time.sleep(1)
+            except Exception as e:
+                raise e
+        else:
+            raise StaleElementReferenceException(msg="Can't send keys to chat message input, loading")
         self.send_message_button.click()
 
     def send_contact_request(self, message: str = 'Contact request message', wait_chat_input_sec=5):
@@ -1020,7 +1032,8 @@ class ChatView(BaseView):
 
     def copy_message_text(self, message_text):
         self.driver.info("Copying '%s' message via long press" % message_text)
-        self.element_by_text_part(message_text).long_press_element()
+        self.chat_element_by_text(message_text).wait_for_visibility_of_element()
+        self.chat_element_by_text(message_text).long_press_element()
         self.element_by_translation_id("copy-text").click()
 
     def quote_message(self, message: str):
