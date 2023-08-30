@@ -15,7 +15,7 @@
 
 (defn time-color
   [theme]
-  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
+  (colors/theme-colors colors/neutral-40 colors/neutral-50 theme))
 
 (defn sm-icon
   [{:keys [icon color opacity]}]
@@ -64,7 +64,8 @@
   [{:keys [icon timestamp theme]} child]
   [rn/view
    {:flex-direction :row
-    :flex           1}
+    :flex           1
+    :align-items    :center}
    [sm-icon icon]
    [rn/view
     {:align-self     :center
@@ -75,7 +76,7 @@
     [sm-timestamp timestamp theme]]])
 
 (defn system-message-deleted-internal
-  [{:keys [label child theme timestamp]}]
+  [{:keys [label child theme timestamp ]}]
   [system-message-base
    {:icon      {:icon    :i/delete
                 :color   :danger
@@ -157,7 +158,8 @@
    [rn/view
     [rn/view
      {:flex-direction :row
-      :flex-wrap      :wrap}
+      :flex-wrap      :wrap
+      :height         18.2}
      [author/author {:primary-name pinned-by}]
      [split-text (i18n/label :pinned-a-message) theme true]]
     (when child child)]])
