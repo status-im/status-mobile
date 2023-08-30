@@ -21,21 +21,22 @@
 (defn- row-icon
   [profile-picture type secondary-color]
   (case type
-    :default-keypair [user-avatar/user-avatar {:size :xxs
-                                               :ring? false
-                                               :profile-picture profile-picture}]
-    :recovery-phrase [icons/icon 
+    :default-keypair [user-avatar/user-avatar
+                      {:size            :xxs
+                       :ring?           false
+                       :profile-picture profile-picture}]
+    :recovery-phrase [icons/icon
                       :i/seed
                       {:accessibility-label :recovery-phrase-icon
-                       :color secondary-color}]
-    :private-key [icons/icon 
-                  :i/key
-                  {:accessibility-label :private-key-icon
-                   :color secondary-color}]
-    :derivation-path [icons/icon 
+                       :color               secondary-color}]
+    :private-key     [icons/icon
+                      :i/key
+                      {:accessibility-label :private-key-icon
+                       :color               secondary-color}]
+    :derivation-path [icons/icon
                       :i/derivated-path
                       {:accessibility-label :derivation-path-icon
-                       :color secondary-color}]
+                       :color               secondary-color}]
     nil))
 
 (defn- row-view
@@ -50,56 +51,58 @@
      [text/text
       {:weight :regular
        :size   :paragraph-2
-       :style (style/stored-title theme)}
+       :style  (style/stored-title theme)}
       subtitle]
      (when (= :on-keycard stored)
-       [icons/icon 
+       [icons/icon
         :i/keycard-card
         {:color secondary-color}])]]
    (when (= :derivation-path type)
-   [rn/pressable 
-    {:accessibility-label :derivation-path-button
-     :on-press on-press
-     :style style/right-icon-container}
-    [icons/icon
-     :i/options
-     {:color secondary-color}]])])
+     [rn/pressable
+      {:accessibility-label :derivation-path-button
+       :on-press            on-press
+       :style               style/right-icon-container}
+      [icons/icon
+       :i/options
+       {:color secondary-color}]])])
 
 (defn- list-view
   [{:keys [type stored profile-picture user-name theme secondary-color]}]
   (let [stored-name (if (= :on-device stored)
                       (i18n/label "on-device")
                       (i18n/label "on-keycard"))]
-    [row-view {:type type
-               :stored stored
-               :profile-picture profile-picture 
-               :title user-name
-               :subtitle stored-name
-               :theme theme 
-               :secondary-color secondary-color}]))
+    [row-view
+     {:type            type
+      :stored          stored
+      :profile-picture profile-picture
+      :title           user-name
+      :subtitle        stored-name
+      :theme           theme
+      :secondary-color secondary-color}]))
 
 (defn- card-view
   [theme derivation-path secondary-color on-press]
-  [row-view {:type :derivation-path
-             :subtitle derivation-path
-             :theme theme
-             :on-press on-press
-             :secondary-color secondary-color}])
+  [row-view
+   {:type            :derivation-path
+    :subtitle        derivation-path
+    :theme           theme
+    :on-press        on-press
+    :secondary-color secondary-color}])
 
 (def view-internal
   (fn [{:keys [type theme derivation-path on-press] :as props}]
-    (let [secondary-color (colors/theme-colors colors/neutral-50 
-                                               colors/neutral-40 
+    (let [secondary-color (colors/theme-colors colors/neutral-50
+                                               colors/neutral-40
                                                theme)]
-    [rn/view {:style (style/container theme)}
-     [text/text
-      {:weight :regular
-       :size   :paragraph-2
-       :style  (style/title secondary-color)}
-      (i18n/label :t/origin)]
-     [list-view (assoc props :secondary-color secondary-color)]
-     (when (not= :private-key type)
-       [card-view theme derivation-path secondary-color on-press])])))
+      [rn/view {:style (style/container theme)}
+       [text/text
+        {:weight :regular
+         :size   :paragraph-2
+         :style  (style/title secondary-color)}
+        (i18n/label :t/origin)]
+       [list-view (assoc props :secondary-color secondary-color)]
+       (when (not= :private-key type)
+         [card-view theme derivation-path secondary-color on-press])])))
 
 (def view
   "Create an accont-origin UI component.
