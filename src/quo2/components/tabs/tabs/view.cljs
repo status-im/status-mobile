@@ -21,7 +21,7 @@
     ;; Truncate to avoid unnecessary rendering.
     (if (> fade-percentage 0.99)
       0.99
-      (utils.number/naive-round fade-percentage 2))))
+      max-fade-percentage)))
 
 (defn- masked-view-wrapper
   [{:keys [fade-end-percentage fade-end?]} & children]
@@ -59,8 +59,10 @@
   (when on-scroll
     (on-scroll e)))
 
-(defn- render-tab
-  [{:keys [active-tab-id
+(defn- tab-view
+  [{:keys [id label notification-dot? accessibility-label]}
+   index _
+   {:keys [active-tab-id
            blur?
            customization-color
            flat-list-ref
@@ -68,9 +70,8 @@
            on-change
            scroll-on-press?
            size
-           style]}
-   {:keys [id label notification-dot? accessibility-label]}
-   index]
+           style
+          ]}]
   [rn/view
    {:style (style/tab {:size             size
                        :default-tab-size default-tab-size
@@ -166,7 +167,6 @@
              ;; just one about this topic:
              ;; https://github.com/facebook/react-native/issues/31218
              :content-container-style           {:padding-top (dec unread-count-offset)}
-             :extra-data                        (str @active-tab-id)
              :horizontal                        true
              :scroll-event-throttle             64
              :shows-horizontal-scroll-indicator false
@@ -178,20 +178,20 @@
                                                           :fade-end?           fade-end?
                                                           :fading              fading
                                                           :on-scroll           on-scroll})
-             :render-fn                         (partial render-tab
-                                                         {:active-tab-id       active-tab-id
-                                                          :blur?               blur?
-                                                          :customization-color customization-color
-                                                          :flat-list-ref       flat-list-ref
-                                                          :number-of-items     (count data)
-                                                          :on-change           on-change
-                                                          :scroll-on-press?    scroll-on-press?
-                                                          :size                size
-                                                          :style               style})})]]]
+             :render-fn                         tab-view
+             :render-data                       {:active-tab-id       active-tab-id
+                                                 :blur?               blur?
+                                                 :customization-color customization-color
+                                                 :flat-list-ref       flat-list-ref
+                                                 :number-of-items     (count data)
+                                                 :on-change           on-change
+                                                 :scroll-on-press?    scroll-on-press?
+                                                 :size                size
+                                                 :style               style}})]]]
         [rn/view (merge style {:flex-direction :row})
          (map-indexed (fn [index item]
                         ^{:key (:id item)}
-                        [render-tab
+                        [tab-view item index nil
                          {:active-tab-id       active-tab-id
                           :blur?               blur?
                           :customization-color customization-color
@@ -199,6 +199,5 @@
                           :on-change           on-change
                           :size                size
                           :style               style}
-                         item
-                         index])
+                        ])
                       data)]))))
