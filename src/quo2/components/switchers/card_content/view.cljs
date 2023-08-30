@@ -45,20 +45,23 @@
        :style               style/gif}]
 
      :audio
-     [tag/view {:type     :audio
-                :duration duration}]
+     [tag/view
+      {:type     :audio
+       :duration duration}]
 
      :community
-     [tag/view {:type           :community
-                :community-name community-name
-                :community-logo community-avatar
-                :size           24}]
+     [tag/view
+      {:type           :community
+       :community-name community-name
+       :community-logo community-avatar
+       :size           24}]
 
      :link
-     [tag/view {:type    :icon
-                :icon    (:icon content)
-                :context (:text content)
-                :size    24}]
+     [tag/view
+      {:type    :icon
+       :icon    (:icon content)
+       :context (:text content)
+       :size    24}]
 
      :code
      [snippet/snippet
