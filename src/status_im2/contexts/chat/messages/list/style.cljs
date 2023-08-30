@@ -6,7 +6,6 @@
 (defonce ^:const cover-height 168)
 (defonce ^:const overscroll-cover-height 2000)
 (defonce ^:const header-avatar-top-offset -36)
-(defonce ^:const messages-list-bottom-offset 16)
 
 (defn keyboard-avoiding-container
   [{:keys [top]}]
