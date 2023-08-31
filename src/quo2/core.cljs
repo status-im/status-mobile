@@ -116,7 +116,6 @@
     quo2.components.tags.tags
     quo2.components.tags.token-tag
     quo2.components.text-combinations.view
-    quo2.components.text-combinations.title.view
     quo2.components.wallet.account-card.view
     quo2.components.wallet.account-origin.view
     quo2.components.wallet.account-overview.view
