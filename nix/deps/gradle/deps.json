@@ -14487,27 +14487,27 @@
   },
 
   {
-    "path": "org/easymock/easymock-parent/5.1.0",
+    "path": "org/easymock/easymock-parent/5.2.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "easymock-parent-5.1.0.pom": {
-        "sha1": "aa65d01ea878d85642ac56c6e68504725613933e",
-        "sha256": "sha256-YI6Eq3iEn+VyIcBUi/yt4t/KcY4w7W6DsTDS0xGGasc="
+      "easymock-parent-5.2.0.pom": {
+        "sha1": "f942e2bc1c32f566e68ea181ce2ec131ace7ec91",
+        "sha256": "sha256-iRyhdqVz5GLVL1oJN3ztVl5uhIGAYhYLIPdiw2sL28w="
       }
     }
   },
 
   {
-    "path": "org/easymock/easymock/5.1.0",
+    "path": "org/easymock/easymock/5.2.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "easymock-5.1.0.pom": {
-        "sha1": "3f78c28fe129d1af50f3fd3e153ededd0e5c77c2",
-        "sha256": "sha256-T4ur5QUtJiF3oeHIiW53SC5vgxKADKYISFXwlXOUNxU="
+      "easymock-5.2.0.pom": {
+        "sha1": "45a5fc0d7e21023c4848871317a3c829048fe959",
+        "sha256": "sha256-OP4z1gT9184dN//Ggz0FYnZuARiMhv4HM4Y1K2GAkjE="
       },
-      "easymock-5.1.0.jar": {
-        "sha1": "0b699beae4f519f06c587674b62dcfe5fb437f1c",
-        "sha256": "sha256-PyWDvT4nW+Pi+yaxEQKW6FCj/UU02YQny/D60ZBo3Jo="
+      "easymock-5.2.0.jar": {
+        "sha1": "ceb40330d6ecc2da3cdac41663f193e300497238",
+        "sha256": "sha256-5jpklLllU8vQ394TtfI9q72BGFRBDW68U6amaEoXY7U="
       }
     }
   },
