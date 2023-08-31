@@ -35,7 +35,7 @@
    :indicator-size   status indicator outer radius, set to nil or 0 when no indicator
    :indicator-border `indicator-size`-`indicator-border` is the inner radius
    :indicator-color  color for status indicator
-   :override-theme   override theme for ring
+   :theme   :light or :dark
    :background-color intials avatar background color
    :color            intials avatar text color
    :size             intials avatar radius
@@ -55,7 +55,7 @@
            status-indicator?   true
            online?             true
            ring?               true
-           customization-color :turquoise}
+           customization-color :blue}
     :as   props}]
   (let [full-name          (or full-name "Your Name")
         ;; image generated with profile-picture-fn is round cropped

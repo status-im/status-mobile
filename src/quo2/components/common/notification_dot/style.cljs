@@ -4,17 +4,18 @@
 (def ^:const size 8)
 
 (defn dot-background-color
-  [customization-color theme]
-  (if customization-color
-    (colors/theme-colors
-     (colors/custom-color customization-color 50)
-     (colors/custom-color customization-color 60)
-     theme)
-    (colors/theme-colors colors/primary-50 colors/primary-60 theme)))
+  [customization-color theme blur?]
+  (cond
+    customization-color (colors/theme-colors
+                         (colors/custom-color customization-color 50)
+                         (colors/custom-color customization-color 60)
+                         theme)
+    blur?               (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
+    :else               (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)))
 
 (defn notification-dot
-  [customization-color theme]
-  {:background-color (dot-background-color customization-color theme)
+  [customization-color theme blur?]
+  {:background-color (dot-background-color customization-color theme blur?)
    :width            size
    :height           size
    :border-radius    (/ size 2)

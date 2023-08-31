@@ -280,7 +280,7 @@
    :navigation        [{:name      :bottom-nav-tab
                         :component bottom-nav-tab/preview-bottom-nav-tab}
                        {:name      :top-nav
-                        :component top-nav/preview-top-nav}
+                        :component top-nav/preview}
                        {:name      :page-nav
                         :component page-nav/preview-page-nav}
                        {:name      :floating-shell-button

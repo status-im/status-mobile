@@ -4,8 +4,9 @@
             [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
-            [status-im2.common.home.banner.view :as common.home.banner]
-            [status-im2.common.home.view :as common.home]
+            [status-im2.common.home.banner.view :as common.banner]
+            [status-im2.common.home.empty-state.view :as common.empty-state]
+            [status-im2.common.home.header-spacing.view :as common.header-spacing]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
@@ -90,24 +91,24 @@
             scroll-shared-value             (reanimated/use-shared-value 0)]
         [:<>
          (if (empty? selected-items)
-           [common.home/empty-state-image
+           [common.empty-state/view
             {:selected-tab selected-tab
              :tab->content (empty-state-content theme)}]
            [reanimated/flat-list
             {:ref                               set-flat-list-ref
              :key-fn                            :id
              :content-inset-adjustment-behavior :never
-             :header                            [common.home/header-spacing]
+             :header                            [common.header-spacing/view]
              :render-fn                         item-render
              :style                             {:margin-top -1}
              :data                              selected-items
              :scroll-event-throttle             8
-             :on-scroll                         #(common.home.banner/set-scroll-shared-value
+             :on-scroll                         #(common.banner/set-scroll-shared-value
                                                   {:scroll-input (oops/oget
                                                                   %
                                                                   "nativeEvent.contentOffset.y")
                                                    :shared-value scroll-shared-value})}])
-         [:f> common.home.banner/animated-banner
+         [:f> common.banner/animated-banner
           {:content             banner-data
            :customization-color customization-color
            :scroll-ref          flat-list-ref
