@@ -1,10 +1,8 @@
 (ns status-im2.contexts.quo-preview.wallet.account-origin
   (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.common.resources :as resources]))
+            [status-im2.common.resources :as resources]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:type    :select
@@ -17,7 +15,7 @@
     :options [{:key :on-device}
               {:key :on-keycard}]}])
 
-(defn cool-preview
+(defn view
   []
   (let [state (reagent/atom {:type            :default-keypair
                              :stored          :on-keycard
@@ -26,21 +24,5 @@
                              :user-name       "Alisher Yakupov"
                              :on-press        #(js/alert "pressed")})]
     (fn []
-      [rn/view
-       [rn/view {:style {:flex 1}}
-        [preview/customizer state descriptor]]
-       [rn/view
-        {:style {:padding-vertical  10
-                 :margin-horizontal 20}}
-        [quo/account-origin @state]]])))
-
-(defn view
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-90)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/account-origin @state]])))

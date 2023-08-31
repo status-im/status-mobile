@@ -70,7 +70,7 @@
   [{:keys [type stored profile-picture user-name theme secondary-color]}]
   (let [stored-name (if (= :on-device stored)
                       (i18n/label :t/on-device)
-                      (i18n/label :t/on-device))]
+                      (i18n/label :t/on-keycard))]
     [row-view
      {:type            type
       :stored          stored
