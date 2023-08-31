@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "link-previews-not-working-on-message-edit",
-    "commit-sha1": "d6b58543d4f911385653365aef688ebf07c9b12d",
-    "src-sha256": "0znfb2ay1blljbn0x0fbvw4lxlkr4yqa22c1xh966n7gxa5fcagv"
+    "version": "v0.166.5",
+    "commit-sha1": "22ec4ac5861cd3c907c980469a73f685b43dbda0",
+    "src-sha256": "0z9j9hrgab3qrc84nj12b97mkjqpas83ln5a9k6367d23jiqwmj6"
 }
