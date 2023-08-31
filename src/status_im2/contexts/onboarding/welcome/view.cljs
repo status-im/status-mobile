@@ -19,7 +19,8 @@
       :title-accessibility-label       :welcome-title
       :description                     :description
       :description-props               (i18n/label :t/welcome-to-web3-sub-title)
-      :description-accessibility-label :welcome-sub-title}]))
+      :description-accessibility-label :welcome-sub-title
+      :onboarding?                     true}]))
 
 (defn dispatch-visibility-status-update
   [status-type]

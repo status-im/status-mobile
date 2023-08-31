@@ -18,7 +18,8 @@
     :title-accessibility-label       :enable-biometrics-title
     :description                     :description
     :description-props               (i18n/label :t/use-biometrics)
-    :description-accessibility-label :enable-biometrics-sub-title}])
+    :description-accessibility-label :enable-biometrics-sub-title
+    :onboarding?                     true}])
 
 (defn enable-biometrics-buttons
   [insets]

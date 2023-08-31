@@ -1,14 +1,14 @@
 (ns quo2.components.text-combinations.style)
 
 (defn container
-  [container-style]
+  [container-style onboarding?]
   (merge
-   {:flex              1
+   {:flex              (when-not onboarding? 1)
     :margin-horizontal 20}
    container-style))
 
-(def title-container
-  {:flex           1
+(defn title-container [onboarding?]
+  {:flex           (when-not onboarding? 1)
    :flex-direction :row
    :align-items    :center})
 

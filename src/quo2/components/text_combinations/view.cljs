@@ -24,9 +24,10 @@
            title-accessibility-label
            description
            description-props
-           description-accessibility-label]}]
-  [rn/view {:style (style/container container-style)}
-   [rn/view {:style style/title-container}
+           description-accessibility-label
+           onboarding?]}]
+  [rn/view {:style (style/container container-style onboarding?)}
+   [rn/view {:style (style/title-container onboarding?)}
     (when avatar
       [rn/view {:style style/avatar-container}
        [icon avatar 32]])

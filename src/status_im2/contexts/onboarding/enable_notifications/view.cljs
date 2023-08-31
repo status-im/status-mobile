@@ -17,7 +17,8 @@
     :title-accessibility-label       :notifications-title
     :description                     :description
     :description-props               (i18n/label :t/enable-notifications-sub-title)
-    :description-accessibility-label :notifications-sub-title}])
+    :description-accessibility-label :notifications-sub-title
+    :onboarding?                     true}])
 
 (defn enable-notification-buttons
   [{:keys [insets]}]
