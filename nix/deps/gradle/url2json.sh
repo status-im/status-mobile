@@ -14,6 +14,11 @@ declare -a REPOS=(
   "https://jitpack.io"
 )
 
+# These files are not necessary for the build process.
+FILENAMES_BLACKLIST='-(javadoc|runtime|gwt|headers|sources|src|tests|adapters|modular|site|bin)\.'
+FILETYPES_BLACKLIST='(pom|json|zip|module|xml|md5|sha1|sha256|sha512)$'
+SIGNATURE_BLACKLIST='(pom|jar|json|zip|module|xml|md5|asc).asc$'
+
 function nix_prefetch() {
     nix store prefetch-file --json "${1}" 2>/dev/null
 }
@@ -36,7 +41,49 @@ function match_repo_url() {
 
 function pom_has_nodeps_jar() {
     grep '<shadedClassifierName>nodeps</shadedClassifierName>' "${1}" \
-        >/dev/null 2>&1 
+        >/dev/null 2>&1
+}
+
+function guess_pkg_files() {
+    # Some deps are just POMs, in which case there is no JAR to fetch.
+    [[ "${OBJ_TYPE}" == "" ]]        && echo "${PKG_NAME}.jar"
+    [[ "${OBJ_TYPE}" == "jar" ]]     && echo "${PKG_NAME}.jar"
+    [[ "${OBJ_TYPE}" == "bundle" ]]  && echo "${PKG_NAME}.jar"
+    [[ "${OBJ_TYPE}" =~ aar* ]]      && echo "${PKG_NAME}.aar"
+    [[ "${OBJ_TYPE}" == "aar.asc" ]] && echo "${PKG_NAME}.${OBJ_TYPE}"
+    pom_has_nodeps_jar "${POM_PATH}" && echo "${PKG_NAME}-nodeps.jar"
+}
+
+function get_pkg_files() {
+    REPO_URL="${1}"
+    PKG_PATH="${2}"
+    PKG_NAME="${3}"
+    # Google Maven repo doesn't have normal HTML directory listing.
+    if [[ "${REPO_URL}" == "https://dl.google.com/dl/android/maven2" ]]; then
+        FOUND=$(curl --fail -s "${REPO_URL}/${PKG_PATH}/artifact-metadata.json")
+        # Some older packages do not have artifacts-metadata.json.
+        if [[ "$?" -eq 0 ]]; then
+            FOUND=$(echo "${FOUND}" | jq -r '.artifacts[].name')
+        else
+            FOUND=''
+        fi
+    else
+        FOUND=$(
+            curl -s "${REPO_URL}/${PKG_PATH}/" \
+                | htmlq a -a href \
+                | grep -e "^${PKG_NAME}"
+        )
+    fi
+    if [[ "${FOUND}" == '' ]]; then
+        guess_pkg_files
+    else
+        # Filter out files we don't actually need for builds.
+        echo "${FOUND}" \
+            | grep -v -E \
+                -e "${FILENAMES_BLACKLIST}" \
+                -e "${FILETYPES_BLACKLIST}" \
+                -e "${SIGNATURE_BLACKLIST}"
+    fi
 }
 
 function fetch_and_template_file() {
@@ -58,10 +105,6 @@ function fetch_and_template_file() {
       }"
 }
 
-function fetch_and_template_file_no_fail() {
-    fetch_and_template_file "${1}" 2>/dev/null || true
-}
-
 if [[ -z "${1}" ]]; then
     echo "Required POM URL argument not given!" >&2
     exit 1
@@ -77,7 +120,7 @@ echo -en "${CLR} - Nix entry for: ${1##*/}\r" >&2
 REPO_URL=$(match_repo_url "${PKG_URL_NO_EXT}")
 
 if [[ -z "${REPO_URL}" ]]; then
-    echo " ! Repo URL not found: %s" "${REPO_URL}" >&2
+    echo " ! Repo URL not found for: ${POM_URL}" >&2
     exit 1
 fi
 # Get the relative path without full URL
@@ -114,12 +157,8 @@ echo -ne "
         \"sha256\": \"${POM_SHA256}\"
       }"
 
-# Some deps are just POMs, in which case there is no JAR to fetch.
-[[ "${OBJ_TYPE}" == "" ]]        && fetch_and_template_file_no_fail "${PKG_NAME}.jar"
-[[ "${OBJ_TYPE}" == "jar" ]]     && fetch_and_template_file "${PKG_NAME}.jar"
-[[ "${OBJ_TYPE}" == "bundle" ]]  && fetch_and_template_file "${PKG_NAME}.jar"
-[[ "${OBJ_TYPE}" =~ aar* ]]      && fetch_and_template_file "${PKG_NAME}.aar"
-[[ "${OBJ_TYPE}" == "aar.asc" ]] && fetch_and_template_file "${PKG_NAME}.${OBJ_TYPE}"
-pom_has_nodeps_jar "${POM_PATH}" && fetch_and_template_file "${PKG_NAME}-nodeps.jar"
+for FILE in $(get_pkg_files "${REPO_URL}" "${PKG_PATH}" "${PKG_NAME}"); do
+    fetch_and_template_file "${FILE}"
+done
 
 echo -e '\n    }\n  },'
