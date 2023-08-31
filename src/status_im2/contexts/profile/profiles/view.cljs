@@ -311,8 +311,10 @@
         set-show-profiles #(reset! show-profiles? true)
         set-hide-profiles #(reset! show-profiles? false)]
     (fn []
-      [:<>
-       [background/view true]
-       (if @show-profiles?
-         [profiles-section {:set-hide-profiles set-hide-profiles}]
-         [login-section {:set-show-profiles set-show-profiles}])])))
+      (if @show-profiles?
+        [:<>
+         [background/view true]
+         [profiles-section {:set-hide-profiles set-hide-profiles}]]
+        [:<>
+         [background/view true]
+         [login-section {:set-show-profiles set-show-profiles}]]))))
