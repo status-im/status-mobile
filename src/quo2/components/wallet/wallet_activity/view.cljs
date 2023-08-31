@@ -55,7 +55,7 @@
        {:weight :medium
         :size   :label
         :style  (style/transaction-counter theme)}
-       (str "x" counter)]])
+       (i18n/label :t/x-counter {:counter counter})]])
    [rn/view
     [text/text
      {:weight :regular
@@ -102,8 +102,8 @@
     (fn
       [{:keys [state theme blur?
                on-press
-               first second third fourth
-               second-prefix third-prefix fourth-prefix]
+               first-tag second-tag third-tag fourth-tag
+               second-tag-prefix third-tag-prefix fourth-tag-prefix]
         :as   props}]
       [rn/pressable
        {:style               (style/wallet-activity-container {:pressed? @pressed?
@@ -114,25 +114,21 @@
         :on-press            on-press
         :on-press-in         (fn [] (reset! pressed? true))
         :on-press-out        (fn [] (reset! pressed? false))}
-
        [rn/view
         {:style {:flex-direction :row}}
         [transaction-icon-view props]
-        [rn/view ;content
+        [rn/view
          {:style style/content-container}
-
          [transaction-header props]
-
          [rn/view {:style style/content-line}
-          (when first [prop-tag first blur?])
-          (when second-prefix [prop-text second-prefix theme])
-          (when second [prop-tag second blur?])]
-
+          (when first-tag [prop-tag first-tag blur?])
+          (when second-tag-prefix [prop-text second-tag-prefix theme])
+          (when second-tag [prop-tag second-tag blur?])]
          [rn/view {:style style/content-line}
-          (when third-prefix [prop-text third-prefix theme])
-          (when third [prop-tag third blur?])
-          (when fourth-prefix [prop-text fourth-prefix theme])
-          (when fourth [prop-tag fourth blur?])]]]])))
+          (when third-tag-prefix [prop-text third-tag-prefix theme])
+          (when third-tag [prop-tag third-tag blur?])
+          (when fourth-tag-prefix [prop-text fourth-tag-prefix theme])
+          (when fourth-tag [prop-tag fourth-tag blur?])]]]])))
 
 (def view
   "Properties:
@@ -156,14 +152,14 @@
         - :timestamp - when transaction occured (string)
         - :blur?
         
-        - :first - props for context tag component that will be first on the first line
-        - :second - props for context tag component that will be second on the first line
-        - :third - props for context tag component that will be first on the second line
-        - :fourth - props for context tag component that will be second on the second line
+        - :first-tag - props for context tag component that will be first on the first line
+        - :second-tag - props for context tag component that will be second on the first line
+        - :third-tag - props for context tag component that will be first on the second line
+        - :fourth-tag - props for context tag component that will be second on the second line
      
-        - :second-prefix - translation keyword to be used with label before second context tag
-        - :third-prefix - translation keyword to be used with label before third context tag
-        - :fourth-prefix - translation keyword to be used with label before fourth context tag
+        - :second-tag-prefix - translation keyword to be used with label before second context tag
+        - :third-tag-prefix - translation keyword to be used with label before third context tag
+        - :fourth-tag-prefix - translation keyword to be used with label before fourth context tag
      
     "
   (quo.theme/with-theme view-internal))

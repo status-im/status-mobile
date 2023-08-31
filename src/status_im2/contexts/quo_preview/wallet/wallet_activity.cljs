@@ -164,55 +164,55 @@
                 :value 3}]}
 
     {:label   "Slot 1"
-     :key     :first
+     :key     :first-tag
      :type    :select
      :options context-tags}
     {:label   "Slot 2 prefix"
-     :key     :second-prefix
+     :key     :second-tag-prefix
      :type    :select
      :options prefixes}
     {:label   "Slot 2"
-     :key     :second
+     :key     :second-tag
      :type    :select
      :options context-tags}
     {:label   "Slot 3 prefix"
-     :key     :third-prefix
+     :key     :third-tag-prefix
      :type    :select
      :options prefixes}
     {:label   "Slot 3"
-     :key     :third
+     :key     :third-tag
      :type    :select
      :options context-tags}
     {:label   "Slot 4 prefix"
-     :key     :fourth-prefix
+     :key     :fourth-tag-prefix
      :type    :select
      :options prefixes}
     {:label   "Slot 4"
-     :key     :fourth
+     :key     :fourth-tag
      :type    :select
      :options context-tags}]))
 
 (defn view
   []
-  (let [component-state (reagent/atom {:transaction   :send
-                                       :timestamp     "Today 22:20"
-                                       :status        :pending
-                                       :counter       1
-                                       :first         asset-snt
-                                       :second-prefix :t/from
-                                       :second        piggy-bank
-                                       :third-prefix  :t/to
-                                       :third         aretha-gosling
-                                       :fourth-prefix :t/via
-                                       :fourth        mainnet
-                                       :blur?         false})]
+  (let [component-state (reagent/atom {:transaction       :send
+                                       :timestamp         "Today 22:20"
+                                       :status            :pending
+                                       :counter           1
+                                       :first-tag         asset-snt
+                                       :second-tag-prefix :t/from
+                                       :second-tag        piggy-bank
+                                       :third-tag-prefix  :t/to
+                                       :third-tag         aretha-gosling
+                                       :fourth-tag-prefix :t/via
+                                       :fourth-tag        mainnet
+                                       :blur?             false})]
     (fn []
       [preview/preview-container
-       {:state                 component-state
-        :descriptor            descriptor
-        :blur?                 (:blur? @component-state)
-        :show-blur-background? true}
-       [rn/view {:style {:align-self :center}}
-        [quo/wallet-activity
-         (merge {:on-press #(js/alert "Dropdown pressed")}
-                @component-state)]]])))
+       {:state                     component-state
+        :descriptor                descriptor
+        :blur?                     (:blur? @component-state)
+        :show-blur-background?     true
+        :component-container-style {:align-self :center}}
+       [quo/wallet-activity
+        (merge {:on-press #(js/alert "Dropdown pressed")}
+               @component-state)]])))

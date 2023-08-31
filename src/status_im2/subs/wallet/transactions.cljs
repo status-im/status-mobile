@@ -125,13 +125,13 @@
      (case type
        :inbound
        (assoc transaction
-              :label                       (i18n/label :t/From)
+              :label                       (i18n/label :t/from-capitalized)
               :contact-accessibility-label :sender-text
               :address-accessibility-label :sender-address-text
               :contact                     from-contact
               :address                     from)
        (assoc transaction
-              :label                       (i18n/label :t/To)
+              :label                       (i18n/label :t/to-capitalized)
               :contact-accessibility-label :recipient-name-text
               :address-accessibility-label :recipient-address-text
               :contact                     to-contact

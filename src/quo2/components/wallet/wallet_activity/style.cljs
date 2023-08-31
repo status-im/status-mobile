@@ -53,14 +53,15 @@
 (def icon-container
   {:width      32
    :height     32
-
    :margin-top 8})
 
 (def content-container
   {:margin-left 8})
 
 (def content-line
-  {:flex-direction :row :margin-top 2 :align-items :center})
+  {:flex-direction :row
+   :margin-top     2
+   :align-items    :center})
 
 (defn icon-hole-view
   [theme blur?]
@@ -79,5 +80,7 @@
   (colors/theme-colors colors/neutral-100 colors/white theme))
 
 (def icon-status-container
-  {:position :absolute :bottom 0 :right 0})
+  {:position :absolute
+   :bottom   0
+   :right    0})
 

@@ -245,14 +245,14 @@
     :as   tx}]
   [react/view {:style styles/details-block}
    [details-list-row :t/block block]
-   [details-list-row :t/hash (:hash tx)]
-   [details-list-row :t/from
+   [details-list-row :t/hash hash]
+   [details-list-row :t/from-capitalized
     [{:accessibility-label (if from-wallet :sender-name-text :sender-address-text)}
      (or from-wallet from-contact from)]
     (when (or from-wallet from-contact)
       [{:accessibility-label :sender-address-text}
        from])]
-   [details-list-row :t/To
+   [details-list-row :t/to-capitalized
     [{:accessibility-label (if to-wallet :recipient-name-text :recipient-address-text)}
      (or to-wallet to-contact to)]
     (when (or to-wallet to-contact)

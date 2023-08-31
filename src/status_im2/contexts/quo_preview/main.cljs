@@ -125,8 +125,8 @@
     [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
-    [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
     [status-im2.contexts.quo-preview.wallet.wallet-activity :as wallet-activity]
+    [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
     [utils.re-frame :as rf]))
 
 (def screens-categories
@@ -378,10 +378,10 @@
                         :component summary-info/preview}
                        {:name      :token-input
                         :component token-input/preview}
-                       {:name      :wallet-overview
-                        :component wallet-overview/preview-wallet-overview}
                        {:name      :wallet-activity
-                        :component wallet-activity/view}]
+                        :component wallet-activity/view}
+                       {:name      :wallet-overview
+                        :component wallet-overview/preview-wallet-overview}]
    :keycard           [{:name      :keycard-component
                         :component keycard/view}]})
 

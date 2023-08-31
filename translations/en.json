@@ -625,7 +625,7 @@
     "follow-your-interests": "Jump into a public chat and meet new people",
     "follow": "Follow",
     "free": "↓ Free",
-    "From": "From",
+    "from-capitalized": "From",
     "from": "from",
     "gas-limit": "Gas limit",
     "gas-price": "Gas price",
@@ -1333,7 +1333,7 @@
     "three-words-description": "You should see these 3 words before signing each transaction",
     "three-words-description-2": "If you see a different combination, cancel the transaction and sign out",
     "to": "to",
-    "To": "To",
+    "to-capitalized": "To",
     "to-block": "Block",
     "to-encrypt-enter-password": "To encrypt the account please enter your password",
     "to-see-this-message": "To see this message,",
@@ -2300,5 +2300,6 @@
     "slide-create": "Slide to create account",
     "destroy": "Destroy",
     "mint": "Mint",
-    "via": "via"
+    "via": "via",
+    "x-counter": "x{{counter}}"
 }
