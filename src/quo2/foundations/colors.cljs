@@ -123,6 +123,7 @@
 
 ;;;;Blur
 (def white-70-blur (alpha white 0.7))
+(def white-70-blur-opaque (alpha-opaque white 0.7))
 (def neutral-80-opa-1-blur (alpha "#192438" 0.1))
 (def neutral-5-opa-70-blur (alpha neutral-5 0.7))
 (def neutral-10-opa-10-blur (alpha neutral-10 0.1))

@@ -124,7 +124,8 @@
     quo2.components.wallet.progress-bar.view
     quo2.components.wallet.summary-info.view
     quo2.components.wallet.token-input.view
-    quo2.components.wallet.wallet-overview.view))
+    quo2.components.wallet.wallet-overview.view
+    [quo2.components.graph.interactive-graph.view :as interactive-graph]))
 
 (def separator quo2.components.common.separator.view/separator)
 
@@ -205,6 +206,7 @@
 (def empty-state quo2.components.empty-state.empty-state.view/empty-state)
 
 ;;;; Graph
+(def interactive-graph quo2.components.graph.interactive-graph.view/view)
 (def wallet-graph quo2.components.graph.wallet-graph.view/view)
 
 ;;;; Header

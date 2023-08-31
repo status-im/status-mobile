@@ -6,7 +6,7 @@
             [quo2.components.graph.wallet-graph.style :as style]
             [quo2.foundations.colors :as colors]
             [quo2.components.markdown.text :as text]
-            [quo2.components.graph.wallet-graph.utils :as utils]))
+            [quo2.components.graph.utils :as utils]))
 
 (defn- max-data-points
   [time-frame]
