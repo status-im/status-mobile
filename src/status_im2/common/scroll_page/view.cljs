@@ -137,6 +137,6 @@
           [rn/view
            {:style (style/children-container {:border-radius    (diff-with-max-min @scroll-height 16 0)
                                               :background-color background-color})}
-           (when cover-image
+           (when (and (not collapsed?) cover-image)
              [:f> f-display-picture @scroll-height logo theme])
            children])]])))

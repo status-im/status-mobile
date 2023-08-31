@@ -1209,7 +1209,7 @@
     "request-processed-after-node-online": "Community control node is offline. Request will be processed once it's back online.",
     "request-to-join-disclaimer": "Joining the community will reveal your public addresses to the owner",
     "request-to-join": "Request to join",
-    "request-to-join-community": "Request to join Community",
+    "request-to-join-community": "Request to join community",
     "requested-to-join-community": "You requested to join “{{community}}”",
     "request-transaction": "Request transaction",
     "required-field": "Required field",
