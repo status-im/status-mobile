@@ -8,7 +8,7 @@
                {:type            :recovery-phrase
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
-                :user-name       "Alisher Yakupov"}])
+                :user-name       "Test Name"}])
     (h/is-truthy (h/get-by-text (h/get-by-translation-text :t/origin))))
 
   (h/test "recovery phrase icon is visible when :type is :recovery-phrase"
@@ -16,7 +16,7 @@
                {:type            :recovery-phrase
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
-                :user-name       "Alisher Yakupov"}])
+                :user-name       "Test Name"}])
     (h/is-truthy (h/get-by-label-text :recovery-phrase-icon)))
 
   (h/test "recovery phrase icon is visible when :type is :recovery-phrase"
@@ -24,7 +24,7 @@
                {:type            :recovery-phrase
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
-                :user-name       "Alisher Yakupov"}])
+                :user-name       "Test Name"}])
     (h/is-truthy (h/get-by-label-text :recovery-phrase-icon)))
 
   (h/test "private-key-icon is visible when :type is :private-key"
@@ -32,7 +32,7 @@
                {:type            :private-key
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
-                :user-name       "Alisher Yakupov"}])
+                :user-name       "Test Name"}])
     (h/is-truthy (h/get-by-label-text :private-key-icon)))
 
   (h/test "derivation-path-icon is visible when :type is :default-keypair"
@@ -40,7 +40,7 @@
                {:type            :default-keypair
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
-                :user-name       "Alisher Yakupov"}])
+                :user-name       "Test Name"}])
     (h/is-truthy (h/get-by-label-text :derivation-path-icon)))
 
   (h/test "derivation-path-icon is visible when :type is :recovery-phrase"
@@ -48,7 +48,7 @@
                {:type            :recovery-phrase
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
-                :user-name       "Alisher Yakupov"}])
+                :user-name       "Test Name"}])
     (h/is-truthy (h/get-by-label-text :derivation-path-icon)))
 
   (h/test "on-device text is visible when :stored is :on-device"
@@ -56,7 +56,7 @@
                {:type            :recovery-phrase
                 :stored          :on-device
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
-                :user-name       "Alisher Yakupov"}])
+                :user-name       "Test Name"}])
     (h/is-truthy (h/get-by-text (h/get-by-translation-text :t/on-device))))
 
   (h/test "on-keycard text is visible when :stored is :on-keycard"
@@ -64,7 +64,7 @@
                {:type            :recovery-phrase
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
-                :user-name       "Alisher Yakupov"}])
+                :user-name       "Test Name"}])
     (h/is-truthy (h/get-by-text (h/get-by-translation-text :t/on-keycard))))
 
   (h/test "on-press is called when :type is :recovery-phrase"
@@ -73,7 +73,7 @@
                  {:type            :recovery-phrase
                   :stored          :on-keycard
                   :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
-                  :user-name       "Alisher Yakupov"
+                  :user-name       "Test Name"
                   :on-press        on-press}])
       (h/fire-event :press (h/query-by-label-text :derivation-path-button))
       (h/was-called on-press)))
@@ -84,7 +84,7 @@
                  {:type            :default-keypair
                   :stored          :on-keycard
                   :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
-                  :user-name       "Alisher Yakupov"
+                  :user-name       "Test Name"
                   :on-press        on-press}])
       (h/fire-event :press (h/query-by-label-text :derivation-path-button))
       (h/was-called on-press))))
