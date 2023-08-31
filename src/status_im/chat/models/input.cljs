@@ -245,17 +245,18 @@
   (rf/merge
    cofx
    {:json-rpc/call [{:method      "wakuext_editMessage"
-                     :params      [{:id            message-id
-                                    :text          text
-                                    :content-type  (if (message-content/emoji-only-content?
-                                                        {:text        text
-                                                         :response-to quoted-message})
-                                                     constants/content-type-emoji
-                                                     constants/content-type-text)
+                     :params      [{:id           message-id
+                                    :text         text
+                                    :content-type (if (message-content/emoji-only-content?
+                                                       {:text        text
+                                                        :response-to quoted-message})
+                                                    constants/content-type-emoji
+                                                    constants/content-type-text)
                                     :linkPreviews (map #(-> %
-                                                             (select-keys [:url :title :description :thumbnail])
-                                                             data-store-messages/->link-preview-rpc)
-                                                        (get-in db [:chat/link-previews :unfurled]))}]
+                                                            (select-keys [:url :title :description
+                                                                          :thumbnail])
+                                                            data-store-messages/->link-preview-rpc)
+                                                       (get-in db [:chat/link-previews :unfurled]))}]
                      :js-response true
                      :on-error    #(log/error "failed to edit message " %)
                      :on-success  (fn [result]
