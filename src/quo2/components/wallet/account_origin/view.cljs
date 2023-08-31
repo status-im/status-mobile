@@ -89,21 +89,21 @@
     :on-press        on-press
     :secondary-color secondary-color}])
 
-(def view-internal
-  (fn [{:keys [type theme derivation-path on-press] :as props}]
-    (let [secondary-color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
-      [rn/view {:style (style/container theme)}
-       [text/text
-        {:weight :regular
-         :size   :paragraph-2
-         :style  (style/title secondary-color)}
-        (i18n/label :t/origin)]
-       [list-view (assoc props :secondary-color secondary-color)]
-       (when (not= :private-key type)
-         [card-view theme derivation-path secondary-color on-press])])))
+(defn view-internal
+  [{:keys [type theme derivation-path on-press] :as props}]
+  (let [secondary-color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
+    [rn/view {:style (style/container theme)}
+     [text/text
+      {:weight :regular
+       :size   :paragraph-2
+       :style  (style/title secondary-color)}
+      (i18n/label :t/origin)]
+     [list-view (assoc props :secondary-color secondary-color)]
+     (when (not= :private-key type)
+       [card-view theme derivation-path secondary-color on-press])]))
 
 (def view
-  "Create an accont-origin UI component.
+  "Create an account-origin UI component.
   | key               | values                                         |
   | ------------------|------------------------------------------------|
   | :type             | :default-keypair :recovery-phrase :private-key 
