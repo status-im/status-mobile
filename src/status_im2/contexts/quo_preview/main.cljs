@@ -104,6 +104,7 @@
     [status-im2.contexts.quo-preview.tabs.tabs :as tabs]
     [status-im2.contexts.quo-preview.empty-state.empty-state :as empty-state]
     [status-im2.contexts.quo-preview.tags.context-tags :as context-tags]
+    [status-im2.contexts.quo-preview.tags.network-tags :as network-tags]
     [status-im2.contexts.quo-preview.tags.number-tag :as number-tag]
     [status-im2.contexts.quo-preview.tags.permission-tag :as permission-tag]
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
@@ -338,14 +339,16 @@
                         :component account-selector/preview-this}]
    :tags              [{:name      :context-tags
                         :component context-tags/preview-context-tags}
+                       {:name      :network-tags
+                        :component network-tags/preview}
                        {:name      :number-tag
                         :component number-tag/preview}
-                       {:name      :tags
-                        :component tags/preview-tags}
                        {:name      :permission-tag
                         :component permission-tag/preview-permission-tag}
                        {:name      :status-tags
                         :component status-tags/preview-status-tags}
+                       {:name      :tags
+                        :component tags/preview-tags}
                        {:name      :token-tag
                         :component token-tag/preview-token-tag}]
    :text-combinations [{:name      :text-combinations
