@@ -36,7 +36,7 @@ class ChatElement(SilentButton):
         if self.community_channel:
             super().__init__(
                 driver,
-                xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/.." % username_part)
+                xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
         elif community:
             super().__init__(
                 driver,
@@ -411,7 +411,9 @@ class HomeView(BaseView):
         self.new_chat_button.click()
         chat = self.get_chat_view()
         self.start_a_new_chat_bottom_sheet_button.click()
-        [chat.get_username_checkbox(user_name).click() for user_name in user_names_to_add]
+        for user_name in user_names_to_add:
+            chat.get_username_checkbox(user_name).click_until_presence_of_element(
+                chat.get_username_checkbox(user_name, state_on=True))
         self.setup_chat_button.click()
         chat.chat_name_editbox.send_keys(group_chat_name)
         chat.create_button.click()
