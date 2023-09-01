@@ -625,7 +625,8 @@
     "follow-your-interests": "Jump into a public chat and meet new people",
     "follow": "Follow",
     "free": "↓ Free",
-    "from": "From",
+    "from-capitalized": "From",
+    "from": "from",
     "gas-limit": "Gas limit",
     "gas-price": "Gas price",
     "gas-used": "Gas used",
@@ -687,6 +688,7 @@
     "profile-pic-take": "Take photo",
     "profile-pic-pick": "Select from gallery",
     "profile-pic-remove": "Remove photo",
+    "in": "in",
     "in-contacts": "In contacts",
     "incoming": "Incoming",
     "incoming-transaction": "Incoming transaction",
@@ -1330,7 +1332,8 @@
     "this-will-take-few-seconds": "This will take a few seconds",
     "three-words-description": "You should see these 3 words before signing each transaction",
     "three-words-description-2": "If you see a different combination, cancel the transaction and sign out",
-    "to": "To",
+    "to": "to",
+    "to-capitalized": "To",
     "to-block": "Block",
     "to-encrypt-enter-password": "To encrypt the account please enter your password",
     "to-see-this-message": "To see this message,",
@@ -2294,5 +2297,9 @@
     "add-address-description": "Watch a public address or ENS name",
     "colour": "Colour",
     "origin": "Origin",
-    "slide-create": "Slide to create account"
+    "slide-create": "Slide to create account",
+    "destroy": "Destroy",
+    "mint": "Mint",
+    "via": "via",
+    "x-counter": "x{{counter}}"
 }

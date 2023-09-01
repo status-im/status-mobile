@@ -138,7 +138,7 @@
      :align-items        :center
      :margin-vertical    16}]
    [quo/list-header
-    (i18n/label :t/from)]
+    (i18n/label :t/from-capitalized)]
    [react/view {:flex-direction :row :flex 1 :align-items :center}
     [react/view {:flex 1}
      [render-account from nil ::commands/set-selected-account]]]
@@ -204,7 +204,7 @@
         [fiat-value amount-text token prices wallet-currency]
         [components/separator]
         [quo/list-header
-         (i18n/label :t/to)]
+         (i18n/label :t/to-capitalized)]
         [react/view {:flex-direction :row :flex 1 :align-items :center}
          [react/view {:flex 1}
           [render-account from token :wallet.request/set-field]]]]]
@@ -278,12 +278,12 @@
           (when-not (or request? from-chat?)
             [set-max token])
           [components/separator]
-          [quo/list-header (i18n/label :t/from)]
+          [quo/list-header (i18n/label :t/from-capitalized)]
           [react/view {:flex-direction :row :flex 1 :align-items :center}
            [react/view {:flex 1}
             [render-account from token :wallet.send/set-field]]]
           [quo/list-header
-           (i18n/label :t/to)]
+           (i18n/label :t/to-capitalized)]
           [react/view {:flex-direction :row :flex 1 :align-items :center}
            [react/view {:flex 1}
             [render-contact to from-chat?]]]]]
