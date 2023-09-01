@@ -241,8 +241,7 @@
            to to-wallet to-contact
            gas-limit gas-price-gwei gas-price-eth gas-used
            fee-cap-gwei tip-cap-gwei
-           cost nonce data]
-    :as   tx}]
+           cost nonce data]}]
   [react/view {:style styles/details-block}
    [details-list-row :t/block block]
    [details-list-row :t/hash hash]
