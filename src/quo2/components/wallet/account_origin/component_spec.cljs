@@ -9,7 +9,8 @@
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
                 :user-name       "Test Name"}])
-    (h/is-truthy (h/get-by-text (h/get-by-translation-text :t/origin))))
+    (-> (h/expect (h/get-by-translation-text :origin))
+        (.toBeTruthy)))
 
   (h/test "recovery phrase icon is visible when :type is :recovery-phrase"
     (h/render [quo/account-origin
@@ -57,7 +58,8 @@
                 :stored          :on-device
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
                 :user-name       "Test Name"}])
-    (h/is-truthy (h/get-by-text (h/get-by-translation-text :t/on-device))))
+    (-> (h/expect (h/get-by-translation-text :on-device))
+        (.toBeTruthy)))
 
   (h/test "on-keycard text is visible when :stored is :on-keycard"
     (h/render [quo/account-origin
@@ -65,7 +67,8 @@
                 :stored          :on-keycard
                 :derivation-path "m / 44’ / 60’ / 0’ / 0’ / 2"
                 :user-name       "Test Name"}])
-    (h/is-truthy (h/get-by-text (h/get-by-translation-text :t/on-keycard))))
+    (-> (h/expect (h/get-by-translation-text :on-keycard))
+        (.toBeTruthy)))
 
   (h/test "on-press is called when :type is :recovery-phrase"
     (let [on-press (h/mock-fn)]
