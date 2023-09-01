@@ -208,11 +208,11 @@
                                        :blur?             false})]
     (fn []
       [preview/preview-container
-       {:state                     component-state
-        :descriptor                descriptor
-        :blur?                     (:blur? @component-state)
-        :show-blur-background?     true
-        :component-container-style {:align-self :center}}
-       [quo/wallet-activity
-        (merge {:on-press #(js/alert "Dropdown pressed")}
-               @component-state)]])))
+       {:state                 component-state
+        :descriptor            descriptor
+        :blur?                 (:blur? @component-state)
+        :show-blur-background? true}
+       [rn/view {:style {:align-self :center}}
+        [quo/wallet-activity
+         (merge {:on-press #(js/alert "Dropdown pressed")}
+                @component-state)]]])))
