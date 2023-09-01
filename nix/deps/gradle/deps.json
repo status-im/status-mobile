@@ -8565,24 +8565,24 @@
   },
 
   {
-    "path": "com/facebook/react/react-android/0.72.3",
+    "path": "com/facebook/react/react-android/0.72.4",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "react-android-0.72.3.pom": {
-        "sha1": "f40df82d179bfe37f0aa93f762211f894013ef53",
-        "sha256": "sha256-T1cxP6xjlo9yz+pxhIZZuAaRvelwXAspvdQqmsKMQZ8="
+      "react-android-0.72.4.pom": {
+        "sha1": "70ae198ae73e75bf3d23a3c9fd287207f6a67fc3",
+        "sha256": "sha256-FbytPNftWoLkYhRpAey/GLaBnMm1eqVPgbTvela7o0s="
       },
-      "react-android-0.72.3.module": {
-        "sha1": "a0725319b69ba9c5a30217d6faf37c36a3f4280c",
-        "sha256": "sha256-pZHU/ilQdsiPBHfsxJ8GBWDJLV68gUTh89e9kl9+Sxg="
+      "react-android-0.72.4.module": {
+        "sha1": "488d15ca887bef82c880b83d3ee8a71656714e63",
+        "sha256": "sha256-YIz4G22ljUPbZW8Neocfv+eDrdNHjicdx7cyCy60oDI="
       },
-      "react-android-0.72.3-release.aar": {
-        "sha1": "3d1c58848ed374f0664317a0627f1afd12398133",
-        "sha256": "sha256-Kph3mGlnRKgSd6BkPQ6nz651/aq+DoKQcvVl8cQj3nQ="
+      "react-android-0.72.4-release.aar": {
+        "sha1": "51dc205f362a12520f3abe56f8a5054566c1ae52",
+        "sha256": "sha256-eYaNMUEP6zrEe8xlsNPSO9iU1Mwckia1VJnwVbUUNWc="
       },
-      "react-android-0.72.3-debug.aar": {
-        "sha1": "753dcb10579a06570819a980133bb5042d82a6a5",
-        "sha256": "sha256-/fbW8a59yTDvKy7Tnxj4qI1UOmgCEI/+LHEJGafqT/g="
+      "react-android-0.72.4-debug.aar": {
+        "sha1": "908144bc260f04956a10fa2f6bd9583c6e963ba5",
+        "sha256": "sha256-j1kdV/nweIhAlB+Vs3tjb5Iv/v5tYBiC3S5gAVcXKlY="
       }
     }
   },
