@@ -1,6 +1,6 @@
 # Pipeline process
 
-[Pipeline for QA](https://github.com/status-im/status-mobile/projects/7) is a project board for developers and testers used to track the status of a pull request, get reviews and manual testing, _and run autotests_ (_temporary disabled_).
+[Pipeline for QA](https://github.com/status-im/status-mobile/projects/7) is a project board for developers and testers used to track the status of a pull request, get reviews and manual testing, and run autotests.
 
 The generally accepted recommendations for its use are described below:
 
@@ -53,7 +53,7 @@ _**How do I know if a design review is needed?**_
 
 There are three cases here depending on the changes in the PR:
 1. **Functional PRs with UI changes:** after the ```Tested - OK``` label is added, the QA moves the PR to the ```Design review``` column + mentions ```@Francesca-G``` in comments. 
-2. **Component PRs:** can be moved directly to the ```Design review``` column by the developer when get a review from devs (manual testing step can be skipped) + the developer mentions ```@Francesca-G``` in comments.
+2. **Component PRs:** once the PR has received a review from developers and e2e tests results, it can be moved directly to the ```Design review``` column by the developer (manual testing step can be skipped) + the developer mentions ```@Francesca-G``` in comments.
 3. **Functional PRs changes in which are not related to UI (e.g. a crash fix):** skip the ```Design review``` step (the PR should only be manually tested by QA).
 
 There are three possible scenarios when the design review is completed:
@@ -75,10 +75,11 @@ In the second case - after fixing of all found issues, the developer should ping
 ## Merging a PR
 **Merge conditions:**
 1. Required number of reviews received
-2. All commits are squashed into one.
-3. No conflicting files in PR
-4. No issues from lint
-5. Pay attention to automation checks (some of them are not blockers, best to check before merge anyway)
+2. E2E results are received and reviewed
+3. All commits are squashed into one.
+4. No conflicting files in PR
+5. No issues from lint
+6. Pay attention to automation checks (some of them are not blockers, best to check before merge anyway)
 ![](images/pipeline-process/automation-checks.png)
 
 
