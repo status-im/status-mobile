@@ -22,14 +22,11 @@
 ;; Standlone message skeleton
 (defn- ^:deprecated f-message-skeleton
   []
-  "
- Reason:
- 
-This skeleton was with performance issue and was deprecated in favor of the skeleton-list component.
-
-Issue - https://github.com/status-im/status-mobile/pull/16865
-"
-
+  ;; Reason:
+  ;;
+  ;; This skeleton had performance issues and was deprecated in favor of the skeleton-list component.
+  ;;
+  ;; Issue - https://github.com/status-im/status-mobile/pull/16865
 
   (let [color                   (colors/theme-colors colors/neutral-5 colors/neutral-70)
         loading-color           (colors/theme-colors colors/neutral-10 colors/neutral-60)
