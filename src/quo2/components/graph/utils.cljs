@@ -36,10 +36,10 @@
         (str formatted-scaled-number "0" suffix)))))
 
 (defn calculate-x-axis-labels
-  [array num-elements]
-  (let [array-length (count array)
+  [coll num-elements]
+  (let [array-length (count coll)
         partitions   (partition-all (js/Math.floor (/ array-length (min array-length num-elements)))
-                                    array)]
+                                    coll)]
     (->> partitions
          (map first)
          (map :date))))
