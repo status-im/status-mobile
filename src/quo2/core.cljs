@@ -330,9 +330,7 @@
 (def share-qr-code quo2.components.share.share-qr-code.view/view)
 
 ;;;; SWITCHER
-(def switcher-base-card quo2.components.switchers.base-card.view/base-card)
 (def group-messaging-card quo2.components.switchers.group-messaging-card.view/view)
-(def switcher-screen-card quo2.components.switchers.screen-card.view/screen-card)
 
 ;;;; Tabs
 (def tabs quo2.components.tabs.tabs.view/view)
