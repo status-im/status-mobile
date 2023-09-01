@@ -40,6 +40,7 @@
     quo2.components.drawers.action-drawers.view
     quo2.components.drawers.documentation-drawers.view
     quo2.components.drawers.drawer-buttons.view
+    quo2.components.drawers.drawer-top.view
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
     quo2.components.dropdowns.network-dropdown.view
@@ -200,6 +201,7 @@
 (def action-drawer quo2.components.drawers.action-drawers.view/action-drawer)
 (def documentation-drawers quo2.components.drawers.documentation-drawers.view/view)
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
+(def drawer-top quo2.components.drawers.drawer-top.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
 ;;;; Dropdowns
