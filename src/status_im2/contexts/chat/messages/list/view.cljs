@@ -104,22 +104,28 @@
   {:extrapolateLeft  "clamp"
    :extrapolateRight "clamp"})
 
+(defn skeleton-list-props
+  [content parent-height animated?]
+  {:content       content
+   :parent-height parent-height
+   :animated?     animated?})
+
 (defn loading-view
   [chat-id]
   (let [loading-messages?   (rf/sub [:chats/loading-messages? chat-id])
         all-loaded?         (rf/sub [:chats/all-loaded? chat-id])
         messages            (rf/sub [:chats/raw-chat-messages-stream chat-id])
         loading-first-page? (= (count messages) 0)
-        top-spacing         (if loading-first-page? 0 navigation.style/navigation-bar-height)]
+        top-spacing         (if loading-first-page? 0 navigation.style/navigation-bar-height)
+        parent-height       (if loading-first-page?
+                              (- @messages-view-height
+                                 @messages-view-header-height
+                                 composer.constants/composer-default-height
+                                 loading-indicator-extra-spacing)
+                              loading-indicator-page-loading-height)]
     (when (or loading-messages? (not all-loaded?))
       [rn/view {:padding-top top-spacing}
-       [quo/skeleton
-        (if loading-first-page?
-          (- @messages-view-height
-             @messages-view-header-height
-             composer.constants/composer-default-height
-             loading-indicator-extra-spacing)
-          loading-indicator-page-loading-height)]])))
+       [quo/skeleton-list (skeleton-list-props :messages parent-height true)]])))
 
 (defn list-header
   [insets able-to-send-message?]
