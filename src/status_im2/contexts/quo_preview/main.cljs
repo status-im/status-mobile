@@ -117,6 +117,7 @@
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
     [status-im2.contexts.quo-preview.wallet.account-card :as account-card]
+    [status-im2.contexts.quo-preview.wallet.account-origin :as account-origin]
     [status-im2.contexts.quo-preview.wallet.account-overview :as account-overview]
     [status-im2.contexts.quo-preview.wallet.keypair :as keypair]
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
@@ -361,6 +362,8 @@
                         :component text-combinations/preview}]
    :wallet            [{:name      :account-card
                         :component account-card/preview-account-card}
+                       {:name      :account-origin
+                        :component account-origin/view}
                        {:name      :account-overview
                         :component account-overview/preview-account-overview}
                        {:name      :keypair
