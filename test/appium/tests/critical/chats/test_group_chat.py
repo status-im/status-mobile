@@ -211,11 +211,11 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         message_to_admin = self.message_to_admin
         [self.homes[i].navigate_back_to_home_view() for i in range(3)]
         self.homes[1].get_chat(self.chat_name).click()
+        self.chats[0].open_notification_bar()
 
         self.chats[1].send_message(message_to_admin)
 
         self.chats[0].just_fyi('Check that PN is received and after tap you are redirected to group chat')
-        self.chats[0].open_notification_bar()
         pn = self.homes[0].get_pn(message_to_admin)
         if pn:
             pn.click()

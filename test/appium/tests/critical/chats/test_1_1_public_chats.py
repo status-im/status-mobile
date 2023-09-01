@@ -1153,13 +1153,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         chat_2 = self.device_2.click_upon_push_notification_by_text(message)
 
         self.device_2.just_fyi("Send emoji message to Device 1 while it's on background")
+        self.device_1.put_app_to_background()
+        self.device_1.open_notification_bar()
         emoji_message = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_message]
         chat_2.send_message(emoji.emojize(emoji_message))
 
         self.device_1.just_fyi("Device 1 checks PN with emoji")
-        self.device_1.put_app_to_background()
-        self.device_1.open_notification_bar()
         if not self.device_1.element_by_text_part(emoji_unicode).is_element_displayed(60):
             self.device_1.click_system_back_button()
             self.device_1.status_in_background_button.click()
@@ -1312,8 +1312,9 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.device_2.just_fyi("Send one more message and check that PN will be deleted with message deletion")
         message_to_delete = 'DELETE ME'
         self.home_1.put_app_to_background()
-        self.chat_2.send_message(message_to_delete)
         self.home_1.open_notification_bar()
+        self.chat_2.send_message(message_to_delete)
+        self.chat_2.chat_element_by_text(message_to_delete).wait_for_sent_state()
         if not self.home_1.get_pn(message_to_delete):
             self.home_1.click_system_back_button()
             self.home_1.status_in_background_button.click()

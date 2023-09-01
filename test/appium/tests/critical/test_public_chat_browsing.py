@@ -1,5 +1,6 @@
 import datetime
 import random
+import time
 from datetime import timedelta
 
 import emoji
@@ -337,7 +338,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         for element, template in element_templates.items():
             if element.is_element_differs_from_template(template):
                 element.save_new_screenshot_of_element('%s_different.png' % element.name)
-                self.errors.append("%s is different from expected %s!" % (element.name, template))
+                self.errors.append("Element %s is different from expected template %s!" % (element.locator, template))
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702846)
@@ -348,6 +349,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.home.get_to_community_channel_from_home(self.community_name)
 
         self.channel.send_message(text_message)
+        self.channel.chat_element_by_text(text_message).wait_for_visibility_of_element()
         self.channel.reopen_app()
         if not self.channel.chat_element_by_text(text_message).is_element_displayed(30):
             self.drivers[0].fail("Not navigated to channel view after reopening app")
@@ -577,6 +579,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.chat_2.chat_element_by_text(self.community_name).view_community_button.click()
         self.community_2.join_community()
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
+        self.channel_2.chat_message_input.wait_for_visibility_of_element(20)
 
     @marks.testrail_id(702838)
     def test_community_message_send_check_timestamps_sender_username(self):
@@ -1010,6 +1013,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append("New messages counter is not shown in community channel element")
         self.community_1.click_system_back_button()
         mark_as_read_button = self.community_1.mark_all_messages_as_read_button
+        self.home_1.community_floating_screen.wait_for_invisibility_of_element()
         community_1_element.long_press_until_element_is_shown(mark_as_read_button)
         mark_as_read_button.click()
         if community_1_element.new_messages_grey_dot.is_element_displayed():
@@ -1065,10 +1069,10 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
     @marks.testrail_id(702786)
-    @marks.xfail(
-        reason="Issue with username in PN, issue #6 in https://github.com/status-im/status-mobile/issues/15500")
+    @marks.xfail(reason="Issue with username in PN, issue #6 in 15500")
     def test_community_mentions_push_notification(self):
         self.home_1.navigate_back_to_home_view()
+        self.device_1.open_notification_bar()
 
         self.device_2.just_fyi("Invited member sends a message with a mention")
         self.channel_2.send_message("hi")
@@ -1076,7 +1080,6 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.channel_2.send_message_button.click()
 
         self.device_1.just_fyi("Admin gets push notification with the mention and tap it")
-        self.device_1.open_notification_bar()
         message_received = False
         if self.home_1.get_pn(self.username_1):
             self.device_1.click_upon_push_notification_by_text(self.username_1)

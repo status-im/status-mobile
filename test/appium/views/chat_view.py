@@ -5,7 +5,8 @@ from time import sleep
 
 import dateutil.parser
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException, \
+    InvalidElementStateException
 
 from tests import emojis, common_password
 from views.base_element import Button, EditBox, Text, BaseElement, SilentButton
@@ -334,9 +335,10 @@ class UsernameOptions(Button):
 
 
 class UsernameCheckbox(Button):
-    def __init__(self, driver, username):
+    def __init__(self, driver, username, state_on):
         self.username = username
-        super().__init__(driver, xpath="//*[@text='%s']/..//*[@content-desc='checkbox-off']" % username)
+        super().__init__(driver, xpath="//*[@text='%s']/..//*[@content-desc='checkbox-%s']" % (
+            username, 'on' if state_on else 'off'))
 
     def click(self):
         try:
@@ -488,6 +490,7 @@ class CommunityView(HomeView):
         self.driver.info("Share to  %s community" % ', '.join(map(str, user_names_to_share)))
         self.jump_to_communities_home()
         home = self.get_home_view()
+        home.communities_tab.click()
         community_element = home.get_chat(community_name, community=True)
         # community_element.long_press_until_element_is_shown(self.view_members_button)
         community_element.long_press_until_element_is_shown(self.share_community_button)
@@ -941,9 +944,9 @@ class ChatView(BaseView):
         self.introduce_yourself_edit_box.set_value(intro_message)
         self.request_membership_button.click_until_presence_of_element(self.element_by_text('Request pending…'))
 
-    def get_username_checkbox(self, username: str):
+    def get_username_checkbox(self, username: str, state_on=False):
         self.driver.info("Getting %s checkbox" % username)
-        return UsernameCheckbox(self.driver, username)
+        return UsernameCheckbox(self.driver, username, state_on)
 
     def accept_membership_for_group_chat_via_chat_view(self, username, accept=True):
         info = "%s membership to group chat" % username
@@ -993,13 +996,18 @@ class ChatView(BaseView):
             try:
                 self.chat_message_input.send_keys(message)
                 break
-            except StaleElementReferenceException:
+            except (StaleElementReferenceException, InvalidElementStateException):
                 time.sleep(1)
             except Exception as e:
                 raise e
         else:
             raise StaleElementReferenceException(msg="Can't send keys to chat message input, loading")
-        self.send_message_button.click()
+        try:
+            self.send_message_button.click()
+        except NoSuchElementException:
+            self.chat_message_input.clear()
+            self.chat_message_input.send_keys(message)
+            self.send_message_button.click()
 
     def send_contact_request(self, message: str = 'Contact request message', wait_chat_input_sec=5):
         self.driver.info("Sending contact request message '%s'" % BaseElement(self.driver).exclude_emoji(message))
@@ -1017,7 +1025,7 @@ class ChatView(BaseView):
     def edit_message_in_chat(self, message_to_edit, message_to_update):
         self.driver.info("Looking for message '%s' to edit it" % message_to_edit)
         element = self.element_by_translation_id("edit-message")
-        self.chat_view_element_starts_with_text(message_to_edit).long_press_until_element_is_shown(element)
+        self.chat_element_by_text(message_to_edit).message_body.long_press_until_element_is_shown(element)
         element.click()
         self.chat_message_input.clear()
         self.chat_message_input.send_keys(message_to_update)
@@ -1025,10 +1033,12 @@ class ChatView(BaseView):
 
     def delete_message_in_chat(self, message, everyone=True):
         self.driver.info("Looking for message '%s' to delete it" % message)
-        self.chat_view_element_starts_with_text(message).long_press_element()
-        for_everyone, for_me = self.element_by_translation_id("delete-for-everyone"), self.element_by_translation_id(
-            "delete-for-me")
-        for_everyone.click() if everyone else for_me.click()
+        if everyone:
+            delete_button = self.element_by_translation_id("delete-for-everyone")
+        else:
+            delete_button = self.element_by_translation_id("delete-for-me")
+        self.chat_element_by_text(message).message_body.long_press_until_element_is_shown(delete_button)
+        delete_button.click()
 
     def copy_message_text(self, message_text):
         self.driver.info("Copying '%s' message via long press" % message_text)
