@@ -2,7 +2,7 @@
   (:require
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
-    status-im.utils.pixel-ratio
+    status-im2.common.pixel-ratio
     [status-im2.constants :as constants]
     [utils.datetime :as datetime]))
 
@@ -71,30 +71,33 @@
   `indicator-size` is outer indicator radius
   `indicator-size` - `indicator-border` is inner indicator radius"
   [{:keys [port public-key image-name key-uid size theme indicator-size
-           indicator-border indicator-color ring?]}]
-  (str image-server-uri-prefix
-       port
-       account-images-action
-       "?publicKey="
-       public-key
-       "&keyUid="
-       key-uid
-       "&imageName="
-       image-name
-       "&size="
-       (Math/round (* size status-im.utils.pixel-ratio/ratio))
-       "&theme="
-       (current-theme-index theme)
-       "&clock="
-       (timestamp)
-       "&indicatorColor="
-       (js/encodeURIComponent indicator-color)
-       "&indicatorSize="
-       (* indicator-size status-im.utils.pixel-ratio/ratio)
-       "&indicatorBorder="
-       (* indicator-border status-im.utils.pixel-ratio/ratio)
-       "&addRing="
-       (if ring? 1 0)))
+           indicator-border indicator-color ring? ring-width]}]
+  (str
+   image-server-uri-prefix
+   port
+   account-images-action
+   "?publicKey="
+   public-key
+   "&keyUid="
+   key-uid
+   "&imageName="
+   image-name
+   "&size="
+   (Math/round (* size status-im2.common.pixel-ratio/ratio))
+   "&theme="
+   (current-theme-index theme)
+   "&clock="
+   (timestamp)
+   "&indicatorColor="
+   (js/encodeURIComponent indicator-color)
+   "&indicatorSize="
+   (* indicator-size status-im2.common.pixel-ratio/ratio)
+   "&indicatorBorder="
+   (* indicator-border status-im2.common.pixel-ratio/ratio)
+   "&addRing="
+   (if ring? 1 0)
+   "&ringWidth="
+   (* ring-width status-im2.common.pixel-ratio/ratio)))
 
 (defn get-account-image-uri-fn
   "pass the result fn to user-avatar component as `:profile-picture`
@@ -109,7 +112,7 @@
   check `get-account-image-uri` for color formats"
   [{:keys [port public-key key-uid image-name theme override-ring?]}]
   (fn [{:keys [size indicator-size indicator-border indicator-color ring?
-               override-theme]}]
+               ring-width override-theme]}]
     (get-account-image-uri
      {:port             port
       :image-name       image-name
@@ -120,7 +123,8 @@
       :indicator-size   indicator-size
       :indicator-border indicator-border
       :indicator-color  indicator-color
-      :ring?            (if (nil? override-ring?) ring? override-ring?)})))
+      :ring?            (if (nil? override-ring?) ring? override-ring?)
+      :ring-width       ring-width})))
 
 (defn get-initials-avatar-uri
   "fn to get the avatar uri when account/contact/placeholder has no custom pic set
@@ -135,7 +139,7 @@
   `uppercase-ratio` is the uppercase-height/line-height for `font-file`"
   [{:keys [port public-key key-uid theme ring? length size background-color color
            font-size font-file uppercase-ratio indicator-size indicator-border
-           indicator-color full-name]}]
+           indicator-color full-name ring-width]}]
   (str
    image-server-uri-prefix
    port
@@ -147,13 +151,13 @@
    "&length="
    length
    "&size="
-   (Math/round (* size status-im.utils.pixel-ratio/ratio))
+   (Math/round (* size status-im2.common.pixel-ratio/ratio))
    "&bgColor="
    (js/encodeURIComponent background-color)
    "&color="
    (js/encodeURIComponent color)
    "&fontSize="
-   (* font-size status-im.utils.pixel-ratio/ratio)
+   (* font-size status-im2.common.pixel-ratio/ratio)
    "&fontFile="
    (js/encodeURIComponent font-file)
    "&uppercaseRatio="
@@ -167,11 +171,13 @@
    "&indicatorColor="
    (js/encodeURIComponent indicator-color)
    "&indicatorSize="
-   (* indicator-size status-im.utils.pixel-ratio/ratio)
+   (* indicator-size status-im2.common.pixel-ratio/ratio)
    "&indicatorBorder="
-   (* indicator-border status-im.utils.pixel-ratio/ratio)
+   (* indicator-border status-im2.common.pixel-ratio/ratio)
    "&addRing="
-   (if ring? 1 0)))
+   (if ring? 1 0)
+   "&ringWidth="
+   (* ring-width status-im2.common.pixel-ratio/ratio)))
 
 (defn get-initials-avatar-uri-fn
   "return a fn that calls `get-account-initials-uri`
@@ -183,28 +189,30 @@
   check `get-account-image-uri-fn` for `override-ring?`"
   [{:keys [port public-key key-uid theme override-ring? font-file]}]
   (fn [{:keys [full-name length size background-color font-size color
-               indicator-size indicator-border indicator-color ring?
+               indicator-size indicator-border indicator-color ring? ring-width
                override-theme]}]
-    (get-initials-avatar-uri {:port             port
-                              :public-key       public-key
-                              :key-uid          key-uid
-                              :full-name        full-name
-                              :length           length
-                              :size             size
-                              :background-color background-color
-                              :theme            (if (nil? override-theme) theme override-theme)
-                              :ring?            (if (nil? override-ring?) ring? override-ring?)
-                              :font-size        font-size
-                              :color            color
-                              :font-file        font-file
-                              :uppercase-ratio  (:uppercase-ratio constants/initials-avatar-font-conf)
-                              :indicator-size   indicator-size
-                              :indicator-border indicator-border
-                              :indicator-color  indicator-color})))
+    (get-initials-avatar-uri
+     {:port             port
+      :public-key       public-key
+      :key-uid          key-uid
+      :full-name        full-name
+      :length           length
+      :size             size
+      :background-color background-color
+      :theme            (if (nil? override-theme) theme override-theme)
+      :ring?            (if (nil? override-ring?) ring? override-ring?)
+      :ring-width       ring-width
+      :font-size        font-size
+      :color            color
+      :font-file        font-file
+      :uppercase-ratio  (:uppercase-ratio constants/initials-avatar-font-conf)
+      :indicator-size   indicator-size
+      :indicator-border indicator-border
+      :indicator-color  indicator-color})))
 
 (defn get-contact-image-uri
   [{:keys [port public-key image-name clock theme indicator-size indicator-border
-           indicator-color size ring?]}]
+           indicator-color size ring? ring-width]}]
   (str image-server-uri-prefix
        port
        contact-images-action
@@ -213,7 +221,7 @@
        "&imageName="
        image-name
        "&size="
-       (Math/round (* size status-im.utils.pixel-ratio/ratio))
+       (Math/round (* size status-im2.common.pixel-ratio/ratio))
        "&theme="
        (current-theme-index theme)
        "&clock="
@@ -221,15 +229,17 @@
        "&indicatorColor="
        (js/encodeURIComponent indicator-color)
        "&indicatorSize="
-       (* indicator-size status-im.utils.pixel-ratio/ratio)
+       (* indicator-size status-im2.common.pixel-ratio/ratio)
        "&indicatorBorder="
-       (* indicator-border status-im.utils.pixel-ratio/ratio)
+       (* indicator-border status-im2.common.pixel-ratio/ratio)
        "&addRing="
-       (if ring? 1 0)))
+       (if ring? 1 0)
+       "&ringWidth="
+       (* ring-width status-im2.common.pixel-ratio/ratio)))
 
 (defn get-contact-image-uri-fn
   [{:keys [port public-key image-name theme override-ring? clock]}]
-  (fn [{:keys [size indicator-size indicator-border indicator-color ring? override-theme]}]
+  (fn [{:keys [size indicator-size indicator-border indicator-color ring? ring-width override-theme]}]
     (get-contact-image-uri {:port             port
                             :image-name       image-name
                             :public-key       public-key
@@ -239,7 +249,8 @@
                             :indicator-size   indicator-size
                             :indicator-border indicator-border
                             :indicator-color  indicator-color
-                            :ring?            (if (nil? override-ring?) ring? override-ring?)})))
+                            :ring?            (if (nil? override-ring?) ring? override-ring?)
+                            :ring-width       ring-width})))
 
 (defn get-account-qr-image-uri
   [{:keys [key-uid public-key port qr-size]}]

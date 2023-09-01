@@ -92,7 +92,8 @@
        {:full-name         full-name
         :profile-picture   profile-picture
         :size              (if (= size 24) :xxs 28)
-        :status-indicator? false}]]
+        :status-indicator? false
+        :ring?             false}]]
 
      :multiuser
      [preview-list/view {:type :user :size 20}
