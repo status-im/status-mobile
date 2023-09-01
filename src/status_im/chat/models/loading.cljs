@@ -59,12 +59,14 @@
 
 (defn mark-chat-all-read
   [db chat-id]
-  (update-in db
-             [:chats chat-id]
-             assoc
-             :unviewed-messages-count 0
-             :unviewed-mentions-count 0
-             :highlight               false))
+  (when (get-in db [:chats chat-id])
+    (update-in
+     db
+     [:chats chat-id]
+     assoc
+     :unviewed-messages-count 0
+     :unviewed-mentions-count 0
+     :highlight               false)))
 
 (rf/defn handle-mark-all-read-successful
   {:events [::mark-all-read-successful]}
