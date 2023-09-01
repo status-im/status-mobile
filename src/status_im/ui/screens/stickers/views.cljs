@@ -69,13 +69,13 @@
 
 (defview packs
   []
-  (letsubs [packs [:stickers/all-packs]]
+  (letsubs [all-packs [:stickers/all-packs]]
     [react/view styles/screen
      [react/keyboard-avoiding-view {:flex 1}
-      (if (seq packs)
+      (if (seq all-packs)
         [react/scroll-view {:keyboard-should-persist-taps :handled :style {:padding 16}}
          [react/view
-          (for [pack packs]
+          (for [pack all-packs]
             ^{:key pack}
             [pack-badge pack])]]
         [react/view {:flex 1 :align-items :center :justify-content :center}

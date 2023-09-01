@@ -122,19 +122,19 @@
                                          "easing"   (get easings easing)))))
 
 (defn animate-shared-value-with-delay
-  [anim v duration easing delay]
+  [anim v duration easing delay-ms]
   (set-shared-value anim
-                    (with-delay delay
+                    (with-delay delay-ms
                                 (with-timing v
                                              (js-obj "duration" duration
                                                      "easing"   (get easings easing))))))
 
 (defn animate-delay
-  ([animation v delay]
-   (animate-delay animation v delay default-duration))
-  ([animation v delay duration]
+  ([animation v delay-ms]
+   (animate-delay animation v delay-ms default-duration))
+  ([animation v delay-ms duration]
    (set-shared-value animation
-                     (with-delay delay
+                     (with-delay delay-ms
                                  (with-timing v
                                               (clj->js {:duration duration
                                                         :easing   (default-easing)}))))))
@@ -149,11 +149,11 @@
                                  reverse?)))
 
 (defn animate-shared-value-with-delay-repeat
-  ([anim v duration easing delay number-of-repetitions]
-   (animate-shared-value-with-delay-repeat anim v duration easing delay number-of-repetitions false))
-  ([anim v duration easing delay number-of-repetitions reverse?]
+  ([anim v duration easing delay-ms number-of-repetitions]
+   (animate-shared-value-with-delay-repeat anim v duration easing delay-ms number-of-repetitions false))
+  ([anim v duration easing delay-ms number-of-repetitions reverse?]
    (set-shared-value anim
-                     (with-delay delay
+                     (with-delay delay-ms
                                  (with-repeat
                                   (with-timing v
                                                #js

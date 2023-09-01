@@ -268,11 +268,11 @@
 
 (views/defview accounts
   [selected-account-atom]
-  (views/letsubs [accounts [:multiaccount/visible-accounts]]
+  (views/letsubs [visible-accounts [:multiaccount/visible-accounts]]
     ;keycard? [:keycard-multiaccount?]]
     (do
-      (reset! selected-account-atom (:address (first accounts)))
-      (let [accounts-data (for [account accounts]
+      (reset! selected-account-atom (:address (first visible-accounts)))
+      (let [accounts-data (for [account visible-accounts]
                             {:label (:name account)
                              :id    (:address account)})]
         [react/scroll-view
@@ -283,7 +283,7 @@
           :margin-bottom                     20}
          [react/view {:flex-direction :row}
           [quo2/tabs
-           {:default-active (:address (first accounts))
+           {:default-active (:address (first visible-accounts))
             :on-change      #(reset! selected-account-atom %)
             :data           accounts-data}]
           [quo2/button

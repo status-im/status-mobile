@@ -44,8 +44,8 @@
    (-> (js/Promise.all
         (clj->js (mapv (fn [ens-name]
                          (js/Promise.
-                          (fn [resolve _]
-                            (ens/address chain-id ens-name resolve))))
+                          (fn [resolve-fn _]
+                            (ens/address chain-id ens-name resolve-fn))))
                        ens-names)))
        (.then callback)
        (.catch (fn [error]

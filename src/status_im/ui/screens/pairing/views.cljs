@@ -20,8 +20,7 @@
 (defn synchronize-installations!
   []
   (reset! syncing true)
-  ;; Currently we don't know how long it takes, so we just disable for 10s, to avoid
-  ;; spamming
+  ;; Currently we don't know how long it takes, so we just disable for 10s, to avoid spamming
   (js/setTimeout #(reset! syncing false) 10000)
   (re-frame/dispatch [:pairing.ui/synchronize-installation-pressed]))
 
@@ -44,7 +43,7 @@
     (enable-installation! installation-id)))
 
 (defn footer
-  [syncing]
+  []
   [react/touchable-highlight
    {:on-press (when-not @syncing
                 synchronize-installations!)
@@ -152,13 +151,13 @@
 
 (views/defview installations
   []
-  (views/letsubs [installations [:pairing/installations]]
+  (views/letsubs [installs [:pairing/installations]]
     [:<>
      [react/scroll-view
-      (if (string/blank? (-> installations first :name))
+      (if (string/blank? (-> installs first :name))
         [edit-installation-name]
         [react/view
          [pair-this-device]
          [info-section]
-         [installations-list installations]])]
-     (when (seq installations) [footer syncing])]))
+         [installations-list installs]])]
+     (when (seq installs) [footer])]))

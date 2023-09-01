@@ -85,7 +85,7 @@
 
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
-   {:keys [chat-input audio] :as subs}]
+   {:keys [chat-input audio] :as subscriptions}]
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
@@ -95,12 +95,12 @@
      (background-effect state animations dimensions chat-input)
      (link-preview-effect state)
      (audio-effect state animations audio)
-     (empty-effect state animations subs)
+     (empty-effect state animations subscriptions)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
    [max-height]))
 
-(defn edit
+(defn use-edit
   [{:keys [input-ref]}
    {:keys [text-value saved-cursor-position]}
    {:keys [edit]}]
@@ -114,7 +114,7 @@
          (reset! saved-cursor-position (count edit-text)))))
    [(:message-id edit)]))
 
-(defn reply
+(defn use-reply
   [{:keys [input-ref]}
    {:keys [container-opacity]}
    {:keys [reply]}]
@@ -179,7 +179,7 @@
      (reset! sending-links? link-previews?))
    [link-previews?]))
 
-(defn images
+(defn use-images
   [{:keys [sending-images? input-ref]}
    {:keys [text-value maximized?]}
    {:keys [container-opacity height saved-height last-height]}

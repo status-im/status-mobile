@@ -93,8 +93,7 @@
    (when (and outgoing
               (not (or deleted? deleted-for-me?))
               ;; temporarily disable edit image message until
-              ;; https://github.com/status-im/status-mobile/issues/15298
-              ;; is implemented
+              ;; https://github.com/status-im/status-mobile/issues/15298 is implemented
               (not= content-type constants/content-type-image)
               (not= content-type constants/content-type-audio))
      [{:type     :main
@@ -162,13 +161,13 @@
 
 (defn reactions
   [{:keys [chat-id message-id]}]
-  (let [reactions     (rf/sub [:chats/message-reactions message-id chat-id])
+  (let [msg-reactions (rf/sub [:chats/message-reactions message-id chat-id])
         own-reactions (reduce (fn [acc {:keys [emoji-id own emoji-reaction-id]}]
                                 (if own
                                   (assoc acc emoji-id emoji-reaction-id)
                                   acc))
                               {}
-                              reactions)]
+                              msg-reactions)]
     [rn/view
      {:style {:flex-direction     :row
               :justify-content    :space-between

@@ -19,15 +19,15 @@
   Reagent and React render."
   [f]
   (js/Promise.
-   (fn [resolve reject]
+   (fn [resolve-fn reject]
      (try
        (.then (rtl/act
-               #(let [p (js/Promise. (fn [resolve _reject]
+               #(let [p (js/Promise. (fn [resolve-fn2 _reject]
                                        (r/after-render (fn reagent-act-after-reagent-flush []
-                                                         (resolve)))))]
+                                                         (resolve-fn2)))))]
                   (f)
                   p))
-              resolve
+              resolve-fn
               reject)
        (catch :default e
          (reject e))))))
@@ -117,4 +117,3 @@
                                                                 gesture-events)))]
         (h/advance-timers-by-time 250)
         (-> promise (.then #(h/was-not-called (:on-complete props))))))))
-

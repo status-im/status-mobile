@@ -153,14 +153,14 @@
 
 (defn text-input
   [options _]
-  (let [render-fn (fn [options text]
+  (let [render-fn (fn [options value]
                     [text-input-class
                      (merge
                       {:underline-color-android  :transparent
                        :max-font-size-multiplier max-font-size-multiplier
                        :placeholder-text-color   colors/text-gray
                        :placeholder              (i18n/label :t/type-a-message)
-                       :value                    text}
+                       :value                    value}
                       (-> options
                           (dissoc :preserve-input?)
                           (update :style typography/get-style)
@@ -172,7 +172,7 @@
          {:component-will-unmount #(when @input-ref
                                      (swap! text-input-refs dissoc @input-ref))
           :reagent-render
-          (fn [options text]
+          (fn [options value]
             (render-fn (assoc options
                               :ref
                               (fn [r]
@@ -183,7 +183,7 @@
                                 (reset! input-ref r)
                                 (when (:ref options)
                                   ((:ref options) r))))
-                       text))})))))
+                       value))})))))
 
 (defn i18n-text
   [{style :style k :key}]
@@ -248,8 +248,8 @@
   (.-Share react-native))
 
 (defn copy-to-clipboard
-  [text]
-  (.setString ^js Clipboard text))
+  [s]
+  (.setString ^js Clipboard s))
 
 (defn get-from-clipboard
   [clbk]
@@ -288,7 +288,7 @@
   (vec (conj children props scroll-view-class)))
 
 (views/defview with-activity-indicator
-  [{:keys [timeout style enabled? preview]} comp]
+  [{:keys [timeout style enabled? preview]} component]
   (views/letsubs
     [loading (reagent/atom true)]
     {:component-did-mount (fn []
@@ -304,7 +304,7 @@
                        {:justify-content :center
                         :align-items     :center})}
            [activity-indicator {:animating true}]])
-      comp)))
+      component)))
 
 (defn hw-back-add-listener
   [callback]

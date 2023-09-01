@@ -30,13 +30,13 @@
       (debounced))))
 
 (defn get-items
-  [keys cb]
+  [ks cb]
   (-> ^js async-storage
-      (.multiGet (to-array (map key->string keys)))
+      (.multiGet (to-array (map key->string ks)))
       (.then (fn [^js data]
                (cb (->> (js->clj data)
                         (map (comp transit->clj second))
-                        (zipmap keys)))))
+                        (zipmap ks)))))
       (.catch (fn [error]
                 (cb nil)
                 (log/error "[async-storage]" error)))))
@@ -58,5 +58,5 @@
 
 (re-frame/reg-fx
  ::get
- (fn [{:keys [keys cb]}]
-   (get-items keys cb)))
+ (fn [{ks :keys cb :cb}]
+   (get-items ks cb)))

@@ -30,8 +30,8 @@
           copy           #(utils.fs/copy-assets src dest)
           cb             #(callback dest)]
       (.then (utils.fs/file-exists? dest)
-             (fn [exists?]
-               (if exists?
+             (fn [file?]
+               (if file?
                  (cb)
                  (.then (copy) cb)))))
     (callback (str (utils.fs/main-bundle-path)

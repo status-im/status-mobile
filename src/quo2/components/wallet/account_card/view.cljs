@@ -11,7 +11,7 @@
 (defn- loading-view
   [{:keys [customization-color type theme metrics?]}]
   (let [watch-only? (= :watch-only type)
-        empty?      (= :empty type)]
+        empty-type? (= :empty type)]
     [rn/view
      {:accessibility-label :loading
       :style               (style/card customization-color watch-only? metrics? theme)}
@@ -28,7 +28,7 @@
        (when watch-only? [icon/icon :reveal {:color colors/neutral-50 :size 12}])]]
      [rn/view
       {:style (assoc (style/loader-view
-                      (if empty? 56 80)
+                      (if empty-type? 56 80)
                       16
                       watch-only?
                       theme)
@@ -38,7 +38,7 @@
        [rn/view
         {:accessibility-label :metrics
          :style               (assoc (style/loader-view
-                                      (if empty? 37 96)
+                                      (if empty-type? 37 96)
                                       8
                                       watch-only?
                                       theme)
@@ -49,7 +49,7 @@
   [{:keys [state name balance percentage-value loading? amount customization-color type emoji metrics?
            theme on-press]}]
   (let [watch-only?        (= :watch-only type)
-        empty?             (= :empty type)
+        empty-type?        (= :empty type)
         account-amount     (if (= :empty state) "€0.00" amount)
         account-name       (if (= :empty state) (i18n/label :t/Account 1) name)
         account-percentage (if (= :empty state) "€0.00" percentage-value)]
@@ -85,7 +85,7 @@
             :accessibility-label :metrics
             :style               (style/metrics watch-only? theme)}
            account-percentage]
-          (when (not empty?)
+          (when (not empty-type?)
             [:<>
              [rn/view (style/separator watch-only? theme)]
              [text/text

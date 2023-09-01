@@ -18,8 +18,8 @@
 (def one-min-ms 60000)
 
 (defn f-use-interval
-  [clock cleanup-clock delay]
-  (hooks/use-interval clock cleanup-clock delay)
+  [clock cleanup-clock delay-ms]
+  (hooks/use-interval clock cleanup-clock delay-ms)
   nil)
 
 (defn view
@@ -27,12 +27,12 @@
   (let [profile-color (rf/sub [:profile/customization-color])
         valid-for-ms  (reagent/atom code-valid-for-ms)
         code          (reagent/atom nil)
-        delay         (reagent/atom nil)
+        delay-ms      (reagent/atom nil)
         timestamp     (reagent/atom nil)
         set-code      (fn [connection-string]
                         (when (sync-utils/valid-connection-string? connection-string)
                           (reset! timestamp (* 1000 (js/Math.ceil (/ (datetime/timestamp) 1000))))
-                          (reset! delay 1000)
+                          (reset! delay-ms 1000)
                           (reset! code connection-string)))
         clock         (fn []
                         (if (pos? (- code-valid-for-ms
@@ -43,7 +43,7 @@
                                                    (- (* 1000
                                                          (js/Math.ceil (/ (datetime/timestamp) 1000)))
                                                       @timestamp))))
-                          (reset! delay nil)))
+                          (reset! delay-ms nil)))
         cleanup-clock (fn []
                         (reset! code nil)
                         (reset! timestamp nil)
@@ -51,7 +51,7 @@
 
     (fn []
       [rn/view {:style style/container-main}
-       [:f> f-use-interval clock cleanup-clock @delay]
+       [:f> f-use-interval clock cleanup-clock @delay-ms]
        [rn/scroll-view {}
         [quo/page-nav
          {:type       :no-title

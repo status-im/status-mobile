@@ -91,8 +91,8 @@
   (navigation/navigate-to cofx :wallet-transaction-details {:hash hash :address address}))
 
 (defn dups
-  [seq]
-  (for [[id freq] (frequencies seq)
+  [coll]
+  (for [[id freq] (frequencies coll)
         :when     (> freq 1)]
     id))
 
@@ -763,23 +763,23 @@
 
 (re-frame/reg-fx
  :load-transaction-by-hash
- (fn [[address hash]]
-   (log/info "calling wallet_loadTransferByHash" address hash)
+ (fn [[address tx-hash]]
+   (log/info "calling wallet_loadTransferByHash" address tx-hash)
    (json-rpc/call
     {:method     "wallet_loadTransferByHash"
-     :params     [address hash]
+     :params     [address tx-hash]
      :on-success #(re-frame/dispatch [:transaction/get-fetched-transfers])
      :on-error   #(log/warn "Transfer loading failed" %)})))
 
 (rf/defn load-transaction-by-hash
-  [_ address hash]
-  {:load-transaction-by-hash [address hash]})
+  [_ address tx-hash]
+  {:load-transaction-by-hash [address tx-hash]})
 
 (rf/defn transaction-included
   {:events [::transaction-included]}
-  [{:keys [db] :as cofx} address hash]
+  [{:keys [db] :as cofx} address tx-hash]
   (if (ethereum/binance-chain? db)
-    (load-transaction-by-hash cofx address hash)
+    (load-transaction-by-hash cofx address tx-hash)
     (restart cofx true)))
 
 (def pull-to-refresh-cooldown-period (* 1 60 1000))
@@ -803,12 +803,12 @@
  ::start-watching
  (fn [hashes]
    (log/info "[wallet] watch transactions" hashes)
-   (doseq [[address hash] hashes]
+   (doseq [[address tx-hash] hashes]
      (json-rpc/call
       {:method     "wallet_watchTransaction"
-       :params     [hash]
-       :on-success #(re-frame.core/dispatch [::transaction-included address hash])
-       :on-error   #(log/info "[wallet] watch transaction error" % "hash" hash)}))))
+       :params     [tx-hash]
+       :on-success #(re-frame.core/dispatch [::transaction-included address tx-hash])
+       :on-error   #(log/info "[wallet] watch transaction error" % "hash" tx-hash)}))))
 
 (rf/defn watch-tx
   {:events [:watch-tx]}
@@ -1006,8 +1006,8 @@
   [{:keys [db]} raw-transactions]
   (log/info "[wallet] pending transactions")
   {:db
-   (reduce (fn [db {:keys [from hash] :as transaction}]
-             (let [path [:wallet :accounts from :transactions hash]]
+   (reduce (fn [db {:keys [from] :as transaction}]
+             (let [path [:wallet :accounts from :transactions (:hash transaction)]]
                (if-not (get-in db path)
                  (assoc-in db path transaction)
                  db)))
@@ -1019,11 +1019,11 @@
  :wallet/delete-pending-transactions
  (fn [hashes]
    (log/info "[wallet] delete pending transactions")
-   (doseq [hash hashes]
+   (doseq [tx-hash hashes]
      (json-rpc/call
       {:method     "wallet_deletePendingTransaction"
-       :params     [hash]
-       :on-success #(log/info "[wallet] pending transaction deleted" hash)}))))
+       :params     [tx-hash]
+       :on-success #(log/info "[wallet] pending transaction deleted" tx-hash)}))))
 
 (rf/defn switch-transactions-management-enabled
   {:events [:multiaccounts.ui/switch-transactions-management-enabled]}
@@ -1084,12 +1084,12 @@
    (-> (js/Promise.all
         (clj->js
          [(js/Promise.
-           (fn [resolve reject]
+           (fn [resolve-fn reject]
              (json-rpc/call {:method     "accounts_getAccounts"
-                             :on-success resolve
+                             :on-success resolve-fn
                              :on-error   reject})))
           (js/Promise.
-           (fn [resolve _]
+           (fn [resolve-fn _]
              (json-rpc/call
               {:method "wallet_addEthereumChain"
                :params
@@ -1104,24 +1104,24 @@
                  :chainId                (int network-id)
                  :enabled                false
                  :fallbackURL            (get-in network [:config :UpstreamConfig :URL])}]
-               :on-success resolve
-               :on-error (fn [_] (resolve nil))})))
+               :on-success resolve-fn
+               :on-error (fn [_] (resolve-fn nil))})))
           (js/Promise.
-           (fn [resolve _]
+           (fn [resolve-fn _]
              (json-rpc/call {:method     "wallet_getTokens"
                              :params     [(int network-id)]
-                             :on-success resolve
+                             :on-success resolve-fn
                              :on-error   (fn [_]
-                                           (resolve nil))})))
+                                           (resolve-fn nil))})))
           (js/Promise.
-           (fn [resolve reject]
+           (fn [resolve-fn reject]
              (json-rpc/call {:method     "wallet_getCustomTokens"
-                             :on-success resolve
+                             :on-success resolve-fn
                              :on-error   reject})))
           (js/Promise.
-           (fn [resolve reject]
+           (fn [resolve-fn reject]
              (json-rpc/call {:method     "wallet_getSavedAddresses"
-                             :on-success resolve
+                             :on-success resolve-fn
                              :on-error   reject})))]))
        (.then (fn [[accounts _ tokens custom-tokens favourites]]
                 (callback accounts

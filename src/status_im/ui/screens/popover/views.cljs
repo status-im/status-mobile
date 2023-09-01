@@ -161,6 +161,6 @@
 
 (views/defview popover
   []
-  (views/letsubs [popover                 [:popover/popover]
+  (views/letsubs [current-popover         [:popover/popover]
                   {window-height :height} [:dimensions/window]]
-    [popover-view popover window-height]))
+    [popover-view current-popover window-height]))

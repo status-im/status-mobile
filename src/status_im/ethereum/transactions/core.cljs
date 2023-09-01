@@ -24,20 +24,20 @@
 (def network->subdomain {5 "goerli"})
 
 (defn get-transaction-details-url
-  [chain-id hash]
-  {:pre  [(number? chain-id) (string? hash)]
+  [chain-id tx-hash]
+  {:pre  [(number? chain-id) (string? tx-hash)]
    :post [(or (nil? %) (string? %))]}
   (cond
     (etherscan-supported? chain-id)
     (let [network-subdomain (when-let [subdomain (network->subdomain chain-id)]
                               (str subdomain "."))]
-      (str "https://" network-subdomain "etherscan.io/tx/" hash))
+      (str "https://" network-subdomain "etherscan.io/tx/" tx-hash))
 
     (= chain-id binance-mainnet-chain-id)
-    (str "https://bscscan.com/tx/" hash)
+    (str "https://bscscan.com/tx/" tx-hash)
 
     (= chain-id binance-testnet-chain-id)
-    (str "https://testnet.bscscan.com/tx/" hash)))
+    (str "https://testnet.bscscan.com/tx/" tx-hash)))
 
 (def default-erc20-token
   {:symbol   :ERC20

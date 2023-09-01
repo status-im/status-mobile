@@ -119,10 +119,10 @@
   [{:keys [profile/profile :networks/networks :networks/current-network]
     :as   db}]
   (let [wakuv2-config (get profile :wakuv2-config {})
-        current-fleet-key (current-fleet-key db)
+        fleet-key (current-fleet-key db)
         current-fleet (get-current-fleet db)
         wakuv2-enabled (wakuv2-enabled? current-fleet)
-        waku-nodes (get config/waku-nodes-config current-fleet-key)
+        waku-nodes (get config/waku-nodes-config fleet-key)
         rendezvous-nodes (pick-nodes 3 (vals (:rendezvous current-fleet)))
         {:keys [installation-id log-level
                 waku-bloom-filter-mode
@@ -140,7 +140,7 @@
       (assoc :NoDiscovery   wakuv2-enabled
              :Rendezvous    (if wakuv2-enabled false (boolean (seq rendezvous-nodes)))
              :ClusterConfig {:Enabled true
-                             :Fleet (name current-fleet-key)
+                             :Fleet (name fleet-key)
                              :DiscV5BootstrapNodes
                              (if wakuv2-enabled
                                waku-nodes

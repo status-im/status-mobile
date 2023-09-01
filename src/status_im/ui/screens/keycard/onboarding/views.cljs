@@ -93,9 +93,9 @@
 
 (defview puk-code
   []
-  (letsubs [secrets  [:keycard-secrets]
-            steps    [:keycard-flow-steps]
-            puk-code [:keycard-puk-code]]
+  (letsubs [secrets [:keycard-secrets]
+            steps   [:keycard-flow-steps]
+            puk     [:keycard-puk-code]]
     [react/view styles/container
      [topbar/topbar
       {:navigation {:on-press #(re-frame/dispatch [::keycard.onboarding/cancel-pressed])
@@ -151,7 +151,7 @@
               :size                :large
               :monospace           true
               :accessibility-label :puk-code}
-             puk-code]]]]
+             puk]]]]
          [react/view {:margin-top 16}
           [react/text {:style {:color colors/gray}}
            (i18n/label :t/puk-code-explanation)]]
@@ -199,7 +199,7 @@
 
 (defview pin
   []
-  (letsubs [pin           [:keycard/pin]
+  (letsubs [card-pin      [:keycard/pin]
             enter-step    [:keycard/pin-enter-step]
             status        [:keycard/pin-status]
             error-label   [:keycard/pin-error-label]
@@ -236,7 +236,7 @@
           [react/text {:style {:color colors/gray}}
            (i18n/label :t/intro-wizard-text4)])]]
       [pin.views/pin-view
-       {:pin           pin
+       {:pin           card-pin
         :status        status
         :small-screen? small-screen?
         :error-label   error-label

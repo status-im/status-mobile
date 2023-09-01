@@ -24,12 +24,12 @@
    {:keys [text-value]}
    {:keys [height saved-height]}
    {:keys [max-height]}]
-  (let [start-h   (oops/oget event "startCoordinates.height")
-        end-h     (oops/oget event "endCoordinates.height")
-        diff      (- end-h start-h)
-        max       (- max-height diff)
-        curr-text @text-value]
-    (if (> (reanimated/get-shared-value height) max)
+  (let [start-h         (oops/oget event "startCoordinates.height")
+        end-h           (oops/oget event "endCoordinates.height")
+        diff            (- end-h start-h)
+        max-height-diff (- max-height diff)
+        curr-text       @text-value]
+    (if (> (reanimated/get-shared-value height) max-height-diff)
       (do
         (reanimated/set-shared-value height (- (reanimated/get-shared-value height) diff))
         (reanimated/set-shared-value saved-height (- (reanimated/get-shared-value saved-height) diff))

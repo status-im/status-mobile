@@ -12,8 +12,8 @@
   {:in-pinned-view? false})
 
 (defn setup-subs
-  [subs]
-  (doseq [keyval subs]
+  [subscriptions]
+  (doseq [keyval subscriptions]
     (re-frame/reg-sub
      (key keyval)
      (fn [_] (val keyval)))))

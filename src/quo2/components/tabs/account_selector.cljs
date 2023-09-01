@@ -28,10 +28,6 @@
    :background-color background-color
    :border-radius    12})
 
-(def account-emoji
-  {:height 16
-   :width  16})
-
 (def account-avatar-container
   {:margin-left  4
    :margin-right 8})

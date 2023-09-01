@@ -14,7 +14,7 @@
   (.useBackHandler hooks handler))
 
 (defn use-interval
-  [cb cleanup-cb delay]
+  [cb cleanup-cb delay-ms]
   (let [saved-callback (rn/use-ref)]
     (rn/use-effect
      (fn []
@@ -24,9 +24,9 @@
     (rn/use-effect
      (fn []
        (let [tick (oops/oget saved-callback "current")]
-         (when delay
-           (let [id (js/setInterval tick delay)]
+         (when delay-ms
+           (let [id (js/setInterval tick delay-ms)]
              (fn []
                (cleanup-cb)
                (js/clearInterval id))))))
-     [delay])))
+     [delay-ms])))

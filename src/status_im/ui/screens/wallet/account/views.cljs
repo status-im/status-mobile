@@ -305,8 +305,8 @@
 
 (views/defview account
   []
-  (views/letsubs [{:keys [name address] :as account} [:multiaccount/current-account]
-                  fetching-error                     [:wallet/fetching-error]]
+  (views/letsubs [{:keys [name address] :as current-account} [:multiaccount/current-account]
+                  fetching-error                             [:wallet/fetching-error]]
     (let [anim-y   (animation/create-value button-group-height)
           scroll-y (animation/create-value 0)]
       (anim-listener anim-y scroll-y)
@@ -356,9 +356,9 @@
         [react/view {:padding-left 16}
          [react/scroll-view {:horizontal true}
           [react/view {:flex-direction :row :padding-top 8 :padding-bottom 12}
-           [account-card account]]]]
+           [account-card current-account]]]]
         (if config/swap-enabled?
           [top-actions]
           [buy-crypto/banner])
         [assets-and-collections address]]
-       [bottom-send-recv-buttons account anim-y]])))
+       [bottom-send-recv-buttons current-account anim-y]])))

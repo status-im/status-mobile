@@ -1,5 +1,6 @@
 (ns status-im2.subs.general
   (:require [re-frame.core :as re-frame]
+            [clojure.string :as string]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
             [status-im.multiaccounts.model :as multiaccounts.model]
@@ -13,7 +14,7 @@
  :<- [:multiaccount/current-user-visibility-status]
  :<- [:visibility-status-updates]
  (fn [[my-public-key my-status-update status-updates] [_ public-key]]
-   (if (= public-key my-public-key)
+   (if (or (string/blank? public-key) (= public-key my-public-key))
      my-status-update
      (get status-updates public-key))))
 
@@ -94,8 +95,7 @@
  :<- [:waku/v2-flag]
  :<- [:waku/v2-peer-stats]
  (fn [[peers-count wakuv2-flag peer-stats]]
-   ;; If wakuv2 is enabled,
-   ;; then fetch connectivity status from
+   ;; If wakuv2 is enabled, then fetch connectivity status from
    ;; peer-stats (populated from "wakuv2.peerstats" status-go signal)
    ;; Otherwise use peers-count fetched from "discovery.summary" signal
    (if wakuv2-flag (not (:isOnline peer-stats)) (zero? peers-count))))

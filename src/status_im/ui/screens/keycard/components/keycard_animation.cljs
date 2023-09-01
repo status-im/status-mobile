@@ -48,7 +48,7 @@
                                          :outputRange [0 1]})}]}}
    children])
 
-(defn indicator
+(defn indicator-view
   [{:keys [state animation-value]}]
   [indicator-container animation-value
    (case @state
@@ -99,7 +99,7 @@
      :chip-color colors/white}
     nil))
 
-(defn card
+(defn card-view
   [{:keys [card-scale state indicator-value animation-value]}]
   (let [{:keys [card-color
                 chip-color
@@ -136,11 +136,11 @@
        {:color  key-color
         :width  25
         :height 42}]]
-     [indicator
+     [indicator-view
       {:state           state
        :animation-value indicator-value}]]))
 
-(defn phone
+(defn phone-view
   [{:keys [animation-value]}]
   [react/animated-view
    {:style {:position  :absolute
@@ -163,10 +163,10 @@
 (def card-easing (animation/bezier 0.77 0 0.175 1))
 
 (defn- circle-animation
-  [animation-value to delay]
+  [animation-value to delay-ms]
   (animation/timing animation-value
                     {:toValue  to
-                     :delay    delay
+                     :delay    delay-ms
                      :duration 1000
                      :easing   circle-easing}))
 
@@ -312,7 +312,7 @@
                                  :small      animation-small
                                  :medium     animation-medium
                                  :big        animation-big}))
-        on-error            #(do
+        on-error-fn         #(do
                                (on-card-disconnected)
                                (on-error
                                 {:state   state
@@ -325,7 +325,7 @@
           (keycard-nfc/remove-event-listener listener))
 
         (reset! listeners [(keycard-nfc/on-card-connected on-card-connected)
-                           (keycard-nfc/on-card-disconnected on-error)])
+                           (keycard-nfc/on-card-disconnected on-error-fn)])
 
         (on-start-animation)
 
@@ -359,10 +359,10 @@
            :size            80
            :color           "#D2D9F0"}]
 
-         [card
+         [card-view
           {:animation-value animation-card
            :state           state
            :indicator-value animation-indicator
            :card-scale      card-scale}]
 
-         [phone {:animation-value animation-phone}]])})))
+         [phone-view {:animation-value animation-phone}]])})))

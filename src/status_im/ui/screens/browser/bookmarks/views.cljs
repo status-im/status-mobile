@@ -11,10 +11,10 @@
             [status-im.ui.components.topbar :as topbar]))
 
 (defn screen
-  [{:keys [url name new]}]
+  [{url :url name :name new-arg :new}]
   (let [input-name (reagent/atom name)]
     (fn []
-      (let [edit? (not new)]
+      (let [edit? (not new-arg)]
         [kb-presentation/keyboard-avoiding-view
          {:style         {:flex 1}
           :ignore-offset true}

@@ -57,10 +57,9 @@
     (= s (string/lower-case s))))
 
 (defn valid-username?
-  [username]
-  (boolean
-   (and (lower-case? username)
-        (re-find #"^[a-z0-9]+$" username))))
+  [s]
+  (boolean (and (lower-case? s)
+                (re-find #"^[a-z0-9]+$" s))))
 
 (defn ens-name-parse
   [contact-identity]

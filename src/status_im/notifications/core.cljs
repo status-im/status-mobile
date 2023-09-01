@@ -288,8 +288,10 @@
        (= (:identifier x) (:identifier y))))
 
 (defn- update-preference
-  [all new]
-  (conj (filter (comp not (partial preference= new)) all) new))
+  [all new-preference]
+  (conj (filter (comp not (partial preference= new-preference))
+                all)
+        new-preference))
 
 (rf/defn switch-transaction-notifications
   {:events [::switch-transaction-notifications]}

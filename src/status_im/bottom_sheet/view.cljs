@@ -66,7 +66,7 @@
                (and @expanded? (< end-pan-y collapse-threshold))
                (reset! expanded? false))))))))
 
-(defn handle-comp
+(defn handle-view
   [window-width override-theme]
   [rn/view
    {:style {:width            window-width
@@ -151,7 +151,7 @@
                                    close-bottom-sheet
                                    gesture-running?)
              handle-comp [gesture/gesture-detector {:gesture bottom-sheet-gesture}
-                          [handle-comp window-width override-theme]]]
+                          [handle-view window-width override-theme]]]
 
          (react/effect! #(do
                            (cond

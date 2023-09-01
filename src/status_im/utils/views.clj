@@ -15,14 +15,14 @@
     (or (form->sym sub) sub)))
 
 (defn prepare-subs
-  [subs]
+  [subscriptions]
   (let [pairs     (map (fn [[form sub]]
                          {:form form
                           :sub  sub
                           :sym  (if (atom? sub)
                                   (gensym (str (if (map? form) "keys" form)))
                                   form)})
-                       (partition 2 subs))
+                       (partition 2 subscriptions))
         form->sym (->> pairs
                        (map (fn [{:keys [form sym]}]
                               [form sym]))
@@ -45,19 +45,19 @@
 
 (defmacro defview
   [n params & rest-body]
-  (let [first-symbol                  (ffirst rest-body)
-        rest-body'                    (if (and (symbol? first-symbol)
-                                               (= (name first-symbol) "letsubs"))
-                                        (rest (first rest-body))
-                                        rest-body)
-        [subs component-map body]     (case (count rest-body')
-                                        1 [nil {} (first rest-body')]
-                                        2 (let [first-element (first rest-body')]
-                                            (if (map? first-element)
-                                              [nil first-element (second rest-body')]
-                                              [(first rest-body') {} (second rest-body')]))
-                                        3 rest-body')
-        [subs-bindings vars-bindings] (prepare-subs subs)]
+  (let [first-symbol                       (ffirst rest-body)
+        rest-body'                         (if (and (symbol? first-symbol)
+                                                    (= (name first-symbol) "letsubs"))
+                                             (rest (first rest-body))
+                                             rest-body)
+        [subscriptions component-map body] (case (count rest-body')
+                                             1 [nil {} (first rest-body')]
+                                             2 (let [first-element (first rest-body')]
+                                                 (if (map? first-element)
+                                                   [nil first-element (second rest-body')]
+                                                   [(first rest-body') {} (second rest-body')]))
+                                             3 rest-body')
+        [subs-bindings vars-bindings]      (prepare-subs subscriptions)]
     `(defn ~n
        ~params
        (let [~@subs-bindings]

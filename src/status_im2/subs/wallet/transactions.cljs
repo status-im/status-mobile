@@ -17,9 +17,9 @@
 (re-frame/reg-sub
  :wallet/account-by-transaction-hash
  :<- [:wallet/accounts]
- (fn [accounts [_ hash]]
+ (fn [accounts [_ tx-hash]]
    (some (fn [[address account]]
-           (when-let [transaction (get-in account [:transactions hash])]
+           (when-let [transaction (get-in account [:transactions tx-hash])]
              (assoc transaction :address address)))
          accounts)))
 
@@ -66,9 +66,9 @@
     (re-frame/subscribe [:contacts/contacts-by-address])
     (re-frame/subscribe [:ethereum/native-currency])])
  (fn [[transactions contacts native-currency]]
-   (reduce (fn [acc [hash transaction]]
+   (reduce (fn [acc [tx-hash transaction]]
              (assoc acc
-                    hash
+                    tx-hash
                     (enrich-transaction transaction contacts native-currency))) ;;TODO this doesn't
                                                                                 ;;look good for
                                                                                 ;;performance, we
@@ -118,7 +118,7 @@
 
 (defn- enrich-transaction-for-list
   [filters
-   {:keys [type from-contact from to-contact to hash timestamp] :as transaction}
+   {:keys [type from-contact from to-contact to timestamp] :as transaction}
    address]
   (when (filters type)
     (assoc
@@ -137,7 +137,9 @@
               :contact                     to-contact
               :address                     to))
      :time-formatted (datetime/timestamp->time timestamp)
-     :on-touch-fn    #(re-frame/dispatch [:wallet.ui/show-transaction-details hash address]))))
+     :on-touch-fn    #(re-frame/dispatch [:wallet.ui/show-transaction-details
+                                          (:hash transaction)
+                                          address]))))
 
 (defn group-transactions-by-date
   [transactions]
@@ -181,10 +183,10 @@
    [(re-frame/subscribe [:wallet.transactions/transactions address])
     (re-frame/subscribe [:ethereum/native-currency])
     (re-frame/subscribe [:chain-id])])
- (fn [[transactions native-currency chain-id] [_ hash _]]
-   (let [{:keys [gas-used gas-price fee-cap tip-cap hash timestamp type]
+ (fn [[transactions native-currency chain-id] [_ tx-hash _]]
+   (let [{:keys [gas-used gas-price fee-cap tip-cap timestamp type]
           :as   transaction}
-         (get transactions hash)
+         (get transactions tx-hash)
          native-currency-text (name (or (:symbol-display native-currency)
                                         (:symbol native-currency)))]
      (when transaction
@@ -220,12 +222,12 @@
                                          native-currency-text))
                  :url  (transactions/get-transaction-details-url
                         chain-id
-                        hash)}))))))
+                        (:hash transaction))}))))))
 
 (re-frame/reg-sub
  :wallet.transactions.details/screen
- (fn [[_ hash address] _]
-   [(re-frame/subscribe [:wallet.transactions.details/current-transaction hash address])
+ (fn [[_ tx-hash address] _]
+   [(re-frame/subscribe [:wallet.transactions.details/current-transaction tx-hash address])
     (re-frame/subscribe [:ethereum/current-block])])
  (fn [[transaction current-block]]
    (let [confirmations (wallet.db/get-confirmations transaction

@@ -28,7 +28,7 @@
     (i18n/label description)]
    [quo/separator {:style {:margin-vertical 8}}]])
 
-(defn membership
+(defn membership-view
   []
   (let [{:keys [membership]} (rf/sub [:communities/create])]
     [:<>

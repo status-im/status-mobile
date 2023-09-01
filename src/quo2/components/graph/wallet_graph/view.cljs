@@ -8,7 +8,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.graph.utils :as utils]))
 
-(defn- max-data-points
+(defn- time-frame->max-data-points
   [time-frame]
   (case time-frame
     :empty    0
@@ -20,7 +20,7 @@
 
 (defn- view-internal
   [{:keys [data state time-frame theme]}]
-  (let [max-data-points (max-data-points time-frame)
+  (let [max-data-points (time-frame->max-data-points time-frame)
         data            (if (and (not= time-frame :empty) (> (count data) max-data-points))
                           (utils/downsample-data data max-data-points)
                           data)

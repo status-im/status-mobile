@@ -3,7 +3,7 @@
             [react-native.core :as rn]
             [status-im2.contexts.communities.actions.community-rules-list.style :as style]))
 
-(def rules
+(def standard-rules
   [{:index 1
     :title "Be respectful"
     :content

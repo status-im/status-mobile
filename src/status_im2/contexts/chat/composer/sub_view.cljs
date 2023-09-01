@@ -54,5 +54,5 @@
         style/scroll-to-bottom-button])]))
 
 (defn shell-button
-  [state animations subs]
-  [:f> f-shell-button state animations subs])
+  [state animations subscriptions]
+  [:f> f-shell-button state animations subscriptions])
