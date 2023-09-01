@@ -118,6 +118,7 @@
     ;; Onboarding
     {:name      :intro
      :options   {:theme :dark}
+     :on-focus  [:onboarding/intro-on-focus]
      :component intro/view}
 
     {:name      :profiles
@@ -125,18 +126,15 @@
                  :layout options/onboarding-layout}
      :component profiles/view}
 
-    {:name                         :new-to-status
-     :options                      {:theme :dark
-                                    :layout options/onboarding-transparent-layout
-                                    :animations (merge
-                                                 transitions/new-to-status-modal-animations
-                                                 transitions/push-animations-for-transparent-background)
-                                    :popGesture false
-                                    :modalPresentationStyle :overCurrentContext
-                                    :hardwareBackButton {:dismissModalOnPress false
-                                                         :popStackOnPress     false}}
-     :hardware-back-button-handler new-to-status/navigate-back
-     :component                    new-to-status/new-to-status}
+    {:name      :new-to-status
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge
+                                          transitions/new-to-status-modal-animations
+                                          transitions/push-animations-for-transparent-background)
+                 :popGesture             false
+                 :modalPresentationStyle :overCurrentContext}
+     :component new-to-status/new-to-status}
 
     {:name      :create-profile
      :options   {:theme      :dark
@@ -181,10 +179,7 @@
                  :layout                 options/onboarding-transparent-layout
                  :animations             (merge transitions/new-to-status-modal-animations
                                                 transitions/push-animations-for-transparent-background)
-                 :modalPresentationStyle :overCurrentContext
-                 :popGesture             false
-                 :hardwareBackButton     {:dismissModalOnPress false
-                                          :popStackOnPress     false}}
+                 :modalPresentationStyle :overCurrentContext}
      :component enable-notifications/enable-notifications}
 
     {:name      :identifiers
@@ -200,16 +195,13 @@
      :options   options/dark-screen
      :component scan-sync-code-page/view}
 
-    {:name                         :sign-in-intro
-     :options                      {:layout options/onboarding-transparent-layout
-                                    :animations (merge
-                                                 transitions/sign-in-modal-animations
-                                                 transitions/push-animations-for-transparent-background)
-                                    :modalPresentationStyle :overCurrentContext
-                                    :hardwareBackButton {:dismissModalOnPress false
-                                                         :popStackOnPress     false}}
-     :hardware-back-button-handler sign-in/navigate-back
-     :component                    sign-in/animated-view}
+    {:name      :sign-in-intro
+     :options   {:layout                 options/onboarding-transparent-layout
+                 :animations             (merge
+                                          transitions/sign-in-modal-animations
+                                          transitions/push-animations-for-transparent-background)
+                 :modalPresentationStyle :overCurrentContext}
+     :component sign-in/animated-view}
 
     {:name      :sign-in
      :options   {:theme                  :dark

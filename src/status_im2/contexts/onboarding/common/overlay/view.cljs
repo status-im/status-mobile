@@ -45,9 +45,12 @@
         max-blur-amount
         2))))
 
+;; we had to register it here, because of hotreload, overwise on hotreload it will be reseted
+(defonce blur-amount (reagent/atom 0))
+
 (defn f-view
-  [blur-amount]
-  (let [opacity         (reanimated/use-shared-value 0)
+  []
+  (let [opacity         (reanimated/use-shared-value (if (zero? @blur-amount) 0 1))
         blur-show-fn    #(blur-show opacity blur-amount)
         blur-dismiss-fn #(blur-dismiss opacity blur-amount)]
     (rn/use-effect
@@ -69,5 +72,4 @@
 
 (defn view
   []
-  (let [blur-amount (reagent/atom 0)]
-    [:f> f-view blur-amount]))
+  [:f> f-view])

@@ -52,7 +52,7 @@
      [quo/page-nav
       {:background :blur
        :icon-name  :i/arrow-left
-       :on-press   #(rf/dispatch [:navigate-back-within-stack :identifiers])}]
+       :on-press   #(rf/dispatch [:navigate-back-within-stack :new-to-status])}]
      [page-title]
      [rn/view {:style style/page-illustration}
       [quo/text
