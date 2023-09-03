@@ -13,6 +13,7 @@ import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.modules.network.OkHttpClientProvider;
+import com.reactnativecommunity.blurview.BlurViewPackage;
 
 import java.util.List;
 
@@ -40,6 +41,7 @@ public class MainApplication extends NavigationApplication {
             packages.add(statusPackage);
             packages.add(new RNStatusKeycardPackage());
             packages.add(new PushNotificationPackage());
+            packages.add(new BlurViewPackage());
             return packages;
         }
 

@@ -14,4 +14,4 @@ if [ ! -z "$METRO_PID" ]; then
   [[ $term == 'y' ]] && kill $METRO_PID
 fi
 
-yarn start
+yarn start --reset-cache

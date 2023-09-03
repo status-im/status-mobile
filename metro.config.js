@@ -15,7 +15,10 @@ const config = {
         }),
     },
     resolver: {
+        resolverMainFields: ['react-native', 'browser', 'main'],
+        nodeModulesPaths: ['./node_modules'],
         extraNodeModules: require('node-libs-react-native'),
+        unstable_enableSymlinks: true
     },
 };
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);

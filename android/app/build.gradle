@@ -294,6 +294,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
     implementation 'androidx.multidex:multidex:2.0.1' // required by status-mobile/android/app/src/main/java/im/status/ethereum/MainApplication.java
+    implementation project(':react-native-blur')
     implementation project(':react-native-status')
     implementation project(':react-native-status-keycard')
     implementation 'com.github.status-im:function:0.0.1'
