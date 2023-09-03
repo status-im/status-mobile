@@ -52,8 +52,14 @@
      {:opacity animation})
    blur-view))
 
-(def navigation-view
-  {:z-index 1})
+(defn navigation-view
+  [loaded?]
+  {:z-index  1
+   :top      0
+   :right    0
+   :left     0
+   :position :absolute
+   :opacity  (if loaded? 1 0)})
 
 (def header-container
   {:position       :absolute
