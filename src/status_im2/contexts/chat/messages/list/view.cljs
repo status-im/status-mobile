@@ -187,9 +187,12 @@
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]} chat
         all-loaded?          (rf/sub [:chats/all-loaded? chat-id])
-        display-name         (if (= chat-type constants/one-to-one-chat-type)
+        display-name         (cond
+                               (= chat-type constants/one-to-one-chat-type)
                                (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                               (str emoji " " chat-name))
+                               (= chat-type constants/community-chat-type)
+                               (str (when emoji (str emoji " ")) "# " chat-name)
+                               :else (str emoji chat-name))
         {:keys [bio]}        (rf/sub [:contacts/contact-by-identity chat-id])
         online?              (rf/sub [:visibility-status-updates/online? chat-id])
         contact              (when-not group-chat
