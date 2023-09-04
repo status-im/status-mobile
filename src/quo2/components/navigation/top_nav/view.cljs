@@ -4,8 +4,33 @@
             [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.counter.counter.view :as counter]
             [quo2.components.navigation.top-nav.style :as style]
+            [react-native.hole-view :as hole-view]
             [quo2.theme :as quo.theme]
             [quo2.components.common.notification-dot.view :as notification-dot]))
+
+(def notification-dot-hole
+  [{:x            37
+    :y            -2
+    :width        9
+    :height       9
+    :borderRadius 4}])
+
+(defn unread-counter-hole
+  [notification-count]
+  (let [x     (case (count (str notification-count))
+                (1 2) 33
+                29)
+        width (case (count (str notification-count))
+                1 16
+                2 20
+                28)]
+    (if (pos? (js/Number notification-count))
+      [{:x            x
+        :y            -5
+        :width        width
+        :height       16
+        :borderRadius 6}]
+      [])))
 
 (defn- get-button-common-props
   [{:keys [jump-to? theme blur?]}]
@@ -47,7 +72,7 @@
                                :notification-count  notification-count
                                :max-value           max-unread-notifications
                                :customization-color customization-color}]
-    nil))
+    [:<>]))
 
 (defn- left-section
   [{:keys [avatar-props on-press customization-color]}]
@@ -65,6 +90,8 @@
   [{:keys [theme
            jump-to?
            blur?
+           notification
+           notification-count
            activity-center-on-press
            scan-on-press
            qr-code-on-press
@@ -95,12 +122,18 @@
               :on-press            qr-code-on-press})
       :i/qr-code]
      [rn/view
-      [button/button
-       (merge button-common-props
-              {:accessibility-label :open-activity-center-button
-               :on-press            activity-center-on-press})
-       :i/activity-center]]
-     [notification-highlight props]]))
+      [hole-view/hole-view
+       {:key   (hash (str notification notification-count))
+        :holes (case notification
+                 (:seen :notification)    notification-dot-hole
+                 (:mention :mention-seen) (unread-counter-hole notification-count)
+                 [])}
+       [button/button
+        (merge button-common-props
+               {:accessibility-label :open-activity-center-button
+                :on-press            activity-center-on-press})
+        :i/activity-center]]
+      [notification-highlight props]]]))
 
 (defn view-internal
   [{:keys [avatar-on-press avatar-props customization-color container-style] :as props}]
