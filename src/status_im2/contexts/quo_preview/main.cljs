@@ -66,6 +66,7 @@
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.dapp :as dapp]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
+    [status-im2.contexts.quo-preview.list-items.token-value :as token-value]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
     [status-im2.contexts.quo-preview.markdown.text :as text]
@@ -94,7 +95,7 @@
     [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
     [status-im2.contexts.quo-preview.settings.data-item :as data-item]
-    [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
+    [status-im2.contexts.quo-preview.settings.settings-item :as settings-item]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
     [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
     [status-im2.contexts.quo-preview.settings.category :as category]
@@ -266,6 +267,8 @@
                         :component dapp/preview}
                        {:name      :preview-lists
                         :component preview-lists/view}
+                       {:name      :token-value
+                        :component token-value/preview}
                        {:name      :user-list
                         :options   {:topBar {:visible true}}
                         :component user-list/preview-user-list}]
@@ -328,8 +331,8 @@
                         :component privacy-option/preview-options}
                        {:name      :accounts
                         :component accounts/preview-accounts}
-                       {:name      :settings-list
-                        :component settings-list/preview-settings-list}
+                       {:name      :settings-item
+                        :component settings-item/preview}
                        {:name      :reorder-item
                         :component reorder-item/preview-reorder-item}
                        {:name      :category
