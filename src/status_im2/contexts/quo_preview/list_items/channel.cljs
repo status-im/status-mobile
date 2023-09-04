@@ -1,19 +1,27 @@
 (ns status-im2.contexts.quo-preview.list-items.channel
   (:require [quo2.core :as quo]
             [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [quo2.foundations.colors :as colors]))
 
 (def descriptor
-  [{:key  :muted?
-    :type :boolean}
-   {:key  :name
+  [{:key  :name
     :type :text}
+   {:key     :notification
+    :type    :select
+    :options [{:key   nil
+               :value "None"}
+              {:key   :notification
+               :value :notification}
+              {:key   :mute
+               :value :mute}
+              {:key   :mention
+               :value :mention}]}
    {:key  :mentions-count
     :type :text}
-   {:key  :unread-messages?
-    :type :boolean}
    {:key  :emoji
     :type :text}
+   (preview/customization-color-option)
    {:key     :locked?
     :type    :select
     :options [{:key   nil
@@ -21,28 +29,19 @@
               {:key   false
                :value "Unlocked"}
               {:key   true
-               :value "Locked"}]}
-   {:key  :is-active-channel?
-    :type :boolean}
-   {:key     :channel-color
-    :type    :select
-    :options [{:key   "#00FFFF"
-               :value "Blue"}
-              {:key   "#FF00FF"
-               :value "Pink"}
-              {:key   "#FFFF00"
-               :value "Yellow"}]}])
+               :value "Locked"}]}])
 
 (defn view
   []
-  (let [state (reagent/atom {:is-active-channel? false
-                             :muted?             false
-                             :unread-messages?   false
-                             :emoji              "🍑"
-                             :channel-color      "#4360DF"
-                             :mentions-count     "5"
-                             :name               "channel"
-                             :locked?            true})]
+  (let [state (reagent/atom {:name                "channel"
+                             :notification        nil
+                             :mentions-count      "5"
+                             :emoji               "🍑"
+                             :customization-color :blue
+                             :locked?             nil})]
     (fn []
-      [preview/preview-container {:state state :descriptor descriptor}
-       [quo/channel-list-item @state]])))
+      (let [customization-color (colors/custom-color-by-theme (:customization-color @state) 50 60)]
+        [preview/preview-container
+         {:state      state
+          :descriptor descriptor}
+         [quo/channel (assoc @state :customization-color customization-color)]]))))

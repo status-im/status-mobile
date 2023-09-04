@@ -257,9 +257,11 @@
             color-keyword (keyword color)
             base-color    (get-in colors-map
                                   [color-keyword suffix])]
-        (if hex?
-          color
-          (if opacity (alpha base-color (/ opacity 100)) base-color)))))))
+        (cond
+          (and opacity hex?) (alpha color (/ opacity 100))
+          opacity            (alpha base-color (/ opacity 100))
+          hex?               color
+          :else              base-color))))))
 
 (defn custom-color-by-theme
   "(custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark)

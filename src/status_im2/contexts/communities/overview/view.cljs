@@ -47,21 +47,31 @@
   (oops/oget event "nativeEvent.layout.y"))
 
 (defn- channel-chat-item
-  [community-id community-color {:keys [:muted? id] :as chat}]
+  [community-id community-color
+   {:keys [name emoji muted? id mentions-count unread-messages? on-press locked?] :as chat}]
   (let [sheet-content      [actions/chat-actions
                             (assoc chat
                                    :chat-type constants/community-chat-type
                                    :chat-id   (str community-id id))
                             false]
-        channel-sheet-data {:selected-item (fn [] [quo/channel-list-item chat])
+        notification       (cond
+                             muted?               :mute
+                             (> mentions-count 0) :mention
+                             unread-messages?     :notification
+                             :else                nil)
+        channel-options    {:name                name
+                            :emoji               emoji
+                            :customization-color community-color
+                            :mentions-count      mentions-count
+                            :locked?             locked?
+                            :notification        notification}
+        channel-sheet-data {:selected-item (fn [] [quo/channel channel-options])
                             :content       (fn [] sheet-content)}]
-    [rn/view {:key id :style {:margin-top 4}}
-     [quo/channel-list-item
-      (assoc chat
-             :default-color community-color
-             :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data])
-             :muted?        (or muted?
-                                (rf/sub [:chat/check-channel-muted? community-id id])))]]))
+    [rn/view {:key id}
+     [quo/channel
+      (merge channel-options
+             {:on-press      on-press
+              :on-long-press #(rf/dispatch [:show-bottom-sheet channel-sheet-data])})]]))
 
 (defn channel-list-component
   [{:keys [on-category-layout community-id community-color on-first-channel-height-changed]}
