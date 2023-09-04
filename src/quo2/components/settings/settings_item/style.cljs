@@ -47,4 +47,3 @@
 (defn label-dot
   [background-color]
   {:width 20 :height 20 :border-radius 12 :background-color background-color})
-
