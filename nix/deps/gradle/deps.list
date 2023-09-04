@@ -631,7 +631,10 @@ javax.inject:javax.inject:1
 javax.xml.bind:jaxb-api:2.2.12-b140109.1041
 javax.xml.bind:jaxb-api:2.3.1
 junit:junit:4.12
+junit:junit:4.13.2
 me.zhanghai.android.materialprogressbar:library:1.4.2
+net.bytebuddy:byte-buddy-agent:1.11.13
+net.bytebuddy:byte-buddy:1.11.13
 net.java.dev.jna:jna-platform:5.6.0
 net.java.dev.jna:jna:5.6.0
 net.sf.jopt-simple:jopt-simple:4.9
@@ -788,6 +791,8 @@ org.jsoup:jsoup:1.13.1
 org.jvnet.staxex:stax-ex:1.7.7
 org.jvnet.staxex:stax-ex:1.8
 org.jvnet.staxex:stax-ex:1.8.1
+org.mockito:mockito-core:3.12.4
+org.objenesis:objenesis:3.2
 org.ow2.asm:asm-analysis:5.0.3
 org.ow2.asm:asm-analysis:5.1
 org.ow2.asm:asm-analysis:6.0

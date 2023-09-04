@@ -348,6 +348,11 @@ test: ##@test Run tests once in NodeJS
 	yarn shadow-cljs compile test && \
 	node --require ./test-resources/override.js target/test/test.js
 
+android-test: jsbundle
+android-test: export TARGET := android
+android-test:
+	cd android && ./gradlew test
+
 component-test-watch: export TARGET := clojure
 component-test-watch: export COMPONENT_TEST := true
 component-test-watch: export BABEL_ENV := test

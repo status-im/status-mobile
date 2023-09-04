@@ -12875,6 +12875,21 @@
   },
 
   {
+    "path": "net/bytebuddy/byte-buddy-agent/1.11.13",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "byte-buddy-agent-1.11.13.pom": {
+        "sha1": "462542bd3a41955bedcb1b86512cf10d1280575d",
+        "sha256": "sha256-sDhEB2p1yahs4azSrqxPu3kEJ0AzlrbGi7/KlTZLbrQ="
+      },
+      "byte-buddy-agent-1.11.13.jar": {
+        "sha1": "8c7aaa0ef9863fa89a711bfc5d8e2e0affa0d67f",
+        "sha256": "sha256-SbQ7DRD4ux2ADVYTe98PRGKEEuvh+9gE5F82PUlYYPo="
+      }
+    }
+  },
+
+  {
     "path": "net/bytebuddy/byte-buddy-agent/1.14.6",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -12890,12 +12905,38 @@
   },
 
   {
+    "path": "net/bytebuddy/byte-buddy-parent/1.11.13",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "byte-buddy-parent-1.11.13.pom": {
+        "sha1": "e3334dfff8e86e2caf5c632bc98e6fca2f1a4222",
+        "sha256": "sha256-BZo8mkiOF2lhULG5budtAJyWs6pTVp5jxyS6s6SIAQo="
+      }
+    }
+  },
+
+  {
     "path": "net/bytebuddy/byte-buddy-parent/1.14.6",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
       "byte-buddy-parent-1.14.6.pom": {
         "sha1": "05abbecf7fee254bb50c1f1bfd6ecaf68b4e8fd3",
         "sha256": "sha256-+Ik5S55Xah56POE+/Ue1yy5i67wz4tVczw6SNlzKYvY="
+      }
+    }
+  },
+
+  {
+    "path": "net/bytebuddy/byte-buddy/1.11.13",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "byte-buddy-1.11.13.pom": {
+        "sha1": "3d4916e320cae88ae58704cedc347c1eebca0ca8",
+        "sha256": "sha256-Krna5rnDCPcpvGMb1osG0i+X0ky2Ao85/lRMqpDWrJc="
+      },
+      "byte-buddy-1.11.13.jar": {
+        "sha1": "0a85d4d74de5ce7a4dd5cbbd337ced6af2740acd",
+        "sha256": "sha256-4p+nW5A0Mqxk0FwYwZ0OO5Am50q9pSu9b5Bl5V9KKfU="
       }
     }
   },
@@ -13278,27 +13319,27 @@
   },
 
   {
-    "path": "org/antlr/antlr4-master/4.13.0",
+    "path": "org/antlr/antlr4-master/4.13.1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "antlr4-master-4.13.0.pom": {
-        "sha1": "d8cb4559e841b8fb7fb73da13b6fb28aad20e8c6",
-        "sha256": "sha256-IiBv17pJUVLlJvUO/sn8j03QX8tD38+PJk6Dffa2Qk8="
+      "antlr4-master-4.13.1.pom": {
+        "sha1": "bbbe6ef89c12fbfb3fde78ac5c190adebbfed6ea",
+        "sha256": "sha256-28/JebgFKPwMtFP8to28nSsGA6e+LNzpmrL8aHFGnRg="
       }
     }
   },
 
   {
-    "path": "org/antlr/antlr4-runtime/4.13.0",
+    "path": "org/antlr/antlr4-runtime/4.13.1",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
-      "antlr4-runtime-4.13.0.pom": {
-        "sha1": "bd7a583a403c741d7b33674d693a7d3787a41519",
-        "sha256": "sha256-GY40+1rHWXsaPDGTAwHgjOlB5cpQQRbdVKOnU3iRSn8="
+      "antlr4-runtime-4.13.1.pom": {
+        "sha1": "4ca08d3d1a1f5cb989858cde922f40acf129e9ac",
+        "sha256": "sha256-GSJrF7+jj5nqImsi6XQg4qjt4JqXQg+xrPGG2a2kZXE="
       },
-      "antlr4-runtime-4.13.0.jar": {
-        "sha1": "5a02e48521624faaf5ff4d99afc88b01686af655",
-        "sha256": "sha256-vX97XQe8CwR/EJFbMspLsd6eV9gEkJiILkRTyIwHal0="
+      "antlr4-runtime-4.13.1.jar": {
+        "sha1": "17125bae1d965624e265ef49552f6465a2bfa307",
+        "sha256": "sha256-VGZdKDjMZkWDQ0aO/FOeRU/JW0aooEsTxqxD/JvmNQU="
       }
     }
   },
@@ -17515,6 +17556,21 @@
   },
 
   {
+    "path": "org/mockito/mockito-core/3.12.4",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "mockito-core-3.12.4.pom": {
+        "sha1": "e159a2a2e92b2410cd76a4cde41a0d63abe82883",
+        "sha256": "sha256-8AK44cJMjXozH5kVpTumW1lFT8Lqqf15b9m/z8HLCv4="
+      },
+      "mockito-core-3.12.4.jar": {
+        "sha1": "f9cdc14ea4a3573c0c0366d47d5ca960be24ddb6",
+        "sha256": "sha256-ddSxS6eu+DbpK6ey1Tyn1rIV3X21Ylr7w5JS8TWINf4="
+      }
+    }
+  },
+
+  {
     "path": "org/mockito/mockito-core/5.5.0",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
@@ -17530,12 +17586,38 @@
   },
 
   {
+    "path": "org/objenesis/objenesis-parent/3.2",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "objenesis-parent-3.2.pom": {
+        "sha1": "833ced74e7fd53408a3915080c5e50f2dc90dc35",
+        "sha256": "sha256-CFm6DVz+77E5ZOWGLANvqkigvM/0kyY4+xP+NEXfM/c="
+      }
+    }
+  },
+
+  {
     "path": "org/objenesis/objenesis-parent/3.3",
     "repo": "https://repo.maven.apache.org/maven2",
     "files": {
       "objenesis-parent-3.3.pom": {
         "sha1": "60b46fea1dc4cb9c3123f8c366f8b33d0c774fa3",
         "sha256": "sha256-MFw4SqLx4cf+U6ltpBw+w1JDuX1CjSSo93mBjMEL5P8="
+      }
+    }
+  },
+
+  {
+    "path": "org/objenesis/objenesis/3.2",
+    "repo": "https://repo.maven.apache.org/maven2",
+    "files": {
+      "objenesis-3.2.pom": {
+        "sha1": "d6bda29a6a26aa5207ab880a4f09870aff20e3c6",
+        "sha256": "sha256-ThCt8Ud7jHEbRbihXrlg9rRIcfXh3vOPFmgTSKoWaww="
+      },
+      "objenesis-3.2.jar": {
+        "sha1": "7fadf57620c8b8abdf7519533e5527367cb51f09",
+        "sha256": "sha256-A9lgvVrvA8ZT6wAEE62hXrd83SuOREiIbt9WkoBeNfM="
       }
     }
   },
