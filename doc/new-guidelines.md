@@ -784,6 +784,29 @@ src
         └── view.cljs
 ```
 
+## Deprecation process
+
+To deprecate a var, add the `:deprecated` metadata and, if necessary, suggest an
+alternative.
+
+\```clojure
+;; Good if there's no better alternative yet, but we want to deprecate it anyway.
+(defn ^:deprecated foo
+  []
+  (bar))
+
+;; Good
+(defn foo
+  {:deprecated "Use some.namespace/var-name instead."}
+  []
+  (bar))
+\```
+
+<details>
+  <summary>Expand to see why.</summary>
+  https://guide.clojure.style/#deprecated
+</details>
+
 ### Test structure
 
 [Unit tests](#glossary) should be created alongside their respective source
