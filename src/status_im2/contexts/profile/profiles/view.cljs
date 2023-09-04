@@ -20,10 +20,13 @@
 
 (defonce push-animation-fn-atom (atom nil))
 (defonce pop-animation-fn-atom (atom nil))
+;; we need this for hotreload, overwise on hotreload translate-x will be reseted
+(defonce translate-x-atom (atom 0))
 
 (defn push-animation
   [translate-x]
   (let [window-width (:width (rn/get-window))]
+    (reset! translate-x-atom (- window-width))
     (reanimated/animate-shared-value-with-delay translate-x
                                                 (- window-width)
                                                 constants/onboarding-modal-animation-duration
@@ -32,6 +35,7 @@
 
 (defn pop-animation
   [translate-x]
+  (reset! translate-x-atom 0)
   (reanimated/animate-shared-value-with-delay translate-x
                                               0
                                               constants/onboarding-modal-animation-duration
@@ -126,7 +130,7 @@
 (defn- f-profiles-section
   [{:keys [set-hide-profiles]}]
   (let [profiles    (vals (rf/sub [:profile/profiles-overview]))
-        translate-x (reanimated/use-shared-value 0)]
+        translate-x (reanimated/use-shared-value @translate-x-atom)]
     (rn/use-effect (fn []
                      (reset! push-animation-fn-atom #(push-animation translate-x))
                      (reset! pop-animation-fn-atom #(pop-animation translate-x))
@@ -305,10 +309,12 @@
        :container-style     {:margin-bottom (+ (safe-area/get-bottom) 12)}}
       (i18n/label :t/log-in)]]))
 
+;; we had to register it here, because of hotreload, overwise on hotreload it will be reseted
+(defonce show-profiles? (reagent/atom false))
+
 (defn view
   []
-  (let [show-profiles?    (reagent/atom false)
-        set-show-profiles #(reset! show-profiles? true)
+  (let [set-show-profiles #(reset! show-profiles? true)
         set-hide-profiles #(reset! show-profiles? false)]
     (fn []
       [:<>

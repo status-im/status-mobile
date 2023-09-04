@@ -118,12 +118,13 @@
     ;; Onboarding
     {:name      :intro
      :options   {:theme :dark}
-     :on-focus  [:onboarding/intro-on-focus]
+     :on-focus  [:onboarding/overlay-dismiss]
      :component intro/view}
 
     {:name      :profiles
      :options   {:theme  :dark
                  :layout options/onboarding-layout}
+     :on-focus  [:onboarding/overlay-dismiss]
      :component profiles/view}
 
     {:name      :new-to-status

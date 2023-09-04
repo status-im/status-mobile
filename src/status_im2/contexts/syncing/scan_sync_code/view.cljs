@@ -307,7 +307,7 @@
                                          (boolean (not-empty @qr-view-finder)))
             camera-ready-to-scan?   (and (or (not animated?) @render-camera?)
                                          show-camera?
-                                         (not qr-code-succeed?))
+                                         (not @qr-code-succeed?))
             title-opacity           (reanimated/use-shared-value (if animated? 0 1))
             subtitle-opacity        (reanimated/use-shared-value (if animated? 0 1))
             content-opacity         (reanimated/use-shared-value (if animated? 0 1))

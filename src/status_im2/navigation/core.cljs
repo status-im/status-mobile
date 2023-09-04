@@ -48,8 +48,12 @@
 (navigation/reg-component-did-appear-listener
  (fn [view-id]
    (when (get views/screens view-id)
-     (set-view-id view-id)
+     ;;NOTE when back from the background on Android, this event happens for all screens, but we need
+     ;;only for active one
+     (when (and @state/curr-modal (= @state/curr-modal view-id))
+       (set-view-id view-id))
      (when-not @state/curr-modal
+       (set-view-id view-id)
        (reset! state/pushed-screen-id view-id)))))
 
 (defn dissmissModal

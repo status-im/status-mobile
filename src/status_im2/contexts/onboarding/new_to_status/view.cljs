@@ -98,7 +98,9 @@
        :type       :no-title
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   #(rf/dispatch [:navigate-back])
+       :on-press   #(do
+                      (rf/dispatch [:onboarding/overlay-dismiss])
+                      (rf/dispatch [:navigate-back]))
        :right-side [{:icon-name :i/info
                      :on-press  #(rf/dispatch [:show-bottom-sheet
                                                {:content getting-started-doc
