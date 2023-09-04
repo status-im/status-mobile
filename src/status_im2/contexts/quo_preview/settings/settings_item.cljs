@@ -14,7 +14,7 @@
     :key     :action
     :type    :select
     :options [{:key   :none
-               :value :none}
+               :value nil}
               {:key   :arrow
                :value :arrow}
               {:key   :button
@@ -25,7 +25,7 @@
     :key     :label
     :type    :select
     :options [{:key   :none
-               :value :none}
+               :value nil}
               {:key   :color
                :value :color}
               {:key   :preview
@@ -36,7 +36,7 @@
     :key     :image
     :type    :select
     :options [{:key   :none
-               :value :none}
+               :value nil}
               {:key   :icon
                :value :icon}
               {:key   :avatar
@@ -47,7 +47,7 @@
     :key     :description
     :type    :select
     :options [{:key   :none
-               :value :none}
+               :value nil}
               {:key   :text
                :value :text}
               {:key   :text-plus-icon
@@ -58,7 +58,7 @@
     :key     :tag
     :type    :select
     :options [{:key   :none
-               :value :none}
+               :value nil}
               {:key   :positive
                :value :positive}
               {:key   :context
@@ -110,21 +110,16 @@
                              :accessibility-label :settings-item
                              :action              :arrow
                              :image               :icon
-                             :description         :none
-                             :tag                 :none
-                             :label               :none
                              :blur?               false
                              :on-press            (fn [] (js/alert "Settings list item pressed"))})]
-     (fn []
-       [preview/preview-container
-        {:state                 state
-         :descriptor            descriptor
-         :blur?                 (:blur? @state)
-         :show-blur-background? true}
-        [rn/view
-         {:align-items     :center
-          :justify-content :center}
-         [quo/settings-item (get-props @state)]]])))
+    (fn []
+      [preview/preview-container
+       {:state                 state
+        :descriptor            descriptor
+        :blur?                 (:blur? @state)
+        :show-blur-background? true}
+       [rn/view {:style {:flex 1}}
+        [quo/settings-item (get-props @state)]]])))
 
 (defn preview
   []

@@ -4,8 +4,8 @@
 (defn find-icon-height
   [description tag image]
   (let [icon-height (if (= image :icon) 20 32)
-        icon-height (if (not= description :none) 40 icon-height)]
-    (if (not= tag :none) 72 icon-height)))
+        icon-height (if description 40 icon-height)]
+    (if tag 72 icon-height)))
 
 (defn container
   [in-card? tag]
@@ -13,8 +13,7 @@
    :padding-vertical   (if in-card? 12 13)
    :flex-direction     :row
    :justify-content    :space-between
-   :width              359
-   :height             (if (= tag :none) 48 96)})
+   :height             (if tag 96 48)})
 
 (def sub-container
   {:flex-direction :row
@@ -23,7 +22,7 @@
 (defn image-container
   [description tag image]
   {:height      (find-icon-height description tag image)
-   :padding-top (if (= description :none) 0 1)})
+   :padding-top (if description 1 0)})
 
 (def status-container
   {:flex-direction :row
