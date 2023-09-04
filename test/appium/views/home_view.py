@@ -36,7 +36,7 @@ class ChatElement(SilentButton):
         if self.community_channel:
             super().__init__(
                 driver,
-                xpath="//*[@content-desc='chat-name-text']//*[starts-with(@text,'# %s')]/../.." % username_part)
+                xpath="//*[@content-desc='channel-list-item']//*[starts-with(@text,'# %s')]/.." % username_part)
         elif community:
             super().__init__(
                 driver,
@@ -112,14 +112,6 @@ class ChatElement(SilentButton):
                 super().__init__(driver, xpath="%s/*[@content-desc='unviewed-messages-public']" % parent_locator)
 
         return UnreadMessagesPublicChat(self.driver, self.locator)
-
-    # @property
-    # def new_messages_community(self):
-    #     class UnreadMessagesCommunity(BaseElement):
-    #         def __init__(self, driver, parent_locator: str):
-    #             super().__init__(driver, prefix=parent_locator, xpath="%s/android.view.ViewGroup" % parent_locator)
-    #
-    #     return UnreadMessagesCommunity(self.driver, self.locator)
 
     @property
     def chat_image(self):
