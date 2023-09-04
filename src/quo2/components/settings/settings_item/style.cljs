@@ -3,7 +3,7 @@
 
 (defn find-icon-height
   [description tag image]
-  (let [icon-height (if (= image :icon) 20 32)
+  (let [icon-height (if (= image :icon-avatar) 32 20)
         icon-height (if description 40 icon-height)]
     (if tag 72 icon-height)))
 
