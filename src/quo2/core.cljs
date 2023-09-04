@@ -60,7 +60,7 @@
     quo2.components.links.url-preview-list.view
     quo2.components.links.url-preview.view
     quo2.components.list-items.account-list-card.view
-    quo2.components.list-items.channel
+    quo2.components.list-items.channel.view
     quo2.components.list-items.community.view
     quo2.components.list-items.dapp.view
     quo2.components.list-items.menu-item
@@ -244,7 +244,7 @@
 
 ;;;; List items
 (def account-list-card quo2.components.list-items.account-list-card.view/view)
-(def channel-list-item quo2.components.list-items.channel/list-item)
+(def channel quo2.components.list-items.channel.view/view)
 (def dapp quo2.components.list-items.dapp.view/view)
 (def menu-item quo2.components.list-items.menu-item/menu-item)
 (def preview-list quo2.components.list-items.preview-list.view/view)
