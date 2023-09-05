@@ -224,3 +224,8 @@
 (defn has-style
   [mock styles]
   (.toHaveStyle (js/expect mock) (clj->js styles)))
+
+(defn has-prop
+  ([element prop] (has-prop element prop js/undefined))
+  ([element prop value]
+   (.toHaveProp (js/expect element) (camel-snake-kebab/->camelCaseString prop) value)))
