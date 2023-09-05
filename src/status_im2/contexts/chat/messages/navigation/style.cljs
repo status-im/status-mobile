@@ -8,8 +8,8 @@
 (defn button-container
   [position]
   (merge
-   {:width            32
-    :height           32
+   {:width            24
+    :height           24
     :border-radius    10
     :justify-content  :center
     :align-items      :center
@@ -67,6 +67,7 @@
    :left           0
    :right          0
    :padding-bottom 8
+   :padding-horizontal 20
    :display        :flex
    :flex-direction :row
    :overflow       :hidden})

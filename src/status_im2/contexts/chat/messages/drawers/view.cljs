@@ -232,7 +232,7 @@
                                      (when on-press (on-press)))}]))]
        
        (when-not (empty? danger-actions)
-         [quo/separator])
+         [quo/separator {:style {:margin-vertical 8}}])
 
        ;; DANGER ACTIONS
        [rn/view {:style {:padding-horizontal 8}}
@@ -246,10 +246,10 @@
               :icon                (:icon action)
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
-                                     (when on-press (on-press)))}]))]
+                                     (when on-press (on-press)))}]))] 
        
-       (when-not (empty? admin-actions)
-         [quo/separator])
+        (when-not (empty? admin-actions)
+         [quo/separator {:style {:margin-vertical 8}}])
 
        ;; ADMIN ACTIONS
        [rn/view {:style {:padding-horizontal 8}}

@@ -52,16 +52,17 @@
         :style       {:flex 1}}]]
 
      [rn/view {:style style/header-container}
-      [rn/touchable-opacity
-       {:active-opacity      1
+      [quo/button
+       {:icon-only?          true
+        :type                :dark-grey
+        :background          :blur
+        :size                32
+        :accessibility-label :back-button
         :on-press            #(do
                                 (when config/shell-navigation-disabled?
                                   (rf/dispatch [:chat/close]))
-                                (rf/dispatch [:navigate-back]))
-        :accessibility-label :back-button
-        :style               (style/button-container {:margin-left 20})}
-       [quo/icon :i/arrow-left
-        {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+                                (rf/dispatch [:navigate-back]))}
+       :i/arrow-left]
       [reanimated/view
        {:style (style/animated-header all-loaded? translate-animation title-opacity-animation)}
        [rn/view {:style style/header-content-container}
@@ -88,15 +89,17 @@
              :style           (style/header-status)}
             (i18n/label
              (if online? :t/online :t/offline))])]]]
-      [rn/touchable-opacity
-       {:active-opacity      1
-        :style               (style/button-container {:margin-right 20})
+      [quo/button
+       {:icon-only?          true
+        :type                :dark-grey
+        :background          :blur
+        :size                32
         :accessibility-label :options-button
         :on-press            (fn []
                                (rf/dispatch [:dismiss-keyboard])
                                (rf/dispatch [:show-bottom-sheet
                                              {:content (fn [] [actions/chat-actions chat true])}]))}
-       [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
+       :i/options]]
      [:f>
       pin.banner/f-banner
       {:chat-id           chat-id
