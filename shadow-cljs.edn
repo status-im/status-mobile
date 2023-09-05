@@ -66,10 +66,14 @@
           status-im2.config/ALCHEMY_OPTIMISM_MAINNET_TOKEN #shadow/env "ALCHEMY_OPTIMISM_MAINNET_TOKEN"
           status-im2.config/ALCHEMY_ARBITRUM_MAINNET_TOKEN #shadow/env "ALCHEMY_ARBITRUM_MAINNET_TOKEN"}
          :compiler-options {:output-feature-set :es5
-                            :closure-defines
-                            {re-frame.trace/trace-enabled? true}
-                            :source-map false
-                            :infer-externs true}
+                            ;; We disable `:fn-deprecated` warnings because we
+                            ;; are managing deprecation via clj-kondo and we
+                            ;; don't want the terminal output to be littered
+                            ;; with warnings on every code reload.
+                            :warnings           {:fn-deprecated false}
+                            :closure-defines    {re-frame.trace/trace-enabled? true}
+                            :source-map         false
+                            :infer-externs      true}
          ;; if you want to use a real device, set your local ip
          ;; in the SHADOW_HOST env variable to make sure that
          ;; it will use the right interface
