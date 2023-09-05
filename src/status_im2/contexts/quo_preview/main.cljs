@@ -209,7 +209,7 @@
                        {:name      :documentation-drawer
                         :component documenation-drawers/view}
                        {:name      :drawer-buttons
-                        :component drawer-buttons/view} 
+                        :component drawer-buttons/view}
                        {:name      :drawer-top
                         :component drawer-top/view}
                        {:name      :permission-drawers
