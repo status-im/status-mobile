@@ -20,14 +20,14 @@
                       (/ constants/onboarding-modal-animation-duration 2))
   (js/clearInterval @timer-interval)
   (reset! timer-interval
-    (js/setInterval
-     (fn []
-       (if (< @blur-amount max-blur-amount)
-         (swap! blur-amount + 1)
-         (js/clearInterval @timer-interval)))
-     (/ constants/onboarding-modal-animation-duration
-        max-blur-amount
-        2))))
+          (js/setInterval
+           (fn []
+             (if (< @blur-amount max-blur-amount)
+               (swap! blur-amount + 1)
+               (js/clearInterval @timer-interval)))
+           (/ constants/onboarding-modal-animation-duration
+              max-blur-amount
+              2))))
 
 (defn blur-dismiss
   [opacity blur-amount]
@@ -35,11 +35,12 @@
                             0
                             (/ constants/onboarding-modal-animation-duration 2)
                             (/ constants/onboarding-modal-animation-duration 2))
+  (js/clearInterval @timer-interval)
   (reset! timer-interval
     (js/setInterval
      (fn []
        (if (> @blur-amount 0)
-         (swap! blur-amount - 1)
+         (swap! blur-amount dec)
          (js/clearInterval @timer-interval)))
      (/ constants/onboarding-modal-animation-duration
         max-blur-amount
@@ -53,6 +54,7 @@
   (let [opacity         (reanimated/use-shared-value (if (zero? @blur-amount) 0 1))
         blur-show-fn    #(blur-show opacity blur-amount)
         blur-dismiss-fn #(blur-dismiss opacity blur-amount)]
+    (println "blur-amount" @blur-amount)
     (rn/use-effect
      (fn []
        (reset! blur-show-fn-atom blur-show-fn)
