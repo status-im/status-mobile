@@ -789,7 +789,7 @@ src
 To deprecate a var, add the `:deprecated` metadata and, if necessary, suggest an
 alternative.
 
-\```clojure
+```clojure
 ;; Good if there's no better alternative yet, but we want to deprecate it anyway.
 (defn ^:deprecated foo
   []
@@ -800,7 +800,7 @@ alternative.
   {:deprecated "Use some.namespace/var-name instead."}
   []
   (bar))
-\```
+```
 
 <details>
   <summary>Expand to see why.</summary>
