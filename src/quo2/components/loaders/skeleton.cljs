@@ -22,7 +22,6 @@
 ;; Standlone message skeleton
 (defn- f-message-skeleton
   {:deprecated "quo2.components.loaders.skeleton-list.view should be used instead"}
-
   []
 
   (let [color                   (colors/theme-colors colors/neutral-5 colors/neutral-70)
