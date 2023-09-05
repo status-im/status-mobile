@@ -8,7 +8,8 @@
             [status-im2.navigation.view :as views]
             [taoensso.timbre :as log]
             [status-im2.common.theme.core :as theme]
-            [status-im2.navigation.options :as options]))
+            [status-im2.navigation.options :as options]
+            [status-im2.contexts.quo-preview.main :as quo-preview]))
 
 (navigation/set-lazy-component-registrator
  (fn [screen-key]
@@ -291,6 +292,7 @@
 (re-frame/reg-fx :show-select-acc-sheet (fn [] (show-overlay "select-acc-sheet")))
 (re-frame/reg-fx :hide-select-acc-sheet (fn [] (dissmiss-overlay "select-acc-sheet")))
 
+
 (defonce
   _
   [(navigation/register-component
@@ -302,6 +304,11 @@
     "visibility-status-popover"
     (fn [] (gesture/gesture-handler-root-hoc views/visibility-status-popover-comp))
     (fn [] views/visibility-status-popover-comp))
+
+   (navigation/register-component
+     "theme-switcher"
+     (fn [] (gesture/gesture-handler-root-hoc quo-preview/theme-switcher))
+     (fn [] quo-preview/theme-switcher))
 
    (navigation/register-component
     "bottom-sheet-old"

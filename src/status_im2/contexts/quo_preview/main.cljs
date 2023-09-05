@@ -130,6 +130,19 @@
     [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
     [utils.re-frame :as rf]))
 
+;(defn theme-switcher
+;  []
+;  [rn/view {:style style/theme-switcher}
+;   [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
+;   [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
+
+(def theme-switcher
+  (reagent/reactify-component
+    (fn []
+      [rn/view {:style style/theme-switcher}
+       [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
+       [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])))
+
 (def screens-categories
   {:foundations       [{:name      :shadows
                         :component shadows/view}]
@@ -330,7 +343,7 @@
                        {:name      :reorder-item
                         :component reorder-item/preview-reorder-item}
                        {:name      :category
-                        :options   {:topBar {:visible true}}
+                        :options   {:topBar {:title {:component {:name "theme-switcher"}}}}
                         :component category/preview}
                        {:name      :data-item
                         :component data-item/preview-data-item}]
@@ -367,7 +380,6 @@
                        {:name      :account-overview
                         :component account-overview/preview-account-overview}
                        {:name      :keypair
-                        :options   {:topBar {:visible true}}
                         :component keypair/preview}
                        {:name      :network-amount
                         :component network-amount/preview}
@@ -404,11 +416,6 @@
                        (theme/set-theme :dark)
                        (rf/dispatch [:init-root root])))}]))
 
-(defn- theme-switcher
-  []
-  [rn/view {:style style/theme-switcher}
-   [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
-   [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
 
 (defn- category-view
   []

@@ -175,5 +175,6 @@
 (def theme-switcher
   {:flex-direction     :row
    :justify-content    :space-between
-   :padding-horizontal 24
-   :padding-vertical   12})
+   ;:padding-horizontal 24
+   ;:padding-vertical   12
+   })
