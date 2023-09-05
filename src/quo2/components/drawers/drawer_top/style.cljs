@@ -4,13 +4,9 @@
 (def container
   {:padding-horizontal 20
    :padding-bottom 12
-   :flex-direction :row
-   :background-color "#f3f3f3"})
+   :flex-direction :row})
 
 (def body-container
-  {:flex 1})
-
-(def title
   {:flex 1})
 
 (defn description
@@ -22,3 +18,10 @@
 (def left-container
   {:margin-right 8
    :justify-content :center})
+
+(defn network-text-color
+  [network]
+  {:color (get colors/networks network)})
+
+(def row
+  {:flex-direction :row})
