@@ -802,11 +802,8 @@ alternative.
   (bar))
 ```
 
-<details>
-  <summary>Expand to see why.</summary>
-  https://guide.clojure.style/#deprecated
-</details>
-
+Please check the [Clojure Style](https://guide.clojure.style/#deprecated) documentation
+  
 ### Test structure
 
 [Unit tests](#glossary) should be created alongside their respective source
