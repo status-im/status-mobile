@@ -286,7 +286,6 @@ else
 	npx react-native run-ios
 endif
 
-show-ios-devices: export TARGET := ios
 show-ios-devices: ##@other shows connected ios device and its name
 	xcrun xctrace list devices
 
