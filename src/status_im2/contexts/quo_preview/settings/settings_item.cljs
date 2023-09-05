@@ -7,11 +7,9 @@
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Account name:"
-    :key   :title
-    :type  :text}
-   {:label   "Action:"
-    :key     :action
+  [{:key  :title
+    :type :text}
+   {:key     :action
     :type    :select
     :options [{:key   :none
                :value nil}
@@ -21,8 +19,7 @@
                :value :button}
               {:key   :selector
                :value :selector}]}
-   {:label   "Label:"
-    :key     :label
+   {:key     :label
     :type    :select
     :options [{:key   :none
                :value nil}
@@ -32,8 +29,7 @@
                :value :preview}
               {:key   :text
                :value :text}]}
-   {:label   "Image:"
-    :key     :image
+   {:key     :image
     :type    :select
     :options [{:key   :none
                :value nil}
@@ -43,8 +39,7 @@
                :value :avatar}
               {:key   :icon-avatar
                :value :icon-avatar}]}
-   {:label   "Description:"
-    :key     :description
+   {:key     :description
     :type    :select
     :options [{:key   :none
                :value nil}
@@ -54,8 +49,7 @@
                :value :text-plus-icon}
               {:key   :status
                :value :status}]}
-   {:label   "Tag:"
-    :key     :tag
+   {:key     :tag
     :type    :select
     :options [{:key   :none
                :value nil}

@@ -6,11 +6,7 @@
   {:title               "Account"
    :accessibility-label :settings-item
    :action              :arrow
-   :image               :icon
-   :description         :none
-   :tag                 :none
-   :label               :none
-   :blur?               false})
+   :image               :icon})
 
 (h/describe "Settings list tests"
   (h/test "Default render of Setting list component"

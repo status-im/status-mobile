@@ -8,7 +8,7 @@
     (if tag 72 icon-height)))
 
 (defn container
-  [in-card? tag]
+  [{:keys [in-card? tag]}]
   {:padding-horizontal 12
    :padding-vertical   (if in-card? 12 13)
    :flex-direction     :row
@@ -22,7 +22,7 @@
 (defn image-container
   [description tag image]
   {:height      (find-icon-height description tag image)
-   :padding-top (if description 1 0)})
+   :padding-top (when description 1)})
 
 (def status-container
   {:flex-direction :row
@@ -46,4 +46,7 @@
 
 (defn label-dot
   [background-color]
-  {:width 20 :height 20 :border-radius 12 :background-color background-color})
+  {:width            20
+   :height           20
+   :border-radius    12
+   :background-color background-color})

@@ -15,40 +15,38 @@
     [utils.i18n :as i18n]))
 
 (defn status-description
-  [{:keys [online? text]} blur? theme]
-  [rn/view
-   {:style style/status-container}
-   [rn/view
-    {:style (style/status-dot online? blur?)}]
+  [{:keys [online? text blur? theme]}]
+  [rn/view {:style style/status-container}
+   [rn/view {:style (style/status-dot online? blur?)}]
    [text/text
     {:size  :paragraph-2
      :style (style/color blur? theme)}
     (if online? (i18n/label :t/online-now) text)]])
 
 (defn text-description
-  [description-props blur? theme]
+  [{:keys [text icon blur? theme]}]
   [rn/view
    {:style style/sub-container}
    [text/text
     {:size  :paragraph-2
      :style (style/color blur? theme)}
-    (:text description-props)]
-   (when (:icon description-props)
-     [icon/icon (:icon description-props)
+    text]
+   (when icon
+     [icon/icon icon
       (merge (style/color blur? theme)
              {:size            16
               :container-style {:margin-left 4}})])])
 
 (defn description-component
-  [description description-props blur? theme]
+  [{:keys [description] :as props}]
   (case description
-    :text           [text-description description-props blur? theme]
-    :text-plus-icon [text-description description-props blur? theme]
-    :status         [status-description description-props blur? theme]
+    :text           [text-description props]
+    :text-plus-icon [text-description props]
+    :status         [status-description props]
     nil))
 
 (defn image-component
-  [image image-props description tag blur? theme]
+  [{:keys [image image-props description tag blur? theme]}]
   [rn/view
    {:style (style/image-container description tag image)}
    (case image
@@ -58,7 +56,7 @@
      nil)])
 
 (defn tag-component
-  [tag tag-props]
+  [{:keys [tag tag-props]}]
   (case tag
     :positive [status-tags/status-tag
                {:status          {:type :positive}
@@ -74,7 +72,7 @@
     nil))
 
 (defn label-component
-  [label label-props blur? theme]
+  [{:keys [label label-props blur? theme]}]
   [rn/view {:accessibility-label :label-component}
    (case label
      :text    [text/text
@@ -86,7 +84,7 @@
      nil)])
 
 (defn action-component
-  [action action-props blur? theme]
+  [{:keys [action action-props blur? theme]}]
   [rn/view {:style {:margin-left 12}}
    (case action
      :arrow    [icon/icon :i/chevron-right (style/color blur? theme)]
@@ -99,20 +97,19 @@
      nil)])
 
 (defn- internal-view
-  [{:keys [title image image-props description description-props action action-props label label-props
-           tag tag-props on-press in-card? blur? accessibility-label theme]}]
+  [{:keys [title on-press accessibility-label] :as props}]
   [rn/pressable
-   {:style               (style/container in-card? tag)
+   {:style               (style/container props)
     :on-press            on-press
     :accessibility-label accessibility-label}
    [rn/view {:style style/sub-container}
-    [image-component image image-props description tag blur? theme]
+    [image-component props]
     [rn/view {:style {:margin-left 12}}
      [text/text {:weight :medium} title]
-     [description-component description description-props blur? theme]
-     [tag-component tag tag-props]]]
+     [description-component props]
+     [tag-component props]]]
    [rn/view {:style style/sub-container}
-    [label-component label label-props blur? theme]
-    [action-component action action-props blur? theme]]])
+    [label-component props]
+    [action-component props]]])
 
 (def view (quo.theme/with-theme internal-view))
