@@ -34,8 +34,7 @@
 
 (defn f-video
   [{:keys [layers disable-parallax? offset stretch container-style enable-looping?]
-    :or   {offset  50
-           stretch 0}}]
+    :or   {offset 50 stretch 0}}]
   [rn/view
    {:style (style/outer-container container-style)}
    (map-indexed (fn [idx layer]

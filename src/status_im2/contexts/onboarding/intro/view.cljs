@@ -26,8 +26,8 @@
                            :animated-heading    (i18n/label :t/sign-in-by-syncing)
                            :accessibility-label :already-use-status-button}
      :bottom-card         {:on-press            (fn []
-                                                  (when @overlay/blur-show-fn-atom
-                                                    (@overlay/blur-show-fn-atom))
+                                                  (when-let [blur-show-fn @overlay/blur-show-fn-atom]
+                                                    (blur-show-fn))
                                                   (rf/dispatch [:open-modal :new-to-status]))
                            :heading             (i18n/label :t/new-to-status)
                            :accessibility-label :new-to-status-button}}

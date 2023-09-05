@@ -17,7 +17,6 @@
             [status-im2.contexts.syncing.scan-sync-code.animation :as animation]
             [status-im2.contexts.syncing.scan-sync-code.style :as style]
             [status-im2.contexts.syncing.utils :as sync-utils]
-            [status-im2.navigation.util :as navigation.util]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
@@ -28,7 +27,6 @@
 
 (defonce camera-permission-granted? (reagent/atom false))
 (defonce dismiss-animations (atom nil))
-(defonce navigate-back-fn (atom nil))
 
 (defn perform-preflight-check
   "Performing the check for the first time
@@ -290,6 +288,7 @@
 (defn f-view
   [_]
   (let [insets             (safe-area/get-insets)
+        qr-code-succeed?   (reagent/atom false)
         active-tab         (reagent/atom 1)
         qr-view-finder     (reagent/atom {})
         render-camera?     (reagent/atom false)
@@ -298,8 +297,7 @@
         set-rescan-timeout (fn []
                              (reset! scan-code? false)
                              (js/setTimeout #(reset! scan-code? true) 3000))]
-    (fn [{:keys [title show-bottom-view? background animated? qr-code-succeed?
-                 set-qr-code-succeeded]}]
+    (fn [{:keys [title show-bottom-view? background animated?]}]
       (let [torch-mode              (if @torch? :on :off)
             flashlight-icon         (if @torch? :i/flashlight-on :i/flashlight-off)
             scan-qr-code-tab?       (= @active-tab 1)
@@ -309,7 +307,7 @@
                                          (boolean (not-empty @qr-view-finder)))
             camera-ready-to-scan?   (and (or (not animated?) @render-camera?)
                                          show-camera?
-                                         (not qr-code-succeed?))
+                                         (not @qr-code-succeed?))
             title-opacity           (reanimated/use-shared-value (if animated? 0 1))
             subtitle-opacity        (reanimated/use-shared-value (if animated? 0 1))
             content-opacity         (reanimated/use-shared-value (if animated? 0 1))
@@ -322,10 +320,16 @@
                                       :content-opacity  content-opacity
                                       :subtitle-opacity subtitle-opacity
                                       :title-opacity    title-opacity})]
+
         (rn/use-effect
          #(set-listener-torch-off-on-app-inactive torch?))
 
         (when animated?
+          (rn/use-effect
+           (fn []
+             (rn/hw-back-add-listener reset-animations-fn)
+             #(rn/hw-back-remove-listener reset-animations-fn))
+           [])
           (animation/animate-subtitle subtitle-opacity)
           (animation/animate-title title-opacity)
           (animation/animate-bottom bottom-view-translate-y))
@@ -337,8 +341,7 @@
              (js/setTimeout #(reset! render-camera? true)
                             (+ constants/onboarding-modal-animation-duration
                                constants/onboarding-modal-animation-delay
-                               300))
-             (reset! navigate-back-fn reset-animations-fn))
+                               300)))
            (when-not @camera-permission-granted?
              (permissions/permission-granted? :camera
                                               #(reset! camera-permission-granted? %)
@@ -350,7 +353,7 @@
             {:torch-mode            torch-mode
              :qr-view-finder        @qr-view-finder
              :scan-code?            @scan-code?
-             :set-qr-code-succeeded set-qr-code-succeeded
+             :set-qr-code-succeeded #(reset! qr-code-succeed? true)
              :set-rescan-timeout    set-rescan-timeout}])
          [rn/view {:style (style/root-container (:top insets))}
           [:f> header
@@ -389,14 +392,5 @@
              flashlight-icon])]]))))
 
 (defn view
-  [{:keys [screen-name] :as _props}]
-  (let [qr-code-succeed? (reagent/atom false)]
-    (navigation.util/create-class-and-bind
-     screen-name
-     {:component-did-appear (fn set-qr-code-failed [_this]
-                              (reset! qr-code-succeed? false))}
-     (fn [props]
-       (let [new-pops (assoc props
-                             :qr-code-succeed?      @qr-code-succeed?
-                             :set-qr-code-succeeded #(reset! qr-code-succeed? true))]
-         [:f> f-view new-pops])))))
+  [props]
+  [:f> f-view props])

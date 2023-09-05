@@ -8,17 +8,8 @@
     [status-im2.contexts.onboarding.new-to-status.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [status-im2.contexts.onboarding.common.overlay.view :as overlay]
-    [status-im2.contexts.profile.profiles.view :as profiles]
-    [status-im2.config :as config]))
-
-(defn navigate-back
-  []
-  (when @overlay/blur-dismiss-fn-atom
-    (@overlay/blur-dismiss-fn-atom))
-  (when @profiles/pop-animation-fn-atom
-    (@profiles/pop-animation-fn-atom))
-  (rf/dispatch [:dismiss-modal :new-to-status]))
+    [status-im2.config :as config]
+    re-frame.db))
 
 (defn sign-in-options
   []
@@ -107,7 +98,9 @@
        :type       :no-title
        :background :blur
        :icon-name  :i/arrow-left
-       :on-press   navigate-back
+       :on-press   #(do
+                      (rf/dispatch [:onboarding/overlay-dismiss])
+                      (rf/dispatch [:navigate-back]))
        :right-side [{:icon-name :i/info
                      :on-press  #(rf/dispatch [:show-bottom-sheet
                                                {:content getting-started-doc

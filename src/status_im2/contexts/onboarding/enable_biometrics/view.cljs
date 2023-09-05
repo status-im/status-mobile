@@ -43,31 +43,23 @@
 (defn enable-biometrics-parallax
   []
   (let [stretch (if rn/small-screen? 25 40)]
-    [:<>
-     [parallax/video
-      {:layers  (:biometrics resources/parallax-video)
-       :stretch stretch}]
-     [rn/view
-      [quo/page-nav {:background :blur}]
-      [page-title]]]))
+    [parallax/video
+     {:layers  (:biometrics resources/parallax-video)
+      :stretch stretch}]))
 
 (defn enable-biometrics-simple
   []
   (let [width (:width (rn/get-window))]
-    [:<>
-     [rn/view {:flex 1}
-      [quo/page-nav {:background :blur}]
-      [page-title]
-      [rn/view {:style {:flex 1}}
-       [rn/image
-        {:resize-mode :contain
-         :style       (style/page-illustration width)
-         :source      (resources/get-image :biometrics)}]]]]))
+    [rn/image
+     {:resize-mode :contain
+      :style       (style/page-illustration width)
+      :source      (resources/get-image :biometrics)}]))
 
 (defn enable-biometrics
   []
   (let [insets (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
+     [page-title]
      (if whitelist/whitelisted?
        [enable-biometrics-parallax]
        [enable-biometrics-simple])

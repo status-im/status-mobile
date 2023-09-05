@@ -6,7 +6,7 @@
   [insets]
   {:flex            1
    :justify-content :space-between
-   :padding-top     (:top insets)})
+   :padding-top     (+ (:top insets) 56)})
 
 (defn page-illustration
   [width]

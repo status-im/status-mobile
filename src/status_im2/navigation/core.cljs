@@ -48,8 +48,12 @@
 (navigation/reg-component-did-appear-listener
  (fn [view-id]
    (when (get views/screens view-id)
-     (set-view-id view-id)
+     ;;NOTE when back from the background on Android, this event happens for all screens, but we need
+     ;;only for active one
+     (when (and @state/curr-modal (= @state/curr-modal view-id))
+       (set-view-id view-id))
      (when-not @state/curr-modal
+       (set-view-id view-id)
        (reset! state/pushed-screen-id view-id)))))
 
 (defn dissmissModal
@@ -167,18 +171,11 @@
 
 (navigation/reg-button-pressed-listener
  (fn [id]
-   (cond
-     (= "dismiss-modal" id)
+   (if (= "dismiss-modal" id)
      (do
        (when-let [event (get-in views/screens [(last @state/modals) :on-dissmiss])]
          (re-frame/dispatch event))
        (dissmissModal))
-     (= "RNN.hardwareBackButton" id)
-     (when-let [handler (get-in views/screens
-                                [(or (last @state/modals) @state/pushed-screen-id)
-                                 :hardware-back-button-handler])]
-       (handler))
-     :else
      (when-let [handler (get-in views/screens [(keyword id) :right-handler])]
        (handler)))))
 

@@ -3,11 +3,6 @@
             [status-im2.contexts.onboarding.common.background.view :as background]
             [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]))
 
-(defn navigate-back
-  []
-  (when @scan-sync-code/navigate-back-fn
-    (@scan-sync-code/navigate-back-fn)))
-
 (defn view
   []
   [scan-sync-code/view
