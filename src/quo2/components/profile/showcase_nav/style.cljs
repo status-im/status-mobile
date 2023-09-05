@@ -1,8 +1,10 @@
 (ns quo2.components.profile.showcase-nav.style
   (:require [quo2.foundations.colors :as colors]))
 
+(def height 56)
+
 (def root-container
-  {:height 56})
+  {:height height})
 
 (defn container
   [state theme]

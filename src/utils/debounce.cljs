@@ -14,7 +14,7 @@
     (js/clearTimeout v)))
 
 (defn debounce-and-dispatch
-  "Dispatches `event` iff it was not dispatched for the duration of `duration-ms`."
+  "Dispatches `event` if it was not dispatched for the duration of `duration-ms`."
   [event duration-ms]
   (let [event-key (first event)]
     (clear event-key)
@@ -30,3 +30,11 @@
       (swap! chill assoc event-key true)
       (js/setTimeout #(swap! chill assoc event-key false) duration-ms)
       (re-frame/dispatch event))))
+
+(defn debounce
+  [f duration-ms]
+  (let [timer (atom nil)]
+    (fn [& args]
+      (js/clearTimeout @timer)
+      (reset! timer (js/setTimeout (fn [] (apply f args)) duration-ms))
+      nil)))

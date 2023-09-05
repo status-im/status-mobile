@@ -45,7 +45,9 @@
           :type            :grey
           :background      :photo
           :icon-only?      true
-          :on-press        #(js/alert "pressed")
+          :on-press        #(rf/dispatch [:emoji-picker/open
+                                          {:on-select (fn [selected-emoji]
+                                                        (reset! emoji selected-emoji))}])
           :container-style style/reaction-button-container} :i/reaction]]
        [quo/title-input
         {:color           :red

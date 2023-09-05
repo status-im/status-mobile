@@ -420,6 +420,7 @@
     "react-native-transparent-video"                 react-native-transparent-video
     "react-native-orientation-locker"                react-native-orientation-locker
     "react-native-gifted-charts"                     react-native-gifted-charts
+    "../src/js/data/emojis.json"                     #js []
     "../src/js/worklets/core.js"                     worklet-factory
     "../src/js/worklets/shell/bottom_tabs.js"        #js {}
     "../src/js/worklets/shell/home_stack.js"         #js {}
