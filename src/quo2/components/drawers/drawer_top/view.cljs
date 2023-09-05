@@ -55,11 +55,13 @@
                                    :weight :regular
                                    :style (style/description theme blur?)}
                         description]]
-    (= :default-keypair type) [text/text {:size :paragraph-2
+    (= :default-keypair type) [text/text {:accessibility-label :default-keypair-text
+                                          :size :paragraph-2
                                           :weight :regular
                                           :style (style/description theme blur?)}
                                (str description " ∙ " (i18n/label :t/on-device))]
-    (= :context-tag type) [rn/view {:style {:flex-wrap :wrap}}
+    (= :context-tag type) [rn/view {:accessibility-label :context-tag-wrapper
+                                    :style {:flex-wrap :wrap}}
                            [context-tag/view
                             {:type :community
                              :community-name community-name
@@ -75,10 +77,11 @@
   (cond
     (= :info type) [icons/icon
                     :i/info
-                    {:accessibility-label :description-icon
+                    {:accessibility-label :info-icon
                      :size                20
                      :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]
-    (and (= :context-tag type) button-icon) [button/button {:on-press on-button-press
+    (and (= :context-tag type) button-icon) [button/button {:accessibility-label :button-icon
+                                                            :on-press on-button-press
                                                             :on-long-press on-button-long-press
                                                             :disabled? button-disabled?
                                                             :type   :primary

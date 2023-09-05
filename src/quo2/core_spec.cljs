@@ -22,6 +22,7 @@
     [quo2.components.drawers.action-drawers.component-spec]
     [quo2.components.drawers.documentation-drawers.component-spec]
     [quo2.components.drawers.drawer-buttons.component-spec]
+    [quo2.components.drawers.drawer-top.component-spec]
     [quo2.components.drawers.permission-context.component-spec]
     [quo2.components.dropdowns.network-dropdown.component-spec]
     [quo2.components.gradient.gradient-cover.component-spec]
