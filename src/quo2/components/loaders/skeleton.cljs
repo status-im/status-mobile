@@ -20,13 +20,10 @@
     :message 144}])
 
 ;; Standlone message skeleton
-(defn- ^:deprecated f-message-skeleton
+(defn- f-message-skeleton
+  {:deprecated "quo2.components.loaders.skeleton-list.view should be used instead"}
+
   []
-  ;; Reason:
-  ;;
-  ;; This skeleton had performance issues and was deprecated in favor of the skeleton-list component.
-  ;;
-  ;; Issue - https://github.com/status-im/status-mobile/pull/16865
 
   (let [color                   (colors/theme-colors colors/neutral-5 colors/neutral-70)
         loading-color           (colors/theme-colors colors/neutral-10 colors/neutral-60)
