@@ -67,7 +67,9 @@
     :top           (- (+ picture-radius picture-border-width))
     :left          (- (/ picture-radius 2) picture-border-width)}))
 
-(def display-picture
-  {:border-radius picture-diameter
-   :width         picture-diameter
-   :height        picture-diameter})
+(defn display-picture
+  [theme]
+  {:border-radius    picture-diameter
+   :width            picture-diameter
+   :height           picture-diameter
+   :background-color (colors/theme-colors colors/white colors/neutral-95 theme)})

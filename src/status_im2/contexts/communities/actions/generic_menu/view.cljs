@@ -12,7 +12,7 @@
       [quo/text
        {:accessibility-label :communities-join-community
         :weight              :semi-bold
-        :size                :heading-1}
+        :size                :heading-2}
        title]]
      [rn/view {:style style/community-tag}
       [quo/context-tag

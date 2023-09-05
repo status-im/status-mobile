@@ -83,7 +83,7 @@
 
 
 (defn f-display-picture
-  [scroll-height cover]
+  [scroll-height cover theme]
   (let [input-range [0 150]
         y           (reanimated/use-shared-value scroll-height)
         animation   (reanimated/interpolate y
@@ -99,12 +99,12 @@
      {:style (style/display-picture-container animation)}
      [rn/image
       {:source cover
-       :style  style/display-picture}]]))
+       :style  (style/display-picture theme)}]]))
 
 (defn scroll-page
   [_ _ _]
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
-    (fn [{:keys [name cover-image logo page-nav-right-section-buttons on-scroll
+    (fn [{:keys [name theme cover-image logo page-nav-right-section-buttons on-scroll
                  collapsed?
                  height top-nav title-colum background-color navigate-back?]}
          sticky-header
@@ -138,5 +138,5 @@
            {:style (style/children-container {:border-radius    (diff-with-max-min @scroll-height 16 0)
                                               :background-color background-color})}
            (when (and (not collapsed?) cover-image)
-             [:f> f-display-picture @scroll-height logo])
+             [:f> f-display-picture @scroll-height logo theme])
            children])]])))

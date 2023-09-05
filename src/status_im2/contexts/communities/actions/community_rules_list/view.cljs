@@ -32,13 +32,13 @@
   [rn/view {:style style/community-rule}
    [quo/text
     {:style  style/community-rule-index
-     :weight :medium
+     :weight :regular
      :size   :paragraph-2}
     (str index ". ")]
    [quo/text
     {:style               style/community-rule-text
      :accessibility-label :communities-rule-index
-     :weight              :medium
+     :weight              :regular
      :size                :paragraph-2}
     (str title ": " content)]])
 
