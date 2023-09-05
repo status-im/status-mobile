@@ -31,8 +31,6 @@
       :type :text}
      {:key :community-name
       :type :text}
-     {:key :button-icon
-      :type :text}
      {:key :label
       :type :text}])
   
@@ -51,6 +49,8 @@
                                :account-avatar-emoji "🍿" 
                                :account-avatar-customization-color :purple
                                :icon-avatar :i/placeholder
+                               :on-button-press #(js/alert "on press")
+                               :on-button-long-press #(js/alert "on long press")
                                :profile-picture (resources/get-mock-image :user-picture-male5)})]
       (fn []
         [preview/preview-container {:state state

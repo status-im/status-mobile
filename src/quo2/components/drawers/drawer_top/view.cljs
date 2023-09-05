@@ -71,7 +71,7 @@
                                           description]))
 
 (defn- right-icon
-  [{:keys [theme type on-button-press on-button-long-press button-disabled button-icon]}]
+  [{:keys [theme type on-button-press on-button-long-press button-disabled? button-icon]}]
   (cond
     (= :info type) [icons/icon
                     :i/info
@@ -80,7 +80,7 @@
                      :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]
     (and (= :context-tag type) button-icon) [button/button {:on-press on-button-press
                                                             :on-long-press on-button-long-press
-                                                            :disabled? button-disabled
+                                                            :disabled? button-disabled?
                                                             :type   :primary
                                                             :size   24
                                                             :icon-only?   true}
@@ -99,9 +99,7 @@
 
 (defn- view-internal
   [{:keys [title type theme description blur? community-name community-logo button-icon on-button-press on-button-long-press 
-           button-disabled account-avatar-emoji account-avatar-customization-color icon-avatar profile-picture keycard? networks label] 
-    :or {button-disabled false
-         keycard? true}}]
+           button-disabled? account-avatar-emoji account-avatar-customization-color icon-avatar profile-picture keycard? networks label]}]
   [rn/view {:style style/container}
    [rn/view {:style style/left-container}
     [left-image {:type type
@@ -127,7 +125,7 @@
                 :type type 
                 :on-button-press on-button-press 
                 :on-button-long-press on-button-long-press 
-                :button-disabled button-disabled 
+                :button-disabled? button-disabled? 
                 :button-icon button-icon}]])
 
 (def view
