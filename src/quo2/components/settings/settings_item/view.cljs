@@ -15,27 +15,29 @@
     [utils.i18n :as i18n]))
 
 (defn status-description
-  [{:keys [online? text blur? theme]}]
-  [rn/view {:style style/status-container}
-   [rn/view {:style (style/status-dot online? blur?)}]
-   [text/text
-    {:size  :paragraph-2
-     :style (style/color blur? theme)}
-    (if online? (i18n/label :t/online-now) text)]])
+  [{:keys [description-props blur? theme]}]
+  (let [{:keys [online? text]} description-props]
+    [rn/view {:style style/status-container}
+     [rn/view {:style (style/status-dot online? blur?)}]
+     [text/text
+      {:size  :paragraph-2
+       :style (style/color blur? theme)}
+      (if online? (i18n/label :t/online-now) text)]]))
 
 (defn text-description
-  [{:keys [text icon blur? theme]}]
-  [rn/view
-   {:style style/sub-container}
-   [text/text
-    {:size  :paragraph-2
-     :style (style/color blur? theme)}
-    text]
-   (when icon
-     [icon/icon icon
-      (merge (style/color blur? theme)
-             {:size            16
-              :container-style {:margin-left 4}})])])
+  [{:keys [description-props blur? theme]}]
+  (let [{:keys [text icon]} description-props]
+    [rn/view
+     {:style style/sub-container}
+     [text/text
+      {:size  :paragraph-2
+       :style (style/color blur? theme)}
+      text]
+     (when icon
+       [icon/icon icon
+        (merge (style/color blur? theme)
+               {:size            16
+                :container-style {:margin-left 4}})])]))
 
 (defn description-component
   [{:keys [description] :as props}]

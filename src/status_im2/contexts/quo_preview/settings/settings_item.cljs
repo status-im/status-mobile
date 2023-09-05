@@ -11,8 +11,8 @@
     :type :text}
    {:key     :action
     :type    :select
-    :options [{:key   :none
-               :value nil}
+    :options [{:key   nil
+               :value :none}
               {:key   :arrow
                :value :arrow}
               {:key   :button
@@ -21,8 +21,8 @@
                :value :selector}]}
    {:key     :label
     :type    :select
-    :options [{:key   :none
-               :value nil}
+    :options [{:key   nil
+               :value :none}
               {:key   :color
                :value :color}
               {:key   :preview
@@ -31,8 +31,8 @@
                :value :text}]}
    {:key     :image
     :type    :select
-    :options [{:key   :none
-               :value nil}
+    :options [{:key   nil
+               :value :none}
               {:key   :icon
                :value :icon}
               {:key   :avatar
@@ -41,8 +41,8 @@
                :value :icon-avatar}]}
    {:key     :description
     :type    :select
-    :options [{:key   :none
-               :value nil}
+    :options [{:key   nil
+               :value :none}
               {:key   :text
                :value :text}
               {:key   :text-plus-icon
@@ -51,8 +51,8 @@
                :value :status}]}
    {:key     :tag
     :type    :select
-    :options [{:key   :none
-               :value nil}
+    :options [{:key   nil
+               :value :none}
               {:key   :positive
                :value :positive}
               {:key   :context
