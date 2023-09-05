@@ -154,14 +154,4 @@
      :button-disabled?     button-disabled?
      :button-icon          button-icon}]])
 
-(def view
-  " Create an account-origin UI component.
-| key               | values                                         |
-| ------------------|------------------------------------------------|
-| :type             | :default-keypair :recovery-phrase :private-key
-| :stored           | :on-device :on-keycard
-| :profile-picture  | image source
-| :derivation-path  | string
-| :user-name        | string
-| :on-press         | function "
-  (quo.theme/with-theme view-internal))
+(def view (quo.theme/with-theme view-internal))
