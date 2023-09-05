@@ -20,14 +20,14 @@
                       (/ constants/onboarding-modal-animation-duration 2))
   (js/clearInterval @timer-interval)
   (reset! timer-interval
-          (js/setInterval
-           (fn []
-             (if (< @blur-amount max-blur-amount)
-               (swap! blur-amount + 1)
-               (js/clearInterval @timer-interval)))
-           (/ constants/onboarding-modal-animation-duration
-              max-blur-amount
-              2))))
+    (js/setInterval
+     (fn []
+       (if (< @blur-amount max-blur-amount)
+         (swap! blur-amount + 1)
+         (js/clearInterval @timer-interval)))
+     (/ constants/onboarding-modal-animation-duration
+        max-blur-amount
+        2))))
 
 (defn blur-dismiss
   [opacity blur-amount]
