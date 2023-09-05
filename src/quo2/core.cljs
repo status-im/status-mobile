@@ -34,6 +34,7 @@
     quo2.components.counter.step.view
     quo2.components.dividers.date
     quo2.components.dividers.divider-label.view
+    quo2.components.dividers.divider-line.view
     quo2.components.dividers.new-messages
     quo2.components.dividers.strength-divider.view
     quo2.components.drawers.action-drawers.view
@@ -191,6 +192,7 @@
 
 ;;;; Dividers
 (def divider-label quo2.components.dividers.divider-label.view/view)
+(def divider-line quo2.components.dividers.divider-line.view/view)
 (def new-messages quo2.components.dividers.new-messages/new-messages)
 (def divider-date quo2.components.dividers.date/date)
 (def strength-divider quo2.components.dividers.strength-divider.view/view)
