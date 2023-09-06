@@ -95,7 +95,7 @@ class AppiumContainer:
 
         # Wi-Fi stats
         wifi_stats = self.exec_run(['adb', 'shell', 'dumpsys', 'batterystats', 'im.status.ethereum', '|', 'grep',
-                                'Wi-Fi\ total']).output.decode('utf-8')
+                                'Wi-Fi total']).output.decode('utf-8')
         stats.wifi_received = wifi_stats.split()[3].replace(',', '')
         stats.wifi_sent = wifi_stats.split()[5]
 

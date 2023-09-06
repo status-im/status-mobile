@@ -367,10 +367,6 @@ class EditBox(BaseElement):
         self.find_element().send_keys(value)
         self.driver.info("Type `%s` to `%s`" % (self.exclude_emoji(value), self.name))
 
-    def set_value(self, value):
-        self.find_element().set_value(value)
-        self.driver.info("Set `%s` value for `%s`" % (self.exclude_emoji(value), self.name))
-
     def clear(self):
         self.find_element().clear()
         self.driver.info("Clear text in `%s`" % self.name)

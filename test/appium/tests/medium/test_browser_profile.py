@@ -248,7 +248,7 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
                 chat.public_key_edit_box.click()
                 chat.public_key_edit_box.send_keys(users[key]['contact_code'])
                 if 'nickname' in users[key]:
-                    chat.nickname_input_field.set_value(users[key]['nickname'])
+                    chat.nickname_input_field.send_keys(users[key]['nickname'])
                 chat.confirm_until_presence_of_element(profile.add_new_contact_button)
             if not profile.element_by_text(users[key]['username']).is_element_displayed():
                 self.errors.append('In %s case username not found in contact view after scanning' % key)
@@ -447,17 +447,17 @@ class TestBrowserProfileOneDevice(MultipleSharedDeviceTestCase):
         profile.just_fyi("Check that can not reset password when entering wrong current password")
         profile.reset_password_button.click()
         profile.current_password_edit_box.send_keys(common_password + '1')
-        profile.new_password_edit_box.set_value(new_password)
-        profile.confirm_new_password_edit_box.set_value(new_password)
+        profile.new_password_edit_box.send_keys(new_password)
+        profile.confirm_new_password_edit_box.send_keys(new_password)
         profile.next_button.click()
         if not profile.current_password_wrong_text.is_element_displayed():
             self.errors.append("Validation error for wrong current password is not shown")
 
         profile.just_fyi("Check that can not procced if did not confirm new password")
         profile.current_password_edit_box.clear()
-        profile.current_password_edit_box.set_value(common_password)
-        profile.new_password_edit_box.set_value(new_password)
-        profile.confirm_new_password_edit_box.set_value(new_password + '1')
+        profile.current_password_edit_box.send_keys(common_password)
+        profile.new_password_edit_box.send_keys(new_password)
+        profile.confirm_new_password_edit_box.send_keys(new_password + '1')
         profile.next_button.click()
 
         profile.just_fyi("Delete last symbol and check that can reset password")

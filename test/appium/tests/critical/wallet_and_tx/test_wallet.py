@@ -198,13 +198,13 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.wallet.add_account_button.click()
         self.wallet.enter_a_private_key_button.click()
         self.wallet.enter_your_password_input.send_keys(common_password)
-        self.wallet.enter_a_private_key_input.set_value(wallet_users['C']['private_key'][0:9])
+        self.wallet.enter_a_private_key_input.send_keys(wallet_users['C']['private_key'][0:9])
         account_name_private = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
         self.wallet.account_name_input.send_keys(account_name_private)
         self.wallet.add_account_generate_account_button.click()
         if self.wallet.get_account_by_name(account_name_private).is_element_displayed():
             self.driver.fail('Account is added with wrong private key')
-        self.wallet.enter_a_private_key_input.set_value(wallet_users['C']['private_key'])
+        self.wallet.enter_a_private_key_input.send_keys(wallet_users['C']['private_key'])
         self.wallet.add_account_generate_account_button.click()
         account_button = self.wallet.get_account_by_name(account_name_private)
         if not account_button.is_element_displayed():
@@ -264,18 +264,18 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi('Check basic validation when adding account from seed phrase')
         self.wallet.enter_your_password_input.send_keys(common_password)
-        self.wallet.enter_seed_phrase_input.set_value('')
+        self.wallet.enter_seed_phrase_input.send_keys('')
         self.wallet.account_name_input.send_keys(account_seed_collectibles)
         self.wallet.add_account_generate_account_button.click()
         if self.wallet.get_account_by_name(account_seed_collectibles).is_element_displayed():
             self.wallet.driver.fail('Account is added without seed phrase')
-        self.wallet.enter_seed_phrase_input.set_value(str(wallet_users['D']['passphrase']).upper())
+        self.wallet.enter_seed_phrase_input.send_keys(str(wallet_users['D']['passphrase']).upper())
         self.wallet.add_account_generate_account_button.click()
         if self.wallet.get_account_by_name(account_seed_collectibles).is_element_displayed():
             self.wallet.driver.fail('Same account was added twice')
 
         self.wallet.enter_your_password_input.send_keys(common_password)
-        self.wallet.enter_seed_phrase_input.set_value(str(user['passphrase']).upper())
+        self.wallet.enter_seed_phrase_input.send_keys(str(user['passphrase']).upper())
         self.wallet.account_name_input.send_keys(account_seed_collectibles)
         self.wallet.add_account_generate_account_button.click()
         account_button = self.wallet.get_account_by_name(account_seed_collectibles)
@@ -298,7 +298,7 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.just_fyi('Checking insufficient_balance errors')
         wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()
-        send_transaction.amount_edit_box.set_value(round(eth_value + 1))
+        send_transaction.amount_edit_box.send_keys(round(eth_value + 1))
         error_text = send_transaction.element_by_text('Insufficient funds')
         if not error_text.is_element_displayed():
             self.errors.append(
@@ -307,7 +307,7 @@ class TestWalletManagementDeviceMerged(MultipleSharedDeviceTestCase):
         send_transaction.select_asset_button.click()
         send_transaction.asset_by_name('STT').scroll_to_element()
         send_transaction.asset_by_name('STT').click()
-        send_transaction.amount_edit_box.set_value(round(stt_value + 1))
+        send_transaction.amount_edit_box.send_keys(round(stt_value + 1))
         if not error_text.is_element_displayed():
             self.errors.append(
                 "'Insufficient funds' error is not shown when sending %s STT from wallet with balance %s" % (

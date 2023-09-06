@@ -11,6 +11,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
+from base_test_case import app_package
 from support.device_apps import start_web_browser
 from tests import common_password, pytest_config_global, transl
 from views.base_element import Button, BaseElement, EditBox, Text, CheckBox
@@ -196,7 +197,7 @@ class EnterQRcodeEditBox(EditBox):
         super().__init__(driver, translation_id="type-a-message")
 
     def scan_qr(self, value):
-        self.set_value(value)
+        self.send_keys(value)
         base_view = BaseView(self.driver)
         base_view.ok_button.click()
 
@@ -643,8 +644,8 @@ class BaseView(object):
         self.element_by_text(text).click()
 
     def reopen_app(self, password=common_password, sign_in=True):
-        self.driver.close_app()
-        self.driver.launch_app()
+        self.driver.terminate_app(app_package)
+        self.driver.activate_app(app_package)
         if sign_in:
             sign_in_view = self.get_sign_in_view()
             sign_in_view.sign_in(password)
@@ -745,7 +746,7 @@ class BaseView(object):
     def upgrade_app(self):
         self.driver.info("Upgrading apk to apk_upgrade")
         self.driver.install_app(pytest_config_global['apk_upgrade'], replace=True)
-        self.app = self.driver.launch_app()
+        self.app = self.driver.activate_app(app_package)
 
     def search_by_keyword(self, keyword):
         self.driver.info('Search for `%s`' % keyword)

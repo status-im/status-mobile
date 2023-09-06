@@ -62,7 +62,7 @@ class KeycardView(BaseView):
         self.yes_button.click()
         for _ in range(2):
             number = self.get_required_word_number()
-            self.confirm_seed_phrase_edit_box.set_value(recovery_phrase[number])
+            self.confirm_seed_phrase_edit_box.send_keys(recovery_phrase[number])
             self.next_button.click()
         return ' '.join(recovery_phrase.values())
 

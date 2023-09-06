@@ -7,7 +7,7 @@ from _pytest.outcomes import Failed
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import marks, common_password, run_in_parallel, transl
-from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
+from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers, app_package
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_message_sender
 from views.sign_in_view import SignInView
 
@@ -43,7 +43,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         send_transaction.get_username_in_transaction_bottom_sheet_button(self.recipient_username).click()
         if send_transaction.scan_qr_code_button.is_element_displayed():
             self.drivers[0].fail('Recipient is editable in bottom sheet when send ETH from 1-1 chat')
-        send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.amount_edit_box.send_keys(amount)
         send_transaction.confirm()
         send_transaction.sign_transaction_button.click()
         sender_message = self.chat_1.get_outgoing_transaction(self.account_name_1)
@@ -118,7 +118,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.chat_1.commands_button.click()
         send_transaction = self.chat_1.send_command.click()
         amount = self.chat_1.get_unique_amount()
-        send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.amount_edit_box.send_keys(amount)
         send_transaction.confirm()
         send_transaction.sign_transaction_button.click()
         chat_1_sender_message = self.chat_1.get_outgoing_transaction()
@@ -138,7 +138,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         request_amount = self.chat_1.get_unique_amount()
         self.chat_1.commands_button.click()
         request_transaction = self.chat_1.request_command.click()
-        request_transaction.amount_edit_box.set_value(request_amount)
+        request_transaction.amount_edit_box.send_keys(request_amount)
         request_transaction.confirm()
         request_transaction.request_transaction_button.click()
         chat_1_request_message = self.chat_1.get_incoming_transaction()
@@ -162,13 +162,13 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.wallet_2.home_button.click()
         self.home_1.wallet_button.double_click()
         initial_amount_stt = self.wallet_1.get_asset_amount_by_name('STT')
-        self.home_1.driver.close_app()
+        self.home_1.driver.terminate_app(app_package)
 
         self.home_2.just_fyi('Request %s STT in 1-1 chat and check it is visible for sender and receiver' % amount)
         chat_2 = self.home_2.get_chat(username=self.sender['username']).click()
         chat_2.commands_button.click()
         request_transaction = chat_2.request_command.click()
-        request_transaction.amount_edit_box.set_value(amount)
+        request_transaction.amount_edit_box.send_keys(amount)
         request_transaction.confirm()
         asset_button = request_transaction.asset_by_name(asset_name)
         request_transaction.select_asset_button.click_until_presence_of_element(asset_button)
@@ -179,7 +179,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
             self.drivers[1].fail('No incoming transaction in 1-1 chat is shown for recipient after requesting STT')
 
         self.home_1.just_fyi('Check that transaction message is fetched from offline and sign transaction')
-        self.device_1.driver.launch_app()
+        self.device_1.driver.activate_app(app_package)
         self.device_1.sign_in()
         self.home_1.connection_offline_icon.wait_for_invisibility_of_element(30)
         self.home_1.get_chat(self.recipient_username).click()
@@ -325,7 +325,7 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         send_transaction.get_username_in_transaction_bottom_sheet_button(self.default_username_2).click()
         if send_transaction.scan_qr_code_button.is_element_displayed():
             self.chat_1.driver.fail('Recipient is editable in bottom sheet when send ETH from 1-1 chat')
-        send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.amount_edit_box.send_keys(amount)
         send_transaction.confirm()
         send_transaction.sign_transaction_button.click()
         sender_message = self.chat_1.get_outgoing_transaction()
@@ -542,11 +542,11 @@ class TestContactBlockMigrateKeycardMultipleSharedDevices(MultipleSharedDeviceTe
         self.device_2.manage_keys_and_storage_button.click()
         self.device_2.move_keystore_file_option.click()
         self.device_2.enter_seed_phrase_next_button.click()
-        self.device_2.seedphrase_input.set_value(self.recovery_phrase)
+        self.device_2.seedphrase_input.send_keys(self.recovery_phrase)
         self.device_2.choose_storage_button.click()
         self.device_2.keycard_required_option.click()
         self.device_2.confirm_button.click()
-        self.device_2.migration_password_input.set_value(common_password)
+        self.device_2.migration_password_input.send_keys(common_password)
         self.device_2.confirm_button.click()
         from views.keycard_view import KeycardView
         keycard = KeycardView(self.device_2.driver)
@@ -628,7 +628,7 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
 
         self.chat_1.just_fyi("Check sending assets to ENS name from sender side")
         send_message = self.chat_1.send_command.click()
-        send_message.amount_edit_box.set_value(amount)
+        send_message.amount_edit_box.send_keys(amount)
         send_message.confirm()
         send_message.next_button.click()
         from views.send_transaction_view import SendTransactionView
@@ -790,14 +790,14 @@ class TestEnsStickersMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.home_1.just_fyi("Validation: invalid public key and invalid ENS")
         for invalid_chat_key in (basic_user['public_key'][:-1], ens_user_message_sender['ens'][:-2]):
             chat.public_key_edit_box.clear()
-            chat.public_key_edit_box.set_value(invalid_chat_key)
+            chat.public_key_edit_box.send_keys(invalid_chat_key)
             chat.confirm()
             if not self.home_1.element_by_translation_id("profile-not-found").is_element_displayed():
                 self.errors.append('Error is not shown for invalid public key')
 
         self.home_1.just_fyi("Check that valid ENS is resolved")
         chat.public_key_edit_box.clear()
-        chat.public_key_edit_box.set_value(ens_user_message_sender['ens'])
+        chat.public_key_edit_box.send_keys(ens_user_message_sender['ens'])
         resolved_ens = '%s.stateofus.eth' % ens_user_message_sender['ens']
         if not chat.element_by_text(resolved_ens).is_element_displayed(10):
             self.errors.append('ENS name is not resolved after pasting chat key')
@@ -1371,7 +1371,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         for home in self.homes:
             home.toggle_airplane_mode()
             if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
-                home.driver.launch_app()
+                home.driver.activate_app(app_package)
                 SignInView(home.driver).sign_in()
 
         # Not implemented yet
@@ -1397,7 +1397,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         for i, home in enumerate(self.homes):
             home.toggle_airplane_mode()
             if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
-                home.driver.launch_app()
+                home.driver.activate_app(app_package)
                 SignInView(home.driver).sign_in()
                 home.chats_tab.click()
                 home.get_chat(self.username_2 if i == 0 else self.username_1).click()

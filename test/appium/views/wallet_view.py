@@ -315,7 +315,7 @@ class WalletView(BaseView):
 
         transaction_amount = str(kwargs.get('amount', send_tx.get_unique_amount()))
 
-        send_tx.amount_edit_box.set_value(transaction_amount)
+        send_tx.amount_edit_box.send_keys(transaction_amount)
         if kwargs.get('account_name'):
             send_tx.chose_recipient_button.click()
             send_tx.accounts_button.click()

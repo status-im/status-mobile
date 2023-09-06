@@ -385,12 +385,12 @@ class ProfileView(BaseView):
         self.network_settings_button.scroll_to_element()
         self.network_settings_button.click()
         self.plus_button.click_until_presence_of_element(self.custom_chain_button)
-        self.custom_network_url_input.set_value(rpc_url)
-        self.specify_name_input.set_value(name)
-        self.custom_network_symbol_input.set_value(symbol)
+        self.custom_network_url_input.send_keys(rpc_url)
+        self.specify_name_input.send_keys(name)
+        self.custom_network_symbol_input.send_keys(symbol)
         self.custom_chain_button.scroll_and_click()
         self.specify_network_id_input.scroll_to_element()
-        self.specify_network_id_input.set_value(netwrok_id)
+        self.specify_network_id_input.send_keys(netwrok_id)
         self.save_button.click()
         self.element_by_text_part(name).scroll_to_element()
         self.element_by_text_part(name).click_until_presence_of_element(self.connect_button)
@@ -409,10 +409,10 @@ class ProfileView(BaseView):
         recovery_phrase = self.get_recovery_phrase()
         self.next_button.click()
         word_number = self.recovery_phrase_word_number.number
-        self.recovery_phrase_word_input.set_value(recovery_phrase[word_number])
+        self.recovery_phrase_word_input.send_keys(recovery_phrase[word_number])
         self.next_button.click()
         word_number_1 = self.recovery_phrase_word_number.number
-        self.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
+        self.recovery_phrase_word_input.send_keys(recovery_phrase[word_number_1])
         self.done_button.click()
         self.yes_button.click()
         self.ok_got_it_button.click()
@@ -480,7 +480,7 @@ class ProfileView(BaseView):
         self.sync_settings_button.click()
         self.devices_button.scroll_to_element()
         self.devices_button.click()
-        self.device_name_input.set_value(device_name)
+        self.device_name_input.send_keys(device_name)
         self.continue_button.click_until_presence_of_element(self.advertise_device_button, 2)
         self.advertise_device_button.click()
 
@@ -501,7 +501,7 @@ class ProfileView(BaseView):
         dapp_view.element_by_translation_id("get-started").click()
         if not is_stateofus:
             dapp_view.element_by_translation_id("ens-want-custom-domain").click()
-        dapp_view.ens_name_input.set_value(name)
+        dapp_view.ens_name_input.send_keys(name)
         expected_text = dapp_view.get_translation_by_key("ens-username-connected")
         if not dapp_view.element_by_text_part(expected_text).is_element_displayed():
             dapp_view.click_system_back_button()

@@ -24,7 +24,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in.recover_with_keycard_button.click()
         keycard_view = sign_in.begin_recovery_button.click()
         keycard_view.connect_pairing_card_button.click()
-        keycard_view.pair_code_input.set_value(pair_code)
+        keycard_view.pair_code_input.send_keys(pair_code)
         keycard_view.confirm()
         keycard_view.enter_default_pin()
         sign_in.maybe_later_button.click_until_presence_of_element(sign_in.start_button)
@@ -224,7 +224,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in.access_key_button.click()
         sign_in.enter_seed_phrase_button.click()
         sign_in.seedphrase_input.click()
-        sign_in.seedphrase_input.set_value(basic_user['passphrase'])
+        sign_in.seedphrase_input.send_keys(basic_user['passphrase'])
         sign_in.next_button.click()
         sign_in.reencrypt_your_key_button.click()
         keycard_flow = sign_in.keycard_storage_button.click()
@@ -325,13 +325,13 @@ class TestChatManagement(SingleDeviceTestCase):
         if not home.element_by_translation_id("keycard-is-frozen-title").is_element_displayed(30):
             self.driver.fail("No reset card flow is shown for frozen card")
         home.element_by_translation_id("keycard-is-frozen-factory-reset").click()
-        sign_in.seedphrase_input.set_value(transaction_senders['A']['passphrase'])
+        sign_in.seedphrase_input.send_keys(transaction_senders['A']['passphrase'])
         sign_in.next_button.click()
         if not home.element_by_translation_id("seed-key-uid-mismatch").is_element_displayed():
             self.driver.fail("No popup about mismatch in seed phrase is shown!")
         home.element_by_translation_id("try-again").click()
         sign_in.seedphrase_input.clear()
-        sign_in.seedphrase_input.set_value(seed)
+        sign_in.seedphrase_input.send_keys(seed)
         sign_in.next_button.click()
         keycard.begin_setup_button.click()
         keycard.yes_button.click()
@@ -353,7 +353,7 @@ class TestChatManagement(SingleDeviceTestCase):
             self.driver.fail("No popup about frozen keycard is shown!")
 
         sign_in.element_by_translation_id("keycard-is-frozen-factory-reset").click()
-        sign_in.seedphrase_input.set_value(seed)
+        sign_in.seedphrase_input.send_keys(seed)
         sign_in.next_button.click()
         keycard.begin_setup_button.click()
         keycard.yes_button.click()
@@ -407,7 +407,7 @@ class TestChatManagement(SingleDeviceTestCase):
         keycard.element_by_translation_id("keycard-is-blocked-title").wait_for_element(30)
         keycard.element_by_translation_id("keycard-recover").click()
         keycard.yes_button.click()
-        sign_in.seedphrase_input.set_value(seed)
+        sign_in.seedphrase_input.send_keys(seed)
         sign_in.next_button.click()
         keycard.begin_setup_button.click()
         keycard.yes_button.click()
@@ -441,7 +441,7 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.add_account_button.click()
         wallet.enter_a_seed_phrase_button.click()
         wallet.enter_your_password_input.send_keys(common_password)
-        wallet.enter_seed_phrase_input.set_value(receiver['passphrase'])
+        wallet.enter_seed_phrase_input.send_keys(receiver['passphrase'])
         wallet.account_name_input.send_keys(account_name)
         wallet.add_account_generate_account_button.click()
         account_button = wallet.get_account_by_name(account_name)
@@ -513,14 +513,14 @@ class TestChatManagement(SingleDeviceTestCase):
         adi_button.click()
         send_transaction.amount_edit_box.click()
         amount = '0.000%s' % str(random.randint(100000, 999999)) + '1'
-        send_transaction.amount_edit_box.set_value(amount)
+        send_transaction.amount_edit_box.send_keys(amount)
         if not send_transaction.element_by_text(
                 errors['send_transaction_screen']['too_precise']).is_element_displayed():
             self.errors.append(warning % (errors['send_transaction_screen']['too_precise'], screen))
 
         sign_in.just_fyi('Checking %s on %s' % (errors['send_transaction_screen']['insufficient_funds'], screen))
         send_transaction.amount_edit_box.clear()
-        send_transaction.amount_edit_box.set_value(str(initial_amount_adi) + '1')
+        send_transaction.amount_edit_box.send_keys(str(initial_amount_adi) + '1')
         if not send_transaction.element_by_text(
                 errors['send_transaction_screen']['insufficient_funds']).is_element_displayed():
             self.errors.append(warning % (errors['send_transaction_screen']['insufficient_funds'], screen))
@@ -533,7 +533,7 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.add_account(account_name)
         wallet.get_account_by_name(account_name).click()
         wallet.send_transaction_button.click()
-        send_transaction.amount_edit_box.set_value('0')
+        send_transaction.amount_edit_box.send_keys('0')
         send_transaction.set_recipient_address(ens_user_message_sender['ens'])
         send_transaction.next_button.click()
         wallet.ok_got_it_button.wait_and_click(30)
@@ -571,7 +571,7 @@ class TestChatManagement(SingleDeviceTestCase):
 
         send_transaction = wallet.send_transaction_button.click()
         amount = '0.000%s' % str(random.randint(100000, 999999)) + '1'
-        self.value = send_transaction.amount_edit_box.set_value(amount)
+        self.value = send_transaction.amount_edit_box.send_keys(amount)
         send_transaction.set_recipient_address(ens_user_message_sender['ens'])
         send_transaction.next_button.click()
         wallet.ok_got_it_button.wait_and_click(30)
@@ -611,7 +611,7 @@ class TestChatManagement(SingleDeviceTestCase):
                     if not send_transaction.element_by_translation_id(values[field][key]).is_element_displayed(10):
                         self.errors.append("%s is not shown for %s" % (values[field][key], field.accessibility_id))
                     field.clear()
-                    field.set_value(values[field]['value'])
+                    field.send_keys(values[field]['value'])
 
         wallet.just_fyi("Set custom fee and check that it will be applied")
         send_transaction.save_fee_button.scroll_and_click()
@@ -642,12 +642,12 @@ class TestChatManagement(SingleDeviceTestCase):
 
         wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click_until_presence_of_element(send_transaction.amount_edit_box)
-        send_transaction.amount_edit_box.set_value(0)
+        send_transaction.amount_edit_box.send_keys(0)
         send_transaction.set_recipient_address(ens_user_message_sender['ens'])
         send_transaction.next_button.click()
         wallet.element_by_translation_id("network-fee").click()
         send_transaction.gas_limit_input.clear()
-        send_transaction.gas_limit_input.set_value(default_limit)
+        send_transaction.gas_limit_input.send_keys(default_limit)
         send_transaction.per_gas_price_limit_input.clear()
         send_transaction.per_gas_price_limit_input.click()
         send_transaction.per_gas_price_limit_input.send_keys('0.00000000000001')
@@ -664,7 +664,7 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.just_fyi("Check can change tip to higher value and sign transaction")
         wallet.element_by_translation_id("network-fee").click()
         send_transaction.gas_limit_input.clear()
-        send_transaction.gas_limit_input.set_value(default_limit)
+        send_transaction.gas_limit_input.send_keys(default_limit)
         send_transaction.per_gas_price_limit_input.clear()
         send_transaction.per_gas_price_limit_input.click()
         send_transaction.per_gas_price_limit_input.send_keys('0.00000000000001')
@@ -683,9 +683,9 @@ class TestChatManagement(SingleDeviceTestCase):
 
         wallet.just_fyi('Check gas limit price is calculated in case of signing contract address')
         wallet.send_transaction_button.click_until_presence_of_element(send_transaction.amount_edit_box)
-        send_transaction.amount_edit_box.set_value(0)
+        send_transaction.amount_edit_box.send_keys(0)
         send_transaction.chose_recipient_button.click()
-        send_transaction.enter_recipient_address_input.set_value('0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6')
+        send_transaction.enter_recipient_address_input.send_keys('0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6')
         send_transaction.element_by_translation_id("warning-sending-to-contract-descr").wait_for_visibility_of_element()
         send_transaction.ok_button.click()
         send_transaction.enter_recipient_address_input.click()
@@ -705,7 +705,7 @@ class TestChatManagement(SingleDeviceTestCase):
         wallet.accounts_status_account.click()
 
         send_transaction = wallet.send_transaction_button.click_until_presence_of_element(send_transaction.amount_edit_box)
-        send_transaction.amount_edit_box.set_value(0)
+        send_transaction.amount_edit_box.send_keys(0)
         send_transaction.set_recipient_address(ens_user_message_sender['ens'])
         send_transaction.next_button.click()
         wallet.element_by_translation_id("network-fee").click()
@@ -795,12 +795,12 @@ class TestChatManagement(SingleDeviceTestCase):
         send_tx = wallet.send_transaction_from_main_screen.click()
         from views.send_transaction_view import SendTransactionView
         send_tx = SendTransactionView(self.driver)
-        send_tx.amount_edit_box.set_value('0')
+        send_tx.amount_edit_box.send_keys('0')
         send_tx.set_recipient_address(transaction_senders['ETH_7']['address'])
         send_tx.next_button.click()
         send_tx.set_up_wallet_when_sending_tx()
         send_tx.advanced_button.click()
-        send_tx.nonce_input.set_value('0')
+        send_tx.nonce_input.send_keys('0')
         send_tx.nonce_save_button.click()
         error_text = send_tx.sign_transaction(error=True)
         if error_text != 'nonce too low':
@@ -836,7 +836,7 @@ class TestChatManagement(SingleDeviceTestCase):
         dapp = profile.connect_existing_ens(ens_main)
 
         profile.element_by_translation_id("ens-add-username").wait_and_click()
-        dapp.ens_name_input.set_value(ens_second)
+        dapp.ens_name_input.send_keys(ens_second)
         dapp.check_ens_name.click_until_presence_of_element(dapp.element_by_translation_id("ens-got-it"))
         dapp.element_by_translation_id("ens-got-it").wait_and_click()
 
@@ -909,12 +909,12 @@ class TestChatManagement(SingleDeviceTestCase):
         profile.submit_bug_button.click()
 
         signin.just_fyi("Checking bug submitting form")
-        profile.bug_description_edit_box.set_value('1234')
+        profile.bug_description_edit_box.send_keys('1234')
         profile.bug_submit_button.click()
         if not profile.element_by_translation_id("bug-report-too-short-description").is_element_displayed():
             self.errors.append("Can submit big with too short description!")
         profile.bug_description_edit_box.clear()
-        [field.set_value("Something wrong happened!!") for field in
+        [field.send_keys("Something wrong happened!!") for field in
          (profile.bug_description_edit_box, profile.bug_steps_edit_box)]
         profile.bug_submit_button.click()
         if not profile.element_by_text_part("Welcome to Gmail").is_element_displayed(30):
@@ -978,9 +978,9 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in.generate_new_key_button.click()
         sign_in.next_button.click()
         sign_in.next_button.click()
-        sign_in.create_password_input.set_value(common_password)
+        sign_in.create_password_input.send_keys(common_password)
         sign_in.next_button.click()
-        sign_in.confirm_your_password_input.set_value(common_password)
+        sign_in.confirm_your_password_input.send_keys(common_password)
         sign_in.next_button.click()
         sign_in.maybe_later_button.click_until_presence_of_element(sign_in.start_button)
         sign_in.start_button.click()
@@ -995,7 +995,7 @@ class TestChatManagement(SingleDeviceTestCase):
         profile.delete_profile_button.click()
         if profile.element_by_translation_id("profile-deleted-title").is_element_displayed():
             self.driver.fail('Profile is deleted without confirmation with password')
-        profile.delete_my_profile_password_input.set_value(common_password)
+        profile.delete_my_profile_password_input.send_keys(common_password)
         profile.delete_profile_button.click_until_presence_of_element(
             profile.element_by_translation_id("profile-deleted-title"))
         profile.ok_button.click()
@@ -1005,7 +1005,7 @@ class TestChatManagement(SingleDeviceTestCase):
         sign_in.profile_button.click()
         profile.privacy_and_security_button.click()
         profile.delete_my_profile_button.scroll_and_click()
-        profile.delete_my_profile_password_input.set_value(common_password)
+        profile.delete_my_profile_password_input.send_keys(common_password)
         profile.delete_profile_button.click()
         profile.ok_button.click()
         if not sign_in.get_started_button.is_element_displayed(20):
@@ -1101,7 +1101,7 @@ class TestChatManagement(SingleDeviceTestCase):
             profile = home_view.profile_button.click()
             profile.privacy_and_security_button.click()
             profile.delete_my_profile_button.scroll_and_click()
-            profile.delete_my_profile_password_input.set_value(unique_password)
+            profile.delete_my_profile_password_input.send_keys(unique_password)
             profile.delete_profile_button.click()
             profile.ok_button.click()
         self.errors.verify_no_errors()
@@ -1125,7 +1125,7 @@ class TestChatManagement(SingleDeviceTestCase):
         self.profile.ens_usernames_button.wait_and_click()
         self.dapp = self.home.get_dapp_view()
         self.dapp.get_started_ens.click()
-        self.dapp.ens_name_input.set_value(self.ens_name)
+        self.dapp.ens_name_input.send_keys(self.ens_name)
         self.dapp.check_ens_name.click_until_presence_of_element(self.dapp.register_ens_button)
         self.dapp.agree_on_terms_ens.scroll_and_click()
         if not self.dapp.element_by_text(self.chat_key).is_element_displayed():

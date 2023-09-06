@@ -107,10 +107,10 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         recovery_phrase = profile.get_recovery_phrase()
         profile.next_button.click()
         word_number = profile.recovery_phrase_word_number.number
-        profile.recovery_phrase_word_input.set_value(recovery_phrase[word_number])
+        profile.recovery_phrase_word_input.send_keys(recovery_phrase[word_number])
         profile.next_button.click()
         word_number_1 = profile.recovery_phrase_word_number.number
-        profile.recovery_phrase_word_input.set_value(recovery_phrase[word_number_1])
+        profile.recovery_phrase_word_input.send_keys(recovery_phrase[word_number_1])
         profile.done_button.click()
         profile.yes_button.click()
         profile.ok_got_it_button.click()
@@ -129,10 +129,10 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.access_key_button.click()
         self.sign_in.enter_seed_phrase_button.click()
         self.sign_in.seedphrase_input.click()
-        self.sign_in.seedphrase_input.set_value(' '.join(recovery_phrase.values()))
+        self.sign_in.seedphrase_input.send_keys(' '.join(recovery_phrase.values()))
         self.sign_in.next_button.click()
         self.sign_in.element_by_translation_id(translation_id="unlock", uppercase=True).click()
-        self.sign_in.password_input.set_value(self.password)
+        self.sign_in.password_input.send_keys(self.password)
         self.sign_in.sign_in_button.click()
         self.home.plus_button.wait_and_click()
         if not self.home.start_new_chat_button.is_element_displayed():
@@ -149,12 +149,12 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         if self.sign_in.ok_button.is_element_displayed():
             self.sign_in.ok_button.click()
         self.sign_in.multi_account_on_login_button.click()
-        self.sign_in.password_input.set_value(common_password)
+        self.sign_in.password_input.send_keys(common_password)
         self.sign_in.sign_in_button.click()
         self.sign_in.element_by_translation_id("wrong-password").wait_for_visibility_of_element(20)
         if not self.sign_in.element_by_text(self.username).is_element_displayed():
             self.errors.append('Username is not shown while login')
-        self.sign_in.password_input.set_value(self.password)
+        self.sign_in.password_input.send_keys(self.password)
         self.sign_in.sign_in_button.click()
         if not self.sign_in.home_button.is_element_displayed(10):
             self.errors.append('User is not logged in')
@@ -207,8 +207,8 @@ class TestOnboardingOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.confirm_your_password_input.send_keys('1234567')
         if not self.sign_in.element_by_translation_id("password_error1").is_element_displayed():
             self.errors.append("'%s' is not shown" % self.sign_in.get_translation_by_key("password_error1"))
-        self.sign_in.create_password_input.set_value(common_password)
-        self.sign_in.confirm_your_password_input.set_value(common_password)
+        self.sign_in.create_password_input.send_keys(common_password)
+        self.sign_in.confirm_your_password_input.send_keys(common_password)
 
         self.sign_in.next_button.click()
         [element.wait_and_click(10) for element in (self.sign_in.maybe_later_button, self.sign_in.start_button)]
@@ -261,7 +261,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
         wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.amount_edit_box.click()
-        send_transaction.amount_edit_box.set_value("0")
+        send_transaction.amount_edit_box.send_keys("0")
         send_transaction.set_recipient_address("0x" + basic_user['address'])
         send_transaction.sign_transaction_button.click()
 
@@ -282,7 +282,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
         wallet.wallet_button.click()
         wallet.accounts_status_account.click()
         send_transaction = wallet.send_transaction_button.click()
-        send_transaction.amount_edit_box.set_value('0')
+        send_transaction.amount_edit_box.send_keys('0')
         send_transaction.set_recipient_address('0x%s' % basic_user['address'])
         send_transaction.next_button.click_until_presence_of_element(send_transaction.sign_transaction_button)
         send_transaction.sign_transaction_button.click()
@@ -348,7 +348,7 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
                 self.sign_in.access_key_button.click()
             if self.sign_in.enter_seed_phrase_button.is_element_displayed():
                 self.sign_in.enter_seed_phrase_button.click()
-            self.sign_in.seedphrase_input.set_value(phrase)
+            self.sign_in.seedphrase_input.send_keys(phrase)
 
             if msg:
                 if not self.sign_in.element_by_text(msg).is_element_displayed():
@@ -410,17 +410,17 @@ class TestRestoreOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.move_keystore_file_option.click()
         self.sign_in.reset_database_checkbox.click()
         self.sign_in.enter_seed_phrase_next_button.click()
-        self.sign_in.seedphrase_input.set_value(transaction_senders['A']['passphrase'])
+        self.sign_in.seedphrase_input.send_keys(transaction_senders['A']['passphrase'])
         self.sign_in.choose_storage_button.click()
         if not self.sign_in.element_by_translation_id("seed-key-uid-mismatch").is_element_displayed():
             self.driver.fail("Can proceed with seed phrase of another user")
         self.sign_in.element_by_translation_id("try-again").click()
-        self.sign_in.seedphrase_input.set_value(self.user['passphrase'][:-1])
+        self.sign_in.seedphrase_input.send_keys(self.user['passphrase'][:-1])
         self.sign_in.choose_storage_button.click()
         if not self.sign_in.custom_seed_phrase_label.is_element_displayed():
             self.driver.fail("Can proceed with invalid seed phrase")
         self.sign_in.cancel_button.click()
-        self.sign_in.seedphrase_input.set_value(self.user['passphrase'])
+        self.sign_in.seedphrase_input.send_keys(self.user['passphrase'])
         self.sign_in.choose_storage_button.click()
         if not self.sign_in.get_keycard_banner.is_element_displayed():
             self.errors.append("Get a keycard banner is not shown on Key management screen")

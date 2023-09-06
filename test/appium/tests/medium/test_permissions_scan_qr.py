@@ -333,7 +333,7 @@ class TestPermissionsScanQrOneDevice(MultipleSharedDeviceTestCase):
         wallet.accounts_status_account.click_until_presence_of_element(wallet.send_transaction_button)
         send_transaction = wallet.send_transaction_button.click()
         send_transaction.set_recipient_address('0x%s' % basic_user['address'])
-        send_transaction.amount_edit_box.set_value("0")
+        send_transaction.amount_edit_box.send_keys("0")
         send_transaction.confirm()
         send_transaction.sign_transaction_button.click()
         wallet.set_up_wallet_when_sending_tx()

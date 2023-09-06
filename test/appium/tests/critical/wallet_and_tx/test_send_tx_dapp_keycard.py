@@ -68,7 +68,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
         self.wallet.just_fyi("Checking signing message")
         status_test_dapp.transactions_button.click()
         send_transaction = status_test_dapp.sign_message_button.click()
-        send_transaction.enter_password_input.set_value(common_password)
+        send_transaction.enter_password_input.send_keys(common_password)
         send_transaction.sign_button.click()
         if not status_test_dapp.element_by_text_part('Signed message').is_element_displayed():
             self.errors.append('Message was not signed')
@@ -129,7 +129,7 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
             send_tx.eth_asset_in_select_asset_bottom_sheet_button)
         asset_button.click()
         send_tx.amount_edit_box.click()
-        send_tx.amount_edit_box.set_value(self.amount_eth)
+        send_tx.amount_edit_box.send_keys(self.amount_eth)
         send_tx.set_recipient_address(self.recipient_address)
         send_tx.sign_transaction_button.click()
         if self.wallet.sign_in_phrase.is_element_displayed():
@@ -185,10 +185,10 @@ class TestSendTxDeviceMerged(MultipleSharedDeviceTestCase):
 
         wallet.just_fyi("Check that can't send to invalid address")
         send_tr.amount_edit_box.click()
-        send_tr.amount_edit_box.set_value(send_tr.get_unique_amount())
+        send_tr.amount_edit_box.send_keys(send_tr.get_unique_amount())
         send_tr.chose_recipient_button.click()
         for address in (basic_user['public_key'], '0xDE709F2102306220921060314715629080E2fB77'):
-            send_tr.enter_recipient_address_input.set_value(address)
+            send_tr.enter_recipient_address_input.send_keys(address)
             send_tr.enter_recipient_address_input.click()
             send_tr.done_button.click()
             if send_tr.set_max_button.is_element_displayed():
@@ -377,7 +377,7 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.recover_with_keycard_button.click()
         keycard = self.sign_in.begin_recovery_button.click()
         keycard.connect_pairing_card_button.click()
-        keycard.pair_code_input.set_value(pair_code)
+        keycard.pair_code_input.send_keys(pair_code)
         self.sign_in.pair_to_this_device_button.click()
         keycard.enter_default_pin()
         self.sign_in.maybe_later_button.click_until_presence_of_element(self.sign_in.start_button)
@@ -450,7 +450,7 @@ class TestKeycardTxOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.sign_in.access_key_button.click()
         self.sign_in.enter_seed_phrase_button.click()
         self.sign_in.seedphrase_input.click()
-        self.sign_in.seedphrase_input.set_value(seed_phrase)
+        self.sign_in.seedphrase_input.send_keys(seed_phrase)
         self.sign_in.next_button.click()
         self.sign_in.element_by_translation_id("unlock", uppercase=True).click()
         keycard_flow.enter_default_pin()

@@ -5,7 +5,7 @@ from _pytest.outcomes import Failed
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, run_in_parallel, transl
-from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
+from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers, app_package
 from views.chat_view import ChatView
 from views.sign_in_view import SignInView
 
@@ -428,7 +428,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.homes[0].click_system_back_button()
         # workaround for app closed after opening notifications
         if not self.homes[0].chats_tab.is_element_displayed():
-            self.drivers[0].launch_app()
+            self.drivers[0].activate_app(app_package)
             SignInView(self.drivers[0]).sign_in()
         self.homes[0].chats_tab.click()
         self.homes[0].get_chat(self.chat_name).click()

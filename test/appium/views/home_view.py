@@ -431,8 +431,8 @@ class HomeView(BaseView):
         self.driver.info("## Creating community '%s', set image is set to '%s'" % (name, str(set_image)), device=False)
         self.plus_community_button.click()
         chat_view = self.communities_button.click()
-        chat_view.community_name_edit_box.set_value(name)
-        chat_view.community_description_edit_box.set_value(description)
+        chat_view.community_name_edit_box.send_keys(name)
+        chat_view.community_description_edit_box.send_keys(description)
         if set_image:
             from views.profile_view import ProfileView
             set_picture_view = ProfileView(self.driver)
@@ -468,7 +468,7 @@ class HomeView(BaseView):
         chat_view = self.communities_button.click()
         chat_view.chat_options.click()
         chat_view.element_by_translation_id("import-community").wait_and_click()
-        EditBox(self.driver, xpath="//android.widget.EditText").set_value(key)
+        EditBox(self.driver, xpath="//android.widget.EditText").send_keys(key)
         import_button.click_until_absense_of_element(import_button)
 
     def join_public_chat(self, chat_name: str):

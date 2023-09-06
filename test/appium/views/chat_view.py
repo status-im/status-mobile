@@ -417,7 +417,7 @@ class CommunityView(HomeView):
         self.driver.info("Joining community")
         self.join_button.click()
         self.join_community_button.scroll_and_click()
-        self.password_input.set_value(password)
+        self.password_input.send_keys(password)
         Button(self.driver,
                xpath="//*[@content-desc='password-input']/../following-sibling::*//*[@text='Join Community']").click()
         if open_community:
@@ -432,8 +432,8 @@ class CommunityView(HomeView):
         self.driver.info("Adding channel in community")
         self.plus_button.click()
         self.community_create_a_channel_button.wait_and_click()
-        self.channel_name_edit_box.set_value(name)
-        self.channel_descripton.set_value(description)
+        self.channel_name_edit_box.send_keys(name)
+        self.channel_descripton.send_keys(description)
         chat_view = ChatView(self.driver)
         chat_view.confirm_create_in_community_button.click()
         self.get_chat(name).click()
@@ -930,7 +930,7 @@ class ChatView(BaseView):
         self.chat_options.click()
         self.group_info.click()
         self.edit_group_chat_name_button.click()
-        self.edit_group_chat_name_edit_box.set_value(new_chat_name)
+        self.edit_group_chat_name_edit_box.send_keys(new_chat_name)
         self.done_button.click()
 
     def get_group_invite_via_group_info(self):
@@ -942,7 +942,7 @@ class ChatView(BaseView):
 
     def request_membership_for_group_chat(self, intro_message):
         self.driver.info("Requesting membership to group chat")
-        self.introduce_yourself_edit_box.set_value(intro_message)
+        self.introduce_yourself_edit_box.send_keys(intro_message)
         self.request_membership_button.click_until_presence_of_element(self.element_by_text('Request pending…'))
 
     def get_username_checkbox(self, username: str, state_on=False):
@@ -1133,7 +1133,7 @@ class ChatView(BaseView):
 
     def select_mention_from_suggestion_list(self, username_in_list, typed_search_pattern=''):
         self.driver.info("Selecting '%s' from suggestion list by '%s'" % (username_in_list, typed_search_pattern))
-        self.chat_message_input.set_value('@' + typed_search_pattern)
+        self.chat_message_input.send_keys('@' + typed_search_pattern)
         self.chat_message_input.click()
         self.search_user_in_mention_suggestion_list(username_in_list).wait_for_visibility_of_element(10).click()
 
@@ -1203,8 +1203,8 @@ class ChatView(BaseView):
 
     def mention_user(self, user_name: str):
         self.driver.info("Mention user %s in the chat" % user_name)
-        gboard = self.driver.available_ime_engines[0]
-        self.driver.activate_ime_engine(gboard)  # workaround to get mentions list expanded
+        # gboard = self.driver.available_ime_engines[0]
+        # self.driver.activate_ime_engine(gboard)  # workaround to get mentions list expanded
         self.chat_message_input.click_inside()
         self.chat_message_input.send_keys("@")
         try:

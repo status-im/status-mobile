@@ -10,7 +10,7 @@ from dateutil import parser
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel, pytest_config_global, transl
-from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
+from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase, app_package
 from views.chat_view import CommunityView
 from views.dbs.waku_backup import user as waku_user
 from views.sign_in_view import SignInView
@@ -134,7 +134,7 @@ class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700739)
     def test_public_chat_open_using_deep_link(self):
-        self.drivers[0].close_app()
+        self.drivers[0].terminate_app(app_package)
         chat_name = self.home.get_random_chat_name()
         deep_link = 'status-im://%s' % chat_name
         self.sign_in.open_weblink_and_login(deep_link)
@@ -831,7 +831,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         for key, data in preview_urls.items():
             self.home_2.just_fyi("Checking %s preview case" % key)
             url = data['url']
-            self.channel_2.chat_message_input.set_value(url)
+            self.channel_2.chat_message_input.send_keys(url)
             self.channel_2.url_preview_composer.wait_for_element(20)
             shown_title = self.channel_2.url_preview_composer_text.text
             if shown_title != data['title']:
@@ -923,7 +923,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         # workaround for app closed after airplane mode
         if not self.home_1.chats_tab.is_element_displayed() and \
                 not self.chat_1.chat_floating_screen.is_element_displayed():
-            self.device_1.driver.launch_app()
+            self.device_1.driver.activate_app(app_package)
             self.device_1.sign_in()
 
         self.home_2.just_fyi('Send message to public chat while device 1 is offline')

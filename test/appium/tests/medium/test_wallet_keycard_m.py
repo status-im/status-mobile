@@ -58,7 +58,7 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         amount = chat.get_unique_amount()
 
         send_message = chat.send_command.click()
-        send_message.amount_edit_box.set_value(amount)
+        send_message.amount_edit_box.send_keys(amount)
         send_message.confirm()
         send_message.next_button.click()
 
@@ -118,8 +118,8 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         keycard = profile.change_pairing_code_button.click()
         keycard.enter_default_pin()
         self.sign_in.create_password_input.wait_for_element()
-        self.sign_in.create_password_input.set_value(common_password)
-        self.sign_in.confirm_your_password_input.set_value(common_password + "1")
+        self.sign_in.create_password_input.send_keys(common_password)
+        self.sign_in.confirm_your_password_input.send_keys(common_password + "1")
         if not keycard.element_by_translation_id("pairing-code_error1").is_element_displayed():
             self.errors.append("No error is shown when pairing codes don't match")
         self.sign_in.confirm_your_password_input.delete_last_symbols(1)
@@ -138,7 +138,7 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.home.just_fyi("Checking backing up keycard")
         profile.create_keycard_backup_button.scroll_to_element()
         keycard = profile.create_keycard_backup_button.click()
-        self.sign_in.seedphrase_input.set_value(self.user['passphrase'])
+        self.sign_in.seedphrase_input.send_keys(self.user['passphrase'])
         self.sign_in.next_button.click()
         keycard.return_card_to_factory_settings_checkbox.enable()
         keycard.begin_setup_button.click()
@@ -159,9 +159,9 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.sign_in.generate_new_key_button.click()
         self.sign_in.next_button.click()
         self.sign_in.next_button.click()
-        self.sign_in.create_password_input.set_value(common_password)
+        self.sign_in.create_password_input.send_keys(common_password)
         self.sign_in.next_button.click()
-        self.sign_in.confirm_your_password_input.set_value(common_password)
+        self.sign_in.confirm_your_password_input.send_keys(common_password)
         self.sign_in.next_button.click()
         self.sign_in.maybe_later_button.click_until_presence_of_element(self.sign_in.start_button)
         self.sign_in.start_button.click()
@@ -173,7 +173,7 @@ class TestKeycardMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         wallet.enter_your_password_input.send_keys(common_password)
         account_name = 'subacc'
         wallet.account_name_input.send_keys(account_name)
-        wallet.enter_seed_phrase_input.set_value(self.user['passphrase'])
+        wallet.enter_seed_phrase_input.send_keys(self.user['passphrase'])
         wallet.add_account_generate_account_button.click()
         wallet.get_account_by_name(account_name).click()
 
@@ -404,7 +404,7 @@ class TestWalletTestDappMediumMultipleDevicesMerged(MultipleSharedDeviceTestCase
         self.wallet.toggle_airplane_mode()
         send_transaction = self.wallet.send_transaction_from_main_screen.click()
         send_transaction.set_recipient_address('0x%s' % basic_user['address'])
-        send_transaction.amount_edit_box.set_value("0")
+        send_transaction.amount_edit_box.send_keys("0")
         send_transaction.confirm()
         send_transaction.sign_transaction_button.click()
         if send_transaction.sign_with_password.is_element_displayed():

@@ -72,7 +72,7 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
 
         profile_1.just_fyi('Check profile image it is not in mentions because user not in contacts yet')
         one_to_one_chat_2 = self.home_2.get_chat(self.default_username_1).click()
-        one_to_one_chat_2.chat_message_input.set_value('@' + self.default_username_1)
+        one_to_one_chat_2.chat_message_input.send_keys('@' + self.default_username_1)
         one_to_one_chat_2.chat_message_input.click()
         if one_to_one_chat_2.user_profile_image_in_mentions_list(
                 self.default_username_1).is_element_image_similar_to_template(logo_default):
@@ -81,7 +81,7 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         profile_1.just_fyi('Check profile image is in mentions because now user was added in contacts')
         one_to_one_chat_2.add_to_contacts.click()
         one_to_one_chat_2.send_message("hey")
-        one_to_one_chat_2.chat_message_input.set_value('@' + self.default_username_1)
+        one_to_one_chat_2.chat_message_input.send_keys('@' + self.default_username_1)
         one_to_one_chat_2.chat_message_input.click()
         if not one_to_one_chat_2.user_profile_image_in_mentions_list(
                 self.default_username_1).is_element_image_similar_to_template(logo_default):
@@ -143,7 +143,7 @@ class TestProfileGapsCommunityMediumMultipleDevicesMerged(MultipleSharedDeviceTe
         if not sign_in_1.get_multiaccount_by_position(1).account_logo.is_element_image_similar_to_template(
                 logo_default):
             self.errors.append('User profile picture was not updated on account login view')
-        sign_in_1.password_input.set_value(common_password)
+        sign_in_1.password_input.send_keys(common_password)
         sign_in_1.sign_in_button.click()
 
         profile_1.just_fyi('Remove user from contact and check there is no profile image displayed')

@@ -206,7 +206,7 @@ class SignInView(BaseView):
         self.remove_profile_button = Button(self.driver, accessibility_id="remove-profile")
 
     def set_password(self, password: str):
-        self.profile_password_edit_box.set_value(password)
+        self.profile_password_edit_box.send_keys(password)
         self.profile_repeat_password_edit_box.click()
         self.profile_repeat_password_edit_box.send_keys(password)
         self.checkbox_button.scroll_to_element()
@@ -214,7 +214,7 @@ class SignInView(BaseView):
         self.profile_confirm_password_button.click()
 
     def set_profile(self, username: str, set_image=False):
-        self.profile_your_name_edit_box.set_value(username)
+        self.profile_your_name_edit_box.send_keys(username)
         self.profile_continue_button.click_until_presence_of_element(self.profile_password_edit_box)
         if set_image:
             pass
@@ -242,8 +242,8 @@ class SignInView(BaseView):
         #     keycard_flow.backup_seed_phrase()
         # else:
         #     self.next_button.click()
-        #     self.create_password_input.set_value(password)
-        #     self.confirm_your_password_input.set_value(password)
+        #     self.create_password_input.send_keys(password)
+        #     self.confirm_your_password_input.send_keys(password)
         #     self.next_button.click()
         self.identifiers_button.wait_and_click(30)
         if enable_notifications:
@@ -266,7 +266,7 @@ class SignInView(BaseView):
             self.plus_profiles_button.click()
             self.create_new_profile_button.click()
         self.use_recovery_phrase_button.click()
-        self.passphrase_edit_box.set_value(passphrase)
+        self.passphrase_edit_box.send_keys(passphrase)
         self.continue_button.click_until_presence_of_element(self.profile_your_name_edit_box)
         self.set_profile(username, set_image)
         self.set_password(password)
@@ -293,7 +293,7 @@ class SignInView(BaseView):
             if keycard_view.connect_selected_card_button.is_element_displayed():
                 keycard_view.connect_selected_card_button.click()
         else:
-            self.password_input.set_value(password)
+            self.password_input.send_keys(password)
             self.login_button.click()
         self.driver.info("## Signed in successfully!", device=False)
         return self.get_home_view()
@@ -321,7 +321,7 @@ class SignInView(BaseView):
         profile.logout()
         self.multi_account_on_login_button.wait_for_visibility_of_element(30)
         self.get_multiaccount_by_position(1).click()
-        self.password_input.set_value(password)
+        self.password_input.send_keys(password)
         self.driver.push_file(source_path=full_path_to_file,
                               destination_path='%s%s' % (get_app_path(), import_file_name))
         self.options_button.click()
@@ -340,7 +340,7 @@ class SignInView(BaseView):
         profile.logout()
         self.multi_account_on_login_button.wait_for_visibility_of_element(30)
         self.get_multiaccount_by_position(1).click()
-        self.password_input.set_value(common_password)
+        self.password_input.send_keys(common_password)
         self.options_button.click()
         self.element_by_text('Export unencrypted').wait_and_click(40)
         self.element_by_text('Export unencrypted').wait_for_invisibility_of_element(40)
