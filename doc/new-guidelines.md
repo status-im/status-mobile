@@ -803,6 +803,8 @@ alternative.
 ```
 
 Please check the [Clojure Style](https://guide.clojure.style/#deprecated) documentation
+
+To reduce visual clutter from deprecated methods in your text editor, consult this [example](https://rider-support.jetbrains.com/hc/en-us/community/posts/4419728641810-How-to-disable-the-the-strike-thru-for-deprecated-methods-in-Javascript-#:~:text=Try%20disabling%20%22Preferences%20%7C%20Editor%20%7C,It%20works%20for%20me) for settings in VSCode, Emacs, VIM, and others.
   
 ### Test structure
 
