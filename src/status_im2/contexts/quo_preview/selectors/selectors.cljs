@@ -32,14 +32,15 @@
      :blur?               blur?
      :customization-color customization-color}]])
 
-(defn cool-preview
+(defn preview-selectors
   []
   (let [state (reagent/atom {:disabled?           false
                              :blur?               false
                              :customization-color :blue})]
     (fn []
-      [rn/view
-       [preview/customizer state descriptor]
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:style {:margin-vertical 24}}
         [preview/blur-view
          {:style                 {:width       "100%"
@@ -58,14 +59,3 @@
           [selector-preview "Radio" quo2/radio @state]
           [selector-preview "Checkbox" quo2/checkbox @state]
           [selector-preview "Checkbox Prefill" quo2/checkbox-prefill @state]]]]])))
-
-(defn preview-selectors
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

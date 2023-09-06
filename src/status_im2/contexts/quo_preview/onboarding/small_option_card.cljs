@@ -29,7 +29,7 @@
     :key   :subtitle
     :type  :text}])
 
-(defn cool-preview
+(defn preview-small-option-card
   []
   (let [state (reagent/atom {:variant  :main
                              :image    (-> descriptor second :options first :key)
@@ -37,22 +37,11 @@
                              :subtitle "Your new self-sovereign identity in Status"
                              :on-press #(js/alert "Small option card pressed!")})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:style {:padding-bottom 150}}
-        [rn/view {:style {:flex 1}}
-         [preview/customizer state descriptor]]
         [rn/view
          {:style {:background-color colors/neutral-80
                   :padding          20}}
          [quo2/small-option-card @state]]]])))
-
-(defn preview-small-option-card
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-90)
-            :flex             1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

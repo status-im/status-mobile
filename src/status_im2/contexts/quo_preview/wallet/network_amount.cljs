@@ -23,9 +23,10 @@
   (let [state (reagent/atom {:amount "5.123456"
                              :token  :eth})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view
         {:style {:flex               1
                  :padding-horizontal 20}}
-        [rn/view {:style {:min-height 150}} [preview/customizer state descriptor]]
         [quo/network-amount @state]]])))

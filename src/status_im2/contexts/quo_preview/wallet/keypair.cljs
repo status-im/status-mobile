@@ -82,7 +82,7 @@
 
 (def other-details {:full-name "Metamask"})
 
-(defn cool-preview
+(defn preview
   []
   (let [state (reagent/atom {:accounts            accounts
                              :customization-color :blue
@@ -91,25 +91,14 @@
                              :on-options-press    #(js/alert "Options pressed")
                              :action              :selector})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:style {:padding-bottom 150}}
-        [rn/view {:style {:flex 1}}
-         [preview/customizer state descriptor]]
-        [rn/view
-         {:style {:padding-vertical 30
-                  :flex-direction   :row
-                  :justify-content  :center}}
-         [quo/keypair
-          (merge
-           @state
-           {:details (if (= (:type @state) :default-keypair) default-details other-details)})]]]])))
-
-(defn preview
-  []
-  [rn/view
-   {:style {:flex 1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
+       [rn/view
+        {:style {:padding-vertical 30
+                 :flex-direction   :row
+                 :justify-content  :center}}
+        [quo/keypair
+         (merge
+          @state
+          {:details (if (= (:type @state) :default-keypair) default-details other-details)})]]])))

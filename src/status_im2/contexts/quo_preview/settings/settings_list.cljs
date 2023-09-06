@@ -51,7 +51,7 @@
                          :label          "example"
                          :override-theme :dark})}))
 
-(defn cool-preview
+(defn preview-settings-list
   []
   (let [state (reagent/atom {:title               "Account"
                              :accessibility-label :settings-list-item
@@ -59,20 +59,11 @@
                              :chevron?            true
                              :on-press            (fn [] (js/alert "Settings list item pressed"))})]
     (fn []
-      [rn/view
-       {:margin-bottom 50}
-       [preview/customizer state descriptor]
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view
         {:padding-vertical   100
          :padding-horizontal 20
          :align-items        :center}
         [quo/settings-list (get-props @state)]]])))
-
-(defn preview-settings-list
-  []
-  [rn/view {:style {:flex 1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

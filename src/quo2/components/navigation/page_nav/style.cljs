@@ -32,7 +32,8 @@
   {:width 12})
 
 (def right-content-min-size
-  {:min-width 32 :min-height 32})
+  {:min-width  32
+   :min-height 32})
 
 (def token-logo
   {:width 16 :height 16})

@@ -30,7 +30,7 @@
     (assoc state :avatar (resources/get-mock-image :user-picture-male4))
     state))
 
-(defn cool-preview
+(defn preview
   []
   (let [state (reagent/atom {:title                           "Title"
                              :title-accessibility-label       :title
@@ -38,24 +38,12 @@
                              :description-props               ""
                              :description-accessibility-label :subtitle})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
          [quo2/view
           (state->text-combinations-props @state)]]]])))
-
-(defn preview
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :flex-grow                    1
-     :nested-scroll-enabled        true
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

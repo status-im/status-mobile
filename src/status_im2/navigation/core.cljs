@@ -306,11 +306,6 @@
     (fn [] views/visibility-status-popover-comp))
 
    (navigation/register-component
-     "theme-switcher"
-     (fn [] (gesture/gesture-handler-root-hoc quo-preview/theme-switcher))
-     (fn [] quo-preview/theme-switcher))
-
-   (navigation/register-component
     "bottom-sheet-old"
     (fn [] (gesture/gesture-handler-root-hoc views/sheet-comp-old))
     (fn [] views/sheet-comp-old))

@@ -20,7 +20,7 @@
     :key   :shuffle-images
     :type  :boolean}])
 
-(defn cool-preview
+(defn preview-collectible
   []
   (let [state (reagent/atom {:num-images 1 :shuffle-images false})]
     (fn []
@@ -29,22 +29,12 @@
                              (shuffle)
                              :always
                              (take (:num-images @state)))]
-        [rn/view
-         {:margin-bottom 50
-          :padding       16}
-         [preview/customizer state descriptor]
+        [preview/preview-container
+         {:state      state
+          :descriptor descriptor}
          [rn/view
           {:padding-vertical 100
            :align-items      :center}
           [quo/collectible
            {:images   images-to-show
             :on-press #(js/alert "Pressed")}]]]))))
-
-(defn preview-collectible
-  []
-  [rn/view {:style {:flex 1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

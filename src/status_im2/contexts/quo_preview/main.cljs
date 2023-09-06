@@ -5,7 +5,7 @@
     [reagent.core :as reagent]
     [react-native.core :as rn]
     [status-im2.contexts.quo-preview.style :as style]
-    [status-im2.common.theme.core :as theme]
+    [status-im2.contexts.quo-preview.common :as common]
     [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]
     [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
     [status-im2.contexts.quo-preview.avatars.channel-avatar :as channel-avatar]
@@ -129,19 +129,6 @@
     [status-im2.contexts.quo-preview.wallet.wallet-activity :as wallet-activity]
     [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
     [utils.re-frame :as rf]))
-
-;(defn theme-switcher
-;  []
-;  [rn/view {:style style/theme-switcher}
-;   [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
-;   [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
-
-(def theme-switcher
-  (reagent/reactify-component
-    (fn []
-      [rn/view {:style style/theme-switcher}
-       [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
-       [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])))
 
 (def screens-categories
   {:foundations       [{:name      :shadows
@@ -343,7 +330,6 @@
                        {:name      :reorder-item
                         :component reorder-item/preview-reorder-item}
                        {:name      :category
-                        :options   {:topBar {:title {:component {:name "theme-switcher"}}}}
                         :component category/preview}
                        {:name      :data-item
                         :component data-item/preview-data-item}]
@@ -400,23 +386,6 @@
    :keycard           [{:name      :keycard-component
                         :component keycard/view}]})
 
-(defn- navigation-bar
-  []
-  (let [logged-in?    (rf/sub [:multiaccount/logged-in?])
-        has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
-        root          (if has-profiles? :profiles :intro)]
-    [quo/page-nav
-     {:type       :title
-      :title      "Quo2 components preview"
-      :text-align :left
-      :icon-name  :i/close
-      :on-press   #(if logged-in?
-                     (rf/dispatch [:navigate-back])
-                     (do
-                       (theme/set-theme :dark)
-                       (rf/dispatch [:init-root root])))}]))
-
-
 (defn- category-view
   []
   (let [open?     (reagent/atom false)
@@ -440,8 +409,7 @@
 (defn- main-screen
   []
   [:<>
-   [navigation-bar]
-   [theme-switcher]
+   [common/navigation-bar]
    [rn/scroll-view {:style (style/main)}
     (for [category (sort screens-categories)]
       ^{:key (first category)}
@@ -455,7 +423,7 @@
               (update-in subcategory
                          [:options :topBar]
                          merge
-                         {:visible true})))))
+                         {:visible false})))))
 
 (def main-screens
   [{:name      :quo2-preview

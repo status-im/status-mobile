@@ -26,7 +26,7 @@
    :options [{:key 24}
              {:key 32}]})
 
-(def main-descriptor
+(def descriptor
   [{:label   "Type"
     :key     :type
     :type    :select
@@ -164,7 +164,7 @@
     :key   :duration
     :type  :text}])
 
-(defn cool-preview
+(defn preview-context-tags
   []
   (let [state
         (reagent/atom
@@ -203,26 +203,25 @@
           :context             "Context"
           :duration            "00:32"})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor (concat descriptor
+                            (case (:type @state)
+                              :default      default-descriptor
+                              :multiuser    multiuser-descriptor
+                              :group        group-descriptor
+                              :channel      channel-descriptor
+                              :community    community-descriptor
+                              :token        token-descriptor
+                              :network      network-descriptor
+                              :multinetwork multinetwork-descriptor
+                              :account      account-descriptor
+                              :collectible  collectible-descriptor
+                              :address      address-descriptor
+                              :icon         icon-descriptor
+                              :audio        audio-descriptor
+                              default-descriptor))}
        [rn/view {:style {:padding-bottom 150}}
-        [rn/view {:style {:flex 1}}
-         [preview/customizer state
-          (concat main-descriptor
-                  (case (:type @state)
-                    :default      default-descriptor
-                    :multiuser    multiuser-descriptor
-                    :group        group-descriptor
-                    :channel      channel-descriptor
-                    :community    community-descriptor
-                    :token        token-descriptor
-                    :network      network-descriptor
-                    :multinetwork multinetwork-descriptor
-                    :account      account-descriptor
-                    :collectible  collectible-descriptor
-                    :address      address-descriptor
-                    :icon         icon-descriptor
-                    :audio        audio-descriptor
-                    default-descriptor))]]
         [rn/view {:style {:padding-vertical 60}}
          [preview/blur-view
           {:style                 {:flex              1
@@ -230,14 +229,3 @@
                                    :margin-horizontal 40}
            :show-blur-background? (:blur? @state)}
           [quo/context-tag @state]]]]])))
-
-(defn preview-context-tags
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

@@ -31,23 +31,13 @@
    (resources/get-mock-image :photo2)
    (resources/get-mock-image :photo3)])
 
-(defn cool-preview
+(defn preview-activity-logs-photos
   []
   (let [state (reagent/atom {:count 1})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
         [rn/view
          [quo/activity-logs-photos {:photos (take (:count @state) mock-photos)}]]]])))
-
-(defn preview-activity-logs-photos
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

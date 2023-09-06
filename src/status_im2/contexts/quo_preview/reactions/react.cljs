@@ -21,13 +21,14 @@
     :key   :neutral?
     :type  :boolean}])
 
-(defn cool-preview
+(defn preview-react
   []
   (let [state (reagent/atom {:emoji :reaction/love})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
         [rn/view
          {:padding-vertical 60
           :justify-content  :center
@@ -35,14 +36,3 @@
           :align-items      :center}
          [quo2.reaction/reaction @state]
          [quo2.reaction/add-reaction @state]]]])))
-
-(defn preview-react
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

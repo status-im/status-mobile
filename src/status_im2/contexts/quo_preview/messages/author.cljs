@@ -31,7 +31,7 @@
     :key   :untrustworthy?
     :type  :boolean}])
 
-(defn cool-preview
+(defn preview-author
   []
   (let [state (reagent/atom {:primary-name    "Alisher Yakupov"
                              :seconadary-name ""
@@ -40,10 +40,10 @@
                              :verified?       false
                              :untrustworthy?  false})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [rn/view {:flex 1}
-         [preview/customizer state descriptor]]
         [rn/view
          {:padding-vertical    60
           :padding--horizontal 15
@@ -51,15 +51,3 @@
          [rn/view
           [text/text "Author:"]
           [quo2/author @state]]]]])))
-
-(defn preview-author
-  []
-  [rn/keyboard-avoiding-view {:style {:flex 1}}
-   [rn/view
-    {:background-color (colors/theme-colors colors/white colors/neutral-90)
-     :flex             1}
-    [rn/flat-list
-     {:flex                         1
-      :keyboard-should-persist-taps :always
-      :header                       [cool-preview]
-      :key-fn                       str}]]])

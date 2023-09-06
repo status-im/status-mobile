@@ -20,7 +20,7 @@
     :key   :account-address
     :type  :text}])
 
-(defn cool-preview
+(defn preview-accounts
   []
   (let [state (reagent/atom {:customization-color :blue
                              :account-name        "Booze for Dubai"
@@ -29,10 +29,9 @@
                              :on-press-menu       (fn []
                                                     (js/alert "Menu button pressed"))})]
     (fn []
-      [rn/view
-       {:margin-bottom 50
-        :padding       16}
-       [preview/customizer state descriptor]
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view
         {:padding-vertical 100
          :align-items      :center
@@ -40,12 +39,3 @@
                             colors/neutral-30
                             colors/neutral-95)}
         [quo/account @state]]])))
-
-(defn preview-accounts
-  []
-  [rn/view {:style {:flex 1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

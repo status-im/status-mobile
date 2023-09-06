@@ -44,27 +44,17 @@
 (def eth-token (resources/get-token :eth))
 (def snt-token (resources/get-token :snt))
 
-(defn cool-preview
+(defn preview-token-tag
   []
   (let [state (reagent/atom {:size :big :value 10 :token "ETH" :sufficient? false :purchasable? false})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
          [quo2/token-tag
           (merge @state
                  {:token-img-src (if (= (get-in @state [:token]) "ETH") eth-token snt-token)})]]]])))
-
-(defn preview-token-tag
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

@@ -147,7 +147,7 @@
      {:avatar-params community-avatar}
      {})))
 
-(defn cool-preview
+(defn preview-switcher-cards
   []
   (let [state (reagent/atom {:type                   shell.constants/private-group-chat-card
                              :title                  "Alisher Yakupov"
@@ -160,21 +160,11 @@
                              :last-message           "This is fantastic! Ethereum"
                              :preview-label-color    colors/white})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
          [switcher-cards/card (get-mock-data @state)]]]])))
-
-(defn preview-switcher-cards
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
