@@ -8,8 +8,7 @@
             [status-im2.navigation.view :as views]
             [taoensso.timbre :as log]
             [status-im2.common.theme.core :as theme]
-            [status-im2.navigation.options :as options]
-            [status-im2.contexts.quo-preview.main :as quo-preview]))
+            [status-im2.navigation.options :as options]))
 
 (navigation/set-lazy-component-registrator
  (fn [screen-key]
@@ -291,7 +290,6 @@
 (re-frame/reg-fx :hide-signing-sheet (fn [] (dissmiss-overlay "signing-sheet")))
 (re-frame/reg-fx :show-select-acc-sheet (fn [] (show-overlay "select-acc-sheet")))
 (re-frame/reg-fx :hide-select-acc-sheet (fn [] (dissmiss-overlay "select-acc-sheet")))
-
 
 (defonce
   _

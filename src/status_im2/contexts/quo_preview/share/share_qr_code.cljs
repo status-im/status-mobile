@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.share.share-qr-code
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
+  (:require [react-native.core :as rn]
             [quo2.core :as quo]
             [status-im2.contexts.quo-preview.preview :as preview]
             [status-im2.common.resources :as resources]

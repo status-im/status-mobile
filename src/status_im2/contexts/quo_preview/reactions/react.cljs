@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.reactions.react
   (:require [clojure.string :as string]
             [quo2.components.reactions.reaction :as quo2.reaction]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.constants :as constants]

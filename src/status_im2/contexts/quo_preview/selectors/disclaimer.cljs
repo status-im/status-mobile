@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.selectors.disclaimer
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]

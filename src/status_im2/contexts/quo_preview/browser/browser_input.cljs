@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.browser.browser-input
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
@@ -27,7 +26,7 @@
                      keyboard-hide-listener (.addListener rn/keyboard
                                                           "keyboardWillHide"
                                                           #(reset! keyboard-shown? false))
-                     {:keys [bottom top]}   (safe-area/get-insets)
+                     {:keys [bottom]}       (safe-area/get-insets)
                      state                  (reagent/atom {:blur?       false
                                                            :disabled?   false
                                                            :favicon?    false

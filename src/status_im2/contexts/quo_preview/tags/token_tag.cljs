@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.tags.token-tag
   (:require [quo2.components.tags.token-tag :as quo2]
-            [quo2.foundations.colors :as colors]
             [quo2.foundations.resources :as resources]
             [react-native.core :as rn]
             [reagent.core :as reagent]

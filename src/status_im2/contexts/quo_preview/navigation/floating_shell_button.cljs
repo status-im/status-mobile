@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.navigation.floating-shell-button
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]

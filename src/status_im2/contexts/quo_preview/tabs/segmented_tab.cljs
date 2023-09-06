@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.tabs.segmented-tab
   (:require [quo2.components.tabs.segmented-tab :as quo2]
-            [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]

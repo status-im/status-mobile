@@ -2,7 +2,6 @@
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 

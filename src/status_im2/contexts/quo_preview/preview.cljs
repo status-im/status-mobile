@@ -4,7 +4,6 @@
             [status-im2.contexts.quo-preview.common :as common]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
             [react-native.safe-area :as safe-area]
             [quo2.theme :as quo.theme]
             [react-native.blur :as blur]
@@ -12,8 +11,7 @@
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.style :as style]
-            utils.number
-            [utils.re-frame :as rf])
+            utils.number)
   (:require-macros status-im2.contexts.quo-preview.preview))
 
 (defn- label-view

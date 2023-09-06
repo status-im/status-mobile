@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.list-items.user-list
   (:require [react-native.core :as rn]
             [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]
             [status-im2.contexts.quo-preview.preview :as preview]
             [quo2.components.list-items.user-list :as user-list]
             [utils.address :as address]))

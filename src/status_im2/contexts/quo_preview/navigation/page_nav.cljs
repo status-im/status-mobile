@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -229,7 +228,7 @@
        :blur-type   :light
        :blur-amount 20}]]))
 
-(defn- preview-page-nav
+(defn preview-page-nav
   [{:keys [theme]}]
   (let [state (reagent/atom
                {:type               :title-description

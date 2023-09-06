@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.markdown.text
   (:require [quo2.components.markdown.text :as quo2]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))

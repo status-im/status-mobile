@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.messages.system-message
   (:require [quo2.components.messages.system-message :as system-message]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
