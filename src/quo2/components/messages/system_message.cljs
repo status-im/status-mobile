@@ -2,7 +2,6 @@
   (:require [quo2.components.avatars.icon-avatar :as icon-avatar]
             [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.components.markdown.text :as text]
-            [quo2.components.messages.author.view :as author]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [utils.i18n :as i18n]
@@ -29,7 +28,7 @@
 
 (defn sm-timestamp
   [timestamp theme]
-  [rn/view {:margin-left 8 :margin-top 2}
+  [rn/view {:margin-left 8}
    [text/text
     {:size  :label
      :style {:color          (time-color theme)
@@ -48,20 +47,23 @@
 
 (defn split-text
   [label theme add-pred?]
-  (let [color (text-color theme)]
-    [:<>
+  (let [color        (text-color theme)
+        label-vector (map-indexed vector (string/split label " "))]
+    [rn/view {:style {:flex-direction :row :flex-shrink 0 :align-items :center}}
      (when add-pred?
        [text/text {} " "])
-     (for [[indx item] (map-indexed vector (string/split label " "))]
+     (for [[indx item] label-vector]
        ^{:key indx}
        [text/text
         {:size  :paragraph-2
          :style {:color        color
-                 :margin-right 3}}
+                 :margin-right (if (= indx (dec (count label-vector)))
+                                 0
+                                 3)}}
         item])]))
 
 (defn system-message-base
-  [{:keys [icon timestamp theme]} child]
+  [{:keys [icon]} child]
   [rn/view
    {:flex-direction :row
     :flex           1
@@ -70,46 +72,47 @@
    [rn/view
     {:align-self     :center
      :flex-direction :row
-     :margin-right   40 ;; dirty hack, flexbox won't work as expected
      :flex           1}
-    child
-    [sm-timestamp timestamp theme]]])
+    child]])
 
 (defn system-message-deleted-internal
   [{:keys [label child theme timestamp]}]
   [system-message-base
-   {:icon      {:icon    :i/delete
-                :color   :danger
-                :opacity 5}
-    :timestamp timestamp
-    :theme     theme}
-   (if child
-     child
-     [text/text
-      {:size  :paragraph-2
-       :style {:color (text-color theme)}}
-      (or label (i18n/label :t/message-deleted))])])
+   {:icon {:icon    :i/delete
+           :color   :danger
+           :opacity 5}}
+   [rn/view {:style {:flex-direction :row :align-items :center}}
+    (if child
+      child
+      [text/text
+       {:size  :paragraph-2
+        :style {:color (text-color theme)}}
+       (or label (i18n/label :t/message-deleted))])
+    [sm-timestamp timestamp theme]]])
 
 (def system-message-deleted (quo.theme/with-theme system-message-deleted-internal))
 
 (defn system-message-contact-internal
   [{:keys [display-name photo-path customization-color theme timestamp]} label icon]
   [system-message-base
-   {:icon      {:icon    icon
-                :color   (or customization-color :primary)
-                :opacity 5}
-    :timestamp timestamp}
+   {:icon {:icon    icon
+           :color   (or customization-color :primary)
+           :opacity 5}}
    [rn/view
     {:flex-direction :row
      :align-items    :center
-     :flex-wrap      :wrap}
-    [rn/view {:flex-direction :row :align-items :center}
+     :flex-shrink    1
+     :flex-wrap      :nowrap}
+    [rn/view {:flex-direction :row :align-items :center :flex-shrink 1}
      [sm-user-avatar display-name photo-path]
      [text/text
-      {:weight :semi-bold
-       :size   :paragraph-2}
+      {:weight          :semi-bold
+       :number-of-lines 1
+       :style           {:flex-shrink 1}
+       :size            :paragraph-2}
       display-name]]
-    [split-text label theme true]]])
+    [split-text label theme true]
+    [sm-timestamp timestamp theme]]])
 
 (def system-message-contact (quo.theme/with-theme system-message-contact-internal))
 
@@ -129,39 +132,47 @@
 (defn system-message-contact-request-internal
   [{:keys [display-name photo-path customization-color theme timestamp incoming?]}]
   [system-message-base
-   {:icon      {:icon    :i/add-user
-                :color   (or customization-color :primary)
-                :opacity 5}
-    :timestamp timestamp}
+   {:icon {:icon    :i/add-user
+           :color   (or customization-color :primary)
+           :opacity 5}}
    [rn/view
     {:flex-direction :row
      :align-items    :center
-     :flex-wrap      :wrap}
+     :flex-shrink    1
+     :flex-wrap      :nowrap}
     (when-not incoming? [split-text "Contact request sent to" theme false])
-    [rn/view {:flex-direction :row :align-items :center}
+    [rn/view {:flex-direction :row :align-items :center :flex-shrink 1}
      [sm-user-avatar display-name photo-path]
      [text/text
-      {:weight :semi-bold
-       :size   :paragraph-2}
+      {:weight          :semi-bold
+       :number-of-lines 1
+       :style           {:flex-shrink 1}
+       :size            :paragraph-2}
       display-name]]
-    (when incoming? [split-text "sent you a contact request" theme true])]])
+    (when incoming? [split-text "sent you a contact request" theme true])
+    [sm-timestamp timestamp theme]]])
 
 (def system-message-contact-request (quo.theme/with-theme system-message-contact-request-internal))
 
 (defn system-message-pinned-internal
   [{:keys [pinned-by child customization-color theme timestamp]}]
   [system-message-base
-   {:icon      {:icon    :i/pin
-                :color   (or customization-color :primary)
-                :opacity 5}
-    :timestamp timestamp}
-   [rn/view
+   {:icon {:icon    :i/pin
+           :color   (or customization-color :primary)
+           :opacity 5}}
+   [rn/view {:style {:flex 1}}
     [rn/view
      {:flex-direction :row
-      :flex-wrap      :wrap
-      :height         18.2}
-     [author/author {:primary-name pinned-by}]
-     [split-text (i18n/label :pinned-a-message) theme true]]
+      :align-items    :center
+      :flex-wrap      :nowrap}
+     [text/text
+      {:weight          :semi-bold
+       :number-of-lines 1
+       :style           {:flex-shrink 1}
+       :size            :paragraph-2}
+      pinned-by]
+     [split-text (i18n/label :pinned-a-message) theme true]
+     [sm-timestamp timestamp theme]]
     (when child child)]])
 
 (def system-message-pinned (quo.theme/with-theme system-message-pinned-internal))
