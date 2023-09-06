@@ -44,3 +44,7 @@
   {:margin-horizontal 12
    :color             (get-label-color notification theme)
    :flex              1})
+
+(defn counter
+  [mentions]
+  {:margin-horizontal (if (= (count (str mentions)) 1) 2 0)})
