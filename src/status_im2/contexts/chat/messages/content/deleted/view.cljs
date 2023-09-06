@@ -6,7 +6,10 @@
 
 (defn user-xxx-deleted-this-message
   [{:keys [display-name profile-picture]}]
-  [:<>
+  [rn/view
+   {:style {:flex-direction :row
+            :align-items    :center
+            :flex-shrink    1}}
    [rn/view
     {:style {:margin-right 4
              :align-self   :center}}
@@ -15,11 +18,15 @@
       :profile-picture   profile-picture
       :status-indicator? false
       :size              :xxxs}]]
-   [quo/author
-    {:primary-name display-name
-     :style        {:margin-right 4}}]
+   [quo/text
+    {:weight          :semi-bold
+     :number-of-lines 1
+     :style           {:flex-shrink 1 :margin-right 4}
+     :size            :paragraph-2}
+    display-name]
    [quo/text
     {:size            :paragraph-2
+     :flex-shrink     0
      :number-of-lines 1}
     (i18n/label :t/deleted-this-message)]])
 
