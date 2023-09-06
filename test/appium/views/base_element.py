@@ -149,14 +149,6 @@ class BaseElement(object):
                 "Device %s: %s by %s: `%s`  is still visible on the screen after %s seconds after wait_for_invisibility_of_element" % (
                     self.driver.number, self.name, self.by, self.locator, seconds)) from None
 
-    def wait_for_staleness_of_element(self, seconds=10):
-        try:
-            return WebDriverWait(self.driver, seconds).until(expected_conditions.staleness_of(self.find_element()))
-        except TimeoutException:
-            raise TimeoutException(
-                "Device %s: %s by %s: `%s` is not stale after %s seconds" % (
-                    self.driver.number, self.name, self.by, self.locator, seconds)) from None
-
     def wait_for_rendering_ended_and_click(self, attempts=3):
         for i in range(attempts):
             try:

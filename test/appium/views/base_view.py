@@ -5,8 +5,11 @@ import string
 import time
 from datetime import datetime
 
+from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
 
 from support.device_apps import start_web_browser
 from tests import common_password, pytest_config_global, transl
@@ -813,3 +816,10 @@ class BaseView(object):
                 return
             time.sleep(1)
         raise TimeoutException("Driver current package is '%s' after %s seconds" % (package, timeout))
+
+    def wait_for_staleness_of_element(self, element_instance: WebElement, seconds=10):
+        try:
+            return WebDriverWait(self.driver, seconds).until(expected_conditions.staleness_of(element_instance))
+        except TimeoutException:
+            raise TimeoutException(
+                "Device %s: expected element is not stale after %s seconds" % (self.driver.number, seconds)) from None

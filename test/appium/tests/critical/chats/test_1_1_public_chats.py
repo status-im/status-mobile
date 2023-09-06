@@ -1327,10 +1327,46 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         [device.navigate_back_to_home_view() for device in (self.device_1, self.device_2)]
         self.errors.verify_no_errors()
 
+
+@pytest.mark.xdist_group(name="new_seven_2")
+@marks.new_ui_critical
+class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase):
+
+    def prepare_devices(self):
+        self.drivers, self.loop = create_shared_drivers(2)
+        self.device_1, self.device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
+
+        self.username_1, self.username_2 = 'sender', 'receiver'
+        self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True,
+                                                                                   'username': self.username_1}),
+                                                      (self.device_2.create_user, {'enable_notifications': True,
+                                                                                   'username': self.username_2}))))
+        self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
+        self.homes = (self.home_1, self.home_2)
+        self.profile_1, self.profile_2 = (home.get_profile_view() for home in self.homes)
+        self.public_key_2 = self.home_2.get_public_key()
+
+        self.profile_1.just_fyi("Sending contact request via Profile > Contacts")
+        for home in (self.home_1, self.home_2):
+            home.navigate_back_to_home_view()
+            home.chats_tab.click()
+        self.home_1.send_contact_request_via_bottom_sheet(self.public_key_2)
+
+        self.home_2.just_fyi("Accepting contact request from activity centre")
+        self.home_2.handle_contact_request(self.username_1)
+
+        self.profile_1.just_fyi("Sending message to contact via Messages > Recent")
+        self.chat_1 = self.home_1.get_chat(self.username_2).click()
+        self.chat_1.send_message('hey')
+        self.home_2.navigate_back_to_home_view()
+        self.chat_2 = self.home_2.get_chat(self.username_1).click()
+        self.message_1, self.message_2, self.message_3, self.message_4 = \
+            "Message 1", "Message 2", "Message 3", "Message 4"
+
     @marks.testrail_id(702783)
     def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
-        self.chat_2.jump_to_card_by_text(self.username_1)
-        self.chat_1.jump_to_card_by_text(self.username_2)
+        # self.chat_2.jump_to_card_by_text(self.username_1)
+        # self.chat_1.jump_to_card_by_text(self.username_2)
         self.home_1.just_fyi('Turn on airplane mode and check that offline status is shown on home view')
         for home in self.homes:
             home.toggle_airplane_mode()

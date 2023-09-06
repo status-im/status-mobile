@@ -186,7 +186,9 @@ class TestActivityMultipleDevicePR(MultipleSharedDeviceTestCase):
         self.community_1.element_by_translation_id("community-channel").click()
         if not self.channel_1.chat_element_by_text(self.text_message).is_element_displayed(20):
             self.errors.append("User was not redirected to community channel after tapping on community channel card!")
+        element = self.channel_1.jump_to_button.find_element()
         self.channel_1.click_system_back_button()
+        self.channel_1.wait_for_staleness_of_element(element)
         self.community_1.jump_to_button.click()
         self.community_1.element_by_text_part(self.username_2).click()
         if not self.chat_1.chat_element_by_text(self.one_to_one_message).is_element_displayed(20):

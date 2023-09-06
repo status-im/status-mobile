@@ -1025,6 +1025,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
                 "New messages badge is shown in community channel element while there are no unread messages")
         self.errors.verify_no_errors()
 
+
 @pytest.mark.xdist_group(name="new_five_2")
 @marks.new_ui_critical
 class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
