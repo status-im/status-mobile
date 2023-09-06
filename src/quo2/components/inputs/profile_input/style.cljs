@@ -1,13 +1,12 @@
 (ns quo2.components.inputs.profile-input.style
-  (:require [react-native.platform :as platform]
-            [quo2.foundations.colors :as colors]))
+  (:require [quo2.foundations.colors :as colors]))
 
 (defn container
   [customization-color]
   {:background-color   (colors/custom-color customization-color 50 40)
    :padding-horizontal 12
    :padding-top        12
-   :padding-bottom     (if platform/ios? 10 0)
+   :padding-bottom     10
    :border-radius      16
    :flex               1})
 
