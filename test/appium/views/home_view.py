@@ -361,19 +361,21 @@ class HomeView(BaseView):
         if self.notifications_unread_badge.is_element_displayed(30):
             self.open_activity_center_button.click()
         chat_element = ActivityCenterElement(self.driver, username[:25])
-        if action == 'accept':
-            self.driver.info("Accepting incoming CR for %s" % username)
-            chat_element.accept_contact_request()
-        elif action == 'decline':
-            self.driver.info("Rejecting incoming CR for %s" % username)
-            chat_element.decline_contact_request()
-        elif action == 'cancel':
-            self.driver.info("Canceling outgoing CR for %s" % username)
-            chat_element.cancel_contact_request()
-        else:
-            self.driver.fail("Illegal option for CR!")
-        self.close_activity_centre.wait_for_rendering_ended_and_click()
-        self.chats_tab.wait_for_visibility_of_element()
+        try:
+            if action == 'accept':
+                self.driver.info("Accepting incoming CR for %s" % username)
+                chat_element.accept_contact_request()
+            elif action == 'decline':
+                self.driver.info("Rejecting incoming CR for %s" % username)
+                chat_element.decline_contact_request()
+            elif action == 'cancel':
+                self.driver.info("Canceling outgoing CR for %s" % username)
+                chat_element.cancel_contact_request()
+            else:
+                self.driver.fail("Illegal option for CR!")
+        finally:
+            self.close_activity_centre.wait_for_rendering_ended_and_click()
+            self.chats_tab.wait_for_visibility_of_element()
 
     def get_username_below_start_new_chat_button(self, username_part):
         return Text(self.driver,

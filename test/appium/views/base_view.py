@@ -11,7 +11,6 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
-from base_test_case import app_package
 from support.device_apps import start_web_browser
 from tests import common_password, pytest_config_global, transl
 from views.base_element import Button, BaseElement, EditBox, Text, CheckBox
@@ -644,6 +643,7 @@ class BaseView(object):
         self.element_by_text(text).click()
 
     def reopen_app(self, password=common_password, sign_in=True):
+        app_package = self.driver.current_package
         self.driver.terminate_app(app_package)
         self.driver.activate_app(app_package)
         if sign_in:
@@ -746,6 +746,10 @@ class BaseView(object):
     def upgrade_app(self):
         self.driver.info("Upgrading apk to apk_upgrade")
         self.driver.install_app(pytest_config_global['apk_upgrade'], replace=True)
+        if self.driver.is_app_installed('im.status.ethereum'):
+            app_package = 'im.status.ethereum'
+        else:
+            app_package = 'im.status.ethereum.pr'
         self.app = self.driver.activate_app(app_package)
 
     def search_by_keyword(self, keyword):

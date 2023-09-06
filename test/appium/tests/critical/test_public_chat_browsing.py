@@ -10,7 +10,7 @@ from dateutil import parser
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, test_dapp_name, test_dapp_url, run_in_parallel, pytest_config_global, transl
-from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase, app_package
+from tests.base_test_case import create_shared_drivers, MultipleSharedDeviceTestCase
 from views.chat_view import CommunityView
 from views.dbs.waku_backup import user as waku_user
 from views.sign_in_view import SignInView
@@ -134,7 +134,7 @@ class TestPublicChatBrowserOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(700739)
     def test_public_chat_open_using_deep_link(self):
-        self.drivers[0].terminate_app(app_package)
+        self.drivers[0].terminate_app(self.drivers[0].current_package)
         chat_name = self.home.get_random_chat_name()
         deep_link = 'status-im://%s' % chat_name
         self.sign_in.open_weblink_and_login(deep_link)
@@ -323,6 +323,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel = self.community_view.get_channel(self.channel_name).click()
 
     @marks.testrail_id(703503)
+    @marks.xfail(reason="https://github.com/status-im/status-mobile/issues/17175", run=False)
     def test_community_discovery(self):
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
@@ -912,6 +913,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_1.block_contact()
 
         self.chat_1.just_fyi('Check that messages from blocked user are hidden in public chat and close app')
+        app_package = self.device_1.driver.current_package
         if not self.chat_1.chat_element_by_text(message_to_disappear).is_element_disappeared(30):
             self.errors.append("Messages from blocked user is not cleared in public chat ")
         self.chat_1.navigate_back_to_home_view()

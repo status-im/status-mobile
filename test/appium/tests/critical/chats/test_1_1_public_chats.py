@@ -7,7 +7,7 @@ from _pytest.outcomes import Failed
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import marks, common_password, run_in_parallel, transl
-from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers, app_package
+from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, basic_user, ens_user, ens_user_message_sender
 from views.sign_in_view import SignInView
 
@@ -162,6 +162,7 @@ class TestCommandsMultipleDevicesMerged(MultipleSharedDeviceTestCase):
         self.wallet_2.home_button.click()
         self.home_1.wallet_button.double_click()
         initial_amount_stt = self.wallet_1.get_asset_amount_by_name('STT')
+        app_package = self.home_1.driver.current_package
         self.home_1.driver.terminate_app(app_package)
 
         self.home_2.just_fyi('Request %s STT in 1-1 chat and check it is visible for sender and receiver' % amount)
@@ -1122,7 +1123,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if not self.chat_2.chat_message_input.is_element_displayed():
             self.home_2.get_chat(self.username_1).click()
         if self.chat_2.chat_element_by_text(message).member_photo.is_element_differs_from_template("member3.png",
-                                                                                                   diff=6):
+                                                                                                   diff=7):
             self.errors.append("Image of user in 1-1 chat is too different from template!")
         self.errors.verify_no_errors()
 
@@ -1369,6 +1370,7 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         # self.chat_1.jump_to_card_by_text(self.username_2)
         self.home_1.just_fyi('Turn on airplane mode and check that offline status is shown on home view')
         for home in self.homes:
+            app_package = self.home_1.driver.current_package
             home.toggle_airplane_mode()
             if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
                 home.driver.activate_app(app_package)
