@@ -119,9 +119,11 @@
            selected-tab]}]
   [react/animated-view
    [screen-title]
-   [featured-communities-header featured-communities-count]
-   [featured-list featured-communities view-type]
-   [quo/separator {:style {:margin-horizontal 20}}]
+   (when (pos? featured-communities-count)
+     [:<>
+      [featured-communities-header featured-communities-count]
+      [featured-list featured-communities view-type]
+      [quo/separator {:style {:margin-horizontal 20}}]])
    [discover-communities-segments selected-tab false]])
 
 (defn other-communities-list
