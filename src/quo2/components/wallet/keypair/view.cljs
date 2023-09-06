@@ -67,7 +67,7 @@
      [rn/view {:style {:margin-left 4}}
       [icon/icon :i/keycard-card
        {:size  16
-        :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]])])
+        :color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]])])
 
 (defn- view-internal
   []

@@ -34,8 +34,8 @@
                                     :color   color})}])]])
 
 (defn- f-animated-skeleton-view
-  [{:keys [style color skeleton-height animated? translate-x window-width] :as data}]
-  (let [loading-color (colors/theme-colors colors/neutral-10 colors/neutral-60)]
+  [{:keys [style color skeleton-height animated? translate-x window-width theme] :as data}]
+  (let [loading-color (colors/theme-colors colors/neutral-10 colors/neutral-60 theme)]
 
     (rn/use-effect
      (fn []
@@ -73,10 +73,9 @@
                                   :height "100%"})
         skeleton-height         (get-in constants/layout-dimensions [content :height])
         number-of-skeletons     (int (Math/ceil (/ parent-height skeleton-height)))
-        color                   (cond
-                                  (and blur? (= theme :dark)) colors/white-opa-5
-                                  (= theme :dark)             colors/neutral-90
-                                  :else                       colors/neutral-5)
+        color                   (if (and blur? (= theme :dark))
+                                  colors/white-opa-5
+                                  (colors/theme-colors colors/neutral-5 colors/neutral-90 theme))
         component               (if animated? animated-skeleton-view static-skeleton-view)]
     [rn/view
      {:style               {:padding 8}

@@ -13,9 +13,9 @@
    :opacity            (when (= state :disabled) 0.3)})
 
 (defn add-container
-  []
+  [theme]
   {:border-style       :dashed
-   :border-color       (colors/theme-colors colors/neutral-30 colors/neutral-70)
+   :border-color       (colors/theme-colors colors/neutral-30 colors/neutral-70 theme)
    :justify-content    :center
    :align-items        :center
    :padding-vertical   0

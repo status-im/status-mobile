@@ -9,7 +9,8 @@
     [reagent.core :as reagent]
     [quo2.foundations.colors :as colors]
     [quo2.components.animated-header-flatlist.style :as style]
-    [oops.core :as oops]))
+    [oops.core :as oops]
+    [quo2.theme :as quo.theme]))
 
 (def header-height 234)
 (def cover-height 192)
@@ -30,7 +31,7 @@
     (reanimated/set-shared-value scroll-y current-y)))
 
 (defn header
-  [{:keys [theme-color f-display-picture-comp cover-uri title-comp]} top-inset scroll-y]
+  [{:keys [theme-color f-display-picture-comp cover-uri title-comp theme]} top-inset scroll-y]
   (let [input-range        [0 (* threshold 0.33)]
         picture-scale-down 0.4
         size-animation     (interpolate scroll-y input-range [80 (* 80 picture-scale-down)])
@@ -38,21 +39,23 @@
         border-animation   (interpolate scroll-y input-range [12 0])]
     [rn/view
      {:style {:height           header-height
-              :background-color (or theme-color (colors/theme-colors colors/white colors/neutral-95))
+              :background-color (or theme-color
+                                    (colors/theme-colors colors/white colors/neutral-95 theme))
               :margin-top       (when platform/ios? (- top-inset))}}
      (when cover-uri
        [fast-image/fast-image
         {:style  {:width  "100%"
                   :height cover-height}
          :source {:uri cover-uri}}])
-     [reanimated/view {:style (style/header-bottom-part border-animation)}
+     [reanimated/view {:style (style/header-bottom-part border-animation theme)}
       [title-comp]]
-     [reanimated/view {:style (style/entity-picture size-animation)}
+     [reanimated/view {:style (style/entity-picture size-animation theme)}
       [:f> f-display-picture-comp image-animation]]]))
 
 (defn- f-animated-header-list
   [{:keys [header-comp main-comp back-button-on-press] :as params}]
-  (let [window-height           (:height (rn/get-window))
+  (let [theme                   (quo.theme/use-theme-value)
+        window-height           (:height (rn/get-window))
         {:keys [top bottom]}    (safe-area/get-insets)
         ;; view height calculation is different because window height is different on iOS and Android:
         view-height             (if platform/ios?
@@ -69,12 +72,12 @@
      [rn/touchable-opacity
       {:active-opacity 1
        :on-press       back-button-on-press
-       :style          (style/button-container {:left 20})}
-      [quo/icon :i/arrow-left {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+       :style          (style/button-container {:left 20 :theme theme})}
+      [quo/icon :i/arrow-left {:size 20 :color (colors/theme-colors colors/black colors/white theme)}]]
      [rn/touchable-opacity
       {:active-opacity 1
-       :style          (style/button-container {:right 20})}
-      [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+       :style          (style/button-container {:right 20 :theme theme})}
+      [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white theme)}]]
      [reanimated/blur-view
       {:blurAmount   32
        :blurType     :light
@@ -86,7 +89,7 @@
       {:data                  [nil]
        :render-fn             main-comp
        :key-fn                str
-       :header                (reagent/as-element (header params top scroll-y))
+       :header                (reagent/as-element (header (assoc params :theme theme) top scroll-y))
        ;; TODO: https://github.com/status-im/status-mobile/issues/14924
        :scroll-event-throttle 8
        :on-scroll             (fn [event] (scroll-handler event initial-y scroll-y))}]]))
