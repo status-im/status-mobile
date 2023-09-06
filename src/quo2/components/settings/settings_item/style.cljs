@@ -21,13 +21,13 @@
 
 (def left-container
   {:margin-left     12
-   :justify-content :center
-   :align-items     :center})
+   :height          "100%"
+   :justify-content :center})
 
 (defn image-container
   [description tag image]
-  {:height      (find-icon-height description tag image)
-   :padding-top (when description 1)})
+  {:height          (find-icon-height description tag image)
+   :justify-content :flex-start})
 
 (def status-container
   {:flex-direction :row
