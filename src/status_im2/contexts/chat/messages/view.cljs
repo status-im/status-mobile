@@ -32,11 +32,12 @@
         chat-screen-loaded?                      (rf/sub [:shell/chat-screen-loaded?])
         all-loaded?                              (when chat-screen-loaded?
                                                    (rf/sub [:chats/all-loaded? (:chat-id chat)]))
-        display-name                             (if (= chat-type constants/one-to-one-chat-type)
-                                                   (first (rf/sub
-                                                           [:contacts/contact-two-names-by-identity
-                                                            chat-id]))
-                                                   (str emoji " " chat-name))
+        display-name             (cond
+                                   (= chat-type constants/one-to-one-chat-type)
+                                   (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                                   (= chat-type constants/community-chat-type)
+                                   (str (when emoji (str emoji " ")) "# " chat-name)
+                                   :else (str emoji chat-name))
         online?                                  (rf/sub [:visibility-status-updates/online? chat-id])
         photo-path                               (rf/sub [:chats/photo-path chat-id])]
     (rn/use-effect
