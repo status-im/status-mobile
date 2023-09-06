@@ -5,7 +5,7 @@ from _pytest.outcomes import Failed
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, run_in_parallel, transl
-from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers, app_package
+from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from views.chat_view import ChatView
 from views.sign_in_view import SignInView
 
@@ -412,6 +412,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         message_1, message_2 = 'message from old member', 'message from new member'
 
         self.homes[0].just_fyi("Put admin device to offline and send messages from members")
+        app_package = self.drivers[0].current_package
         self.homes[0].toggle_airplane_mode()
         self.chats[1].send_message(message_1)
         self.chats[2].send_message(message_2)

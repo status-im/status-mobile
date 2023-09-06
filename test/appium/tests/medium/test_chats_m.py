@@ -6,7 +6,7 @@ import pytest
 
 from tests import bootnode_address, mailserver_address, mailserver_ams, used_fleet, background_service_message
 from tests import marks
-from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers, app_package
+from tests.base_test_case import MultipleSharedDeviceTestCase, create_shared_drivers
 from tests.users import transaction_senders, ens_user
 from views.sign_in_view import SignInView
 
@@ -940,6 +940,7 @@ class TestChatKeycardMentionsMediumMultipleDevice(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702296)
     def test_block_user_from_1_1_chat_header_check_mentions_and_push_notification_service(self):
+        app_package = self.device_1.driver.current_package
         [home.home_button.double_click() for home in (self.home_1, self.home_2)]
         message_before_block_1 = "Before block from recipient"
         message_before_block_2 = "Before block from sender"

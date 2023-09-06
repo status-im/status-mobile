@@ -27,8 +27,6 @@ executor_local = 'http://localhost:4723/wd/hub'
 
 implicit_wait = 5
 
-app_package = 'im.status.ethereum'
-
 
 def get_capabilities_local():
     desired_caps = dict()

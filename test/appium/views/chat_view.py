@@ -1209,7 +1209,7 @@ class ChatView(BaseView):
         self.chat_message_input.send_keys("@")
         try:
             self.mentions_list.wait_for_element()
-            self.user_list_element_by_name(user_name).click()
+            self.user_list_element_by_name(user_name).wait_for_rendering_ended_and_click()
         except TimeoutException:
             self.driver.fail("Mentions list is not shown")
 
