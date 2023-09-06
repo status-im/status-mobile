@@ -106,7 +106,7 @@
     :accessibility-label accessibility-label}
    [rn/view {:style style/sub-container}
     [image-component props]
-    [rn/view {:style {:margin-left 12}}
+    [rn/view {:style style/left-container}
      [text/text {:weight :medium} title]
      [description-component props]
      [tag-component props]]]

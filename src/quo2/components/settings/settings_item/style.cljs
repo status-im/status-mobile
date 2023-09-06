@@ -19,6 +19,11 @@
   {:flex-direction :row
    :align-items    :center})
 
+(def left-container
+  {:margin-left 12
+   :justify-content :center
+   :align-items :center})
+
 (defn image-container
   [description tag image]
   {:height      (find-icon-height description tag image)
