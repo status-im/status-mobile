@@ -55,21 +55,17 @@
       :mention
       (conj
        units
-       [rn/view
-        {:style style/mention-tag-wrapper}
-        [rn/touchable-opacity
-         {:active-opacity 1
-          :on-press       #(rf/dispatch [:chat.ui/show-profile literal])
-          :style          style/mention-tag}
-         [quo/text
-          {:weight :medium
-           :style  style/mention-tag-text
-           :size   :paragraph-1}
-          (rf/sub [:messages/resolve-mention literal])]]])
+       [rn/pressable
+        {:on-press #(rf/dispatch [:chat.ui/show-profile literal])
+         :style    style/mention-tag-wrapper}
+        [quo/text
+         {:weight :medium
+          :style  style/mention-tag-text
+          :size   :paragraph-1}
+         (rf/sub [:messages/resolve-mention literal])]])
 
       :edited
       (conj units
-
             [quo/text
              {:weight :medium
               :style  {:font-size 11 ; Font-size must be used instead of props or the
@@ -90,6 +86,11 @@
 
       (conj units literal))))
 
+(defn first-child-mention
+  [children]
+  (and (> (count children) 0)
+       (= (keyword (:type (second children))) :mention)
+       (empty? (get-in children [0 :literal]))))
 
 (defn render-block
   [blocks {:keys [type literal children]} chat-id style-override]
@@ -101,8 +102,9 @@
             (fn [acc e]
               (render-inline acc e chat-id style-override))
             [quo/text
-             {:style {:size  :paragraph-1
-                      :color (when (seq style-override) colors/white)}}]
+             {:style {:size          :paragraph-1
+                      :margin-bottom (if (first-child-mention children) 4 0)
+                      :color         (when (seq style-override) colors/white)}}]
             children)])
 
     :edited-block

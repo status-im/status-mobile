@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.text.style
-  (:require [quo2.foundations.colors :as colors]))
-
-(def spacing-between-blocks 0)
+  (:require [quo2.foundations.colors :as colors]
+            [quo.platform :as platform]))
 
 (def block
   {:border-radius      6
@@ -12,18 +11,14 @@
    :padding-left      10
    :border-left-color colors/neutral-40})
 
-(defn mention-tag-wrapper
-  []
-  {:flex-direction :row
-   :align-items    :center
-   :height         22})
-
-(def mention-tag
-  {:background-color   colors/primary-50-opa-10
+(def mention-tag-wrapper
+  {:flex-direction     :row
+   :align-items        :center
+   :height             22
+   :background-color   colors/primary-50-opa-10
    :padding-horizontal 3
    :border-radius      6
-   :margin-bottom      -3
-   :height             22})
+   :transform          [{:translateY (if platform/ios? 4 6)}]})
 
 (def mention-tag-text
   {:color                 (colors/theme-colors colors/primary-50
