@@ -1227,7 +1227,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         control_message_1_1_chat = "it is just a message text"
         self.chat_2.send_message(control_message_1_1_chat)
         self.chat_2.chat_element_by_text(community_name).view_community_button.click()
-        self.community_2.join_community()
+        self.community_2.join_community(open_community=False)
 
         self.home_1.just_fyi("Device 1 accepts the community request")
         self.home_1.jump_to_communities_home()

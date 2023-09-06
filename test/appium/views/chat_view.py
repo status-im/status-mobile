@@ -411,16 +411,17 @@ class CommunityView(HomeView):
         #### NEW UI
         # Communities initial page
         self.community_description_text = Text(self.driver, accessibility_id="community-description-text")
+        self.community_status_joined = Text(self.driver, accessibility_id="status-tag-positive")
 
-    def join_community(self, password=common_password):
+    def join_community(self, password=common_password, open_community=True):
         self.driver.info("Joining community")
         self.join_button.click()
-        self.checkbox_button.scroll_to_element()
-        self.checkbox_button.enable()
         self.join_community_button.scroll_and_click()
         self.password_input.set_value(password)
         Button(self.driver,
                xpath="//*[@content-desc='password-input']/../following-sibling::*//*[@text='Join Community']").click()
+        if open_community:
+            self.community_status_joined.wait_for_visibility_of_element(60)
 
     def get_channel(self, channel_name: str):
         self.driver.info("Getting  %s channel element in community" % channel_name)
