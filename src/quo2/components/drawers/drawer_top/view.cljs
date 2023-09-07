@@ -57,7 +57,7 @@
 
 (defn- acocunt-subtitle
   [{:keys [networks theme blur? description]}]
-   [rn/view {:style style/row}
+  [rn/view {:style style/row}
    (for [network networks]
      ^{:key (str network)}
      [network-view network])
@@ -99,29 +99,34 @@
   [{:keys [type theme blur? keycard? networks description community-name community-logo]}]
   (cond
     (= :keypair type)
-    [keypair-subtitle {:theme theme
-                       :blur? blur?
-                       :keycard? keycard?}]
+    [keypair-subtitle
+     {:theme    theme
+      :blur?    blur?
+      :keycard? keycard?}]
 
     (= :account type)
-    [acocunt-subtitle {:networks networks
-                       :theme theme
-                       :blur? blur?
-                       :description description}]
-    
+    [acocunt-subtitle
+     {:networks    networks
+      :theme       theme
+      :blur?       blur?
+      :description description}]
+
     (= :default-keypair type)
-    [default-keypair-subtitle {:description description
-                               :theme theme
-                               :blur? blur?}]
+    [default-keypair-subtitle
+     {:description description
+      :theme       theme
+      :blur?       blur?}]
 
     (= :context-tag type)
-    [context-tag-subtitle {:community-logo community-logo
-                           :community-name community-name}]
+    [context-tag-subtitle
+     {:community-logo community-logo
+      :community-name community-name}]
 
     (and (not= :label type) description)
-    [description-subtitle {:theme theme
-                           :blur? blur?
-                           :description description}]))
+    [description-subtitle
+     {:theme       theme
+      :blur?       blur?
+      :description description}]))
 
 (defn- right-icon
   [{:keys [theme type on-button-press on-button-long-press button-disabled? button-icon]}]
@@ -166,11 +171,11 @@
   [rn/view {:style style/container}
    [rn/view {:style style/left-container}
     [left-image
-     {:type                               type
-      :customization-color customization-color
-      :account-avatar-emoji               account-avatar-emoji
-      :icon-avatar                        icon-avatar
-      :profile-picture                    profile-picture}]]
+     {:type                 type
+      :customization-color  customization-color
+      :account-avatar-emoji account-avatar-emoji
+      :icon-avatar          icon-avatar
+      :profile-picture      profile-picture}]]
    [rn/view {:style style/body-container}
     [left-title
      {:type  type

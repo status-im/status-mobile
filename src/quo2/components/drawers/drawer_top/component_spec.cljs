@@ -53,12 +53,12 @@
 
   (h/test "component renders in account type"
     (h/render [quo/drawer-top
-               {:title                              "Title"
-                :type                               :account
-                :account-avatar-emoji               "🍿"
-                :networks                           [:ethereum]
-                :description                        "0x62b...0a5"
-                :customization-color :purple}])
+               {:title                "Title"
+                :type                 :account
+                :account-avatar-emoji "🍿"
+                :networks             [:ethereum]
+                :description          "0x62b...0a5"
+                :customization-color  :purple}])
     (h/is-truthy (h/get-by-text "Title"))
     (h/is-truthy (h/get-by-text "0x62b...0a5"))
     (h/is-truthy (h/get-by-label-text :account-avatar)))

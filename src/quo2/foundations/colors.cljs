@@ -256,7 +256,8 @@
          customization
          networks))
 
-(defn hex-string? [s]
+(defn hex-string?
+  [s]
   (and (string? s) (string/starts-with? s "#")))
 
 (def custom-color
@@ -269,9 +270,9 @@
      ([color]
       (custom-color color nil nil))
      ([color suffix]
-      (custom-color color suffix nil)) 
+      (custom-color color suffix nil))
      ([color suffix opacity]
-      (let [hex?          (not (keyword? color))
+      (let [hex?  (not (keyword? color))
             color (if (hex-string? (get colors-map color))
                     (get colors-map color)
                     (get-in colors-map [color suffix]))]

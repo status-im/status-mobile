@@ -37,22 +37,22 @@
 (defn view
   []
   (let [state (reagent/atom
-               {:blur?                              false
-                :title                              "Title"
-                :type                               :default
-                :label                              "Drawer label"
-                :keycard?                           true
-                :networks                           [:ethereum]
-                :description                        "0x62b...0a5"
-                :button-icon                        :i/placeholder
-                :community-name                     "Coinbase"
-                :community-logo                     (resources/mock-images :coinbase)
-                :account-avatar-emoji               "🍿"
-                :customization-color :purple
-                :icon-avatar                        :i/placeholder
-                :on-button-press                    #(js/alert "on press")
-                :on-button-long-press               #(js/alert "on long press")
-                :profile-picture                    (resources/get-mock-image :user-picture-male5)})]
+               {:blur?                false
+                :title                "Title"
+                :type                 :default
+                :label                "Drawer label"
+                :keycard?             true
+                :networks             [:ethereum]
+                :description          "0x62b...0a5"
+                :button-icon          :i/placeholder
+                :community-name       "Coinbase"
+                :community-logo       (resources/mock-images :coinbase)
+                :account-avatar-emoji "🍿"
+                :customization-color  :purple
+                :icon-avatar          :i/placeholder
+                :on-button-press      #(js/alert "on press")
+                :on-button-long-press #(js/alert "on long press")
+                :profile-picture      (resources/get-mock-image :user-picture-male5)})]
     (fn []
       [preview/preview-container
        {:state                 state
