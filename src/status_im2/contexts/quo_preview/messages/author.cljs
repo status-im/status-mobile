@@ -40,8 +40,7 @@
                              :untrustworthy?  false})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
+       {:state state :descriptor descriptor}
        [rn/view {:padding-bottom 150}
         [rn/view
          {:padding-vertical    60

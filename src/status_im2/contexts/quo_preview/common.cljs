@@ -17,8 +17,8 @@
       :text-align :left
       :icon-name  :i/close
       :right-side [{:icon-name (if light? :i/dark :i/light)
-                    :on-press  (fn [] (if light? (theme/set-theme :dark) (theme/set-theme :light)))}]
-      :on-press   #(if logged-in?
+                    :on-press  #(if light? (theme/set-theme :dark) (theme/set-theme :light))}]
+      :on-press   #(if (or logged-in? (not= (rf/sub [:view-id]) :quo2-preview))
                      (rf/dispatch [:navigate-back])
                      (do
                        (theme/set-theme :dark)
