@@ -101,6 +101,7 @@
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
     [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
     [status-im2.contexts.quo-preview.settings.category :as category]
+    [status-im2.contexts.quo-preview.settings.section-label :as section-label]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
@@ -345,7 +346,9 @@
                        {:name      :category
                         :component category/preview}
                        {:name      :data-item
-                        :component data-item/preview-data-item}]
+                        :component data-item/preview-data-item}
+                       {:name      :section-label
+                        :component section-label/preview}]
    :share             [{:name      :qr-code
                         :component qr-code/preview-qr-code}
                        {:name      :share-qr-code

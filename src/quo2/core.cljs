@@ -104,6 +104,7 @@
     quo2.components.settings.reorder-item.view
     quo2.components.settings.settings-item.view
     quo2.components.settings.category.view
+    quo2.components.settings.section-label.view
     quo2.components.share.qr-code.view
     quo2.components.share.share-qr-code.view
     quo2.components.tabs.account-selector
@@ -312,6 +313,7 @@
 (def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
 (def category quo2.components.settings.category.view/category)
 (def data-item quo2.components.settings.data-item.view/view)
+(def section-label quo2.components.settings.section-label.view/view)
 
 ;;;; Share
 (def qr-code quo2.components.share.qr-code.view/qr-code)
