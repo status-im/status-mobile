@@ -5,17 +5,6 @@
 (defonce ^:const navigation-bar-height 100)
 (defonce ^:const header-offset 56)
 
-(defn button-container
-  [position]
-  (merge
-   {:width            24
-    :height           24
-    :border-radius    10
-    :justify-content  :center
-    :align-items      :center
-    :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)}
-   position))
-
 (defn background-view
   [theme]
   {:position         :absolute
@@ -62,15 +51,15 @@
    :opacity  (if loaded? 1 0)})
 
 (def header-container
-  {:position       :absolute
-   :top            header-offset
-   :left           0
-   :right          0
-   :padding-bottom 8
+  {:position           :absolute
+   :top                header-offset
+   :left               0
+   :right              0
+   :padding-bottom     8
    :padding-horizontal 20
-   :display        :flex
-   :flex-direction :row
-   :overflow       :hidden})
+   :display            :flex
+   :flex-direction     :row
+   :overflow           :hidden})
 
 (def header
   {:flex 1})

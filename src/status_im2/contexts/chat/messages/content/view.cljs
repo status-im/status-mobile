@@ -163,7 +163,6 @@
           [rn/view
            {:style {:padding-horizontal 4
                     :flex-direction     :row}}
-           (js/console.log (str "size " message-data))
            [avatar-container message-data show-reactions? show-user-info?]
            (into
             (if show-reactions?
