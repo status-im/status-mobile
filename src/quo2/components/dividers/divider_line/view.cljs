@@ -5,7 +5,7 @@
     [quo2.components.dividers.divider-line.style :as style]))
 
 (defn- view-internal
-  [{:keys [theme]}]
-  [rn/view {:style (style/divider-line theme)}])
+  [{:keys [blur? theme]}]
+  [rn/view {:style (style/divider-line blur? theme)}])
 
 (def view (quo.theme/with-theme view-internal))
