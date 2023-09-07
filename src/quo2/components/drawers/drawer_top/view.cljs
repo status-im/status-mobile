@@ -41,57 +41,87 @@
     :style  (style/network-text-color network)}
    (str (subs (name network) 0 3) ":")])
 
+(defn- keypair-subtitle
+  [{:keys [theme blur? keycard?]}]
+  [rn/view {:style style/row}
+   [text/text
+    {:size   :paragraph-2
+     :weight :regular
+     :style  (style/description theme blur?)}
+    (if keycard?
+      (i18n/label :t/on-keycard)
+      (i18n/label :t/on-device))]
+   (when keycard?
+     [icons/icon :i/keycard-card
+      {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}])])
+
+(defn- acocunt-subtitle
+  [{:keys [networks theme blur? description]}]
+   [rn/view {:style style/row}
+   (for [network networks]
+     ^{:key (str network)}
+     [network-view network])
+   [text/text
+    {:size   :paragraph-2
+     :weight :regular
+     :style  (style/description theme blur?)}
+    description]])
+
+(defn- default-keypair-subtitle
+  [{:keys [description theme blur?]}]
+  [text/text
+   {:accessibility-label :default-keypair-text
+    :size                :paragraph-2
+    :weight              :regular
+    :style               (style/description theme blur?)}
+   (str description " ∙ " (i18n/label :t/on-device))])
+
+(defn- context-tag-subtitle
+  [{:keys [community-logo community-name]}]
+  [rn/view
+   {:accessibility-label :context-tag-wrapper
+    :style               {:flex-wrap :wrap}}
+   [context-tag/view
+    {:type           :community
+     :community-name community-name
+     :community-logo community-logo
+     :size           24}]])
+
+(defn- description-subtitle
+  [{:keys [theme blur? description]}]
+  [text/text
+   {:size   :paragraph-1
+    :weight :regular
+    :style  (style/description theme blur?)}
+   description])
+
 (defn- subtitle
   [{:keys [type theme blur? keycard? networks description community-name community-logo]}]
   (cond
     (= :keypair type)
-    [rn/view {:style style/row}
-     [text/text
-      {:size   :paragraph-2
-       :weight :regular
-       :style  (style/description theme blur?)}
-      (if keycard?
-        (i18n/label :t/on-keycard)
-        (i18n/label :t/on-device))]
-     (when keycard?
-       [icons/icon :i/keycard-card
-        {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}])]
+    [keypair-subtitle {:theme theme
+                       :blur? blur?
+                       :keycard? keycard?}]
 
     (= :account type)
-    [rn/view {:style style/row}
-     (for [network networks]
-       ^{:key (str network)}
-       [network-view network])
-     [text/text
-      {:size   :paragraph-2
-       :weight :regular
-       :style  (style/description theme blur?)}
-      description]]
-
+    [acocunt-subtitle {:networks networks
+                       :theme theme
+                       :blur? blur?
+                       :description description}]
+    
     (= :default-keypair type)
-    [text/text
-     {:accessibility-label :default-keypair-text
-      :size                :paragraph-2
-      :weight              :regular
-      :style               (style/description theme blur?)}
-     (str description " ∙ " (i18n/label :t/on-device))]
+    [default-keypair-subtitle {:description description
+                               :theme theme
+                               :blur? blur?}]
 
     (= :context-tag type)
-    [rn/view
-     {:accessibility-label :context-tag-wrapper
-      :style               {:flex-wrap :wrap}}
-     [context-tag/view
-      {:type           :community
-       :community-name community-name
-       :community-logo community-logo
-       :size           24}]]
+    [context-tag-subtitle {:community-logo community-logo
+                           :community-name community-name}]
 
     (and (not= :label type) description)
-    [text/text
-     {:size   :paragraph-1
-      :weight :regular
-      :style  (style/description theme blur?)}
-     description]))
+    [description-subtitle {:theme theme
+                           :blur? blur?
+                           :description description}]))
 
 (defn- right-icon
   [{:keys [theme type on-button-press on-button-long-press button-disabled? button-icon]}]
