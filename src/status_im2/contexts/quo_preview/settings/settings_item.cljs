@@ -98,7 +98,7 @@
                                    :context "Context"}
                          nil)}))
 
-(defn cool-preview
+(defn preview
   []
   (let [state (reagent/atom {:title               "Account"
                              :accessibility-label :settings-item
@@ -114,12 +114,3 @@
         :show-blur-background? true}
        [rn/view {:style {:flex 1}}
         [quo/settings-item (get-props @state)]]])))
-
-(defn preview
-  []
-  [rn/view {:style {:flex 1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

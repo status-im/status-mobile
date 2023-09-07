@@ -6,7 +6,8 @@
   {:title               "Account"
    :accessibility-label :settings-item
    :action              :arrow
-   :image               :icon})
+   :image               :icon
+   :image-props         :i/browser})
 
 (h/describe "Settings list tests"
   (h/test "Default render of Setting list component"
