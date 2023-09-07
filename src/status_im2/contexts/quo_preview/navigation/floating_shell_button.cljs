@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.navigation.floating-shell-button
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
@@ -42,26 +41,16 @@
     (= scroll-type :scroll-to-bottom)
     (assoc :scroll-to-bottom {:on-press #()})))
 
-(defn cool-preview
+(defn preview-floating-shell-button
   []
   (let [state (reagent/atom {:show-jump-to? true
                              :scroll-type   :notification-down})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
          [quo/floating-shell-button (mock-data @state) nil]]]])))
-
-(defn preview-floating-shell-button
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

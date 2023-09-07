@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.wallet.wallet-overview
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -42,7 +41,7 @@
               {:key   :negative
                :value "Negative"}]}])
 
-(defn cool-preview
+(defn preview-wallet-overview
   []
   (let [state (reagent/atom {:state             :default
                              :time-frame        :one-week
@@ -54,24 +53,12 @@
                              :currency-change   "€0.00"
                              :percentage-change "0.00%"})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [rn/view {:flex 1}
-         [preview/customizer state descriptor]]
         [rn/view
          {:padding-vertical 60
           :flex-direction   :row
           :justify-content  :center}
          [quo/wallet-overview @state]]]])))
-
-(defn preview-wallet-overview
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-95)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

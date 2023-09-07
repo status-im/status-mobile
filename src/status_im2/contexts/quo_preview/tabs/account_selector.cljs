@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.tabs.account-selector
   (:require [quo2.components.tabs.account-selector :as quo2]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -46,7 +45,7 @@
     :account-emoji "🍟"
     :label-text    "Label 3"}])
 
-(defn cool-preview
+(defn preview-this
   []
   (let [state (reagent/atom {:show-label?   true
                              :transparent?  false
@@ -55,21 +54,11 @@
                              :account-emoji "🍑"
                              :label-text    "Label"})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
          [quo2/account-selector @state]]]])))
-
-(defn preview-this
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

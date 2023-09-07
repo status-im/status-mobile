@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.share.share-qr-code
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
+  (:require [react-native.core :as rn]
             [quo2.core :as quo]
             [status-im2.contexts.quo-preview.preview :as preview]
             [status-im2.common.resources :as resources]
@@ -15,16 +14,17 @@
     :key   :link-title
     :type  :text}])
 
-(defn cool-preview
+(defn preview-share-qr-code
   []
   (let [state (reagent/atom {:info-button? true
                              :link-title   "Link to profile"
                              :url          "status.app/u/zQ34e1zlOdas0pKnvrweeedsasas12adjie8"})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:style {:padding-bottom 150}}
         [rn/view {:style {:flex 1}}]
-        [preview/customizer state descriptor]
         [rn/view
          {:style {:padding-vertical 60
                   :justify-content  :center}}
@@ -40,15 +40,3 @@
             :url-on-long-press #(js/alert "url long pressed")
             :share-on-press    #(js/alert "share pressed")
             :qr-url            (:url @state)}]]]]])))
-
-(defn preview-share-qr-code
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white
-                                                   colors/neutral-90)
-            :flex             1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

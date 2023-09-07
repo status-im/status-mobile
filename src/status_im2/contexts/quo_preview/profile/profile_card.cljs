@@ -45,7 +45,7 @@
     :key   :emoji-hash
     :type  :text}])
 
-(defn cool-preview
+(defn preview-profile-card
   []
   (let [state (reagent/atom {:keycard-account? false
                              :name "Matt Grote"
@@ -63,24 +63,12 @@
                              :hash "zQ3k83euenmcikw7474hfu73t5N"
                              :emoji-hash "😄😂🫣🍑😇🤢😻🥷🏻🦸🏻‍♀️🦸🏻🦸🏻‍♂️🦹🏻‍♀️🧑🏻‍🎄🎅🏻"})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [rn/view {:flex 1}
-         [preview/customizer state descriptor]]
         [rn/view
          {:padding-vertical 60
           :flex-direction   :row
           :justify-content  :center}
          [quo/profile-card @state]]]])))
-
-(defn preview-profile-card
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

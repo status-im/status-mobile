@@ -2,14 +2,13 @@
   (:require [clojure.string :as string]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
-(def ^:private main-descriptor
+(def ^:private descriptor
   [{:label   "Type"
     :key     :type
     :type    :select
@@ -229,7 +228,7 @@
        :blur-type   :light
        :blur-amount 20}]]))
 
-(defn- cool-preview
+(defn preview-page-nav
   [{:keys [theme]}]
   (let [state (reagent/atom
                {:type               :title-description
@@ -257,21 +256,20 @@
                 :network-name       "Mainnet"
                 :network-logo       (resources/get-mock-image :diamond)})]
     (fn []
-      [rn/view {:style {:margin-bottom 50 :padding-vertical 16}}
-       [rn/view {:style {:flex 1}}
-        [preview/customizer state
-         (concat main-descriptor
-                 (case (:type @state)
-                   :no-title          no-title-descriptor
-                   :title             title-descriptor
-                   :dropdown          dropdown-descriptor
-                   :token             token-descriptor
-                   :channel           channel-descriptor
-                   :title-description title-description-descriptor
-                   :wallet-networks   wallet-networks-descriptor
-                   :community         community-descriptor
-                   :network           network-descriptor
-                   nil))]]
+      [preview/preview-container
+       {:state      state
+        :descriptor (concat descriptor
+                            (case (:type @state)
+                              :no-title          no-title-descriptor
+                              :title             title-descriptor
+                              :dropdown          dropdown-descriptor
+                              :token             token-descriptor
+                              :channel           channel-descriptor
+                              :title-description title-description-descriptor
+                              :wallet-networks   wallet-networks-descriptor
+                              :community         community-descriptor
+                              :network           network-descriptor
+                              nil))}
        [rn/view
         {:style {:background-color (case (:background @state)
                                      :white       colors/white
@@ -286,14 +284,3 @@
         [photo-bg (:background @state)]
         [blur-bg (:background @state)]
         [quo/page-nav @state]]])))
-
-(defn preview-page-nav
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-90)
-            :flex             1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [(quo.theme/with-theme cool-preview)]
-     :key-fn                       str}]])

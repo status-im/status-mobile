@@ -3,6 +3,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]
             [utils.re-frame :as rf]))
 
 (defn toast-button
@@ -85,10 +86,10 @@
                  :duration   3000}])}
             "update above toast"]])))))
 
-(defn preview
+(defn preview-toasts
   []
   (fn []
-    [rn/view
+    [preview/preview-container
      [rn/view
       {:background-color "#508485"
        :flex-direction   :column
@@ -104,12 +105,3 @@
        ^{:key :30s-duration} [toast-button-30s-duration]
        ^{:key :upsert}
        [update-toast-button]]]]))
-
-(defn preview-toasts
-  []
-  [rn/view {:flex 1}
-   [rn/flat-list
-    {:flex                         1
-     :header                       [preview]
-     :key-fn                       str
-     :keyboard-should-persist-taps :always}]])

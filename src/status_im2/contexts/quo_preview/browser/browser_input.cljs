@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.browser.browser-input
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
@@ -18,7 +17,7 @@
     :key   :disabled?
     :type  :boolean}])
 
-(defn cool-preview
+(defn preview-browser-input
   []
   (reagent/with-let [keyboard-shown?        (reagent/atom false)
                      keyboard-show-listener (.addListener rn/keyboard
@@ -27,21 +26,22 @@
                      keyboard-hide-listener (.addListener rn/keyboard
                                                           "keyboardWillHide"
                                                           #(reset! keyboard-shown? false))
-                     {:keys [bottom top]}   (safe-area/get-insets)
+                     {:keys [bottom]}       (safe-area/get-insets)
                      state                  (reagent/atom {:blur?       false
                                                            :disabled?   false
                                                            :favicon?    false
                                                            :placeholder "Search or enter dapp domain"
                                                            :locked?     false})]
-    [rn/keyboard-avoiding-view {:style {:flex 1 :padding-top top}}
+    [preview/preview-container
+     {:state      state
+      :descriptor descriptor}
      [quo/page-nav
       {:type      :no-title
        :icon-name :i/arrow-left
        :on-press  #(rf/dispatch [:navigate-back])}]
 
      [rn/flat-list
-      {:header                       [preview/customizer state descriptor]
-       :key-fn                       str
+      {:key-fn                       str
        :keyboard-should-persist-taps :always
        :style                        {:flex 1}}]
      [rn/view
@@ -53,10 +53,3 @@
     (finally
      (.remove keyboard-show-listener)
      (.remove keyboard-hide-listener))))
-
-(defn preview-browser-input
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-95)
-            :flex             1}}
-   [cool-preview]])

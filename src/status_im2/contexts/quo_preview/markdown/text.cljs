@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.markdown.text
   (:require [quo2.components.markdown.text :as quo2]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -31,24 +30,14 @@
               {:key   :monospace
                :value "Monospace"}]}])
 
-(defn cool-preview
+(defn preview-text
   []
   (let [state (reagent/atom {})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
         [rn/view {:padding-vertical 60}
          [quo2/text @state
           "The quick brown fox jumped over the lazy dog."]]]])))
-
-(defn preview-text
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
