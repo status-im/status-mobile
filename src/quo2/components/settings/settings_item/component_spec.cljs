@@ -28,8 +28,9 @@
   (h/test "on change event gets fired for toggle"
     (let [on-change (h/mock-fn)]
       (h/render [settings-item/view
-                 (merge props {:action :selector
-                               :action-props {:on-change on-change}})])
+                 (merge props
+                        {:action       :selector
+                         :action-props {:on-change on-change}})])
       (h/fire-event :press (h/get-by-label-text :toggle-off))
       (h/was-called on-change)))
 
