@@ -265,6 +265,10 @@
                             :ring-width               ring-width})))
 
 (defn get-account-qr-image-uri
+  {:deprecated
+   "The size of the avatar image inside this QR is not the same as designs and it's not
+   returning the expected image.
+   Please use `quo2.components.share.qr-code.view/view` in its `:profile` variant."}
   [{:keys [key-uid public-key port qr-size]}]
   (let [profile-qr-url         (str status-profile-base-url public-key)
         base-64-qr-url         (js/btoa profile-qr-url)
