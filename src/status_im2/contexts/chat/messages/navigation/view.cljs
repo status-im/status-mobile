@@ -9,52 +9,38 @@
             [react-native.reanimated :as reanimated]
             [status-im2.common.home.actions.view :as actions]
             [status-im2.config :as config]
-            [status-im2.constants :as constants]
             [status-im2.contexts.chat.messages.navigation.style :as style]
             [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
 (defn f-view
-  [{:keys [scroll-y]}]
-  (let [{:keys [group-chat chat-id chat-name emoji
-                chat-type]
-         :as   chat}             (rf/sub [:chats/current-chat-chat-view])
-        chat-screen-loaded?      (rf/sub [:shell/chat-screen-loaded?])
-        all-loaded?              (when chat-screen-loaded?
-                                   (rf/sub [:chats/all-loaded? (:chat-id chat)]))
-        display-name             (cond
-                                   (= chat-type constants/one-to-one-chat-type)
-                                   (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                                   (= chat-type constants/community-chat-type)
-                                   (str (when emoji (str emoji " ")) "# " chat-name)
-                                   :else (str emoji chat-name))
-        online?                  (rf/sub [:visibility-status-updates/online? chat-id])
-        photo-path               (rf/sub [:chats/photo-path chat-id])
-        opacity-animation        (reanimated/interpolate scroll-y
-                                                         [style/navigation-bar-height
-                                                          (+ style/navigation-bar-height 30)]
-                                                         [0 1]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "extend"})
-        banner-opacity-animation (reanimated/interpolate scroll-y
-                                                         [(+ style/navigation-bar-height 150)
-                                                          (+ style/navigation-bar-height 200)]
-                                                         [0 1]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "extend"})
-        translate-animation      (reanimated/interpolate scroll-y
-                                                         [(+ style/navigation-bar-height 25)
-                                                          (+ style/navigation-bar-height 100)]
-                                                         [50 0]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "clamp"})
-        title-opacity-animation  (reanimated/interpolate scroll-y
-                                                         [0 50]
-                                                         [0 1]
-                                                         {:extrapolateLeft  "clamp"
-                                                          :extrapolateRight "clamp"})]
-    [rn/view {:style style/navigation-view}
+  [{:keys [scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path]}]
+  (let [{:keys [group-chat chat-id]} chat
+        opacity-animation            (reanimated/interpolate scroll-y
+                                                             [style/navigation-bar-height
+                                                              (+ style/navigation-bar-height 30)]
+                                                             [0 1]
+                                                             {:extrapolateLeft  "clamp"
+                                                              :extrapolateRight "extend"})
+        banner-opacity-animation     (reanimated/interpolate scroll-y
+                                                             [(+ style/navigation-bar-height 150)
+                                                              (+ style/navigation-bar-height 200)]
+                                                             [0 1]
+                                                             {:extrapolateLeft  "clamp"
+                                                              :extrapolateRight "extend"})
+        translate-animation          (reanimated/interpolate scroll-y
+                                                             [(+ style/navigation-bar-height 25)
+                                                              (+ style/navigation-bar-height 100)]
+                                                             [50 0]
+                                                             {:extrapolateLeft  "clamp"
+                                                              :extrapolateRight "clamp"})
+        title-opacity-animation      (reanimated/interpolate scroll-y
+                                                             [0 50]
+                                                             [0 1]
+                                                             {:extrapolateLeft  "clamp"
+                                                              :extrapolateRight "clamp"})]
+    [rn/view {:style (style/navigation-view chat-screen-loaded?)}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]
 
@@ -64,6 +50,7 @@
         :blur-type   (colors/theme-colors :light :dark)
         :blur-radius (if platform/ios? 20 10)
         :style       {:flex 1}}]]
+
      [rn/view {:style style/header-container}
       [rn/touchable-opacity
        {:active-opacity      1
