@@ -21,7 +21,7 @@
 
 (defn network-text-color
   [network]
-  {:color (get colors/networks network)})
+  {:color (colors/custom-color network)})
 
 (def row
   {:flex-direction :row})
