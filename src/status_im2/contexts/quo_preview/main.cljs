@@ -5,7 +5,7 @@
     [reagent.core :as reagent]
     [react-native.core :as rn]
     [status-im2.contexts.quo-preview.style :as style]
-    [status-im2.common.theme.core :as theme]
+    [status-im2.contexts.quo-preview.common :as common]
     [status-im2.contexts.quo-preview.animated-header-list.animated-header-list :as animated-header-list]
     [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
     [status-im2.contexts.quo-preview.avatars.channel-avatar :as channel-avatar]
@@ -39,6 +39,7 @@
     [status-im2.contexts.quo-preview.counter.step :as step]
     [status-im2.contexts.quo-preview.dividers.date :as divider-date]
     [status-im2.contexts.quo-preview.dividers.divider-label :as divider-label]
+    [status-im2.contexts.quo-preview.dividers.divider-line :as divider-line]
     [status-im2.contexts.quo-preview.dividers.new-messages :as new-messages]
     [status-im2.contexts.quo-preview.dividers.strength-divider :as strength-divider]
     [status-im2.contexts.quo-preview.drawers.action-drawers :as action-drawers]
@@ -65,6 +66,7 @@
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.dapp :as dapp]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
+    [status-im2.contexts.quo-preview.list-items.token-value :as token-value]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.list-items.community-list :as community-list]
     [status-im2.contexts.quo-preview.markdown.text :as text]
@@ -93,7 +95,7 @@
     [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
     [status-im2.contexts.quo-preview.settings.data-item :as data-item]
-    [status-im2.contexts.quo-preview.settings.settings-list :as settings-list]
+    [status-im2.contexts.quo-preview.settings.settings-item :as settings-item]
     [status-im2.contexts.quo-preview.settings.privacy-option :as privacy-option]
     [status-im2.contexts.quo-preview.settings.reorder-item :as reorder-item]
     [status-im2.contexts.quo-preview.settings.category :as category]
@@ -193,6 +195,8 @@
                         :component step/view}]
    :dividers          [{:name      :divider-label
                         :component divider-label/view}
+                       {:name      :divider-line
+                        :component divider-line/view}
                        {:name      :new-messages
                         :component new-messages/view}
                        {:name      :divider-date
@@ -263,6 +267,8 @@
                         :component dapp/preview}
                        {:name      :preview-lists
                         :component preview-lists/view}
+                       {:name      :token-value
+                        :component token-value/preview}
                        {:name      :user-list
                         :options   {:topBar {:visible true}}
                         :component user-list/preview-user-list}]
@@ -325,12 +331,11 @@
                         :component privacy-option/preview-options}
                        {:name      :accounts
                         :component accounts/preview-accounts}
-                       {:name      :settings-list
-                        :component settings-list/preview-settings-list}
+                       {:name      :settings-item
+                        :component settings-item/preview}
                        {:name      :reorder-item
                         :component reorder-item/preview-reorder-item}
                        {:name      :category
-                        :options   {:topBar {:visible true}}
                         :component category/preview}
                        {:name      :data-item
                         :component data-item/preview-data-item}]
@@ -367,7 +372,6 @@
                        {:name      :account-overview
                         :component account-overview/preview-account-overview}
                        {:name      :keypair
-                        :options   {:topBar {:visible true}}
                         :component keypair/preview}
                        {:name      :network-amount
                         :component network-amount/preview}
@@ -387,28 +391,6 @@
                         :component wallet-overview/preview-wallet-overview}]
    :keycard           [{:name      :keycard-component
                         :component keycard/view}]})
-
-(defn- navigation-bar
-  []
-  (let [logged-in?    (rf/sub [:multiaccount/logged-in?])
-        has-profiles? (boolean (rf/sub [:profile/profiles-overview]))
-        root          (if has-profiles? :profiles :intro)]
-    [quo/page-nav
-     {:type       :title
-      :title      "Quo2 components preview"
-      :text-align :left
-      :icon-name  :i/close
-      :on-press   #(if logged-in?
-                     (rf/dispatch [:navigate-back])
-                     (do
-                       (theme/set-theme :dark)
-                       (rf/dispatch [:init-root root])))}]))
-
-(defn- theme-switcher
-  []
-  [rn/view {:style style/theme-switcher}
-   [quo/button {:on-press #(theme/set-theme :light)} "Set light theme"]
-   [quo/button {:on-press #(theme/set-theme :dark)} "Set dark theme"]])
 
 (defn- category-view
   []
@@ -433,8 +415,7 @@
 (defn- main-screen
   []
   [:<>
-   [navigation-bar]
-   [theme-switcher]
+   [common/navigation-bar]
    [rn/scroll-view {:style (style/main)}
     (for [category (sort screens-categories)]
       ^{:key (first category)}
@@ -448,7 +429,7 @@
               (update-in subcategory
                          [:options :topBar]
                          merge
-                         {:visible true})))))
+                         {:visible false})))))
 
 (def main-screens
   [{:name      :quo2-preview

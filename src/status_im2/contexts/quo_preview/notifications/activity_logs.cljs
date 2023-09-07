@@ -104,7 +104,7 @@
   {:body  "Your favorite color is Turquoise."
    :title "What's my favorite color?"})
 
-(defn preview
+(defn preview-activity-logs
   []
   (let [state (reagent/atom {:button-1-label "Decline"
                              :button-1-type  :danger
@@ -165,7 +165,9 @@
 
                     (= (:context @state) :complex-user-action)
                     (assoc :context complex-user-action))]
-        [rn/view {:margin-bottom 50}
+        [preview/preview-container
+         {:state      state
+          :descriptor descriptor}
          [rn/view
           {:flex    1
            :padding 16}
@@ -177,12 +179,3 @@
             :justify-content  :center
             :padding-vertical 60}
            [quo/activity-log props]]]]))))
-
-(defn preview-activity-logs
-  []
-  [rn/view {:flex 1}
-   [rn/flat-list
-    {:flex                         1
-     :header                       [preview]
-     :key-fn                       str
-     :keyboard-should-persist-taps :always}]])

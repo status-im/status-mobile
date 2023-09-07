@@ -1,11 +1,11 @@
 (ns status-im2.contexts.quo-preview.tags.tag
   (:require [quo.react-native :as rn]
-            [quo.previews.preview :as preview]
             [quo2.foundations.colors :as colors]
             [quo2.components.tags.tag :as tag]
             [status-im.ui.components.react :as react]
             [status-im2.common.resources :as resources]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Size:"
@@ -34,18 +34,18 @@
     :key   :blurred?
     :type  :boolean}])
 
-(defn cool-preview
+(defn preview-tag
   []
   (let [state (reagent/atom {:size      32
                              :labelled? true
                              :type      :emoji})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view
         {:style {:padding-bottom 150
                  :padding-top    60}}
-        [rn/view {:flex 1}
-         [preview/customizer state descriptor]]
         [rn/view
          {:style {:flex               1
                   :justify-content    :center
@@ -84,15 +84,3 @@
                    :resource  (if (= :emoji (:type @state))
                                 (resources/get-image :music)
                                 :i/placeholder)})]]]]])))
-(defn preview-tag
-  []
-  [rn/view
-   {:flex             1
-    :background-color (colors/theme-colors
-                       colors/white
-                       colors/neutral-90)}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

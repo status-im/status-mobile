@@ -10,15 +10,16 @@
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defn create-item-array
-  [n {:keys [right-icon? image? subtitle?]}]
-  (vec (for [i (range n)]
-         {:title      (str "Item " i)
-          :subtitle   (when subtitle? "subtitle")
-          :chevron?   true
-          :right-icon (when right-icon? :i/globe)
-          :left-icon  :i/browser
-          :image-size (if image? 32 0)
-          :image      (when image? (resources/get-mock-image :diamond))})))
+  [n {:keys [right-icon? image? subtitle? list-type]}]
+  (vec
+   (for [i (range n)]
+     {:title       (str "Item " i)
+      :subtitle    (when subtitle? "subtitle")
+      :action      :arrow
+      :right-icon  (when right-icon? :i/globe)
+      :image       (if (= list-type :settings) :icon (when image? (resources/get-mock-image :diamond)))
+      :image-props :i/browser
+      :image-size  (if image? 32 0)})))
 
 (def reorder-descriptor
   [{:label "Right icon:"
@@ -68,7 +69,9 @@
                             (reset! data (create-item-array (max (js/parseInt (:size @state)) 1)
                                                             @state)))
                           [(:blur? @state) (:right-icon? @state) (:image? @state) (:subtitle? @state)])
-           [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+           [preview/preview-container
+            {:state      state
+             :descriptor (if (= (:list-type @state) :settings) settings-descriptor reorder-descriptor)}
             [rn/view
              {:style {:flex             1
                       :padding-bottom   150

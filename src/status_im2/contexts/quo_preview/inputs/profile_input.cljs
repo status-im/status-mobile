@@ -1,10 +1,9 @@
 (ns status-im2.contexts.quo-preview.inputs.profile-input
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [quo.react-native :as rn]))
 
 (def descriptor
   [{:key  :disabled?
@@ -22,12 +21,12 @@
         value          (reagent/atom "")
         on-change-text #(reset! value %)]
     (fn []
-      [preview/preview-container {:state state :descriptor descriptor}
-       [blur/view
-        {:background-color  colors/neutral-80-opa-80
-         :flex-direction    :row
-         :margin-horizontal 20
-         :justify-content   :center}
+      [preview/preview-container
+       {:state                 state
+        :descriptor            descriptor
+        :blur?                 true
+        :show-blur-background? true}
+       [rn/view
         [quo/profile-input
          {:default-value       ""
           :on-change-text      on-change-text

@@ -171,9 +171,3 @@
    :padding-bottom     8
    :padding-horizontal 16
    :background-color   (colors/theme-colors colors/white colors/neutral-90)})
-
-(def theme-switcher
-  {:flex-direction     :row
-   :justify-content    :space-between
-   :padding-horizontal 24
-   :padding-vertical   12})

@@ -30,18 +30,21 @@
              icon
              text-color
              label
-             accessibility-label]}]
+             accessibility-label
+             container-style]}]
     (let [paragraph-size (if (= size :small) :paragraph-2 :paragraph-1)]
       [rn/view
        {:accessible          true
         :accessibility-label accessibility-label
-        :style               (assoc (if (= size :small)
-                                      small-container-style
-                                      large-container-style)
-                                    :align-self       :flex-start
-                                    :border-width     1
-                                    :border-color     border-color
-                                    :background-color background-color)}
+        :style               (merge
+                              (assoc (if (= size :small)
+                                       small-container-style
+                                       large-container-style)
+                                     :align-self       :flex-start
+                                     :border-width     1
+                                     :border-color     border-color
+                                     :background-color background-color)
+                              container-style)}
        [rn/view
         {:flex-direction :row
          :align-items    :center
@@ -61,9 +64,10 @@
                    :color        text-color}} label]]])))
 
 (defn- positive
-  [size theme label _ no-icon?]
+  [size theme label _ no-icon? container-style]
   [base-tag
    {:accessibility-label :status-tag-positive
+    :container-style     container-style
     :size                size
     :icon                (when-not no-icon? :i/positive-state)
     :background-color    colors/success-50-opa-10
@@ -73,9 +77,10 @@
     :text-color          (if (= theme :dark) colors/success-60 colors/success-50)}])
 
 (defn- negative
-  [size theme label _ no-icon?]
+  [size theme label _ no-icon? container-style]
   [base-tag
    {:accessibility-label :status-tag-negative
+    :container-style     container-style
     :size                size
     :icon                (when-not no-icon? :i/negative-state)
     :background-color    colors/danger-50-opa-10
@@ -85,9 +90,10 @@
     :text-color          (colors/theme-colors colors/danger-50 colors/danger-60 theme)}])
 
 (defn- pending
-  [size theme label blur? no-icon?]
+  [size theme label blur? no-icon? container-style]
   [base-tag
    {:accessibility-label :status-tag-pending
+    :container-style     container-style
     :size                size
     :label               label
     :icon                (when-not no-icon?
@@ -106,7 +112,7 @@
                            (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}])
 
 (defn- status-tag-internal
-  [{:keys [status size theme label blur? no-icon?]}]
+  [{:keys [status size theme label blur? no-icon? container-style]}]
   (when status
     (when-let [status-component (case (:type status)
                                   :positive positive
@@ -118,6 +124,7 @@
        theme
        label
        blur?
-       no-icon?])))
+       no-icon?
+       container-style])))
 
 (def status-tag (quo.theme/with-theme status-tag-internal))

@@ -34,6 +34,7 @@
     quo2.components.counter.step.view
     quo2.components.dividers.date
     quo2.components.dividers.divider-label.view
+    quo2.components.dividers.divider-line.view
     quo2.components.dividers.new-messages
     quo2.components.dividers.strength-divider.view
     quo2.components.drawers.action-drawers.view
@@ -67,7 +68,6 @@
     quo2.components.list-items.preview-list.view
     quo2.components.list-items.token-value.view
     quo2.components.list-items.user-list
-    quo2.components.loaders.skeleton
     quo2.components.loaders.skeleton-list.view
     quo2.components.markdown.list.view
     quo2.components.markdown.text
@@ -100,7 +100,7 @@
     quo2.components.settings.data-item.view
     quo2.components.settings.privacy-option
     quo2.components.settings.reorder-item.view
-    quo2.components.settings.settings-list.view
+    quo2.components.settings.settings-item.view
     quo2.components.settings.category.view
     quo2.components.share.qr-code.view
     quo2.components.share.share-qr-code.view
@@ -191,6 +191,7 @@
 
 ;;;; Dividers
 (def divider-label quo2.components.dividers.divider-label.view/view)
+(def divider-line quo2.components.dividers.divider-line.view/view)
 (def new-messages quo2.components.dividers.new-messages/new-messages)
 (def divider-date quo2.components.dividers.date/date)
 (def strength-divider quo2.components.dividers.strength-divider.view/view)
@@ -253,7 +254,6 @@
 (def token-value quo2.components.list-items.token-value.view/view)
 
 ;;;; Loaders
-(def skeleton quo2.components.loaders.skeleton/skeleton)
 (def skeleton-list quo2.components.loaders.skeleton-list.view/view)
 
 ;;;; Navigation
@@ -303,7 +303,7 @@
 ;;;; Settings
 (def privacy-option quo2.components.settings.privacy-option/card)
 (def account quo2.components.settings.accounts.view/account)
-(def settings-list quo2.components.settings.settings-list.view/settings-list)
+(def settings-item quo2.components.settings.settings-item.view/view)
 (def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
 (def category quo2.components.settings.category.view/category)
 (def data-item quo2.components.settings.data-item.view/view)

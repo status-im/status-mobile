@@ -10,12 +10,9 @@
 (def descriptor
   [{:key     :notification
     :type    :select
-    :options [{:key   :mention
-               :value "Mention"}
-              {:key   :notification
-               :value "Notification"}
-              {:key   :seen
-               :value "Seen"}]}
+    :options [{:key :mention}
+              {:key :notification}
+              {:key :seen}]}
    {:key  :blur?
     :type :boolean}
    {:key  :jump-to?
@@ -34,9 +31,10 @@
             jump-to?            (:jump-to? @state)
             notification        (:notification @state)
             notification-count  (:notification-count @state)]
-        [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+        [preview/preview-container
+         {:state      state
+          :descriptor descriptor}
          [rn/view {:padding-bottom 150}
-          [preview/customizer state descriptor]
           [rn/view
            {:padding-vertical   60
             :padding-horizontal 20

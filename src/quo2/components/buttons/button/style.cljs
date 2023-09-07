@@ -85,14 +85,14 @@
                                   56 0
                                   40 (if border-color 8 9)
                                   32 (if border-color 4 5)
-                                  24 (if border-color 0 1)
+                                  24 0
                                   (if border-color 8 9)))
           :padding-bottom     (when-not (or icon-only? icon-left icon-right)
                                 (case size
                                   56 0
                                   40 9
                                   32 5
-                                  24 4
+                                  24 0
                                   9))
           :overflow           :hidden
           :background-color   background-color

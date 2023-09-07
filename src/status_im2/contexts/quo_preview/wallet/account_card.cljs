@@ -86,7 +86,8 @@
      :metrics?            true
      :type                :add-account}))
 
-(defn cool-preview
+
+(defn preview-account-card
   []
   (let [state (reagent/atom (initial-state :default))]
     [:f>
@@ -94,8 +95,9 @@
        (rn/use-effect
         (fn [] (reset! state (initial-state (:type @state))))
         [(:type @state)])
-       [rn/view
-        {:style {:flex 1}}
+       [preview/preview-container
+        {:state      state
+         :descriptor descriptor}
         [rn/view
          {:style {:margin-vertical 40
                   :padding-left    40
@@ -118,15 +120,3 @@
          [preview/customizer state descriptor]]
         [rn/view {:style {:align-items :center :margin-top 40}}
          [quo/account-card @state]]])]))
-
-(defn preview-account-card
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

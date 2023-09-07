@@ -1,8 +1,10 @@
 (ns status-im2.contexts.quo-preview.preview
   (:require [camel-snake-kebab.core :as camel-snake-kebab]
             [clojure.string :as string]
+            [status-im2.contexts.quo-preview.common :as common]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [react-native.safe-area :as safe-area]
             [quo2.theme :as quo.theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]
@@ -209,7 +211,7 @@
                :border-radius 16
                :overflow      :hidden}}
       [rn/image
-       {:source (or image (resources/get-mock-image :community-cover))
+       {:source (or image (resources/get-mock-image :dark-blur-bg))
         :style  {:height "100%" :width "100%"}}]
       [blur/view
        (merge {:style         {:position :absolute
@@ -227,32 +229,37 @@
                          style)}]
          children)])
 
+
 (defn preview-container
   [{:keys [state descriptor blur?
            component-container-style
            blur-container-style blur-view-props blur-height show-blur-background?]
     :or   {blur-height 200}}
    & children]
-  [rn/scroll-view
-   {:style                           (style/panel-basic)
-    :shows-vertical-scroll-indicator false}
-   [rn/pressable {:on-press rn/dismiss-keyboard!}
-    (when descriptor
-      [rn/view {:style style/customizer-container}
-       [customizer state descriptor]])
-    (if blur?
-      [rn/view {:style (merge style/component-container component-container-style)}
-       (into [blur-view
-              {:show-blur-background? show-blur-background?
-               :height                blur-height
-               :style                 (merge {:width     "100%"
-                                              :flex-grow 1}
-                                             (when-not show-blur-background?
-                                               {:padding-horizontal 0
-                                                :top                0})
-                                             blur-container-style)
-               :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
-                                             blur-view-props)}]
-             children)]
-      (into [rn/view {:style (merge style/component-container component-container-style)}]
-            children))]])
+  [rn/view
+   {:style {:top  (safe-area/get-top)
+            :flex 1}}
+   [common/navigation-bar]
+   [rn/scroll-view
+    {:style                           (style/panel-basic)
+     :shows-vertical-scroll-indicator false}
+    [rn/pressable {:on-press rn/dismiss-keyboard!}
+     (when descriptor
+       [rn/view {:style style/customizer-container}
+        [customizer state descriptor]])
+     (if blur?
+       [rn/view {:style (merge style/component-container component-container-style)}
+        (into [blur-view
+               {:show-blur-background? show-blur-background?
+                :height                blur-height
+                :style                 (merge {:width     "100%"
+                                               :flex-grow 1}
+                                              (when-not show-blur-background?
+                                                {:padding-horizontal 0
+                                                 :top                0})
+                                              blur-container-style)
+                :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
+                                              blur-view-props)}]
+              children)]
+       (into [rn/view {:style (merge style/component-container component-container-style)}]
+             children))]]])

@@ -21,7 +21,7 @@
     :key   :selected?
     :type  :boolean}])
 
-(defn cool-preview
+(defn preview-select-profile
   []
   (let [state     (reagent/atom {:selected?           false
                                  :name                "Alisher Yakupov"
@@ -29,10 +29,10 @@
                                  :profile-picture     (resources/get-mock-image :user-picture-male5)})
         selected? (reagent/cursor state [:selected?])]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [rn/view {:flex 1}
-         [preview/customizer state descriptor]]
         [rn/view
          {:padding-vertical   60
           :flex-direction     :row
@@ -40,16 +40,3 @@
           :background-color   colors/neutral-90
           :justify-content    :center}
          [quo/select-profile (merge @state {:on-change #(reset! selected? %)})]]]])))
-
-(defn preview-select-profile
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white
-                                           colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
-

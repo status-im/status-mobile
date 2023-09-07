@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.numbered-keyboard.numbered-keyboard
   (:require [quo2.core :as quo]
-            [react-native.core :as rn]
             [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]
@@ -26,7 +25,7 @@
               {:key   :none
                :value "None"}]}])
 
-(defn cool-preview
+(defn preview-numbered-keyboard
   []
   (let [state (reagent/atom {:disabled?   false
                              :on-press    (fn [item] (js/alert (str item " pressed")))
@@ -35,9 +34,9 @@
                              :left-action :dot})
         blur? (reagent/cursor state [:blur?])]
     (fn []
-      [rn/view
-       [rn/view {:flex 1}
-        [preview/customizer state descriptor]]
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        (when @blur?
          [blur/view
           {:style         {:position         :absolute
@@ -48,14 +47,3 @@
                            :background-color colors/neutral-80-opa-70}
            :overlay-color :transparent}])
        [quo/numbered-keyboard @state]])))
-
-(defn preview-numbered-keyboard
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-90)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

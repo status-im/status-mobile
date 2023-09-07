@@ -1,25 +1,25 @@
 (ns status-im2.contexts.chat.messages.list.view
-  (:require [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.background-timer :as background-timer]
-            [react-native.core :as rn]
-            [react-native.hooks :as hooks]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im.ui.screens.chat.group :as chat.group]
-            [status-im.ui.screens.chat.message.gap :as message.gap]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.content.view :as message]
-            [status-im2.contexts.chat.messages.list.state :as state]
-            [status-im2.contexts.chat.messages.list.style :as style]
-            [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
-            [status-im2.contexts.chat.composer.constants :as composer.constants]
-            [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.background-timer :as background-timer]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [status-im.ui.screens.chat.group :as chat.group]
+    [status-im.ui.screens.chat.message.gap :as message.gap]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.content.view :as message]
+    [status-im2.contexts.chat.messages.list.state :as state]
+    [status-im2.contexts.chat.messages.list.style :as style]
+    [status-im2.contexts.chat.composer.constants :as composer.constants]
+    [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
+    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -27,10 +27,11 @@
 (defonce ^:const scroll-animation-input-range [50 125])
 (defonce ^:const min-message-height 32)
 
+(defonce extra-keyboard-height (reagent/atom 0))
 (defonce messages-list-ref (atom nil))
 (defonce messages-view-height (reagent/atom 0))
 (defonce messages-view-header-height (reagent/atom 0))
-(defonce show-floating-scroll-down-button (reagent/atom false))
+(defonce show-floating-scroll-down-button? (reagent/atom false))
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
 (defn list-ref [ref] (reset! messages-list-ref ref))
@@ -48,9 +49,9 @@
         threshold-height   (* (/ layout-height 100)
                               threshold-percentage-to-show-floating-scroll-down-button)
         reached-threshold? (> y threshold-height)]
-    (when (not= reached-threshold? @show-floating-scroll-down-button)
+    (when (not= reached-threshold? @show-floating-scroll-down-button?)
       (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
-      (reset! show-floating-scroll-down-button reached-threshold?))))
+      (reset! show-floating-scroll-down-button? reached-threshold?))))
 
 (defn on-viewable-items-changed
   [e]
@@ -103,22 +104,28 @@
   {:extrapolateLeft  "clamp"
    :extrapolateRight "clamp"})
 
+(defn skeleton-list-props
+  [content parent-height animated?]
+  {:content       content
+   :parent-height parent-height
+   :animated?     animated?})
+
 (defn loading-view
   [chat-id]
   (let [loading-messages?   (rf/sub [:chats/loading-messages? chat-id])
         all-loaded?         (rf/sub [:chats/all-loaded? chat-id])
         messages            (rf/sub [:chats/raw-chat-messages-stream chat-id])
         loading-first-page? (= (count messages) 0)
-        top-spacing         (if loading-first-page? 0 navigation.style/navigation-bar-height)]
+        top-spacing         (if loading-first-page? 0 navigation.style/navigation-bar-height)
+        parent-height       (if loading-first-page?
+                              (- @messages-view-height
+                                 @messages-view-header-height
+                                 composer.constants/composer-default-height
+                                 loading-indicator-extra-spacing)
+                              loading-indicator-page-loading-height)]
     (when (or loading-messages? (not all-loaded?))
       [rn/view {:padding-top top-spacing}
-       [quo/skeleton
-        (if loading-first-page?
-          (- @messages-view-height
-             @messages-view-header-height
-             composer.constants/composer-default-height
-             loading-indicator-extra-spacing)
-          loading-indicator-page-loading-height)]])))
+       [quo/skeleton-list (skeleton-list-props :messages parent-height true)]])))
 
 (defn list-header
   [insets able-to-send-message?]
@@ -296,10 +303,9 @@
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
                                             ;; NOTE(alwx): here we set the initial value of `scroll-y`
-                                            ;; which is needed because by default the chat is scrolled to
-                                            ;; the
-                                            ;; bottom
-                                            ;; and no initial `on-scroll` event is getting triggered
+                                            ;; which is needed because by default the chat is
+                                            ;; scrolled to the bottom and no initial `on-scroll`
+                                            ;; event is getting triggered
                                             (let [scroll-y-shared       (reanimated/get-shared-value
                                                                          scroll-y)
                                                   content-height-shared (reanimated/get-shared-value
@@ -353,51 +359,9 @@
   [props]
   (let [chat-screen-loaded? (rf/sub [:shell/chat-screen-loaded?])
         window-height       (:height (rn/get-window))
-        content-height      (- window-height composer.constants/composer-default-height)]
+        content-height      (- window-height composer.constants/composer-default-height)
+        top-spacing         (when (not chat-screen-loaded?) navigation.style/navigation-bar-height)]
     (if chat-screen-loaded?
       [:f> f-messages-list-content props]
-      [rn/view {:style {:flex 1}}
-       [quo/skeleton-list
-        {:content       :messages
-         :parent-height content-height}]])))
-
-(defn f-messages-list
-  [{:keys [chat cover-bg-color header-comp footer-comp]}]
-  (let [insets                                   (safe-area/get-insets)
-        scroll-y                                 (reanimated/use-shared-value 0)
-        content-height                           (reanimated/use-shared-value 0)
-        {:keys [keyboard-height keyboard-shown]} (hooks/use-keyboard)]
-    (rn/use-effect
-     (fn []
-       (if keyboard-shown
-         (reanimated/set-shared-value scroll-y
-                                      (+ (reanimated/get-shared-value scroll-y)
-                                         keyboard-height))
-         (reanimated/set-shared-value scroll-y
-                                      (- (reanimated/get-shared-value scroll-y)
-                                         keyboard-height))))
-     [keyboard-shown keyboard-height])
-    ;; Note - Don't pass `behavior :height` to keyboard avoiding view,
-    ;; It breaks composer - https://github.com/status-im/status-mobile/issues/16595
-    [rn/keyboard-avoiding-view
-     {:style                    (style/keyboard-avoiding-container insets)
-      :keyboard-vertical-offset (- (:bottom insets))}
-
-     (when header-comp
-       [header-comp
-        {:scroll-y scroll-y}])
-
-     [message-list-content-view
-      {:chat            chat
-       :insets          insets
-       :scroll-y        scroll-y
-       :content-height  content-height
-       :cover-bg-color  cover-bg-color
-       :keyboard-shown? keyboard-shown}]
-
-     (when footer-comp
-       [footer-comp {:insets insets}])]))
-
-(defn messages-list
-  [props]
-  [:f> f-messages-list props])
+      [rn/view {:style {:padding-top top-spacing}}
+       [quo/skeleton-list (skeleton-list-props :messages content-height false)]])))

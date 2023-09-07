@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.share.qr-code
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
+  (:require [react-native.core :as rn]
             [quo2.core :as quo]
             [utils.image-server :as image-server]
             [utils.re-frame :as rf]
@@ -23,7 +22,7 @@
               {:key   :highest
                :value "Highest"}]}])
 
-(defn cool-preview
+(defn preview-qr-code
   []
   (let [state                  (reagent/atom {:text                   "https://status.im"
                                               :error-correction-level :highest})
@@ -36,9 +35,10 @@
                                  :port        (rf/sub [:mediaserver/port])
                                  :error-level @error-correction-level
                                  :qr-size     250}))
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:style {:padding-bottom 150}}
-        [preview/customizer state descriptor]
         [rn/view {:style {:flex 1}}]
         [rn/view
          {:style {:padding-vertical 60
@@ -53,15 +53,3 @@
           [rn/view
            [rn/text {:style {:padding 20 :flex-shrink 1}} "Media server url -> "
             @media-server-uri]]]]]])))
-
-(defn preview-qr-code
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white
-                                                   colors/neutral-90)
-            :flex             1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

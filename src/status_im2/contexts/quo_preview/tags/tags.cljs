@@ -44,7 +44,7 @@
     :key   :blurred?
     :type  :boolean}])
 
-(defn cool-preview
+(defn preview-tags
   []
   (let [state (reagent/atom {:size                32
                              :labelled?           true
@@ -52,12 +52,12 @@
                              :fade-end-percentage 0.4
                              :scrollable?         false})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view
         {:style {:padding-bottom 150
                  :padding-top    60}}
-        [rn/view {:style {:flex 1}}
-         [preview/customizer state descriptor]]
         [rn/view
          {:style {:flex               1
                   :justify-content    :center
@@ -101,15 +101,3 @@
             (when (:scrollable? @state)
               {:scroll-on-press? true
                :fade-end?        true}))]]]]])))
-(defn preview-tags
-  []
-  [rn/view
-   {:flex             1
-    :background-color (colors/theme-colors
-                       colors/white
-                       colors/neutral-90)}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

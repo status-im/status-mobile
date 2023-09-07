@@ -48,9 +48,10 @@
                                                    :percentage-change "0.00"
                                                    :fiat-change       "€0.00"}})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view
-        [rn/view {:style {:min-height 300}} [preview/customizer state descriptor]]
         [rn/view
          {:style {:align-items :center
                   :margin-top  50}}

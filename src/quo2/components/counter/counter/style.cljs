@@ -12,19 +12,16 @@
 
 (defn container
   [{:keys [type label container-style customization-color theme value max-value]}]
-  (let [label-length (count label)
-        width        (case label-length
-                       1 16
-                       2 20
-                       28)]
+  (let [width (case (count label)
+                1 16
+                2 20
+                28)]
     (cond-> (merge
-             {:align-items       :center
-              :justify-content   :center
-              :border-radius     6
-              :width             width
-              :margin-vertical   2
-              :margin-horizontal (if (= label-length 1) 2 0)
-              :height            16}
+             {:align-items     :center
+              :justify-content :center
+              :border-radius   6
+              :width           width
+              :height          16}
              container-style)
       (= type :outline)
       (merge {:border-width 1
