@@ -57,7 +57,7 @@
    {:source (resources/get-mock-image :decentraland)}
    {:source (resources/get-mock-image :rarible)}])
 
-(defn cool-preview
+(defn preview-data-item
   []
   (let [state (reagent/atom {:on-press            #(js/alert (str "pressed"))
                              :blur?               false
@@ -75,7 +75,9 @@
                              :communities-list    communities-list})
         blur? (reagent/cursor state [:blur?])]
     (fn []
-      [rn/view
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:style {:flex 1}}
         [preview/customizer state descriptor]]
        (when @blur?
@@ -92,14 +94,3 @@
                  :padding-vertical  10
                  :margin-horizontal 20}}
         [quo/data-item @state]]])))
-
-(defn preview-data-item
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-100)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

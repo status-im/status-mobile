@@ -68,7 +68,9 @@
                             (reset! data (create-item-array (max (js/parseInt (:size @state)) 1)
                                                             @state)))
                           [(:blur? @state) (:right-icon? @state) (:image? @state) (:subtitle? @state)])
-           [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+           [preview/preview-container
+            {:state      state
+             :descriptor (if (= (:list-type @state) :settings) settings-descriptor reorder-descriptor)}
             [rn/view
              {:style {:flex             1
                       :padding-bottom   150

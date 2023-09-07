@@ -2,6 +2,7 @@
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [status-im2.contexts.quo-preview.code.snippet :as snippet-preview]
+            [status-im2.contexts.quo-preview.preview :as preview]
             [utils.re-frame :as rf]))
 
 (defn notification-button
@@ -75,10 +76,10 @@
     :duration 3000
     :type     :notification}])
 
-(defn preview
+(defn preview-notification
   []
   (fn []
-    [rn/view
+    [preview/preview-container
      [rn/view
       {:background-color "#508485"
        :flex-direction   :column
@@ -92,14 +93,4 @@
       [^{:key :0} [notification-button-0]
        ^{:key :1} [notification-button-1]
        ^{:key :2} [notification-button-2]
-       ^{:key :3} [notification-button-3]]
-     ]]))
-
-(defn preview-notification
-  []
-  [rn/view {:flex 1}
-   [rn/flat-list
-    {:flex                         1
-     :header                       [preview]
-     :key-fn                       str
-     :keyboard-should-persist-taps :always}]])
+       ^{:key :3} [notification-button-3]]]]))

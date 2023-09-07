@@ -47,9 +47,10 @@
                               :status-account      (merge status-account-props {:size 16})}]
     (fn []
       (let [account-props (if (= (:type @state) :status-account) status-account-props user-props)]
-        [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+        [preview/preview-container
+         {:state      state
+          :descriptor descriptor}
          [rn/view
           {:style {:flex               1
                    :padding-horizontal 20}}
-          [rn/view {:style {:min-height 150}} [preview/customizer state descriptor]]
           [quo/summary-info (merge @state {:account-props account-props})]]]))))

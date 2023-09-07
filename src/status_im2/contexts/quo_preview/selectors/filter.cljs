@@ -18,16 +18,14 @@
     :key   :blur?
     :type  :boolean}])
 
-(defn cool-preview
+(defn preview
   []
   (let [state (reagent/atom {:override-theme (theme/get-theme)
                              :blur?          false})]
     (fn []
-      [rn/view
-       {:style {:margin-bottom      50
-                :padding-vertical   16
-                :padding-horizontal 20}}
-       [preview/customizer state descriptor]
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view
         {:style {:padding-vertical 60
                  :align-items      :center}}
@@ -43,14 +41,3 @@
                                           (= :light (:override-theme @state))
                                           colors/white)}}
          [quo/view @state]]]])))
-
-(defn preview
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white colors/neutral-90)
-            :flex             1}}
-   [rn/flat-list
-    {:style                        {:flex 1}
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

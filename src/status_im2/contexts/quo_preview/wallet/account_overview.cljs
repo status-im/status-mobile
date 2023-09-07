@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.wallet.account-overview
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -68,7 +67,7 @@
               {:key   :custom
                :value "Custom"}]}])
 
-(defn cool-preview
+(defn preview-account-overview
   []
   (let [state (reagent/atom {:metrics              :positive
                              :currency-change      "€0.00"
@@ -81,24 +80,12 @@
                              :account              :default
                              :customization-color  :blue})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:style {:padding-bottom 150}}
-        [rn/view {:style {:flex 1}}
-         [preview/customizer state descriptor]]
         [rn/view
          {:style {:padding-vertical 60
                   :flex-direction   :row
                   :justify-content  :center}}
          [quo/account-overview @state]]]])))
-
-(defn preview-account-overview
-  []
-  [rn/view
-   {:style {:background-color (colors/theme-colors colors/white
-                                                   colors/neutral-95)
-            :flex             1}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

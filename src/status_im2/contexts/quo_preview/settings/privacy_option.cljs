@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.settings.privacy-option
   (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -22,7 +21,7 @@
     :key   :li3
     :type  :text}])
 
-(defn cool-preview
+(defn preview-options
   []
   (let [state (reagent/atom {:selected :contacts
                              :header   "header"
@@ -36,15 +35,15 @@
             list-items (->> (select-keys @state [:li1 :li2 :li3])
                             vals
                             (remove empty?))]
-        [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+        [preview/preview-container
+         {:state      state
+          :descriptor descriptor}
          [rn/view
           {:margin-horizontal 20
            :padding           16
            :flex              1}
           [rn/view {:margin-vertical 2}
            [quo/text {:size :paragraph-2} "Dynamic sample"]]
-          [rn/view {:flex 1}
-           [preview/customizer state descriptor]]
           [rn/view {:margin-vertical 8}
            [quo/privacy-option
             (cond-> {:on-select #(swap! state assoc :selected :preview)
@@ -88,14 +87,3 @@
              :footer "This footer is exceedingly long to test the overflowing behavior of text in it"
              :list-items
              ["A very, very very long text line that serves to test the overflow behavior of this component"]}]]]]))))
-
-(defn preview-options
-  []
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-90)
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])

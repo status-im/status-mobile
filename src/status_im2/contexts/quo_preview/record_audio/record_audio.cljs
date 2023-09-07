@@ -3,6 +3,7 @@
             [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]
             [utils.re-frame :as rf]
             [status-im2.common.alert.events :as alert]
             [utils.i18n :as i18n]
@@ -11,7 +12,7 @@
 
 (defonce record-audio-permission-granted (reagent/atom false))
 
-(defn cool-preview
+(defn preview-record-audio
   []
   (let [message                            (reagent/atom
                                             "Press & hold the mic button to start recording...")
@@ -40,7 +41,7 @@
                                                       :t/audio-recorder-permissions-error)))
                                                   50)}]))]
     (fn []
-      [rn/view
+      [preview/preview-container
        [rn/view
         {:padding-top      150
          :align-items      :center
@@ -56,13 +57,3 @@
           :on-request-record-audio-permission on-request-record-audio-permission
           :max-duration-ms                    constants/audio-max-duration-ms}]]
        [quo/text {:style {:margin-horizontal 20}} @message]])))
-
-(defn preview-record-audio
-  []
-  [rn/view {:flex 1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :never
-     :scroll-enabled               false
-     :header                       [cool-preview]
-     :key-fn                       str}]])

@@ -64,7 +64,7 @@
      (merge state {:icon-color-anim icon-color-anim})
      (:value state)]))
 
-(defn cool-preview
+(defn preview-bottom-nav-tab
   []
   (let [state         (reagent/atom {:icon                   :i/communities
                                      :new-notifications?     true
@@ -75,21 +75,11 @@
         selected?     (reagent/cursor state [:selected?])
         pass-through? (reagent/cursor state [:pass-through?])]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
+      [preview/preview-container
+       {:state      state
+        :descriptor descriptor}
        [rn/view {:padding-bottom 150}
-        [preview/customizer state descriptor]
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
          [:f> f-bottom-tab @state @selected? @pass-through?]]]])))
-
-(defn preview-bottom-nav-tab
-  []
-  [rn/view
-   {:background-color colors/neutral-100
-    :flex             1}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
