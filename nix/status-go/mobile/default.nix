@@ -17,11 +17,10 @@
     inherit meta source goBuildLdFlags;
   };
 
-  ios = callPackage ./build.nix {
+  ios = {targets ? [ "ios/arm64" "iossimulator/amd64"]}: callPackage ./build.nix {
     platform = "ios";
     platformVersion = "8.0";
-    targets = [ "ios" "iossimulator" ];
     outputFileName = "Statusgo.xcframework";
-    inherit meta source goBuildLdFlags;
+    inherit meta source goBuildLdFlags targets;
   };
 }

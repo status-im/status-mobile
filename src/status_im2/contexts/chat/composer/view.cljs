@@ -26,7 +26,13 @@
     [quo2.theme :as theme]))
 
 (defn sheet-component
-  [{:keys [insets window-height blur-height opacity background-y]} props state]
+  [{:keys [insets
+           scroll-to-bottom-fn
+           show-floating-scroll-down-button?
+           window-height
+           blur-height
+           opacity
+           background-y]} props state]
   (let [{:keys [chat-screen-loaded?]
          :as   subscriptions}    (utils/init-subs)
         content-height           (reagent/atom (or (:input-content-height
@@ -76,7 +82,7 @@
         (:edit subscriptions)])
      [rn/view
       {:style style/composer-sheet-and-jump-to-container}
-      [sub-view/shell-button state]
+      [sub-view/shell-button state scroll-to-bottom-fn show-floating-scroll-down-button?]
       [gesture/gesture-detector
        {:gesture
         (drag-gesture/drag-gesture props state animations subscriptions dimensions keyboard-shown)}
@@ -127,20 +133,23 @@
             [gradients/view props state animations show-bottom-gradient?]
             [link-preview/view]
             [images/images-list]])]
-        [:f> actions/view props state animations window-height insets subscriptions]]]]]))
+        [:f> actions/view props state animations window-height insets scroll-to-bottom-fn
+         subscriptions]]]]]))
 
 (defn composer
-  [insets]
+  [{:keys [insets scroll-to-bottom-fn show-floating-scroll-down-button?]}]
   (let [window-height (:height (rn/get-window))
         opacity       (reanimated/use-shared-value 0)
         background-y  (reanimated/use-shared-value (- window-height))
         blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
                                                       (:bottom insets)))
-        extra-params  {:insets        insets
-                       :window-height window-height
-                       :blur-height   blur-height
-                       :opacity       opacity
-                       :background-y  background-y}
+        extra-params  {:insets                            insets
+                       :window-height                     window-height
+                       :scroll-to-bottom-fn               scroll-to-bottom-fn
+                       :show-floating-scroll-down-button? show-floating-scroll-down-button?
+                       :blur-height                       blur-height
+                       :opacity                           opacity
+                       :background-y                      background-y}
         props         (utils/init-props)
         state         (utils/init-state)]
     [rn/view (when platform/ios? {:style {:z-index 1}})

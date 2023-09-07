@@ -6,7 +6,6 @@
     [status-im2.config :as config]
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.composer.style :as style]
-    [status-im2.contexts.chat.messages.list.view :as messages.list]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -25,16 +24,16 @@
   [:f> f-blur-view layout-height focused?])
 
 (defn- f-shell-button
-  [{:keys [focused?]}]
+  [{:keys [focused?]} scroll-to-bottom-fn show-floating-scroll-down-button?]
   (let [customization-color (rf/sub [:profile/customization-color])
-        hide-shell?         (or @focused? @messages.list/show-floating-scroll-down-button)
+        hide-shell?         (or @focused? @show-floating-scroll-down-button?)
         y-shell             (reanimated/use-shared-value (if hide-shell? 35 0))
         opacity             (reanimated/use-shared-value (if hide-shell? 0 1))]
     (rn/use-effect
      (fn []
        (reanimated/animate opacity (if hide-shell? 0 1))
        (reanimated/animate y-shell (if hide-shell? 35 0)))
-     [@focused? @messages.list/show-floating-scroll-down-button])
+     [@focused? @show-floating-scroll-down-button?])
     [:<>
      [reanimated/view
       {:style (style/shell-button y-shell opacity)}
@@ -48,11 +47,11 @@
          :label               (i18n/label :t/jump-to)
          :style               {:align-self :center}}}
        {}]]
-     (when @messages.list/show-floating-scroll-down-button
+     (when @show-floating-scroll-down-button?
        [quo/floating-shell-button
-        {:scroll-to-bottom {:on-press messages.list/scroll-to-bottom}}
+        {:scroll-to-bottom {:on-press scroll-to-bottom-fn}}
         style/scroll-to-bottom-button])]))
 
 (defn shell-button
-  [state animations subscriptions]
-  [:f> f-shell-button state animations subscriptions])
+  [state scroll-to-bottom-fn show-floating-scroll-down-button?]
+  [:f> f-shell-button state scroll-to-bottom-fn show-floating-scroll-down-button?])

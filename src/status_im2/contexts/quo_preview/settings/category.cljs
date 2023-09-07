@@ -10,15 +10,16 @@
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defn create-item-array
-  [n {:keys [right-icon? image? subtitle?]}]
-  (vec (for [i (range n)]
-         {:title      (str "Item " i)
-          :subtitle   (when subtitle? "subtitle")
-          :chevron?   true
-          :right-icon (when right-icon? :i/globe)
-          :left-icon  :i/browser
-          :image-size (if image? 32 0)
-          :image      (when image? (resources/get-mock-image :diamond))})))
+  [n {:keys [right-icon? image? subtitle? list-type]}]
+  (vec
+   (for [i (range n)]
+     {:title       (str "Item " i)
+      :subtitle    (when subtitle? "subtitle")
+      :action      :arrow
+      :right-icon  (when right-icon? :i/globe)
+      :image       (if (= list-type :settings) :icon (when image? (resources/get-mock-image :diamond)))
+      :image-props :i/browser
+      :image-size  (if image? 32 0)})))
 
 (def reorder-descriptor
   [{:label "Right icon:"

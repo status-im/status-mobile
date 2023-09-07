@@ -10,12 +10,9 @@
 (def descriptor
   [{:key     :notification
     :type    :select
-    :options [{:key   :mention
-               :value "Mention"}
-              {:key   :notification
-               :value "Notification"}
-              {:key   :seen
-               :value "Seen"}]}
+    :options [{:key :mention}
+              {:key :notification}
+              {:key :seen}]}
    {:key  :blur?
     :type :boolean}
    {:key  :jump-to?

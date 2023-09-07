@@ -228,33 +228,22 @@
            [category (update v :chats add-on-press)])
          categorized-chats)))
 
-
 (defn community-header
-  [title logo]
+  [title logo description]
   [quo/text-combinations
    {:container-style
-    {:margin-horizontal 0
-     :padding-right 20
-     :margin-top
+    {:margin-top
      (if logo
        12
        (+ scroll-page.style/picture-radius
           scroll-page.style/picture-border-width
-          12))}
+          12))
+     :margin-bottom 12}
     :avatar logo
     :title title
-    :title-accessibility-label :chat-name-text}])
-
-(defn community-description
-  [description]
-  [quo/text
-   {:accessibility-label :community-description-text
-    :number-of-lines     4
-    :ellipsize-mode      :tail
-    :weight              :regular
-    :size                :paragraph-1
-    :style               {:margin-top 8 :margin-bottom 12}}
-   description])
+    :description description
+    :title-accessibility-label :community-title
+    :description-accessibility-label :community-description}])
 
 (defn community-content
   [{:keys [name description joined images tags color id]
@@ -268,9 +257,8 @@
      [rn/view {:style style/community-content-container}
       (when-not collapsed?
         [status-tag pending? joined])
-      [community-header name (when collapsed? (get-in images [:thumbnail :uri]))]
-      (when-not collapsed?
-        [community-description description])
+      [community-header name (when collapsed? (get-in images [:thumbnail :uri]))
+       (when-not collapsed? description)]
       (when-not collapsed?
         [quo/community-tags
          {:tags            tags
