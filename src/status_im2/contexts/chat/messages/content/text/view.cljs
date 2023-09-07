@@ -9,7 +9,7 @@
     [utils.re-frame :as rf]))
 
 (defn render-inline
-  [units {:keys [type literal destination]} chat-id style-override]
+  [units {:keys [type literal destination]} chat-id style-override first-child-mention]
   (let [show-as-plain-text? (seq style-override)]
     (case (keyword type)
       :code
@@ -57,7 +57,7 @@
        units
        [rn/pressable
         {:on-press #(rf/dispatch [:chat.ui/show-profile literal])
-         :style    style/mention-tag-wrapper}
+         :style    (style/mention-tag-wrapper first-child-mention)}
         [quo/text
          {:weight :medium
           :style  style/mention-tag-text
@@ -94,37 +94,39 @@
 
 (defn render-block
   [blocks {:keys [type literal children]} chat-id style-override]
-  (case (keyword type)
-    :paragraph
-    (conj blocks
-          [rn/view
-           (reduce
-            (fn [acc e]
-              (render-inline acc e chat-id style-override))
-            [quo/text
-             {:style {:size          :paragraph-1
-                      :margin-bottom (if (first-child-mention children) 4 0)
-                      :color         (when (seq style-override) colors/white)}}]
-            children)])
+  (let [mention-first (first-child-mention children)]
+    (case (keyword type)
+      :paragraph
+      (conj blocks
+            [rn/view
+             (reduce
+              (fn [acc e]
+                (render-inline acc e chat-id style-override mention-first))
+              [quo/text
+               {:style {:size          :paragraph-1
+                        :margin-bottom (if mention-first (if quo.platform/ios? 4 0) 2)
+                        :margin-top    (if mention-first (if quo.platform/ios? -4 0) 2)
+                        :color         (when (seq style-override) colors/white)}}]
+              children)])
 
-    :edited-block
-    (conj blocks
-          (reduce
-           (fn [acc e]
-             (render-inline acc e chat-id style-override))
-           [quo/text {:size :paragraph-1}]
-           children))
+      :edited-block
+      (conj blocks
+            (reduce
+             (fn [acc e]
+               (render-inline acc e chat-id style-override first-child-mention))
+             [quo/text {:size :paragraph-1}]
+             children))
 
-    :blockquote
-    (conj blocks
-          [rn/view {:style style/quote}
-           [quo/text literal]])
+      :blockquote
+      (conj blocks
+            [rn/view {:style style/quote}
+             [quo/text literal]])
 
-    :codeblock
-    (conj blocks
-          [rn/view {:style (merge style/block (style/code))}
-           [quo/text (subs literal 0 (dec (count literal)))]])
-    blocks))
+      :codeblock
+      (conj blocks
+            [rn/view {:style (merge style/block (style/code))}
+             [quo/text (subs literal 0 (dec (count literal)))]])
+      blocks)))
 
 (def edited-tag
   {:literal (str "(" (i18n/label :t/edited) ")")

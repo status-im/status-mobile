@@ -11,14 +11,15 @@
    :padding-left      10
    :border-left-color colors/neutral-40})
 
-(def mention-tag-wrapper
+(defn mention-tag-wrapper
+  [first-child-mention]
   {:flex-direction     :row
    :align-items        :center
-   :height             22
+   :height             (if platform/ios? 22 21)
    :background-color   colors/primary-50-opa-10
    :padding-horizontal 3
    :border-radius      6
-   :transform          [{:translateY (if platform/ios? 4 6)}]})
+   :transform          [{:translateY (if platform/ios? (if first-child-mention 4.5 3) 4.5)}]})
 
 (def mention-tag-text
   {:color                 (colors/theme-colors colors/primary-50
