@@ -24,7 +24,10 @@
          :style    {:height (if in-progress? window-height 48)}}
         [react/view {:style style/label-container}
          (if in-progress?
-           [quo2/skeleton window-height]
+           [quo2/skeleton-list
+            {:parent-height window-height
+             :animated      true
+             :content       :messages}]
            [react/nested-text
             {:style (style/gap-text (and connected? use-status-nodes?))}
             (i18n/label (if first-gap? :t/load-more-messages :t/fetch-messages))
