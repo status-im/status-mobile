@@ -16,8 +16,8 @@
   (rf/dispatch [:set-in [:profile/login :error] ""]))
 
 (defn authorize
-  [{:keys [on-enter-password biometric-auth? on-auth-success on-auth-fail
-           fallback-button-label theme on-close]}]
+  [{:keys [on-enter-password biometric-auth? on-auth-success on-auth-fail on-close
+           fallback-button-label theme blur?]}]
   (biometric/get-supported-type
    (fn [biometric-type]
      (if (and biometric-auth? biometric-type)
@@ -31,7 +31,7 @@
                        (when on-auth-fail (on-auth-fail error))
                        (rf/dispatch [:show-bottom-sheet
                                      {:theme   theme
-                                      :shell?  true
+                                      :shell?  blur?
                                       :content (fn []
                                                  [enter-password/view
                                                   {:on-enter-password on-enter-password}])}]))})
@@ -40,6 +40,7 @@
          (rf/dispatch [:show-bottom-sheet
                        {:on-close on-close
                         :theme    theme
+                        :shell?   blur?
                         :content  (fn []
                                     [enter-password/view
                                      {:on-enter-password on-enter-password
@@ -57,7 +58,8 @@
                  on-auth-success
                  on-auth-fail
                  size
-                 theme]}]
+                 theme
+                 blur?]}]
       [rn/view {:style {:flex 1}}
        [quo/slide-button
         {:size                size
@@ -65,6 +67,7 @@
          :on-reset            (when @reset-slider? #(reset! reset-slider? false))
          :on-complete         #(authorize {:on-close              on-close
                                            :theme                 theme
+                                           :blur?                 blur?
                                            :on-enter-password     on-enter-password
                                            :biometric-auth?       biometric-auth?
                                            :on-auth-success       on-auth-success

@@ -4,15 +4,17 @@
             [react-native.core :as rn]
             [utils.re-frame :as rf]
             [status-im2.common.standard-authentication.enter-password.style :as style]
-            [status-im2.common.standard-authentication.password-input.view :as password-input]))
+            [status-im2.common.standard-authentication.password-input.view :as password-input]
+            [status-im.multiaccounts.core :as multiaccounts]))
 
 (defn view
   [{:keys [on-enter-password button-label]}]
   (let [{:keys [key-uid display-name
-                customization-color]}       (rf/sub [:profile/multiaccount])
+                customization-color]
+         :as   account}                     (rf/sub [:profile/multiaccount])
         {:keys [error processing password]} (rf/sub [:profile/login])
         sign-in-enabled?                    (rf/sub [:sign-in-enabled?])
-        profile-picture                     (rf/sub [:profile/login-profiles-picture key-uid])]
+        profile-picture                     (multiaccounts/displayed-photo account)]
     [:<>
      [rn/view {:style style/enter-password-container}
       [rn/view
@@ -25,7 +27,9 @@
        [rn/view
         {:style style/context-tag}
         [quo/context-tag
-         {:profile-picture     profile-picture
+         {:type                :default
+          :blur?               true
+          :profile-picture     profile-picture
           :full-name           display-name
           :customization-color customization-color
           :size                24}]]

@@ -27,7 +27,7 @@
   (let [{:keys [customization-color]} (rf/sub [:profile/multiaccount])
         valid-for-ms                  (reagent/atom code-valid-for-ms)
         code                          (reagent/atom nil)
-        delay-ms                         (reagent/atom nil)
+        delay-ms                      (reagent/atom nil)
         timestamp                     (reagent/atom nil)
         set-code                      (fn [connection-string]
                                         (when (sync-utils/valid-connection-string? connection-string)
@@ -117,7 +117,8 @@
           (when-not (sync-utils/valid-connection-string? @code)
             [rn/view {:style style/standard-auth}
              [standard-auth/view
-              {:size                  :size/s-40
+              {:blur?                 true
+               :size                  :size/s-40
                :track-text            (i18n/label :t/slide-to-reveal-code)
                :customization-color   customization-color
                :on-enter-password     on-enter-password
