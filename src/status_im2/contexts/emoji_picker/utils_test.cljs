@@ -39,6 +39,3 @@
                            :tags    ["bird" "black" "crow" "raven" "rook"]
                            :unicode "🐦‍⬛"}))]
       (is (= expected (utils/search-emoji search-input))))))
-
-
-

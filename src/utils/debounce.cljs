@@ -14,7 +14,7 @@
     (js/clearTimeout v)))
 
 (defn debounce-and-dispatch
-  "Dispatches `event` if it was not dispatched for the duration of `duration-ms`."
+  "Dispatches `event` iff it was not dispatched for the duration of `duration-ms`."
   [event duration-ms]
   (let [event-key (first event)]
     (clear event-key)

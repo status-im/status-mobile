@@ -33,7 +33,7 @@
     last-item-on-row?
     (dissoc :margin-right)))
 
-(def list-container-style
+(def list-container
   {:padding-bottom showcase-nav.style/height})
 
 (def empty-results

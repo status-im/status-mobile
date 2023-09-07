@@ -1,5 +1,6 @@
 (ns status-im2.contexts.emoji-picker.view
-  (:require [oops.core :as oops]
+  (:require [clojure.string :as string]
+            [oops.core :as oops]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [quo2.theme :as quo.theme]
@@ -18,7 +19,7 @@
             [utils.transforms :as transforms]))
 
 (defn- on-press-category
-  [id index active-category scroll-ref]
+  [{:keys [id index active-category scroll-ref]}]
   (reset! active-category id)
   (some-> ^js @scroll-ref
           (.scrollToIndex #js
@@ -26,38 +27,40 @@
                             :animated false})))
 
 (defn- handle-on-viewable-items-changed
-  [event active-category filtered-data]
-  (when-not @filtered-data
+  [{:keys [event active-category should-update-active-category?]}]
+  (when should-update-active-category?
     (let [viewable-item (-> (oops/oget event "viewableItems")
                             transforms/js->clj
                             first
                             :item)
-          is-header?    (and (map? viewable-item) (:header? viewable-item))
-          section-key   (if is-header?
+          header?       (and (map? viewable-item) (:header? viewable-item))
+          section-key   (if header?
                           (:id viewable-item)
-                          (emoji-picker.data/section-group (get-in (vec viewable-item) [0 :group])))]
+                          (:id (emoji-picker.data/emoji-group->category (-> viewable-item
+                                                                            first
+                                                                            :group))))]
       (when (and (some? section-key) (not= @active-category section-key))
         (reset! active-category section-key)))))
 
 (defn- get-item-layout
   [_ index]
   #js
-   {:length constants/get-item-height
-    :offset (* constants/get-item-height index)
+   {:length constants/item-height
+    :offset (* constants/item-height index)
     :index  index})
 
 (defn- section-header
-  [{:keys [title]} _ _ {:keys [theme]}]
+  [{:keys [title]} {:keys [theme]}]
   [quo/divider-label
    {:tight?          false
     :container-style (style/section-header theme)}
    (i18n/label title)])
 
 (defn- emoji-item
-  [{:keys [unicode] :as emoji} col-index callback close]
+  [{:keys [unicode] :as emoji} col-index on-select close]
   (let [on-press          (fn []
-                            (when callback
-                              (callback unicode emoji))
+                            (when on-select
+                              (on-select unicode emoji))
                             (close))
         last-item-on-row? (= (inc col-index) constants/emojis-per-row)]
     (fn []
@@ -71,19 +74,19 @@
         unicode]])))
 
 (defn- emoji-row
-  [row-data _ _ {:keys [callback close]}]
+  [row-data {:keys [on-select close]}]
   (into [rn/view {:style style/emoji-row-container}]
         (map-indexed
          (fn [col-index {:keys [hexcode] :as emoji}]
            ^{:key (str hexcode col-index)}
-           [emoji-item emoji col-index callback close])
+           [emoji-item emoji col-index on-select close])
          row-data)))
 
 (defn- render-item
-  [item index separator render-data]
+  [item _ _ render-data]
   (if (:header? item)
-    [section-header item index separator render-data]
-    [emoji-row item index separator render-data]))
+    [section-header item render-data]
+    [emoji-row item render-data]))
 
 (defn- empty-result
   []
@@ -110,18 +113,23 @@
       :on-scroll-to-index-failed       identity
       :empty-component                 [empty-result]
       :on-scroll                       on-scroll
-      :render-data                     {:close    close
-                                        :theme    theme
-                                        :callback on-select}
-      :content-container-style         style/list-container-style
+      :render-data                     {:close     close
+                                        :theme     theme
+                                        :on-select on-select}
+      :content-container-style         style/list-container
       :viewability-config              {:wait-for-interaction           true
                                         :item-visible-percent-threshold 100
                                         :minimum-view-time              200}
       :on-viewable-items-changed       on-viewable-items-changed}]))
 
 (defn- footer
-  [theme active-category scroll-ref]
-  (let [on-press #(on-press-category %1 %2 active-category scroll-ref)]
+  [{:keys [theme active-category scroll-ref]}]
+  (let [on-press (fn [id index]
+                   (on-press-category
+                    {:id              id
+                     :index           index
+                     :active-category active-category
+                     :scroll-ref      scroll-ref}))]
     (fn []
       [rn/view {:style style/category-container}
        [blur/view
@@ -133,12 +141,12 @@
         [quo/showcase-nav
          {:state     :scroll
           :active-id @active-category
-          :data      emoji-picker.data/list-data
+          :data      emoji-picker.data/categories
           :on-press  on-press}]]])))
 
 (defn- clear
-  [active-category filtered-data search-text]
-  (reset! active-category :people)
+  [{:keys [active-category filtered-data search-text]}]
+  (reset! active-category constants/default-category)
   (reset! filtered-data nil)
   (reset! search-text ""))
 
@@ -149,32 +157,29 @@
         set-scroll-ref            #(reset! scroll-ref %)
         search-text               (reagent/atom "")
         filtered-data             (reagent/atom nil)
-        active-category           (reagent/atom :people)
+        active-category           (reagent/atom constants/default-category)
+        clear-states              #(clear {:active-category active-category
+                                           :filtered-data   filtered-data
+                                           :search-text     search-text})
         search-emojis             (debounce/debounce
                                    (fn []
                                      (when (pos? (count @search-text))
-                                       (let [results         (emoji-picker.utils/search-emoji
-                                                              @search-text)
-                                             has-results?    (not-empty results)
-                                             filtered-search (into []
-                                                                   (when has-results?
-                                                                     results))]
-                                         (reset! filtered-data filtered-search))))
+                                       (reset! filtered-data (emoji-picker.utils/search-emoji
+                                                              @search-text))))
                                    constants/search-debounce-ms)
         on-change-text            (fn [text]
-                                    (if (= text "")
-                                      (clear active-category filtered-data search-text)
+                                    (if (string/blank? text)
+                                      (clear-states)
                                       (do
                                         (reset! search-text text)
                                         (search-emojis))))
-        on-clear-text             (fn []
-                                    (clear active-category filtered-data search-text))
         on-viewable-items-changed (fn [event]
-                                    (handle-on-viewable-items-changed event
-                                                                      active-category
-                                                                      filtered-data))]
+                                    (handle-on-viewable-items-changed
+                                     {:event                          event
+                                      :active-category                active-category
+                                      :should-update-active-category? (nil? @filtered-data)}))]
     (fn [{:keys [theme] :as sheet-opts}]
-      (let [is-search-active? (pos? (count @search-text))]
+      (let [search-active? (pos? (count @search-text))]
         [rn/keyboard-avoiding-view
          {:style                    style/flex-spacer
           :keyboard-vertical-offset 8}
@@ -186,15 +191,18 @@
              :icon-name      :i/search
              :value          @search-text
              :on-change-text on-change-text
-             :clearable?     is-search-active?
-             :on-clear       on-clear-text}]]
+             :clearable?     search-active?
+             :on-clear       clear-states}]]
           [render-list
            (merge {:filtered-data             @filtered-data
                    :set-scroll-ref            set-scroll-ref
                    :on-select                 on-select
                    :on-viewable-items-changed on-viewable-items-changed}
                   sheet-opts)]
-          (when-not is-search-active?
-            [footer theme active-category scroll-ref])]]))))
+          (when-not search-active?
+            [footer
+             {:theme           theme
+              :active-category active-category
+              :scroll-ref      scroll-ref}])]]))))
 
 (def view (quo.theme/with-theme view-internal))

@@ -1,6 +1,8 @@
 (ns status-im2.contexts.emoji-picker.constants
   (:require [react-native.core :as rn]))
 
+(def default-category :people)
+
 (def search-debounce-ms 600)
 
 (def emojis-per-row 7)
@@ -17,5 +19,4 @@
   (/ (- (:width (rn/get-window)) (* emoji-row-padding-horizontal 2) (* emoji-size emojis-per-row))
      (- emojis-per-row 1)))
 
-(def get-item-height
-  (+ emoji-size emoji-row-separator-height))
+(def item-height (+ emoji-size emoji-row-separator-height))
