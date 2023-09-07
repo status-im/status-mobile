@@ -9,7 +9,7 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:blur?         false})]
+  (let [state (reagent/atom {:blur? false})]
     (fn []
       [preview/preview-container
        {:state                 state
