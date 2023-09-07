@@ -12,17 +12,20 @@
 (defn generate-keys-title
   []
   [quo/text-combinations
-   {:title (i18n/label :t/generating-keys)}])
+   {:container-style {:margin-horizontal 20}
+    :title           (i18n/label :t/generating-keys)}])
 
 (defn saving-keys-title
   []
   [quo/text-combinations
-   {:title (i18n/label :t/saving-keys-to-device)}])
+   {:container-style {:margin-horizontal 20}
+    :title           (i18n/label :t/saving-keys-to-device)}])
 
 (defn keys-saved-title
   []
   [quo/text-combinations
-   {:title (i18n/label :t/keys-saved)}])
+   {:container-style {:margin-horizontal 20}
+    :title           (i18n/label :t/keys-saved)}])
 
 (def first-transition-delay-ms 2000)
 

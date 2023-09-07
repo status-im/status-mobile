@@ -13,12 +13,11 @@
 (defn page-title
   [pairing-progress?]
   [quo/text-combinations
-   {:container-style                 {:margin-top 56}
+   {:container-style                 {:margin-top 56 :margin-horizontal 20}
     :title                           (i18n/label (if pairing-progress?
                                                    :t/sync-devices-title
                                                    :t/sync-devices-error-title))
-    :description                     :description
-    :description-props               (i18n/label (if pairing-progress?
+    :description                     (i18n/label (if pairing-progress?
                                                    :t/sync-devices-sub-title
                                                    :t/sync-devices-error-sub-title))
     :title-accessibility-label       :progress-screen-title
