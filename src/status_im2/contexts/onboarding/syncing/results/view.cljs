@@ -14,10 +14,10 @@
 (defn page-title
   []
   [quo/text-combinations
-   {:title                           (i18n/label :t/sync-devices-complete-title)
+   {:container-style                 {:margin-horizontal 20}
+    :title                           (i18n/label :t/sync-devices-complete-title)
     :title-accessibility-label       :sync-devices-title
-    :description                     :description
-    :description-props               (i18n/label :t/sync-devices-complete-sub-title)
+    :description                     (i18n/label :t/sync-devices-complete-sub-title)
     :description-accessibility-label :sync-devices-complete-sub-title}])
 
 (defn current-device

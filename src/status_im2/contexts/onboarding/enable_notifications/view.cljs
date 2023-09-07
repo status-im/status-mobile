@@ -12,11 +12,10 @@
 (defn page-title
   []
   [quo/text-combinations
-   {:container-style                 {:margin-top 12}
+   {:container-style                 {:margin-top 12 :margin-horizontal 20}
     :title                           (i18n/label :t/intro-wizard-title6)
     :title-accessibility-label       :notifications-title
-    :description                     :description
-    :description-props               (i18n/label :t/enable-notifications-sub-title)
+    :description                     (i18n/label :t/enable-notifications-sub-title)
     :description-accessibility-label :notifications-sub-title}])
 
 (defn enable-notification-buttons

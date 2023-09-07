@@ -23,9 +23,8 @@
            avatar
            title-accessibility-label
            description
-           description-props
            description-accessibility-label]}]
-  [rn/view {:style (style/container container-style)}
+  [rn/view {:style container-style}
    [rn/view {:style style/title-container}
     (when avatar
       [rn/view {:style style/avatar-container}
@@ -38,14 +37,12 @@
       :number-of-lines     1
       :size                :heading-1}
      title]]
-   (case description
-     :description
+   (when description
      [text/text
       {:accessibility-label description-accessibility-label
        :weight              :regular
        :size                :paragraph-1
        :style               style/description-description-text}
-      description-props]
-     nil)])
+      description])])
 
 (def view (theme/with-theme view-internal))

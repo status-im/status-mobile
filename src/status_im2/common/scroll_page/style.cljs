@@ -65,7 +65,7 @@
     :border-color  (colors/theme-colors colors/white colors/neutral-95)
     :position      :absolute
     :top           (- (+ picture-radius picture-border-width))
-    :left          (- (/ picture-radius 2) picture-border-width)}))
+    :left          (+ (/ picture-radius 2) picture-border-width)}))
 
 (defn display-picture
   [theme]

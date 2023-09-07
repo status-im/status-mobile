@@ -12,13 +12,12 @@
   []
   (let [new-account? (rf/sub [:onboarding-2/new-account?])]
     [quo/text-combinations
-     {:container-style                 {:margin-top 12}
+     {:container-style                 {:margin-top 12 :margin-horizontal 20}
       :title                           (i18n/label (if new-account?
                                                      :t/welcome-to-web3
                                                      :t/welcome-back))
       :title-accessibility-label       :welcome-title
-      :description                     :description
-      :description-props               (i18n/label :t/welcome-to-web3-sub-title)
+      :description                     (i18n/label :t/welcome-to-web3-sub-title)
       :description-accessibility-label :welcome-sub-title}]))
 
 (defn dispatch-visibility-status-update
