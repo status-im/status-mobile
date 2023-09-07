@@ -9,5 +9,4 @@
                  {:placeholder "Your Name"
                   :on-press    event}])
       (h/fire-event :press (h/get-by-label-text :select-profile-picture-button))
-      (-> (js/expect event)
-          (.toHaveBeenCalledTimes 1)))))
+      (h/was-called-times event 1))))
