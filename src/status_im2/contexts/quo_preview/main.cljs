@@ -39,6 +39,7 @@
     [status-im2.contexts.quo-preview.counter.step :as step]
     [status-im2.contexts.quo-preview.dividers.date :as divider-date]
     [status-im2.contexts.quo-preview.dividers.divider-label :as divider-label]
+    [status-im2.contexts.quo-preview.dividers.divider-line :as divider-line]
     [status-im2.contexts.quo-preview.dividers.new-messages :as new-messages]
     [status-im2.contexts.quo-preview.dividers.strength-divider :as strength-divider]
     [status-im2.contexts.quo-preview.drawers.action-drawers :as action-drawers]
@@ -193,6 +194,8 @@
                         :component step/view}]
    :dividers          [{:name      :divider-label
                         :component divider-label/view}
+                       {:name      :divider-line
+                        :component divider-line/view}
                        {:name      :new-messages
                         :component new-messages/view}
                        {:name      :divider-date
