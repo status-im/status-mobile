@@ -51,7 +51,9 @@
          (condp = notification
            :mute         [quo2.icons/icon :i/muted
                           {:color (style/mute-notification-icon-color theme)}]
-           :mention      [counter/view {:customization-color customization-color}
+           :mention      [counter/view
+                          {:customization-color customization-color
+                           :container-style     (style/counter mentions-count)}
                           mentions-count]
            :notification [quo2.icons/icon :i/notification
                           {:color               (style/mute-notification-icon-color theme)
