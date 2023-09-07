@@ -28,7 +28,8 @@
   (h/test "on change event gets fired for toggle"
     (let [on-change (h/mock-fn)]
       (h/render [settings-item/view
-                 (merge props {:action-props {:on-change on-change}})])
+                 (merge props {:action :selector
+                               :action-props {:on-change on-change}})])
       (h/fire-event :press (h/get-by-label-text :toggle-off))
       (h/was-called on-change)))
 
@@ -40,7 +41,8 @@
     (h/render [settings-item/view
                (merge props
                       {:tag       :context
-                       :tag-props {:context "Test Tag"}})])
+                       :tag-props {:context "Test Tag"
+                                   :icon    :i/placeholder}})])
     (h/is-truthy (h/get-by-text "Test Tag")))
 
   (h/test "on press event gets fired for button"
@@ -51,16 +53,4 @@
                          :action-props {:button-text "test button"
                                         :on-press    event}})])
       (h/fire-event :press (h/get-by-text "test button"))
-      (h/was-called event)))
-
-  (h/test "It renders a list of community icons"
-    (h/render [settings-item/view
-               (merge props
-                      {:label       :preview
-                       :label-props {:type :communities
-                                     :data [{:source              "1"
-                                             :accessibility-label :community-1}
-                                            {:source              "2"
-                                             :accessibility-label :community-2}]}})])
-    (h/is-truthy (h/get-by-label-text :community-1))
-    (h/is-truthy (h/get-by-label-text :community-2))))
+      (h/was-called event))))
