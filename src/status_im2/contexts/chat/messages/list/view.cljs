@@ -359,10 +359,9 @@
   [props]
   (let [chat-screen-loaded? (rf/sub [:shell/chat-screen-loaded?])
         window-height       (:height (rn/get-window))
-        content-height      (- window-height composer.constants/composer-default-height)]
+        content-height      (- window-height composer.constants/composer-default-height)
+        top-spacing         (when (not chat-screen-loaded?) navigation.style/navigation-bar-height)]
     (if chat-screen-loaded?
       [:f> f-messages-list-content props]
-      [rn/view {:style {:flex 1}}
-       [quo/skeleton-list
-        {:content       :messages
-         :parent-height content-height}]])))
+      [rn/view {:style {:padding-top top-spacing}}
+       [quo/skeleton-list (skeleton-list-props :messages content-height false)]])))
