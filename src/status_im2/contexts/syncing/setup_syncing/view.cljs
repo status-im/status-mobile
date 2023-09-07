@@ -76,9 +76,11 @@
            (i18n/label :t/setup-syncing)]]
          [rn/view {:style style/qr-container}
           (if (sync-utils/valid-connection-string? @code)
-            [rn/view {:style {:margin-horizontal 12}}
-             [qr-code-viewer/qr-code-view 311 @code]]
+            ;; TODO: margin-horizontal 12
             [quo/qr-code
+             {:media-server-port (rf/sub [:mediaserver/port])
+              :url               @code}]
+            [rn/image
              {:source (resources/get-image :qr-code)
               :height 220
               :width  "100%"}])

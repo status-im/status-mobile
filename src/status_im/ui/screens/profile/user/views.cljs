@@ -3,6 +3,7 @@
             [quo.design-system.colors :as colors]
             [quo.design-system.spacing :as spacing]
             [quo2.components.avatars.user-avatar.style :as user-avatar.style]
+            [quo2.core :as quo2]
             [quo2.theme :as theme]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
@@ -19,7 +20,6 @@
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.universal-links.utils :as universal-links]
             [status-im.utils.utils :as utils]
-            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
             [status-im2.config :as config]
             [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
@@ -32,7 +32,11 @@
       [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
        [react/view {:style {:padding-top 16 :padding-horizontal 16}}
         (when @width
-          [qr-code-viewer/qr-code-view (- @width 32) address])
+          [quo2/qr-code
+           {:avatar            :none
+            :media-server-port @(re-frame/subscribe [:mediaserver/port])
+            :url               address
+            :size              (- @width 32)}])
         (when ens-name
           [react/view
            [copyable-text/copyable-text-view
