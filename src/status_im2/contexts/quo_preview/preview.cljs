@@ -211,7 +211,7 @@
                :border-radius 16
                :overflow      :hidden}}
       [rn/image
-       {:source (or image (resources/get-mock-image :community-cover))
+       {:source (or image (resources/get-mock-image :dark-blur-bg))
         :style  {:height "100%" :width "100%"}}]
       [blur/view
        (merge {:style         {:position :absolute
