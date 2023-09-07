@@ -48,7 +48,7 @@
                 :community-name                     "Coinbase"
                 :community-logo                     (resources/mock-images :coinbase)
                 :account-avatar-emoji               "🍿"
-                :account-avatar-customization-color :purple
+                :customization-color :purple
                 :icon-avatar                        :i/placeholder
                 :on-button-press                    #(js/alert "on press")
                 :on-button-long-press               #(js/alert "on long press")

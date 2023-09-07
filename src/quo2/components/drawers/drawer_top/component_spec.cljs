@@ -58,7 +58,7 @@
                 :account-avatar-emoji               "🍿"
                 :networks                           [:ethereum]
                 :description                        "0x62b...0a5"
-                :account-avatar-customization-color :purple}])
+                :customization-color :purple}])
     (h/is-truthy (h/get-by-text "Title"))
     (h/is-truthy (h/get-by-text "0x62b...0a5"))
     (h/is-truthy (h/get-by-label-text :account-avatar)))

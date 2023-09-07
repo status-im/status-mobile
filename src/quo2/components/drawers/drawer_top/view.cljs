@@ -13,10 +13,10 @@
             [utils.i18n :as i18n]))
 
 (defn- left-image
-  [{:keys [type account-avatar-customization-color account-avatar-emoji icon-avatar profile-picture]}]
+  [{:keys [type customization-color account-avatar-emoji icon-avatar profile-picture]}]
   (case type
     :account         [account-avatar/view
-                      {:customization-color account-avatar-customization-color
+                      {:customization-color customization-color
                        :size                32
                        :emoji               account-avatar-emoji
                        :type                :default}]
@@ -131,13 +131,13 @@
 (defn- view-internal
   [{:keys [title type theme description blur? community-name community-logo button-icon on-button-press
            on-button-long-press
-           button-disabled? account-avatar-emoji account-avatar-customization-color icon-avatar
+           button-disabled? account-avatar-emoji customization-color icon-avatar
            profile-picture keycard? networks label]}]
   [rn/view {:style style/container}
    [rn/view {:style style/left-container}
     [left-image
      {:type                               type
-      :account-avatar-customization-color account-avatar-customization-color
+      :customization-color customization-color
       :account-avatar-emoji               account-avatar-emoji
       :icon-avatar                        icon-avatar
       :profile-picture                    profile-picture}]]
