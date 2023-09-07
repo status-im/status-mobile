@@ -12,7 +12,7 @@
            show-button?]}]
   (let [paired?   (and (not this-device?) enabled?)
         unpaired? (not enabled?)]
-    [quo/settings-list
+    [quo/settings-item
      (cond->
        {:container-style style/device-container
         :title           name

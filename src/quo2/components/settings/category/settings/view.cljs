@@ -1,7 +1,7 @@
 (ns quo2.components.settings.category.settings.view
   (:require
     [quo2.components.markdown.text :as text]
-    [quo2.components.settings.settings-list.view :as settings-list]
+    [quo2.components.settings.settings-item.view :as settings-item]
     [quo2.foundations.colors :as colors]
     [react-native.blur :as blur]
     [react-native.core :as rn]
@@ -21,7 +21,7 @@
    [rn/flat-list
     {:data      data
      :style     (style/settings-items theme blur?)
-     :render-fn (fn [item] [settings-list/settings-list item])
+     :render-fn (fn [item] [settings-item/view item])
      :separator [rn/view {:style (style/settings-separator theme blur?)}]}]])
 
 (def settings-category (quo.theme/with-theme category-internal))
