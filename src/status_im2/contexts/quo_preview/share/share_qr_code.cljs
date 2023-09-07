@@ -1,9 +1,9 @@
 (ns status-im2.contexts.quo-preview.share.share-qr-code
-  (:require [react-native.core :as rn]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.common.resources :as resources]
-            [reagent.core :as reagent]))
+            [utils.re-frame :as rf]))
 
 
 (def descriptor
@@ -34,7 +34,8 @@
            :blur-view-props       {:padding-top        20
                                    :padding-horizontal 20}}
           [quo/share-qr-code
-           {:source            (resources/get-mock-image :qr-code)
+           {:url               (:url @state)
+            :media-server-port (rf/sub [:mediaserver/port])
             :link-title        (:link-title @state)
             :url-on-press      #(js/alert "url pressed")
             :url-on-long-press #(js/alert "url long pressed")
