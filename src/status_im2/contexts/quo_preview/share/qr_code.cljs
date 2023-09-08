@@ -86,10 +86,10 @@
           :state                     state
           :descriptor                (concat descriptor
                                              (case (:avatar @state)
-                                               :profile profile-descriptor
+                                               :profile        profile-descriptor
                                                :wallet-account wallet-account-descriptor
-                                               :channel channel-descriptor
-                                               :saved-address saved-address-descriptor
+                                               :channel        channel-descriptor
+                                               :saved-address  saved-address-descriptor
                                                nil))}
          [quo/qr-code
           (cond-> @state
