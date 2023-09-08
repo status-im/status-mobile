@@ -1,6 +1,5 @@
 (ns quo.components.list.item
-  (:require [quo.components.animated.pressable :as animated]
-            [quo.components.controls.view :as controls]
+  (:require [quo.components.controls.view :as controls]
             [quo.components.text :as text]
             [quo.components.tooltip :as tooltip]
             [quo.design-system.colors :as colors]
@@ -241,7 +240,6 @@
                     (and (not on-press)
                          (not on-long-press))
                     rn/view
-                    animated animated/pressable
                     :else rn/touchable-highlight)]
     [rn/view
      {:background-color (cond (not= background-color nil)

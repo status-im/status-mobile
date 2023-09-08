@@ -1,6 +1,5 @@
 (ns quo.components.button.view
-  (:require [quo.components.animated.pressable :as animation]
-            [quo.components.text :as text] ;; FIXME:
+  (:require [quo.components.text :as text] ;; FIXME:
             [quo.design-system.colors :as colors]
             [quo.design-system.spacing :as spacing]
             [quo.haptic :as haptic]
@@ -75,7 +74,7 @@
         optional-haptic (fn []
                           (when haptic-feedback
                             (haptic/trigger haptic-type)))]
-    [animation/pressable
+    [rn/pressable
      (merge {:bg-color            background-color
              :border-radius       border-radius
              :type                type

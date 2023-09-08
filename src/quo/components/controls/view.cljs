@@ -16,8 +16,8 @@
                   ;                   value
                   onChange disabled]}
           (bean/bean props)
-          state (animated/use-value 0)
-          tap-state (animated/use-value (:undetermined gh/states))
+          state 0
+          tap-state (:undetermined gh/states)
           tap-handler (animated/on-gesture {:state tap-state})
           hold (react/use-memo
                 (fn []

@@ -40,17 +40,8 @@
                                                         (js-obj
                                                          "duration"
                                                          transition-duration-ms
-                                                         ;;commented out to upgrade
-                                                         ;;react-native-reanimated to v3 and
-                                                         ;;react-native to 0.72
-                                                         ;;TODO: replace this with an updated
-                                                         ;;implementation
-                                                         ;                                                                "easing"
-                                                         ;
-                                                         ;                                                                (:linear
-                                                         ;                                                                            reanimated/easings)
-
-                                                        ))))
+                                                         "easing"
+                                                         (:linear reanimated/easings)))))
   (reanimated/set-shared-value
    saving-keys-opacity
    (reanimated/with-sequence
@@ -58,31 +49,14 @@
                            (reanimated/with-timing 1
                                                    (js-obj "duration"
                                                            transition-duration-ms
-                                                           ;;commented out to upgrade
-                                                           ;;react-native-reanimated to v3 and
-                                                           ;;react-native to 0.72
-                                                           ;;TODO: replace this with an updated
-                                                           ;;implementation
-                                                           ;                                                           "easing"
-                                                           ;
-                                                           ;                                                           (:linear
-                                                           ;                                                           reanimated/easings)
-                                                   )
-                           ))
+                                                           "easing"
+                                                           (:linear reanimated/easings))))
     (reanimated/with-delay 1000
                            (reanimated/with-timing 0
                                                    (js-obj "duration"
                                                            transition-duration-ms
-                                                           ;;commented out to upgrade
-                                                           ;;react-native-reanimated to v3 and
-                                                           ;;react-native to 0.72
-                                                           ;;TODO: replace this with an updated
-                                                           ;;implementation
-                                                           ;                                                           "easing"
-                                                           ;
-                                                           ;                                                           (:linear
-                                                           ;                                                           reanimated/easings)
-                                                   )))))
+                                                           "easing"
+                                                           (:linear reanimated/easings))))))
   (reanimated/set-shared-value keys-saved-opacity
                                (reanimated/with-delay
                                 4600
@@ -90,16 +64,8 @@
                                                         (js-obj
                                                          "duration"
                                                          transition-duration-ms
-                                                         ;;commented out to upgrade
-                                                         ;;react-native-reanimated to v3 and
-                                                         ;;react-native to 0.72
-                                                         ;;TODO: replace this with an updated
-                                                         ;;implementation
-                                                         ;                                                                "easing"
-                                                         ;
-                                                         ;                                                                (:linear
-                                                         ;                                                                            reanimated/easings)
-                                                        )))))
+                                                         "easing"
+                                                         (:linear reanimated/easings))))))
 
 (defn f-title
   [insets generate-keys-opacity saving-keys-opacity keys-saved-opacity]

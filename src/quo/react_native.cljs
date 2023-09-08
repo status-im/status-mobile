@@ -126,6 +126,8 @@
 
 (def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js rn)))
 
+(def pressable (reagent/adapt-react-class (.-Pressable ^js rn)))
+
 ;; Flat-list
 (def ^:private rn-flat-list (reagent/adapt-react-class (.-FlatList ^js rn)))
 
