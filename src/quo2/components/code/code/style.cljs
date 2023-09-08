@@ -6,13 +6,15 @@
 (defn theme
   [theme-key]
   (case theme-key
-    :hljs-comment (colors/theme-colors colors/neutral-40 colors/neutral-60)
-    :hljs-title   (colors/custom-color-by-theme :sky 50 60)
-    :hljs-keyword (colors/custom-color-by-theme :green 50 60)
-    :hljs-string  (colors/custom-color-by-theme :turquoise 50 60)
-    :hljs-literal (colors/custom-color-by-theme :turquoise 50 60)
-    :hljs-number  (colors/custom-color-by-theme :turquoise 50 60)
-    :line-number  colors/neutral-40
+    :hljs-comment      (colors/theme-colors colors/neutral-40 colors/neutral-60)
+    :hljs-title        (colors/custom-color-by-theme :sky 50 60)
+    :hljs-keyword      (colors/custom-color-by-theme :green 50 60)
+    :hljs-string       (colors/custom-color-by-theme :turquoise 50 60)
+    :hljs-literal      (colors/custom-color-by-theme :turquoise 50 60)
+    :hljs-number       (colors/custom-color-by-theme :turquoise 50 60)
+    :hljs-symbol       (colors/custom-color-by-theme :orange 50 60)
+    :hljs-builtin-name (colors/custom-color-by-theme :pink 50 60)
+    :line-number       colors/neutral-40
     nil))
 
 (defn text-style
