@@ -49,7 +49,8 @@
 
 (def user-account
   (let [pressed? (reagent/atom false)]
-    (fn [{:keys [state name balance percentage-value loading? amount customization-color type emoji metrics?
+    (fn [{:keys [state name balance percentage-value loading? amount customization-color type emoji
+                 metrics?
                  theme on-press]}]
       (let [watch-only?        (= :watch-only type)
             empty-type?        (= :empty type)
@@ -63,10 +64,10 @@
             :theme               theme
             :metrics?            metrics?}]
           [rn/pressable
-           {:on-press-in         #(reset! pressed? true)
-            :on-press-out         #(reset! pressed? false)
-            :style    (style/card customization-color watch-only? metrics? theme @pressed?)
-            :on-press on-press}
+           {:on-press-in  #(reset! pressed? true)
+            :on-press-out #(reset! pressed? false)
+            :style        (style/card customization-color watch-only? metrics? theme @pressed?)
+            :on-press     on-press}
            (when (and customization-color (not= :watch-only type))
              [customization-colors/overlay
               {:customization-color customization-color
@@ -114,10 +115,10 @@
   (let [pressed? (reagent/atom false)]
     (fn [{:keys [on-press customization-color theme metrics?]}]
       [rn/pressable
-       {:on-press            on-press
-        :on-press-in         #(reset! pressed? true)
-        :on-press-out        #(reset! pressed? false)
-        :style (style/add-account-container theme metrics? @pressed?)}
+       {:on-press     on-press
+        :on-press-in  #(reset! pressed? true)
+        :on-press-out #(reset! pressed? false)
+        :style        (style/add-account-container theme metrics? @pressed?)}
        [button/button
         {:type                :primary
          :size                24

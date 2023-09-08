@@ -21,9 +21,9 @@
    :border-radius      16
    :border-width       1
    :border-color       (if watch-only?
-                         (colors/theme-colors 
+                         (colors/theme-colors
                           (if pressed? colors/neutral-80-opa-10 colors/neutral-80-opa-5)
-                          (if pressed? colors/white-opa-10 colors/white-opa-5) 
+                          (if pressed? colors/white-opa-10 colors/white-opa-5)
                           theme)
                          colors/neutral-80-opa-10)
    :padding-horizontal 12
