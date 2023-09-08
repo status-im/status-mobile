@@ -46,7 +46,7 @@
         :container-style     style/button
         :inner-style         style/button-inner} :i/camera]]
      [rn/view {:style style/input-container}
-      [title-input/title-input
+      [title-input/view
        (merge title-input-props
               {:blur?               true
                :placeholder         placeholder

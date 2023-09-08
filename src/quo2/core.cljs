@@ -232,7 +232,7 @@
 (def profile-input quo2.components.inputs.profile-input.view/profile-input)
 (def recovery-phrase-input quo2.components.inputs.recovery-phrase.view/recovery-phrase-input)
 (def search-input quo2.components.inputs.search-input.view/search-input)
-(def title-input quo2.components.inputs.title-input.view/title-input)
+(def title-input quo2.components.inputs.title-input.view/view)
 
 ;;;; Numbered Keyboard
 (def keyboard-key quo2.components.numbered-keyboard.keyboard-key.view/view)
