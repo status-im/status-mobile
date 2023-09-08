@@ -6,7 +6,9 @@
             [quo2.components.buttons.button.view :as button]
             [quo2.components.markdown.text :as text]
             [utils.i18n :as i18n]
-            [quo2.theme :as theme]))
+            [quo2.theme :as theme]
+            [reagent.core :as reagent]
+            [quo2.foundations.customization-colors :as customization-colors]))
 
 (defn- loading-view
   [{:keys [customization-color type theme metrics?]}]
@@ -14,7 +16,7 @@
         empty-type? (= :empty type)]
     [rn/view
      {:accessibility-label :loading
-      :style               (style/card customization-color watch-only? metrics? theme)}
+      :style               (style/card customization-color watch-only? metrics? theme false)}
      [rn/view {:style style/loader-container}
       [rn/view
        {:style (assoc (style/loader-view 16
@@ -45,72 +47,89 @@
                                      :margin-top
                                      10)}])]))
 
-(defn- user-account
-  [{:keys [state name balance percentage-value loading? amount customization-color type emoji metrics?
-           theme on-press]}]
-  (let [watch-only?        (= :watch-only type)
-        empty-type?        (= :empty type)
-        account-amount     (if (= :empty state) "€0.00" amount)
-        account-name       (if (= :empty state) (i18n/label :t/Account 1) name)
-        account-percentage (if (= :empty state) "€0.00" percentage-value)]
-    (if loading?
-      [loading-view
-       {:customization-color customization-color
-        :type                type
-        :theme               theme
-        :metrics?            metrics?}]
-      [rn/pressable
-       {:style    (style/card customization-color watch-only? metrics? theme)
-        :on-press on-press}
-       [rn/view {:style style/profile-container}
-        [rn/view {:style {:padding-bottom 2 :margin-right 2}}
-         [text/text {:style style/emoji} emoji]]
-        [rn/view {:style style/watch-only-container}
-         [text/text
-          {:size   :paragraph-2
-           :weight :medium
-           :style  (style/account-name watch-only? theme)}
-          account-name]
-         (when watch-only? [icon/icon :reveal {:color colors/neutral-50 :size 12}])]]
-       [text/text
-        {:size   :heading-2
-         :weight :semi-bold
-         :style  (style/account-value watch-only? theme)}
-        balance]
-       (when metrics?
-         [rn/view {:style style/metrics-container}
-          [text/text
-           {:weight              :semi-bold
-            :size                :paragraph-2
-            :accessibility-label :metrics
-            :style               (style/metrics watch-only? theme)}
-           account-percentage]
-          (when (not empty-type?)
-            [:<>
-             [rn/view (style/separator watch-only? theme)]
+(def user-account
+  (let [pressed? (reagent/atom false)]
+    (fn [{:keys [state name balance percentage-value loading? amount customization-color type emoji metrics?
+                 theme on-press]}]
+      (let [watch-only?        (= :watch-only type)
+            empty-type?        (= :empty type)
+            account-amount     (if (= :empty state) "€0.00" amount)
+            account-name       (if (= :empty state) (i18n/label :t/Account 1) name)
+            account-percentage (if (= :empty state) "€0.00" percentage-value)]
+        (if loading?
+          [loading-view
+           {:customization-color customization-color
+            :type                type
+            :theme               theme
+            :metrics?            metrics?}]
+          [rn/pressable
+           {:on-press-in         #(reset! pressed? true)
+            :on-press-out         #(reset! pressed? false)
+            :style    (style/card customization-color watch-only? metrics? theme @pressed?)
+            :on-press on-press}
+           (when (and customization-color (not= :watch-only type))
+             [customization-colors/overlay
+              {:customization-color customization-color
+               :border-radius       16
+               :theme               theme
+               :pressed?            @pressed?}])
+           [rn/view {:style style/profile-container}
+            [rn/view {:style {:padding-bottom 2 :margin-right 2}}
+             [text/text {:style style/emoji} emoji]]
+            [rn/view {:style style/watch-only-container}
              [text/text
-              {:weight :semi-bold
-               :size   :paragraph-2
-               :style  (style/metrics watch-only? theme)} account-amount]
-             [rn/view {:style {:margin-left 4}}
-              [icon/icon :positive
-               {:color (colors/theme-colors (if watch-only? colors/neutral-50 colors/white-opa-70)
-                                            colors/white-opa-70
-                                            theme)
-                :size  16}]]])])])))
+              {:size   :paragraph-2
+               :weight :medium
+               :style  (style/account-name watch-only? theme)}
+              account-name]
+             (when watch-only? [icon/icon :reveal {:color colors/neutral-50 :size 12}])]]
+           [text/text
+            {:size   :heading-2
+             :weight :semi-bold
+             :style  (style/account-value watch-only? theme)}
+            balance]
+           (when metrics?
+             [rn/view {:style style/metrics-container}
+              [text/text
+               {:weight              :semi-bold
+                :size                :paragraph-2
+                :accessibility-label :metrics
+                :style               (style/metrics watch-only? theme)}
+               account-percentage]
+              (when (not empty-type?)
+                [:<>
+                 [rn/view (style/separator watch-only? theme)]
+                 [text/text
+                  {:weight :semi-bold
+                   :size   :paragraph-2
+                   :style  (style/metrics watch-only? theme)} account-amount]
+                 [rn/view {:style {:margin-left 4}}
+                  [icon/icon :positive
+                   {:color (colors/theme-colors (if watch-only? colors/neutral-50 colors/white-opa-70)
+                                                colors/white-opa-70
+                                                theme)
+                    :size  16}]]])])])))))
 
-(defn- add-account-view
-  [{:keys [on-press customization-color theme metrics?]}]
-  [rn/view (style/add-account-container theme metrics?)
-   [button/button
-    {:type                :primary
-     :size                24
-     :icon                true
-     :accessibility-label :add-account
-     :on-press            on-press
-     :customization-color customization-color
-     :icon-only?          true}
-    :i/add]])
+(def add-account-view
+  (let [pressed? (reagent/atom false)]
+    (fn [{:keys [on-press customization-color theme metrics?]}]
+      [rn/pressable
+       {:on-press            on-press
+        :on-press-in         #(reset! pressed? true)
+        :on-press-out        #(reset! pressed? false)
+        :style (style/add-account-container theme metrics? @pressed?)}
+       [button/button
+        {:type                :primary
+         :size                24
+         :icon                true
+         :accessibility-label :add-account
+         :on-press            on-press
+         :pressed?            @pressed?
+         :on-press-in         #(reset! pressed? true)
+         :on-press-out        #(reset! pressed? false)
+         :customization-color customization-color
+         :icon-only?          true}
+        :i/add]])))
 
 (defn- view-internal
   [{:keys [type] :as props}]

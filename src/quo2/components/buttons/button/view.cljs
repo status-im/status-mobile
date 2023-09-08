@@ -29,10 +29,10 @@
    only icon
    [button {:icon-only? true} :i/close-circle]"
   [_ _]
-  (let [pressed? (reagent/atom false)]
+  (let [pressed-state? (reagent/atom false)]
     (fn
       [{:keys [on-press on-long-press disabled? type background size icon-left icon-right icon-top
-               customization-color theme accessibility-label icon-only? container-style inner-style]
+               customization-color theme accessibility-label icon-only? container-style inner-style pressed? on-press-in on-press-out]
         :or   {type                :primary
                size                40
                customization-color (cond (= type :primary)  :blue
@@ -46,14 +46,18 @@
                                            :background          background
                                            :type                type
                                            :theme               theme
-                                           :pressed?            @pressed?
+                                           :pressed?            (if pressed? pressed? @pressed-state?)
                                            :icon-only?          icon-only?})
             icon-size (when (= 24 size) 12)]
         [rn/touchable-without-feedback
          {:disabled            disabled?
           :accessibility-label accessibility-label
-          :on-press-in         #(reset! pressed? true)
-          :on-press-out        #(reset! pressed? nil)
+          :on-press-in         (fn [] 
+                                 (reset! pressed-state? true)
+                                 (when on-press-in (on-press-in)))
+          :on-press-out        (fn [] 
+                                 (reset! pressed-state? nil)
+                                 (when on-press-out (on-press-out)))
           :on-press            on-press
           :on-long-press       on-long-press}
          [rn/view
@@ -76,7 +80,7 @@
              [customization-colors/overlay
               {:customization-color customization-color
                :theme               theme
-               :pressed?            @pressed?}])
+               :pressed?            (if pressed? pressed? @pressed-state?)}])
            (when (= background :photo)
              [blur/view
               {:blur-radius   20
