@@ -6,6 +6,7 @@
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]
+            [utils.image-server :as image-server]
             [utils.re-frame :as rf]))
 
 (def descriptor
@@ -59,39 +60,46 @@
 
 (defn preview
   []
-  (let [state (reagent/atom
-               {:url                 "https://join.status.im/status"
-                :media-server-port   (rf/sub [:mediaserver/port])
-                :size                250
-                :avatar              :none
-                :profile-picture     (resources/get-mock-image :user-picture-male5)
-                :customization-color :army
-                :full-name           "Full Name"
-                :emoji               "🍒"
-                :picture             (resources/get-mock-image :community-logo)
-                :f-name              "First Name"
-                :l-name              "Last Name"})]
+  (let [media-server-port (rf/sub [:mediaserver/port])
+        state             (reagent/atom
+                           {:url                 "https://join.status.im/status"
+                            :size                250
+                            :avatar              :none
+                            :profile-picture     (resources/get-mock-image :user-picture-male5)
+                            :customization-color :army
+                            :full-name           "Full Name"
+                            :emoji               "🍒"
+                            :picture             (resources/get-mock-image :community-logo)
+                            :f-name              "First Name"
+                            :l-name              "Last Name"})]
     (fn []
-      [preview/preview-container
-       {:state      state
-        :descriptor (concat descriptor
-                            (case (:avatar @state)
-                              :profile        profile-descriptor
-                              :wallet-account wallet-account-descriptor
-                              :channel        channel-descriptor
-                              :saved-address  saved-address-descriptor
-                              nil))}
-       [rn/view
-        {:style {:flex            1
-                 :justify-content :center
-                 :align-items     :center
-                 :margin-vertical 12}}
-        [quo/qr-code
-         (cond-> @state
-           ;; `:channel` variant receives colors as hex strings instead of keywords
-           (= (:avatar @state) :channel)
-           (update :customization-color colors/custom-color 60))]
+      (let [qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
+                                 {:url         (:url @state)
+                                  :qr-size     (:size @state)
+                                  :port        media-server-port
+                                  :error-level :highest})]
+        [preview/preview-container
+         {:component-container-style {:flex            1
+                                      :justify-content :center
+                                      :align-items     :center
+                                      :margin-vertical 12}
+          :state                     state
+          :descriptor                (concat descriptor
+                                             (case (:avatar @state)
+                                               :profile profile-descriptor
+                                               :wallet-account wallet-account-descriptor
+                                               :channel channel-descriptor
+                                               :saved-address saved-address-descriptor
+                                               nil))}
+         [quo/qr-code
+          (cond-> @state
+            :always
+            (assoc :qr-image-uri qr-media-server-uri)
 
-        [rn/view {:style {:margin 12}}
-         [text/text "URL:"]
-         [text/text (:url @state)]]]])))
+            ;; `:channel` variant receives colors as hex strings instead of keywords
+            (= (:avatar @state) :channel)
+            (update :customization-color colors/custom-color 60))]
+
+         [rn/view {:style {:margin 12}}
+          [text/text "URL:"]
+          [text/text (:url @state)]]]))))

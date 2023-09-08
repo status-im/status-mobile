@@ -8,14 +8,11 @@
             [react-native.core :as rn]))
 
 (defn view
-  [{:keys [url media-server-port link-title
-           url-on-press url-on-long-press qr-url share-on-press]}]
+  [{:keys [qr-image-uri link-title url-on-press url-on-long-press qr-url share-on-press]}]
   [blur/ios-view
    {:style     style/qr-code-container
     :blur-type :light}
-   [qr-code/view
-    {:media-server-port media-server-port
-     :url               url}]
+   [qr-code/view {:qr-image-uri qr-image-uri}]
    [rn/view {:style style/profile-address-container}
     [rn/view {:style style/profile-address-column}
      [text/text

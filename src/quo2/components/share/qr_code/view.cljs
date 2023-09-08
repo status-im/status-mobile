@@ -5,19 +5,7 @@
             [quo2.components.avatars.wallet-user-avatar :as wallet-avatar]
             [quo2.components.share.qr-code.style :as style]
             [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
-            [utils.image-server :as image-server]))
-
-(defn- qr-code-image
-  [{:keys [size url media-server-port]}]
-  (let [media-server-uri (image-server/get-qr-image-uri-for-any-url
-                          {:url         url
-                           :port        media-server-port
-                           :qr-size     (or 400 (int size))
-                           :error-level :highest})]
-    [fast-image/fast-image
-     {:style  (style/qr-image size)
-      :source {:uri media-server-uri}}]))
+            [react-native.fast-image :as fast-image]))
 
 (defn- avatar-image
   [{avatar-type :avatar
@@ -55,8 +43,7 @@
 (defn view
   "Receives a URL to show a QR code with an avatar (optional) over it.
    Parameters:
-     - url: String codified in the QR code
-     - media-server-port: receives the value of the subscription `[:mediaserver/port]`
+     - qr-image-uri: A valid uri representing the QR code to display using `fast-image`
      - size: if not provided, the QR code image will grow according to its parent
      - avatar: Type of the avatar, defaults to `:none` and it can be:
          `:profile`, `:wallet-account`, `:community`, `:channel` or `:saved-address`
@@ -78,10 +65,12 @@
       - f-name
       - l-name
       - customization-color"
-  [{:keys [avatar size]
+  [{:keys [avatar size qr-image-uri]
     :or   {avatar :none}
     :as   props}]
   [rn/view {:style (style/container size)}
-   [qr-code-image props]
+   [fast-image/fast-image
+    {:style  (style/qr-image size)
+     :source {:uri qr-image-uri}}]
    (when-not (= avatar :none)
      [avatar-image props])])

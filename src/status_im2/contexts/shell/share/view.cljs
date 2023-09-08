@@ -8,6 +8,7 @@
             [reagent.core :as reagent]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.list-selection :as list-selection]
+            [status-im2.common.qr-codes.view :as qr-codes]
             [status-im2.contexts.shell.share.style :as style]
             [utils.address :as address]
             [utils.i18n :as i18n]
@@ -55,9 +56,8 @@
         emoji-hash-string (string/join emoji-hash)]
     [:<>
      [rn/view {:style style/qr-code-container}
-      [quo/qr-code
-       {:media-server-port   (rf/sub [:mediaserver/port])
-        :url                 profile-url
+      [qr-codes/qr-code
+       {:url                 profile-url
         :size                qr-size
         :avatar              :profile
         :full-name           display-name

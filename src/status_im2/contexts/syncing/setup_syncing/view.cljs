@@ -5,6 +5,7 @@
             [react-native.core :as rn]
             [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
             [reagent.core :as reagent]
+            [status-im2.common.qr-codes.view :as qr-codes]
             [status-im2.common.resources :as resources]
             [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
             [react-native.hooks :as hooks]
@@ -77,9 +78,7 @@
          [rn/view {:style style/qr-container}
           (if (sync-utils/valid-connection-string? @code)
             ;; TODO: margin-horizontal 12
-            [quo/qr-code
-             {:media-server-port (rf/sub [:mediaserver/port])
-              :url               @code}]
+            [qr-codes/qr-code {:url @code}]
             [rn/image
              {:source (resources/get-image :qr-code)
               :height 220
