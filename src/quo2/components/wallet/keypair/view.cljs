@@ -1,18 +1,18 @@
 (ns quo2.components.wallet.keypair.view
   (:require
+    [clojure.string :as string]
     [quo2.components.avatars.icon-avatar :as icon-avatar]
     [quo2.components.avatars.user-avatar.view :as user-avatar]
     [quo2.components.icon :as icon]
     [quo2.components.list-items.account-list-card.view :as account-list-card]
     [quo2.components.markdown.text :as text]
+    [quo2.components.selectors.selectors.view :as selectors]
+    [quo2.components.wallet.keypair.style :as style]
     [quo2.foundations.colors :as colors]
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
-    [quo2.components.selectors.selectors.view :as selectors]
     [reagent.core :as reagent]
-    [utils.i18n :as i18n]
-    [quo2.components.wallet.keypair.style :as style]
-    [clojure.string :as string]))
+    [utils.i18n :as i18n]))
 
 (defn keypair-string
   [full-name]
@@ -33,7 +33,7 @@
       :size                :small
       :customization-color customization-color}]
     [icon-avatar/icon-avatar
-     {:size    :medium
+     {:size    :size/s-32
       :icon    :i/placeholder
       :border? true}]))
 
