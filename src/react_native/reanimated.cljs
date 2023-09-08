@@ -16,22 +16,23 @@
                              cancelAnimation
                              SlideInUp
                              SlideOutUp
-                             LinearTransition
-                             enableLayoutAnimations
+                             FadeIn
                              runOnJS)]
             [reagent.core :as reagent]
             ["react-native-redash" :refer (withPause)]
             [react-native.flat-list :as rn-flat-list]
             [utils.worklets.core :as worklets.core]))
 
-(def enable-layout-animations enableLayoutAnimations)
-
 (def ^:const default-duration 300)
 
 ;; Animations
 (def slide-in-up-animation SlideInUp)
 (def slide-out-up-animation SlideOutUp)
-(def linear-transition LinearTransition)
+
+;;;; LinearTransition is deprecated
+;;;; https://github.com/software-mansion/react-native-reanimated/issues/4362#issuecomment-1508682400
+;;;; temporarily using FadeIn as a replacement to Linear Transition
+(def linear-transition FadeIn)
 
 ;; Animated Components
 (def create-animated-component (comp reagent/adapt-react-class (.-createAnimatedComponent reanimated)))
@@ -122,22 +123,24 @@
                                          "easing"   (get easings easing)))))
 
 (defn animate-shared-value-with-delay
-  [anim v duration easing delay-ms]
-  (set-shared-value anim
-                    (with-delay delay-ms
-                                (with-timing v
-                                             (js-obj "duration" duration
-                                                     "easing"   (get easings easing))))))
+  [anim v duration easing delay]
+  (set-shared-value
+   anim
+   (with-delay delay
+               (with-timing v
+                            (js-obj "duration" duration
+                                    "easing"   (get easings easing))))))
 
 (defn animate-delay
-  ([animation v delay-ms]
-   (animate-delay animation v delay-ms default-duration))
-  ([animation v delay-ms duration]
-   (set-shared-value animation
-                     (with-delay delay-ms
-                                 (with-timing v
-                                              (clj->js {:duration duration
-                                                        :easing   (default-easing)}))))))
+  ([animation v delay]
+   (animate-delay animation v delay default-duration))
+  ([animation v delay duration]
+   (set-shared-value
+    animation
+    (with-delay delay
+                (with-timing v
+                             (clj->js {:duration duration
+                                       :easing   (default-easing)}))))))
 
 (defn animate-shared-value-with-repeat
   [anim v duration easing number-of-repetitions reverse?]
@@ -149,11 +152,11 @@
                                  reverse?)))
 
 (defn animate-shared-value-with-delay-repeat
-  ([anim v duration easing delay-ms number-of-repetitions]
-   (animate-shared-value-with-delay-repeat anim v duration easing delay-ms number-of-repetitions false))
-  ([anim v duration easing delay-ms number-of-repetitions reverse?]
+  ([anim v duration easing delay number-of-repetitions]
+   (animate-shared-value-with-delay-repeat anim v duration easing delay number-of-repetitions false))
+  ([anim v duration easing delay number-of-repetitions reverse?]
    (set-shared-value anim
-                     (with-delay delay-ms
+                     (with-delay delay
                                  (with-repeat
                                   (with-timing v
                                                #js
@@ -184,6 +187,7 @@
                      (with-timing value
                                   (clj->js {:duration duration
                                             :easing   (default-easing)})))))
+
 
 (defn with-timing-duration
   [v duration]

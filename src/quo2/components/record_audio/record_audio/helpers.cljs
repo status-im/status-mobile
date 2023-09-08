@@ -10,22 +10,22 @@
    :linear))
 
 (defn animate-linear-with-delay
-  [shared-value value duration delay-ms]
+  [shared-value value duration delay]
   (reanimated/animate-shared-value-with-delay
    shared-value
    value
    duration
    :linear
-   delay-ms))
+   delay))
 
 (defn animate-linear-with-delay-loop
-  [shared-value value duration delay-ms]
+  [shared-value value duration delay]
   (reanimated/animate-shared-value-with-delay-repeat
    shared-value
    value
    duration
    :linear
-   delay-ms
+   delay
    -1))
 
 (defn animate-easing
@@ -37,13 +37,13 @@
    :easing1))
 
 (defn animate-easing-with-delay
-  [shared-value value duration delay-ms]
+  [shared-value value duration delay]
   (reanimated/animate-shared-value-with-delay
    shared-value
    value
    duration
    :easing1
-   delay-ms))
+   delay))
 
 (defn set-value
   [shared-value value]

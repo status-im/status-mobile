@@ -35,12 +35,7 @@
                                  {:transform [{:translateX translate-x}]}
                                  {:width  window-width
                                   :height "100%"})]
-    (reanimated/animate-shared-value-with-repeat translate-x
-                                                 window-width
-                                                 1000
-                                                 ;                                                 :linear
-                                                 (- 1)
-                                                 false)
+    (reanimated/animate-shared-value-with-repeat translate-x window-width 1000 :linear (- 1) false)
     [masked-view/masked-view
      {:style       {:height message-skeleton-height}
       :maskElement (reagent/as-element

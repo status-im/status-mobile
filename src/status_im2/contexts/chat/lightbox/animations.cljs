@@ -16,11 +16,6 @@
    (set-val animation
             (reanimated/with-timing value
                                     (clj->js {:duration duration
-                                              ;;commented out to upgrade react-native-reanimated to v3
-                                              ;;and react-native to 0.72
-                                              ;;TODO: replace this with an updated implementation
-                                              ;                                              :easing
-                                              ;                                              (reanimated/default-easing)
-                                             })))))
+                                              :easing   (reanimated/default-easing)})))))
 
 (def animate-decay reanimated/animate-shared-value-with-decay)

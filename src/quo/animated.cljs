@@ -1,9 +1,7 @@
 (ns quo.animated
   (:refer-clojure :exclude [abs set delay divide])
   (:require ["react-native-reanimated" :default animated :refer
-             (clockRunning
-              ;                                                                 EasingNode
-             )]
+             (clockRunning Easing Extrapolate)]
             ["react-native-redash" :as redash]
             [oops.core :refer [ocall oget]]
             [quo.gesture-handler :as gh]
@@ -87,26 +85,18 @@
 
 (def clock-running clockRunning)
 
-;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
-;;;;; TODO: replace this with an updated implementation
-;;;TypeError: undefined is not an object (evaluating
-;;;'shadow.js.shim.module$react_native_reanimated.EasingNode.bezier')
-;(def bezier (.-bezier ^js EasingNode))
+(def bezier (.-bezier ^js Easing))
 
-;;;ERROR  TypeError: undefined is not an object (evaluating
-;;;'shadow.js.shim.module$react_native_reanimated.EasingNode.linear')
-;(def linear (.-linear ^js EasingNode))
+(def linear (.-linear ^js Easing))
 
+(def easings
+  {:linear      linear
+   :ease-in     (bezier 0.42 0 1 1)
+   :ease-out    (bezier 0 0 0.58 1)
+   :ease-in-out (bezier 0.42 0 0.58 1)
+   :cubic       (bezier 0.55 0.055 0.675 0.19)
+   :keyboard    (bezier 0.17 0.59 0.4 0.77)})
 
-;;; They depend on bezier and linear
-;(def easings
-;  {:linear      linear
-;   :ease-in     (bezier 0.42 0 1 1)
-;   :ease-out    (bezier 0 0 0.58 1)
-;   :ease-in-out (bezier 0.42 0 0.58 1)
-;   :cubic       (bezier 0.55 0.055 0.675 0.19)
-;   :keyboard    (bezier 0.17 0.59 0.4 0.77)})
-;
 (def springs
   {:lazy {:damping           50
           :mass              0.3
@@ -183,9 +173,6 @@
   [opts]
   (.block ^js animated (to-array opts)))
 
-(defn interpolate
-  [anim-value config]
-  (.interpolateNode ^js animated anim-value (clj->js config)))
 
 (defn call*
   [args callback]
@@ -205,16 +192,13 @@
            (clj->js opts)
            (clj->js config)))
 
-;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
-;;;;; TODO: replace this with an updated implementation
-;;;ERROR  Error: Oops, Missing expected object key 'log'
-;(def extrapolate {:clamp (oget animated "Extrapolate" "CLAMP")})
-;
+(def extrapolate {:clamp (oget Extrapolate "CLAMP")})
+
 ;;; utilities
-;
+
 (def clamp (oget redash "clamp"))
 (def diff-clamp (.-diffClamp ^js redash))
-;
+
 (defn with-spring
   [config]
   (ocall redash "withSpring" (clj->js config)))
@@ -284,41 +268,3 @@
 (defn snap-point
   [v velocity snap-points]
   (.snapPoint ^js redash v velocity (to-array snap-points)))
-
-;;;; commented out to upgrade react-native-reanimated to v3 and react-native to 0.72
-;;;;; TODO: replace this with an updated implementation
-;(defn with-easing
-;  [{v     :value
-;    :keys [snap-points velocity offset state easing duration
-;           animation-over]
-;    :or   {duration       250
-;           animation-over (value 1)
-;           easing         (:ease-out easings)}}]
-;  (let [position         (value 0)
-;        c                (clock)
-;        interrupted      (and* (eq state (:began gh/states))
-;                               (clock-running c))
-;        vel              (multiply velocity 1.5)
-;        to               (snap-point position vel snap-points)
-;        finish-animation [(set offset position)
-;                          (stop-clock c)
-;                          (set animation-over 1)]]
-;    (block
-;     [(cond* interrupted finish-animation)
-;      (cond* animation-over
-;             (set position offset))
-;      (cond* (neq state (:end gh/states))
-;             [(set animation-over 0)
-;              (set position (add offset v))])
-;      (cond* (and* (eq state (:end gh/states))
-;                   (not* animation-over))
-;             [(set position
-;                   (re-timing
-;                    {:clock    c
-;                     :easing   easing
-;                     :duration duration
-;                     :from     position
-;                     :to       to}))
-;              (cond* (not* (clock-running c))
-;                     finish-animation)])
-;      position])))
