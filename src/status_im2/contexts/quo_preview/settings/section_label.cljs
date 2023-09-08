@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.settings.section-label
   (:require
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]
     [quo2.core :as quo]))
@@ -21,25 +20,16 @@
         description (reagent/cursor state [:description])
         section     (reagent/cursor state [:section])
         blur?       (reagent/cursor state [:blur?])]
-
     (fn []
       [preview/preview-container
-       {:state                     state
-        :descriptor                descriptor
-        :component-container-style {:align-items :center}}
-       [rn/view
-        {:style {:flex          1
-                 :align-self    :stretch
-                 :border-radius 24}}
-        [preview/blur-view
-         {:style                 {:flex               1
-                                  :padding-horizontal 32
-                                  :padding-vertical   32}
-          :height                150
-          :show-blur-background? @blur?}
-         [quo/section-label
-          {:section     @section
-           :description (if (empty? @description)
-                          nil
-                          @description)
-           :blur?       @blur?}]]]])))
+       {:state                 state
+        :descriptor            descriptor
+        :show-blur-background? @blur?
+        :blur?                 @blur?
+        :blur-height           150}
+       [quo/section-label
+        {:section     @section
+         :description (if (empty? @description)
+                        nil
+                        @description)
+         :blur?       @blur?}]])))
