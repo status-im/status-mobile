@@ -16,7 +16,7 @@ ext {
     gradlePluginVersion = project.gradlePluginVersion
     kotlinPluginVersion = project.kotlinPluginVersion
 
-    ndkVersion = "25.2.9519653"
+    ndkVersion = "23.1.7779620"
 }
 
 buildscript {
