@@ -26,9 +26,9 @@
                        :color   :neutral}]
 
     :default-keypair [user-avatar/user-avatar
-                      {:size                  :small
-                       :status-indicator?     false
-                       :profile-picture       profile-picture}]
+                      {:size              :small
+                       :status-indicator? false
+                       :profile-picture   profile-picture}]
     nil))
 
 (defn- network-view
