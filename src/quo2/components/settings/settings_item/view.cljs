@@ -62,7 +62,8 @@
   (case tag
     :positive [status-tags/status-tag
                {:status          {:type :positive}
-                :label           (i18n/label :t/positive)
+                :label           (:label tag-props)
+                :no-icon?        true
                 :size            :small
                 :container-style {:margin-top 8}}]
     :context  [context-tag/view

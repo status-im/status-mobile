@@ -8,12 +8,14 @@
     (if tag 72 icon-height)))
 
 (defn container
-  [{:keys [in-card? tag]}]
-  {:padding-horizontal 12
-   :padding-vertical   (if in-card? 12 13)
-   :flex-direction     :row
-   :justify-content    :space-between
-   :height             (if tag 96 48)})
+  [{:keys [in-card? tag container-style]}]
+  (merge {:padding-horizontal 12
+          :padding-top        (if in-card? 12 13)
+          :padding-bottom     (if in-card? 12 13)
+          :flex-direction     :row
+          :justify-content    :space-between
+          :height             (if tag 96 48)}
+         container-style))
 
 (def sub-container
   {:flex-direction :row
