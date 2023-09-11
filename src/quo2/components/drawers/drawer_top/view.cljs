@@ -75,7 +75,7 @@
     :size                :paragraph-2
     :weight              :regular
     :style               (style/description theme blur?)}
-   (str description " ∙ " (i18n/label :t/on-device))])
+   (str description " · " (i18n/label :t/on-device))])
 
 (defn- context-tag-subtitle
   [{:keys [community-logo community-name]}]
