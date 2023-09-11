@@ -1,5 +1,6 @@
 (ns utils.debounce
-  (:require [re-frame.core :as re-frame]))
+  (:require [goog.functions]
+            [re-frame.core :as re-frame]))
 
 (def timeout (atom {}))
 
@@ -33,8 +34,4 @@
 
 (defn debounce
   [f duration-ms]
-  (let [timer (atom nil)]
-    (fn [& args]
-      (js/clearTimeout @timer)
-      (reset! timer (js/setTimeout (fn [] (apply f args)) duration-ms))
-      nil)))
+  (goog.functions/debounce f duration-ms))

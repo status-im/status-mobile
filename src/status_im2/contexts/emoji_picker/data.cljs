@@ -2,6 +2,8 @@
   (:require [status-im2.contexts.emoji-picker.constants :as constants]
             [utils.transforms :as transforms]))
 
+;; Emoji data is pulled from the `emojibase` (https://emojibase.dev).
+;;
 ;; The dataset constains `group` key which holds a number to reduce the file size.
 ;; It is then categorized below:
 ;; - smileys-emotion (0)
@@ -19,9 +21,19 @@
 ;; - The emoji components (https://symbl.cc/en/emoji/component) which are group 2 are not used
 ;;   in the app and are removed from the dataset.
 
-(def emoji-data (transforms/js->clj (js/require "../resources/data/emojis/en.json")))
+(def ^:const emoji-data (transforms/js->clj (js/require "../resources/data/emojis/en.json")))
 
-(def categories
+(def ^:const group-smileys-emotion 0)
+(def ^:const group-people-body 1)
+(def ^:const group-animals-nature 3)
+(def ^:const group-food-drink 4)
+(def ^:const group-travel-places 5)
+(def ^:const group-activity 6)
+(def ^:const group-objects 7)
+(def ^:const group-symbols 8)
+(def ^:const group-flags 9)
+
+(def ^:const categories
   [{:title :t/emoji-people ;; 0 and 1
     :icon  :i/faces
     :id    :people
@@ -57,15 +69,16 @@
 
 (defn emoji-group->category
   [group]
-  (case group
-    (0 1) {:index 0 :id :people}
-    3     {:index 1 :id :nature}
-    4     {:index 2 :id :food}
-    5     {:index 4 :id :travel}
-    6     {:index 3 :id :activity}
-    7     {:index 5 :id :objects}
-    8     {:index 6 :id :symbols}
-    9     {:index 7 :id :flags}
+  (condp = group
+    group-smileys-emotion {:index 0 :id :people}
+    group-people-body     {:index 0 :id :people}
+    group-animals-nature  {:index 1 :id :nature}
+    group-food-drink      {:index 2 :id :food}
+    group-travel-places   {:index 4 :id :travel}
+    group-activity        {:index 3 :id :activity}
+    group-objects         {:index 5 :id :objects}
+    group-symbols         {:index 6 :id :symbols}
+    group-flags           {:index 7 :id :flags}
     nil))
 
 (def ^:private categorized-and-partitioned
@@ -77,7 +90,7 @@
                  (conj acc (assoc item :data (partition-all constants/emojis-per-row data))))
                [])))
 
-(def flatten-data
+(def ^:const flatten-data
   (mapcat (fn [{:keys [title id data]}]
             (into [{:title title :id id :header? true}] data))
    categorized-and-partitioned))

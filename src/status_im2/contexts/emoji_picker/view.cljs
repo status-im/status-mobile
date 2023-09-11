@@ -78,7 +78,7 @@
   (into [rn/view {:style style/emoji-row-container}]
         (map-indexed
          (fn [col-index {:keys [hexcode] :as emoji}]
-           ^{:key (str hexcode col-index)}
+           ^{:key hexcode}
            [emoji-item emoji col-index on-select close])
          row-data)))
 
@@ -104,7 +104,8 @@
      {:ref                             set-scroll-ref
       :scroll-enabled                  @scroll-enabled
       :data                            data
-      :initial-num-to-render           15
+      :initial-num-to-render           20
+      :max-to-render-per-batch         15
       :render-fn                       render-item
       :get-item-layout                 get-item-layout
       :keyboard-dismiss-mode           :on-drag
