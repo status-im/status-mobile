@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 from _pytest.outcomes import Failed
+from appium.webdriver.connectiontype import ConnectionType
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, run_in_parallel, transl
@@ -280,12 +281,12 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
 
         self.homes[0].just_fyi("Put admin device to offline and send messages from members")
         app_package = self.drivers[0].current_package
-        self.homes[0].toggle_airplane_mode()
+        self.homes[0].driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
         self.chats[1].send_message(message_1)
         self.chats[2].send_message(message_2)
 
         self.homes[0].just_fyi("Put admin device to online and check that messages and PNs will be fetched")
-        self.homes[0].toggle_airplane_mode()
+        self.homes[0].driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
         self.homes[0].connection_offline_icon.wait_for_invisibility_of_element(60)
         self.homes[0].open_notification_bar()
         for message in (message_1, message_2):

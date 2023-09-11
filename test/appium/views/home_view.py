@@ -1,6 +1,7 @@
 import time
 
 from appium.webdriver.common.mobileby import MobileBy
+from appium.webdriver.extensions.android.nativekey import AndroidKey
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from typing_extensions import Literal
 
@@ -382,7 +383,10 @@ class HomeView(BaseView):
         except NoSuchElementException:
             self.driver.fail("No contact request received from %s" % username)
         finally:
-            self.close_activity_centre.wait_for_rendering_ended_and_click()
+            print(1)
+            # self.close_activity_centre.wait_for_rendering_ended_and_click()
+            # time.sleep(5)
+            self.driver.press_keycode(4)
             self.chats_tab.wait_for_visibility_of_element()
 
     def get_username_below_start_new_chat_button(self, username_part):

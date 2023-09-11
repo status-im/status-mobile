@@ -3,6 +3,7 @@ import random
 import emoji
 import pytest
 from _pytest.outcomes import Failed
+from appium.webdriver.connectiontype import ConnectionType
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from tests import marks, run_in_parallel, transl
@@ -556,10 +557,10 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         self.home_1.just_fyi('Turn on airplane mode and check that offline status is shown on home view')
         app_package = self.home_1.driver.current_package
         for home in self.homes:
-            home.toggle_airplane_mode()
-            if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
-                home.driver.activate_app(app_package)
-                SignInView(home.driver).sign_in()
+            home.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
+#            if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
+#                home.driver.activate_app(app_package)
+#                SignInView(home.driver).sign_in()
 
         # Not implemented yet
         # self.home_1.connection_offline_icon.wait_and_click(20)
@@ -582,12 +583,12 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
 
         self.home_2.just_fyi('Device2 goes back online and checks that status of the message is changed to "delivered"')
         for i, home in enumerate(self.homes):
-            home.toggle_airplane_mode()
-            if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
-                home.driver.activate_app(app_package)
-                SignInView(home.driver).sign_in()
-                home.chats_tab.click()
-                home.get_chat(self.username_2 if i == 0 else self.username_1).click()
+            home.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
+            # if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
+            #     home.driver.activate_app(app_package)
+            #     SignInView(home.driver).sign_in()
+            #     home.chats_tab.click()
+            #     home.get_chat(self.username_2 if i == 0 else self.username_1).click()
 
         self.home_1.just_fyi('Device1 goes back online and checks that 1-1 chat will be fetched')
         if not self.chat_1.chat_element_by_text(message_1).is_element_displayed(120):

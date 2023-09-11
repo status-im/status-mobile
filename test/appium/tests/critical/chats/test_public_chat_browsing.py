@@ -1,9 +1,12 @@
 import datetime
 import random
+from datetime import timedelta
 
 import emoji
 import pytest
 from _pytest.outcomes import Failed
+from appium.webdriver.connectiontype import ConnectionType
+from dateutil import parser
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests import marks, run_in_parallel, pytest_config_global, transl
@@ -647,20 +650,20 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.home_1.chats_tab.click()
         if not self.home_1.element_by_translation_id("no-messages").is_element_displayed():
             self.errors.append("1-1 chat from blocked user is not removed and messages home is not empty!")
-        self.chat_1.toggle_airplane_mode()
+        self.home_1.driver.set_network_connection(ConnectionType.AIRPLANE_MODE)
 
         # workaround for app closed after airplane mode
-        if not self.home_1.chats_tab.is_element_displayed() and \
-                not self.chat_1.chat_floating_screen.is_element_displayed():
-            self.device_1.driver.activate_app(app_package)
-            self.device_1.sign_in()
+        # if not self.home_1.chats_tab.is_element_displayed() and \
+        #         not self.chat_1.chat_floating_screen.is_element_displayed():
+        #     self.device_1.driver.activate_app(app_package)
+        #     self.device_1.sign_in()
 
         self.home_2.just_fyi('Send message to public chat while device 1 is offline')
         message_blocked, message_unblocked = "Message from blocked user", "Hurray! unblocked"
         self.channel_2.send_message(message_blocked)
 
-        self.chat_1.just_fyi('Check that new messages from blocked user are not delivered')
-        self.chat_1.toggle_airplane_mode()
+        self.home_1.just_fyi('Check that new messages from blocked user are not delivered')
+        self.home_1.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
         # self.home_1.jump_to_card_by_text('# %s' % self.channel_name)
         self.home_1.communities_tab.click()
         self.home_1.get_chat(self.community_name, community=True).click()

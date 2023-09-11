@@ -67,7 +67,7 @@ def get_capabilities_sauce_lab():
     caps['appium:app'] = 'sauce-storage:' + test_suite_data.apk_name
     caps['appium:deviceName'] = 'Android GoogleAPI Emulator'
     caps['appium:deviceOrientation'] = 'portrait'
-    caps['appium:platformVersion'] = '10.0'
+    caps['appium:platformVersion'] = '11.0'
     caps['appium:automationName'] = 'UiAutomator2'
     caps['appium:newCommandTimeout'] = 600
     caps['appium:idleTimeout'] = 1000
