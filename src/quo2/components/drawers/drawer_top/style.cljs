@@ -24,4 +24,8 @@
   {:color (colors/custom-color network)})
 
 (def row
-  {:flex-direction :row})
+  {:flex-direction :row
+   :align-items :center})
+
+(def keycard-icon
+  {:margin-left 4})

@@ -21,8 +21,7 @@
                        :emoji               account-avatar-emoji
                        :type                :default}]
     :keypair         [icon-avatar/icon-avatar
-                      {:size    :medium
-                       :icon    icon-avatar
+                      {:icon    icon-avatar
                        :border? true
                        :color   :neutral}]
 
@@ -52,8 +51,11 @@
       (i18n/label :t/on-keycard)
       (i18n/label :t/on-device))]
    (when keycard?
-     [icons/icon :i/keycard-card
-      {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}])])
+     [icons/icon 
+      :i/keycard-card
+      {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+       :size 16
+       :container-style style/keycard-icon}])])
 
 (defn- acocunt-subtitle
   [{:keys [networks theme blur? description]}]
