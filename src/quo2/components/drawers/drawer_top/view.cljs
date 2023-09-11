@@ -10,10 +10,13 @@
             [quo2.components.avatars.icon-avatar :as icon-avatar]
             [quo2.components.avatars.user-avatar.view :as user-avatar]
             [quo2.foundations.colors :as colors]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [utils.re-frame :as rf]))
 
 (defn- left-image
-  [{:keys [type customization-color account-avatar-emoji icon-avatar profile-picture]}]
+  [{:keys [type customization-color account-avatar-emoji icon-avatar]}]
+  (let [account (rf/sub [:profile/multiaccount])]
   (case type
     :account         [account-avatar/view
                       {:customization-color customization-color
@@ -27,9 +30,9 @@
 
     :default-keypair [user-avatar/user-avatar
                       {:size                  :small
-                       :status-indicator?     false
-                       :profile-picture       profile-picture}]
-    nil))
+                       :status-indicator?   false
+                       :profile-picture       (multiaccounts/displayed-photo account)}]
+    nil)))
 
 (defn- network-view
   [network]
@@ -167,16 +170,14 @@
 (defn- view-internal
   [{:keys [title type theme description blur? community-name community-logo button-icon on-button-press
            on-button-long-press
-           button-disabled? account-avatar-emoji customization-color icon-avatar
-           profile-picture keycard? networks label]}]
+           button-disabled? account-avatar-emoji customization-color icon-avatar keycard? networks label]}]
   [rn/view {:style style/container}
    [rn/view {:style style/left-container}
     [left-image
      {:type                 type
       :customization-color  customization-color
       :account-avatar-emoji account-avatar-emoji
-      :icon-avatar          icon-avatar
-      :profile-picture      profile-picture}]]
+      :icon-avatar          icon-avatar}]]
    [rn/view {:style style/body-container}
     [left-title
      {:type  type
