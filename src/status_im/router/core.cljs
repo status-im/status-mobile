@@ -20,7 +20,7 @@
 
 (def uri-schemes ["status-im://" "status-im:"])
 
-(def web-prefixes ["https://" "http://" "https://www." "http://wwww."])
+(def web-prefixes ["https://" "http://" "https://www." "http://www."])
 
 (def web2-domain "join.status.im")
 
