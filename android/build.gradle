@@ -61,7 +61,6 @@ allprojects {
         flatDir { dirs "libs", System.env.STATUS_GO_ANDROID_LIBDIR }
         google()
         mavenCentral()
-        maven { url "https://www.jitpack.io" }
         maven { url 'https://mvnrepository.com/artifact/com.github.gundy/semver4j'}
     }
 }

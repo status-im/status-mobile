@@ -54,21 +54,6 @@ public class MainActivity extends NavigationActivity
         return "StatusIm";
       }
 
-    /**
-       * Returns the instance of the {@link ReactActivityDelegate}. Here we use a util class {@link
-       * DefaultReactActivityDelegate} which allows you to easily enable Fabric and Concurrent React
-       * (aka React 18) with two boolean flags.
-       */
-    /** MainActivity.java:64: error: incompatible types: MainActivity cannot be converted to ReactActivity this, ^
-        protected ReactActivityDelegate createReactActivityDelegate() {
-            return new DefaultReactActivityDelegate(
-            this,
-            getMainComponentName(),
-            // If you opted-in for the New Architecture, we enable the Fabric Renderer.
-             DefaultNewArchitectureEntryPoint.getFabricEnabled()
-        );
-      }
-     */
     private static void registerUncaughtExceptionHandler(final Context context) {
         final Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
