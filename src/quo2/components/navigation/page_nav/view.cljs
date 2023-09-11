@@ -56,7 +56,9 @@
    (cond
      ;; TODO: use account-switcher when available (issue #16456)
      (and support-account-switcher? (= content :account-switcher))
-     [rn/view {:style style/account-switcher-placeholder}]
+     [rn/pressable
+      {:style    style/account-switcher-placeholder
+       :on-press #(js/alert "Not implemented yet")}]
 
      (coll? content)
      (into [rn/view {:style style/right-actions-container}]
