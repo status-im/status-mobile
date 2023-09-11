@@ -105,7 +105,7 @@
       :scroll-enabled                  @scroll-enabled
       :data                            data
       :initial-num-to-render           20
-      :max-to-render-per-batch         15
+      :max-to-render-per-batch         20
       :render-fn                       render-item
       :get-item-layout                 get-item-layout
       :keyboard-dismiss-mode           :on-drag
@@ -118,8 +118,7 @@
                                         :theme     theme
                                         :on-select on-select}
       :content-container-style         style/list-container
-      :viewability-config              {:wait-for-interaction           true
-                                        :item-visible-percent-threshold 100
+      :viewability-config              {:item-visible-percent-threshold 100
                                         :minimum-view-time              200}
       :on-viewable-items-changed       on-viewable-items-changed}]))
 
