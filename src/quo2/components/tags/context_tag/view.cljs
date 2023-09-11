@@ -85,7 +85,8 @@
                                     :state               state
                                     :blur?               blur?
                                     :customization-color customization-color})
-                  container-style)}
+                  container-style)
+    :accessibility-label :context-tag}
    (case type
      :default
      [tag-skeleton {:theme theme :size size :text full-name}

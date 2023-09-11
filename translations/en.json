@@ -697,6 +697,7 @@
         "Sorry the code was incorrect, please enter it again"
     ],
     "initialization": "Initialization",
+    "input-data": "Input data",
     "install": "↓ Install",
     "intro-message1": "Welcome to Status!\nTap this message to set your password and get started.",
     "intro-privacy-policy-note1": "Status does not collect or profit from your personal data. By continuing, you agree with the ",
@@ -1831,6 +1832,7 @@
     "pinned-by": "Pinned by",
     "pin-limit-reached": "Pin limit reached. Unpin a previous message first.",
     "max-fee": "Max fee",
+    "max-fees": "Max fees",
     "max-priority-fee": "Max priority fee",
     "miners-higher-fee": "Miners will likely inlcude your transaction earlier if you pay a higher fee.",
     "gas-amount-limit": "Gas amount limit",

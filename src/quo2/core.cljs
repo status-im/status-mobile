@@ -127,6 +127,7 @@
     quo2.components.wallet.progress-bar.view
     quo2.components.wallet.summary-info.view
     quo2.components.wallet.token-input.view
+    quo2.components.wallet.transaction-summary.view
     quo2.components.wallet.wallet-activity.view
     quo2.components.wallet.wallet-overview.view
     [quo2.components.graph.interactive-graph.view :as interactive-graph]))
@@ -345,3 +346,4 @@
 (def token-input quo2.components.wallet.token-input.view/view)
 (def wallet-overview quo2.components.wallet.wallet-overview.view/view)
 (def wallet-activity quo2.components.wallet.wallet-activity.view/view)
+(def transaction-summary quo2.components.wallet.transaction-summary.view/view)
