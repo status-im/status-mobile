@@ -17,22 +17,22 @@
 (defn- left-image
   [{:keys [type customization-color account-avatar-emoji icon-avatar]}]
   (let [account (rf/sub [:profile/multiaccount])]
-  (case type
-    :account         [account-avatar/view
-                      {:customization-color customization-color
-                       :size                32
-                       :emoji               account-avatar-emoji
-                       :type                :default}]
-    :keypair         [icon-avatar/icon-avatar
-                      {:icon    icon-avatar
-                       :border? true
-                       :color   :neutral}]
+    (case type
+      :account         [account-avatar/view
+                        {:customization-color customization-color
+                         :size                32
+                         :emoji               account-avatar-emoji
+                         :type                :default}]
+      :keypair         [icon-avatar/icon-avatar
+                        {:icon    icon-avatar
+                         :border? true
+                         :color   :neutral}]
 
-    :default-keypair [user-avatar/user-avatar
-                      {:size                  :small
-                       :status-indicator?   false
-                       :profile-picture       (multiaccounts/displayed-photo account)}]
-    nil)))
+      :default-keypair [user-avatar/user-avatar
+                        {:size              :small
+                         :status-indicator? false
+                         :profile-picture   (multiaccounts/displayed-photo account)}]
+      nil)))
 
 (defn- network-view
   [network]
@@ -53,10 +53,10 @@
       (i18n/label :t/on-keycard)
       (i18n/label :t/on-device))]
    (when keycard?
-     [icons/icon 
+     [icons/icon
       :i/keycard-card
-      {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-       :size 16
+      {:color           (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+       :size            16
        :container-style style/keycard-icon}])])
 
 (defn- acocunt-subtitle
@@ -170,7 +170,8 @@
 (defn- view-internal
   [{:keys [title type theme description blur? community-name community-logo button-icon on-button-press
            on-button-long-press
-           button-disabled? account-avatar-emoji customization-color icon-avatar keycard? networks label]}]
+           button-disabled? account-avatar-emoji customization-color icon-avatar keycard? networks
+           label]}]
   [rn/view {:style style/container}
    [rn/view {:style style/left-container}
     [left-image

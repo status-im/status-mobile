@@ -25,7 +25,7 @@
 
 (def row
   {:flex-direction :row
-   :align-items :center})
+   :align-items    :center})
 
 (def keycard-icon
   {:margin-left 4})
