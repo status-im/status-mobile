@@ -263,7 +263,7 @@ run-clojure: export TARGET := clojure
 run-clojure: ##@run Watch for and build Clojure changes for mobile
 	yarn shadow-cljs watch mobile
 
-run-metro: export TARGET := clojure
+run-metro: export TARGET := android
 run-metro: ##@run Start Metro to build React Native changes
 	@scripts/start-react-native.sh
 
