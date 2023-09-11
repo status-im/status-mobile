@@ -6,7 +6,7 @@
             [quo2.components.buttons.button.view :as button]
             [quo2.components.markdown.text :as text]
             [utils.i18n :as i18n]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [reagent.core :as reagent]
             [quo2.foundations.customization-colors :as customization-colors]))
 
@@ -16,7 +16,11 @@
         empty-type? (= :empty type)]
     [rn/view
      {:accessibility-label :loading
-      :style               (style/card customization-color watch-only? metrics? theme false)}
+      :style               (style/card {:customization-color customization-color 
+                                        :watch-only? watch-only?
+                                        :metrics? metrics? 
+                                        :theme theme 
+                                        :pressed? false})}
      [rn/view {:style style/loader-container}
       [rn/view
        {:style (assoc (style/loader-view 16
@@ -47,7 +51,8 @@
                                      :margin-top
                                      10)}])]))
 
-(def user-account
+(defn- user-account
+  []
   (let [pressed? (reagent/atom false)]
     (fn [{:keys [state name balance percentage-value loading? amount customization-color type emoji
                  metrics?
@@ -66,7 +71,11 @@
           [rn/pressable
            {:on-press-in  #(reset! pressed? true)
             :on-press-out #(reset! pressed? false)
-            :style        (style/card customization-color watch-only? metrics? theme @pressed?)
+            :style        (style/card {:customization-color :customization-color 
+                                       :watch-only? watch-only? 
+                                       :metrics? metrics? 
+                                       :theme theme
+                                       :pressed? @pressed?})
             :on-press     on-press}
            (when (and customization-color (not= :watch-only type))
              [customization-colors/overlay
@@ -111,14 +120,17 @@
                                                 theme)
                     :size  16}]]])])])))))
 
-(def add-account-view
+(defn- add-account-view
+  []
   (let [pressed? (reagent/atom false)]
     (fn [{:keys [on-press customization-color theme metrics?]}]
       [rn/pressable
        {:on-press     on-press
         :on-press-in  #(reset! pressed? true)
         :on-press-out #(reset! pressed? false)
-        :style        (style/add-account-container theme metrics? @pressed?)}
+        :style        (style/add-account-container {:theme theme 
+                                                    :metrics? metrics? 
+                                                    :pressed? @pressed?})}
        [button/button
         {:type                :primary
          :size                24
@@ -141,4 +153,4 @@
     :empty       [user-account props]
     nil))
 
-(def view (theme/with-theme view-internal))
+(def view (quo.theme/with-theme view-internal))

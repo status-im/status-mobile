@@ -9,7 +9,7 @@
     colors/white))
 
 (defn card
-  [customization-color watch-only? metrics? theme pressed?]
+  [{:keys [customization-color watch-only? metrics? theme pressed?]}]
   {:width              162
    :height             (if metrics? 88 68)
    :background-color   (if watch-only?
@@ -70,7 +70,7 @@
    :margin-horizontal 4})
 
 (defn add-account-container
-  [theme metrics? pressed?]
+  [{:keys [theme metrics? pressed?]}]
   {:width              161
    :height             (if metrics? 88 68)
    :border-color       (colors/theme-colors
