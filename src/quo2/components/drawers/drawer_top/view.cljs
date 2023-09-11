@@ -27,8 +27,7 @@
 
     :default-keypair [user-avatar/user-avatar
                       {:size                  :small
-                       :identification-right? true
-                       :nft-avatar?           false
+                       :status-indicator?     false
                        :profile-picture       profile-picture}]
     nil))
 
