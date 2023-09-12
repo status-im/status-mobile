@@ -1,5 +1,6 @@
 (ns status-im2.contexts.quo-preview.tags.context-tags
   (:require [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
@@ -69,8 +70,9 @@
       :type    :select
       :options (map (fn [idx]
                       {:key   (mapv (fn [picture idx-name]
-                                      {:profile-picture picture
-                                       :full-name       (str (inc idx-name))})
+                                      {:profile-picture     picture
+                                       :full-name           (str (inc idx-name))
+                                       :customization-color (rand-nth (keys colors/customization))})
                                     (take idx (cycle users))
                                     (range))
                        :value (str idx)})
@@ -175,12 +177,15 @@
           :customization-color :army
           :profile-picture     nil
           :full-name           "Full Name"
-          :users               [{:profile-picture (resources/mock-images :user-picture-male5)
-                                 :full-name       "1"}
-                                {:profile-picture nil
-                                 :full-name       "3"}
-                                {:profile-picture (resources/mock-images :user-picture-male5)
-                                 :full-name       "2"}]
+          :users               [{:profile-picture     (resources/mock-images :user-picture-male5)
+                                 :full-name           "1"
+                                 :customization-color (rand-nth (keys colors/customization))}
+                                {:profile-picture     nil
+                                 :full-name           "3"
+                                 :customization-color (rand-nth (keys colors/customization))}
+                                {:profile-picture     (resources/mock-images :user-picture-male5)
+                                 :full-name           "2"
+                                 :customization-color (rand-nth (keys colors/customization))}]
           :group-name          "Group"
           :community-logo      (resources/mock-images :coinbase)
           :community-name      "Community"

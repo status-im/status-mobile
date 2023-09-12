@@ -67,7 +67,6 @@
        constants/content-type-image
        [quo/preview-list
         {:type               :collectibles
-         :more-than-99-label (i18n/label :counter-99-plus)
          :size               :size-24}
         data]
 

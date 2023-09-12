@@ -98,12 +98,12 @@
         :ring?             false}]]
 
      :multiuser
-     [preview-list/view {:type :user :size 20}
+     [preview-list/view {:type :user :size :size/s-20}
       users]
 
      :multinetwork
-     [preview-list/view {:type :network :size 20}
-      (map #(hash-map :profile-picture %) networks)]
+     [preview-list/view {:type :network :size :size/s-20}
+      networks]
 
      :audio
      [tag-skeleton {:theme theme :text (str duration)}

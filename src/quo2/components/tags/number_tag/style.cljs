@@ -55,10 +55,11 @@
     (get-in sizes [size (if widen? :width-extra :size)])))
 
 (defn container
-  [{:keys [type number size blur? theme]}]
-  {:style {:width            (get-width size number)
-           :height           (get-in sizes [size :size])
-           :border-radius    (get-shape-value size :border-radius type)
-           :justify-content  :center
-           :align-items      :center
-           :background-color (get-bg-color blur? theme)}})
+  [{:keys [type number size blur? theme container-style]}]
+  {:style (merge {:width            (get-width size number)
+                  :height           (get-in sizes [size :size])
+                  :border-radius    (get-shape-value size :border-radius type)
+                  :justify-content  :center
+                  :align-items      :center
+                  :background-color (get-bg-color blur? theme)}
+                 container-style)})
