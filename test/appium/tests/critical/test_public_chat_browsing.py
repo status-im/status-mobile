@@ -1,6 +1,5 @@
 import datetime
 import random
-import time
 from datetime import timedelta
 
 import emoji
@@ -891,6 +890,7 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         channel_1_element.click()
         self.errors.verify_no_errors()
 
+    @marks.xfail(reason="Message can be missed after unblock: https://github.com/status-im/status-mobile/issues/16873")
     @marks.testrail_id(702894)
     def test_community_contact_block_unblock_offline(self):
         for i, channel in enumerate([self.channel_1, self.channel_2]):
