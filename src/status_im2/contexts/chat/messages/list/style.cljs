@@ -57,8 +57,7 @@
    {:align-items :flex-start}))
 
 (def name-container
-  {:flex-direction :row
-   :align-items    :center})
+  {:justify-content    :center})
 
 (def bio
   {:margin-top 8})
