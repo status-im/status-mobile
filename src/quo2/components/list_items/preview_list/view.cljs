@@ -25,13 +25,13 @@
                                     (merge item {:size size})]
 
       (:communities :collectibles) [fast-image/fast-image
-                                    {:source (if (:source item) (:source item) item)
+                                    {:source (or (:source item) item)
                                      :style  {:width         size
                                               :height        size
                                               :border-radius border-radius}}]
 
       (:tokens :network :dapps)    [fast-image/fast-image
-                                    {:source (if (:source item) (:source item) item)
+                                    {:source (or (:source item) item)
                                      :style  {:width         size
                                               :height        size
                                               :border-radius border-radius}}]
