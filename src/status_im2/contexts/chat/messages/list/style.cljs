@@ -56,9 +56,5 @@
     :margin-bottom side-margin-animation}
    {:align-items :flex-start}))
 
-(def name-container
-  {:flex-direction :row
-   :align-items    :center})
-
 (def bio
   {:margin-top 8})
