@@ -10,7 +10,7 @@
             [status-im2.common.contact-list-item.view :as contact-list-item]
             [status-im2.contexts.chat.messages.drawers.style :as style]
             [react-native.gesture :as gesture]
-            [quo2.components.reactions.resource :as reactions.resource]))
+            [quo2.components.selectors.reaction-resource :as reactions.resource]))
 
 (defn contact-list-item-fn
   [{:keys [from compressed-key]}]
@@ -185,8 +185,9 @@
      (for [[id reaction-name] constants/reactions
            :let               [emoji-reaction-id (get own-reactions id)]]
        ^{:key id}
-       [quo/reactions reaction-name
-        {:start-pressed? (boolean emoji-reaction-id)
+       [quo/reactions-selector
+        {:emoji reaction-name
+         :start-pressed? (boolean emoji-reaction-id)
          :accessibility-label (str "reaction-" (name reaction-name))
          :on-press
          (fn []

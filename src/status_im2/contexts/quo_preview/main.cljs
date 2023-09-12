@@ -12,7 +12,6 @@
     [status-im2.contexts.quo-preview.avatars.group-avatar :as group-avatar]
     [status-im2.contexts.quo-preview.avatars.icon-avatar :as icon-avatar]
     [status-im2.contexts.quo-preview.avatars.user-avatar :as user-avatar]
-    [status-im2.contexts.quo-preview.selectors.reactions :as selector-reactions]
     [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as wallet-user-avatar]
     [status-im2.contexts.quo-preview.banners.banner :as banner]
     [status-im2.contexts.quo-preview.buttons.button :as button]
@@ -90,11 +89,14 @@
     [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
     [status-im2.contexts.quo-preview.profile.select-profile :as select-profile]
     [status-im2.contexts.quo-preview.profile.showcase-nav :as showcase-nav]
-    [status-im2.contexts.quo-preview.reactions.react :as react]
     [status-im2.contexts.quo-preview.record-audio.record-audio :as record-audio]
     [status-im2.contexts.quo-preview.selectors.disclaimer :as disclaimer]
     [status-im2.contexts.quo-preview.selectors.filter :as filter]
     [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
+    [status-im2.contexts.quo-preview.selectors.reactions-selector :as reactions-selector]
+    [status-im2.contexts.quo-preview.selectors.react-selector :as react-selector]
+    [status-im2.contexts.quo-preview.selectors.react-selector-add :as react-selector-add]
+    [status-im2.contexts.quo-preview.selectors.react :as react]
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
     [status-im2.contexts.quo-preview.settings.data-item :as data-item]
     [status-im2.contexts.quo-preview.settings.settings-item :as settings-item]
@@ -320,8 +322,6 @@
                         :component select-profile/preview-select-profile}
                        {:name      :showcase-nav
                         :component showcase-nav/view}]
-   :reactions         [{:name      :react
-                        :component react/preview-react}]
    :record-audio      [{:name      :record-audio
                         :component record-audio/preview-record-audio}]
    :switcher          [{:name      :switcher-cards
@@ -332,8 +332,15 @@
                         :component filter/preview}
                        {:name      :selectors
                         :component selectors/preview-selectors}
-                       {:name      :select-reactions
-                        :component selector-reactions/preview}]
+                       {:name      :reactions-selector
+                        :component reactions-selector/preview}
+                       {:name      :react-selector
+                        :component (react-selector/preview-react-selector)}
+                       {:name      :react-selector-add
+                        :component (react-selector-add/preview-react-selector-add)}
+                       {:name      :react
+                        :component react/preview-react}]
+
    :settings          [{:name      :privacy-option
                         :component privacy-option/preview-options}
                        {:name      :accounts
