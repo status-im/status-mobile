@@ -243,7 +243,7 @@
                         (if blur?
                           (quo.theme/set-theme :dark)
                           (quo.theme/set-theme :light))))
-                    [blur?])
+                    [blur? blur-dark-only?])
      [rn/view
       {:style {:top  (safe-area/get-top)
                :flex 1}}
