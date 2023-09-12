@@ -130,6 +130,7 @@
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
     [status-im2.contexts.quo-preview.wallet.wallet-activity :as wallet-activity]
+    [status-im2.contexts.quo-preview.wallet.transaction-summary :as transaction-summary]
     [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
     [utils.re-frame :as rf]))
 
@@ -390,6 +391,8 @@
                         :component token-input/preview}
                        {:name      :wallet-activity
                         :component wallet-activity/view}
+                       {:name      :transaction-summary
+                        :component transaction-summary/view}
                        {:name      :wallet-overview
                         :component wallet-overview/preview-wallet-overview}]
    :keycard           [{:name      :keycard-component

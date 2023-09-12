@@ -72,5 +72,6 @@
     [quo2.components.wallet.progress-bar.component-spec]
     [quo2.components.wallet.summary-info.component-spec]
     [quo2.components.wallet.token-input.component-spec]
+    [quo2.components.wallet.transaction-summary.component-spec]
     [quo2.components.wallet.wallet-overview.component-spec]
     [quo2.components.wallet.wallet-activity.component-spec]))
