@@ -56,7 +56,9 @@
               {:key   :positive
                :value :positive}
               {:key   :context
-               :value :context}]}])
+               :value :context}]}
+   {:key  :blur?
+    :type :boolean}])
 
 (def communities-list
   [{:source (resources/get-mock-image :coinbase)}
@@ -111,6 +113,7 @@
        {:state                 state
         :descriptor            descriptor
         :blur?                 (:blur? @state)
-        :show-blur-background? true}
+        :show-blur-background? true
+        :blur-dark-only?       true}
        [rn/view {:style {:flex 1}}
         [quo/settings-item (get-props @state)]]])))

@@ -231,35 +231,43 @@
 
 
 (defn preview-container
-  [{:keys [state descriptor blur?
+  [{:keys [state descriptor blur? blur-dark-only?
            component-container-style
            blur-container-style blur-view-props blur-height show-blur-background?]
     :or   {blur-height 200}}
    & children]
-  [rn/view
-   {:style {:top  (safe-area/get-top)
-            :flex 1}}
-   [common/navigation-bar]
-   [rn/scroll-view
-    {:style                           (style/panel-basic)
-     :shows-vertical-scroll-indicator false}
-    [rn/pressable {:on-press rn/dismiss-keyboard!}
-     (when descriptor
-       [rn/view {:style style/customizer-container}
-        [customizer state descriptor]])
-     (if blur?
-       [rn/view {:style (merge style/component-container component-container-style)}
-        (into [blur-view
-               {:show-blur-background? show-blur-background?
-                :height                blur-height
-                :style                 (merge {:width     "100%"
-                                               :flex-grow 1}
-                                              (when-not show-blur-background?
-                                                {:padding-horizontal 0
-                                                 :top                0})
-                                              blur-container-style)
-                :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
-                                              blur-view-props)}]
-              children)]
-       (into [rn/view {:style (merge style/component-container component-container-style)}]
-             children))]]])
+  [:f>
+   (fn []
+     (rn/use-effect (fn []
+                      (when blur-dark-only?
+                        (if blur?
+                          (quo.theme/set-theme :dark)
+                          (quo.theme/set-theme :light))))
+                    [blur? blur-dark-only?])
+     [rn/view
+      {:style {:top  (safe-area/get-top)
+               :flex 1}}
+      [common/navigation-bar]
+      [rn/scroll-view
+       {:style                           (style/panel-basic)
+        :shows-vertical-scroll-indicator false}
+       [rn/pressable {:on-press rn/dismiss-keyboard!}
+        (when descriptor
+          [rn/view {:style style/customizer-container}
+           [customizer state descriptor]])
+        (if blur?
+          [rn/view {:style (merge style/component-container component-container-style)}
+           (into [blur-view
+                  {:show-blur-background? show-blur-background?
+                   :height                blur-height
+                   :style                 (merge {:width     "100%"
+                                                  :flex-grow 1}
+                                                 (when-not show-blur-background?
+                                                   {:padding-horizontal 0
+                                                    :top                0})
+                                                 blur-container-style)
+                   :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
+                                                 blur-view-props)}]
+                 children)]
+          (into [rn/view {:style (merge style/component-container component-container-style)}]
+                children))]]])])
