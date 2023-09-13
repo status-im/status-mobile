@@ -285,7 +285,7 @@
    :markdown          [{:name      :texts
                         :component text/preview-text}
                        {:name      :markdown-list
-                        :component markdown-list/preview-markdown-list}]
+                        :component markdown-list/view}]
    :messages          [{:name      :gap
                         :component messages-gap/preview-messages-gap}
                        {:name      :system-messages
