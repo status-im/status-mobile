@@ -1,6 +1,10 @@
 (ns quo2.components.dividers.divider-label.style
   (:require [quo2.foundations.colors :as colors]))
 
+(defn get-height
+  [tight?]
+  (if tight? 34 42))
+
 (defn- get-border-color
   [blur? theme]
   (colors/theme-colors (if blur? colors/neutral-80-opa-5 colors/neutral-10)
@@ -17,6 +21,7 @@
   [blur? tight? chevron theme]
   {:border-top-width 1
    :border-top-color (get-border-color blur? theme)
+   :height           (get-height tight?)
    :padding-top      (if tight? 6 14)
    :padding-bottom   7
    :padding-left     (if (= :left chevron) 16 20)
