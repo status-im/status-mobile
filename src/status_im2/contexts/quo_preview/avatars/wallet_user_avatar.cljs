@@ -1,14 +1,11 @@
 (ns status-im2.contexts.quo-preview.avatars.wallet-user-avatar
-  (:require [quo2.components.avatars.wallet-user-avatar :as quo]
+  (:require [quo2.components.avatars.wallet-user-avatar.view :as quo]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "First name"
-    :key   :f-name
-    :type  :text}
-   {:label "Last name"
-    :key   :l-name
+  [{:label "Full name"
+    :key   :full-name
     :type  :text}
    {:key     :size
     :type    :select
@@ -21,10 +18,9 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:first-name "empty"
-                             :last-name  "name"
-                             :size       :x-large
-                             :color      :indigo})]
+  (let [state (reagent/atom {:full-name "empty name"
+                             :size      :x-large
+                             :color     :blue})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}
-       [quo/wallet-user-avatar @state]])))
+       [quo/view @state]])))

@@ -2,6 +2,7 @@
   (:require
     [quo2.components.avatars.account-avatar.component-spec]
     [quo2.components.avatars.user-avatar.component-spec]
+    [quo2.components.avatars.wallet-user-avatar.component-spec]
     [quo2.components.banners.banner.component-spec]
     [quo2.components.browser.browser-input.component-spec]
     [quo2.components.buttons.button.component-spec]
