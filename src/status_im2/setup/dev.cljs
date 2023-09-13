@@ -44,9 +44,10 @@
                            :utils/dispatch-later
                            :json-rpc/call})
 
-  (when (and js/goog.DEBUG platform/ios? DevSettings)
+  #_(when (and js/goog.DEBUG platform/ios? DevSettings)
     ;;on Android this method doesn't work
     (when-let [nm (.-_nativeModule DevSettings)]
       ;;there is a bug in RN, so we have to enable it first and then disable
       (.setHotLoadingEnabled ^js nm true)
-      (js/setTimeout #(.setHotLoadingEnabled ^js nm false) 1000))))
+      (js/setTimeout #(.setHotLoadingEnabled ^js nm false) 1000)))
+  )

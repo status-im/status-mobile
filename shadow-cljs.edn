@@ -51,7 +51,7 @@
    :dev {:devtools {:before-load-async status-im2.setup.hot-reload/before-reload
                     :after-load-async  status-im2.setup.hot-reload/reload
                     :build-notify      status-im2.setup.hot-reload/build-notify
-                    :preloads          [re-frisk-remote.preload
+                    :preloads          [;re-frisk-remote.preload
                                         ;; In order to use component test helpers in the REPL we
                                         ;; need to preload namespaces that are not normally required
                                         ;; by production code, such as
