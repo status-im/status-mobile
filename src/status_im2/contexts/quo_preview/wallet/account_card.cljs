@@ -1,0 +1,134 @@
+(ns status-im2.contexts.quo-preview.wallet.account-card
+  (:require
+    [quo.components.icon :as icon]
+    [quo.components.markdown.text :as text]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.collection]))
+
+(def descriptor
+  [{:label   "Type:"
+    :key     :type
+    :type    :select
+    :options [{:key   :default
+               :value "Default"}
+              {:key   :watch-only
+               :value "Watch Only"}
+              {:key   :add-account
+               :value "Add Account"}
+              {:key   :empty
+               :value "Empty"}
+              {:key   :missing-keypair
+               :value "Missing Keypair"}]}
+   {:label   "Customization color:"
+    :key     :customization-color
+    :type    :select
+    :options (map (fn [[color-kw _]]
+                    {:key   color-kw
+                     :value (name color-kw)})
+                  colors/customization)}
+   {:label "Name:"
+    :key   :name
+    :type  :text}
+   {:label "Balance:"
+    :key   :balance
+    :type  :text}
+   {:label "Percentage value:"
+    :key   :percentage-value
+    :type  :text}
+   {:label "Amount:"
+    :key   :amount
+    :type  :text}
+   {:label "Metrics:"
+    :key   :metrics?
+    :type  :boolean}
+   {:label "Loading:"
+    :key   :loading?
+    :type  :boolean}
+   {:label "Emoji:"
+    :key   :emoji
+    :type  :text}])
+
+(defn initial-state
+  [type]
+  (case type
+    :default
+    {:name                "Alisher account"
+     :balance             "€2,269.12"
+     :percentage-value    "16.9%"
+     :amount              "€570.24"
+     :customization-color :turquoise
+     :metrics?            true
+     :type                :default
+     :emoji               "💎"}
+
+    :empty
+    {:name                "Account 1"
+     :balance             "€0.00"
+     :percentage-value    "€0.00"
+     :customization-color :blue
+     :metrics?            true
+     :type                :empty
+     :emoji               "🍑"}
+
+    :watch-only
+    {:name                "Ben’s fortune"
+     :balance             "€2,269.12"
+     :percentage-value    "16.9%"
+     :amount              "€570.24"
+     :metrics?            true
+     :type                :watch-only
+     :customization-color :army
+     :emoji               "💸"}
+
+    :missing-keypair
+    {:name                "Trip to Vegas"
+     :balance             "€2,269.12"
+     :percentage-value    "16.9%"
+     :amount              "€570.24"
+     :metrics?            true
+     :customization-color :turquoise
+     :type                :missing-keypair
+     :emoji               "🎲"}
+
+    :add-account
+    {:customization-color :blue
+     :on-press            #(js/alert "Button pressed")
+     :metrics?            true
+     :type                :add-account}))
+
+
+(defn preview-account-card
+  []
+  (let [state (reagent/atom (initial-state :default))]
+    [:f>
+     (fn []
+       (rn/use-effect
+        (fn [] (reset! state (initial-state (:type @state))))
+        [(:type @state)])
+       [preview/preview-container
+        {:state      state
+         :descriptor descriptor}
+        [rn/view
+         {:style {:margin-vertical 40
+                  :padding-left    40
+                  :flex-direction  :row
+                  :align-items     :center}}
+         [text/text
+          {:size   :heading-1
+           :weight :semi-bold}
+          "Account card"]
+         [rn/view
+          {:style {:width            20
+                   :height           20
+                   :border-radius    60
+                   :background-color colors/success-50
+                   :align-items      :center
+                   :justify-content  :center
+                   :margin-left      8}}
+          [icon/icon :i/check {:color colors/white :size 16}]]]
+        [rn/view {:style {:align-items :center :margin-bottom 20}}
+         [quo/account-card @state]]])]))
