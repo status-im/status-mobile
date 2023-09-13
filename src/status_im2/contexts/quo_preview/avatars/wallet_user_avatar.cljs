@@ -5,28 +5,23 @@
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "First name"
-    :key   :f-name
-    :type  :text}
-   {:label "Last name"
-    :key   :l-name
-    :type  :text}
+  [{:key  :full-name
+    :type :text}
    {:key     :size
     :type    :select
-    :options [{:key :small}
-              {:key :medium}
-              {:key :large}
+    :options [{:key :size-20}
+              {:key :size-24}
+              {:key :size-32}
+              {:key :size-48}
               {:key :size-64}
-              {:key   :x-large
-               :value "X Large"}]}
-   (preview/customization-color-option {:key :customization-color})])
+              {:key :size-80}]}
+   (preview/customization-color-option)])
 
 (defn view
   []
-  (let [state (reagent/atom {:first-name          "empty"
-                             :last-name           "name"
-                             :size                :x-large
-                             :customization-color :indigo})]
+  (let [state (reagent/atom {:full-name           "empty name"
+                             :size                :size-80
+                             :customization-color :blue})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}
        [quo/wallet-user-avatar @state]])))

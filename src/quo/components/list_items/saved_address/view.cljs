@@ -1,7 +1,7 @@
 (ns quo.components.list-items.saved-address.view
   (:require
     [clojure.string :as string]
-    [quo.components.avatars.wallet-user-avatar :as wallet-user-avatar]
+    [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
     [quo.components.icon :as icon]
     [quo.components.list-items.saved-address.style :as style]
     [quo.components.markdown.text :as text]
