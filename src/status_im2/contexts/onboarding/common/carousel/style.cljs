@@ -64,7 +64,6 @@
 (defn carousel-container
   [left animate?]
   (cond->> {:position       :absolute
-            :right          0
             :top            0
             :flex-direction :row
             :left           left}
