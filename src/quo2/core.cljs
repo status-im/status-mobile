@@ -52,6 +52,7 @@
     quo2.components.info.info-message
     quo2.components.info.information-box.view
     quo2.components.inputs.input.view
+    quo2.components.inputs.address-input.view
     quo2.components.inputs.locked-input.view
     quo2.components.inputs.profile-input.view
     quo2.components.inputs.recovery-phrase.view
@@ -231,6 +232,7 @@
 
 ;;;; Inputs
 (def input quo2.components.inputs.input.view/input)
+(def address-input quo2.components.inputs.address-input.view/address-input)
 (def locked-input quo2.components.inputs.locked-input.view/locked-input)
 (def profile-input quo2.components.inputs.profile-input.view/profile-input)
 (def recovery-phrase-input quo2.components.inputs.recovery-phrase.view/recovery-phrase-input)
