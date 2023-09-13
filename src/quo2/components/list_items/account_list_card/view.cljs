@@ -14,12 +14,22 @@
   (let [state (reagent/atom :default)]
     (fn [{:keys [action blur? account-props networks on-press on-options-press theme]}]
       [rn/pressable
+<<<<<<< HEAD
        {:style               (style/container {:state @state :blur? blur? :theme theme})
+=======
+       {:style               (style/container @state blur? theme)
+>>>>>>> af1110833 (account list card blur)
         :on-press-in         #(reset! state :pressed)
         :on-press-out        #(reset! state :default)
         :on-press            on-press
         :accessibility-label :container}
+<<<<<<< HEAD
        [rn/view {:style style/left-container}
+=======
+       [rn/view
+        {:style {:flex-direction :row
+                 :align-items    :center}}
+>>>>>>> af1110833 (account list card blur)
         [account-avatar/view account-props]
         [rn/view {:style {:margin-left 8}}
          [text/text

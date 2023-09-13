@@ -2,7 +2,11 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn container
+<<<<<<< HEAD
   [{:keys [state blur? theme]}]
+=======
+  [state blur? theme]
+>>>>>>> af1110833 (account list card blur)
   (let [light-bg     (if (= state :default) colors/neutral-2_5 colors/neutral-5)
         dark-bg      (if (= state :default) colors/neutral-80-opa-40 colors/neutral-80-opa-60)
         blur-bg      (if (= state :default) colors/white-opa-5 colors/white-opa-10)
