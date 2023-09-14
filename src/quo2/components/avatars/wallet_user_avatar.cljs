@@ -5,21 +5,24 @@
             [react-native.core :as rn]))
 
 (def circle-sizes
-  {:small   20
-   :medium  32
-   :large   48
-   :x-large 80})
+  {:small     20
+   :medium    32
+   :large     48
+   :size/l-64 64
+   :x-large   80})
 
 (def font-sizes
-  {:small   :label
-   :medium  :paragraph-2
-   :large   :paragraph-1
-   :x-large :heading-1})
+  {:small     :label
+   :medium    :paragraph-2
+   :large     :paragraph-1
+   :size/l-64 :heading-1
+   :x-large   :heading-1})
 
 (def font-weights
   {:small   :medium
    :medium  :semi-bold
    :large   :semi-bold
+   :size/l-64 :medium
    :x-large :medium})
 
 (defn wallet-user-avatar

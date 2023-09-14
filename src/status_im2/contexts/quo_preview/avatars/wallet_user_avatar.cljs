@@ -15,6 +15,7 @@
     :options [{:key :small}
               {:key :medium}
               {:key :large}
+              {:key :size/l-64}
               {:key   :x-large
                :value "X Large"}]}
    (preview/customization-color-option {:key :color})])
