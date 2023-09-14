@@ -2,7 +2,7 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn container
-  [state blur? theme]
+  [{:keys [state blur? theme]}]
   (let [light-bg     (if (= state :default) colors/neutral-2_5 colors/neutral-5)
         dark-bg      (if (= state :default) colors/neutral-80-opa-40 colors/neutral-80-opa-60)
         blur-bg      (if (= state :default) colors/white-opa-5 colors/white-opa-10)
@@ -18,3 +18,7 @@
      :padding-horizontal 8
      :padding-vertical   6
      :justify-content    :space-between}))
+
+(def left-container
+  {:flex-direction :row
+   :align-items    :center})

@@ -14,14 +14,12 @@
   (let [state (reagent/atom :default)]
     (fn [{:keys [action blur? account-props networks on-press on-options-press theme]}]
       [rn/pressable
-       {:style               (style/container @state blur? theme)
+       {:style               (style/container {:state @state :blur? blur? :theme theme})
         :on-press-in         #(reset! state :pressed)
         :on-press-out        #(reset! state :default)
         :on-press            on-press
         :accessibility-label :container}
-       [rn/view
-        {:style {:flex-direction :row
-                 :align-items    :center}}
+       [rn/view {:style style/left-container}
         [account-avatar/view account-props]
         [rn/view {:style {:margin-left 8}}
          [text/text
