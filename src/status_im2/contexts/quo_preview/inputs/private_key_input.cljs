@@ -7,16 +7,20 @@
   [{:key  :input-placeholder
     :type :text}
    {:key  :title-text
-    :type :text}])
+    :type :text}
+   {:key  :invalid?
+    :type :boolean}
+  ])
 
 (defn view
   []
-  (let [state (reagent/atom {:color             nil
-                             :input-placeholder "cs2:4FH..."
-                             :disabled?         false
-                             :title-text        "Type or paste sync code"})]
+  (let [state    (reagent/atom {:input-placeholder "cs2:4FH..."
+                                :disabled?         false
+                                :title-text        "Type or paste sync code"
+                                :scan-variant?     false})
+        invalid? (reagent/atom nil)]
     (fn []
       [preview/preview-container
        {:state      state
         :descriptor descriptor}
-       [quo/private-key-input @state]])))
+       [quo/private-key-input @state {:invalid invalid?}]])))

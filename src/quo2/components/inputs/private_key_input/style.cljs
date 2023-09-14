@@ -2,10 +2,13 @@
   (:require [quo2.foundations.colors :as colors]
             [quo2.foundations.typography :as typography]))
 
+(def container-inner
+  {:style {:flex-direction :column
+           :align-items    :flex-start}})
+
 (def container-text-input
-  {:flex-direction     :row
-   :justify-content    :space-between
-   :padding-horizontal 20})
+  {:flex-direction  :row
+   :justify-content :space-between})
 
 (defn text-input-container
   [invalid?]
@@ -52,7 +55,7 @@
 
 (def label-container
   {:flex-direction :row
-   :margin-left    20
+   ;   :margin-left    20
    :line-height    18
    :margin-top     20
    :margin-bottom  8})
