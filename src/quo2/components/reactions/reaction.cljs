@@ -12,31 +12,32 @@
   [rn/touchable-opacity
    {:on-press            on-press
     :accessibility-label :emoji-reaction-add
-    :style               (style/add-reaction)}
+    :style               (style/add-reaction theme)}
    [icons/icon :i/add-reaction
     {:size  20
-     :color (colors/theme-colors colors/neutral-50 colors/white theme)}]])
+     :color (colors/theme-colors colors/neutral-50
+                                 colors/neutral-40
+                                 theme)}]])
 
-(defn reaction
+(def add-reaction (theme/with-theme add-reaction-internal))
+
+(defn reaction-internal
   "Add your emoji as a param here"
-  [{:keys [emoji clicks neutral? on-press accessibility-label on-long-press]}]
+  [{:keys [emoji clicks neutral? on-press accessibility-label on-long-press theme]}]
   (let [numeric-value (int clicks)]
     [rn/touchable-opacity
      {:on-press            on-press
       :on-long-press       on-long-press
       :accessibility-label accessibility-label
-      :style               (style/reaction neutral?)}
+      :style               (style/reaction neutral? theme)}
      [rn/image
       {:style               {:width 16 :height 16}
        :accessibility-label :emoji
        :source              (resource/get-reaction emoji)}]
      [text/text
-      {:size            :paragraph-2
-       :weight          :semi-bold
-       :flex-direction  :row
-       :align-items     :center
-       :justify-content :center}
-      (when (pos? numeric-value)
-        (str " " numeric-value))]]))
+      {:size   :paragraph-2
+       :weight :semi-bold
+       :style  style/reaction-count}
+      (str (if (pos? numeric-value) numeric-value 1))]]))
 
-(def add-reaction (theme/with-theme add-reaction-internal))
+(def reaction (theme/with-theme reaction-internal))
