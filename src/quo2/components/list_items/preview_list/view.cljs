@@ -1,9 +1,9 @@
 (ns quo2.components.list-items.preview-list.view
   (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
             [quo2.components.avatars.user-avatar.view :as user-avatar]
+            [quo2.components.list-items.preview-list.properties :as properties]
             [quo2.components.tags.number-tag.view :as number-tag]
             [quo2.theme :as quo.theme]
-            [quo2.components.list-items.preview-list.properties :as properties]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]
             [react-native.hole-view :as hole-view]))
