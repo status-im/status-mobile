@@ -2303,5 +2303,6 @@
     "destroy": "Destroy",
     "mint": "Mint",
     "via": "via",
-    "x-counter": "x{{counter}}"
+    "x-counter": "x{{counter}}",
+    "other-options": "Other options"
 }
