@@ -45,10 +45,9 @@
         invalid-state (reagent/atom nil)]
     (fn []
       (clipboard/get-string #(reset! clipboard %))
-      (let [{:keys [input scanned public-key ens state msg]}
-            (rf/sub [:contacts/new-identity])
+      (let [{:keys [input scanned public-key ens state msg]} (rf/sub [:contacts/new-identity])
             customization-color (rf/sub [:profile/customization-color])
-            invalid? (reset! invalid-state (= state :invalid))
+            _ (reset! invalid-state (= state :invalid))
             show-paste-button? (and (not (string/blank? @clipboard))
                                     (string/blank? @default-value)
                                     (string/blank? input))]

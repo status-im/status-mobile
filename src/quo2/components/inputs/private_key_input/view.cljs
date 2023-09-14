@@ -25,7 +25,6 @@
     (fn []
 
       (let [show-paste-button? (string/blank? @text-input-value)]
-        (if show-paste-button? (reset! invalid? false))
         [:<>
          [rn/view style/container-inner
           [rn/view
