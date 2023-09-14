@@ -3,6 +3,8 @@
             [quo2.theme :as theme]
             [react-native.platform :as platform]))
 
+(def bottom-margin 8)
+
 (defn handle
   [theme]
   {:width            32
