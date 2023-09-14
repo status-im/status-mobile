@@ -45,6 +45,7 @@
     [status-im2.contexts.quo-preview.drawers.action-drawers :as action-drawers]
     [status-im2.contexts.quo-preview.drawers.documentation-drawers :as documenation-drawers]
     [status-im2.contexts.quo-preview.drawers.drawer-buttons :as drawer-buttons]
+    [status-im2.contexts.quo-preview.drawers.drawer-top :as drawer-top]
     [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
     [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
     [status-im2.contexts.quo-preview.dropdowns.network-dropdown :as network-dropdown]
@@ -52,6 +53,7 @@
     [status-im2.contexts.quo-preview.info.info-message :as info-message]
     [status-im2.contexts.quo-preview.info.information-box :as information-box]
     [status-im2.contexts.quo-preview.inputs.input :as input]
+    [status-im2.contexts.quo-preview.inputs.address-input :as address-input]
     [status-im2.contexts.quo-preview.inputs.locked-input :as locked-input]
     [status-im2.contexts.quo-preview.inputs.recovery-phrase-input :as recovery-phrase-input]
     [status-im2.contexts.quo-preview.inputs.profile-input :as profile-input]
@@ -129,6 +131,7 @@
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
     [status-im2.contexts.quo-preview.wallet.wallet-activity :as wallet-activity]
+    [status-im2.contexts.quo-preview.wallet.transaction-summary :as transaction-summary]
     [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
     [utils.re-frame :as rf]))
 
@@ -209,6 +212,8 @@
                         :component documenation-drawers/view}
                        {:name      :drawer-buttons
                         :component drawer-buttons/view}
+                       {:name      :drawer-top
+                        :component drawer-top/view}
                        {:name      :permission-drawers
                         :component permission-drawers/view}]
    :dropdowns         [{:name      :dropdown
@@ -231,6 +236,8 @@
                         :component information-box/view}]
    :inputs            [{:name      :input
                         :component input/view}
+                       {:name      :address-input
+                        :component address-input/view}
                        {:name      :locked-input
                         :component locked-input/view}
                        {:name      :profile-input
@@ -387,6 +394,8 @@
                         :component token-input/preview}
                        {:name      :wallet-activity
                         :component wallet-activity/view}
+                       {:name      :transaction-summary
+                        :component transaction-summary/view}
                        {:name      :wallet-overview
                         :component wallet-overview/preview-wallet-overview}]
    :keycard           [{:name      :keycard-component

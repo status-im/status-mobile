@@ -182,6 +182,7 @@
 (def regx-universal-link #"((^https?://join.status.im/)|(^status-im://))[\x00-\x7F]+$")
 (def regx-community-universal-link #"((^https?://join.status.im/)|(^status-im://))c/([\x00-\x7F]+)$")
 (def regx-deep-link #"((^ethereum:.*)|(^status-im://[\x00-\x7F]+$))")
+(def regx-ens #"^(?=.{5,255}$)([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$")
 
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")

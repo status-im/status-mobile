@@ -363,5 +363,5 @@
         top-spacing         (when (not chat-screen-loaded?) navigation.style/navigation-bar-height)]
     (if chat-screen-loaded?
       [:f> f-messages-list-content props]
-      [rn/view {:style {:padding-top top-spacing}}
+      [rn/view {:style {:padding-top top-spacing :flex 1}}
        [quo/skeleton-list (skeleton-list-props :messages content-height false)]])))

@@ -229,13 +229,18 @@
                          style)}]
          children)])
 
-
-(defn preview-container
-  [{:keys [state descriptor blur?
+(defn- f-preview-container
+  [{:keys [state descriptor blur? blur-dark-only?
            component-container-style
            blur-container-style blur-view-props blur-height show-blur-background?]
     :or   {blur-height 200}}
    & children]
+  (rn/use-effect (fn []
+                   (when blur-dark-only?
+                     (if blur?
+                       (quo.theme/set-theme :dark)
+                       (quo.theme/set-theme :light))))
+                 [blur? blur-dark-only?])
   [rn/view
    {:style {:top  (safe-area/get-top)
             :flex 1}}
@@ -263,3 +268,7 @@
               children)]
        (into [rn/view {:style (merge style/component-container component-container-style)}]
              children))]]])
+
+(defn preview-container
+  [& args]
+  (into [:f> f-preview-container] args))

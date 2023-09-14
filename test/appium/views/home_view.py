@@ -359,7 +359,7 @@ class HomeView(BaseView):
         if self.toast_content_element.is_element_displayed(10):
             self.toast_content_element.wait_for_invisibility_of_element()
         if self.notifications_unread_badge.is_element_displayed(30):
-            self.open_activity_center_button.click()
+            self.open_activity_center_button.click_until_presence_of_element(self.close_activity_centre)
         chat_element = ActivityCenterElement(self.driver, username[:25])
         try:
             if action == 'accept':
