@@ -7,7 +7,8 @@
 (def descriptor
   [{:key     :size
     :type    :select
-    :options [{:key :size/l :value "Large"}
+    :options [{:key :size/l-64 :value "Large 64"}
+              {:key :size/l :value "Large"}
               {:key :default}]}
    {:key  :emoji
     :type :text}

@@ -5,17 +5,19 @@
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
-            utils.string))
+            [utils.string]))
 
 (defn- initials
   [full-name size color]
-  (let [amount-initials (if (= size :size/l) 2 1)
+  (let [amount-initials (if (#{:size/l :size/l-64} size) 2 1)
         channel-name    (string/replace full-name "#" "")]
     [text/text
-     {:accessibility-label :initials
-      :size                :paragraph-2
-      :weight              :semi-bold
-      :style               {:color color}}
+     (cond-> {:accessibility-label :initials
+              :style               {:color color}
+              :size                :paragraph-2
+              :weight              :semi-bold}
+       (= size :size/l-64) (assoc :size   :heading-1
+                                  :weight :medium))
      (utils.string/get-initials channel-name amount-initials)]))
 
 (defn- lock
@@ -54,8 +56,8 @@
     :style               (style/outer-container {:size size :color customization-color})}
    (if (string/blank? emoji)
      [initials full-name size customization-color]
-     [text/text
-      {:accessibility-label :emoji
-       :size                (if (= size :size/l) :paragraph-1 :label)}
+     [rn/text
+      {:style               (style/emoji-size size)
+       :accessibility-label :emoji}
       (string/trim emoji)])
    [lock locked? size]])
