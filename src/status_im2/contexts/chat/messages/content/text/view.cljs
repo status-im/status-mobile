@@ -6,6 +6,7 @@
     [status-im2.contexts.chat.messages.content.link-preview.view :as link-preview]
     [status-im2.contexts.chat.messages.content.text.style :as style]
     [utils.i18n :as i18n]
+    [react-native.platform :as platform]
     [utils.re-frame :as rf]))
 
 (defn render-inline
@@ -104,8 +105,8 @@
                 (render-inline acc e chat-id style-override mention-first))
               [quo/text
                {:style {:size          :paragraph-1
-                        :margin-bottom (if mention-first (if quo.platform/ios? 4 0) 2)
-                        :margin-top    (if mention-first (if quo.platform/ios? -4 0) 2)
+                        :margin-bottom (if mention-first (if platform/ios? 4 0) 2)
+                        :margin-top    (if mention-first (if platform/ios? -4 0) 2)
                         :color         (when (seq style-override) colors/white)}}]
               children)])
 
