@@ -11,21 +11,16 @@
               {:key :watch-only}]}
    {:key     :size
     :type    :select
-    :options [{:key   16
-               :value "16"}
-              {:key   20
-               :value "20"}
-              {:key   24
-               :value "24"}
-              {:key   28
-               :value "28"}
-              {:key   32
-               :value "32"}
-              {:key   48
-               :value "48"}
-              {:key   80
-               :value "80"}]}
-   {:key :emoji :type :text}
+    :options [{:key 16}
+              {:key 20}
+              {:key 24}
+              {:key 28}
+              {:key 32}
+              {:key 48}
+              {:key 64}
+              {:key 80}]}
+   {:key  "Emoji"
+    :type :text}
    (preview/customization-color-option)])
 
 (defn view
