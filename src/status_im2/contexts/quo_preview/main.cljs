@@ -291,7 +291,7 @@
                        {:name      :system-messages
                         :component system-message/preview-system-message}
                        {:name      :author
-                        :component messages-author/preview-author}]
+                        :component messages-author/view}]
    :navigation        [{:name      :bottom-nav-tab
                         :component bottom-nav-tab/preview-bottom-nav-tab}
                        {:name      :top-nav
