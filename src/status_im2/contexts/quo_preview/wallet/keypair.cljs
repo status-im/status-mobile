@@ -52,6 +52,10 @@
     :state         :default
     :action        :none}])
 
+(defn get-accounts
+  [blur?]
+  (map (fn [map] (assoc map :blur? blur?)) accounts))
+
 (def descriptor
   [{:label   "Stored:"
     :key     :stored
@@ -74,7 +78,9 @@
                :value "Default keypair"}
               {:key   :other
                :value "Other"}]}
-   (preview/customization-color-option)])
+   (preview/customization-color-option)
+   {:key  :blur?
+    :type :boolean}])
 
 (def default-details
   {:full-name "John Doe"
@@ -84,16 +90,20 @@
 
 (defn preview
   []
-  (let [state (reagent/atom {:accounts            accounts
-                             :customization-color :blue
+  (let [state (reagent/atom {:customization-color :blue
                              :type                :default-keypair
                              :stored              :on-device
                              :on-options-press    #(js/alert "Options pressed")
-                             :action              :selector})]
+                             :action              :selector
+                             :blur?               false})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
+       {:state                 state
+        :descriptor            descriptor
+        :blur?                 (:blur? @state)
+        :show-blur-background? true
+        :blur-dark-only?       true
+        :blur-height           400}
        [rn/view
         {:style {:padding-vertical 30
                  :flex-direction   :row
@@ -101,4 +111,5 @@
         [quo/keypair
          (merge
           @state
-          {:details (if (= (:type @state) :default-keypair) default-details other-details)})]]])))
+          {:details  (if (= (:type @state) :default-keypair) default-details other-details)
+           :accounts (get-accounts (:blur? @state))})]]])))

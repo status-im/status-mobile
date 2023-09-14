@@ -38,7 +38,7 @@
       :border? true}]))
 
 (defn title-view
-  [full-name action selected? type customization-color on-options-press theme]
+  [full-name action selected? type blur? customization-color on-options-press theme]
   [rn/view
    {:style               style/title-container
     :accessibility-label :title}
@@ -47,43 +47,54 @@
    (if (= action :selector)
      [selectors/radio
       {:checked?            selected?
+       :blur?               blur?
        :customization-color customization-color}]
      [rn/pressable {:on-press on-options-press}
       [icon/icon :i/options
-       {:color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+       {:color               (if blur?
+                               colors/white-opa-70
+                               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))
         :accessibility-label :options-button}]])])
 
 (defn details-view
-  [address stored theme]
+  [address stored blur? theme]
   [rn/view
    {:style {:flex-direction :row
             :align-items    :center}}
    [text/text
     {:size                :paragraph-2
      :accessibility-label :details
-     :style               {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+     :style               {:color (if blur?
+                                    colors/white-opa-40
+                                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
     (details-string address stored)]
    (when (= stored :on-keycard)
      [rn/view {:style {:margin-left 4}}
       [icon/icon :i/keycard-card
        {:size  16
+<<<<<<< HEAD
         :color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]])])
+=======
+        :color (if blur?
+                 colors/white-opa-40
+                 (colors/theme-colors colors/neutral-50 colors/neutral-40))}]])])
+>>>>>>> be98d71dc (quo2: keypair blur)
 
 (defn- view-internal
   []
   (let [selected? (reagent/atom true)]
-    (fn [{:keys [theme accounts customization-color type details stored action on-options-press]}]
+    (fn [{:keys [theme accounts customization-color type details stored action blur? on-options-press]}]
       (let [{:keys [address full-name]} details]
         [rn/pressable
-         {:style    (style/container @selected? customization-color theme)
+         {:style    (style/container @selected? blur? customization-color theme)
           :on-press #(when (= action :selector) (reset! selected? (not @selected?)))}
          [rn/view {:style style/header-container}
           [avatar type full-name customization-color]
           [rn/view
            {:style {:margin-left 8
                     :flex        1}}
-           [title-view full-name action @selected? type customization-color on-options-press theme]
-           [details-view address stored theme]]]
+           [title-view full-name action @selected? type blur? customization-color on-options-press theme]
+           [details-view address stored blur? theme]]]
          [rn/flat-list
           {:data      accounts
            :render-fn account-list-card/view
@@ -91,3 +102,5 @@
            :style     {:padding-horizontal 8}}]]))))
 
 (def view (quo.theme/with-theme view-internal))
+
+;; todo: mapize, fix dot

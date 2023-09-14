@@ -2,14 +2,19 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn container
-  [selected? customization-color theme]
-  {:border-radius  20
+  [selected? blur? customization-color theme]
+  {:flex           1
+   :border-radius  20
    :border-width   1
    :border-color   (if selected?
-                     (colors/theme-colors (colors/custom-color customization-color 50)
-                                          (colors/custom-color customization-color 60)
-                                          theme)
-                     (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))
+                     (if blur?
+                       colors/white
+                       (colors/theme-colors (colors/custom-color customization-color 50)
+                                            (colors/custom-color customization-color 60)
+                                            theme))
+                     (if blur?
+                       colors/white-opa-5
+                       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)))
    :padding-bottom 8})
 
 (def header-container
