@@ -15,14 +15,19 @@
     (fn [{:keys [action blur? account-props networks on-press on-options-press theme]}]
       [rn/pressable
 <<<<<<< HEAD
+<<<<<<< HEAD
        {:style               (style/container {:state @state :blur? blur? :theme theme})
 =======
        {:style               (style/container @state blur? theme)
 >>>>>>> af1110833 (account list card blur)
+=======
+       {:style               (style/container {:state @state :blur? blur? :theme theme})
+>>>>>>> 73cedf275 (review)
         :on-press-in         #(reset! state :pressed)
         :on-press-out        #(reset! state :default)
         :on-press            on-press
         :accessibility-label :container}
+<<<<<<< HEAD
 <<<<<<< HEAD
        [rn/view {:style style/left-container}
 =======
@@ -30,6 +35,9 @@
         {:style {:flex-direction :row
                  :align-items    :center}}
 >>>>>>> af1110833 (account list card blur)
+=======
+       [rn/view {:style style/left-container}
+>>>>>>> 73cedf275 (review)
         [account-avatar/view account-props]
         [rn/view {:style {:margin-left 8}}
          [text/text
