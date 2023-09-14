@@ -98,11 +98,11 @@
         :ring?             false}]]
 
      :multiuser
-     [preview-list/view {:type :user :size :size/s-20}
+     [preview-list/view {:type :user :size :size-20}
       users]
 
      :multinetwork
-     [preview-list/view {:type :network :size :size/s-20}
+     [preview-list/view {:type :network :size :size-20}
       networks]
 
      :audio

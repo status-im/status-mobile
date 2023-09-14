@@ -66,8 +66,8 @@
 
        constants/content-type-image
        [quo/preview-list
-        {:type               :collectibles
-         :size               :size-24}
+        {:type :collectibles
+         :size :size-24}
         data]
 
        constants/content-type-sticker

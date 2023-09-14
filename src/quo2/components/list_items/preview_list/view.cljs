@@ -16,13 +16,13 @@
                                  [size-key :border-radius (properties/border-type type)])]
     (case type
       :user                        [user-avatar/user-avatar
-                                    (merge {:ring?             false
-                                            :status-indicator? false
-                                            :size              user-avatar-size}
-                                           item)]
+                                    (assoc item
+                                           :ring?             false
+                                           :status-indicator? false
+                                           :size              user-avatar-size)]
 
       :accounts                    [account-avatar/view
-                                    (merge item {:size size})]
+                                    (assoc item :size size)]
 
       (:communities :collectibles) [fast-image/fast-image
                                     {:source (or (:source item) item)
