@@ -8,6 +8,12 @@
             :status-indicator-center-to-edge 12
             :font-size                       :heading-1
             :ring-width                      4}
+   64      {:dimensions                      64
+            :status-indicator                8
+            :status-indicator-border         2
+            :status-indicator-center-to-edge 6
+            :font-size                       :heading-1
+            :ring-width                      2}
    :medium {:dimensions                      48
             :status-indicator                8
             :status-indicator-border         2

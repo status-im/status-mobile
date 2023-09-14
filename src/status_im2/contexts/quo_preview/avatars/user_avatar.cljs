@@ -8,6 +8,7 @@
   [{:key     :size
     :type    :select
     :options [{:key :big}
+              {:key 64}
               {:key :medium}
               {:key :small}
               {:key :xs}
