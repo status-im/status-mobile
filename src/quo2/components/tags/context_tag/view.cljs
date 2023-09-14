@@ -114,7 +114,7 @@
      [tag-skeleton {:theme theme :size size :text group-name}
       [group-avatar/view
        {:icon-name           :i/members
-        :size                (if (= size 24) :size/s-20 :size/s-28)
+        :size                (if (= size 24) :size-20 :size-28)
         :customization-color (colors/custom-color customization-color 50)}]]
 
      (:channel :community)

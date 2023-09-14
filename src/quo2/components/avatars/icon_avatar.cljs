@@ -5,19 +5,19 @@
             [react-native.core :as rn]))
 
 (def ^:private sizes
-  {:size/s-48 {:component 48
+  {:size-48 {:component 48
                :icon      20}
-   :size/s-32 {:component 32
+   :size-32 {:component 32
                :icon      20}
-   :size/s-24 {:component 24
+   :size-24 {:component 24
                :icon      16}
-   :size/s-20 {:component 20
+   :size-20 {:component 20
                :icon      12}})
 
 (defn icon-avatar-internal
   [{:keys [size icon color opacity border? theme]
     :or   {opacity 20
-           size    :size/s-32}}]
+           size    :size-32}}]
   (let [{component-size :component icon-size :icon} (get sizes size)
         circle-color                                (colors/custom-color color 50 opacity)
         icon-color                                  (colors/custom-color-by-theme color 50 60)]

@@ -12,7 +12,7 @@
     [rn/view (style/container props)
      (if (and (> size-value 20) (< (count number) 3))
        [text/text
-        {:size   (if (= size :size/s-32)
+        {:size   (if (= size :size-32)
                    :paragraph-2
                    :label)
          :weight :medium

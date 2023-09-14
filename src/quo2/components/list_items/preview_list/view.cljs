@@ -118,13 +118,13 @@
   "[preview-list opts items]
    opts
    {:type          :user/:communities/:accounts/:tokens/:collectibles/:dapps/:network
-    :size          :size/s-32 | :size/s-24 | :size/s-20 | :size/s-16 | :size/s-14
+    :size          :size-32 | :size-24 | :size-20 | :size-16 | :size-14
     :number        number of items in the list (optional)
     :blur?         overflow-label blur?}
    items           preview list items (only 4 items is required for preview)
   "
   [{:keys [type size number blur? theme more-than-99-label]} items]
-  (let [size-key      (if (contains? properties/sizes size) size :size/s-24)
+  (let [size-key      (if (contains? properties/sizes size) size :size-24)
         number        (or number (count items))
         margin-left   (get-in properties/sizes [size-key :margin-left])
         border-radius (get-in properties/sizes [size-key :border-radius (properties/border-type type)])]

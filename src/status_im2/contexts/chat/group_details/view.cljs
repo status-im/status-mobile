@@ -169,7 +169,7 @@
                :padding-horizontal 20}}
       [quo/group-avatar
        {:customization-color color
-        :size                :size/s-32}]
+        :size                :size-32}]
       [quo/text
        {:weight :semi-bold
         :size   :heading-1

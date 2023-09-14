@@ -7,15 +7,15 @@
 (def descriptor
   [{:key     :size
     :type    :select
-    :options [{:key   :size/s-20
+    :options [{:key   :size-20
                :value "20"}
-              {:key   :size/s-28
+              {:key   :size-28
                :value "28"}
-              {:key   :size/s-32
+              {:key   :size-32
                :value "32"}
-              {:key   :size/s-48
+              {:key   :size-48
                :value "48"}
-              {:key   :size/s-80
+              {:key   :size-80
                :value "80"}]}
    {:label "Avatar:"
     :key   :picture?
@@ -27,7 +27,7 @@
 (defn view
   []
   (let [state (reagent/atom {:customization-color :blue
-                             :size                :size/s-20
+                             :size                :size-20
                              :picture?            false})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}

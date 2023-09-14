@@ -25,18 +25,19 @@
        (if (= stored :on-device) (i18n/label :t/on-device) (i18n/label :t/on-keycard))))
 
 (defn avatar
-  [{:keys [type details customization-color]}]
-  (let [{:keys [full-name]} details]
-    (if (= type :default-keypair)
-      [user-avatar/user-avatar
-       {:full-name           full-name
-        :ring?               true
-        :size                :small
-        :customization-color customization-color}]
-      [icon-avatar/icon-avatar
-       {:size    :size-32
-        :icon    :i/placeholder
-        :border? true}])))
+  [{{:keys [full-name]} :details
+    avatar-type         :type
+    customization-color :customization-color}]
+  (if (= avatar-type :default-keypair)
+    [user-avatar/user-avatar
+     {:full-name           full-name
+      :ring?               true
+      :size                :small
+      :customization-color customization-color}]
+    [icon-avatar/icon-avatar
+     {:size    :size-32
+      :icon    :i/placeholder
+      :border? true}]))
 
 (defn title-view
   [{:keys [details action selected? type blur? customization-color on-options-press theme]}]
