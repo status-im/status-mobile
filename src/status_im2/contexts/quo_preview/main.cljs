@@ -283,7 +283,7 @@
                         :options   {:topBar {:visible true}}
                         :component skeleton-list/view}]
    :markdown          [{:name      :texts
-                        :component text/preview-text}
+                        :component text/view}
                        {:name      :markdown-list
                         :component markdown-list/view}]
    :messages          [{:name      :gap
