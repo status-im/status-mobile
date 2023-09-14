@@ -1,12 +1,14 @@
 # How to catch crash on ios use xcode
 
 ## Overview
-Sometimes we can't reproduce crash with local dev build, probably because your built version is different from the one QA team used. 
-QA team mostly used version is PR build, in this guide we will try to make a build as close as possible to PR build for ios.
-You may notice there are various configuration files starting with .env (such as .env, .env.e2e, .env.jenkins) in the project. 
+Sometimes, we can't reproduce crash with local dev build, probably because your built version differs from the one QA team used. 
+The QA team mostly used the PR build version. In this guide we will try to make a build as close as possible to the PR build for iOS.
+
+You may notice various configuration files starting with .env (such as .env, .env.e2e, .env.jenkins) in the project. 
 The usage of these files and environment variables injected at build time on CI will not be covered in this guide.
-This guide covers how to configure Xcode to capture crash stack trace with physical iOS device. This allows debugging crashes by inspecting the stack trace.
-We will use [issue #17255](https://github.com/status-im/status-mobile/issues/17255) as an example to reproduce and analyze a crash.
+
+This guide covers how to configure Xcode to capture a crash stack trace with a physical iOS device. This allows debugging crashes by inspecting the stack trace.
+I will use [issue #17255](https://github.com/status-im/status-mobile/issues/17255) as an example to reproduce and analyze a crash.
 
 ## Prerequisites
 - A physical ios device (simulator is not considered in this doc)
@@ -15,9 +17,9 @@ We will use [issue #17255](https://github.com/status-im/status-mobile/issues/172
 ## Steps
 1. Prepare Status Mobile
    1. Open Terminal, cd to project root
-   2. Run make run-clojure in one tab
-   3. Run make run-metro in a second tab
-   4. Run make pod-install in a third tab
+   2. Run `make run-clojure` in one tab
+   3. Run `make run-metro` in a second tab
+   4. Run `make pod-install` in a third tab
 2. Configure Xcode Project
    1. Open Xcode
    2. Open a project or file, navigate to folder `path_to_root_directory_of_status_mobile/ios` 
