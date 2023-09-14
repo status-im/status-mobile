@@ -1,19 +1,42 @@
 (ns status-im2.contexts.communities.discover.events
-  (:require [camel-snake-kebab.core :as csk]
-            [clojure.string :as string]
-            [taoensso.timbre :as log]
+  (:require [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
+
+(def commmunity-keys-renamed
+  {:requestedAccessAt           :requested-access-at
+   :fileSize                    :file-size
+   :communityTokensMetadata     :community-tokens-metadata
+   :activeMembersCount          :active-members-count
+   :unknownCommunities          :unknown-communities
+   :canRequestAccess            :can-request-access?
+   :adminSettings               :admin-settings
+   :canManageUsers              :can-manage-users?
+   :categoryID                  :category-id
+   :canPost                     :can-post?
+   :isControlNode               :is-control-node?
+   :pinMessageAllMembersEnabled :pin-message-all-members-enabled
+   :isMember                    :is-member?
+   :canDeleteMessageForEveryone :can-delete-message-for-everyone?
+   :tokenPermissions            :token-permissions
+   :muteTill                    :mute-till
+   :contractCommunities         :contract-communities
+   :banList                     :ban-list
+   :keyUid                      :key-uid
+   :memberRole                  :member-role
+   :introMessage                :intro-message
+   :contractFeaturedCommunities :contract-featured-communities
+   :canJoin                     :can-join?
+   :outroMessage                :outro-message
+   :resizeTarget                :resize-target})
 
 (defn rename-contract-community-key
   [k]
   (let [s                  (name k)
-        lower-cased        (csk/->kebab-case-string s)
         starts-with-digit? (re-matches #"^\d.*" s)
-        predicate?         (some #(string/starts-with? lower-cased %)
-                                 ["can-" "is-"])]
+        existing-rename    (k commmunity-keys-renamed)]
     (cond starts-with-digit? s
-          predicate?         (keyword (str lower-cased "?"))
-          :else              (keyword lower-cased))))
+          existing-rename    existing-rename
+          :else              (keyword s))))
 
 (defn rename-contract-community-keys
   [m]
@@ -43,4 +66,3 @@
                     :params     []
                     :on-success #(rf/dispatch [:fetched-contract-communities %])
                     :on-error   #(log/error "failed to fetch contract communities" %)}]})
-
