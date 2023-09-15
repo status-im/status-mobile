@@ -36,7 +36,7 @@
         :component-container-style {:align-items     :center
                                     :justify-content :center}}
        [quo/account-avatar @state
-        ]
+       ]
        [quo/button
         {:type            :grey
          :container-style {:margin-top 30}
