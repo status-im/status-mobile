@@ -71,7 +71,7 @@
           [rn/pressable
            {:on-press-in  #(reset! pressed? true)
             :on-press-out #(reset! pressed? false)
-            :style        (style/card {:customization-color :customization-color 
+            :style        (style/card {:customization-color customization-color 
                                        :watch-only? watch-only? 
                                        :metrics? metrics? 
                                        :theme theme
