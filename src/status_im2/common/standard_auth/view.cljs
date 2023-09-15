@@ -37,14 +37,15 @@
 
       [rn/view {:style style/container}
        [rn/view {:style style/inner-container}
-        [quo/text {:accessibility-label :enter-keycard-pin-text :size :heading-2 :weight :semi-bold} "Enter Keycard PIN"]
+        [quo/text {:accessibility-label :enter-keycard-pin-text :size :heading-2 :weight :semi-bold}
+         "Enter Keycard PIN"]
 
         [rn/view {:style style/context-tag}
          [quo/context-tag
-          {:type           :icon
-           :icon           :i/placeholder
-           :size            24
-           :context     "Alisher Card"}]]
+          {:type    :icon
+           :icon    :i/placeholder
+           :size    24
+           :context "Alisher Card"}]]
 
         [rn/view
          (if @max-attempt-reached
@@ -52,7 +53,7 @@
            {:style style/digits-container :margin-bottom 34})
          (for [i (range max-digits)]
            [rn/view
-            {:key i
+            {:key   i
              :style (get-dot-style i)}])]
 
         (when @max-attempt-reached
@@ -72,26 +73,31 @@
    [rn/view {:style style/inner-container}
     [quo/button
      {:container-style style/close-button
-      :type :grey
-      :icon-only? true
-      :size 32
+      :type            :grey
+      :icon-only?      true
+      :size            32
       :on-press        #(rf/dispatch [:hide-bottom-sheet])} :i/close]
 
     [quo/text
-     {:accessibility-label :this-is-not-keycard-text :size :heading-1 :weight :semi-bold} "Oops, this isn’t a Keycard"]
+     {:accessibility-label :this-is-not-keycard-text :size :heading-1 :weight :semi-bold}
+     "Oops, this isn’t a Keycard"]
 
-    [quo/text {:accessibility-label :make-sure-text :size :paragraph-1 :weight :medium :style style/secondary-text} "Make sure the card you scanned is a Keycard."]]
+    [quo/text
+     {:accessibility-label :make-sure-text
+      :size                :paragraph-1
+      :weight              :medium
+      :style               style/secondary-text} "Make sure the card you scanned is a Keycard."]]
 
    [fast-image/fast-image
-    {:style  {:width  "100%"
-              :height 503
+    {:style  {:width         "100%"
+              :height        503
               :margin-bottom 20
-              :align-self :center}
+              :align-self    :center}
      :source (resources/get-image :this-is-not-keycard)}]
 
    [rn/view {:style style/try-again-button}
     [quo/button
-     {:type            :primary}
+     {:type :primary}
      "Try again"]]])
 
 (defn keycard-locked-sheet
@@ -100,31 +106,36 @@
    [rn/view {:style style/inner-container}
     [quo/button
      {:container-style style/close-button
-      :type :grey
-      :icon-only? true
-      :size 32
+      :type            :grey
+      :icon-only?      true
+      :size            32
       :on-press        #(rf/dispatch [:hide-bottom-sheet])} :i/close]
 
     [quo/text
-     {:accessibility-label :keycard-locked-text :size :heading-1 :weight :semi-bold} "Oh no! Your Keycard is locked!"]
+     {:accessibility-label :keycard-locked-text :size :heading-1 :weight :semi-bold}
+     "Oh no! Your Keycard is locked!"]
 
-    [quo/text {:accessibility-label :unlock-keycard-text :size :paragraph-1 :weight :medium :style style/secondary-text} "Unlock Keycard to use keys stored on it"]
+    [quo/text
+     {:accessibility-label :unlock-keycard-text
+      :size                :paragraph-1
+      :weight              :medium
+      :style               style/secondary-text} "Unlock Keycard to use keys stored on it"]
 
     [rn/view {:style style/keycard}
      [keycard/keycard
       {:holder-name "Alisher Card"
-       :locked? true}]]
+       :locked?     true}]]
 
     [quo/button
-     {:type            :primary}
+     {:type :primary}
      "Unlock Keycard"]
 
     [quo/divider-label {:tight? false :container-style style/divider} (i18n/label :t/other-options)]
 
     [quo/button
-     {:type      :ghost
-      :size      20
-      :icon-left :i/refresh
+     {:type            :ghost
+      :size            20
+      :icon-left       :i/refresh
       :container-style style/reset-keycard-button} "Factory reset this Keycard"]]])
 
 (defn wrong-keycard-sheet
@@ -133,24 +144,29 @@
    [rn/view {:style style/inner-container}
     [quo/button
      {:container-style style/close-button
-      :type :grey
-      :icon-only? true
-      :size 32
+      :type            :grey
+      :icon-only?      true
+      :size            32
       :on-press        #(rf/dispatch [:hide-bottom-sheet])} :i/close]
 
     [quo/text
      {:accessibility-label :wrong-card-text :size :heading-1 :weight :semi-bold} "Oops, wrong Keycard"]
 
-    [quo/text {:accessibility-label :make-sure-scanned-text :size :paragraph-1 :weight :medium :style {:margin-top 8 :margin-bottom 20}} "Make sure the card you scanned is the one that contains your profile keys."]]
+    [quo/text
+     {:accessibility-label :make-sure-scanned-text
+      :size                :paragraph-1
+      :weight              :medium
+      :style               {:margin-top 8 :margin-bottom 20}}
+     "Make sure the card you scanned is the one that contains your profile keys."]]
 
    [fast-image/fast-image
-    {:style  {:width  "100%"
-              :height 481
+    {:style  {:width         "100%"
+              :height        481
               :margin-bottom 20
-              :align-self :center}
+              :align-self    :center}
      :source (resources/get-image :wrong-keycard)}]
 
    [rn/view {:style style/try-again-button}
     [quo/button
-     {:type            :primary}
-     "Try again"]]])  
+     {:type :primary}
+     "Try again"]]])

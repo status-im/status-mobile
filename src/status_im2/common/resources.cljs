@@ -4,7 +4,7 @@
   {:add-new-contact               (js/require "../resources/images/ui2/add-contact.png")
    :biometrics                    (js/require "../resources/images/ui2/biometrics.png")
    :this-is-not-keycard           (js/require "../resources/images/ui2/this-is-not-keycard.png")
-   :wrong-keycard           (js/require "../resources/images/ui2/wrong-keycard.png")
+   :wrong-keycard                 (js/require "../resources/images/ui2/wrong-keycard.png")
    :desktop-how-to-pair-sign-in   (js/require "../resources/images/ui2/desktop-how-to-pair-sign-in.png")
    :desktop-how-to-pair-logged-in (js/require
                                    "../resources/images/ui2/desktop-how-to-pair-logged-in.png")
