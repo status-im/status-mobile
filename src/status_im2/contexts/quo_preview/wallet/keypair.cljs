@@ -54,7 +54,7 @@
 
 (defn get-accounts
   [blur?]
-  (map (fn [map] (assoc map :blur? blur?)) accounts))
+  (map (fn [account] (assoc account :blur? blur?)) accounts))
 
 (def descriptor
   [{:label   "Stored:"
