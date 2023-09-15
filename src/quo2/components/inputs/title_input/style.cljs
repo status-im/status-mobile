@@ -25,7 +25,7 @@
   (colors/alpha (if blur?
                   (colors/theme-colors colors/neutral-100 colors/white theme)
                   (colors/custom-color customization-color
-                                       (if (or (= :dark theme) colors/dark?) 60 50)))
+                                       (if (= :dark theme) 60 50)))
                 (if platform/ios? 1 0.2)))
 
 (def text-input-container {:flex 1})

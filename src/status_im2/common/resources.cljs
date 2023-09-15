@@ -1,5 +1,4 @@
-(ns status-im2.common.resources
-  (:require [quo2.foundations.colors :as colors]))
+(ns status-im2.common.resources)
 
 (def ui
   {:add-new-contact               (js/require "../resources/images/ui2/add-contact.png")
@@ -49,6 +48,38 @@
    :no-notifications-light        (js/require "../resources/images/ui2/no-notifications-light.png")
    :no-notifications-dark         (js/require "../resources/images/ui2/no-notifications-dark.png")})
 
+(def ui-themed
+  {:no-messages
+   {:light (js/require "../resources/images/ui2/no-messages-light.png")
+    :dark  (js/require "../resources/images/ui2/no-messages-dark.png")}
+   :no-group-chats
+   {:light (js/require "../resources/images/ui2/no-group-chats-light.png")
+    :dark  (js/require "../resources/images/ui2/no-group-chats-dark.png")}
+   :no-contacts
+   {:light (js/require "../resources/images/ui2/no-contacts-light.png")
+    :dark  (js/require "../resources/images/ui2/no-contacts-dark.png")}
+   :no-sent-requests
+   {:light (js/require "../resources/images/ui2/no-sent-requests-light.png")
+    :dark  (js/require "../resources/images/ui2/no-sent-requests-dark.png")}
+   :no-received-requests
+   {:light (js/require "../resources/images/ui2/no-received-requests-light.png")
+    :dark  (js/require "../resources/images/ui2/no-received-requests-dark.png")}
+   :no-communities
+   {:light (js/require "../resources/images/ui2/no-communities-light.png")
+    :dark  (js/require "../resources/images/ui2/no-communities-dark.png")}
+   :no-pending-communities
+   {:light (js/require "../resources/images/ui2/no-pending-communities-light.png")
+    :dark  (js/require "../resources/images/ui2/no-pending-communities-dark.png")}
+   :no-opened-communities
+   {:light (js/require "../resources/images/ui2/no-opened-communities-light.png")
+    :dark  (js/require "../resources/images/ui2/no-opened-communities-dark.png")}
+   :no-contacts-to-invite
+   {:light (js/require "../resources/images/ui2/no-contacts-to-invite-light.png")
+    :dark  (js/require "../resources/images/ui2/no-contacts-to-invite-dark.png")}
+   :no-notifications
+   {:light (js/require "../resources/images/ui2/no-notifications-light.png")
+    :dark  (js/require "../resources/images/ui2/no-notifications-dark.png")}})
+
 (def mock-images
   {:diamond               (js/require "../resources/images/mock2/diamond.png")
    :coinbase              (js/require "../resources/images/mock2/coinbase.png")
@@ -97,5 +128,5 @@
   (get ui k))
 
 (defn get-themed-image
-  [k k2]
-  (get ui (if (colors/dark?) k k2)))
+  [k theme]
+  (get-in ui-themed [k theme]))

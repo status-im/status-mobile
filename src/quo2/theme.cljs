@@ -43,6 +43,10 @@
   []
   (utils.transforms/js->clj (rn/use-context theme-context)))
 
+(defn use-theme-value
+  []
+  (keyword (:theme (use-theme))))
+
 (defn ^:private f-with-theme
   [component props & args]
   (let [theme (-> (use-theme) :theme keyword)]

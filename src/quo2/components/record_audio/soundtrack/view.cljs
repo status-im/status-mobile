@@ -4,14 +4,16 @@
             [react-native.audio-toolkit :as audio]
             [taoensso.timbre :as log]
             [react-native.platform :as platform]
-            [react-native.slider :as slider]))
+            [react-native.slider :as slider]
+            [quo2.theme :as quo.theme]))
 
 (def ^:private thumb-light (js/require "../resources/images/icons2/12x12/thumb-light.png"))
 (def ^:private thumb-dark (js/require "../resources/images/icons2/12x12/thumb-dark.png"))
 
 (defn f-soundtrack
   [{:keys [audio-current-time-ms player-ref style seeking-audio? max-audio-duration-ms]}]
-  (let [audio-duration-ms (min max-audio-duration-ms (audio/get-player-duration player-ref))]
+  (let [audio-duration-ms (min max-audio-duration-ms (audio/get-player-duration player-ref))
+        theme             (quo.theme/use-theme-value)]
     [:<>
      [slider/slider
       {:test-ID                  "soundtrack"
@@ -31,8 +33,9 @@
                                     #(log/error "[record-audio] on seek - error: " %)))
        :on-value-change          #(when @seeking-audio?
                                     (reset! audio-current-time-ms %))
-       :thumb-image              (if (colors/dark?) thumb-dark thumb-light)
-       :minimum-track-tint-color (colors/theme-colors colors/primary-50 colors/primary-60)
+       :thumb-image              (quo.theme/theme-value thumb-light thumb-dark theme)
+       :minimum-track-tint-color (colors/theme-colors colors/primary-50 colors/primary-60 theme)
        :maximum-track-tint-color (colors/theme-colors
                                   (if platform/ios? colors/neutral-20 colors/neutral-40)
-                                  (if platform/ios? colors/neutral-80 colors/neutral-60))}]]))
+                                  (if platform/ios? colors/neutral-80 colors/neutral-60)
+                                  theme)}]]))
