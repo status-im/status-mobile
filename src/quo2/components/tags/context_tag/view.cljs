@@ -79,13 +79,14 @@
            state               :default}
     :as   props}]
   [rn/view
-   {:style (merge (style/container {:theme               theme
-                                    :type                type
-                                    :size                size
-                                    :state               state
-                                    :blur?               blur?
-                                    :customization-color customization-color})
-                  container-style)}
+   {:style               (merge (style/container {:theme               theme
+                                                  :type                type
+                                                  :size                size
+                                                  :state               state
+                                                  :blur?               blur?
+                                                  :customization-color customization-color})
+                                container-style)
+    :accessibility-label :context-tag}
    (case type
      :default
      [tag-skeleton {:theme theme :size size :text full-name}

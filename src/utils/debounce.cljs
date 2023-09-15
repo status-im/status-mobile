@@ -1,5 +1,6 @@
 (ns utils.debounce
-  (:require [re-frame.core :as re-frame]))
+  (:require [goog.functions]
+            [re-frame.core :as re-frame]))
 
 (def timeout (atom {}))
 
@@ -30,3 +31,7 @@
       (swap! chill assoc event-key true)
       (js/setTimeout #(swap! chill assoc event-key false) duration-ms)
       (re-frame/dispatch event))))
+
+(defn debounce
+  [f duration-ms]
+  (goog.functions/debounce f duration-ms))

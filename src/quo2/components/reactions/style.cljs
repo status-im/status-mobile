@@ -10,25 +10,24 @@
    :height             24})
 
 (defn add-reaction
-  []
+  [theme]
   (merge reaction-styling
-         {:padding-horizontal 9
+         {:padding-horizontal 8
           :border-width       1
-          :border-color       (colors/theme-colors colors/neutral-30 colors/neutral-70)}))
+          :border-color       (colors/theme-colors colors/neutral-20
+                                                   colors/neutral-70
+                                                   theme)}))
 
 (defn reaction
-  [neutral?]
+  [neutral? theme]
   (merge reaction-styling
-         (cond->
-           {:background-color (colors/theme-colors (if neutral?
-                                                     colors/neutral-30
-                                                     :transparent)
-                                                   (if neutral?
-                                                     colors/neutral-70
-                                                     :transparent))}
-           (and (colors/dark?) (not neutral?))
-           (assoc :border-color colors/neutral-70
-                  :border-width 1)
-           (and (not (colors/dark?)) (not neutral?))
-           (assoc :border-color colors/neutral-30
-                  :border-width 1))))
+         {:border-color     (colors/theme-colors colors/neutral-20
+                                                 colors/neutral-80
+                                                 theme)
+          :border-width     1
+          :background-color (if neutral?
+                              (colors/theme-colors colors/neutral-10
+                                                   colors/neutral-80-opa-40)
+                              :transparent)}))
+
+(def reaction-count {:margin-left 4})

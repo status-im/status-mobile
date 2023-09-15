@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.reactions.react
   (:require [clojure.string :as string]
-            [quo2.components.reactions.reaction :as quo2.reaction]
+            [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.constants :as constants]
@@ -27,11 +27,14 @@
       [preview/preview-container
        {:state      state
         :descriptor descriptor}
-       [rn/view {:padding-bottom 150}
+       [rn/view
+        {:padding-bottom 150
+         :align-items    :center}
         [rn/view
-         {:padding-vertical 60
-          :justify-content  :center
+         {:width            100
+          :padding-vertical 60
+          :justify-content  :space-evenly
           :flex-direction   :row
           :align-items      :center}
-         [quo2.reaction/reaction @state]
-         [quo2.reaction/add-reaction @state]]]])))
+         [quo/reaction @state]
+         [quo/add-reaction]]]])))

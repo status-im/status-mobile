@@ -6,15 +6,15 @@
 
 (defn- wrap-render-fn
   [f render-data]
-  (fn [data]
-    (reagent/as-element [f (.-item ^js data) (.-index ^js data)
-                         (.-separators ^js data) render-data
-                         (.-isActive ^js data) (.-drag ^js data)])))
+  (fn [^js data]
+    (reagent/as-element [f (.-item data) (.-index data)
+                         (.-separators data) render-data
+                         (.-isActive data) (.-drag data)])))
 
 (defn- wrap-on-drag-end-fn
   [f]
-  (fn [data]
-    (f (.-from ^js data) (.-to ^js data) (.-data ^js data))))
+  (fn [^js data]
+    (f (.-from data) (.-to data) (.-data data))))
 
 (defn- wrap-key-fn
   [f]

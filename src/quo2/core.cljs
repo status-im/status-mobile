@@ -40,6 +40,7 @@
     quo2.components.drawers.action-drawers.view
     quo2.components.drawers.documentation-drawers.view
     quo2.components.drawers.drawer-buttons.view
+    quo2.components.drawers.drawer-top.view
     quo2.components.drawers.permission-context.view
     quo2.components.dropdowns.dropdown
     quo2.components.dropdowns.network-dropdown.view
@@ -51,6 +52,7 @@
     quo2.components.info.info-message
     quo2.components.info.information-box.view
     quo2.components.inputs.input.view
+    quo2.components.inputs.address-input.view
     quo2.components.inputs.locked-input.view
     quo2.components.inputs.profile-input.view
     quo2.components.inputs.recovery-phrase.view
@@ -126,6 +128,7 @@
     quo2.components.wallet.progress-bar.view
     quo2.components.wallet.summary-info.view
     quo2.components.wallet.token-input.view
+    quo2.components.wallet.transaction-summary.view
     quo2.components.wallet.wallet-activity.view
     quo2.components.wallet.wallet-overview.view
     [quo2.components.graph.interactive-graph.view :as interactive-graph]))
@@ -200,6 +203,7 @@
 (def action-drawer quo2.components.drawers.action-drawers.view/action-drawer)
 (def documentation-drawers quo2.components.drawers.documentation-drawers.view/view)
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
+(def drawer-top quo2.components.drawers.drawer-top.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
 ;;;; Dropdowns
@@ -228,11 +232,12 @@
 
 ;;;; Inputs
 (def input quo2.components.inputs.input.view/input)
+(def address-input quo2.components.inputs.address-input.view/address-input)
 (def locked-input quo2.components.inputs.locked-input.view/locked-input)
 (def profile-input quo2.components.inputs.profile-input.view/profile-input)
 (def recovery-phrase-input quo2.components.inputs.recovery-phrase.view/recovery-phrase-input)
 (def search-input quo2.components.inputs.search-input.view/search-input)
-(def title-input quo2.components.inputs.title-input.view/title-input)
+(def title-input quo2.components.inputs.title-input.view/view)
 
 ;;;; Numbered Keyboard
 (def keyboard-key quo2.components.numbered-keyboard.keyboard-key.view/view)
@@ -343,3 +348,4 @@
 (def token-input quo2.components.wallet.token-input.view/view)
 (def wallet-overview quo2.components.wallet.wallet-overview.view/view)
 (def wallet-activity quo2.components.wallet.wallet-activity.view/view)
+(def transaction-summary quo2.components.wallet.transaction-summary.view/view)

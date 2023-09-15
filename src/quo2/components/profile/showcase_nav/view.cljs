@@ -5,7 +5,7 @@
             [react-native.core :as rn]))
 
 (defn- render-button
-  [{:keys [icon id]} _ _ {:keys [state on-press active-id]}]
+  [{:keys [icon id]} index _ {:keys [state on-press active-id]}]
   (let [active?       (= id active-id)
         button-type   (if active? :grey :ghost)
         scroll-state? (= state :scroll)]
@@ -17,21 +17,21 @@
       :icon-only?          true
       :on-press            (fn []
                              (when on-press
-                               (on-press id)))
+                               (on-press id index)))
       :container-style     style/button-container}
      icon]))
 
 (defn- view-internal
   [{:keys [theme container-style default-active state data on-press active-id]}]
   [rn/view
-   {:style               style/root-container
+   {:style               (merge style/root-container container-style)
     :accessibility-label :showcase-nav}
    [rn/flat-list
     {:data                              data
-     :key-fn                            str
+     :key-fn                            :id
      :horizontal                        true
      :shows-horizontal-scroll-indicator false
-     :content-container-style           (merge (style/container state theme) container-style)
+     :content-container-style           (style/container state theme)
      :render-fn                         render-button
      :render-data                       {:state     state
                                          :on-press  on-press

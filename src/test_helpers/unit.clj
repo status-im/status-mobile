@@ -51,10 +51,12 @@
        (let [~args [sub-name#]]
          (restore-app-db
           (fn []
-            ~@(clojure.walk/postwalk-replace
-               {'cljs.test/testing `testing-subscription
-                'testing           `testing-subscription}
-               body)))))))
+            ;; Do not warn about subscriptions being used in non-reactive contexts.
+            (with-redefs [re-frame.interop/debug-enabled? false]
+              ~@(clojure.walk/postwalk-replace
+                 {'cljs.test/testing `testing-subscription
+                  'testing           `testing-subscription}
+                 body))))))))
 
 (defmacro use-log-fixture
   "Register log fixture which allows inspecting all calls to `taoensso.timbre/log`.

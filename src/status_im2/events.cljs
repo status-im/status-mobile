@@ -10,6 +10,7 @@
             status-im2.contexts.chat.events
             status-im2.contexts.chat.photo-selector.events
             status-im2.contexts.communities.overview.events
+            status-im2.contexts.emoji-picker.events
             status-im2.contexts.onboarding.events
             status-im2.contexts.profile.events
             status-im2.contexts.shell.share.events
