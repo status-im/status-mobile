@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.avatars.icon-avatar
-  (:require [quo2.components.avatars.icon-avatar :as quo]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 

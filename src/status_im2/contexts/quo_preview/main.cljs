@@ -43,7 +43,7 @@
     [status-im2.contexts.quo-preview.dividers.new-messages :as new-messages]
     [status-im2.contexts.quo-preview.dividers.strength-divider :as strength-divider]
     [status-im2.contexts.quo-preview.drawers.action-drawers :as action-drawers]
-    [status-im2.contexts.quo-preview.drawers.documentation-drawers :as documenation-drawers]
+    [status-im2.contexts.quo-preview.drawers.documentation-drawers :as documentation-drawers]
     [status-im2.contexts.quo-preview.drawers.drawer-buttons :as drawer-buttons]
     [status-im2.contexts.quo-preview.drawers.drawer-top :as drawer-top]
     [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
@@ -209,7 +209,7 @@
    :drawers           [{:name      :action-drawers
                         :component action-drawers/view}
                        {:name      :documentation-drawer
-                        :component documenation-drawers/view}
+                        :component documentation-drawers/view}
                        {:name      :drawer-buttons
                         :component drawer-buttons/view}
                        {:name      :drawer-top
@@ -283,15 +283,15 @@
                         :options   {:topBar {:visible true}}
                         :component skeleton-list/view}]
    :markdown          [{:name      :texts
-                        :component text/preview-text}
+                        :component text/view}
                        {:name      :markdown-list
-                        :component markdown-list/preview-markdown-list}]
+                        :component markdown-list/view}]
    :messages          [{:name      :gap
                         :component messages-gap/preview-messages-gap}
                        {:name      :system-messages
                         :component system-message/preview-system-message}
                        {:name      :author
-                        :component messages-author/preview-author}]
+                        :component messages-author/view}]
    :navigation        [{:name      :bottom-nav-tab
                         :component bottom-nav-tab/preview-bottom-nav-tab}
                        {:name      :top-nav
