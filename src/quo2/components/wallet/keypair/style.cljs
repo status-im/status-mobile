@@ -2,7 +2,7 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn container
-  [selected? blur? customization-color theme]
+  [{:keys [blur? customization-color theme selected?]}]
   {:flex           1
    :border-radius  20
    :border-width   1
