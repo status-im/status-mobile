@@ -17,7 +17,7 @@
               {:key 28}
               {:key 32}
               {:key 48}
-              {:key 64}
+              {:key :size-64}
               {:key 80}]}
    {:key  "Emoji"
     :type :text}
@@ -35,7 +35,8 @@
         :descriptor                descriptor
         :component-container-style {:align-items     :center
                                     :justify-content :center}}
-       [quo/account-avatar @state]
+       [quo/account-avatar @state
+        ]
        [quo/button
         {:type            :grey
          :container-style {:margin-top 30}

@@ -6,17 +6,20 @@
 (def default-padding 16)
 (def default-emoji-size 36)
 
+(def ^:private container-size
+  {:size-64 64})
+
 (defn get-border-radius
   [size]
   (case size
-    80 16
-    64 16
-    48 12
-    32 10
-    28 8
-    24 8
-    20 6
-    16 4
+    80       16
+    :size-64 16
+    48       12
+    32       10
+    28       8
+    24       8
+    20       6
+    16       4
     default-border-radius))
 
 (defn get-padding
@@ -34,30 +37,32 @@
 (defn get-emoji-size
   [size]
   (case size
-    80 36
-    64 30
-    48 24
-    32 15
-    28 12
-    24 11
-    20 11
-    16 11
+    80       36
+    :size-64 30
+    48       24
+    32       15
+    28       12
+    24       11
+    20       11
+    16       11
     default-emoji-size))
 
 (defn get-border-width
   [size]
-  (case size
-    16 0.8 ;; 0.8 px is for only size 16
-    ;; Rest of the size will have 1 px
-    1))
+  (if (= size 16)
+    0.8 ;; 0.8 px is for only size 16
+    1)) ;; Rest of the size will have 1 px
+
 
 (defn root-container
   [{:keys [type size theme customization-color]
     :or   {size                default-size
            customization-color :blue}}]
-  (let [watch-only? (= type :watch-only)]
-    (cond-> {:width            size
-             :height           size
+  (let [watch-only? (= type :watch-only)
+        width       (cond-> size
+                      (keyword? size) (container-size size))]
+    (cond-> {:width            width
+             :height           width
              :background-color (colors/custom-color-by-theme customization-color 50 60 nil nil theme)
              :border-radius    (get-border-radius size)
              :border-color     (if (= theme :light) colors/neutral-80-opa-5 colors/white-opa-5)
