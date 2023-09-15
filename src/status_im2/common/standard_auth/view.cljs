@@ -15,23 +15,25 @@
   []
   (let [entered-numbers (reagent/atom [])
         max-digits 6
-        max-attempt-reached (reagent/atom false)]
+        max-attempt-reached (reagent/atom false)
+
+        handle-number-entry
+        (fn [number]
+          (when (>= (count @entered-numbers) max-digits)
+            (reset! entered-numbers []))
+          (when (= (count @entered-numbers) (dec max-digits))
+            (reset! max-attempt-reached true))
+          (swap! entered-numbers conj number))
+        get-dot-style
+        (fn [idx]
+          (if (<= idx (dec (count @entered-numbers)))
+            (if @max-attempt-reached
+              (assoc style/digit :backgroundColor colors/danger)
+              (assoc style/digit :backgroundColor colors/white))
+            (assoc style/digit :backgroundColor colors/neutral-50)))]
+
     (fn []
-      (defn handle-number-entry [number]
-        (when (>= (count @entered-numbers) max-digits)
-          (reset! entered-numbers []))
-        (when (= (count @entered-numbers) (dec max-digits))
-          (reset! max-attempt-reached true))
-        (swap! entered-numbers conj number))
-
       (println "entered-numbers" @entered-numbers)
-
-      (defn get-dot-style [idx]
-        (if (<= idx (dec (count @entered-numbers)))
-          (if @max-attempt-reached
-            (assoc style/digit :backgroundColor colors/danger)
-            (assoc style/digit :backgroundColor colors/white))
-          (assoc style/digit :backgroundColor colors/neutral-50)))
 
       [rn/view {:style style/container}
        [rn/view {:style style/inner-container}
