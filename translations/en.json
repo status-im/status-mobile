@@ -2304,5 +2304,16 @@
     "mint": "Mint",
     "via": "via",
     "x-counter": "x{{counter}}",
-    "other-options": "Other options"
+    "other-options": "Other options",
+    "enter-keycard-pin": "Enter Keycard PIN",
+    "alisher-card": "Alisher Card",
+    "attempts-left": "{{attempts}} attempts left",
+    "this-is-not-keycard":"Oops, this isn’t a Keycard",
+    "make-sure-scanned-keycard": "Make sure the card you scanned is a Keycard.",
+    "keycard-locked":"Oh no! Your Keycard is locked!",
+    "unlock-keycard-to-use":"Unlock Keycard to use keys stored on it",
+    "unlock-keycard":"Unlock Keycard",
+    "factory-reset-keycard":"Factory reset this Keycard",
+    "wrong-keycard": "Oops, wrong Keycard",
+    "make-sure-scanned-card-contains-keys":"Make sure the card you scanned is the one that contains your profile keys."
 }
