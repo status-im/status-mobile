@@ -1,6 +1,6 @@
 (ns status-im2.common.standard-auth.style
   (:require
-   [quo2.foundations.colors :as colors]))
+    [quo2.foundations.colors :as colors]))
 
 (def container
   {:flex 1})
@@ -12,7 +12,11 @@
   {:flex 1 :margin-top 12 :margin-bottom 56 :width 115})
 
 (def digits-container
-  {:flex 1  :padding-horizontal 60 :align-items :center :flex-direction :row :justify-content :space-between})
+  {:flex               1
+   :padding-horizontal 60
+   :align-items        :center
+   :flex-direction     :row
+   :justify-content    :space-between})
 
 (def close-button
   {:margin-bottom 12})
