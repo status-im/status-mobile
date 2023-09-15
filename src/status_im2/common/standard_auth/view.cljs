@@ -28,9 +28,9 @@
         (fn [idx]
           (if (<= idx (dec (count @entered-numbers)))
             (if @max-attempt-reached
-              (assoc style/digit :backgroundColor colors/danger)
-              (assoc style/digit :backgroundColor colors/white))
-            (assoc style/digit :backgroundColor colors/neutral-50)))]
+              (assoc style/digit :background-color colors/danger)
+              (assoc style/digit :background-color colors/white))
+            (assoc style/digit :background-color colors/neutral-50)))]
 
     (fn []
       (println "entered-numbers" @entered-numbers)
