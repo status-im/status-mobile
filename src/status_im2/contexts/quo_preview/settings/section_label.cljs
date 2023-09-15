@@ -29,7 +29,6 @@
         :blur-height           150}
        [quo/section-label
         {:section     @section
-         :description (if (empty? @description)
-                        nil
+         :description (when-not (empty? @description)
                         @description)
          :blur?       @blur?}]])))

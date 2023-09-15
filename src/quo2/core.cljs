@@ -307,13 +307,13 @@
 (def checkbox quo2.components.selectors.selectors.view/checkbox)
 
 ;;;; Settings
-(def privacy-option quo2.components.settings.privacy-option/card)
 (def account quo2.components.settings.accounts.view/account)
-(def settings-item quo2.components.settings.settings-item.view/view)
-(def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
 (def category quo2.components.settings.category.view/category)
 (def data-item quo2.components.settings.data-item.view/view)
+(def privacy-option quo2.components.settings.privacy-option/card)
+(def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
 (def section-label quo2.components.settings.section-label.view/view)
+(def settings-item quo2.components.settings.settings-item.view/view)
 
 ;;;; Share
 (def qr-code quo2.components.share.qr-code.view/qr-code)
