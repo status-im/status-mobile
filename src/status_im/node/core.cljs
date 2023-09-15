@@ -160,6 +160,7 @@
 
       :always
       (assoc :LocalNotificationsConfig {:Enabled true}
+             :KeycardPairingDataFile "/ethereum/mainnet_rpc/keycard/pairings.json"
              :BrowsersConfig {:Enabled true}
              :PermissionsConfig {:Enabled true}
              :MailserversConfig {:Enabled true}
