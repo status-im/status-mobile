@@ -1,17 +1,12 @@
 (ns status-im2.contexts.quo-preview.messages.gap
-  (:require [quo2.components.messages.gap :as gap]
-            [react-native.core :as rn]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+            [status-im2.contexts.quo-preview.preview :as preview]
+            [utils.i18n :as i18n]))
 
 (def descriptor
-  [{:label "Timestamp Far"
-    :key   :timestamp-far
-    :type  :text}
-   {:label "Timestamp Near"
-    :key   :timestamp-near
-    :type  :text}])
+  [{:key :timestamp-far :type :text}
+   {:key :timestamp-near :type :text}])
 
 (defn preview-messages-gap
   []
@@ -22,9 +17,7 @@
                              :warning-label          (i18n/label :messages-gap-warning)})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view
-        {:padding-vertical 60
-         :align-items      :center}
-        [gap/gap @state]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-vertical 60}}
+       [quo/gap @state]])))
