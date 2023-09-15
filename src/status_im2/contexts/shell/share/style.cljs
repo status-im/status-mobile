@@ -5,17 +5,22 @@
 (def screen-padding 20)
 
 (def blur
-  {:style         {:position :absolute
-                   :top      0
-                   :left     0
-                   :right    0
-                   :bottom   0}
-   :overlay-color colors/neutral-80-opa-80
-   :blur-amount   20})
+  {:position      :absolute
+   :top           0
+   :left          0
+   :right         0
+   :bottom        0
+   :overlay-color colors/neutral-80-opa-80-blur})
+
+(def header-row
+  {:flex-direction     :row
+   :justify-content    :space-between
+   :padding-horizontal screen-padding
+   :margin-vertical    12})
 
 (def header-button
-  {:margin-bottom 12
-   :margin-left   screen-padding})
+  {:margin-bottom    12
+   :background-color colors/white-opa-5})
 
 (def header-heading
   {:padding-horizontal screen-padding
@@ -23,14 +28,15 @@
    :color              colors/white})
 
 (def qr-code-container
-  {:padding           12
-   :border-radius     16
-   :margin-top        12
-   :margin-bottom     4
-   :margin-horizontal screen-padding
-   :background-color  colors/white-opa-5
-   :flex-direction    :column
-   :justify-content   :center})
+  {:padding-top        12
+   :padding-bottom     8
+   :padding-horizontal 12
+   :border-radius      16
+   :margin-top         8
+   :margin-horizontal  screen-padding
+   :background-color   colors/white-opa-5
+   :flex-direction     :column
+   :justify-content    :center})
 
 (def emoji-hash-container
   {:border-radius     16
@@ -57,16 +63,13 @@
    :padding-top 2})
 
 (def profile-address-container
-  {:flex-direction    :row
-   :justify-content   :flex-start
-   :margin-top        6
-   :margin-horizontal 4})
+  {:flex-direction  :row
+   :justify-content :flex-start
+   :margin-top      4})
 
 (def emoji-address-container
-  {:flex-direction    :row
-   :justify-content   :flex-start
-   :margin-top        6
-   :margin-horizontal 4})
+  {:flex-direction  :row
+   :justify-content :flex-start})
 
 (def emoji-hash-label
   {:color          colors/white-opa-40
@@ -78,12 +81,12 @@
 (def share-button-container
   {:position :absolute
    :right    0
-   :top      16})
+   :top      12})
 
 (def emoji-share-button-container
   {:position :absolute
-   :right    4
-   :top      16})
+   :right    0
+   :top      12})
 
 (def emoji-hash-content
   {:color          colors/white
@@ -91,7 +94,7 @@
    :padding-top    4
    :padding-bottom 12
    :padding-left   12
-   :font-size      14})
+   :font-size      13})
 
 (def tabs-container
   {:padding-horizontal screen-padding

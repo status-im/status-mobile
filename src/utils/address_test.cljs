@@ -21,7 +21,7 @@
 
 (deftest test-get-abbreviated-profile-url
   (testing "Ensure the function correctly generates an abbreviated profile URL for a valid public key"
-    (is (= "join.status.im/u/zQ3sh...aimrdYpzeFUa"
+    (is (= "join.status.im/u/zQ3sh...mrdYpzeFUa"
            (utils.address/get-abbreviated-profile-url
             "join.status.im/u/"
             "zQ3shPrnUhhR42JJn3QdhodGest8w8MjiH8hPaimrdYpzeFUa"))))

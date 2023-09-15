@@ -19,13 +19,13 @@
   "The goal here is to generate a string that begins with
    join.status.im/u/ joined with the 1st 5 characters
    of the compressed public key followed by an ellipsis followed by
-   the last 12 characters of the compressed public key"
+   the last 10 characters of the compressed public key"
   [base-url public-key]
   (if (and public-key base-url (> (count public-key) 17) (= "join.status.im/u/" base-url))
     (let [first-part-of-public-pk (subs public-key 0 5)
           ellipsis                "..."
           public-key-size         (count public-key)
-          last-part-of-public-key (subs public-key (- public-key-size 12) public-key-size)
+          last-part-of-public-key (subs public-key (- public-key-size 10) public-key-size)
           abbreviated-url         (str base-url
                                        first-part-of-public-pk
                                        ellipsis

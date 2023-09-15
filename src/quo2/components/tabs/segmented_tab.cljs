@@ -26,7 +26,7 @@
                                      [theme :background-color])
            :border-radius    (case size
                                32 10
-                               28 8
+                               28 10
                                24 8
                                20 6)
            :padding          2}
