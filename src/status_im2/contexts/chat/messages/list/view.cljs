@@ -223,14 +223,13 @@
              :display-name    display-name
              :online?         online?
              :profile-picture photo-path}])]
-        [rn/view {:style style/name-container}
-         [quo/text
-          {:weight          :semi-bold
-           :size            :heading-1
-           :style           {:margin-top (if group-chat 54 12)}
-           :number-of-lines 1}
-          display-name
-          [contact-icon contact]]]
+        [quo/text
+         {:weight          :semi-bold
+          :size            :heading-1
+          :style           {:margin-top (if group-chat 54 12)}
+          :number-of-lines 1}
+         display-name
+         [contact-icon contact]]
         (when bio
           [quo/text {:style style/bio}
            bio])
