@@ -58,7 +58,8 @@
 
         (when @max-attempt-reached
           [rn/view {:style style/max-attempt-reached-container}
-           [quo/text {:size :label :style {:color colors/danger}} (i18n/label :t/attempts-left {:attempts 4})]])]
+           [quo/text {:size :label :style {:color colors/danger}}
+            (i18n/label :t/attempts-left {:attempts 4})]])]
 
        [numbered-keyboard/view
         {:disabled?   false
@@ -89,7 +90,7 @@
       :style               style/secondary-text} (i18n/label :t/make-sure-scanned-keycard)]]
 
    [fast-image/fast-image
-    {:style  {:width         "100%"
+    {:style  {:aspect-ratio  1
               :height        503
               :margin-bottom 20
               :align-self    :center}
@@ -150,7 +151,8 @@
       :on-press        #(rf/dispatch [:hide-bottom-sheet])} :i/close]
 
     [quo/text
-     {:accessibility-label :wrong-card-text :size :heading-1 :weight :semi-bold} (i18n/label :t/wrong-keycard)]
+     {:accessibility-label :wrong-card-text :size :heading-1 :weight :semi-bold}
+     (i18n/label :t/wrong-keycard)]
 
     [quo/text
      {:accessibility-label :make-sure-scanned-text
@@ -160,7 +162,7 @@
      (i18n/label :t/make-sure-scanned-card-contains-keys)]]
 
    [fast-image/fast-image
-    {:style  {:width         "100%"
+    {:style  {:aspect-ratio  1
               :height        481
               :margin-bottom 20
               :align-self    :center}
