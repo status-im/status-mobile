@@ -60,6 +60,7 @@
 
 (defn details-view
 <<<<<<< HEAD
+<<<<<<< HEAD
   [address stored blur? theme]
   [rn/view
    {:style {:flex-direction :row
@@ -84,6 +85,9 @@
 >>>>>>> be98d71dc (quo2: keypair blur)
 =======
   [details stored blur? theme]
+=======
+  [{:keys [details stored blur? theme]}]
+>>>>>>> 099b4ac61 (review)
   (let [{:keys [address]} details]
     [rn/view
      {:style {:flex-direction :row
@@ -116,7 +120,7 @@
         [rn/view
          {:style {:margin-left 8
                   :flex        1}}
-         [title-view (merge props {:selected? @selected?})]
+         [title-view (assoc props :selected? @selected?)]
          [details-view props]]]
        [rn/flat-list
         {:data      accounts
