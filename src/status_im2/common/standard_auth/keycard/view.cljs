@@ -5,7 +5,6 @@
             [status-im2.common.standard-auth.style :as style]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
-            [react-native.fast-image :as fast-image]
             [status-im2.common.resources :as resources]
             [utils.i18n :as i18n]
             [quo2.components.keycard.view :as keycard]
@@ -89,12 +88,13 @@
       :weight              :medium
       :style               style/secondary-text} (i18n/label :t/make-sure-scanned-keycard)]]
 
-   [fast-image/fast-image
-    {:style  {:aspect-ratio  1
+   [rn/image
+    {:resize-mode :contain
+     :style  {:aspect-ratio  1
               :height        503
               :margin-bottom 20
               :align-self    :center}
-     :source (resources/get-image :this-is-not-keycard)}]
+     :source      (resources/get-image :this-is-not-keycard)}]
 
    [rn/view {:style style/try-again-button}
     [quo/button
@@ -161,8 +161,9 @@
       :style               {:margin-top 8 :margin-bottom 20}}
      (i18n/label :t/make-sure-scanned-card-contains-keys)]]
 
-   [fast-image/fast-image
-    {:style  {:aspect-ratio  1
+   [rn/image
+    {:resize-mode :contain
+     :style  {:aspect-ratio  1
               :height        481
               :margin-bottom 20
               :align-self    :center}
