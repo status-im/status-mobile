@@ -19,16 +19,17 @@
 
 (defn enter-keycard-pin-sheet
   []
-  (let [entered-numbers (reagent/atom [])
-        max-digits 6
+  (let [entered-numbers     (reagent/atom [])
+        max-digits          6
         max-attempt-reached (reagent/atom false)]
 
     (fn []
-      (println "entered-numbers" @entered-numbers)
-
       [rn/view {:style style/container}
        [rn/view {:style style/inner-container}
-        [quo/text {:accessibility-label :enter-keycard-pin-text :size :heading-2 :weight :semi-bold}
+        [quo/text
+         {:accessibility-label :enter-keycard-pin-text
+          :size                :heading-2
+          :weight              :semi-bold}
          (i18n/label :t/enter-keycard-pin)]
 
         [rn/view {:style style/context-tag}
@@ -46,12 +47,15 @@
 
         (when @max-attempt-reached
           [rn/view {:style style/max-attempt-reached-container}
-           [quo/text {:size :label :style {:color colors/danger}}
+           [quo/text
+            {:size  :label
+             :style {:color colors/danger}}
             (i18n/label :t/attempts-left {:attempts 4})]])]
 
        [quo/numbered-keyboard
         {:disabled?   false
-         :on-press    (fn [number] (handle-number-entry entered-numbers max-digits max-attempt-reached number))
+         :on-press    (fn [number]
+                        (handle-number-entry entered-numbers max-digits max-attempt-reached number))
          :blur?       false
          :delete-key? false
          :left-action :none}]])))
@@ -68,7 +72,9 @@
       :on-press        #(rf/dispatch [:hide-bottom-sheet])} :i/close]
 
     [quo/text
-     {:accessibility-label :this-is-not-keycard-text :size :heading-1 :weight :semi-bold}
+     {:accessibility-label :this-is-not-keycard-text
+      :size                :heading-1
+      :weight              :semi-bold}
      (i18n/label :t/this-is-not-keycard)]
 
     [quo/text
@@ -79,10 +85,10 @@
 
    [rn/image
     {:resize-mode :contain
-     :style  {:aspect-ratio  1
-              :height        503
-              :margin-bottom 20
-              :align-self    :center}
+     :style       {:aspect-ratio  1
+                   :height        503
+                   :margin-bottom 20
+                   :align-self    :center}
      :source      (resources/get-image :this-is-not-keycard)}]
 
    [rn/view {:style style/try-again-button}
@@ -92,7 +98,9 @@
 
 (defn keycard-locked-sheet
   []
-  [rn/view {:style style/container :height (:height (rn/get-window))}
+  [rn/view
+   {:style  style/container
+    :height (:height (rn/get-window))}
    [rn/view {:style style/inner-container}
     [quo/button
      {:container-style style/close-button
@@ -102,7 +110,9 @@
       :on-press        #(rf/dispatch [:hide-bottom-sheet])} :i/close]
 
     [quo/text
-     {:accessibility-label :keycard-locked-text :size :heading-1 :weight :semi-bold}
+     {:accessibility-label :keycard-locked-text
+      :size                :heading-1
+      :weight              :semi-bold}
      (i18n/label :t/keycard-locked)]
 
     [quo/text
@@ -120,7 +130,9 @@
      {:type :primary}
      (i18n/label :t/unlock-keycard)]
 
-    [quo/divider-label {:tight? false :container-style style/divider} (i18n/label :t/other-options)]
+    [quo/divider-label
+     {:tight?          false
+      :container-style style/divider} (i18n/label :t/other-options)]
 
     [quo/button
      {:type            :ghost
@@ -140,7 +152,9 @@
       :on-press        #(rf/dispatch [:hide-bottom-sheet])} :i/close]
 
     [quo/text
-     {:accessibility-label :wrong-card-text :size :heading-1 :weight :semi-bold}
+     {:accessibility-label :wrong-card-text
+      :size                :heading-1
+      :weight              :semi-bold}
      (i18n/label :t/wrong-keycard)]
 
     [quo/text
@@ -152,11 +166,11 @@
 
    [rn/image
     {:resize-mode :contain
-     :style  {:aspect-ratio  1
-              :height        481
-              :margin-bottom 20
-              :align-self    :center}
-     :source (resources/get-image :wrong-keycard)}]
+     :style       {:aspect-ratio  1
+                   :height        481
+                   :margin-bottom 20
+                   :align-self    :center}
+     :source      (resources/get-image :wrong-keycard)}]
 
    [rn/view {:style style/try-again-button}
     [quo/button
