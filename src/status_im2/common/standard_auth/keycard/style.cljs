@@ -9,7 +9,7 @@
   {:flex 1 :padding-horizontal 20})
 
 (def context-tag
-  {:flex 1 :margin-top 12 :margin-bottom 56 :width 115})
+  {:margin-top 12 :margin-bottom 56 :flex-direction :row})
 
 (def close-button
   {:margin-bottom 12})
