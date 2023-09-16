@@ -11,13 +11,6 @@
 (def context-tag
   {:flex 1 :margin-top 12 :margin-bottom 56 :width 115})
 
-(def digits-container
-  {:flex               1
-   :padding-horizontal 60
-   :align-items        :center
-   :flex-direction     :row
-   :justify-content    :space-between})
-
 (def close-button
   {:margin-bottom 12})
 
@@ -35,6 +28,14 @@
 
 (def reset-keycard-button
   {:align-self :flex-start :margin-top 12})
+
+(defn get-digits-container-style [max-attempt-reached]
+  {:flex               1
+   :padding-horizontal 60
+   :align-items        :center
+   :flex-direction     :row
+   :justify-content    :space-between
+   :margin-bottom      (if max-attempt-reached 0 34)})
 
 (defn digit-style [max-attempt-reached idx entered-numbers]
   {:width            16
