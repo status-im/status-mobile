@@ -2321,7 +2321,7 @@
     "emoji-no-results-description": "Try something like “rainbow”",
     "other-options": "Other options",
     "enter-keycard-pin": "Enter Keycard PIN",
-    "alisher-card": "Alisher Card",
+    "card-with-name": "{{name}} Card",
     "attempts-left": "{{attempts}} attempts left",
     "this-is-not-keycard":"Oops, this isn’t a Keycard",
     "make-sure-scanned-keycard": "Make sure the card you scanned is a Keycard.",

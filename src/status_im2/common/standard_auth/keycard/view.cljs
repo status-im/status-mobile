@@ -36,7 +36,7 @@
           {:type    :icon
            :icon    :i/placeholder
            :size    24
-           :context (i18n/label :t/alisher-card)}]]
+           :context (i18n/label :t/card-with-name {:name "Alisher"})}]]
 
         [rn/view
          (if @max-attempt-reached
@@ -116,7 +116,7 @@
 
     [rn/view {:style style/keycard}
      [keycard/keycard
-      {:holder-name (i18n/label :t/alisher-card)
+      {:holder-name "Alisher"
        :locked?     true}]]
 
     [quo/button
