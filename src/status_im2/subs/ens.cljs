@@ -6,12 +6,6 @@
             [utils.money :as money]))
 
 (re-frame/reg-sub
- :multiaccount/usernames
- :<- [:profile/profile]
- (fn [multiaccount]
-   (:usernames multiaccount)))
-
-(re-frame/reg-sub
  :ens/preferred-name
  :<- [:profile/profile]
  (fn [multiaccount]
@@ -83,12 +77,17 @@
 
 (re-frame/reg-sub
  :ens.main/screen
- :<- [:multiaccount/usernames]
+ :<- [:ens/names]
  :<- [:profile/profile]
  :<- [:ens/preferred-name]
  :<- [:ens/registrations]
  (fn [[names multiaccount preferred-name registrations]]
-   {:names           names
-    :profile/profile multiaccount
-    :preferred-name  preferred-name
-    :registrations   registrations}))
+   (let [not-in-progress-names (reduce (fn [acc {:keys [username custom-domain?]}]
+                                         (let [full-name (ens/fullname custom-domain? username)]
+                                           (remove #(= % full-name) acc)))
+                                       (keys names)
+                                       (vals registrations))]
+     {:names           not-in-progress-names
+      :profile/profile multiaccount
+      :preferred-name  preferred-name
+      :registrations   registrations})))

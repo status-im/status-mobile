@@ -1,27 +1,28 @@
 (ns status-im.signing.core
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip55 :as eip55]
-            [status-im.ethereum.tokens :as tokens]
-            [utils.i18n :as i18n]
-            [status-im.keycard.card :as keycard.card]
-            [status-im.keycard.common :as keycard.common]
-            [native-module.core :as native-module]
-            [status-im.signing.eip1559 :as eip1559]
-            [status-im.signing.keycard :as signing.keycard]
-            [utils.re-frame :as rf]
-            [status-im.utils.hex :as utils.hex]
-            [utils.money :as money]
-            [status-im.utils.types :as types]
-            [status-im.utils.utils :as utils]
-            [status-im.wallet.core :as wallet]
-            [status-im.wallet.prices :as prices]
-            [status-im2.common.json-rpc.events :as json-rpc]
-            [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+  (:require
+    [clojure.set :as set]
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im2.constants :as constants]
+    [status-im.ethereum.core :as ethereum]
+    [status-im.ethereum.eip55 :as eip55]
+    [status-im.ethereum.tokens :as tokens]
+    [utils.i18n :as i18n]
+    [status-im.keycard.card :as keycard.card]
+    [status-im.keycard.common :as keycard.common]
+    [native-module.core :as native-module]
+    [status-im.signing.eip1559 :as eip1559]
+    [status-im.signing.keycard :as signing.keycard]
+    [utils.re-frame :as rf]
+    [status-im.utils.hex :as utils.hex]
+    [utils.money :as money]
+    [status-im.utils.types :as types]
+    [status-im.utils.utils :as utils]
+    [status-im.wallet.core :as wallet]
+    [status-im.wallet.prices :as prices]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [taoensso.timbre :as log]
+    [utils.security.core :as security]))
 
 (re-frame/reg-fx
  :signing/send-transaction-fx
@@ -100,35 +101,81 @@
 
 (rf/defn send-transaction
   {:events [:signing.ui/sign-is-pressed]}
-  [{{:signing/keys [sign tx] :as db} :db :as cofx}]
-  (let [{:keys [in-progress? password]}      sign
+  [{{:signing/keys [sign tx] :ens/keys [registration] :as db} :db :as cofx}]
+  (let [{:keys [in-progress? password]}          sign
         {:keys [tx-obj gas gasPrice maxPriorityFeePerGas
-                maxFeePerGas message nonce]} tx
-        hashed-password                      (ethereum/sha3 (security/safe-unmask-data password))]
+                maxFeePerGas message nonce]}     tx
+        hashed-password                          (ethereum/sha3 (security/safe-unmask-data password))
+        {:keys [action username custom-domain?]} registration
+        {:keys [public-key]}                     (:profile/profile db)
+        chain-id                                 (ethereum/chain-id db)]
     (if message
       (sign-message cofx)
-      (let [tx-obj-to-send (merge tx-obj
-                                  (when gas
-                                    {:gas (str "0x" (native-module/number-to-hex gas))})
-                                  (when gasPrice
-                                    {:gasPrice (str "0x" (native-module/number-to-hex gasPrice))})
-                                  (when nonce
-                                    {:nonce (str "0x" (native-module/number-to-hex nonce))})
-                                  (when maxPriorityFeePerGas
-                                    {:maxPriorityFeePerGas (str "0x"
-                                                                (native-module/number-to-hex
-                                                                 (js/parseInt maxPriorityFeePerGas)))})
-                                  (when maxFeePerGas
-                                    {:maxFeePerGas (str "0x"
-                                                        (native-module/number-to-hex
-                                                         (js/parseInt maxFeePerGas)))}))]
+      (let [tx-obj-to-send  (merge tx-obj
+                                   (when gas
+                                     {:gas (str "0x" (native-module/number-to-hex gas))})
+                                   (when gasPrice
+                                     {:gasPrice (str "0x" (native-module/number-to-hex gasPrice))})
+                                   (when nonce
+                                     {:nonce (str "0x" (native-module/number-to-hex nonce))})
+                                   (when maxPriorityFeePerGas
+                                     {:maxPriorityFeePerGas (str "0x"
+                                                                 (native-module/number-to-hex
+                                                                  (js/parseInt maxPriorityFeePerGas)))})
+                                   (when maxFeePerGas
+                                     {:maxFeePerGas (str "0x"
+                                                         (native-module/number-to-hex
+                                                          (js/parseInt maxFeePerGas)))}))
+            cb              #(re-frame/dispatch
+                              [:signing/transaction-completed %
+                               tx-obj-to-send hashed-password])
+            watch-ens-tx-fn #(re-frame/dispatch
+                              [:transactions/watch-transaction
+                               %
+                               {:trigger-fn
+                                (fn [_ {:keys [hash type]}]
+                                  (and (= hash %)
+                                       (contains? #{:outbound :failed} type)))
+                                :on-trigger
+                                (fn [{:keys [type]}]
+                                  (case type
+                                    :outbound (do (rf/dispatch [:ens/clear-registration %])
+                                                  (rf/dispatch [:ens/save-username custom-domain?
+                                                                username false]))
+
+                                    :failed   (rf/dispatch [:ens/update-ens-tx-state :failure username
+                                                            custom-domain? %])
+                                    nil))}])]
         (when-not in-progress?
-          {:db                          (update db :signing/sign assoc :error nil :in-progress? true)
-           :signing/send-transaction-fx {:tx-obj          tx-obj-to-send
-                                         :hashed-password hashed-password
-                                         :cb              #(re-frame/dispatch
-                                                            [:signing/transaction-completed %
-                                                             tx-obj-to-send hashed-password])}})))))
+          (cond-> {:db (update db :signing/sign assoc :error nil :in-progress? true)}
+            (nil? action)                                 (assoc :signing/send-transaction-fx
+                                                                 {:tx-obj          tx-obj-to-send
+                                                                  :hashed-password hashed-password
+                                                                  :cb              cb})
+            (= action constants/ens-action-type-register) (assoc :json-rpc/call
+                                                                 [{:method "ens_register"
+                                                                   :params [chain-id tx-obj-to-send
+                                                                            hashed-password username
+                                                                            public-key]
+                                                                   :on-success
+                                                                   #(do
+                                                                      (cb (types/clj->json
+                                                                           {:result %}))
+                                                                      (watch-ens-tx-fn %))
+                                                                   :on-error #(cb (types/clj->json
+                                                                                   {:error %}))}])
+            (= action
+               constants/ens-action-type-set-pub-key)     (assoc :json-rpc/call
+                                                                 [{:method     "ens_setPubKey"
+                                                                   :params     [chain-id tx-obj-to-send
+                                                                                hashed-password username
+                                                                                public-key]
+                                                                   :on-success #(do (cb (types/clj->json
+                                                                                         {:result %}))
+                                                                                    (watch-ens-tx-fn %))
+                                                                   :on-error   #(cb (types/clj->json
+                                                                                     {:error
+                                                                                      %}))}])))))))
 
 (rf/defn prepare-unconfirmed-transaction
   [{:keys [db now]} new-tx-hash
@@ -155,19 +202,10 @@
                      :tip-cap   maxPriorityFeePerGas
                      :gas-limit gas-limit}]
     (log/info "[signing] prepare-unconfirmed-transaction" tx)
-    {:db            (-> db
-                        ;;remove old transaction, because we replace it with the new one
-                        (update-in [:wallet :accounts from :transactions] dissoc old-tx-hash)
-                        (assoc-in [:wallet :accounts from :transactions new-tx-hash] tx))
-     :json-rpc/call [{:method     "wallet_storePendingTransaction"
-                      :params     [(-> tx
-                                       (dissoc :gas-price :gas-limit)
-                                       (assoc :gasPrice
-                                              (money/to-fixed (money/bignumber gasPrice))
-                                              :gasLimit (money/to-fixed (money/bignumber gas)))
-                                       clj->js)]
-                      :on-success #(log/info "pending transfer is saved")
-                      :on-error   #(log/info "pending transfer was not saved" %)}]}))
+    {:db (-> db
+             ;;remove old transaction, because we replace it with the new one
+             (update-in [:wallet :accounts from :transactions] dissoc old-tx-hash)
+             (assoc-in [:wallet :accounts from :transactions new-tx-hash] tx))}))
 
 (defn get-method-type
   [data]
@@ -431,6 +469,7 @@
   {:events       [:signing/transaction-completed]
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [cofx response tx-obj hashed-password]
+  (log/info "transaction-completed" "tx-obj" tx-obj "response" response)
   (let [cofx-in-progress-false (assoc-in cofx [:db :signing/sign :in-progress?] false)
         {:keys [result error]} (types/json->clj response)]
     (if error

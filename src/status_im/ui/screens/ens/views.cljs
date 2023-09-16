@@ -702,7 +702,7 @@
      [name-item
       {:name     username
        :action   (when-not (= state :submitted)
-                   #(re-frame/dispatch [:clear-ens-registration tx-hash]))
+                   #(re-frame/dispatch [:ens/clear-registration tx-hash]))
        :subtitle (case state
                    :submitted (i18n/label :t/ens-registration-in-progress)
                    :failure   (i18n/label :t/ens-registration-failure)

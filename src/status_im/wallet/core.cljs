@@ -803,21 +803,18 @@
  ::start-watching
  (fn [hashes]
    (log/info "[wallet] watch transactions" hashes)
-   (doseq [[address tx-hash] hashes]
+   (doseq [[address tx-hash chain-id] hashes]
      (json-rpc/call
-      {:method     "wallet_watchTransaction"
-       :params     [tx-hash]
+      {:method     "wallet_watchTransactionByChainID"
+       :params     [chain-id tx-hash]
        :on-success #(re-frame.core/dispatch [::transaction-included address tx-hash])
        :on-error   #(log/info "[wallet] watch transaction error" % "hash" tx-hash)}))))
 
 (rf/defn watch-tx
   {:events [:watch-tx]}
   [{:keys [db] :as cofx} address tx-id]
-  {::start-watching [[address tx-id]]})
-
-(rf/defn watch-transsactions
-  [_ hashes]
-  {::start-watching hashes})
+  (let [chain-id (ethereum/chain-id db)]
+    {::start-watching [[address tx-id chain-id]]}))
 
 (rf/defn clear-timeouts
   [{:keys [db]}]
@@ -1013,7 +1010,7 @@
                  db)))
            db
            (map (partial normalize-transaction db) raw-transactions))
-   ::start-watching (map (juxt :from :hash) raw-transactions)})
+   ::start-watching (map (juxt :from :hash :network_id) raw-transactions)})
 
 (re-frame/reg-fx
  :wallet/delete-pending-transactions
