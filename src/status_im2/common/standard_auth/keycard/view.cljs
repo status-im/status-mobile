@@ -54,7 +54,7 @@
 
        [quo/numbered-keyboard
         {:disabled?   false
-         :on-press    handle-number-entry
+         :on-press    (fn [number] (handle-number-entry entered-numbers max-digits max-attempt-reached number))
          :blur?       false
          :delete-key? false
          :left-action :none}]])))

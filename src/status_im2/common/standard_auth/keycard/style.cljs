@@ -41,7 +41,7 @@
    :height           16
    :border-radius    8
    :background-color   (if (<= idx (dec (count @entered-numbers)))
-                         (if @max-attempt-reached
+                         (if max-attempt-reached
                            colors/danger
                            colors/white)
                          colors/neutral-50)})
