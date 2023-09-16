@@ -1,13 +1,13 @@
 (ns status-im2.contexts.chat.messages.content.text.view
   (:require
-   [quo2.core :as quo]
-   [quo2.foundations.colors :as colors]
-   [react-native.platform :as platform]
-   [react-native.core :as rn]
-   [status-im2.contexts.chat.messages.content.link-preview.view :as link-preview]
-   [status-im2.contexts.chat.messages.content.text.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]
+    [react-native.core :as rn]
+    [status-im2.contexts.chat.messages.content.link-preview.view :as link-preview]
+    [status-im2.contexts.chat.messages.content.text.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn render-inline
   [units {:keys [type literal destination]} chat-id style-override first-child-mention]
