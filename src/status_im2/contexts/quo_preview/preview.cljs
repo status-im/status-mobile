@@ -191,8 +191,8 @@
                remove-key (fn [v] (filterv #(not= % k) v))
                on-press   (fn []
                             (swap! selected-keys-atom
-                                   (if checked? remove-key conj)
-                                   k))]
+                              (if checked? remove-key conj)
+                              k))]
            [rn/pressable
             {:style    (style/multi-select-option)
              :on-press on-press}

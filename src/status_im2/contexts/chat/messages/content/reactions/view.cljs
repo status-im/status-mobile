@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.reactions.view
   (:require [quo2.core :as quo]
+            [status-im2.constants :as constants]
             [utils.re-frame :as rf]
             [status-im2.contexts.chat.messages.drawers.view :as drawers]
             [quo2.theme :as quo.theme]))
@@ -48,6 +49,12 @@
      :selected-item (fn []
                       user-message-content)}]))
 
+(defn- add-emoji-key
+  [reaction]
+  (assoc reaction
+         :emoji
+         (get constants/reactions (:emoji-id reaction))))
+
 (defn- view-internal
   [{:keys [message-id chat-id pinned-by theme]} user-message-content]
   (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
@@ -56,7 +63,7 @@
        [quo/react
         {:container-style {:margin-left 44
                            :margin-top  8}
-         :reactions       reactions
+         :reactions       (map add-emoji-key reactions)
          :add-reaction?   true
          :pinned?         (boolean pinned-by)
          :on-press        #(on-press %)
