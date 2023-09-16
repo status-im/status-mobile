@@ -45,13 +45,15 @@
    :bottom           0})
 
 (defn selected-item
-  [theme window-height sheet-height {:keys [top]}]
+  [theme window-height sheet-height item-height {:keys [top]}]
+  (js/console.log (str "item-height " item-height))
   {:position          :absolute
-   :bottom            10
-   :max-height        (- window-height sheet-height top)
+   :bottom            8
+   ;; we minus 8 on the max-height since the bottom has a margin of 8
+   :max-height        (- window-height sheet-height top 8)
    :overflow          :hidden
    :left              0
    :right             0
    :border-radius     12
    :margin-horizontal 8
-   :background-color  (colors/theme-colors colors/white colors/neutral-95 theme)})
+   :background-color  (colors/theme-colors colors/white colors/neutral-90 theme)})

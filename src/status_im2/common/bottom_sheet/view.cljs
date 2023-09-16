@@ -57,7 +57,8 @@
 
 (defn- f-view
   [_ _]
-  (let [sheet-height (reagent/atom 0)]
+  (let [sheet-height (reagent/atom 0)
+        item-height  (reagent/atom 0)]
     (fn [{:keys [hide? insets theme]}
          {:keys [content selected-item padding-bottom-override on-close shell?
                  gradient-cover? customization-color]}]
@@ -101,7 +102,9 @@
              [blur/ios-view {:style style/shell-bg}])
            (when selected-item
              [rn/view
-              [rn/view {:style (style/selected-item theme window-height @sheet-height insets)}
+              [rn/view {:on-layout (fn [event]
+                                     (reset! item-height (oops/oget event "nativeEvent" "layout" "height")))
+                        :style     (style/selected-item theme window-height @sheet-height @item-height insets)}
                [selected-item]]])
 
            ;; handle
