@@ -1,7 +1,7 @@
 (ns status-im2.common.standard-auth.keycard.view
   (:require [react-native.core :as rn]
             [quo2.core :as quo]
-            [status-im2.common.standard-auth.style :as style]
+            [status-im2.common.standard-auth.keycard.style :as style]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
             [status-im2.common.resources :as resources]
@@ -9,26 +9,19 @@
             [quo2.components.keycard.view :as keycard]
             [utils.re-frame :as rf]))
 
+(defn handle-number-entry
+  [entered-numbers max-digits max-attempt-reached number]
+  (when (>= (count @entered-numbers) max-digits)
+    (reset! entered-numbers []))
+  (when (= (count @entered-numbers) (dec max-digits))
+    (reset! max-attempt-reached true))
+  (swap! entered-numbers conj number))
+
 (defn enter-keycard-pin-sheet
   []
   (let [entered-numbers (reagent/atom [])
         max-digits 6
-        max-attempt-reached (reagent/atom false)
-
-        handle-number-entry
-        (fn [number]
-          (when (>= (count @entered-numbers) max-digits)
-            (reset! entered-numbers []))
-          (when (= (count @entered-numbers) (dec max-digits))
-            (reset! max-attempt-reached true))
-          (swap! entered-numbers conj number))
-        get-dot-style
-        (fn [idx]
-          (if (<= idx (dec (count @entered-numbers)))
-            (if @max-attempt-reached
-              (assoc style/digit :background-color colors/danger)
-              (assoc style/digit :background-color colors/white))
-            (assoc style/digit :background-color colors/neutral-50)))]
+        max-attempt-reached (reagent/atom false)]
 
     (fn []
       (println "entered-numbers" @entered-numbers)
@@ -52,7 +45,7 @@
          (for [i (range max-digits)]
            [rn/view
             {:key   i
-             :style (get-dot-style i)}])]
+             :style (style/digit-style @max-attempt-reached i entered-numbers)}])]
 
         (when @max-attempt-reached
           [rn/view {:style style/max-attempt-reached-container}

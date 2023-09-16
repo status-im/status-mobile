@@ -1,6 +1,6 @@
 (ns status-im2.common.standard-auth.keycard.style
   (:require
-    [quo2.foundations.colors :as colors]))
+   [quo2.foundations.colors :as colors]))
 
 (def container
   {:flex 1})
@@ -36,11 +36,15 @@
 (def reset-keycard-button
   {:align-self :flex-start :margin-top 12})
 
-(def digit
+(defn digit-style [max-attempt-reached idx entered-numbers]
   {:width            16
    :height           16
    :border-radius    8
-   :background-color colors/neutral-50})
+   :background-color   (if (<= idx (dec (count @entered-numbers)))
+                         (if @max-attempt-reached
+                           colors/danger
+                           colors/white)
+                         colors/neutral-50)})
 
 (def max-attempt-reached-container
   {:align-self :center :margin-bottom 14 :margin-top 8})
