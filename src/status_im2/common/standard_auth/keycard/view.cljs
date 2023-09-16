@@ -1,6 +1,5 @@
 (ns status-im2.common.standard-auth.keycard.view
   (:require [react-native.core :as rn]
-            [quo2.components.numbered-keyboard.numbered-keyboard.view :as numbered-keyboard]
             [quo2.core :as quo]
             [status-im2.common.standard-auth.style :as style]
             [reagent.core :as reagent]
@@ -60,7 +59,7 @@
            [quo/text {:size :label :style {:color colors/danger}}
             (i18n/label :t/attempts-left {:attempts 4})]])]
 
-       [numbered-keyboard/view
+       [quo/numbered-keyboard
         {:disabled?   false
          :on-press    handle-number-entry
          :blur?       false
