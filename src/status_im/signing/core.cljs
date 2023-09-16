@@ -22,8 +22,7 @@
     [status-im.wallet.prices :as prices]
     [status-im2.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
-    [utils.security.core :as security]
-    [status-im.ethereum.transactions.core :as transactions]))
+    [utils.security.core :as security]))
 
 (re-frame/reg-fx
  :signing/send-transaction-fx

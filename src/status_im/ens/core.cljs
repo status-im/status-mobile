@@ -15,7 +15,6 @@
     [status-im.utils.random :as random]
     [status-im2.navigation.events :as navigation]
     [status-im2.constants :as constants]
-    [status-im2.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]))
 
 (defn fullname

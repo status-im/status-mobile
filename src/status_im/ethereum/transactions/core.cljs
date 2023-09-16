@@ -1,7 +1,6 @@
 (ns status-im.ethereum.transactions.core
   (:require [cljs.spec.alpha :as spec]
             [re-frame.core :as re-frame]
-            [status-im.ens.core :as ens]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.eip55 :as eip55]
