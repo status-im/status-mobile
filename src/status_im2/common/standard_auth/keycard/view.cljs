@@ -1,4 +1,4 @@
-(ns status-im2.common.standard-auth.view
+(ns status-im2.common.standard-auth.keycard.view
   (:require [react-native.core :as rn]
             [quo2.components.numbered-keyboard.numbered-keyboard.view :as numbered-keyboard]
             [quo2.core :as quo]
