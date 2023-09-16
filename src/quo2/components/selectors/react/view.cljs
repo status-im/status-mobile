@@ -13,7 +13,7 @@
      [react-selector/view
       {:key                 emoji-reaction-id
        :emoji               (get constants/reactions emoji-id)
-       :neutral?            own
+       :neutral?            (not own)
        :pinned?             pinned?
        :container-style     style/reaction-container
        :clicks              quantity

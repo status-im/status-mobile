@@ -47,8 +47,9 @@
                              :message-id message-id}])
      :selected-item (fn []
                       user-message-content)}]))
+
 (defn- view-internal
-  [{:keys [message-id chat-id theme]} user-message-content]
+  [{:keys [message-id chat-id pinned-by theme]} user-message-content]
   (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
     [:<>
      (when (seq reactions)
@@ -57,6 +58,7 @@
                            :margin-top  8}
          :reactions       reactions
          :add-reaction?   true
+         :pinned?         (boolean pinned-by)
          :on-press        #(on-press %)
          :on-long-press   #(on-long-press (assoc %
                                                  :theme theme
