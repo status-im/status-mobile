@@ -6,19 +6,24 @@
   {:flex 1})
 
 (def inner-container
-  {:flex 1 :padding-horizontal 20})
+  {:flex 1
+   :padding-horizontal 20})
 
 (def context-tag
-  {:margin-top 12 :margin-bottom 56 :flex-direction :row})
+  {:margin-top 12
+   :margin-bottom 56
+   :flex-direction :row})
 
 (def close-button
   {:margin-bottom 12})
 
 (def secondary-text
-  {:margin-top 8 :margin-bottom 20})
+  {:margin-top 8
+   :margin-bottom 20})
 
 (def try-again-button
-  {:flex 1 :padding-horizontal 20})
+  {:flex 1
+   :padding-horizontal 20})
 
 (def keycard
   {:margin-bottom 12})
@@ -27,7 +32,9 @@
   {:margin-top 20})
 
 (def reset-keycard-button
-  {:align-self :flex-start :margin-top 12})
+  {:align-self
+   :flex-start
+   :margin-top 12})
 
 (defn get-digits-container-style [max-attempt-reached]
   {:flex               1
@@ -48,4 +55,6 @@
                          colors/neutral-50)})
 
 (def max-attempt-reached-container
-  {:align-self :center :margin-bottom 14 :margin-top 8})
+  {:align-self :center
+   :margin-bottom 14
+   :margin-top 8})
