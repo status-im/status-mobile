@@ -38,10 +38,7 @@
            :size    24
            :context (i18n/label :t/card-with-name {:name "Alisher"})}]]
 
-        [rn/view
-         (if @max-attempt-reached
-           {:style style/digits-container :margin-bottom 0}
-           {:style style/digits-container :margin-bottom 34})
+        [rn/view (style/get-digits-container-style @max-attempt-reached)
          (for [i (range max-digits)]
            [rn/view
             {:key   i
