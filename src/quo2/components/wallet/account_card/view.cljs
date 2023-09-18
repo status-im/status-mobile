@@ -15,39 +15,42 @@
         empty-type? (= :empty type)]
     [rn/view
      {:accessibility-label :loading
-      :style               (style/card {:customization-color customization-color 
-                                        :watch-only? watch-only?
-                                        :metrics? metrics? 
-                                        :theme theme 
-                                        :pressed? false})}
+      :style               (style/card {:customization-color customization-color
+                                        :watch-only?         watch-only?
+                                        :metrics?            metrics?
+                                        :theme               theme
+                                        :pressed?            false})}
      [rn/view {:style style/loader-container}
       [rn/view
-       {:style (assoc (style/loader-view {:width 16 
-                                          :height 16 
-                                          :watch-only? watch-only? 
-                                          :theme theme})
+       {:style (assoc (style/loader-view {:width       16
+                                          :height      16
+                                          :watch-only? watch-only?
+                                          :theme       theme})
                       :margin-right 8
                       :margin-top   2)}]
       [rn/view {:style style/watch-only-container}
-       [rn/view {:style (style/loader-view {:width 57 
-                                            :height 8 
-                                            :watch-only? watch-only? 
-                                            :theme theme})}]
+       [rn/view
+        {:style (style/loader-view {:width       57
+                                    :height      8
+                                    :watch-only? watch-only?
+                                    :theme       theme})}]
        (when watch-only? [icon/icon :i/reveal {:color colors/neutral-50 :size 12}])]]
      [rn/view
-      {:style (assoc (style/loader-view {:width (if empty-type? 56 80)
-                                         :height 16
+      {:style (assoc (style/loader-view {:width       (if empty-type? 56 80)
+                                         :height      16
                                          :watch-only? watch-only?
-                                         :theme theme})
-                     :margin-top 13)}]
+                                         :theme       theme})
+                     :margin-top
+                     13)}]
      (when metrics?
        [rn/view
         {:accessibility-label :metrics
-         :style               (assoc (style/loader-view {:width (if empty-type? 37 96)
-                                                         :height 8
+         :style               (assoc (style/loader-view {:width       (if empty-type? 37 96)
+                                                         :height      8
                                                          :watch-only? watch-only?
-                                                         :theme theme})
-                                     :margin-top 10)}])]))
+                                                         :theme       theme})
+                                     :margin-top
+                                     10)}])]))
 
 (defn- metrics-percentage
   [watch-only? theme account-percentage]
@@ -77,7 +80,7 @@
 
 (defn- user-account
   []
-  (let [pressed? (reagent/atom false)
+  (let [pressed?     (reagent/atom false)
         on-press-in  #(reset! pressed? true)
         on-press-out #(reset! pressed? false)]
     (fn [{:keys [name balance percentage-value loading? amount customization-color type emoji metrics?
@@ -92,11 +95,11 @@
           [rn/pressable
            {:on-press-in  on-press-in
             :on-press-out on-press-out
-            :style        (style/card {:customization-color customization-color 
-                                       :watch-only? watch-only? 
-                                       :metrics? metrics? 
-                                       :theme theme
-                                       :pressed? @pressed?})
+            :style        (style/card {:customization-color customization-color
+                                       :watch-only?         watch-only?
+                                       :metrics?            metrics?
+                                       :theme               theme
+                                       :pressed?            @pressed?})
             :on-press     on-press}
            (when (and customization-color (not watch-only?))
              [customization-colors/overlay
@@ -121,7 +124,7 @@
             balance]
            (when metrics?
              [rn/view {:style style/metrics-container}
-              [metrics-percentage watch-only? theme percentage-value] 
+              [metrics-percentage watch-only? theme percentage-value]
               (when (not= :empty type)
                 [metrics-info watch-only? theme amount])])])))))
 
@@ -133,8 +136,8 @@
        {:on-press     on-press
         :on-press-in  #(reset! pressed? true)
         :on-press-out #(reset! pressed? false)
-        :style        (style/add-account-container {:theme theme 
-                                                    :metrics? metrics? 
+        :style        (style/add-account-container {:theme    theme
+                                                    :metrics? metrics?
                                                     :pressed? @pressed?})}
        [button/button
         {:type                :primary
