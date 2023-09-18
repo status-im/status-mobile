@@ -12,6 +12,9 @@
    #(rf/dispatch [:shell/navigate-back constants/close-screen-without-animation])
    (or animation-time constants/shell-animation-time)))
 
+;; Make sure issue is fixed before enabling gesture for floating screens
+;; Issue: https://github.com/status-im/status-mobile/pull/16438#issuecomment-1621397789
+;; More Info: https://github.com/status-im/status-mobile/pull/16438#issuecomment-1622589147
 (defn floating-screen-gesture
   [screen-id]
   (let [{:keys [screen-left screen-state]} (get @state/shared-values-atom screen-id)

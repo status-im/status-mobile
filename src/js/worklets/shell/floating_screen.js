@@ -121,7 +121,14 @@ export function screenGestureOnEnd(data) {
   return function (event) {
     'worklet';
 
-    const { screenLeft, screenState, screenWidth, leftVelocity, rightVelocity, screenClosedCallback } = data;
+    const {
+      'screen-left': screenLeft,
+      'screen-state': screenState,
+      'screen-width': screenWidth,
+      'left-velocity': leftVelocity,
+      'right-velocity': rightVelocity,
+      'screen-closed-callback': screenClosedCallback,
+    } = data;
     const absoluteX = event.absoluteX ?? 0;
     const velocityX = event.velocityX ?? 0;
     const closeScreen = velocityX > rightVelocity || (velocityX > leftVelocity && absoluteX >= screenWidth / 2);
