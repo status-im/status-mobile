@@ -56,10 +56,9 @@
 
 (defn- f-address-input-internal
   []
-  (let [status    (reagent/atom :default)
-        value     (reagent/atom "")
-        clipboard (reagent/atom nil)
-        focused?  (atom false)]
+  (let [status   (reagent/atom :default)
+        value    (reagent/atom "")
+        focused? (atom false)]
     (fn [{:keys [scanned-value theme blur? on-change-text on-blur on-focus on-clear on-scan on-detect-ens
                  ens-regex
                  valid-ens?]}]
@@ -75,9 +74,11 @@
                                          (reset! status :loading)
                                          (on-detect-ens text))))
             on-paste               (fn []
-                                     (when-not (empty? @clipboard)
-                                       (on-change @clipboard)
-                                       (reset! value @clipboard)))
+                                     (clipboard/get-string
+                                      (fn [clipboard]
+                                        (when-not (empty? clipboard)
+                                          (on-change clipboard)
+                                          (reset! value clipboard)))))
             on-clear               (fn []
                                      (reset! value "")
                                      (reset! status (if @focused? :active :default))
@@ -100,7 +101,6 @@
                          (when-not (empty? scanned-value)
                            (on-change scanned-value)))
                        [scanned-value])
-        (clipboard/get-string #(reset! clipboard %))
         [rn/view {:style style/container}
          [rn/text-input
           {:accessibility-label    :address-text-input
