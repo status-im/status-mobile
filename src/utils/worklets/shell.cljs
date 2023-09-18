@@ -1,6 +1,4 @@
-(ns utils.worklets.shell
-  (:require [utils.collection]
-            [camel-snake-kebab.core :as csk]))
+(ns utils.worklets.shell)
 
 (def bottom-tabs-worklets (js/require "../src/js/worklets/shell/bottom_tabs.js"))
 (def home-stack-worklets (js/require "../src/js/worklets/shell/home_stack.js"))
@@ -96,6 +94,4 @@
 
 (defn floating-screen-gesture-on-end
   [data]
-  (.screenGestureOnEnd
-   ^js floating-screen-worklets
-   (clj->js (utils.collection/map-keys csk/->camelCaseString data))))
+  (.screenGestureOnEnd ^js floating-screen-worklets (clj->js data)))
