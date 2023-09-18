@@ -90,7 +90,7 @@
    :line-height 20})
 
 (defn loader-view
-  [width height watch-only? theme]
+  [{:keys [width height watch-only? theme]}]
   {:width            width
    :height           height
    :background-color (if (and watch-only? (= :light theme)) colors/neutral-80-opa-5 colors/white-opa-10)
@@ -99,3 +99,6 @@
 (def loader-container
   {:flex-direction :row
    :align-items    :center})
+
+(def metrics-icon-container
+  {:margin-left 4})
