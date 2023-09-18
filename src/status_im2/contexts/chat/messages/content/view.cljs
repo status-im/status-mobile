@@ -29,6 +29,8 @@
     [quo2.theme :as quo.theme]))
 
 (def delivery-state-showing-time-ms 3000)
+;; (def message-container-width (reagent/atom 0))
+
 
 (defn avatar-container
   [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions? show-user-info?]
@@ -129,7 +131,12 @@
                                                                                 context
                                                                                 keyboard-shown?))
             response-to                                  (:response-to content)
-            height                                       (rf/sub [:dimensions/window-height])]
+            height                                       (rf/sub [:dimensions/window-height])
+            {window-width :width}                        (rn/get-window)
+            message-container-data                       {:window-width            window-width
+                                                          :padding-horizontal      40
+                                                          :avatar-container-width  32
+                                                          :message-margin-left     8}]
         [rn/touchable-highlight
          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
                                  :message-sending
@@ -149,14 +156,14 @@
                                      (js/setTimeout #(reset! show-delivery-state? false)
                                                     delivery-state-showing-time-ms))))
           :on-long-press       #(on-long-press message-data context keyboard-shown?)}
-         [:<>
+         [rn/view
           (when pinned-by
             [pin/pinned-by-view pinned-by])
           (when (and (seq response-to) quoted-message)
             [reply/quoted-message quoted-message])
           [rn/view
            {:style {:padding-horizontal 4
-                    :flex-direction     :row}}
+                    :flex-direction      :row}}
            [avatar-container message-data show-reactions? show-user-info?]
            (into
             (if show-reactions?
@@ -182,10 +189,10 @@
                [audio/audio-message message-data context]
 
                constants/content-type-image
-               [image/image-message 0 message-data context]
-
+               [image/image-message 0 message-data context 0 message-container-data]
+               
                constants/content-type-album
-               [album/album-message message-data context on-long-press]
+               [album/album-message message-data context on-long-press message-container-data]
 
                [not-implemented/not-implemented
                 [content.unknown/unknown-content message-data]])
