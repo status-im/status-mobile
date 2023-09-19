@@ -15,19 +15,28 @@
     :options (for [reaction (vals constants/reactions)]
                {:key   reaction
                 :value (string/capitalize (name reaction))})}
-   {:key  :neutral?
-    :type :boolean}
-   {:key  :pinned?
-    :type :boolean}
-   (preview/customization-color-option
-    {:label "Pinned BG (test)"})])
+   {:key  :state
+    :type :select
+    :options [{:key :not-pressed
+               :value "Not pressed by me"}
+              {:key :pressed
+               :value "Pressed by me"}
+              {:key :add-reaction
+               :value "Add reaction"}]}
+   {:key  :use-case
+    :type :select
+    :options [{:key :default
+               :value "Default"}
+              {:key :pinned
+               :value "Pinned"}]}])
 
 (defn preview-react-selector
   []
   (let [state (reagent/atom {:emoji               :reaction/love
-                             :pinned?             false
-                             :customization-color :blue})]
+                             :state :not-pressed
+                             :use-case :default})]
     (fn []
+      (println @state)
       [preview/preview-container
        {:state      state
         :descriptor descriptor}
@@ -38,12 +47,12 @@
          {:width            100
           :padding-vertical 60
           :border-radius    16
-          :background-color (when (:pinned? @state)
+          :background-color (when (= :pinned (:use-case @state))
                               (colors/custom-color
-                               (:customization-color @state)
+                               :blue
                                50
                                10))
           :justify-content  :space-evenly
           :flex-direction   :row
           :align-items      :center}
-         [quo/react-selector (dissoc @state :customization-color)]]]])))
+         [quo/react-selector @state]]]])))

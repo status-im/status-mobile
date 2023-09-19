@@ -65,7 +65,7 @@
                            :margin-top  8}
          :reactions       (map add-emoji-key reactions)
          :add-reaction?   true
-         :pinned?         (boolean pinned-by)
+         :use-case        (when pinned-by :pinned)
          :on-press        #(on-press %)
          :on-long-press   #(on-long-press (assoc %
                                                  :theme theme

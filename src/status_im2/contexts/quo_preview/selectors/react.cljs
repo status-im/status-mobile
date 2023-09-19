@@ -14,8 +14,7 @@
 (def ^:private memo-gen-quantity (memoize gen-quantity))
 
 (def ^:private descriptor
-  [{:label "Add reaction"
-    :key   :add-reaction?
+  [{:key   :add-reaction?
     :type  :boolean}
    {:label   "Reactions"
     :key     :reaction-ids
@@ -28,52 +27,48 @@
    {:label "Max rand. reactions (helper)"
     :key   :max-count
     :type  :number}
-   {:label "Pinned"
-    :key   :pinned?
-    :type  :boolean}
-   (preview/customization-color-option
-    {:label "Pinned BG (test)"})])
+   {:key   :use-case
+    :type  :select
+    :options [{:key :default
+               :value "Default"}
+              {:key :pinned
+               :value "Pinned"}]}])
 
 (defn preview-react
   []
   (let [state               (reagent/atom {:add-reaction?       true
                                            :max-count           1000
                                            :reaction-ids        [1 2 3]
-                                           :customization-color :blue
-                                           :pinned?             false})
-        reaction-ids        (reagent/cursor state [:reaction-ids])
-        add-reaction?       (reagent/cursor state [:add-reaction?])
-        max-count           (reagent/cursor state [:max-count])
-        pinned?             (reagent/cursor state [:pinned?])
-        customization-color (reagent/cursor state [:customization-color])
-        pressed-reactions   (reagent/atom #{1})
-        reactions           (reagent/reaction
-                             (mapv #(assoc {}
-                                           :emoji-id %
-                                           :quantity (memo-gen-quantity @max-count %)
-                                           :own      (boolean (some (fn [v] (= v %))
-                                                                    @pressed-reactions)))
-                                   @reaction-ids))]
+                                           :use-case            :default})
+        pressed-reactions   (reagent/atom #{1})]
+
     (fn []
-      [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view
-        {:padding-bottom     150
-         :padding-vertical   60
-         :padding-horizontal 20
-         :border-radius      16
-         :background-color   (when @pinned?
-                               (colors/custom-color @customization-color 50 10))
-         :align-items        :flex-start}
-        [quo/react
-         {:reactions     @reactions
-          :add-reaction? @add-reaction?
-          :on-press      (fn [reaction]
-                           (let [reaction-id    (:emoji-id reaction)
-                                 change-pressed (partial swap! pressed-reactions)]
-                             (if (contains? @pressed-reactions reaction-id)
-                               (change-pressed disj reaction-id)
-                               (change-pressed conj reaction-id))))
-          :on-long-press identity
-          :on-press-new  identity}]]])))
+      (let [reactions (mapv (fn [reaction-id]
+                              {:emoji-reaction-id reaction-id
+                               :emoji-id reaction-id
+                               :emoji (get constants/reactions reaction-id)
+                               :quantity (memo-gen-quantity (:max-count @state) reaction-id)
+                               :own      (contains? @pressed-reactions reaction-id)}) (:reaction-ids @state))]
+        [preview/preview-container
+         {:state      state
+          :descriptor descriptor}
+         [rn/view
+          {:padding-bottom     150
+           :padding-vertical   60
+           :padding-horizontal 20
+           :border-radius      16
+           :background-color   (when (= :pinned (:use-case @state))
+                                 (colors/custom-color :blue 50 10))
+           :align-items        :flex-start}
+          [quo/react
+           {:reactions     reactions
+            :add-reaction? (:add-reaction? @state)
+            :use-case      (:use-case @state)
+            :on-press      (fn [reaction]
+                             (let [reaction-id    (:emoji-id reaction)
+                                   change-pressed (partial swap! pressed-reactions)]
+                               (if (contains? @pressed-reactions reaction-id)
+                                 (change-pressed disj reaction-id)
+                                 (change-pressed conj reaction-id))))
+            :on-long-press identity
+            :on-press-new  identity}]]]))))
