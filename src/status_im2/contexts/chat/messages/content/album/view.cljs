@@ -27,7 +27,6 @@
                             :landscape
                             :portrait)
         images-count      (count (:album message))
-      
         ;; album images are always square, except when we have 3 images, then they must be rectangular
         ;; (portrait or landscape)
         portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))]
@@ -76,5 +75,6 @@
        (map-indexed
         (fn [index item]
           [:<> {:key (:message-id item)}
-           [image/image-message index item {:on-long-press #(on-long-press message context)} message-container-data]])
+           [image/image-message index item {:on-long-press #(on-long-press message context)}
+            message-container-data]])
         (:album message))])))

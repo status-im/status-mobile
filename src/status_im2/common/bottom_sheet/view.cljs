@@ -55,23 +55,20 @@
            (show translate-y bg-opacity)
            (hide translate-y bg-opacity window-height on-close))))))
 
-(defn calculate-max-height
-  [window-height sheet-height top]
-  (- window-height sheet-height top 8))
-
 (defn- f-view
   [_ _]
   (let [sheet-height (reagent/atom 0)
         item-height  (reagent/atom 0)]
     (fn [{:keys [hide? insets theme]}
-         {:keys [content selected-item padding-bottom-override on-close shell?
-                 gradient-cover? customization-color]}]
+         {:keys [content selected-item padding-bottom-override border-radius on-close shell?
+                 gradient-cover? customization-color]
+          :or   {border-radius 12}}]
       (let [{window-height :height} (rn/get-window)
             bg-opacity              (reanimated/use-shared-value 0)
             translate-y             (reanimated/use-shared-value window-height)
             sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height on-close)
             show-bottom-margin      (< @item-height (- window-height @sheet-height (:top insets) 8))
-            max-height              (calculate-max-height window-height @sheet-height (:top insets))]
+            top                     (- window-height (:top insets) (:bottom insets) 8)]
         (rn/use-effect
          #(if hide?
             (hide translate-y bg-opacity window-height on-close)
@@ -109,21 +106,15 @@
              [rn/view
               {:on-layout (fn [event]
                             (reset! item-height (oops/oget event "nativeEvent" "layout" "height")))
-               :style     (style/selected-item theme max-height @sheet-height show-bottom-margin)}
+               :style     (style/selected-item theme top @sheet-height show-bottom-margin border-radius)}
               [selected-item]])
 
            [rn/view
-            {:position                :absolute
-             :background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
-             :bottom                  0
-             :left                    0
-             :right                   0
-             :border-top-left-radius  20
-             :border-top-right-radius 20
-             :padding-bottom          (or padding-bottom-override (+ (:bottom insets) 8))
-             :on-layout               (fn [event]
-                                        (reset! sheet-height
-                                          (oops/oget event "nativeEvent" "layout" "height")))}
+            {:style     (when selected-item
+                          (style/sheet-content theme padding-bottom-override insets))
+             :on-layout (fn [event]
+                          (reset! sheet-height
+                            (oops/oget event "nativeEvent" "layout" "height")))}
             ;; handle
             [rn/view {:style (style/handle theme)}]
             ;; content
