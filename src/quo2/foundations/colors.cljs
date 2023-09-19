@@ -277,11 +277,9 @@
                                  (hex-string? (get colors-map color)) (get colors-map color)
                                  :else                                (get-in colors-map
                                                                               [color suffix]))]
-        (cond
-          (and opacity hex?) (alpha resolved-color (/ opacity 100))
-          opacity            (alpha resolved-color (/ opacity 100))
-          hex?               resolved-color
-          :else              resolved-color))))))
+        (if opacity
+          (alpha resolved-color (/ opacity 100))
+          resolved-color))))))
 
 (defn custom-color-by-theme
 
@@ -292,12 +290,7 @@
    opacity-light 0-100 (optional)
    opacity-dark  0-100 (optional)
    theme         :light/:dark (optional)"
-  {:deprecated
-   "for the moment please use: 
-                   (colors/theme-colors 
-                     (colors/custom-color ...)
-                     (colors/custom-color ...)
-                      theme) "}
+  {:deprecated true :superseded-by "theme/colors"}
   ([color suffix-light suffix-dark]
    (custom-color-by-theme color suffix-light suffix-dark nil nil (theme/get-theme)))
   ([color suffix-light suffix-dark opacity-light opacity-dark]
