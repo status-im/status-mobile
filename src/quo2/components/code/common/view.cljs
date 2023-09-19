@@ -39,7 +39,7 @@
   [{:keys [rows line-number-width preview?]}]
   [rn/view
    (->> preview?
-        (render-nodes ,, rows)
+        (render-nodes rows)
         (map-indexed (fn [idx row-content]
                        [line
                         {:line-number       (inc idx)

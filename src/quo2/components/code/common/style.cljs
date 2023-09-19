@@ -26,7 +26,7 @@
                                   text-color))))]
     (cond-> {:flex-shrink 1
              :line-height 18}
-      preview? (assoc :color colors/white)
+      preview?   (assoc :color colors/white)
       text-color (assoc :color text-color))))
 
 (defn border-color
