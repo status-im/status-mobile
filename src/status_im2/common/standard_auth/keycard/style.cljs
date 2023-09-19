@@ -36,21 +36,21 @@
    :flex-start
    :margin-top 12})
 
-(defn get-digits-container-style
-  [max-attempt-reached]
+(defn digits-container
+  [max-attempt-reached?]
   {:flex               1
    :padding-horizontal 60
    :align-items        :center
    :flex-direction     :row
    :justify-content    :space-between
-   :margin-bottom      (if max-attempt-reached 0 34)})
+   :margin-bottom      (if max-attempt-reached? 0 34)})
 
-(defn digit-style
+(defn digit
   [max-attempt-reached idx entered-numbers]
   {:width            16
    :height           16
    :border-radius    8
-   :background-color (if (<= idx (dec (count @entered-numbers)))
+   :background-color (if (<= idx (dec (count entered-numbers)))
                        (if max-attempt-reached
                          colors/danger
                          colors/white)
