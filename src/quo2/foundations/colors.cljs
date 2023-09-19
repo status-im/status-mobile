@@ -318,3 +318,17 @@
 (defn dark?
   []
   (theme/dark?))
+
+(def chat-colors-with-theme
+  {"#fa6565" {:light (get-in customization [:red 50])
+              :dark  (get-in customization [:red 60])}
+   "#7cda00" {:light (get-in customization [:green 50])
+              :dark  (get-in customization [:green 60])}
+   "#887af9" {:light (get-in customization [:blue 50])
+              :dark  (get-in customization [:blue 60])}
+   "#51d0f0" {:light (get-in customization [:blue 50])
+              :dark  (get-in customization [:blue 60])}
+   "#fe8f59" {:light (get-in customization [:orange 50])
+              :dark  (get-in customization [:orange 60])}
+   "#d37ef4" {:light (get-in customization [:purple 50])
+              :dark  (get-in customization [:purple 60])}})
