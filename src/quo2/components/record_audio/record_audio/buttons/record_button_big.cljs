@@ -28,9 +28,9 @@
          [reanimated/view {:style (style/animated-circle scale opacity color)}]))))))
 
 (defn f-record-button-big
-  [recording? ready-to-send? ready-to-lock? ready-to-delete? record-button-is-animating?
-   record-button-at-initial-position? locked? reviewing-audio? recording-length-ms
-   clear-timeout touch-active? recorder-ref reload-recorder-fn idle? on-send on-cancel]
+  [{:keys [recording? ready-to-send? ready-to-lock? ready-to-delete? record-button-is-animating?
+           record-button-at-initial-position? locked? reviewing-audio? recording-length-ms
+           clear-timeout touch-active? recorder-ref reload-recorder-fn idle? on-send on-cancel theme]}]
   (let [scale (reanimated/use-shared-value 1)
         opacity (reanimated/use-shared-value 0)
         opacity-from (if @ready-to-lock? opacity-from-lock opacity-from-default)
@@ -46,13 +46,14 @@
                     (range 0 5))
         rings-color (cond
                       @ready-to-lock?   (colors/theme-colors colors/neutral-80-opa-5-opaque
-                                                             colors/neutral-80)
+                                                             colors/neutral-80
+                                                             theme)
                       @ready-to-delete? colors/danger-50
                       :else             colors/primary-50)
         translate-y (reanimated/use-shared-value 0)
         translate-x (reanimated/use-shared-value 0)
         button-color colors/primary-50
-        icon-color (if (and (not (colors/dark?)) @ready-to-lock?) colors/black colors/white)
+        icon-color (if (and (not (= :dark theme)) @ready-to-lock?) colors/black colors/white)
         icon-opacity (reanimated/use-shared-value 1)
         red-overlay-opacity (reanimated/use-shared-value 0)
         gray-overlay-opacity (reanimated/use-shared-value 0)
