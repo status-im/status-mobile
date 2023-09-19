@@ -18,11 +18,9 @@
   (swap! entered-numbers conj number))
 
 (defn enter-keycard-pin-sheet
-  []
+  [& {:keys [max-digits] :or {max-digits 6}}]
   (let [entered-numbers     (reagent/atom [])
-        max-digits          6
         max-attempt-reached (reagent/atom false)]
-
     (fn []
       [rn/view {:style style/container}
        [rn/view {:style style/inner-container}
@@ -31,27 +29,24 @@
           :size                :heading-2
           :weight              :semi-bold}
          (i18n/label :t/enter-keycard-pin)]
-
         [rn/view {:style style/context-tag}
          [quo/context-tag
           {:type    :icon
            :icon    :i/placeholder
            :size    24
            :context (i18n/label :t/card-with-name {:name "Alisher"})}]]
-
-        [rn/view (style/get-digits-container-style @max-attempt-reached)
-         (for [i (range max-digits)]
-           [rn/view
-            {:key   i
-             :style (style/digit-style @max-attempt-reached i entered-numbers)}])]
-
+        [rn/view (style/digits-container @max-attempt-reached)
+         (doall
+          (for [i (range max-digits)]
+            [rn/view
+             {:key   i
+              :style (style/digit @max-attempt-reached i @entered-numbers)}]))]
         (when @max-attempt-reached
           [rn/view {:style style/max-attempt-reached-container}
            [quo/text
             {:size  :label
              :style {:color colors/danger}}
             (i18n/label :t/attempts-left {:attempts 4})]])]
-
        [quo/numbered-keyboard
         {:disabled?   false
          :on-press    (fn [number]
@@ -69,20 +64,19 @@
       :type            :grey
       :icon-only?      true
       :size            32
-      :on-press        #(rf/dispatch [:hide-bottom-sheet])} :i/close]
-
+      :on-press        #(rf/dispatch [:hide-bottom-sheet])}
+     :i/close]
     [quo/text
      {:accessibility-label :this-is-not-keycard-text
       :size                :heading-1
       :weight              :semi-bold}
      (i18n/label :t/this-is-not-keycard)]
-
     [quo/text
      {:accessibility-label :make-sure-text
       :size                :paragraph-1
       :weight              :medium
-      :style               style/secondary-text} (i18n/label :t/make-sure-scanned-keycard)]]
-
+      :style               style/secondary-text}
+     (i18n/label :t/make-sure-scanned-keycard)]]
    [rn/image
     {:resize-mode :contain
      :style       {:aspect-ratio  1
@@ -90,7 +84,6 @@
                    :margin-bottom 20
                    :align-self    :center}
      :source      (resources/get-image :this-is-not-keycard)}]
-
    [rn/view {:style style/try-again-button}
     [quo/button
      {:type :primary}
@@ -108,37 +101,34 @@
       :icon-only?      true
       :size            32
       :on-press        #(rf/dispatch [:hide-bottom-sheet])} :i/close]
-
     [quo/text
      {:accessibility-label :keycard-locked-text
       :size                :heading-1
       :weight              :semi-bold}
      (i18n/label :t/keycard-locked)]
-
     [quo/text
      {:accessibility-label :unlock-keycard-text
       :size                :paragraph-1
       :weight              :medium
-      :style               style/secondary-text} (i18n/label :t/unlock-keycard-to-use)]
-
+      :style               style/secondary-text}
+     (i18n/label :t/unlock-keycard-to-use)]
     [rn/view {:style style/keycard}
      [keycard/keycard
       {:holder-name "Alisher"
        :locked?     true}]]
-
     [quo/button
      {:type :primary}
      (i18n/label :t/unlock-keycard)]
-
     [quo/divider-label
      {:tight?          false
-      :container-style style/divider} (i18n/label :t/other-options)]
-
+      :container-style style/divider}
+     (i18n/label :t/other-options)]
     [quo/button
      {:type            :ghost
       :size            20
       :icon-left       :i/refresh
-      :container-style style/reset-keycard-button} (i18n/label :t/factory-reset-keycard)]]])
+      :container-style style/reset-keycard-button}
+     (i18n/label :t/factory-reset-keycard)]]])
 
 (defn wrong-keycard-sheet
   []
@@ -149,21 +139,19 @@
       :type            :grey
       :icon-only?      true
       :size            32
-      :on-press        #(rf/dispatch [:hide-bottom-sheet])} :i/close]
-
+      :on-press        #(rf/dispatch [:hide-bottom-sheet])}
+     :i/close]
     [quo/text
      {:accessibility-label :wrong-card-text
       :size                :heading-1
       :weight              :semi-bold}
      (i18n/label :t/wrong-keycard)]
-
     [quo/text
      {:accessibility-label :make-sure-scanned-text
       :size                :paragraph-1
       :weight              :medium
       :style               {:margin-top 8 :margin-bottom 20}}
      (i18n/label :t/make-sure-scanned-card-contains-keys)]]
-
    [rn/image
     {:resize-mode :contain
      :style       {:aspect-ratio  1
@@ -171,7 +159,6 @@
                    :margin-bottom 20
                    :align-self    :center}
      :source      (resources/get-image :wrong-keycard)}]
-
    [rn/view {:style style/try-again-button}
     [quo/button
      {:type :primary}
