@@ -18,7 +18,7 @@
     nil))
 
 (defn text-style
-  [class-names]
+  [class-names preview?]
   (let [text-color (->> class-names
                         (map keyword)
                         (some (fn [class-name]
@@ -26,6 +26,7 @@
                                   text-color))))]
     (cond-> {:flex-shrink 1
              :line-height 18}
+      preview? (assoc :color colors/white)
       text-color (assoc :color text-color))))
 
 (defn border-color
@@ -37,7 +38,7 @@
   (if preview?
     {:overflow         :hidden
      :width            108
-     :background-color (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+     :background-color (colors/theme-colors colors/neutral-20 colors/neutral-80 :dark)
      :border-radius    8}
     {:overflow         :hidden
      :padding          8
@@ -64,7 +65,7 @@
            :width            (+ line-number-width 8 7)
            :background-color (colors/theme-colors colors/neutral-5 colors/neutral-80)}
     preview? (assoc :width            20
-                    :background-color (colors/theme-colors colors/neutral-10 colors/neutral-70 theme))))
+                    :background-color (colors/theme-colors colors/neutral-10 colors/neutral-70 :dark))))
 
 (defn divider
   [line-number-width]

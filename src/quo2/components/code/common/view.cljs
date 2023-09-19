@@ -10,15 +10,15 @@
             [reagent.core :as reagent]))
 
 (defn- render-nodes
-  [nodes]
+  [nodes preview?]
   (map (fn [{:keys [children value last-line?] :as node}]
          (if children
            (into [text/text
                   (cond-> {:weight :code
                            :size   :paragraph-2
-                           :style  (style/text-style (get-in node [:properties :className]))}
+                           :style  (style/text-style (get-in node [:properties :className]) preview?)}
                     last-line? (assoc :number-of-lines 1))]
-                 (render-nodes children))
+                 (render-nodes children preview?))
            ;; Remove newlines as we already render each line separately.
            (string/trim-newline value)))
        nodes))
@@ -28,7 +28,7 @@
   [rn/view {:style style/line}
    [rn/view {:style (style/line-number line-number-width preview?)}
     [text/text
-     {:style  (style/text-style ["line-number"])
+     {:style  (style/text-style ["line-number"] preview?)
       :weight :code
       :size   :paragraph-2}
      line-number]]
@@ -38,8 +38,8 @@
 (defn- code-block
   [{:keys [rows line-number-width preview?]}]
   [rn/view
-   (->> rows
-        (render-nodes)
+   (->> preview?
+        (render-nodes ,, rows)
         (map-indexed (fn [idx row-content]
                        [line
                         {:line-number       (inc idx)
