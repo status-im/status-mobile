@@ -145,5 +145,9 @@
                                     (js->clj event-js :keywordize-keys true))
       "curated.communities.update" (rf/dispatch [:fetched-contract-communities
                                                  (js->clj event-js :keywordize-keys true)])
+      "waku.backedup.profile"      (rf/dispatch [:profile/update-profile-from-backup
+                                                 (js->clj event-js :keywordize-keys true)])
+      "waku.backedup.settings"     (rf/dispatch [:profile/update-setting-from-backup
+                                                 (js->clj event-js :keywordize-keys true)])
 
       (log/debug "Event " type " not handled"))))
