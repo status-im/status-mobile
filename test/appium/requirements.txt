@@ -1,7 +1,7 @@
 Appium-Python-Client==2.11.1
 Pillow==8.1.0
 PyGithub==1.55
-PyYAML==5.3.1
+PyYAML==5.4
 Cython<3.0
 aiohttp==3.8.1
 allpairspy==2.5.0
