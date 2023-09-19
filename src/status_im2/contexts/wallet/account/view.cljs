@@ -36,7 +36,8 @@
                                   :on-press #(rf/dispatch [:open-modal :how-to-pair])}]}]
        [quo/account-overview temp/account-overview-state]
        [quo/wallet-graph {:time-frame :empty}]
-       [quo/wallet-ctas]
+       [quo/wallet-ctas
+        {:send-action #(rf/dispatch [:open-modal :wallet-select-address])}]
        [quo/tabs
         {:style          style/tabs
          :size           32

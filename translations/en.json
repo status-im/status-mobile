@@ -2318,5 +2318,13 @@
     "emoji-symbols": "Symbols",
     "emoji-flags": "Flags",
     "emoji-no-results-title": "No emojis match your search",
-    "emoji-no-results-description": "Try something like “rainbow”"
+    "emoji-no-results-description": "Try something like “rainbow”",
+    "send-to": "Send to",
+    "saved": "Saved",
+    "no-recent-transactions": "No recent transactions",
+    "make-one-it-is-easy-we-promise": "Make one, it’s easy, we promise!",
+    "no-saved-addresses": "No saved addresses",
+    "you-like-to-type-43-characters": "You like to type 43 characters?",
+    "no-other-accounts": "No other accounts",
+    "here-is-a-cat-in-a-box-instead": "Here’s a cat in a box instead"
 }
