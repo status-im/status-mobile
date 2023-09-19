@@ -109,12 +109,15 @@
    {:keys [edit]}]
   (rn/use-effect
    (fn []
-     (let [edit-text (get-in edit [:content :text])]
+     (let [edit-text        (get-in edit [:content :text])
+           text-value-count (count @text-value)]
        (when (and edit @input-ref)
          (.focus ^js @input-ref)
          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
          (reset! text-value edit-text)
-         (reset! saved-cursor-position (count edit-text)))))
+         (reset! saved-cursor-position (if (zero? text-value-count)
+                                         (count edit-text)
+                                         text-value-count)))))
    [(:message-id edit)]))
 
 (defn use-reply
