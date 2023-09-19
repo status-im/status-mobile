@@ -16,21 +16,20 @@
      (cond->
        {:container-style style/device-container
         :title           name
-        :override-theme  :dark
-        :left-icon       (cond (#{:mobile :ios :android} (keyword device-type))
+        :image           :icon
+        :image-props     (cond (#{:mobile :ios :android} (keyword device-type))
                                :i/mobile
                                :else :i/desktop)}
-       (and show-button? unpaired?) (assoc :button-props
-                                           {:title    (i18n/label :t/pair)
-                                            :on-press #(js/alert "feature not added yet")})
-       (and show-button? paired?)   (assoc
-                                     :button-props
-                                     {:title    (i18n/label :t/unpair)
+       (and show-button? unpaired?) (assoc
+                                     :action :button
+                                     :action-props
+                                     {:title    (i18n/label :t/pair)
                                       :on-press #(js/alert "feature not added yet")})
+       (and show-button? paired?)   (assoc
+                                     :action :button
+                                     :action-props
+                                     {:button-text (i18n/label :t/unpair)
+                                      :on-press    #(js/alert "feature not added yet")})
        this-device?                 (assoc
-                                     :status-tag-props
-                                     {:size           :small
-                                      :status         {:type :positive}
-                                      :no-icon?       true
-                                      :label          (i18n/label :t/this-device)
-                                      :override-theme :dark}))]))
+                                     :tag       :positive
+                                     :tag-props {:label (i18n/label :t/this-device)}))]))
