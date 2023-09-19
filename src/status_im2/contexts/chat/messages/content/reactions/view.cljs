@@ -68,10 +68,10 @@
          :use-case        (when pinned-by :pinned)
          :on-press        #(on-press %)
          :on-long-press   #(on-long-press (assoc %
-                                                 :theme theme
+                                                 :theme           theme
                                                  :reactions-order (map :emoji-id reactions)))
-         :on-press-add    #(on-press-add {:chat-id chat-id
-                                          :message-id message-id
+         :on-press-add    #(on-press-add {:chat-id              chat-id
+                                          :message-id           message-id
                                           :user-message-content user-message-content})}])]))
 
 (def message-reactions-row (quo.theme/with-theme view-internal))

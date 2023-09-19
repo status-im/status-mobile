@@ -15,25 +15,25 @@
     :options (for [reaction (vals constants/reactions)]
                {:key   reaction
                 :value (string/capitalize (name reaction))})}
-   {:key  :state
-    :type :select
-    :options [{:key :not-pressed
+   {:key     :state
+    :type    :select
+    :options [{:key   :not-pressed
                :value "Not pressed by me"}
-              {:key :pressed
+              {:key   :pressed
                :value "Pressed by me"}
-              {:key :add-reaction
+              {:key   :add-reaction
                :value "Add reaction"}]}
-   {:key  :use-case
-    :type :select
-    :options [{:key :default
+   {:key     :use-case
+    :type    :select
+    :options [{:key   :default
                :value "Default"}
-              {:key :pinned
+              {:key   :pinned
                :value "Pinned"}]}])
 
 (defn preview-react-selector
   []
-  (let [state (reagent/atom {:emoji               :reaction/love
-                             :state :not-pressed
+  (let [state (reagent/atom {:emoji    :reaction/love
+                             :state    :not-pressed
                              :use-case :default})]
     (fn []
       (println @state)

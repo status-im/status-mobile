@@ -161,7 +161,6 @@
       (let [label           (or label (key->text-label (:key args)))
             field-value     (reagent/cursor state [(:key args)])
             selected-option (find-selected-option @field-value options)]
-        (println (js->clj field-value))
         [rn/view {:style style/field-row}
          [label-view state label]
          [rn/view {:style style/field-column}

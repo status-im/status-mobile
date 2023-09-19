@@ -20,7 +20,7 @@
        :accessibility-label (str "emoji-reaction-" emoji-id)}])
    (when add-reaction?
      [react-selector/view
-      {:on-press on-press-add
-       :state :add-reaction
-       :use-case use-case
+      {:on-press            on-press-add
+       :state               :add-reaction
+       :use-case            use-case
        :accessibility-label (str "emoji-add-reaction")}])])

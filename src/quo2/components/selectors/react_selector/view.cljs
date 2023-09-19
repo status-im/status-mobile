@@ -11,9 +11,9 @@
   [{:keys [emoji clicks state use-case on-press accessibility-label on-long-press container-style
            theme]}]
   (let [numeric-value (int clicks)
-        icon-color (if (= :pinned use-case)
-                     (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
-                     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))]
+        icon-color    (if (= :pinned use-case)
+                        (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme)
+                        (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))]
     (if (= :add-reaction state)
       [rn/touchable-opacity
        {:on-press            on-press

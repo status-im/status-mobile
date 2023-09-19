@@ -14,8 +14,8 @@
 (def ^:private memo-gen-quantity (memoize gen-quantity))
 
 (def ^:private descriptor
-  [{:key   :add-reaction?
-    :type  :boolean}
+  [{:key  :add-reaction?
+    :type :boolean}
    {:label   "Reactions"
     :key     :reaction-ids
     :type    :multi-select
@@ -27,28 +27,29 @@
    {:label "Max rand. reactions (helper)"
     :key   :max-count
     :type  :number}
-   {:key   :use-case
-    :type  :select
-    :options [{:key :default
+   {:key     :use-case
+    :type    :select
+    :options [{:key   :default
                :value "Default"}
-              {:key :pinned
+              {:key   :pinned
                :value "Pinned"}]}])
 
 (defn preview-react
   []
-  (let [state               (reagent/atom {:add-reaction?       true
-                                           :max-count           1000
-                                           :reaction-ids        [1 2 3]
-                                           :use-case            :default})
-        pressed-reactions   (reagent/atom #{1})]
+  (let [state             (reagent/atom {:add-reaction? true
+                                         :max-count     1000
+                                         :reaction-ids  [1 2 3]
+                                         :use-case      :default})
+        pressed-reactions (reagent/atom #{1})]
 
     (fn []
       (let [reactions (mapv (fn [reaction-id]
                               {:emoji-reaction-id reaction-id
-                               :emoji-id reaction-id
-                               :emoji (get constants/reactions reaction-id)
-                               :quantity (memo-gen-quantity (:max-count @state) reaction-id)
-                               :own      (contains? @pressed-reactions reaction-id)}) (:reaction-ids @state))]
+                               :emoji-id          reaction-id
+                               :emoji             (get constants/reactions reaction-id)
+                               :quantity          (memo-gen-quantity (:max-count @state) reaction-id)
+                               :own               (contains? @pressed-reactions reaction-id)})
+                            (:reaction-ids @state))]
         [preview/preview-container
          {:state      state
           :descriptor descriptor}
