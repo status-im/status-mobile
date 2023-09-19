@@ -1,7 +1,6 @@
 (ns quo2.components.code.common.style
   (:require [quo2.foundations.colors :as colors]))
 
-
 ;; Example themes:
 ;; https://github.com/react-syntax-highlighter/react-syntax-highlighter/tree/master/src/styles/hljs
 (defn theme

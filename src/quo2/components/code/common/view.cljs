@@ -104,7 +104,7 @@
            :on-press   on-copy-press}
           :main-icons/copy]]])]))
 
-(defn snippet
+(defn view
   [{:keys [language max-lines on-copy-press preview?]} children]
   [highlighter/highlighter
    {:language          language
