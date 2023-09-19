@@ -319,16 +319,25 @@
   []
   (theme/dark?))
 
-(def chat-colors-with-theme
-  {"#fa6565" {:light (get-in customization [:red 50])
-              :dark  (get-in customization [:red 60])}
-   "#7cda00" {:light (get-in customization [:green 50])
-              :dark  (get-in customization [:green 60])}
-   "#887af9" {:light (get-in customization [:blue 50])
-              :dark  (get-in customization [:blue 60])}
-   "#51d0f0" {:light (get-in customization [:blue 50])
-              :dark  (get-in customization [:blue 60])}
-   "#fe8f59" {:light (get-in customization [:orange 50])
-              :dark  (get-in customization [:orange 60])}
-   "#d37ef4" {:light (get-in customization [:purple 50])
-              :dark  (get-in customization [:purple 60])}})
+(def chat-color->customization-color
+  {"#2A4AF5" :blue
+
+   "#F6B03C" :yellow
+
+   "#2A799B" :turquoise
+
+   "#CB6256" :copper
+
+   "#1992D7" :sky
+
+   "#C78F67" :camel
+
+   "#FF7D46" :orange
+
+   "#216266" :army
+
+   "#F66F8F" :pink
+
+   "#7140FD" :purple
+
+   "#EC266C" :magenta})
