@@ -89,7 +89,6 @@
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
-     (reenter-screen-effect state dimensions chat-input)
      (layout-effect state)
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
@@ -98,7 +97,11 @@
      (empty-effect state animations subscriptions)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
-   [max-height]))
+   [max-height])
+  (rn/use-effect
+   (fn []
+     (reenter-screen-effect state dimensions subscriptions))
+   [max-height subscriptions]))
 
 (defn use-edit
   [{:keys [input-ref]}
