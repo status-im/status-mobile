@@ -50,7 +50,8 @@
 (defn divider
   [theme]
   {:height           1
-   :margin-vertical  4
+   :margin-top       4
+   :margin-bottom    3
    :background-color (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)})
 
 (defn extra-info-header
