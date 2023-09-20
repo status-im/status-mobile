@@ -12,7 +12,7 @@
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
             [status-im.ui.components.typography :as typography]
-            [status-im.utils.platform :as platform]
+            [react-native.platform :as platform]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :as views]))
 

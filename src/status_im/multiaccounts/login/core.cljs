@@ -5,7 +5,7 @@
     [native-module.core :as native-module]
     [status-im.ui.components.react :as react]
     [utils.re-frame :as rf]
-    [status-im.utils.platform :as platform]
+    [react-native.platform :as platform]
     [status-im.utils.types :as types]
     [utils.security.core :as security]))
 

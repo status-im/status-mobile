@@ -4,7 +4,7 @@
   [style]
   `(let [style#             ~style
          common#            (dissoc style# :android :ios)
-         platform#          (keyword status-im.utils.platform/os)
+         platform#          (keyword react-native.platform/os)
          platform-specific# (get style# platform#)]
      (if platform-specific#
        (merge common# platform-specific#)

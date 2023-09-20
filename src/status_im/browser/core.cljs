@@ -18,7 +18,7 @@
     [status-im.ui.components.list-selection :as list-selection]
     [utils.re-frame :as rf]
     [utils.url :as url]
-    [status-im.utils.platform :as platform]
+    [react-native.platform :as platform]
     [status-im.utils.random :as random]
     [status-im.utils.types :as types]
     [status-im.utils.universal-links.utils :as links]

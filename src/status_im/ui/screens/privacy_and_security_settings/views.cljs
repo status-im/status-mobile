@@ -8,7 +8,7 @@
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
             [status-im2.config :as config]
-            [status-im.utils.platform :as platform])
+            [react-native.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn separator

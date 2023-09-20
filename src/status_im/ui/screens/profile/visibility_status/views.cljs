@@ -12,7 +12,7 @@
             [status-im.ui.screens.profile.visibility-status.styles :as styles]
             [status-im.ui.screens.profile.visibility-status.utils :as utils]
             [utils.re-frame :as rf]
-            [status-im.utils.platform :as platform]))
+            [react-native.platform :as platform]))
 
 ;; === Code Related to visibility-status-button ===
 
