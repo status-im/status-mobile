@@ -1,6 +1,7 @@
 (ns status-im2.navigation.options
   (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+            [react-native.platform :as platform]
+            [quo2.theme :as quo.theme]))
 
 (defn default-options
   []
@@ -44,12 +45,14 @@
 
 (defn navbar
   ([dark?]
-   {:navigationBar {:backgroundColor (if (or dark? (colors/dark?)) colors/neutral-100 colors/white)}})
+   {:navigationBar {:backgroundColor (if (or dark? (= :dark (quo.theme/get-theme)))
+                                       colors/neutral-100
+                                       colors/white)}})
   ([] (navbar nil)))
 
 (defn statusbar
   ([dark?]
-   (let [style (if (or dark? (colors/dark?)) :light :dark)]
+   (let [style (if (or dark? (= :dark (quo.theme/get-theme))) :light :dark)]
      (if platform/android?
        {:statusBar {:translucent     true
                     :backgroundColor :transparent
