@@ -185,15 +185,14 @@
 
 (rf/defn verify-database-password
   {:events [:profile.login/verify-database-password]}
-  [{:keys [db]} entered-password]
+  [_ entered-password cb]
   (let [hashed-password (-> entered-password
                             security/safe-unmask-data
-                            ethereum/sha3)
-        key-uid         (get-in db [:profile/login :key-uid])
-        callback        (fn [response]
-                          (let [valid? (string/blank? (.-error (js/JSON.parse response)))]
-                            (rf/dispatch [:profile.login/verified-database-password valid?])))]
-    (native-module/verify-database-password key-uid hashed-password callback)))
+                            ethereum/sha3)]
+    {:json-rpc/call [{:method     "accounts_verifyPassword"
+                      :params     [hashed-password]
+                      :on-success #(do (rf/dispatch [:profile.login/verified-database-password %]) (cb))
+                      :on-error   #(log/error "accounts_verifyPassword error" %)}]}))
 
 (rf/defn verify-database-password-success
   {:events [:profile.login/verified-database-password]}

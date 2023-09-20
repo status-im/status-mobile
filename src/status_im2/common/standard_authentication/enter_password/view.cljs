@@ -48,6 +48,6 @@
           :disabled?           (or (not sign-in-enabled?) processing)
           :on-press            (fn []
                                  (rf/dispatch [:set-in [:profile/login :key-uid] key-uid])
-                                 (rf/dispatch [:profile.login/verify-database-password password])
-                                 (js/setTimeout #(on-enter-password password) 100))}
+                                 (rf/dispatch [:profile.login/verify-database-password password
+                                               #(on-enter-password password)]))}
          button-label]]]]]))
