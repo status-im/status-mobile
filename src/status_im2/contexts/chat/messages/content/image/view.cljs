@@ -6,7 +6,7 @@
     [status-im2.constants :as constants]
     [utils.re-frame :as rf]
     [status-im2.contexts.chat.messages.content.text.view :as text]
-    [status-im.utils.http :as http]))
+    [utils.url :as url]))
 
 (defn calculate-dimensions
   [width height]
@@ -19,7 +19,7 @@
   (let [insets            (safe-area/get-insets)
         dimensions        (calculate-dimensions (or image-width 1000) (or image-height 1000))
         shared-element-id (rf/sub [:shared-element-id])
-        image-local-url   (http/replace-port (:image content) (rf/sub [:mediaserver/port]))]
+        image-local-url   (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     [:<>
      (when (= index 0)
        [text/text-content message])

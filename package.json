@@ -46,7 +46,6 @@
     "react-native-dialogs": "^1.0.4",
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-fast-image": "^8.5.11",
-    "react-native-fetch-polyfill": "^1.1.2",
     "react-native-fs": "^2.14.1",
     "react-native-gesture-handler": "2.6.1",
     "react-native-gifted-charts": "git+https://github.com/status-im/react-native-gifted-charts.git#refs/tags/1.3.2-status.1",

@@ -10,7 +10,7 @@
             [utils.datetime :as datetime]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im.utils.http :as http]))
+            [utils.url :as url]))
 
 ;; NOTE: Replies support text, image and stickers only.
 (defn- get-message-content
@@ -21,7 +21,7 @@
 
     constants/content-type-image
     (let [image           (get-in message [:content :image])
-          image-local-url (http/replace-port image (rf/sub [:mediaserver/port]))
+          image-local-url (url/replace-port image (rf/sub [:mediaserver/port]))
           photos          (when image-local-url [{:uri image-local-url}])]
       [quo/activity-logs-photos {:photos photos}])
 
