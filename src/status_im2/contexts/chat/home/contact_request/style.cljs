@@ -9,11 +9,11 @@
    :align-items        :center})
 
 (defn contact-requests-icon
-  []
+  [theme]
   {:justify-content :center
    :align-items     :center
    :width           32
    :height          32
    :border-radius   16
    :border-width    1
-   :border-color    (colors/theme-colors colors/neutral-20 colors/neutral-80)})
+   :border-color    (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)})

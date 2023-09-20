@@ -3,7 +3,8 @@
             [react-native.core :as rn]
             [react-native.masked-view :as masked-view]
             [react-native.reanimated :as reanimated]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [quo2.theme :as quo.theme]))
 
 (def message-skeleton-height 54)
 
@@ -22,10 +23,10 @@
 ;; Standlone message skeleton
 (defn- f-message-skeleton
   {:deprecated "quo2.components.loaders.skeleton-list.view should be used instead"}
-  []
+  [{:keys [theme]}]
 
-  (let [color                   (colors/theme-colors colors/neutral-5 colors/neutral-70)
-        loading-color           (colors/theme-colors colors/neutral-10 colors/neutral-60)
+  (let [color                   (colors/theme-colors colors/neutral-5 colors/neutral-70 theme)
+        loading-color           (colors/theme-colors colors/neutral-10 colors/neutral-60 theme)
         content-width           (rand-nth message-content-width)
         author-width            (content-width :author)
         message-width           (content-width :message)
@@ -76,14 +77,17 @@
         :end    {:x 1 :y 0}
         :style  animated-gradient-style}]]]))
 
-(defn skeleton
-  [parent-height]
+(defn- view-internal
+  [{:keys [parent-height theme]}]
   (let [number-of-skeletons (int (Math/floor (/ parent-height message-skeleton-height)))]
     [rn/view
      {:style {:background-color (colors/theme-colors
                                  colors/white
-                                 colors/neutral-90)
+                                 colors/neutral-90
+                                 theme)
               :flex             1}}
      (doall
       (for [n (range number-of-skeletons)]
-        [:f> f-message-skeleton {:key n}]))]))
+        [:f> f-message-skeleton {:key n :theme theme}]))]))
+
+(def view (quo.theme/with-theme view-internal))
