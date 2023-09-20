@@ -126,7 +126,7 @@
 (defn change-shell-status-bar-style
   []
   (rf/dispatch [:change-shell-status-bar-style
-                (if (or (quo.theme/get-theme)
+                (if (or (= :dark (quo.theme/get-theme))
                         (not (home-stack-open?)))
                   :light
                   :dark)]))
