@@ -315,10 +315,6 @@
    (let [theme (or override-theme (theme/get-theme))]
      (if (= theme :light) light dark))))
 
-(defn dark?
-  []
-  (theme/dark?))
-
 (def chat-color->customization-color
   {"#2A4AF5" :blue
 

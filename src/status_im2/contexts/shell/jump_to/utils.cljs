@@ -2,13 +2,13 @@
   (:require [utils.re-frame :as rf]
             [react-native.core :as rn]
             [status-im2.config :as config]
-            [quo2.foundations.colors :as colors]
             [react-native.platform :as platform]
             [react-native.safe-area :as safe-area]
             [react-native.reanimated :as reanimated]
             [status-im.async-storage.core :as async-storage]
             [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+            [quo2.theme :as quo.theme]))
 
 ;;;;  Helper Functions
 
@@ -126,7 +126,7 @@
 (defn change-shell-status-bar-style
   []
   (rf/dispatch [:change-shell-status-bar-style
-                (if (or (colors/dark?)
+                (if (or (quo.theme/get-theme)
                         (not (home-stack-open?)))
                   :light
                   :dark)]))

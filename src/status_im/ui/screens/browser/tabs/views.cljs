@@ -11,7 +11,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.wallet.components.views :as components]
-            [status-im.utils.http :as http]))
+            [utils.url :as url]))
 
 (defn list-item
   [_]
@@ -35,7 +35,7 @@
                                   [react/image
                                    {:onLoad #(reset! loaded true)
                                     :style  {:width 32 :height 32 :position :absolute :top 4 :left 4}
-                                    :source {:uri (str "https://" (http/url-host url) "/favicon.ico")}}])
+                                    :source {:uri (str "https://" (url/url-host url) "/favicon.ico")}}])
                                 (when-not @loaded
                                   [react/view
                                    {:width            40

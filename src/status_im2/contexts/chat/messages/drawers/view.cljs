@@ -27,8 +27,8 @@
       :ens-verified   ens-verified
       :added?         added?}]))
 
-(defn get-tabs-data
-  [reaction-authors selected-tab reactions-order]
+(defn- get-tabs-data
+  [{:keys [reaction-authors selected-tab reactions-order theme]}]
   (map (fn [reaction-type-int]
          (let [author-details (get reaction-authors reaction-type-int)]
            {:id                  reaction-type-int
@@ -42,12 +42,13 @@
                                    {:weight :medium
                                     :size   :paragraph-1
                                     :style  (style/tab-count (= selected-tab
-                                                                reaction-type-int))}
+                                                                reaction-type-int)
+                                                             theme)}
                                    (count author-details)]]}))
        reactions-order))
 
-(defn reaction-authors-comp
-  [selected-tab reaction-authors reactions-order]
+(defn- reaction-authors-comp
+  [{:keys [selected-tab reaction-authors reactions-order theme]}]
   [:<>
    [rn/view style/tabs-container
     [quo/tabs
@@ -56,7 +57,10 @@
       :in-scroll-view? true
       :on-change       #(reset! selected-tab %)
       :default-active  @selected-tab
-      :data            (get-tabs-data reaction-authors @selected-tab reactions-order)}]]
+      :data            (get-tabs-data {:reaction-authors reaction-authors
+                                       :selected-tab     @selected-tab
+                                       :reactions-order  reactions-order
+                                       :theme            theme})}]]
    [gesture/flat-list
     {:data      (for [contact (get reaction-authors @selected-tab)]
                   contact)
@@ -65,13 +69,17 @@
      :style     style/authors-list}]])
 
 (defn reaction-authors
-  [reactions-order]
+  [{:keys [reactions-order theme]}]
   (let [{:keys [reaction-authors-list
                 selected-reaction]} (rf/sub [:chat/reactions-authors])
         selected-tab                (reagent/atom (or selected-reaction
                                                       (first (keys reaction-authors-list))))]
     (fn []
-      [reaction-authors-comp selected-tab reaction-authors-list reactions-order])))
+      [reaction-authors-comp
+       {:selected-tab     selected-tab
+        :reaction-authors reaction-authors-list
+        :reactions-order  reactions-order
+        :theme            theme}])))
 
 (defn pin-message
   [{:keys [chat-id pinned pinned-by] :as message-data}]

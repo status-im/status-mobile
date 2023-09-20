@@ -89,7 +89,6 @@
   (rn/use-effect
    (fn []
      (maximized-effect state animations dimensions chat-input)
-     (reenter-screen-effect state dimensions chat-input)
      (layout-effect state)
      (kb-default-height-effect state)
      (background-effect state animations dimensions chat-input)
@@ -98,7 +97,11 @@
      (empty-effect state animations subscriptions)
      (kb/add-kb-listeners props state animations dimensions)
      #(component-will-unmount props))
-   [max-height]))
+   [max-height])
+  (rn/use-effect
+   (fn []
+     (reenter-screen-effect state dimensions subscriptions))
+   [max-height subscriptions]))
 
 (defn use-edit
   [{:keys [input-ref]}
@@ -106,12 +109,15 @@
    {:keys [edit]}]
   (rn/use-effect
    (fn []
-     (let [edit-text (get-in edit [:content :text])]
+     (let [edit-text        (get-in edit [:content :text])
+           text-value-count (count @text-value)]
        (when (and edit @input-ref)
          (.focus ^js @input-ref)
          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
          (reset! text-value edit-text)
-         (reset! saved-cursor-position (count edit-text)))))
+         (reset! saved-cursor-position (if (zero? text-value-count)
+                                         (count edit-text)
+                                         text-value-count)))))
    [(:message-id edit)]))
 
 (defn use-reply
