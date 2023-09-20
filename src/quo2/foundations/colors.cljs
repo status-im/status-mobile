@@ -314,26 +314,3 @@
   ([light dark override-theme]
    (let [theme (or override-theme (theme/get-theme))]
      (if (= theme :light) light dark))))
-
-(def chat-color->customization-color
-  {"#2A4AF5" :blue
-
-   "#F6B03C" :yellow
-
-   "#2A799B" :turquoise
-
-   "#CB6256" :copper
-
-   "#1992D7" :sky
-
-   "#C78F67" :camel
-
-   "#FF7D46" :orange
-
-   "#216266" :army
-
-   "#F66F8F" :pink
-
-   "#7140FD" :purple
-
-   "#EC266C" :magenta})

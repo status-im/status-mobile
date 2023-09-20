@@ -5,7 +5,7 @@
   [{:keys [container-size customization-color theme]}]
   (let [color (if (keyword? customization-color)
                 customization-color
-                (get colors/chat-color->customization-color customization-color :blue))]
+                :blue)]
     {:width            container-size
      :height           container-size
      :align-items      :center
