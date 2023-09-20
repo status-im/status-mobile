@@ -9,7 +9,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.pin.styles :as styles]
-            [status-im.utils.platform :as platform]))
+            [react-native.platform :as platform]))
 
 (def default-pin-retries-number 3)
 (def default-puk-retries-number 5)

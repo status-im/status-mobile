@@ -5,7 +5,7 @@
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im.utils.platform :as platform]
+            [react-native.platform :as platform]
             [utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 

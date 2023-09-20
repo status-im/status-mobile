@@ -5,7 +5,7 @@
             [status-im.ui.components.dialog :as dialog]
             [status-im.ui.components.react :as react]
             [utils.url :as url]
-            [status-im.utils.platform :as platform]))
+            [react-native.platform :as platform]))
 
 (defn open-share
   [content]

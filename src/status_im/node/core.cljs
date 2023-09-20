@@ -3,9 +3,9 @@
             [native-module.core :as native-module]
             [status-im2.config :as config]
             [utils.re-frame :as rf]
-            [status-im.utils.platform :as utils.platform]
             [status-im.utils.types :as types]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [react-native.platform :as platform]))
 
 (defn- add-custom-bootnodes
   [config network all-bootnodes]
@@ -173,7 +173,7 @@
              :WakuV2Config (merge (assoc wakuv2-config :Enabled wakuv2-enabled)
                                   wakuv2-default-config)
              :ShhextConfig
-             {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
+             {:BackupDisabledDataDir      (if platform/android? "/../no_backup" "/")
               :InstallationID             installation-id
               :MaxMessageDeliveryAttempts config/max-message-delivery-attempts
               :MailServerConfirmations    config/mailserver-confirmations-enabled?
@@ -205,7 +205,7 @@
     which will take care of building up the proper config based on settings in
 app-db"
   {:events [::save-new-config]}
-  [{:keys [db]} config {:keys [on-success]}]
+  [_ config {:keys [on-success]}]
   {:json-rpc/call [{:method     "settings_saveSetting"
                     :params     [:node-config config]
                     :on-success on-success}]})
