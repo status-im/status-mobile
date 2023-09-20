@@ -10,7 +10,7 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.components.views :as components]
-            [status-im.utils.http :as http]
+            [utils.url :as url]
             [status-im.utils.utils :as utils]))
 
 (defn hide-sheet-and-dispatch
@@ -45,7 +45,7 @@
           permissions @(re-frame/subscribe [:dapps/permissions])
           fav?        (get bookmarks url)
           connected?  (some #{constants/dapp-permission-web3}
-                            (get-in permissions [(http/url-host url) :permissions]))]
+                            (get-in permissions [(url/url-host url) :permissions]))]
       [react/view {:flex 1}
        [quo/button
         {:style               {:align-self   :flex-end
@@ -94,7 +94,7 @@
            :chevron             true
            :on-press            #(hide-sheet-and-dispatch
                                   [:bottom-sheet/show-sheet-old
-                                   {:content (wallet-connection (http/url-host url) account)}])}]
+                                   {:content (wallet-connection (url/url-host url) account)}])}]
          [quo/list-item
           {:theme               :accent
            :title               (i18n/label :t/connect-wallet)

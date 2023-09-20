@@ -19,7 +19,7 @@
     [status-im2.contexts.chat.messages.content.audio.view :as audio]
     [quo2.core :as quo]
     [utils.re-frame :as rf]
-    [status-im2.contexts.chat.messages.content.legacy-view :as old-message]
+    [status-im.ui.screens.chat.message.legacy-view :as old-message]
     [status-im2.contexts.chat.composer.reply.view :as reply]
     [status-im2.common.not-implemented :as not-implemented]
     [utils.datetime :as datetime]

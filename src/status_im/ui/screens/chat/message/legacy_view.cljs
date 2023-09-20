@@ -1,4 +1,4 @@
-(ns status-im2.contexts.chat.messages.content.legacy-view
+(ns status-im.ui.screens.chat.message.legacy-view
   (:require
     [quo.design-system.colors :as quo.colors]
     [quo.react-native :as rn]

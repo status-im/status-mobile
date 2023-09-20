@@ -14,7 +14,7 @@
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.wallet.request.views :as request]
             [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
-            [status-im.utils.platform :as platform]))
+            [react-native.platform :as platform]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
