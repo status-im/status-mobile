@@ -11,7 +11,7 @@
             [native-module.core :as native-module]
             [status-im.ethereum.stateofus :as stateofus]
             [utils.validators :as validators]
-            [status-im.utils.http :as http]
+            [utils.url :as url]
             [status-im.utils.wallet-connect :as wallet-connect]
             [taoensso.timbre :as log]
             [utils.security.core :as security]))
@@ -60,7 +60,7 @@
 (defn parse-query-params
   [url]
   (let [url (goog.Uri. url)]
-    (http/query->map (.getQuery url))))
+    (url/query->map (.getQuery url))))
 
 (defn match-uri
   [uri]
@@ -247,7 +247,7 @@
       (ethereum/address? uri)
       (cb (address->eip681 uri))
 
-      (http/url? uri)
+      (url/url? uri)
       (cb (match-browser-string uri))
 
       (wallet-connect/url? uri)

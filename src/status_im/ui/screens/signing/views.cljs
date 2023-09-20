@@ -22,7 +22,7 @@
     [status-im.ui.screens.signing.sheets :as sheets]
     [status-im.ui.screens.signing.styles :as styles]
     [status-im.ui.screens.wallet.components.views :as wallet.components]
-    [status-im.utils.platform :as platform]
+    [react-native.platform :as platform]
     [status-im.utils.types :as types]
     [status-im.utils.utils :as utils]
     [status-im.wallet.utils :as wallet.utils]

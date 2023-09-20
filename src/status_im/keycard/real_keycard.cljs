@@ -5,7 +5,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.keycard.keycard :as keycard]
             [native-module.core :as native-module]
-            [status-im.utils.platform :as platform]
+            [react-native.platform :as platform]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]))
 

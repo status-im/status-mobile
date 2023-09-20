@@ -1,7 +1,7 @@
 (ns status-im2.common.bottom-sheet.style
   (:require [quo2.foundations.colors :as colors]
             [quo2.theme :as theme]
-            [status-im.utils.platform :as platform]))
+            [react-native.platform :as platform]))
 
 (defn handle
   [theme]

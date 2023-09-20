@@ -21,7 +21,7 @@
     [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
     [status-im.ui.screens.browser.styles :as styles]
     [status-im.ui.screens.wallet.components.views :as components]
-    [status-im.utils.http :as http]
+    [utils.url :as url]
     [status-im.utils.js-resources :as js-res]
     [utils.debounce :as debounce])
   (:require-macros [status-im.utils.views :as views]))
@@ -52,7 +52,7 @@
        [react/touchable-highlight
         {:style    styles/url-text-container
          :on-press #(re-frame/dispatch [:browser.ui/url-input-pressed])}
-        [react/text {:number-of-lines 1} (http/url-host url-original)]])
+        [react/text {:number-of-lines 1} (url/url-host url-original)]])
      (when-not unsafe?
        [react/touchable-highlight
         {:on-press            #(.reload ^js @webview-ref/webview-ref)
@@ -192,7 +192,7 @@
    {:flex      1
     :elevation -10}
    [react/view {:flex 1}
-    (if (and unsafe? (not= (http/url-host url) ignore-unsafe))
+    (if (and unsafe? (not= (url/url-host url) ignore-unsafe))
       [site-blocked.views/view
        {:can-go-back? can-go-back?
         :site         browser-id}]

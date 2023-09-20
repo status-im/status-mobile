@@ -17,8 +17,8 @@
     [status-im.signing.core :as signing]
     [status-im.ui.components.list-selection :as list-selection]
     [utils.re-frame :as rf]
-    [status-im.utils.http :as http]
-    [status-im.utils.platform :as platform]
+    [utils.url :as url]
+    [react-native.platform :as platform]
     [status-im.utils.random :as random]
     [status-im.utils.types :as types]
     [status-im.utils.universal-links.utils :as links]
@@ -75,7 +75,7 @@
 
 (defn check-if-phishing-url
   [{:keys [history history-index] :as browser}]
-  (let [history-host (http/url-host (try (nth history history-index) (catch js/Error _)))]
+  (let [history-host (url/url-host (try (nth history history-index) (catch js/Error _)))]
     (cond-> browser history-host (assoc :unsafe? (eth-phishing-detect history-host)))))
 
 (defn resolve-ens-contenthash-callback
@@ -88,7 +88,7 @@
   [{:keys [db]} {:keys [error? resolved-url]}]
   (when (not error?)
     (let [current-url (get-current-url (get-current-browser db))
-          host        (http/url-host current-url)]
+          host        (url/url-host current-url)]
       (if (and (not resolved-url) (ens/is-valid-eth-name? host))
         {:db                              (update db :browser/options assoc :resolving? true)
          :browser/resolve-ens-contenthash {:chain-id (ethereum/chain-id db)
@@ -162,7 +162,7 @@
   {:events [:browser/ignore-unsafe]}
   [cofx]
   (let [browser (get-current-browser (:db cofx))
-        host    (http/url-host (get-current-url browser))]
+        host    (url/url-host (get-current-url browser))]
     (update-browser cofx (assoc browser :ignore-unsafe host))))
 
 (defn can-go-forward?
@@ -194,7 +194,7 @@
   {:events [:browser.callback/resolve-ens-multihash-success]}
   [{:keys [db] :as cofx} url]
   (let [current-url (get-current-url (get-current-browser db))
-        host        (http/url-host current-url)
+        host        (url/url-host current-url)
         path        (subs current-url (+ (.indexOf ^js current-url host) (count host)))
         gateway     url]
     (rf/merge cofx
@@ -247,9 +247,9 @@
                                           (not= (.indexOf ^js url (second v)) -1))
                                         (:resolved-ens options)))
             resolved-url (if resolved-ens
-                           (http/normalize-url (string/replace url
-                                                               (second resolved-ens)
-                                                               (first resolved-ens)))
+                           (url/normalize-url (string/replace url
+                                                              (second resolved-ens)
+                                                              (first resolved-ens)))
                            url)]
         (rf/merge cofx
                   (update-browser-history browser resolved-url)
@@ -282,7 +282,7 @@
   {:events [:browser.ui/url-submitted]}
   [cofx url]
   (let [browser        (get-current-browser (:db cofx))
-        normalized-url (http/normalize-and-decode-url url)]
+        normalized-url (url/normalize-and-decode-url url)]
     (if (links/universal-link? normalized-url)
       {:dispatch [:universal-links/handle-url normalized-url]}
       (rf/merge cofx
@@ -296,7 +296,7 @@
   If the browser is reused, the history is flushed"
   {:events [:browser.ui/open-url]}
   [{:keys [db] :as cofx} url]
-  (let [normalized-url (http/normalize-and-decode-url url)
+  (let [normalized-url (url/normalize-and-decode-url url)
         browser        {:browser-id    (random/id)
                         :history-index 0
                         :history       [normalized-url]}]
@@ -503,7 +503,7 @@
         {:keys [dapp? name]}                                                       browser
         dapp-name                                                                  (if dapp?
                                                                                      name
-                                                                                     (http/url-host
+                                                                                     (url/url-host
                                                                                       url-original))]
     (cond
       (and (= type constants/history-state-changed)
