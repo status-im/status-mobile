@@ -117,6 +117,11 @@
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.text-combinations.preview :as text-combinations]
     [status-im2.contexts.quo-preview.keycard.keycard :as keycard]
+    [status-im2.contexts.quo-preview.standart-auth.keycard-pin-entry :as standard-auth-keycard-pin-entry]
+    [status-im2.contexts.quo-preview.standart-auth.this-is-not-keycard :as
+     standard-auth-this-is-not-keycard]
+    [status-im2.contexts.quo-preview.standart-auth.keycard-locked :as standard-auth-keycard-locked]
+    [status-im2.contexts.quo-preview.standart-auth.wrong-keycard :as standard-auth-wrong-keycard]
     [status-im2.contexts.quo-preview.loaders.skeleton-list :as skeleton-list]
     [status-im2.contexts.quo-preview.community.channel-actions :as channel-actions]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
@@ -399,7 +404,15 @@
                        {:name      :wallet-overview
                         :component wallet-overview/preview-wallet-overview}]
    :keycard           [{:name      :keycard-component
-                        :component keycard/view}]})
+                        :component keycard/view}]
+   :standart-auth     [{:name      :keycard-pin-entry
+                        :component standard-auth-keycard-pin-entry/preview}
+                       {:name      :this-is-not-keycard
+                        :component standard-auth-this-is-not-keycard/preview}
+                       {:name      :keycard-locked
+                        :component standard-auth-keycard-locked/preview}
+                       {:name      :wrong-keycard
+                        :component standard-auth-wrong-keycard/preview}]})
 
 (defn- category-view
   []
