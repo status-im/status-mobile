@@ -30,7 +30,7 @@
          {:child        (when (= (:type @state) :pinned) [rn/text (:content @state)])
           :display-name (:pinned-by @state)}))
 
-(defn preview-system-message
+(defn view
   []
   (let [state (reagent/atom {:type      :pinned
                              :pinned-by "Steve"

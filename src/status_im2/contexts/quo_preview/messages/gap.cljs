@@ -8,7 +8,7 @@
   [{:key :timestamp-far :type :text}
    {:key :timestamp-near :type :text}])
 
-(defn preview-messages-gap
+(defn view
   []
   (let [state (reagent/atom {:timestamp-far          "Jan 8 · 09:12"
                              :timestamp-near         "Mar 8 · 22:42"

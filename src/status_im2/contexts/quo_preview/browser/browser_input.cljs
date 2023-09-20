@@ -11,7 +11,7 @@
    {:key :disabled? :type :boolean}
    (preview/customization-color-option)])
 
-(defn preview-browser-input
+(defn view
   []
   (let [state (reagent/atom {:blur?       false
                              :disabled?   false

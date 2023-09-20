@@ -1,42 +1,28 @@
 (ns status-im2.contexts.quo-preview.list-items.token-value
   (:require
     [quo2.core :as quo]
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Token:"
-    :key     :token
+  [{:key     :token
     :type    :select
-    :options [{:key   :eth
-               :value "ETH"}
-              {:key   :snt
-               :value "SNT"}]}
-   {:label   "State:"
-    :key     :state
+    :options [{:key :eth}
+              {:key :snt}]}
+   {:key     :state
     :type    :select
-    :options [{:key   :default
-               :value "Default"}
-              {:key   :pressed
-               :value "Pressed"}
-              {:key   :active
-               :value "Active"}]}
-   {:label   "Status:"
-    :key     :status
+    :options [{:key :default}
+              {:key :pressed}
+              {:key :active}]}
+   {:key     :status
     :type    :select
-    :options [{:key   :empty
-               :value "Empty"}
-              {:key   :positive
-               :value "Positive"}
-              {:key   :negative
-               :value "Negative"}]}
+    :options [{:key :empty}
+              {:key :positive}
+              {:key :negative}]}
    (preview/customization-color-option)
-   {:label "Metrics?:"
-    :key   :metrics?
-    :type  :boolean}])
+   {:key :metrics? :type :boolean}])
 
-(defn preview
+(defn view
   []
   (let [state (reagent/atom {:token               :snt
                              :state               :default
@@ -49,11 +35,9 @@
                                                    :fiat-change       "€0.00"}})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view
-        [rn/view
-         {:style {:align-items :center
-                  :margin-top  50}}
-         [quo/token-value @state]]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:align-items :center
+                                    :margin-top  50}}
+       [quo/token-value @state]])))
 
