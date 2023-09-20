@@ -17,7 +17,6 @@
     status-im.currency.core
     status-im.ethereum.subscriptions
     status-im.fleet.core
-    status-im.http.core
     [utils.i18n :as i18n]
     [status-im.keycard.core :as keycard]
     status-im.log-level.core

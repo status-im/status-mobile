@@ -11,7 +11,7 @@
     [status-im2.contexts.chat.lightbox.zoomable-image.constants :as c]
     [status-im2.contexts.chat.lightbox.zoomable-image.style :as style]
     [status-im2.contexts.chat.lightbox.zoomable-image.utils :as utils]
-    [status-im.utils.http :as http]))
+    [utils.url :as url]))
 
 (defn tap-gesture
   [on-tap]
@@ -227,7 +227,7 @@
                                (= curr-orientation orientation/portrait))}
       [reanimated/fast-image
        (merge
-        {:source    {:uri (http/replace-port (:image content) (rf/sub [:mediaserver/port]))}
+        {:source    {:uri (url/replace-port (:image content) (rf/sub [:mediaserver/port]))}
          :native-ID (when focused? :shared-element)
          :style     (style/image dimensions animations render-data index)}
         (when image-dimensions-nil?

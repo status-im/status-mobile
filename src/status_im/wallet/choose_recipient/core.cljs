@@ -9,7 +9,7 @@
             [status-im.qr-scanner.core :as qr-scaner]
             [status-im.router.core :as router]
             [utils.re-frame :as rf]
-            [status-im.utils.http :as http]
+            [utils.url :as url]
             [utils.money :as money]
             [status-im.utils.universal-links.utils :as links]
             [status-im.utils.wallet-connect :as wallet-connect]
@@ -140,7 +140,7 @@
                       (assoc-in message path address))
                     message
                     (map vector paths addresses)) uri]))}})
-    (if (and (http/url? uri) (not ignore-url))
+    (if (and (url/url? uri) (not ignore-url))
       (if (links/universal-link? uri)
         {:dispatch [:universal-links/handle-url uri]}
         {:browser/show-browser-selection uri})

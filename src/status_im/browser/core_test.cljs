@@ -1,7 +1,7 @@
 (ns status-im.browser.core-test
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im.browser.core :as browser]
-            [status-im.utils.http :as http]))
+            [utils.url :as url]))
 
 (defn has-wrong-properties?
   [result dapp-url expected-browser]
@@ -16,7 +16,7 @@
 
 (defn get-dapp-id
   [result dapp-url]
-  (some #(when (= (http/normalize-and-decode-url dapp-url) (first (:history %))) (:browser-id %))
+  (some #(when (= (url/normalize-and-decode-url dapp-url) (first (:history %))) (:browser-id %))
         (vals (get-in result [:db :browser/browsers]))))
 
 (deftest browser-test
