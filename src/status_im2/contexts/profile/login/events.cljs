@@ -1,6 +1,5 @@
 (ns status-im2.contexts.profile.login.events
   (:require
-    [clojure.string :as string]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
     [re-frame.core :as re-frame]
@@ -188,7 +187,7 @@
   [_ entered-password cb]
   (let [hashed-password (-> entered-password
                             security/safe-unmask-data
-                            ethereum/sha3)]
+                            native-module/sha3)]
     {:json-rpc/call [{:method     "accounts_verifyPassword"
                       :params     [hashed-password]
                       :on-success #(do (rf/dispatch [:profile.login/verified-database-password %]) (cb))
