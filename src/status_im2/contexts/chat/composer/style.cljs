@@ -3,15 +3,16 @@
             [quo2.foundations.typography :as typography]
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.composer.constants :as constants]))
+            [status-im2.contexts.chat.composer.constants :as constants]
+            [quo2.theme :as quo.theme]))
 
 (defn shadow
-  [focused?]
+  [focused? theme]
   (if platform/ios?
     {:shadow-radius  20
-     :shadow-opacity (colors/theme-colors 0.1 0.7)
+     :shadow-opacity (colors/theme-colors 0.1 0.7 theme)
      :shadow-color   colors/neutral-100
-     :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8)}}
+     :shadow-offset  {:width 0 :height (colors/theme-colors -4 -8 theme)}}
     {:elevation (if @focused? 10 0)}))
 
 (def composer-sheet-and-jump-to-container
@@ -21,17 +22,17 @@
    :right    0})
 
 (defn sheet-container
-  [insets {:keys [focused?]} {:keys [container-opacity]}]
+  [insets {:keys [focused?]} {:keys [container-opacity]} theme]
   (reanimated/apply-animations-to-style
    {:opacity container-opacity}
    (merge
     {:border-top-left-radius  20
      :border-top-right-radius 20
      :padding-horizontal      20
-     :background-color        (colors/theme-colors colors/white colors/neutral-95)
+     :background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
      :z-index                 3
      :padding-bottom          (:bottom insets)}
-    (shadow focused?))))
+    (shadow focused? theme))))
 
 (def bar-container
   {:height          constants/bar-container-height
@@ -43,11 +44,11 @@
    :align-items     :center})
 
 (defn bar
-  []
+  [theme]
   {:width            32
    :height           4
    :border-radius    100
-   :background-color (colors/theme-colors colors/neutral-100-opa-5 colors/white-opa-10)})
+   :background-color (colors/theme-colors colors/neutral-100-opa-5 colors/white-opa-10 theme)})
 
 (defn input-container
   [height max-height]
@@ -67,9 +68,9 @@
   [{:keys [saved-emoji-kb-extra-height]}
    {:keys [focused? maximized?]}
    {:keys [link-previews? images]}
-   max-height]
+   {:keys [max-height theme]}]
   (merge typography/paragraph-1
-         {:color               (colors/theme-colors :black :white)
+         {:color               (colors/theme-colors :black :white theme)
           :text-align-vertical :top
           :position            (if @saved-emoji-kb-extra-height :relative :absolute)
           :top                 0
@@ -105,10 +106,10 @@
     :overflow                :hidden}))
 
 (defn blur-view
-  []
+  [theme]
   {:style       {:flex 1}
    :blur-radius (if platform/ios? 20 10)
-   :blur-type   (colors/theme-colors :light :dark)
+   :blur-type   (quo.theme/theme-value :light :dark theme)
    :blur-amount 20})
 
 (defn shell-button

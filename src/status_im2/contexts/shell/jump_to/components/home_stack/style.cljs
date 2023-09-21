@@ -4,7 +4,7 @@
             [status-im2.contexts.shell.jump-to.utils :as utils]))
 
 (defn home-stack
-  [shared-values {:keys [width height]}]
+  [shared-values {:keys [width height theme]}]
   (reanimated/apply-animations-to-style
    {:top            (:home-stack-top shared-values)
     :left           (:home-stack-left shared-values)
@@ -14,7 +14,7 @@
     :transform      [{:scale (:home-stack-scale shared-values)}]}
    {:border-bottom-left-radius  20
     :border-bottom-right-radius 20
-    :background-color           (colors/theme-colors colors/white colors/neutral-95)
+    :background-color           (colors/theme-colors colors/white colors/neutral-95 theme)
     :overflow                   :hidden
     :position                   :absolute
     :width                      width

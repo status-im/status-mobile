@@ -3,6 +3,7 @@
             [quo2.components.buttons.button.view :as button]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [reagent.core :as reagent]))
@@ -10,11 +11,12 @@
 (def header-height 56)
 
 (defn header-wrapper-style
-  [{:keys [height border-bottom background]}]
+  [{:keys [height border-bottom background theme]}]
   (merge
    {:background-color (colors/theme-colors
                        colors/neutral-5
-                       colors/neutral-95)
+                       colors/neutral-95
+                       theme)
     :height           height}
    (when background
      {:background-color background})
@@ -22,7 +24,8 @@
      {:border-bottom-width 1
       :border-bottom-color (colors/theme-colors
                             colors/neutral-5
-                            colors/neutral-95)})))
+                            colors/neutral-95
+                            theme)})))
 
 (def absolute-fill
   {:position :absolute
@@ -129,7 +132,7 @@
              :size            :large}
             title])])
 
-(defn header
+(defn- header-internal
   [{:keys [left-width right-width]}]
   (let [layout        (reagent/atom {:left  {:width  (or left-width 8)
                                              :height header-height}
@@ -153,7 +156,7 @@
       [{:keys [left-accessories left-component border-bottom
                right-accessories right-component insets get-layout
                title subtitle title-component style title-align
-               background]
+               background theme]
         :or   {title-align   :center
                border-bottom false}}]
       (let [status-bar-height (get insets :top 0)
@@ -161,7 +164,8 @@
         [reanimated/view
          {:style (header-wrapper-style {:height        height
                                         :background    background
-                                        :border-bottom border-bottom})}
+                                        :border-bottom border-bottom
+                                        :theme         theme})}
          [rn/view
           {:pointer-events :box-none
            :height         status-bar-height}]
@@ -192,7 +196,6 @@
                :subtitle    subtitle
                :title-align title-align
                :component   title-component}]]
-
             [rn/view
              {:style          right-style
               :on-layout      (handle-layout :right get-layout)
@@ -200,3 +203,5 @@
              [header-actions
               {:accessories right-accessories
                :component   right-component}]]]]]]))))
+
+(def header (quo.theme/with-theme header-internal))

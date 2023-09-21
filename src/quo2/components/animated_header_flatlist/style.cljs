@@ -12,18 +12,19 @@
    :height   view-height})
 
 (defn button-container
-  [position]
+  [{:keys [left right theme]}]
   (merge
    {:width            32
     :height           32
     :border-radius    10
     :justify-content  :center
     :align-items      :center
-    :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40)
+    :background-color (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40 theme)
     :position         :absolute
     :top              56
-    :z-index          3}
-   position))
+    :z-index          3
+    :left             left
+    :right            right}))
 
 (defn blur-view
   [animation]
@@ -38,7 +39,7 @@
     :overflow :hidden}))
 
 (defn entity-picture
-  [animation]
+  [animation theme]
   (reanimated/apply-animations-to-style
    {:width  animation
     :height animation}
@@ -49,11 +50,11 @@
     :left             20
     :justify-content  :center
     :align-items      :center
-    :background-color (colors/theme-colors colors/white colors/neutral-100)
+    :background-color (colors/theme-colors colors/white colors/neutral-100 theme)
     :overflow         :hidden}))
 
 (defn header-bottom-part
-  [animation]
+  [animation theme]
   (reanimated/apply-animations-to-style
    {:border-top-right-radius animation
     :border-top-left-radius  animation}
@@ -62,7 +63,7 @@
     :height           86
     :left             0
     :right            0
-    :background-color (colors/theme-colors colors/white colors/neutral-100)}))
+    :background-color (colors/theme-colors colors/white colors/neutral-100 theme)}))
 
 (defn header-comp
   [y-animation opacity-animation]

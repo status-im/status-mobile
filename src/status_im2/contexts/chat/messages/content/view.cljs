@@ -25,7 +25,8 @@
     [utils.datetime :as datetime]
     [reagent.core :as reagent]
     [utils.address :as address]
-    [react-native.gesture :as gesture]))
+    [react-native.gesture :as gesture]
+    [quo2.theme :as quo.theme]))
 
 (def delivery-state-showing-time-ms 3000)
 
@@ -107,10 +108,10 @@
 
 (declare on-long-press)
 
-(defn user-message-content
+(defn- user-message-content-internal
   []
   (let [show-delivery-state? (reagent/atom false)]
-    (fn [{:keys [message-data context keyboard-shown? show-reactions? show-user-info?]}]
+    (fn [{:keys [message-data context keyboard-shown? show-reactions? show-user-info? theme]}]
       (let [{:keys [content-type quoted-message content
                     outgoing outgoing-status pinned-by]} message-data
             first-image                                  (first (:album message-data))
@@ -133,7 +134,7 @@
          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
                                  :message-sending
                                  :message-sent)
-          :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90)
+          :underlay-color      (colors/theme-colors colors/neutral-5 colors/neutral-90 theme)
           :style               (style/user-message-content
                                 {:first-in-group? (:first-in-group? message-data)
                                  :outgoing        outgoing
@@ -194,11 +195,14 @@
           (when show-reactions?
             [reactions/message-reactions-row message-data
              [rn/view {:pointer-events :none}
-              [user-message-content
-               {:message-data    message-data
+              [user-message-content-internal
+               {:theme           theme
+                :message-data    message-data
                 :context         context
                 :keyboard-shown? keyboard-shown?
                 :show-reactions? false}]]])]]))))
+
+(def user-message-content (quo.theme/with-theme user-message-content-internal))
 
 (defn on-long-press
   [message-data context keyboard-shown?]

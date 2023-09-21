@@ -100,7 +100,7 @@
     quo2.components.selectors.selectors.view
     quo2.components.settings.accounts.view
     quo2.components.settings.data-item.view
-    quo2.components.settings.privacy-option
+    quo2.components.settings.privacy-option.view
     quo2.components.settings.reorder-item.view
     quo2.components.settings.settings-item.view
     quo2.components.settings.category.view
@@ -306,7 +306,7 @@
 (def checkbox quo2.components.selectors.selectors.view/checkbox)
 
 ;;;; Settings
-(def privacy-option quo2.components.settings.privacy-option/card)
+(def privacy-option quo2.components.settings.privacy-option.view/view)
 (def account quo2.components.settings.accounts.view/account)
 (def settings-item quo2.components.settings.settings-item.view/view)
 (def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
