@@ -16,6 +16,7 @@
      {:full-name         display-name
       :profile-picture   photo-path
       :size              :xxs
+      :ring?             false
       :status-indicator? false}]))
 
 (defn extra-action-view
