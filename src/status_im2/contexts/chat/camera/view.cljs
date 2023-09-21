@@ -1,18 +1,18 @@
 (ns status-im2.contexts.chat.camera.view
-  (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [react-native.camera-kit :as camera-kit]
-    [react-native.core :as rn]
-    [react-native.fast-image :as fast-image]
-    [react-native.orientation :as orientation]
-    [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]
-    [reagent.core :as reagent]
-    [utils.i18n :as i18n]
-    [status-im2.contexts.chat.camera.style :as style]
-    [utils.re-frame :as rf]))
+  (:require [oops.core :as oops]
+            [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
+            [react-native.camera-kit :as camera-kit]
+            [react-native.core :as rn]
+            [react-native.fast-image :as fast-image]
+            [react-native.orientation :as orientation]
+            [react-native.platform :as platform]
+            [react-native.reanimated :as reanimated]
+            [react-native.safe-area :as safe-area]
+            [reagent.core :as reagent]
+            [status-im2.contexts.chat.camera.style :as style]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 (defn retake
   [flash uri]
@@ -70,13 +70,12 @@
 
 (defn zoom-buttons
   []
-  (let [current-zoom (reagent/atom 1)]
-    (fn [top insets rotate]
-      [rn/view {:style (style/zoom-container top insets)}
-       [zoom-button {:value 0.5 :current-zoom current-zoom :rotate rotate}]
-       [zoom-button {:value 1 :current-zoom current-zoom :rotate rotate}]
-       [zoom-button {:value 2 :current-zoom current-zoom :rotate rotate}]
-       [zoom-button {:value 3 :current-zoom current-zoom :rotate rotate}]])))
+  (fn [top insets rotate current-zoom]
+    [rn/view {:style (style/zoom-container top insets)}
+     [zoom-button {:value 0.5 :current-zoom current-zoom :rotate rotate}]
+     [zoom-button {:value 1.0 :current-zoom current-zoom :rotate rotate}]
+     [zoom-button {:value 2.0 :current-zoom current-zoom :rotate rotate}]
+     [zoom-button {:value 3.0 :current-zoom current-zoom :rotate rotate}]]))
 
 
 (defn- f-bottom-area
@@ -108,7 +107,7 @@
     [:f> f-bottom-area args back flip-camera]))
 
 (defn- f-camera-screen
-  [{:keys [camera-ref uri camera-type current-orientation flash toggle-flash]}]
+  [{:keys [camera-ref uri camera-type current-orientation flash toggle-flash current-zoom]}]
   (let [window                 (rn/get-window)
         {:keys [width height]} window
         camera-window-height   (* width 1.33)
@@ -140,9 +139,10 @@
         {:ref         #(reset! camera-ref %)
          :style       (style/camera-window width camera-window-height top)
          :flash-mode  (if @flash :on :off)
-         :camera-type @camera-type}])
+         :camera-type @camera-type
+         :zoom        @current-zoom}])
      (when-not @uri
-       [zoom-buttons top insets rotate])
+       [zoom-buttons top insets rotate current-zoom])
      [rn/view {:style (style/confirmation-container insets @uri)}
       [quo/text
        {:on-press on-press
@@ -171,5 +171,6 @@
                :camera-type         (reagent/atom camera-kit/camera-type-back)
                :current-orientation (atom orientation/portrait)
                :flash               flash
-               :toggle-flash        #(swap! flash not)}]
+               :toggle-flash        #(swap! flash not)
+               :current-zoom        (reagent/atom 1)}]
     [:f> f-camera-screen args]))
