@@ -6,5 +6,6 @@
   [code-common/view
    {:preview?  true
     :language  language
-    :max-lines 0}
+    :max-lines 0
+    :theme     :dark}
    children])

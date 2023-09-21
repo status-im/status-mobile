@@ -68,7 +68,7 @@
       (* 9 max-line-digits font-scale))))
 
 (defn- f-native-renderer
-  [{:keys [rows max-lines on-copy-press preview?]
+  [{:keys [rows max-lines on-copy-press preview? theme]
     :or   {max-lines ##Inf}}]
   (let [font-scale          (:font-scale (rn/get-window))
         total-rows          (count rows)
@@ -82,8 +82,8 @@
                                 (update $ number-rows-to-show assoc :last-line? true)
                                 (take (inc number-rows-to-show) $))
                               rows)]
-    [rn/view {:style (style/container preview?)}
-     [rn/view {:style (style/line-number-container line-number-width preview?)}]
+    [rn/view {:style (style/container preview? theme)}
+     [rn/view {:style (style/line-number-container line-number-width preview? theme)}]
      (if preview?
        [code-block
         {:rows              rows-to-show-coll
@@ -105,7 +105,7 @@
           :main-icons/copy]]])]))
 
 (defn view
-  [{:keys [language max-lines on-copy-press preview?]} children]
+  [{:keys [language max-lines on-copy-press preview? theme]} children]
   [highlighter/highlighter
    {:language          language
     :renderer          (fn [^js/Object props]
@@ -114,7 +114,8 @@
                            {:rows          (-> props .-rows bean/->clj)
                             :on-copy-press #(when on-copy-press (on-copy-press children))
                             :max-lines     max-lines
-                            :preview?      preview?}]))
+                            :preview?      preview?
+                            :theme         theme}]))
     :show-line-numbers false
     :style             {}
     :custom-style      {:background-color nil}}

@@ -3,7 +3,7 @@
 
 ;; Example themes:
 ;; https://github.com/react-syntax-highlighter/react-syntax-highlighter/tree/master/src/styles/hljs
-(defn theme
+(defn highlight-theme
   [theme-key]
   (case theme-key
     :hljs-comment      (colors/theme-colors colors/neutral-40 colors/neutral-60)
@@ -22,7 +22,7 @@
   (let [text-color (->> class-names
                         (map keyword)
                         (some (fn [class-name]
-                                (when-let [text-color (theme class-name)]
+                                (when-let [text-color (highlight-theme class-name)]
                                   text-color))))]
     (cond-> {:flex-shrink 1
              :line-height 18}
@@ -34,15 +34,15 @@
   (colors/theme-colors colors/neutral-20 colors/neutral-80))
 
 (defn container
-  [preview?]
+  [preview? theme]
   (if preview?
     {:overflow         :hidden
      :width            108
-     :background-color (colors/theme-colors colors/neutral-20 colors/neutral-80 :dark)
+     :background-color (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
      :border-radius    8}
     {:overflow         :hidden
      :padding          8
-     :background-color (colors/theme-colors colors/white colors/neutral-80-opa-40)
+     :background-color (colors/theme-colors colors/white colors/neutral-80-opa-40 theme)
      :border-color     (border-color)
      :border-width     1
      :border-radius    16}))
@@ -57,15 +57,15 @@
 (def gradient {:height 48})
 
 (defn line-number-container
-  [line-number-width preview?]
+  [line-number-width preview? theme]
   (cond-> {:position         :absolute
            :bottom           0
            :top              0
            :left             0
            :width            (+ line-number-width 8 7)
-           :background-color (colors/theme-colors colors/neutral-5 colors/neutral-80)}
+           :background-color (colors/theme-colors colors/neutral-5 colors/neutral-80 theme)}
     preview? (assoc :width            20
-                    :background-color (colors/theme-colors colors/neutral-10 colors/neutral-70 :dark))))
+                    :background-color (colors/theme-colors colors/neutral-10 colors/neutral-70 theme))))
 
 (defn divider
   [line-number-width]
