@@ -14,7 +14,7 @@
     [utils.re-frame :as rf]))
 
 (defn f-chat
-  [{:keys [extra-keyboard-height show-floating-scroll-down-button?] :as reagent-atoms}]
+  [{:keys [extra-keyboard-height show-floating-scroll-down-button?] :as inner-state-atoms}]
   (let [insets                                   (safe-area/get-insets)
         scroll-y                                 (reanimated/use-shared-value 0)
         content-height                           (reanimated/use-shared-value 0)
@@ -61,13 +61,13 @@
       :keyboard-vertical-offset (- (:bottom insets))}
 
      [list.view/message-list-content-view
-      {:chat            chat
-       :insets          insets
-       :scroll-y        scroll-y
-       :content-height  content-height
-       :cover-bg-color  :turquoise
-       :keyboard-shown? keyboard-shown
-       :reagent-atoms   reagent-atoms}]
+      {:chat              chat
+       :insets            insets
+       :scroll-y          scroll-y
+       :content-height    content-height
+       :cover-bg-color    :turquoise
+       :keyboard-shown?   keyboard-shown
+       :inner-state-atoms inner-state-atoms}]
 
      [messages.navigation/navigation-view
       {:scroll-y            scroll-y
@@ -87,9 +87,9 @@
 
 (defn chat
   []
-  (let [reagent-atoms
+  (let [inner-state-atoms
         {:extra-keyboard-height             (reagent/atom 0)
          :show-floating-scroll-down-button? (reagent/atom false)
          :messages-view-height              (reagent/atom 0)
          :messages-view-header-height       (reagent/atom 0)}]
-    [:f> f-chat reagent-atoms]))
+    [:f> f-chat inner-state-atoms]))

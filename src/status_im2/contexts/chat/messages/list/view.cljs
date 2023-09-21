@@ -275,7 +275,7 @@
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn f-messages-list-content
-  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? reagent-atoms]}]
+  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms]}]
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
         {:keys [keyboard-height]}             (hooks/use-keyboard)
@@ -285,7 +285,7 @@
         all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
-                messages-view-header-height]} reagent-atoms]
+                messages-view-header-height]} inner-state-atoms]
     [rn/view {:style {:flex 1}}
      [rn/flat-list
       {:key-fn                            list-key-fn
