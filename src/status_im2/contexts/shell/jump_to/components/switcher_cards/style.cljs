@@ -80,11 +80,11 @@
    :position        :absolute})
 
 (defn unread-dot
-  [background-color]
+  [customization-color]
   {:width            8
    :height           8
    :border-radius    4
-   :background-color background-color})
+   :background-color (colors/custom-color customization-color 60)})
 
 (def bottom-container
   {:position        :absolute
