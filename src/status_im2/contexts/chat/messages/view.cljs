@@ -13,10 +13,8 @@
     [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
     [utils.re-frame :as rf]))
 
-(defonce extra-keyboard-height (reagent/atom 0))
-
 (defn f-chat
-  []
+  [{:keys [extra-keyboard-height show-floating-scroll-down-button?] :as reagent-atoms}]
   (let [insets                                   (safe-area/get-insets)
         scroll-y                                 (reanimated/use-shared-value 0)
         content-height                           (reanimated/use-shared-value 0)
@@ -68,7 +66,8 @@
        :scroll-y        scroll-y
        :content-height  content-height
        :cover-bg-color  :turquoise
-       :keyboard-shown? keyboard-shown}]
+       :keyboard-shown? keyboard-shown
+       :reagent-atoms   reagent-atoms}]
 
      [messages.navigation/navigation-view
       {:scroll-y            scroll-y
@@ -83,9 +82,14 @@
        [:f> composer.view/composer
         {:insets                            insets
          :scroll-to-bottom-fn               list.view/scroll-to-bottom
-         :show-floating-scroll-down-button? list.view/show-floating-scroll-down-button?}]
+         :show-floating-scroll-down-button? show-floating-scroll-down-button?}]
        [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat])]))
 
 (defn chat
   []
-  [:f> f-chat])
+  (let [reagent-atoms
+        {:extra-keyboard-height             (reagent/atom 0)
+         :show-floating-scroll-down-button? (reagent/atom false)
+         :messages-view-height              (reagent/atom 0)
+         :messages-view-header-height       (reagent/atom 0)}]
+    [:f> f-chat reagent-atoms]))
