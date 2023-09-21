@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.messages.navigation.view
   (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
+            [quo2.theme :as quo.theme]
             [re-frame.db]
             [react-native.blur :as blur]
             [react-native.core :as rn]
@@ -108,4 +108,4 @@
   [params]
   [:f> f-view params])
 
-(def navigation-view (theme/with-theme internal-navigation-view))
+(def navigation-view (quo.theme/with-theme internal-navigation-view))

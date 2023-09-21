@@ -1,4 +1,4 @@
-(ns status-im.utils.image-processing
+(ns react-native.image-resizer
   (:require ["react-native-image-resizer" :default image-resizer]))
 
 (defn resize
