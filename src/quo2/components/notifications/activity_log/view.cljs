@@ -75,22 +75,27 @@
 
 (defn- activity-message
   [{:keys [title body title-number-of-lines body-number-of-lines attachment]}]
-  [rn/view {:style (style/message-container attachment)}
-   (when title
-     [text/text
-      {:size                :paragraph-2
-       :accessibility-label :activity-message-title
-       :style               style/message-title
-       :number-of-lines     title-number-of-lines}
-      title])
-   (if (string? body)
-     [text/text
-      {:style               style/message-body
-       :accessibility-label :activity-message-body
-       :size                :paragraph-1
-       :number-of-lines     body-number-of-lines}
-      body]
-     body)])
+  (let [{:keys [photos text]} (when (vector? body) ;; When the prop is a reagent component with text, Get
+                                                   ;; that component's props.
+                                (second body))
+        text-with-photos?     (and (seq text)
+                                   (seq photos))]
+    [rn/view {:style (style/message-container attachment text-with-photos?)}
+     (when title
+       [text/text
+        {:size                :paragraph-2
+         :accessibility-label :activity-message-title
+         :style               style/message-title
+         :number-of-lines     title-number-of-lines}
+        title])
+     (if (string? body)
+       [text/text
+        {:style               style/message-body
+         :accessibility-label :activity-message-body
+         :size                :paragraph-1
+         :number-of-lines     body-number-of-lines}
+        body]
+       body)]))
 
 (defn- activity-title
   [title replying?]

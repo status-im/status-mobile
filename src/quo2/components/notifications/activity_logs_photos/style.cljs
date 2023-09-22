@@ -1,5 +1,7 @@
 (ns quo2.components.notifications.activity-logs-photos.style)
 
+(def text {:margin-bottom 8})
+
 (def photos-container
   {:flex           1
    :height         40
