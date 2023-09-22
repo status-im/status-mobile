@@ -1,7 +1,7 @@
 (ns status-im2.contexts.add-new-contact.events
   (:require [clojure.string :as string]
             [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
+            [utils.transforms :as transforms]
             [re-frame.core :as re-frame]
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
@@ -129,7 +129,7 @@
     compressed-key
     constants/deserialization-key
     (fn [resp]
-      (let [{:keys [error]} (types/json->clj resp)]
+      (let [{:keys [error]} (transforms/json->clj resp)]
         (if error
           (on-error error)
           (on-success (str "0x" (subs resp 5)))))))))
@@ -194,6 +194,5 @@
 
 (rf/defn set-new-identity-reconnected
   [{:keys [db]}]
-  (let [input     (get-in db [:contacts/new-identity :input])
-        resubmit? (and input (= :new-contact (get-in db [:view-id])))]
+  (let [input (get-in db [:contacts/new-identity :input])]
     (rf/dispatch [:contacts/set-new-identity input])))

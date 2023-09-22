@@ -7,7 +7,7 @@
             [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [native-module.core :as native-module]
             [status-im.ethereum.stateofus :as stateofus]
             [utils.validators :as validators]

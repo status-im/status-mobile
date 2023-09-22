@@ -14,7 +14,7 @@
             [status-im.data-store.chats :as chats-store]
             [status-im2.contexts.contacts.events :as contacts-store]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.types :as types]
+            [utils.transforms :as transforms]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
@@ -234,7 +234,7 @@
 (rf/defn handle-one-to-one-chat-created
   {:events [:chat/one-to-one-chat-created]}
   [{:keys [db]} chat-id response-js]
-  (let [chat       (chats-store/<-rpc (first (types/js->clj (.-chats ^js response-js))))
+  (let [chat       (chats-store/<-rpc (first (transforms/js->clj (.-chats ^js response-js))))
         contact-js (first (.-contacts ^js response-js))
         contact    (when contact-js (contacts-store/<-rpc-js contact-js))]
     {:db       (cond-> db

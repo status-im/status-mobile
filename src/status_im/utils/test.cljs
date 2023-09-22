@@ -1,6 +1,6 @@
 (ns status-im.utils.test
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.types :as types]))
+            [status-im.utils.deprecated-types :as types]))
 
 (def native-status (js/require "../../modules/react-native-status/nodejs/bindings"))
 

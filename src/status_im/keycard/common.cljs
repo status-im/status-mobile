@@ -11,7 +11,7 @@
             [utils.datetime :as datetime]
             [status-im.utils.keychain.core :as keychain]
             [react-native.platform :as platform]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 
