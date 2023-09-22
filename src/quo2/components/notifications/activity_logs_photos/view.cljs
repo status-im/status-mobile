@@ -6,13 +6,14 @@
 (defn view
   [{:keys [photos text]}]
   [:<>
-   [quo2.text/text
-    {:size                :paragraph-1
-     :weight              :regular
-     :style               style/text
-     :number-of-lines     2
-     :accessibility-label :activity-log-title}
-    text]
+   (when (seq text)
+     [quo2.text/text
+      {:size                :paragraph-1
+       :weight              :regular
+       :style               style/text
+       :number-of-lines     2
+       :accessibility-label :activity-log-title}
+      text])
    [rn/view {:style style/photos-container}
     (map-indexed
      (fn [index photo]
