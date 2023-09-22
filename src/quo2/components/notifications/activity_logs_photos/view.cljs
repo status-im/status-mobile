@@ -1,19 +1,19 @@
 (ns quo2.components.notifications.activity-logs-photos.view
   (:require [react-native.core :as rn]
-            [quo2.components.markdown.text :as quo2.text]
+            [quo2.components.markdown.text :as text]
             [quo2.components.notifications.activity-logs-photos.style :as style]))
 
 (defn view
-  [{:keys [photos text]}]
+  [{:keys [photos message-text]}]
   [:<>
-   (when (seq text)
-     [quo2.text/text
+   (when (seq message-text)
+     [text/text
       {:size                :paragraph-1
        :weight              :regular
        :style               style/text
        :number-of-lines     2
        :accessibility-label :activity-log-title}
-      text])
+      message-text])
    [rn/view {:style style/photos-container}
     (map-indexed
      (fn [index photo]
