@@ -82,7 +82,7 @@
 (defn- activity-message
   [{:keys [title body title-number-of-lines body-number-of-lines attachment]}]
   (let [{:keys [photos message-text]} (hiccup-props body)
-        text-with-photos?             (and (seq message-text)
+        text-with-photos?             (and (not (string/blank? message-text))
                                            (seq photos))]
     [rn/view {:style (style/message-container attachment text-with-photos?)}
      (when title
