@@ -73,13 +73,17 @@
                  detail]]))
            context))))
 
+(defn- hiccup-props
+  [body]
+  (and (vector? body)
+       (map? (second body))
+       (second body)))
+
 (defn- activity-message
   [{:keys [title body title-number-of-lines body-number-of-lines attachment]}]
-  (let [{:keys [photos text]} (when (vector? body) ;; When the prop is a reagent component with text, Get
-                                                   ;; that component's props.
-                                (second body))
-        text-with-photos?     (and (seq text)
-                                   (seq photos))]
+  (let [{:keys [photos message-text]} (hiccup-props body)
+        text-with-photos?             (and (seq message-text)
+                                           (seq photos))]
     [rn/view {:style (style/message-container attachment text-with-photos?)}
      (when title
        [text/text

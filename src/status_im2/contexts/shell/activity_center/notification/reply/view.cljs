@@ -22,11 +22,11 @@
     constants/content-type-image
     (let [images           (or album-messages message)
           image-urls       (if album-messages
-                             (mapv #(get % :image) images)
+                             (map :image images)
                              [(get-in message [:content :image])])
-          image-local-urls (mapv (fn [url]
-                                   {:uri (url/replace-port url (rf/sub [:mediaserver/port]))})
-                                 image-urls)]
+          image-local-urls (map (fn [url]
+                                  {:uri (url/replace-port url (rf/sub [:mediaserver/port]))})
+                                image-urls)]
       [quo/activity-logs-photos
        {:photos       image-local-urls
         :message-text (get-in message [:content :text])}])
