@@ -50,19 +50,18 @@ stdenv.mkDerivation {
   '';
 
   # Do not add a BuildId to the generated libraries, for reproducibility
-    patchBuildIdPhase = ''
-      substituteInPlace ./node_modules/react-native/ReactAndroid/src/main/jni/CMakeLists.txt --replace \
-          '-Wl,--build-id' \
-          '-Wl,--build-id=none'
-    '';
+  patchBuildIdPhase = ''
+    substituteInPlace ./node_modules/react-native/ReactAndroid/src/main/jni/CMakeLists.txt --replace \
+      '-Wl,--build-id' \
+      '-Wl,--build-id=none'
+  '';
 
   # Remove when we upgrade jest to 29
-    patchJestPhase = ''
-      substituteInPlace ./node_modules/react-native/jest/setup.js --replace \
-          'jest.now()' \
-          'Date.now'
-    '';
-
+  patchJestPhase = ''
+    substituteInPlace ./node_modules/react-native/jest/setup.js --replace \
+      'jest.now()' \
+      'Date.now'
+  '';
 
   installPhase = ''
     mkdir -p $out
@@ -73,9 +72,9 @@ stdenv.mkDerivation {
   # https://github.com/oblador/react-native-keychain/issues/595
   # TODO: remove this patch when we this library fixes above issue
   patchKeyChainPhase = ''
-   sed -i -e '/classpath/d' \
-          -e '/apply plugin: "com\.adarshr\.test-logger"/d' \
-          ./node_modules/react-native-keychain/android/build.gradle
+    sed -i -e '/classpath/d' \
+      -e '/apply plugin: "com\.adarshr\.test-logger"/d' \
+      ./node_modules/react-native-keychain/android/build.gradle
   '';
 
   # Fix for :react-native-camera-kit:compileDebugKotlin FAILED
