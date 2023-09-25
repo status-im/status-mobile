@@ -6,7 +6,7 @@
     [react-native.core :as rn]
     [quo2.components.colors.color.style :as style]))
 
-(defn feng-shui
+(defn- feng-shui
   [{:keys [color theme]}]
   [rn/view
    {:accessibile         true
