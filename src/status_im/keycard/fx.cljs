@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.keycard.card :as card]
             [native-module.core :as native-module]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [taoensso.timbre :as log]))
 
 (re-frame/reg-fx

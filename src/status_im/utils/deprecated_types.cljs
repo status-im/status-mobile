@@ -1,4 +1,5 @@
-(ns status-im.utils.types
+(ns status-im.utils.deprecated-types
+  {:deprecated true :superseded-by "utils.transforms"}
   (:refer-clojure :exclude [js->clj])
   (:require [cljs-bean.core :as clj-bean]))
 

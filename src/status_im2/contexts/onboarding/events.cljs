@@ -1,7 +1,7 @@
 (ns status-im2.contexts.onboarding.events
   (:require [native-module.core :as native-module]
             [re-frame.core :as re-frame]
-            [status-im.utils.types :as types]
+            [utils.transforms :as transforms]
             [status-im2.constants :as constants]
             [taoensso.timbre :as log]
             [utils.i18n :as i18n]
@@ -17,7 +17,7 @@
    (native-module/validate-mnemonic
     (security/safe-unmask-data mnemonic)
     (fn [result]
-      (let [{:keys [error keyUID]} (types/json->clj result)]
+      (let [{:keys [error keyUID]} (transforms/json->clj result)]
         (if (seq error)
           (when on-error (on-error error))
           (on-success mnemonic keyUID)))))))

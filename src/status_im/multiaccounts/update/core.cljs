@@ -1,6 +1,6 @@
 (ns status-im.multiaccounts.update.core
   (:require [status-im.ethereum.ens :as ens]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im2.constants :as constants]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))

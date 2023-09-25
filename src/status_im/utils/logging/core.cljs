@@ -12,7 +12,7 @@
             [utils.re-frame :as rf]
             [utils.datetime :as datetime]
             [react-native.platform :as platform]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im2.common.log :as log]
             [status-im2.config :as config]))
 
