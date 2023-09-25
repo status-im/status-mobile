@@ -69,6 +69,35 @@ In the image above we can see the properties are `Type`, `State`, `Size`,
   ...)
 ```
 
+### Handling Sizes
+In the designs, sizes are referred to as integers. To avoid having the codebase littered with magic numbers we instead have a keyword convention to use in components to map these keywords with their sizes.
+
+The convention is `:size-<number>`, e.g size `20` is `:size-20`
+
+```clojure
+;; bad
+(defn button
+  [{:keys [size]}]
+  [rn/view
+   {:style {:height (case size
+                      20 20
+                      40 40
+                      0)}}]
+  ...)
+```
+
+```clojure
+;; good
+(defn button
+  [{:keys [size]}]
+  [rn/view
+   {:style {:height (case size
+                      :size-20 20
+                      :size-40 40
+                      0)}}]
+  ...)
+```
+
 ## Clojure var conventions
 
 - Due to the fact that every `view` namespace should export only one component

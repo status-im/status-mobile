@@ -12,9 +12,9 @@
     [reagent.core :as reagent]))
 
 (defn- internal-view
-  [{:keys [theme customization-color status token metrics? values on-press]}]
+  []
   (let [state (reagent/atom :default)]
-    (fn []
+    (fn [{:keys [theme customization-color status token metrics? values on-press]}]
       (let [bg-opacity                                                      (case @state
                                                                               :active  10
                                                                               :pressed 5
@@ -42,7 +42,7 @@
            [text/text
             {:size  :paragraph-2
              :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
-            (str crypto-value " " (string/upper-case (clj->js token)))]]]
+            (str crypto-value " " (if token (string/upper-case (clj->js token)) ""))]]]
          [rn/view
           {:style {:align-items     :flex-end
                    :justify-content :space-between}}

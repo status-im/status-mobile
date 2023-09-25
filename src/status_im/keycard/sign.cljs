@@ -5,7 +5,7 @@
             [status-im.keycard.common :as common]
             [utils.re-frame :as rf]
             [utils.money :as money]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [taoensso.timbre :as log]))
 
 (rf/defn sign

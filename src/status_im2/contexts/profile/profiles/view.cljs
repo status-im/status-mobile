@@ -16,7 +16,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
             [utils.security.core :as security]
-            [utils.transforms :as types]))
+            [utils.transforms :as transforms]))
 
 (defonce push-animation-fn-atom (atom nil))
 (defonce pop-animation-fn-atom (atom nil))
@@ -77,7 +77,7 @@
                            (native-module/delete-multiaccount
                             key-uid
                             (fn [result]
-                              (let [{:keys [error]} (types/json->clj result)]
+                              (let [{:keys [error]} (transforms/json->clj result)]
                                 (rf/dispatch [:onboarding-2/on-delete-profile-success key-uid])
                                 (log/info "profile deleted: error" error)))))}])
 

@@ -1,7 +1,7 @@
 (ns status-im2.contexts.contacts.events
   (:require
     [oops.core :as oops]
-    [status-im.utils.types :as types]
+    [utils.transforms :as transforms]
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -15,7 +15,7 @@
    :secondary-name        (.-secondaryName js-contact)
    :ens-name              (.-name js-contact)
    :nickname              (.-localNickname js-contact)
-   :images                (types/js->clj (oops/oget js-contact "images"))
+   :images                (transforms/js->clj (oops/oget js-contact "images"))
    :ens-verified          (oops/oget js-contact "ensVerified")
    :contact-request-state (oops/oget js-contact "contactRequestState")
    :last-updated          (oops/oget js-contact "lastUpdated")

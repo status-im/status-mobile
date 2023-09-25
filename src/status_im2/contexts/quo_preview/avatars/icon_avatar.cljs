@@ -6,10 +6,10 @@
 (def descriptor
   [{:key     :size
     :type    :select
-    :options [{:key :size/s-20}
-              {:key :size/s-24}
-              {:key :size/s-32}
-              {:key :size/s-48}]}
+    :options [{:key :size-20}
+              {:key :size-24}
+              {:key :size-32}
+              {:key :size-48}]}
    {:key     :icon
     :type    :select
     :options [{:key   :i/placeholder20
@@ -20,7 +20,7 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:size  :size/s-48
+  (let [state (reagent/atom {:size  :size-48
                              :icon  :i/placeholder20
                              :color :primary})]
     (fn []

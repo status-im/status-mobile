@@ -9,7 +9,7 @@
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [native-module.core :as native-module]
             [status-im.node.core :as node]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 

@@ -4,14 +4,14 @@
             [clojure.string :as string]
             [quo.platform :as platform]
             [re-frame.core :as re-frame]
-            [status-im.async-storage.core :as async-storage]
+            [react-native.async-storage :as async-storage]
             [status-im.ethereum.decode :as decode]
             [status-im.ethereum.tokens :as tokens]
             [utils.i18n :as i18n]
             [status-im.notifications.android :as pn-android]
             [utils.re-frame :as rf]
             [utils.money :as money]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im.utils.utils :as utils]
             [react-native.core :as rn]))
 

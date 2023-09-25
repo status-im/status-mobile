@@ -3,7 +3,7 @@
             [status-im2.constants :as constants]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
             [native-module.core :as native-module]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [taoensso.timbre :as log]))
 
 (re-frame/reg-fx

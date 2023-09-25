@@ -2,7 +2,6 @@
   (:require
     clojure.set
     [re-frame.core :as re-frame]
-    [status-im.async-storage.core :as async-storage]
     status-im.backup.core
     status-im.bootnodes.core
     status-im.browser.core
@@ -193,9 +192,9 @@
   (rf/merge cofx
             (cond
               (= :chat view-id)
-              {::async-storage/set! {:chat-id (get-in cofx [:db :current-chat-id])
-                                     :key-uid (get-in cofx [:db :profile/profile :key-uid])}
-               :db                  (assoc db :screens/was-focused-once? true)}
+              {:async-storage-set {:chat-id (get-in cofx [:db :current-chat-id])
+                                   :key-uid (get-in cofx [:db :profile/profile :key-uid])}
+               :db                (assoc db :screens/was-focused-once? true)}
 
               (not (get db :screens/was-focused-once?))
               {:db (assoc db :screens/was-focused-once? true)})
