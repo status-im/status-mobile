@@ -3,25 +3,25 @@
 
 (def sizes
   {:size-32 {:size          32
-               :width-extra   40
-               :border-radius {:rounded 16 :squared 10}
-               :icon-size     20}
+             :width-extra   40
+             :border-radius {:rounded 16 :squared 10}
+             :icon-size     20}
    :size-24 {:size          24
-               :width-extra   32
-               :border-radius {:rounded 12 :squared 8}
-               :icon-size     16}
+             :width-extra   32
+             :border-radius {:rounded 12 :squared 8}
+             :icon-size     16}
    :size-20 {:size          20
-               :width-extra   24
-               :border-radius {:rounded 10 :squared 8}
-               :icon-size     12}
+             :width-extra   24
+             :border-radius {:rounded 10 :squared 8}
+             :icon-size     12}
    :size-16 {:size          16
-               :width-extra   20
-               :border-radius {:rounded 8 :squared 8}
-               :icon-size     12}
+             :width-extra   20
+             :border-radius {:rounded 8 :squared 8}
+             :icon-size     12}
    :size-14 {:size          14
-               :width-extra   16
-               :border-radius {:rounded 7 :squared 7}
-               :icon-size     12}})
+             :width-extra   16
+             :border-radius {:rounded 7 :squared 7}
+             :icon-size     12}})
 
 (defn get-color
   [blur? theme]

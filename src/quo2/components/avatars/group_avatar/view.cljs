@@ -8,15 +8,15 @@
 
 (def sizes
   {:size-20 {:icon      12
-               :container 20}
+             :container 20}
    :size-28 {:icon      16
-               :container 28}
+             :container 28}
    :size-32 {:icon      16
-               :container 32}
+             :container 32}
    :size-48 {:icon      20
-               :container 48}
+             :container 48}
    :size-80 {:icon      32
-               :container 80}})
+             :container 80}})
 
 (defn- view-internal
   [_]

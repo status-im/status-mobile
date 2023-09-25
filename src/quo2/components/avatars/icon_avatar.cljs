@@ -6,13 +6,13 @@
 
 (def ^:private sizes
   {:size-48 {:component 48
-               :icon      20}
+             :icon      20}
    :size-32 {:component 32
-               :icon      20}
+             :icon      20}
    :size-24 {:component 24
-               :icon      16}
+             :icon      16}
    :size-20 {:component 20
-               :icon      12}})
+             :icon      12}})
 
 (defn icon-avatar-internal
   [{:keys [size icon color opacity border? theme]
