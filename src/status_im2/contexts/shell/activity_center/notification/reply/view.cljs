@@ -14,7 +14,7 @@
 
 ;; NOTE: Replies support text, image and stickers only.
 (defn- get-message-content
-  [{:keys [content-type] :as message} album-messages]
+  [{:keys [content-type] :as message} album-messages media-server-port]
   (case content-type
     constants/content-type-text [quo/text {:style style/tag-text}
                                  (get-in message [:content :text])]
@@ -25,7 +25,7 @@
                              (map :image images)
                              [(get-in message [:content :image])])
           image-local-urls (map (fn [url]
-                                  {:uri (url/replace-port url (rf/sub [:mediaserver/port]))})
+                                  {:uri (url/replace-port url media-server-port)})
                                 image-urls)]
       [quo/activity-logs-photos
        {:photos       image-local-urls
@@ -61,10 +61,11 @@
   [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [author chat-name community-id chat-id
                 message read timestamp album-messages]} notification
-        community-chat?                                 (not (string/blank? community-id))
-        community                                       (rf/sub [:communities/community community-id])
-        community-name                                  (:name community)
-        community-image                                 (get-in community [:images :thumbnail :uri])]
+        community-chat?                                                                       (not (string/blank? community-id))
+        community                                                                             (rf/sub [:communities/community community-id])
+        community-name                                                                        (:name community)
+        community-image                                                                       (get-in community [:images :thumbnail :uri])
+        media-server-port                                                                     (rf/sub [:mediaserver/port])]
     [swipeable props
      [gesture/touchable-without-feedback
       {:on-press (fn []
@@ -112,4 +113,4 @@
 
                                                       :else
                                                       nil)
-                              :body                 (get-message-content message album-messages)}}]]]))
+                              :body                 (get-message-content message album-messages media-server-port)}}]]]))
