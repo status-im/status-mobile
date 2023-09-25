@@ -1,9 +1,9 @@
 (ns quo2.components.tags.number-tag.view
   (:require [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
-            [react-native.core :as rn]
             [quo2.components.tags.number-tag.style :as style]
-            [quo2.theme :as quo.theme]))
+            [quo2.theme :as quo.theme]
+            [react-native.core :as rn]))
 
 (defn view-internal
   [{:keys [number size blur? theme] :as props}]

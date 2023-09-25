@@ -104,10 +104,9 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:type               :accounts
-                             :size               :size-32
-                             :number             4
-                             :more-than-99-label "99+"})
+  (let [state (reagent/atom {:type   :accounts
+                             :size   :size-32
+                             :number 4})
         type  (reagent/cursor state [:type])
         blur? (reagent/cursor state [:blur?])]
     (fn []
