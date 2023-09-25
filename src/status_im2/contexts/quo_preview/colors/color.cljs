@@ -25,4 +25,3 @@
         :show-blur-background? true
         :blur-dark-only?       true}
        [quo/color (assoc @state :color (:customization-color @state))]])))
-

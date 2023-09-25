@@ -1,9 +1,6 @@
 (ns quo2.components.colors.color.style
   (:require [quo2.foundations.colors :as colors]))
 
-(def color-picker-container
-  {:flex-direction :row})
-
 (def color-button-common
   {:width         48
    :height        48
