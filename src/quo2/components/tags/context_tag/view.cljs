@@ -91,11 +91,12 @@
      :default
      [tag-skeleton {:theme theme :size size :text full-name}
       [user-avatar/user-avatar
-       {:full-name         full-name
-        :profile-picture   profile-picture
-        :size              (if (= size 24) :xxs 28)
-        :status-indicator? false
-        :ring?             false}]]
+       {:full-name           full-name
+        :profile-picture     profile-picture
+        :size                (if (= size 24) :xxs 28)
+        :status-indicator?   false
+        :ring?               false
+        :customization-color customization-color}]]
 
      :multiuser
      [preview-list/view {:type :user :size :size-20}
