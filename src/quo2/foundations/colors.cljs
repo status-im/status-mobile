@@ -272,17 +272,17 @@
      ([color suffix]
       (custom-color color suffix nil))
      ([color suffix opacity]
-      (let [hex?  (not (keyword? color))
-            color (if (hex-string? (get colors-map color))
-                    (get colors-map color)
-                    (get-in colors-map [color suffix]))]
-        (cond
-          (and opacity hex?) (alpha color (/ opacity 100))
-          opacity            (alpha color (/ opacity 100))
-          hex?               color
-          :else              color))))))
+      (let [hex?           (not (keyword? color))
+            resolved-color (cond hex?                                 color
+                                 (hex-string? (get colors-map color)) (get colors-map color)
+                                 :else                                (get-in colors-map
+                                                                              [color suffix]))]
+        (if opacity
+          (alpha resolved-color (/ opacity 100))
+          resolved-color))))))
 
 (defn custom-color-by-theme
+
   "(custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark)
    color         :primary/:purple/...
    suffix-light  50/60
@@ -290,6 +290,7 @@
    opacity-light 0-100 (optional)
    opacity-dark  0-100 (optional)
    theme         :light/:dark (optional)"
+  {:deprecated true :superseded-by "theme/colors"}
   ([color suffix-light suffix-dark]
    (custom-color-by-theme color suffix-light suffix-dark nil nil (theme/get-theme)))
   ([color suffix-light suffix-dark opacity-light opacity-dark]
@@ -314,7 +315,3 @@
   ([light dark override-theme]
    (let [theme (or override-theme (theme/get-theme))]
      (if (= theme :light) light dark))))
-
-(defn dark?
-  []
-  (theme/dark?))

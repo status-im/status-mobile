@@ -97,8 +97,8 @@
         :header                            [:<>
                                             [common.header-spacing/view]
                                             (when (seq pending-contact-requests)
-                                              [contact-request/contact-requests
-                                               pending-contact-requests])]
+                                              [contact-request/view
+                                               {:requests pending-contact-requests}])]
         :sections                          items
         :sticky-section-headers-enabled    false
         :render-section-header-fn          contact-list/contacts-section-header

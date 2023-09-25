@@ -16,7 +16,7 @@
     [status-im.multiaccounts.update.core :as update.core]
     [status-im.pairing.core :as models.pairing]
     [utils.re-frame :as rf]
-    [status-im.utils.types :as types]
+    [status-im.utils.deprecated-types :as types]
     [status-im.visibility-status-updates.core :as models.visibility-status-updates]
     [status-im2.contexts.shell.activity-center.events :as activity-center]
     [status-im2.contexts.chat.messages.pin.events :as messages.pin]
@@ -51,6 +51,7 @@
         ^js cleared-histories          (.-clearedHistories response-js)
         ^js identity-images            (.-identityImages response-js)
         ^js accounts                   (.-accounts response-js)
+        ^js ens-username-details-js    (.-ensUsernameDetails response-js)
         sync-handler                   (when-not process-async process-response)]
     (cond
 
@@ -193,7 +194,14 @@
         (rf/merge cofx
                   (process-next response-js sync-handler)
                   (models.visibility-status-updates/sync-visibility-status-update
-                   current-visibility-status-clj))))))
+                   current-visibility-status-clj)))
+
+      (seq ens-username-details-js)
+      (let [ens-username-details-clj (types/js->clj ens-username-details-js)]
+        (js-delete response-js "ensUsernameDetails")
+        (rf/merge cofx
+                  (process-next response-js sync-handler)
+                  (rf/dispatch [:ens/update-usernames ens-username-details-clj]))))))
 
 (defn group-by-and-update-unviewed-counts
   "group messages by current chat, profile updates, transactions and update unviewed counters in db for not curent chats"

@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [native-module.core :as native-module]
             [re-frame.core :as re-frame]
-            [status-im.utils.types :as types]
+            [utils.transforms :as transforms]
             [status-im2.config :as config]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
@@ -21,7 +21,7 @@
 (defn setup
   [level]
   (let [handle-error   (fn [res]
-                         (let [{:keys [error]} (types/json->clj res)]
+                         (let [{:keys [error]} (transforms/json->clj res)]
                            (when-not (string/blank? error)
                              (log/error "init statusgo logging failed" error))))
         logging-params {:enable?        true

@@ -7,7 +7,7 @@
             [react-native.fs :as fs]
             [status-im2.constants :as constants]
             [utils.re-frame :as rf]
-            [status-im.utils.platform :as platform]
+            [react-native.platform :as platform]
             [taoensso.timbre :as log]))
 
 (def temp-image-url (str (fs/cache-dir) "/StatusIm_Image.jpeg"))

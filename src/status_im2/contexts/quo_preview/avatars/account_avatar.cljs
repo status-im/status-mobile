@@ -25,9 +25,7 @@
                :value "48"}
               {:key   80
                :value "80"}]}
-   {:label "Emoji"
-    :key   :emoji
-    :type  :text}
+   {:key :emoji :type :text}
    (preview/customization-color-option)])
 
 (defn view

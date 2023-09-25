@@ -16,9 +16,9 @@
 
 (defn header-text-view
   [window-width]
-  {:flex-direction :column
-   :width          window-width
-   :padding-left   20})
+  {:flex-direction     :column
+   :width              window-width
+   :padding-horizontal 20})
 
 (def carousel-text
   {:color colors/white})
@@ -64,7 +64,6 @@
 (defn carousel-container
   [left animate?]
   (cond->> {:position       :absolute
-            :right          0
             :top            0
             :flex-direction :row
             :left           left}

@@ -12,8 +12,8 @@
    :height       20})
 
 (defn tab-count
-  [active?]
-  {:color (if (or active? (colors/dark?)) colors/white colors/neutral-100)})
+  [active? theme]
+  {:color (if (or active? (= :dark theme)) colors/white colors/neutral-100)})
 
 (def tabs-container
   {:flex          1

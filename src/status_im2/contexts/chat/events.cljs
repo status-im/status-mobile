@@ -14,11 +14,11 @@
             [status-im.data-store.chats :as chats-store]
             [status-im2.contexts.contacts.events :as contacts-store]
             [status-im.utils.clocks :as utils.clocks]
-            [status-im.utils.types :as types]
+            [utils.transforms :as transforms]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im.async-storage.core :as async-storage]
+            [react-native.async-storage :as async-storage]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [status-im2.common.muting.helpers :refer [format-mute-till]]))
 
@@ -173,9 +173,9 @@
     (chat.state/reset-visible-item)
     (rf/merge cofx
               (merge
-               {:db                  (dissoc db :current-chat-id)
-                ::async-storage/set! {:chat-id nil
-                                      :key-uid nil}}
+               {:db                (dissoc db :current-chat-id)
+                :async-storage-set {:chat-id nil
+                                    :key-uid nil}}
                (let [community-id (get-in db [:chats chat-id :community-id])]
                  ;; When navigating back from community chat to community, update switcher card
                  ;; A close chat event is also called while opening any chat.
@@ -234,7 +234,7 @@
 (rf/defn handle-one-to-one-chat-created
   {:events [:chat/one-to-one-chat-created]}
   [{:keys [db]} chat-id response-js]
-  (let [chat       (chats-store/<-rpc (first (types/js->clj (.-chats ^js response-js))))
+  (let [chat       (chats-store/<-rpc (first (transforms/js->clj (.-chats ^js response-js))))
         contact-js (first (.-contacts ^js response-js))
         contact    (when contact-js (contacts-store/<-rpc-js contact-js))]
     {:db       (cond-> db

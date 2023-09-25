@@ -6,7 +6,7 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im.utils.http :as http]
+    [utils.url :as url]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.style :as style]
     [utils.datetime :as datetime]
@@ -45,8 +45,7 @@
 (defn drawer
   [messages index]
   (let [{:keys [content]} (nth messages index)
-        uri               (http/replace-port (:image content)
-                                             (rf/sub [:mediaserver/port]))]
+        uri               (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     [quo/action-drawer
      [[{:icon                :i/save
         :accessibility-label :save-image
@@ -65,8 +64,7 @@
 (defn share-image
   [messages index]
   (let [{:keys [content]} (nth messages index)
-        uri               (http/replace-port (:image content)
-                                             (rf/sub [:mediaserver/port]))]
+        uri               (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     (images/share-image uri)))
 
 (defn top-view

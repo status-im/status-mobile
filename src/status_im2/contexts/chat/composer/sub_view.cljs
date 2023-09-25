@@ -10,18 +10,18 @@
     [utils.re-frame :as rf]))
 
 (defn bar
-  []
+  [theme]
   [rn/view {:style style/bar-container}
-   [rn/view {:style (style/bar)}]])
+   [rn/view {:style (style/bar theme)}]])
 
 (defn f-blur-view
-  [layout-height focused?]
+  [{:keys [layout-height focused? theme]}]
   [reanimated/view {:style (style/blur-container layout-height focused?)}
-   [blur/view (style/blur-view)]])
+   [blur/view (style/blur-view theme)]])
 
 (defn blur-view
-  [layout-height focused?]
-  [:f> f-blur-view layout-height focused?])
+  [props]
+  [:f> f-blur-view props])
 
 (defn- f-shell-button
   [{:keys [focused?]} scroll-to-bottom-fn show-floating-scroll-down-button?]

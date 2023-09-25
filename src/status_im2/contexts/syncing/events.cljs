@@ -3,13 +3,13 @@
             [re-frame.core :as re-frame]
             [status-im.data-store.settings :as data-store.settings]
             [status-im.node.core :as node]
-            [status-im.utils.platform :as utils.platform]
             [status-im2.config :as config]
             [status-im2.constants :as constants]
             [taoensso.timbre :as log]
             [utils.re-frame :as rf]
             [utils.security.core :as security]
-            [utils.transforms :as transforms]))
+            [utils.transforms :as transforms]
+            [react-native.platform :as platform]))
 
 (rf/defn local-pairing-update-role
   {:events [:syncing/update-role]}
@@ -60,7 +60,7 @@
                                         {:receiverConfig {:kdfIterations config/default-kdf-iterations
                                                           :nodeConfig final-node-config
                                                           :settingCurrentNetwork config/default-network
-                                                          :deviceType utils.platform/os
+                                                          :deviceType platform/os
                                                           :deviceName
                                                           (native-module/get-installation-name)}}))]
             (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
@@ -87,7 +87,7 @@
                                    (clj->js {:senderConfig {:keyUID       key-uid
                                                             :keystorePath ""
                                                             :password     sha3-pwd
-                                                            :deviceType   utils.platform/os}
+                                                            :deviceType   platform/os}
                                              :serverConfig {:timeout 0}}))]
         (native-module/get-connection-string-for-bootstrapping-another-device
          config-map

@@ -8,7 +8,8 @@
             [status-im2.contexts.communities.home.view :as communities]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [status-im2.contexts.shell.jump-to.components.home-stack.style :as style]
-            [status-im.ui.screens.browser.stack :as browser.stack]))
+            [status-im.ui.screens.browser.stack :as browser.stack]
+            [quo2.theme :as quo.theme]))
 
 (defn load-stack?
   [stack-id]
@@ -44,8 +45,9 @@
 
 (defn f-home-stack
   []
-  (let [shared-values @state/shared-values-atom]
-    [reanimated/view {:style (style/home-stack shared-values (utils/dimensions))}
+  (let [shared-values @state/shared-values-atom
+        theme         (quo.theme/use-theme-value)]
+    [reanimated/view {:style (style/home-stack shared-values (assoc (utils/dimensions) :theme theme))}
      [lazy-screen :communities-stack shared-values]
      [lazy-screen :chats-stack shared-values]
      [lazy-screen :browser-stack shared-values]

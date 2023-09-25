@@ -2,7 +2,7 @@
   (:require [status-im2.config :as config]
             [native-module.core :as native-module]
             [clojure.string :as string]
-            [utils.transforms :as types]
+            [utils.transforms :as transforms]
             [utils.re-frame :as rf]))
 
 (defn login
@@ -47,7 +47,7 @@
 (rf/defn get-node-config-callback
   {:events [:profile.config/get-node-config-callback]}
   [{:keys [db]} node-config-json]
-  (let [node-config (types/json->clj node-config-json)]
+  (let [node-config (transforms/json->clj node-config-json)]
     {:db (assoc-in db
           [:profile/profile :wakuv2-config]
           (get node-config :WakuV2Config))}))

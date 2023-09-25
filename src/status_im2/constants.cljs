@@ -354,3 +354,6 @@
   {:ios             "Inter-Medium.otf"
    :android         "Inter-Medium.ttf"
    :uppercase-ratio 0.603861228044709})
+
+(def ^:const ens-action-type-register 1)
+(def ^:const ens-action-type-set-pub-key 2)

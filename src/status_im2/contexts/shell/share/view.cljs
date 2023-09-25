@@ -11,20 +11,30 @@
             [utils.image-server :as image-server]
             [react-native.navigation :as navigation]
             [clojure.string :as string]
-            [utils.address :as address]))
+            [utils.address :as address]
+            [react-native.platform :as platform]))
 
 (defn header
   []
   [:<>
-   [quo/button
-    {:icon-only?          true
-     :type                :grey
-     :background          :blur
-     :size                32
-     :accessibility-label :close-shell-share-tab
-     :container-style     style/header-button
-     :on-press            #(rf/dispatch [:navigate-back])}
-    :i/close]
+   [rn/view {:style style/header-row}
+    [quo/button
+     {:icon-only?          true
+      :type                :grey
+      :background          :blur
+      :size                32
+      :accessibility-label :close-shell-share-tab
+      :container-style     style/header-button
+      :on-press            #(rf/dispatch [:navigate-back])}
+     :i/close]
+    [quo/button
+     {:icon-only?          true
+      :type                :grey
+      :background          :blur
+      :size                32
+      :accessibility-label :shell-scan-button
+      :on-press            #(rf/dispatch [:navigate-back])}
+     :i/scan]]
    [quo/text
     {:size   :heading-1
      :weight :semi-bold
@@ -154,5 +164,8 @@
       [rn/view
        {:flex        1
         :padding-top (navigation/status-bar-height)}
-       [blur/view style/blur]
+       [blur/view
+        {:style       style/blur
+         :blur-amount 20
+         :blur-radius (if platform/android? 25 10)}]
        [tab-content window-width]])))

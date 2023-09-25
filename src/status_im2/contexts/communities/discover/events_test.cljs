@@ -4,16 +4,12 @@
 
 (deftest rename-contract-community-key-test
   (are [i e] (= (events/rename-contract-community-key i) e)
-   :foo           :foo
-   :fooBar        :foo-bar
-   :fooBarBaz     :foo-bar-baz
-   :isFoo         :is-foo?
-   :isFooBar      :is-foo-bar?
-   :canFoo        :can-foo?
-   :canFooBar     :can-foo-bar?
-   :0x025d27e58   "0x025d27e58"
-   :093b4684-92f0 "093b4684-92f0"
-   :3f9e77b8-97c7 "3f9e77b8-97c7"))
+   :requestedAccessAt           :requested-access-at
+   :canDeleteMessageForEveryone :can-delete-message-for-everyone?
+   :name                        :name
+   :0x025d27e58                 "0x025d27e58"
+   :093b4684-92f0               "093b4684-92f0"
+   :3f9e77b8-97c7               "3f9e77b8-97c7"))
 
 (deftest rename-contract-community-keys-test
   (are [i e] (= (events/rename-contract-community-keys i) e)

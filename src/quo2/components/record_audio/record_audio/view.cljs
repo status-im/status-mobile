@@ -17,7 +17,8 @@
             [quo2.components.record-audio.record-audio.buttons.record-button :as record-button]
             [clojure.string :as string]
             [utils.datetime :as datetime]
-            [react-native.platform :as platform]))
+            [react-native.platform :as platform]
+            [quo2.theme :as quo.theme]))
 
 (def ^:private min-audio-duration-ms 1000)
 (def ^:private max-audio-duration-ms (if platform/ios? 120800 120500))
@@ -155,11 +156,11 @@
       (if @playing-audio? :i/pause :i/play)
       {:color (colors/theme-colors colors/neutral-100 colors/white)}]]))
 
-(defn record-audio
+(defn- record-audio-internal
   [{:keys [on-init on-start-recording on-send on-cancel on-reviewing-audio
            record-audio-permission-granted
            on-request-record-audio-permission on-check-audio-permissions
-           audio-file on-lock max-duration-ms]}]
+           audio-file on-lock max-duration-ms theme]}]
   [:f>
    ;; TODO we need to refactor this, and use :f> with defined function, currenly state is reseted each
    ;; time parent component
@@ -574,20 +575,23 @@
            [:f> send-button/f-send-button recording? ready-to-send? reviewing-audio?
             @force-show-controls?]
            [:f> record-button-big/f-record-button-big
-            recording?
-            ready-to-send?
-            ready-to-lock?
-            ready-to-delete?
-            record-button-is-animating?
-            record-button-at-initial-position?
-            locked?
-            reviewing-audio?
-            recording-length-ms
-            clear-timeout
-            touch-active?
-            recorder-ref
-            reload-recorder
-            idle?
-            on-send
-            on-cancel]
+            {:recording?                         recording?
+             :ready-to-send?                     ready-to-send?
+             :ready-to-lock?                     ready-to-lock?
+             :ready-to-delete?                   ready-to-delete?
+             :record-button-is-animating?        record-button-is-animating?
+             :record-button-at-initial-position? record-button-at-initial-position?
+             :locked?                            locked?
+             :reviewing-audio?                   reviewing-audio?
+             :recording-length-ms                recording-length-ms
+             :clear-timeout                      clear-timeout
+             :touch-active?                      touch-active?
+             :recorder-ref                       recorder-ref
+             :reload-recorder-fn                 reload-recorder
+             :idle?                              idle?
+             :on-send                            on-send
+             :on-cancel                          on-cancel
+             :theme                              theme}]
            [:f> record-button/f-record-button recording? reviewing-audio?]]])))])
+
+(def record-audio (quo.theme/with-theme record-audio-internal))

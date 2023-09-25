@@ -116,7 +116,5 @@
                    :justify-content  :center
                    :margin-left      8}}
           [icon/icon :i/check {:color colors/white :size 16}]]]
-        [rn/view {:style {:flex 1}}
-         [preview/customizer state descriptor]]
-        [rn/view {:style {:align-items :center :margin-top 40}}
+        [rn/view {:style {:align-items :center :margin-bottom 20}}
          [quo/account-card @state]]])]))

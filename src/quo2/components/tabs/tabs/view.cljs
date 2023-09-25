@@ -70,8 +70,7 @@
            on-change
            scroll-on-press?
            size
-           style
-          ]}]
+           style]}]
   [rn/view
    {:style (style/tab {:size             size
                        :default-tab-size default-tab-size
@@ -132,6 +131,7 @@
                scroll-on-press?
                scrollable?
                style
+               container-style
                size
                blur?
                in-scroll-view?
@@ -159,35 +159,36 @@
              :size)
             (when scroll-on-press?
               {:initial-scroll-index (utils.collection/first-index #(= @active-tab-id (:id %)) data)})
-            {:ref                               #(reset! flat-list-ref %)
-             :style                             style
+            {:ref #(reset! flat-list-ref %)
+             :style style
              ;; The padding-top workaround is needed because on Android
              ;; {:overflow :visible} doesn't work on components inheriting
              ;; from ScrollView (e.g. FlatList). There are open issues, here's
              ;; just one about this topic:
              ;; https://github.com/facebook/react-native/issues/31218
-             :content-container-style           {:padding-top (dec unread-count-offset)}
-             :horizontal                        true
-             :scroll-event-throttle             64
+             :content-container-style
+             (assoc container-style :padding-top (dec unread-count-offset))
+             :horizontal true
+             :scroll-event-throttle 64
              :shows-horizontal-scroll-indicator false
-             :data                              data
-             :key-fn                            (comp str :id)
-             :on-scroll-to-index-failed         identity
-             :on-scroll                         (partial on-scroll-handler
-                                                         {:fade-end-percentage fade-end-percentage
-                                                          :fade-end?           fade-end?
-                                                          :fading              fading
-                                                          :on-scroll           on-scroll})
-             :render-fn                         tab-view
-             :render-data                       {:active-tab-id       active-tab-id
-                                                 :blur?               blur?
-                                                 :customization-color customization-color
-                                                 :flat-list-ref       flat-list-ref
-                                                 :number-of-items     (count data)
-                                                 :on-change           on-change
-                                                 :scroll-on-press?    scroll-on-press?
-                                                 :size                size
-                                                 :style               style}})]]]
+             :data data
+             :key-fn (comp str :id)
+             :on-scroll-to-index-failed identity
+             :on-scroll (partial on-scroll-handler
+                                 {:fade-end-percentage fade-end-percentage
+                                  :fade-end?           fade-end?
+                                  :fading              fading
+                                  :on-scroll           on-scroll})
+             :render-fn tab-view
+             :render-data {:active-tab-id       active-tab-id
+                           :blur?               blur?
+                           :customization-color customization-color
+                           :flat-list-ref       flat-list-ref
+                           :number-of-items     (count data)
+                           :on-change           on-change
+                           :scroll-on-press?    scroll-on-press?
+                           :size                size
+                           :style               style}})]]]
         [rn/view (merge style {:flex-direction :row})
          (map-indexed (fn [index item]
                         ^{:key (:id item)}
@@ -198,6 +199,5 @@
                           :number-of-items     (count data)
                           :on-change           on-change
                           :size                size
-                          :style               style}
-                        ])
+                          :style               style}])
                       data)]))))

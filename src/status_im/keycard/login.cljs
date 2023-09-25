@@ -7,7 +7,7 @@
             [status-im.keycard.recovery :as recovery]
             [status-im.signing.core :as signing.core]
             [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))
 

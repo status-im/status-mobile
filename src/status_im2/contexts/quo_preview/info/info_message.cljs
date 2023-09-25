@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.info.info-message
-  (:require [quo2.components.info.info-message :as quo]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 

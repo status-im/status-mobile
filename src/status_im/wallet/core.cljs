@@ -3,7 +3,7 @@
     [clojure.set :as set]
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im.async-storage.core :as async-storage]
+    [react-native.async-storage :as async-storage]
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.contact.db :as contact.db]
     [status-im.ethereum.core :as ethereum]
@@ -803,21 +803,18 @@
  ::start-watching
  (fn [hashes]
    (log/info "[wallet] watch transactions" hashes)
-   (doseq [[address tx-hash] hashes]
+   (doseq [[address tx-hash chain-id] hashes]
      (json-rpc/call
-      {:method     "wallet_watchTransaction"
-       :params     [tx-hash]
+      {:method     "wallet_watchTransactionByChainID"
+       :params     [chain-id tx-hash]
        :on-success #(re-frame.core/dispatch [::transaction-included address tx-hash])
        :on-error   #(log/info "[wallet] watch transaction error" % "hash" tx-hash)}))))
 
 (rf/defn watch-tx
   {:events [:watch-tx]}
   [{:keys [db] :as cofx} address tx-id]
-  {::start-watching [[address tx-id]]})
-
-(rf/defn watch-transsactions
-  [_ hashes]
-  {::start-watching hashes})
+  (let [chain-id (ethereum/chain-id db)]
+    {::start-watching [[address tx-id chain-id]]}))
 
 (rf/defn clear-timeouts
   [{:keys [db]}]
@@ -829,8 +826,8 @@
 (rf/defn get-buy-crypto-preference
   {:events [::get-buy-crypto]}
   [_]
-  {::async-storage/get {:keys [:buy-crypto-hidden]
-                        :cb   #(re-frame/dispatch [::store-buy-crypto-preference %])}})
+  {:async-storage-get {:keys [:buy-crypto-hidden]
+                       :cb   #(re-frame/dispatch [::store-buy-crypto-preference %])}})
 
 (rf/defn wallet-will-focus
   {:events [::wallet-stack]}
@@ -851,8 +848,8 @@
 (rf/defn hide-buy-crypto
   {:events [::hide-buy-crypto]}
   [{:keys [db]}]
-  {:db                  (assoc db :wallet/buy-crypto-hidden true)
-   ::async-storage/set! {:buy-crypto-hidden true}})
+  {:db                (assoc db :wallet/buy-crypto-hidden true)
+   :async-storage-set {:buy-crypto-hidden true}})
 
 (rf/defn store-buy-crypto
   {:events [::store-buy-crypto-preference]}
@@ -1013,7 +1010,7 @@
                  db)))
            db
            (map (partial normalize-transaction db) raw-transactions))
-   ::start-watching (map (juxt :from :hash) raw-transactions)})
+   ::start-watching (map (juxt :from :hash :network_id) raw-transactions)})
 
 (re-frame/reg-fx
  :wallet/delete-pending-transactions
@@ -1028,8 +1025,8 @@
 (rf/defn switch-transactions-management-enabled
   {:events [:multiaccounts.ui/switch-transactions-management-enabled]}
   [{:keys [db]} enabled?]
-  {::async-storage/set! {:transactions-management-enabled? enabled?}
-   :db                  (assoc db :wallet/transactions-management-enabled? enabled?)})
+  {:async-storage-set {:transactions-management-enabled? enabled?}
+   :db                (assoc db :wallet/transactions-management-enabled? enabled?)})
 
 (re-frame/reg-fx
  :wallet/initialize-transactions-management-enabled

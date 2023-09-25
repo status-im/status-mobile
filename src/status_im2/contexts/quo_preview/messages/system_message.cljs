@@ -1,58 +1,44 @@
 (ns status-im2.contexts.quo-preview.messages.system-message
-  (:require [quo2.components.messages.system-message :as system-message]
+  (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Message Type"
+  [{:label "Message Content"
+    :key   :content
+    :type  :text}
+   {:label   "Message Type"
     :key     :type
     :type    :select
     :options [{:value "Message pinned"
                :key   :pinned}
-              {:value "Contact request"
-               :key   :contact-request}
+              {:key :contact-request}
               {:value "User added"
                :key   :added}
               {:value "User removed"
                :key   :removed}
               {:value "Message deleted"
                :key   :deleted}]}
-   {:label   "Action"
-    :key     :action
-    :type    :select
-    :options [{:value "none"
-               :key   nil}
-              {:value "Undo"
-               :key   :undo}]}
-   {:label "Pinned By"
-    :key   :pinned-by
-    :type  :text}
-   {:label "Content Text"
-    :key   :content-text
-    :type  :text}
-   {:label "Content Info"
-    :key   :content-info
-    :type  :text}])
+   {:key :pinned-by :type :text}
+   {:key :incoming? :type :boolean}
+   (preview/customization-color-option)])
 
 (defn finalize-state
   [state]
   (merge @state
-         {:child        (when (= (:type @state) :pinned) [rn/text "Message content"])
+         {:child        (when (= (:type @state) :pinned) [rn/text (:content @state)])
           :display-name (:pinned-by @state)}))
 
-(defn preview-system-message
+(defn view
   []
-  (let [state (reagent/atom {:type         :pinned
-                             :pinned-by    "Steve"
-                             :timestamp    "09:41"
-                             :content-text "Hello! This is an example of a pinned message!"
-                             :content-info "3 photos"})]
+  (let [state (reagent/atom {:type      :pinned
+                             :pinned-by "Steve"
+                             :timestamp "09:41"
+                             :content   "Hello! This is an example of a content!"})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view {:padding-bottom 150}
-        [rn/view
-         {:padding-vertical 60 :flex 1}
-         [system-message/system-message (finalize-state state)]]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-vertical 60}}
+       [quo/system-message (finalize-state state)]])))

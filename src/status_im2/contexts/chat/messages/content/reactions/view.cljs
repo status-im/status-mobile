@@ -3,7 +3,8 @@
             [quo2.core :as quo]
             [react-native.core :as rn]
             [utils.re-frame :as rf]
-            [status-im2.contexts.chat.messages.drawers.view :as drawers]))
+            [status-im2.contexts.chat.messages.drawers.view :as drawers]
+            [quo2.theme :as quo.theme]))
 
 (defn- on-press
   [own message-id emoji-id emoji-reaction-id]
@@ -17,26 +18,29 @@
                    :emoji-id   emoji-id}])))
 
 (defn- on-long-press
-  [message-id emoji-id user-message-content reactions]
-  (rf/dispatch [:chat.ui/emoji-reactions-by-message-id
-                {:message-id message-id
-                 :on-success (fn [response]
-                               (rf/dispatch [:chat/save-emoji-reaction-details
-                                             {:reaction-authors-list response
-                                              :selected-reaction     emoji-id}])
-                               (rf/dispatch [:dismiss-keyboard])
-                               (rf/dispatch [:show-bottom-sheet
-                                             {:on-close (fn []
-                                                          (rf/dispatch
-                                                           [:chat/clear-emoji-reaction-author-details]))
-                                              :content (fn []
-                                                         [drawers/reaction-authors reactions])
-                                              :selected-item (fn []
-                                                               user-message-content)
-                                              :padding-bottom-override 0}]))}]))
+  [{:keys [message-id emoji-id user-message-content reactions theme]}]
+  (rf/dispatch
+   [:chat.ui/emoji-reactions-by-message-id
+    {:message-id message-id
+     :on-success (fn [response]
+                   (rf/dispatch [:chat/save-emoji-reaction-details
+                                 {:reaction-authors-list response
+                                  :selected-reaction     emoji-id}])
+                   (rf/dispatch [:dismiss-keyboard])
+                   (rf/dispatch [:show-bottom-sheet
+                                 {:on-close (fn []
+                                              (rf/dispatch
+                                               [:chat/clear-emoji-reaction-author-details]))
+                                  :content (fn []
+                                             [drawers/reaction-authors
+                                              {:reactions-order reactions
+                                               :theme           theme}])
+                                  :selected-item (fn []
+                                                   user-message-content)
+                                  :padding-bottom-override 0}]))}]))
 
-(defn message-reactions-row
-  [{:keys [message-id chat-id]} user-message-content]
+(defn- view-internal
+  [{:keys [message-id chat-id theme]} user-message-content]
   (let [reactions (rf/sub [:chats/message-reactions message-id chat-id])]
     [:<>
      (when (seq reactions)
@@ -55,10 +59,12 @@
              :neutral?            own
              :clicks              quantity
              :on-press            #(on-press own message-id emoji-id emoji-reaction-id)
-             :on-long-press       #(on-long-press message-id
-                                                  emoji-id
-                                                  user-message-content
-                                                  (map :emoji-id reactions))
+             :on-long-press       #(on-long-press
+                                    {:message-id           message-id
+                                     :emoji-id             emoji-id
+                                     :user-message-content user-message-content
+                                     :reactions            (map :emoji-id reactions)
+                                     :theme                theme})
              :accessibility-label (str "emoji-reaction-" emoji-id)}]])
         [quo/add-reaction
          {:on-press (fn []
@@ -70,3 +76,5 @@
                                                  :message-id message-id}])
                          :selected-item (fn []
                                           user-message-content)}]))}]])]))
+
+(def message-reactions-row (quo.theme/with-theme view-internal))

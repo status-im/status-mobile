@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [quo2.core :as quo]
             [react-native.gesture :as gesture]
-            [status-im2.contexts.chat.messages.content.legacy-view :as old-message]
+            [status-im.ui.screens.chat.message.legacy-view :as old-message]
             [status-im2.common.not-implemented :as not-implemented]
             [status-im2.constants :as constants]
             [status-im2.contexts.shell.activity-center.notification.common.view :as common]
@@ -10,7 +10,7 @@
             [utils.datetime :as datetime]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]
-            [status-im.utils.http :as http]))
+            [utils.url :as url]))
 
 ;; NOTE: Replies support text, image and stickers only.
 (defn- get-message-content
@@ -21,7 +21,7 @@
 
     constants/content-type-image
     (let [image           (get-in message [:content :image])
-          image-local-url (http/replace-port image (rf/sub [:mediaserver/port]))
+          image-local-url (url/replace-port image (rf/sub [:mediaserver/port]))
           photos          (when image-local-url [{:uri image-local-url}])]
       [quo/activity-logs-photos {:photos photos}])
 

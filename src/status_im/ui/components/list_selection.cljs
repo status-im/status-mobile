@@ -4,8 +4,8 @@
             [status-im.ui.components.action-sheet :as action-sheet]
             [status-im.ui.components.dialog :as dialog]
             [status-im.ui.components.react :as react]
-            [status-im.utils.http :as http]
-            [status-im.utils.platform :as platform]))
+            [utils.url :as url]
+            [react-native.platform :as platform]))
 
 (defn open-share
   [content]
@@ -29,12 +29,12 @@
          :options     [{:label  (i18n/label :t/browsing-open-in-status)
                         :action #(re-frame/dispatch [:browser.ui/open-url link])}
                        {:label  (i18n/label (platform-web-browser))
-                        :action #(.openURL ^js react/linking (http/normalize-url link))}]
+                        :action #(.openURL ^js react/linking (url/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))
 
 (defn browse-in-web-browser
   [link]
   (show {:title       (i18n/label :t/browsing-title)
          :options     [{:label  (i18n/label (platform-web-browser))
-                        :action #(.openURL ^js react/linking (http/normalize-url link))}]
+                        :action #(.openURL ^js react/linking (url/normalize-url link))}]
          :cancel-text (i18n/label :t/browsing-cancel)}))

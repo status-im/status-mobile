@@ -1,43 +1,30 @@
 (ns status-im2.contexts.quo-preview.markdown.text
-  (:require [quo2.components.markdown.text :as quo2]
-            [react-native.core :as rn]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Size:"
-    :key     :size
+  [{:key     :size
     :type    :select
-    :options [{:key   :heading-1
-               :value "Heading 1"}
-              {:key   :heading-2
-               :value "Heading 2"}
-              {:key   :paragraph-1
-               :value "Paragraph 1"}
-              {:key   :paragraph-2
-               :value "Paragraph 2"}
-              {:key   :label
-               :value "Label"}]}
-   {:label   "Weight:"
-    :key     :weight
+    :options [{:key :heading-1}
+              {:key :heading-2}
+              {:key :paragraph-1}
+              {:key :paragraph-2}
+              {:key :label}]}
+   {:key     :weight
     :type    :select
-    :options [{:key   :regular
-               :value "Regular"}
-              {:key   :medium
-               :value "Medium"}
-              {:key   :semi-bold
-               :value "Semi-bold"}
-              {:key   :monospace
-               :value "Monospace"}]}])
+    :options [{:key :regular}
+              {:key :medium}
+              {:key :semi-bold}
+              {:key :monospace}]}])
 
-(defn preview-text
+(defn view
   []
   (let [state (reagent/atom {})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view {:padding-bottom 150}
-        [rn/view {:padding-vertical 60}
-         [quo2/text @state
-          "The quick brown fox jumped over the lazy dog."]]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-vertical 60}}
+       [quo/text @state
+        "The quick brown fox jumped over the lazy dog."]])))

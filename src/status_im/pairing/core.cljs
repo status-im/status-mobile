@@ -4,7 +4,7 @@
             [status-im.multiaccounts.update.core :as multiaccounts.update]
             [status-im2.config :as config]
             [utils.re-frame :as rf]
-            [status-im.utils.platform :as utils.platform]
+            [react-native.platform :as utils.platform]
             [status-im2.common.json-rpc.events :as json-rpc]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]))

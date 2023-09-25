@@ -43,7 +43,7 @@
     [status-im2.contexts.quo-preview.dividers.new-messages :as new-messages]
     [status-im2.contexts.quo-preview.dividers.strength-divider :as strength-divider]
     [status-im2.contexts.quo-preview.drawers.action-drawers :as action-drawers]
-    [status-im2.contexts.quo-preview.drawers.documentation-drawers :as documenation-drawers]
+    [status-im2.contexts.quo-preview.drawers.documentation-drawers :as documentation-drawers]
     [status-im2.contexts.quo-preview.drawers.drawer-buttons :as drawer-buttons]
     [status-im2.contexts.quo-preview.drawers.drawer-top :as drawer-top]
     [status-im2.contexts.quo-preview.drawers.permission-drawers :as permission-drawers]
@@ -170,7 +170,7 @@
                        {:name      :wallet-ctas
                         :component wallet-ctas/view}]
    :browser           [{:name      :browser-input
-                        :component browser-input/preview-browser-input}]
+                        :component browser-input/view}]
    :calendar          [{:name      :calendar
                         :component calendar/view}
                        {:name      :calendar-day
@@ -210,7 +210,7 @@
    :drawers           [{:name      :action-drawers
                         :component action-drawers/view}
                        {:name      :documentation-drawer
-                        :component documenation-drawers/view}
+                        :component documentation-drawers/view}
                        {:name      :drawer-buttons
                         :component drawer-buttons/view}
                        {:name      :drawer-top
@@ -276,31 +276,31 @@
                        {:name      :preview-lists
                         :component preview-lists/view}
                        {:name      :token-value
-                        :component token-value/preview}
+                        :component token-value/view}
                        {:name      :user-list
                         :options   {:topBar {:visible true}}
-                        :component user-list/preview-user-list}]
+                        :component user-list/view}]
    :loaders           [{:name      :skeleton-list
                         :options   {:topBar {:visible true}}
                         :component skeleton-list/view}]
    :markdown          [{:name      :texts
-                        :component text/preview-text}
+                        :component text/view}
                        {:name      :markdown-list
-                        :component markdown-list/preview-markdown-list}]
+                        :component markdown-list/view}]
    :messages          [{:name      :gap
-                        :component messages-gap/preview-messages-gap}
+                        :component messages-gap/view}
                        {:name      :system-messages
-                        :component system-message/preview-system-message}
+                        :component system-message/view}
                        {:name      :author
-                        :component messages-author/preview-author}]
+                        :component messages-author/view}]
    :navigation        [{:name      :bottom-nav-tab
-                        :component bottom-nav-tab/preview-bottom-nav-tab}
+                        :component bottom-nav-tab/view}
                        {:name      :top-nav
-                        :component top-nav/preview}
+                        :component top-nav/view}
                        {:name      :page-nav
-                        :component page-nav/preview-page-nav}
+                        :component page-nav/view}
                        {:name      :floating-shell-button
-                        :component floating-shell-button/preview-floating-shell-button}]
+                        :component floating-shell-button/view}]
    :notifications     [{:name      :activity-logs
                         :component activity-logs/preview-activity-logs}
                        {:name      :activity-logs-photos

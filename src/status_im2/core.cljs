@@ -15,7 +15,7 @@
     [status-im2.setup.dev :as dev]
     [status-im2.setup.global-error :as global-error]
     [status-im2.common.log :as log]
-    [status-im.async-storage.core :as async-storage]
+    [react-native.async-storage :as async-storage]
     [native-module.core :as native-module]
     [status-im.notifications.local :as notifications]
     [status-im.utils.universal-links.core :as utils.universal-links]

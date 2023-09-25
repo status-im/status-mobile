@@ -4,11 +4,11 @@
             [react-native.gesture :as gesture]
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]
+            [quo2.core :as quo]
             [status-im2.contexts.shell.jump-to.utils :as utils]
             [status-im2.contexts.shell.jump-to.state :as state]
             [status-im2.contexts.shell.jump-to.animation :as animation]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [quo2.components.navigation.bottom-nav-tab.view :as bottom-nav-tab]
             [status-im2.contexts.shell.jump-to.components.bottom-tabs.style :as style]))
 
 (defn blur-overlay-params
@@ -25,7 +25,7 @@
         icon-color          (->> stack-id
                                  (get shell.constants/tabs-icon-color-keywords)
                                  (get shared-values))]
-    [bottom-nav-tab/bottom-nav-tab
+    [quo/bottom-nav-tab
      (-> notifications-data
          (get stack-id)
          (assoc :test-ID             stack-id

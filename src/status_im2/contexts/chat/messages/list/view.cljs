@@ -8,7 +8,6 @@
     [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
     [status-im.ui.screens.chat.group :as chat.group]
     [status-im.ui.screens.chat.message.gap :as message.gap]
     [status-im2.constants :as constants]
@@ -19,7 +18,8 @@
     [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
     [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [quo2.theme :as quo.theme]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -27,11 +27,7 @@
 (defonce ^:const scroll-animation-input-range [50 125])
 (defonce ^:const min-message-height 32)
 
-(defonce extra-keyboard-height (reagent/atom 0))
 (defonce messages-list-ref (atom nil))
-(defonce messages-view-height (reagent/atom 0))
-(defonce messages-view-header-height (reagent/atom 0))
-(defonce show-floating-scroll-down-button? (reagent/atom false))
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
 (defn list-ref [ref] (reset! messages-list-ref ref))
@@ -43,7 +39,7 @@
                             {:animated true})))
 
 (defn on-scroll
-  [evt]
+  [evt show-floating-scroll-down-button?]
   (let [y                  (oops/oget evt "nativeEvent.contentOffset.y")
         layout-height      (oops/oget evt "nativeEvent.layoutMeasurement.height")
         threshold-height   (* (/ layout-height 100)
@@ -83,8 +79,8 @@
                                                    on-loaded])
                                     (if platform/low-device? 700 100)))))
 
-(defn contact-icon
-  [{:keys [ens-verified added?]}]
+(defn- contact-icon
+  [{:keys [ens-verified added?]} theme]
   (when (or ens-verified added?)
     [rn/view
      {:style {:padding-left 10
@@ -93,25 +89,28 @@
        [quo/icon :i/verified
         {:no-color true
          :size     20
-         :color    (colors/theme-colors colors/success-50 colors/success-60)}]
+         :color    (colors/theme-colors
+                    (colors/custom-color :success 50)
+                    (colors/custom-color :success 60)
+                    theme)}]
        (when added?
          [quo/icon :i/contact
           {:no-color true
            :size     20
-           :color    (colors/theme-colors colors/primary-50 colors/primary-60)}]))]))
+           :color    (colors/theme-colors colors/primary-50 colors/primary-60 theme)}]))]))
 
 (def header-extrapolation-option
   {:extrapolateLeft  "clamp"
    :extrapolateRight "clamp"})
 
-(defn skeleton-list-props
+(defn- skeleton-list-props
   [content parent-height animated?]
   {:content       content
    :parent-height parent-height
    :animated?     animated?})
 
 (defn loading-view
-  [chat-id]
+  [chat-id messages-view-height messages-view-header-height]
   (let [loading-messages?   (rf/sub [:chats/loading-messages? chat-id])
         all-loaded?         (rf/sub [:chats/all-loaded? chat-id])
         messages            (rf/sub [:chats/raw-chat-messages-stream chat-id])
@@ -128,9 +127,9 @@
        [quo/skeleton-list (skeleton-list-props :messages parent-height true)]])))
 
 (defn list-header
-  [insets able-to-send-message?]
+  [insets able-to-send-message? theme]
   [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-95)
+   {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)
     :height           (+ (if able-to-send-message?
                            (+ composer.constants/composer-default-height
                               jump-to.constants/floating-shell-button-height
@@ -190,7 +189,8 @@
                                                       chat-id]))}]}]))
 
 (defn f-list-footer
-  [{:keys [chat scroll-y cover-bg-color on-layout]}]
+  [{:keys [chat scroll-y cover-bg-color on-layout theme messages-view-height
+           messages-view-header-height]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]} chat
         all-loaded?          (rf/sub [:chats/all-loaded? chat-id])
@@ -211,10 +211,10 @@
                                                      header-extrapolation-option)]
     [rn/view (add-inverted-y-android {:flex 1})
      [rn/view
-      {:style     (style/header-container all-loaded?)
+      {:style     (style/header-container all-loaded? theme)
        :on-layout on-layout}
-      [rn/view {:style (style/header-cover cover-bg-color)}]
-      [reanimated/view {:style (style/header-bottom-part border-animation)}
+      [rn/view {:style (style/header-cover cover-bg-color theme)}]
+      [reanimated/view {:style (style/header-bottom-part border-animation theme)}
        [rn/view {:style style/header-avatar}
         [rn/view {:style {:align-items :flex-start}}
          (when-not group-chat
@@ -223,19 +223,18 @@
              :display-name    display-name
              :online?         online?
              :profile-picture photo-path}])]
-        [rn/view {:style style/name-container}
-         [quo/text
-          {:weight          :semi-bold
-           :size            :heading-1
-           :style           {:margin-top (if group-chat 54 12)}
-           :number-of-lines 1}
-          display-name
-          [contact-icon contact]]]
+        [quo/text
+         {:weight          :semi-bold
+          :size            :heading-1
+          :style           {:margin-top (if group-chat 54 12)}
+          :number-of-lines 1}
+         display-name
+         [contact-icon contact theme]]
         (when bio
           [quo/text {:style style/bio}
            bio])
         [actions chat-id cover-bg-color]]]]
-     [loading-view chat-id]]))
+     [loading-view chat-id messages-view-height messages-view-header-height]]))
 
 (defn list-footer
   [props]
@@ -246,17 +245,18 @@
   [rn/view
    [chat.group/group-chat-footer chat-id invitation-admin]])
 (defn footer-on-layout
-  [e]
+  [e messages-view-header-height]
   (let [height (oops/oget e "nativeEvent.layout.height")
         y      (oops/oget e "nativeEvent.layout.y")]
     (reset! messages-view-header-height (+ height y))))
 
 (defn render-fn
-  [{:keys [type value content-type] :as message-data} _ _
+  [{:keys [type value content-type theme] :as message-data} _ _
    {:keys [context keyboard-shown?]}]
   (when (not= content-type constants/content-type-contact-request)
     [rn/view
-     (add-inverted-y-android {:background-color (colors/theme-colors colors/white colors/neutral-95)})
+     (add-inverted-y-android
+      {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
      (cond
        (= type :datemark)
        [quo/divider-date value]
@@ -275,28 +275,38 @@
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn f-messages-list-content
-  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown?]}]
-  (let [{window-height :height}   (rn/get-window)
-        {:keys [keyboard-height]} (hooks/use-keyboard)
-        context                   (rf/sub [:chats/current-chat-message-list-view-context])
-        messages                  (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
-        recording?                (rf/sub [:chats/recording?])
-        all-loaded?               (rf/sub [:chats/all-loaded? (:chat-id chat)])]
+  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms]}]
+  (let [theme                                 (quo.theme/use-theme-value)
+        {window-height :height}               (rn/get-window)
+        {:keys [keyboard-height]}             (hooks/use-keyboard)
+        context                               (rf/sub [:chats/current-chat-message-list-view-context])
+        messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        recording?                            (rf/sub [:chats/recording?])
+        all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
+        {:keys [show-floating-scroll-down-button?
+                messages-view-height
+                messages-view-header-height]} inner-state-atoms]
     [rn/view {:style {:flex 1}}
      [rn/flat-list
       {:key-fn                            list-key-fn
        :ref                               list-ref
        :header                            [:<>
-                                           [list-header insets (:able-to-send-message? context)]
+                                           [list-header insets (:able-to-send-message? context) theme]
                                            (when (= (:chat-type chat) constants/private-group-chat-type)
                                              [list-group-chat-header chat])]
        :footer                            [list-footer
-                                           {:chat           chat
-                                            :scroll-y       scroll-y
-                                            :cover-bg-color cover-bg-color
-                                            :on-layout      footer-on-layout}]
+                                           {:theme                       theme
+                                            :chat                        chat
+                                            :scroll-y                    scroll-y
+                                            :cover-bg-color              cover-bg-color
+                                            :on-layout                   #(footer-on-layout
+                                                                           %
+                                                                           messages-view-header-height)
+                                            :messages-view-header-height messages-view-header-height
+                                            :messages-view-height        messages-view-height}]
        :data                              messages
-       :render-data                       {:context         context
+       :render-data                       {:theme           theme
+                                           :context         context
                                            :keyboard-shown? keyboard-shown?
                                            :insets          insets}
        :render-fn                         render-fn
@@ -332,8 +342,7 @@
        :scroll-event-throttle             16
        :on-scroll                         (fn [event]
                                             (scroll-handler event scroll-y)
-                                            (when on-scroll
-                                              (on-scroll event)))
+                                            (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
                                                                 (colors/theme-colors
@@ -342,10 +351,12 @@
                                                                                       20)
                                                                  (colors/custom-color cover-bg-color
                                                                                       50
-                                                                                      40))
+                                                                                      40)
+                                                                 theme)
                                                                 (colors/theme-colors
                                                                  colors/white
-                                                                 colors/neutral-95))})
+                                                                 colors/neutral-95
+                                                                 theme))})
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
        :inverted                          (when platform/ios? true)
        :on-layout                         (fn [e]
