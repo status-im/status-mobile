@@ -24,7 +24,8 @@
       [preview/preview-container
        {:state                 state
         :descriptor            descriptor
-        :show-blur-background? @blur?
+        :show-blur-background? true
+        :blur-dark-only?       true
         :blur?                 @blur?
         :blur-height           150}
        [quo/section-label
