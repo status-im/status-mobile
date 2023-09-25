@@ -25,13 +25,13 @@
       [rn/scroll-view
        {:horizontal                        true
         :shows-horizontal-scroll-indicator false}
-       (doall (map-indexed (fn [index color]
-                             [color/view
-                              {:selected? (= color @internal-selected)
-                               :on-press  #(on-change-handler internal-selected % on-change)
-                               :blur?     blur?
-                               :key       color
-                               :color     color}])
-                           ;; TODO: using :feng-shui? temporarily while b & w is being developed.
-                           ;; https://github.com/status-im/status-mobile/issues/15442
-                           (if feng-shui? (conj color-list :feng-shui) color-list)))])))
+       (doall (map (fn [color]
+                     [color/view
+                      {:selected? (= color @internal-selected)
+                       :on-press  #(on-change-handler internal-selected % on-change)
+                       :blur?     blur?
+                       :key       color
+                       :color     color}])
+                   ;; TODO: using :feng-shui? temporarily while b & w is being developed.
+                   ;; https://github.com/status-im/status-mobile/issues/15442
+                   (if feng-shui? (conj color-list :feng-shui) color-list)))])))
