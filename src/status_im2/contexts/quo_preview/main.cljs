@@ -305,9 +305,9 @@
                        {:name      :activity-logs-photos
                         :component activity-logs-photos/preview-activity-logs-photos}
                        {:name      :toast
-                        :component toast/view}
+                        :component toast/preview-toasts}
                        {:name      :notification
-                        :component notification/view}]
+                        :component notification/preview-notification}]
    :onboarding        [{:name      :small-option-card
                         :component small-option-card/preview-small-option-card}]
    :password          [{:name      :tips

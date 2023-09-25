@@ -86,17 +86,22 @@
                  :duration   3000}])}
             "update above toast"]])))))
 
-(defn view
+(defn preview-toasts
   []
-  [preview/preview-container
-   {:component-container-style
-    {:flex-direction  :column
-     :justify-content :flex-start}}
-   [into
-    [rn/view {:style {:flex 1 :padding 16}}
-     [toast-button-basic]
-     [toast-button-with-undo-action]
-     [toast-button-multiline]
-     [toast-button-30s-duration]
-     [update-toast-button]
-     [update-toast-button]]]])
+  (fn []
+    [preview/preview-container
+     [rn/view
+      {:background-color "#508485"
+       :flex-direction   :column
+       :justify-content  :flex-start
+       :height           300}]
+     [into
+      [rn/view
+       {:flex    1
+        :padding 16}]
+      [^{:key :basic} [toast-button-basic]
+       ^{:key :with-undo-action} [toast-button-with-undo-action]
+       ^{:key :with-multiline} [toast-button-multiline]
+       ^{:key :30s-duration} [toast-button-30s-duration]
+       ^{:key :upsert}
+       [update-toast-button]]]]))
