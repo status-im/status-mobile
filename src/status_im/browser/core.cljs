@@ -20,7 +20,7 @@
     [utils.url :as url]
     [react-native.platform :as platform]
     [status-im.utils.random :as random]
-    [status-im.utils.types :as types]
+    [status-im.utils.deprecated-types :as types]
     [status-im.utils.universal-links.utils :as links]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]

@@ -11,7 +11,7 @@
             [status-im2.config :as config]
             [utils.re-frame :as rf]
             [status-im.utils.signing-phrase.core :as signing-phrase]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [utils.security.core :as security]))
 
 (defn normalize-derived-data-keys

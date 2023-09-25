@@ -11,7 +11,7 @@
             [status-im.notifications.android :as pn-android]
             [utils.re-frame :as rf]
             [utils.money :as money]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im.utils.utils :as utils]
             [react-native.core :as rn]))
 

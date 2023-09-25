@@ -5,7 +5,7 @@
             [quo.design-system.colors :as colors]
             [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im.async-storage.core :as async-storage]
             [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
             [status-im.utils.universal-links.core :as universal-links]
