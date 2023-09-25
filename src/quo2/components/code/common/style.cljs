@@ -12,8 +12,8 @@
     :hljs-string       (colors/custom-color-by-theme :turquoise 50 60)
     :hljs-literal      (colors/custom-color-by-theme :turquoise 50 60)
     :hljs-number       (colors/custom-color-by-theme :turquoise 50 60)
-    :hljs-symbol       (colors/custom-color-by-theme :orange 50 60)
-    :hljs-builtin-name (colors/custom-color-by-theme :pink 50 60)
+    :hljs-symbol       (colors/custom-color-by-theme :orange 50 50)
+    :hljs-builtin-name (colors/custom-color-by-theme :pink 50 50)
     :line-number       colors/neutral-40
     nil))
 
@@ -82,9 +82,10 @@
 (defn line-number
   [width preview?]
   (if preview?
-    {:width           width
-     :align-items     :center
-     :justify-content :center}
+    {:width            width
+     :padding-vertical 3
+     :padding-left     8
+     :padding-right    4}
     {:margin-right 20 ; 8+12 margin
      :width        width}))
 

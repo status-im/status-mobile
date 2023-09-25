@@ -75,7 +75,7 @@
         number-rows-to-show (if preview?
                               0
                               (min (count rows) max-lines))
-        line-number-width   (calc-line-number-width font-scale number-rows-to-show)
+        line-number-width   (if preview? 20 (calc-line-number-width font-scale number-rows-to-show))
         truncated?          (< number-rows-to-show total-rows)
         rows-to-show-coll   (if truncated?
                               (as-> rows $
