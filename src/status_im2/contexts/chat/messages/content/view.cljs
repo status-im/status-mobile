@@ -246,10 +246,14 @@
   [rn/view
    {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
     :accessibility-label :chat-item}
-   (if (or (system-message? content-type) deleted? deleted-for-me?)
-     (if (or deleted? deleted-for-me?)
-       [content.deleted/deleted-message message-data]
-       [system-message-content message-data])
+   (cond
+     (system-message? content-type)
+     [system-message-content message-data]
+
+     (or deleted? deleted-for-me?)
+     [content.deleted/deleted-message message-data]
+
+     :else
      [user-message-content
       {:message-data    message-data
        :context         context

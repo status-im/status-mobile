@@ -1,4 +1,4 @@
-(ns quo2.components.messages.system-message
+(ns quo2.components.messages.system-message.view
   (:require
     [clojure.string :as string]
     [quo2.components.avatars.icon-avatar :as icon-avatar]

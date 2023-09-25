@@ -33,19 +33,15 @@
     (i18n/label :t/deleted-this-message)]])
 
 (defn deleted-by-message
-  [{:keys [deleted-by deleted-undoable-till timestamp-str deleted-for-me-undoable-till from]}
-   on-long-press-fn]
+  [{:keys [deleted-by timestamp-str from]}]
   (let [;; deleted message with nil deleted-by is deleted by (:from message)
         display-name (first (rf/sub [:contacts/contact-two-names-by-identity (or deleted-by from)]))
         photo-path   (rf/sub [:chats/photo-path (or deleted-by from)])]
     [quo/system-message
-     {:type             :deleted
-      :timestamp        timestamp-str
-      :child            [user-xxx-deleted-this-message
-                         {:display-name display-name :profile-picture photo-path}]
-      :on-long-press    on-long-press-fn
-      :non-pressable?   (if on-long-press-fn false true)
-      :animate-landing? (or deleted-undoable-till deleted-for-me-undoable-till)}]))
+     {:type      :deleted
+      :timestamp timestamp-str
+      :child     [user-xxx-deleted-this-message
+                  {:display-name display-name :profile-picture photo-path}]}]))
 
 (defn deleted-message
   [{:keys [deleted? deleted-by timestamp-str from] :as message}]
