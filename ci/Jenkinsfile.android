@@ -1,0 +1,91 @@
+#!/usr/bin/env groovy
+library 'status-jenkins-lib@v1.7.14'
+
+/* Options section can't access functions in objects. */
+def isPRBuild = utils.isPRBuild()
+
+pipeline {
+  agent { label 'linux && x86_64 && nix-2.14' }
+
+  options {
+    timestamps()
+    /* Prevent Jenkins jobs from running forever */
+    timeout(time: 30, unit: 'MINUTES')
+    /* Limit builds retained */
+    buildDiscarder(logRotator(
+      numToKeepStr: '10',
+      daysToKeepStr: '20',
+      artifactNumToKeepStr: '10',
+    ))
+    /* Allows combined build to copy */
+    copyArtifactPermission('/status-mobile/*')
+    /* Abort old PR builds. */
+    disableConcurrentBuilds(
+      abortPrevious: isPRBuild
+    )
+  }
+
+  parameters {
+    string(
+      name: 'BUILD_TYPE',
+      description: 'Specify build type. Values: pr / e2e / nightly / release',
+      defaultValue: 'pr',
+    )
+  }
+
+  environment {
+    LANG     = "en_US.UTF-8"
+    LC_ALL   = "en_US.UTF-8"
+    LANGUAGE = "en_US.UTF-8"
+    TARGET   = "android${utils.isE2EBuild() ? "-e2e" : ""}"
+    BUILD_ENV = 'prod'
+    NIX_CONF_DIR = "${env.WORKSPACE}/nix"
+    FASTLANE_DISABLE_COLORS = 1
+  }
+
+  stages {
+    stage('Prep') {
+      steps {
+        script {
+          utils.symlinkEnv()
+          println("Build Number: ${utils.genBuildNumber()}")
+        }
+      }
+    }
+    stage('Bundle') {
+      steps {
+        script { apks = android.bundle() }
+      }
+    }
+    stage('Sign') {
+      steps {
+        script { apks = android.sign(apks) }
+      }
+    }
+    stage('Parallel Upload') {
+      parallel {
+        stage('Archive') {
+          steps { script {
+            apks.each { archiveArtifacts it }
+          } }
+        }
+        stage('Upload') {
+          steps { script {
+            def urls = apks.collect { s3.uploadArtifact(it) }
+            if (urls.size() > 1) { /* Return only the universal APK. */
+              env.PKG_URL = urls.find { it.contains('universal') }
+            } else { /* If no universal is available pick first. */
+              env.PKG_URL = urls.first()
+            }
+            jenkins.setBuildDesc(APK: env.PKG_URL)
+          } }
+        }
+      }
+    }
+  }
+  post {
+    success { script { github.notifyPR(true) } }
+    failure { script { github.notifyPR(false) } }
+    always  { sh 'make purge' }
+  }
+}
