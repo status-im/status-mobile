@@ -77,6 +77,7 @@
     quo2.components.messages.gap
     quo2.components.messages.system-message
     quo2.components.navigation.floating-shell-button.view
+    quo2.components.navigation.bottom-nav-tab.view
     quo2.components.navigation.page-nav.view
     quo2.components.navigation.top-nav.view
     quo2.components.notifications.activity-log.view
@@ -262,6 +263,7 @@
 (def skeleton-list quo2.components.loaders.skeleton-list.view/view)
 
 ;;;; Navigation
+(def bottom-nav-tab quo2.components.navigation.bottom-nav-tab.view/view)
 (def floating-shell-button quo2.components.navigation.floating-shell-button.view/view)
 (def page-nav quo2.components.navigation.page-nav.view/page-nav)
 (def top-nav quo2.components.navigation.top-nav.view/view)
