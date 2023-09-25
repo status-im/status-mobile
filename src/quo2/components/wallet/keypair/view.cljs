@@ -34,7 +34,7 @@
         :size                :small
         :customization-color customization-color}]
       [icon-avatar/icon-avatar
-       {:size    :size/s-32
+       {:size    :size-32
         :icon    :i/placeholder
         :border? true}])))
 
