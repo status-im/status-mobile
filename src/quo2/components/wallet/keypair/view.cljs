@@ -59,35 +59,7 @@
           :accessibility-label :options-button}]])]))
 
 (defn details-view
-<<<<<<< HEAD
-<<<<<<< HEAD
-  [address stored blur? theme]
-  [rn/view
-   {:style {:flex-direction :row
-            :align-items    :center}}
-   [text/text
-    {:size                :paragraph-2
-     :accessibility-label :details
-     :style               {:color (if blur?
-                                    colors/white-opa-40
-                                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
-    (details-string address stored)]
-   (when (= stored :on-keycard)
-     [rn/view {:style {:margin-left 4}}
-      [icon/icon :i/keycard-card
-       {:size  16
-<<<<<<< HEAD
-        :color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]])])
-=======
-        :color (if blur?
-                 colors/white-opa-40
-                 (colors/theme-colors colors/neutral-50 colors/neutral-40))}]])])
->>>>>>> be98d71dc (quo2: keypair blur)
-=======
-  [details stored blur? theme]
-=======
   [{:keys [details stored blur? theme]}]
->>>>>>> 099b4ac61 (review)
   (let [{:keys [address]} details]
     [rn/view
      {:style {:flex-direction :row
@@ -106,7 +78,6 @@
           :color (if blur?
                    colors/white-opa-40
                    (colors/theme-colors colors/neutral-50 colors/neutral-40))}]])]))
->>>>>>> a52fda25e (lint)
 
 (defn- view-internal
   []
