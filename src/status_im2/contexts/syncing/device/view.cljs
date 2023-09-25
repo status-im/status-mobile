@@ -16,6 +16,7 @@
      (cond->
        {:container-style style/device-container
         :title           name
+        :blur?           true
         :image           :icon
         :image-props     (cond (#{:mobile :ios :android} (keyword device-type))
                                :i/mobile

@@ -16,7 +16,7 @@
     [utils.re-frame :as rf]
     [status-im.utils.hex :as utils.hex]
     [utils.money :as money]
-    [status-im.utils.types :as types]
+    [status-im.utils.deprecated-types :as types]
     [status-im.utils.utils :as utils]
     [status-im.wallet.core :as wallet]
     [status-im.wallet.prices :as prices]

@@ -3,7 +3,7 @@
             [native-module.core :as native-module]
             [status-im2.config :as config]
             [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [clojure.string :as string]
             [react-native.platform :as platform]))
 

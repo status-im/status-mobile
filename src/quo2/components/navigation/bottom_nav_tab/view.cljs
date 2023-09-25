@@ -86,6 +86,6 @@
            counter-label]
           [rn/view {:style (styles/notification-dot customization-color)}]))]]))
 
-(defn bottom-nav-tab
+(defn view
   [opts]
   [:f> f-bottom-nav-tab opts])

@@ -5,4 +5,4 @@
   {:border-color  colors/white-opa-5
    :border-radius 16
    :border-width  1
-   :margin-top    12})
+   :margin-top    11})

@@ -5,7 +5,7 @@
             [status-im.data-store.messages :as data-store.messages]
             [status-im.transport.message.protocol :as protocol]
             [react-native.platform :as platform]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
             [status-im2.contexts.chat.messages.list.events :as message-list]
             [status-im2.contexts.chat.messages.list.state :as view.state]

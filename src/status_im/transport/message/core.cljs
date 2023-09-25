@@ -16,7 +16,7 @@
     [status-im.multiaccounts.update.core :as update.core]
     [status-im.pairing.core :as models.pairing]
     [utils.re-frame :as rf]
-    [status-im.utils.types :as types]
+    [status-im.utils.deprecated-types :as types]
     [status-im.visibility-status-updates.core :as models.visibility-status-updates]
     [status-im2.contexts.shell.activity-center.events :as activity-center]
     [status-im2.contexts.chat.messages.pin.events :as messages.pin]
