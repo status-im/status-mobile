@@ -9,11 +9,6 @@
     :type    :select
     :options [{:key :eth}
               {:key :snt}]}
-   {:key     :state
-    :type    :select
-    :options [{:key :default}
-              {:key :pressed}
-              {:key :active}]}
    {:key     :status
     :type    :select
     :options [{:key :empty}
