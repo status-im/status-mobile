@@ -19,12 +19,6 @@
    :align-items       :center
    :justify-content   (if centered? :center :flex-start)})
 
-(def account-switcher-placeholder
-  {:width            32
-   :height           32
-   :border-radius    10
-   :background-color (colors/custom-color :purple 50)})
-
 (def right-actions-container
   {:flex-direction :row})
 

@@ -100,14 +100,26 @@
         window-width    (:width (rn/get-window))]
     [:f>
      (fn []
-       (let [camera-roll-photos (rf/sub [:camera-roll/photos])
-             end-cursor         (rf/sub [:camera-roll/end-cursor])
-             loading?           (rf/sub [:camera-roll/loading-more])
-             has-next-page?     (rf/sub [:camera-roll/has-next-page])
-             selected-album     (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))
-             blur-active?       (> @current-scroll min-scroll-to-blur)
-             window-height      (:height (rn/get-window))
-             top                (reanimated/use-shared-value window-height)]
+       (let [camera-roll-photos  (rf/sub [:camera-roll/photos])
+             end-cursor          (rf/sub [:camera-roll/end-cursor])
+             loading?            (rf/sub [:camera-roll/loading-more])
+             has-next-page?      (rf/sub [:camera-roll/has-next-page])
+             selected-album      (or (rf/sub [:camera-roll/selected-album]) (i18n/label :t/recent))
+             blur-active?        (> @current-scroll min-scroll-to-blur)
+             window-height       (:height (rn/get-window))
+             top                 (reanimated/use-shared-value window-height)
+             show-blur?          (and (not @album?) blur-active?)
+             dropdown-type       (if show-blur? :grey :ghost)
+             dropdown-state      (if @album? :active :default)
+             dropdown-background (when show-blur? :photo)
+             dropdown-on-press   (fn []
+                                   (if-not @album?
+                                     (do
+                                       (reset! album? true)
+                                       (reanimated/animate top 0))
+                                     (do
+                                       (reanimated/animate top window-height)
+                                       (js/setTimeout #(reset! album? false) 300))))]
          [rn/view {:style {:flex 1 :margin-top -20}}
           (when @album?
             [album-selector/album-selector sheet album? selected-album top])
@@ -131,18 +143,10 @@
            [confirm-button @selected-images sending-image close]]
           [rn/view {:style style/buttons-container}
            [quo/dropdown
-            {:type                      :blurred
-             :size                      32
-             :on-change                 (fn []
-                                          (if-not @album?
-                                            (do
-                                              (reset! album? true)
-                                              (reanimated/animate top 0))
-                                            (do
-                                              (reanimated/animate top window-height)
-                                              (js/setTimeout #(reset! album? false) 300))))
-             :selected                  @album?
-             :blur-active?              (and (not @album?) blur-active?)
-             :override-background-color (when-not @album? :transparent)}
+            {:type       dropdown-type
+             :size       :size-32
+             :state      dropdown-state
+             :on-press   dropdown-on-press
+             :background dropdown-background}
             selected-album]
            [clear-button @album? selected-images blur-active?]]]))]))

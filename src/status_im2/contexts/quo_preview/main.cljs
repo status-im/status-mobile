@@ -431,14 +431,14 @@
 
 (defn- category-view
   []
-  (let [open?     (reagent/atom false)
-        on-change #(swap! open? not)]
+  (let [open?    (reagent/atom false)
+        on-press #(swap! open? not)]
     (fn [category]
       [rn/view {:style {:margin-vertical 8}}
        [quo/dropdown
-        {:selected  @open?
-         :on-change on-change
-         :type      :grey}
+        {:type     :grey
+         :state    (if @open? :active :default)
+         :on-press on-press}
         (name (key category))]
        (when @open?
          (for [{category-name :name} (val category)]
