@@ -63,4 +63,10 @@ Documentation change PR (review please): https://github.com/status-im/status.im/
 
 <!-- (PRs will only be accepted if squashed into single commit.) -->
 
+### Before and after screenshots comparison
+
+| Figma (if available) | iOS (if available)    | Android (if available)
+| --- | --- | --- |
+| Please embed Image/Video here of the before and after.  | Please embed Image/Video here of the before and after.  | Please embed Image/Video here of the before and after. |
+
 status: ready <!-- Can be ready or wip -->

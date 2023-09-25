@@ -83,7 +83,8 @@
                label-props]
      :color   [rn/view
                {:style (style/label-dot label-props)}]
-     :preview [preview-list/view {:type (:type label-props)} (:data label-props)]
+     :preview [preview-list/view {:type (:type label-props) :size :size-24}
+               (:data label-props)]
      nil)])
 
 (defn action-component

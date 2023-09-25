@@ -66,9 +66,8 @@
 
        constants/content-type-image
        [quo/preview-list
-        {:type               :collectibles
-         :more-than-99-label (i18n/label :counter-99-plus)
-         :size               :size/s-24}
+        {:type :collectibles
+         :size :size-24}
         data]
 
        constants/content-type-sticker
@@ -125,7 +124,7 @@
     shell.constants/private-group-chat-card
     [quo/group-avatar
      {:customization-color customization-color
-      :size                :size/s-48
+      :size                :size-48
       :override-theme      :dark}]
 
     (shell.constants/community-card

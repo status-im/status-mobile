@@ -23,7 +23,6 @@
         :on-press  #(rf/dispatch [:communities/navigate-to-community (:id item)])}]
       [quo/community-list-item
        {:on-press      (fn []
-                         (rf/dispatch [:communities/load-category-states (:id item)])
                          (rf/dispatch [:dismiss-keyboard])
                          (rf/dispatch [:communities/navigate-to-community (:id item)]))
         :on-long-press #(rf/dispatch
@@ -147,7 +146,6 @@
 
              [quo/community-list-item
               {:on-press      (fn []
-                                (rf/dispatch [:communities/load-category-states (:id community)])
                                 (rf/dispatch [:dismiss-keyboard])
                                 (rf/dispatch [:communities/navigate-to-community (:id community)]))
                :on-long-press #(js/alert "TODO: to be implemented")}

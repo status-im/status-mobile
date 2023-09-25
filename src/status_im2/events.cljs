@@ -16,6 +16,7 @@
             status-im2.contexts.shell.share.events
             status-im2.contexts.syncing.events
             status-im2.contexts.onboarding.common.overlay.events
+            status-im2.common.async-storage
             [status-im2.db :as db]
             [utils.re-frame :as rf]))
 

@@ -40,7 +40,7 @@
  (fn [[multiaccounts port font-file] [_ target-key-uid]]
    (let [{:keys [images ens-name?] :as multiaccount} (get multiaccounts target-key-uid)
          image-name                                  (-> images first :type)
-         override-ring?                              (not ens-name?)]
+         override-ring?                              (when ens-name? false)]
      (when multiaccount
        {:fn
         (if image-name
