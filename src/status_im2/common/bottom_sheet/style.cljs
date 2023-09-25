@@ -3,8 +3,6 @@
             [quo2.theme :as theme]
             [react-native.platform :as platform]))
 
-(def bottom-margin 8)
-
 (defn handle
   [theme]
   {:width            32
@@ -47,7 +45,7 @@
    :bottom           0})
 
 (defn sheet-content
-  [theme padding-bottom-override insets]
+  [theme padding-bottom-override insets sheet-bottom-margin]
   {:position                :absolute
    :background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
    :bottom                  0
@@ -55,15 +53,13 @@
    :right                   0
    :border-top-left-radius  20
    :border-top-right-radius 20
-   :padding-bottom          (or padding-bottom-override (+ (:bottom insets) bottom-margin))})
+   :padding-bottom          (or padding-bottom-override (+ (:bottom insets) sheet-bottom-margin))})
 
 (defn selected-item
-  [theme top sheet-height show-bottom-margin border-radius]
+  [theme top sheet-height sheet-bottom-margin border-radius]
   {:position          :absolute
-   :top               (when (not show-bottom-margin) (- 0 top))
-   ;; Bottom margin of 8 is added when the selected item height is less than
-   ;; the max-height of the selected item view
-   :bottom            (when show-bottom-margin (+ sheet-height 8))
+   :top               (when-not sheet-bottom-margin (- 0 top))
+   :bottom            (when sheet-bottom-margin (+ sheet-height sheet-bottom-margin))
    :overflow          :hidden
    :left              0
    :right             0

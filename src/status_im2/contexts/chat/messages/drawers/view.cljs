@@ -230,7 +230,6 @@
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
                                      (when on-press (on-press)))}]))
-
         (when-not (empty? danger-actions)
           [quo/separator])
 
@@ -246,7 +245,6 @@
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
                                      (when on-press (on-press)))}]))
-
         (when-not (empty? admin-actions)
           [quo/separator])
 

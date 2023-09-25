@@ -14,6 +14,7 @@
 
 (def duration 450)
 (def timing-options #js {:duration duration})
+(def bottom-margin 8)
 
 (defn hide
   [translate-y bg-opacity window-height on-close]
@@ -64,11 +65,17 @@
                  gradient-cover? customization-color]
           :or   {border-radius 12}}]
       (let [{window-height :height} (rn/get-window)
-            bg-opacity              (reanimated/use-shared-value 0)
-            translate-y             (reanimated/use-shared-value window-height)
-            sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height on-close)
-            show-bottom-margin      (< @item-height (- window-height @sheet-height (:top insets) 8))
-            top                     (- window-height (:top insets) (:bottom insets) 8)]
+            bg-opacity (reanimated/use-shared-value 0)
+            translate-y (reanimated/use-shared-value window-height)
+            sheet-gesture (get-sheet-gesture translate-y bg-opacity window-height on-close)
+            sheet-bottom-margin
+            (when (< @item-height
+                     (- window-height
+                        @sheet-height
+                        (:top insets)
+                        bottom-margin))
+              bottom-margin)
+            top (- window-height (:top insets) (:bottom insets) sheet-bottom-margin)]
         (rn/use-effect
          #(if hide?
             (hide translate-y bg-opacity window-height on-close)
@@ -101,23 +108,19 @@
              [rn/view {:style style/gradient-bg}
               [quo/gradient-cover {:customization-color customization-color}]])
            (when shell?
-             [blur/ios-view {:style style/shell-bg}])
+             [blur/ios-view {:style style/shell-bg}]) 
            (when selected-item
              [rn/view
-              {:on-layout (fn [event]
-                            (reset! item-height (oops/oget event "nativeEvent" "layout" "height")))
-               :style     (style/selected-item theme top @sheet-height show-bottom-margin border-radius)}
+              {:on-layout #(reset! item-height (.-nativeEvent.layout.height ^js %))
+               :style (style/selected-item theme top @sheet-height sheet-bottom-margin border-radius)}
               [selected-item]])
 
            [rn/view
             {:style     (when selected-item
-                          (style/sheet-content theme padding-bottom-override insets))
-             :on-layout (fn [event]
-                          (reset! sheet-height
-                            (oops/oget event "nativeEvent" "layout" "height")))}
-            ;; handle
+                          (style/sheet-content theme padding-bottom-override insets sheet-bottom-margin))
+             :on-layout #(reset! sheet-height
+                                 (.-nativeEvent.layout.height ^js %))}
             [rn/view {:style (style/handle theme)}]
-            ;; content
             [content]]]]]))))
 
 (defn- internal-view

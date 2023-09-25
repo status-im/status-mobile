@@ -12,7 +12,6 @@
 
 (def rectangular-style-count 3)
 
-
 (defn find-size
   [size-arr album-style]
   (if (= album-style :landscape)
