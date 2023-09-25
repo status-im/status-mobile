@@ -24,15 +24,15 @@
                :value "Network"}]}
    {:key     :size
     :type    :select
-    :options [{:key   :size/s-32
+    :options [{:key   :size-32
                :value "32"}
-              {:key   :size/s-24
+              {:key   :size-24
                :value "24"}
-              {:key   :size/s-20
+              {:key   :size-20
                :value "20"}
-              {:key   :size/s-16
+              {:key   :size-16
                :value "16"}
-              {:key   :size/s-14
+              {:key   :size-14
                :value "14"}]}
    {:key  :number
     :type :text}
@@ -105,7 +105,7 @@
 (defn view
   []
   (let [state (reagent/atom {:type               :accounts
-                             :size               :size/s-32
+                             :size               :size-32
                              :number             4
                              :more-than-99-label "99+"})
         type  (reagent/cursor state [:type])
