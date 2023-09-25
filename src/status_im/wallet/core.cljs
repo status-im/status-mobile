@@ -3,7 +3,7 @@
     [clojure.set :as set]
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im.async-storage.core :as async-storage]
+    [react-native.async-storage :as async-storage]
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.contact.db :as contact.db]
     [status-im.ethereum.core :as ethereum]
@@ -826,8 +826,8 @@
 (rf/defn get-buy-crypto-preference
   {:events [::get-buy-crypto]}
   [_]
-  {::async-storage/get {:keys [:buy-crypto-hidden]
-                        :cb   #(re-frame/dispatch [::store-buy-crypto-preference %])}})
+  {:async-storage-get {:keys [:buy-crypto-hidden]
+                       :cb   #(re-frame/dispatch [::store-buy-crypto-preference %])}})
 
 (rf/defn wallet-will-focus
   {:events [::wallet-stack]}
@@ -848,8 +848,8 @@
 (rf/defn hide-buy-crypto
   {:events [::hide-buy-crypto]}
   [{:keys [db]}]
-  {:db                  (assoc db :wallet/buy-crypto-hidden true)
-   ::async-storage/set! {:buy-crypto-hidden true}})
+  {:db                (assoc db :wallet/buy-crypto-hidden true)
+   :async-storage-set {:buy-crypto-hidden true}})
 
 (rf/defn store-buy-crypto
   {:events [::store-buy-crypto-preference]}
@@ -1025,8 +1025,8 @@
 (rf/defn switch-transactions-management-enabled
   {:events [:multiaccounts.ui/switch-transactions-management-enabled]}
   [{:keys [db]} enabled?]
-  {::async-storage/set! {:transactions-management-enabled? enabled?}
-   :db                  (assoc db :wallet/transactions-management-enabled? enabled?)})
+  {:async-storage-set {:transactions-management-enabled? enabled?}
+   :db                (assoc db :wallet/transactions-management-enabled? enabled?)})
 
 (re-frame/reg-fx
  :wallet/initialize-transactions-management-enabled
