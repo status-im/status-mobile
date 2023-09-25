@@ -18,7 +18,7 @@
     [utils.re-frame :as rf]
     [status-im.utils.hex :as hex]
     [status-im.utils.mobile-sync :as utils.mobile-sync]
-    [status-im.utils.types :as types]
+    [status-im.utils.deprecated-types :as types]
     [status-im.wallet.core :as wallet]
     [status-im.wallet.prices :as prices]
     [status-im2.navigation.events :as navigation]

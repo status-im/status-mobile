@@ -6,7 +6,7 @@
             [oops.core :refer [oget]]
             [react-native.platform :as platform]
             [status-im2.common.resources :as resources]
-            [status-im.async-storage.core :as async-storage]
+            [react-native.async-storage :as async-storage]
             [status-im2.contexts.shell.jump-to.state :as shell.state]
             [status-im2.contexts.onboarding.common.carousel.view :as carousel]
             [status-im2.contexts.onboarding.common.background.style :as style]

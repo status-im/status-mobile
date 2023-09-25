@@ -1,21 +1,17 @@
 (ns quo2.components.settings.settings-item.style
   (:require [quo2.foundations.colors :as colors]))
 
-(defn find-icon-height
-  [description tag image]
-  (let [icon-height (if (= image :icon-avatar) 32 20)
-        icon-height (if description 40 icon-height)]
-    (if tag 72 icon-height)))
-
 (defn container
-  [{:keys [in-card? tag container-style]}]
-  (merge {:padding-horizontal 12
-          :padding-top        (if in-card? 12 13)
-          :padding-bottom     (if in-card? 12 13)
-          :flex-direction     :row
-          :justify-content    :space-between
-          :height             (if tag 96 48)}
+  [{:keys [container-style]}]
+  (merge {:padding         12
+          :flex-direction  :row
+          :justify-content :space-between}
          container-style))
+
+(defn left-sub-container
+  [{:keys [tag description]}]
+  {:flex-direction :row
+   :align-items    (if (or tag description) :flex-start :center)})
 
 (def sub-container
   {:flex-direction :row
@@ -24,12 +20,12 @@
 (def left-container
   {:margin-left     12
    :height          "100%"
-   :justify-content :center})
+   :justify-content :flex-start})
 
 (defn image-container
-  [description tag image]
-  {:height          (find-icon-height description tag image)
-   :justify-content :flex-start})
+  [image tag description]
+  {:height     (if (= image :icon-avatar) 32 20)
+   :margin-top (if (or tag description) 1 0)})
 
 (def status-container
   {:flex-direction :row
@@ -57,3 +53,8 @@
    :height           15
    :border-radius    12
    :background-color background-color})
+
+(def status-tag-container
+  {:margin-top    7
+   :margin-bottom 2
+   :margin-left   -1})

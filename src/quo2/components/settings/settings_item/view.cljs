@@ -65,7 +65,7 @@
                 :label           (:label tag-props)
                 :no-icon?        true
                 :size            :small
-                :container-style {:margin-top 8}}]
+                :container-style style/status-tag-container}]
     :context  [context-tag/view
                (merge tag-props
                       {:type            :icon
@@ -83,7 +83,8 @@
                label-props]
      :color   [rn/view
                {:style (style/label-dot label-props)}]
-     :preview [preview-list/view {:type (:type label-props)} (:data label-props)]
+     :preview [preview-list/view {:type (:type label-props) :size :size-24}
+               (:data label-props)]
      nil)])
 
 (defn action-component
@@ -105,7 +106,7 @@
    {:style               (style/container props)
     :on-press            on-press
     :accessibility-label accessibility-label}
-   [rn/view {:style style/sub-container}
+   [rn/view {:style (style/left-sub-container props)}
     [image-component props]
     [rn/view {:style style/left-container}
      [text/text {:weight :medium} title]

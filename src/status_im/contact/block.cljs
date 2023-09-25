@@ -5,7 +5,7 @@
             [status-im.data-store.chats :as chats-store]
             [status-im2.contexts.contacts.events :as contacts-store]
             [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im2.contexts.shell.activity-center.events :as activity-center]
             [status-im2.navigation.events :as navigation]))
 

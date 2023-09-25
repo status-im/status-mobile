@@ -35,6 +35,11 @@
 [Component tests (jest) overview](component-tests-overview.md)
 
 
+## Project details
+
+[status-go introduction (recorded meeting)](https://drive.google.com/file/d/1B7TljmTZ8fHkqJH8ChU1Cp4FGDFM03gq/view)
+
+[re-frame usage (recorded meeting)](https://drive.google.com/file/d/1qv_E0CEGzQpu_zGXD0gCTU5EvhC2k8Jy/view)
 
 ## Misc
 

@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.composer.keyboard
   (:require [oops.core :as oops]
-            [status-im.async-storage.core :as async-storage]
+            [react-native.async-storage :as async-storage]
             [react-native.core :as rn]
             [react-native.platform :as platform]
             [react-native.reanimated :as reanimated]))

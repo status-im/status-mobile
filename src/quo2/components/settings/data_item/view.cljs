@@ -88,7 +88,7 @@
      :preview [preview-list/view
                {:type   :communities
                 :number 3
-                :size   :size/s-24}
+                :size   :size-24}
                communities-list]
      :graph   [text/text "graph"]
      :none    nil

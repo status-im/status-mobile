@@ -170,7 +170,7 @@
                        {:name      :wallet-ctas
                         :component wallet-ctas/view}]
    :browser           [{:name      :browser-input
-                        :component browser-input/preview-browser-input}]
+                        :component browser-input/view}]
    :calendar          [{:name      :calendar
                         :component calendar/view}
                        {:name      :calendar-day
@@ -276,10 +276,10 @@
                        {:name      :preview-lists
                         :component preview-lists/view}
                        {:name      :token-value
-                        :component token-value/preview}
+                        :component token-value/view}
                        {:name      :user-list
                         :options   {:topBar {:visible true}}
-                        :component user-list/preview-user-list}]
+                        :component user-list/view}]
    :loaders           [{:name      :skeleton-list
                         :options   {:topBar {:visible true}}
                         :component skeleton-list/view}]
@@ -288,19 +288,19 @@
                        {:name      :markdown-list
                         :component markdown-list/view}]
    :messages          [{:name      :gap
-                        :component messages-gap/preview-messages-gap}
+                        :component messages-gap/view}
                        {:name      :system-messages
-                        :component system-message/preview-system-message}
+                        :component system-message/view}
                        {:name      :author
                         :component messages-author/view}]
    :navigation        [{:name      :bottom-nav-tab
-                        :component bottom-nav-tab/preview-bottom-nav-tab}
+                        :component bottom-nav-tab/view}
                        {:name      :top-nav
-                        :component top-nav/preview}
+                        :component top-nav/view}
                        {:name      :page-nav
-                        :component page-nav/preview-page-nav}
+                        :component page-nav/view}
                        {:name      :floating-shell-button
-                        :component floating-shell-button/preview-floating-shell-button}]
+                        :component floating-shell-button/view}]
    :notifications     [{:name      :activity-logs
                         :component activity-logs/preview-activity-logs}
                        {:name      :activity-logs-photos

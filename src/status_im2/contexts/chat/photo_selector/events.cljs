@@ -6,7 +6,7 @@
             [utils.i18n :as i18n]
             [react-native.permissions :as permissions]
             [utils.re-frame :as rf]
-            [status-im.utils.image-processing :as image-processing]
+            [react-native.image-resizer :as image-resizer]
             [taoensso.timbre :as log]
             [react-native.core :as rn]))
 
@@ -18,7 +18,7 @@
    uri
    (fn [width height]
      (let [resize? (> (max width height) maximum-image-size-px)]
-       (image-processing/resize
+       (image-resizer/resize
         uri
         (if resize? maximum-image-size-px width)
         (if resize? maximum-image-size-px height)

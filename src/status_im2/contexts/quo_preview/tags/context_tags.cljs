@@ -1,5 +1,6 @@
 (ns status-im2.contexts.quo-preview.tags.context-tags
   (:require [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
@@ -69,8 +70,9 @@
       :type    :select
       :options (map (fn [idx]
                       {:key   (mapv (fn [picture idx-name]
-                                      {:profile-picture picture
-                                       :full-name       (str (inc idx-name))})
+                                      {:profile-picture     picture
+                                       :full-name           (str (inc idx-name))
+                                       :customization-color (rand-nth (keys colors/customization))})
                                     (take idx (cycle users))
                                     (range))
                        :value (str idx)})
@@ -175,12 +177,15 @@
           :customization-color :army
           :profile-picture     nil
           :full-name           "Full Name"
-          :users               [{:profile-picture (resources/mock-images :user-picture-male5)
-                                 :full-name       "1"}
-                                {:profile-picture nil
-                                 :full-name       "3"}
-                                {:profile-picture (resources/mock-images :user-picture-male5)
-                                 :full-name       "2"}]
+          :users               [{:profile-picture     (resources/mock-images :user-picture-male5)
+                                 :full-name           "1"
+                                 :customization-color (rand-nth (keys colors/customization))}
+                                {:profile-picture     nil
+                                 :full-name           "3"
+                                 :customization-color (rand-nth (keys colors/customization))}
+                                {:profile-picture     (resources/mock-images :user-picture-male5)
+                                 :full-name           "2"
+                                 :customization-color (rand-nth (keys colors/customization))}]
           :group-name          "Group"
           :community-logo      (resources/mock-images :coinbase)
           :community-name      "Community"
@@ -200,31 +205,34 @@
           :address             example-pk
           :icon                :i/placeholder
           :context             "Context"
-          :duration            "00:32"})]
-    (fn []
-      [preview/preview-container
-       {:state      state
-        :descriptor (concat descriptor
-                            (case (:type @state)
-                              :default      default-descriptor
-                              :multiuser    multiuser-descriptor
-                              :group        group-descriptor
-                              :channel      channel-descriptor
-                              :community    community-descriptor
-                              :token        token-descriptor
-                              :network      network-descriptor
-                              :multinetwork multinetwork-descriptor
-                              :account      account-descriptor
-                              :collectible  collectible-descriptor
-                              :address      address-descriptor
-                              :icon         icon-descriptor
-                              :audio        audio-descriptor
-                              default-descriptor))}
-       [rn/view {:style {:padding-bottom 150}}
-        [rn/view {:style {:padding-vertical 60}}
-         [preview/blur-view
-          {:style                 {:flex              1
-                                   :margin-vertical   20
-                                   :margin-horizontal 40}
-           :show-blur-background? (:blur? @state)}
-          [quo/context-tag @state]]]]])))
+          :duration            "00:32"})
+        type (reagent/cursor state [:type])]
+    [:f>
+     (fn []
+       (rn/use-effect (fn []
+                        (when (#{:multiuser :multinetwork :audio} @type)
+                          (swap! state assoc :size 24)))
+                      [@type])
+       [preview/preview-container
+        {:state                 state
+         :descriptor            (concat descriptor
+                                        (case (:type @state)
+                                          :default      default-descriptor
+                                          :multiuser    multiuser-descriptor
+                                          :group        group-descriptor
+                                          :channel      channel-descriptor
+                                          :community    community-descriptor
+                                          :token        token-descriptor
+                                          :network      network-descriptor
+                                          :multinetwork multinetwork-descriptor
+                                          :account      account-descriptor
+                                          :collectible  collectible-descriptor
+                                          :address      address-descriptor
+                                          :icon         icon-descriptor
+                                          :audio        audio-descriptor
+                                          default-descriptor))
+         :blur-height           80
+         :blur?                 true
+         :show-blur-background? (:blur? @state)}
+        [rn/view {:style {:align-items :center}}
+         [quo/context-tag @state]]])]))

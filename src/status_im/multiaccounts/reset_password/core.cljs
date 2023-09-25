@@ -5,7 +5,7 @@
             [native-module.core :as native-module]
             [status-im.popover.core :as popover]
             [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [utils.security.core :as security]))
 
 (rf/defn on-input-change

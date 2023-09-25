@@ -66,9 +66,8 @@
 
        constants/content-type-image
        [quo/preview-list
-        {:type               :collectibles
-         :more-than-99-label (i18n/label :counter-99-plus)
-         :size               :size/s-24}
+        {:type :collectibles
+         :size :size-24}
         data]
 
        constants/content-type-sticker
@@ -98,13 +97,13 @@
        nil))])
 
 (defn notification-container
-  [{:keys [notification-indicator counter-label customization-color]}]
+  [{:keys [notification-indicator counter-label profile-customization-color]}]
   [rn/view {:style style/notification-container}
    (if (= notification-indicator :counter)
      [quo/counter
-      {:customization-color customization-color}
+      {:customization-color profile-customization-color}
       counter-label]
-     [rn/view {:style (style/unread-dot customization-color)}])])
+     [rn/view {:style (style/unread-dot profile-customization-color)}])])
 
 (defn bottom-container
   [type {:keys [new-notifications?] :as content}]
@@ -125,7 +124,7 @@
     shell.constants/private-group-chat-card
     [quo/group-avatar
      {:customization-color customization-color
-      :size                :size/s-48
+      :size                :size-48
       :override-theme      :dark}]
 
     (shell.constants/community-card
@@ -225,7 +224,7 @@
   []
   (let [card-ref (atom nil)]
     (fn [{:keys [avatar-params title type customization-color
-                 content banner id channel-id]}]
+                 content banner id channel-id profile-customization-color]}]
       (let [color-50 (colors/custom-color customization-color 50)]
         [rn/touchable-opacity
          {:on-press       #(calculate-card-position-and-open-screen
@@ -255,8 +254,9 @@
              :style  style/subtitle}
             (subtitle type content)]
            [bottom-container type
-            (merge {:color-50            color-50
-                    :customization-color customization-color}
+            (merge {:color-50                    color-50
+                    :customization-color         customization-color
+                    :profile-customization-color profile-customization-color}
                    content)]]
           (when avatar-params
             [rn/view {:style style/avatar-container}

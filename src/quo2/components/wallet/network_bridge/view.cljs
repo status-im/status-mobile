@@ -11,8 +11,8 @@
 
 
 (defn network-bridge-add
-  [{:keys [network state]}]
-  [rn/view {:style (merge (style/container network state) (style/add-container))}
+  [{:keys [network state theme]}]
+  [rn/view {:style (merge (style/container network state) (style/add-container theme))}
    [icon/icon :i/add-circle {:size 12 :no-color true}]])
 
 (defn view-internal
