@@ -18,7 +18,7 @@
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im.async-storage.core :as async-storage]
+            [react-native.async-storage :as async-storage]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [status-im2.common.muting.helpers :refer [format-mute-till]]))
 
@@ -173,9 +173,9 @@
     (chat.state/reset-visible-item)
     (rf/merge cofx
               (merge
-               {:db                  (dissoc db :current-chat-id)
-                ::async-storage/set! {:chat-id nil
-                                      :key-uid nil}}
+               {:db                (dissoc db :current-chat-id)
+                :async-storage-set {:chat-id nil
+                                    :key-uid nil}}
                (let [community-id (get-in db [:chats chat-id :community-id])]
                  ;; When navigating back from community chat to community, update switcher card
                  ;; A close chat event is also called while opening any chat.
