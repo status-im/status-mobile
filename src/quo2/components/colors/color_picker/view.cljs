@@ -3,10 +3,8 @@
             [reagent.core :as reagent]
             [quo2.components.colors.color.view :as color]))
 
-;; TODO: using :no-color this to keep alignment of colors correct while b & w is being developed.
-;; https://github.com/status-im/status-mobile/issues/15442
 (def color-list
-  [:blue :yellow :purple :turquoise :magenta :sky :orange :army :flamingo :camel :copper :feng-shui])
+  [:blue :yellow :purple :turquoise :magenta :sky :orange :army :flamingo :camel :copper])
 
 (defn- on-change-handler
   [selected color-name on-change]
@@ -21,7 +19,7 @@
    - `blur?` Boolean to enable blur background support.}"
   [{:keys [default-selected?]}]
   (let [internal-selected (reagent/atom default-selected?)]
-    (fn [{:keys [blur? on-change selected]}]
+    (fn [{:keys [blur? on-change selected feng-shui?]}]
       (when (and (not (nil? selected)) (not= @internal-selected selected))
         (reset! internal-selected selected))
       [rn/scroll-view
@@ -34,4 +32,6 @@
                                :blur?     blur?
                                :key       color
                                :color     color}])
-                           color-list))])))
+                           ;; TODO: using :feng-shui? temporarily while b & w is being developed.
+                           ;; https://github.com/status-im/status-mobile/issues/15442
+                           (if feng-shui? (conj color-list :feng-shui) color-list)))])))

@@ -11,7 +11,8 @@
   []
   (let [state (reagent/atom {:selected            :blue
                              :customization-color :blue
-                             :blur?               false})]
+                             :blur?               false
+                             :feng-shui?          true})]
     (fn []
       [preview/preview-container
        {:state                 state
