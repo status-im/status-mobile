@@ -7,7 +7,7 @@
             [status-im.signing.core :as signing]
             [status-im2.config :as config]
             [utils.re-frame :as rf]
-            [status-im.utils.types :as types]
+            [status-im.utils.deprecated-types :as types]
             [status-im.utils.wallet-connect :as wallet-connect]
             [taoensso.timbre :as log]))
 

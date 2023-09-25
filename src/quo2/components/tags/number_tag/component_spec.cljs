@@ -8,13 +8,13 @@
     (h/render [number-tag/view
                {:type   :rounded
                 :number "3"
-                :size   :size/s-32
+                :size   :size-32
                 :blur?  false}])
     (h/is-truthy (h/get-by-text "+3")))
   (h/test "+48 render"
     (h/render [number-tag/view
                {:type   :squared
                 :number "48"
-                :size   :size/s-24
+                :size   :size-24
                 :blur?  true}])
     (h/is-truthy (h/get-by-text "+48"))))

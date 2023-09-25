@@ -2,26 +2,26 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def sizes
-  {:size/s-32 {:size          32
-               :width-extra   40
-               :border-radius {:rounded 16 :squared 10}
-               :icon-size     20}
-   :size/s-24 {:size          24
-               :width-extra   32
-               :border-radius {:rounded 12 :squared 8}
-               :icon-size     16}
-   :size/s-20 {:size          20
-               :width-extra   24
-               :border-radius {:rounded 10 :squared 8}
-               :icon-size     12}
-   :size/s-16 {:size          16
-               :width-extra   20
-               :border-radius {:rounded 8 :squared 8}
-               :icon-size     12}
-   :size/s-14 {:size          14
-               :width-extra   16
-               :border-radius {:rounded 7 :squared 7}
-               :icon-size     12}})
+  {:size-32 {:size          32
+             :width-extra   40
+             :border-radius {:rounded 16 :squared 10}
+             :icon-size     20}
+   :size-24 {:size          24
+             :width-extra   32
+             :border-radius {:rounded 12 :squared 8}
+             :icon-size     16}
+   :size-20 {:size          20
+             :width-extra   24
+             :border-radius {:rounded 10 :squared 8}
+             :icon-size     12}
+   :size-16 {:size          16
+             :width-extra   20
+             :border-radius {:rounded 8 :squared 8}
+             :icon-size     12}
+   :size-14 {:size          14
+             :width-extra   16
+             :border-radius {:rounded 7 :squared 7}
+             :icon-size     12}})
 
 (defn get-color
   [blur? theme]
@@ -55,10 +55,11 @@
     (get-in sizes [size (if widen? :width-extra :size)])))
 
 (defn container
-  [{:keys [type number size blur? theme]}]
-  {:style {:width            (get-width size number)
-           :height           (get-in sizes [size :size])
-           :border-radius    (get-shape-value size :border-radius type)
-           :justify-content  :center
-           :align-items      :center
-           :background-color (get-bg-color blur? theme)}})
+  [{:keys [type number size blur? theme container-style]}]
+  {:style (assoc container-style
+                 :width            (get-width size number)
+                 :height           (get-in sizes [size :size])
+                 :border-radius    (get-shape-value size :border-radius type)
+                 :justify-content  :center
+                 :align-items      :center
+                 :background-color (get-bg-color blur? theme))})

@@ -1,30 +1,37 @@
-(ns status-im.async-storage.core
+(ns react-native.async-storage
   (:require ["@react-native-async-storage/async-storage" :default async-storage]
-            [goog.functions :as f]
-            [re-frame.core :as re-frame]
-            [status-im.async-storage.transit :refer [clj->transit transit->clj]]
-            [taoensso.timbre :as log]))
+            [cognitect.transit :as transit]
+            [taoensso.timbre :as log]
+            goog.functions))
 
 (def ^:private debounce-ms 250)
 
-(def key->string str)
+(def ^:private reader (transit/reader :json))
+(def ^:private writer (transit/writer :json))
+
+(defn clj->transit [o] (transit/write writer o))
+(defn transit->clj
+  [o]
+  (try (transit/read reader o)
+       (catch :default e
+         (log/error e))))
 
 (defn set-item!
   [k value]
   (-> ^js async-storage
-      (.setItem (key->string k)
+      (.setItem (str k)
                 (clj->transit value))
       (.catch (fn [error]
                 (log/error "[async-storage]" error)))))
 
-(defn- set-item-factory
+(defn set-item-factory
   []
   (let [tmp-storage (atom {})
-        debounced   (f/debounce (fn []
-                                  (doseq [[k v] @tmp-storage]
-                                    (swap! tmp-storage dissoc k)
-                                    (set-item! k v)))
-                                debounce-ms)]
+        debounced   (goog.functions/debounce (fn []
+                                               (doseq [[k v] @tmp-storage]
+                                                 (swap! tmp-storage dissoc k)
+                                                 (set-item! k v)))
+                                             debounce-ms)]
     (fn [items]
       (swap! tmp-storage merge items)
       (debounced))))
@@ -32,7 +39,7 @@
 (defn get-items
   [ks cb]
   (-> ^js async-storage
-      (.multiGet (to-array (map key->string ks)))
+      (.multiGet (to-array (map str ks)))
       (.then (fn [^js data]
                (cb (->> (js->clj data)
                         (map (comp transit->clj second))
@@ -44,7 +51,7 @@
 (defn get-item
   [k cb]
   (-> ^js async-storage
-      (.getItem (key->string k))
+      (.getItem (str k))
       (.then (fn [^js data]
                (-> data
                    js->clj
@@ -53,10 +60,3 @@
       (.catch (fn [error]
                 (cb nil)
                 (log/error "[async-storage]" error)))))
-
-(re-frame/reg-fx ::set! (set-item-factory))
-
-(re-frame/reg-fx
- ::get
- (fn [{ks :keys cb :cb}]
-   (get-items ks cb)))

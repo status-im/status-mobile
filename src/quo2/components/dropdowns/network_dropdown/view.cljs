@@ -20,7 +20,7 @@
        [preview-list/view
         {:type      :network
          :list-size (count networks)
-         :size      :size/s-20}
+         :size      :size-20}
         networks]])))
 
 (def view (quo.theme/with-theme internal-view))
