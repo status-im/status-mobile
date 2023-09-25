@@ -1,4 +1,4 @@
-(ns quo2.components.colors.color-picker.style
+(ns quo2.components.colors.color.style
   (:require [quo2.foundations.colors :as colors]))
 
 (def color-picker-container
@@ -33,6 +33,27 @@
    :border-width     (if border? 2 0)
    :overflow         :hidden
    :border-radius    20})
+
+(defn feng-shui
+  [theme]
+  {:width            40
+   :height           40
+   :transform        [{:rotate "45deg"}]
+   :overflow         :hidden
+   :border-color     (colors/theme-colors colors/neutral-100 colors/white theme)
+   :border-width     2
+   :background-color (colors/theme-colors colors/neutral-100 colors/white theme)
+   :border-radius    20})
+
+(defn left-half
+  [theme]
+  {:flex             1
+   :background-color (colors/theme-colors colors/white colors/neutral-100 theme)})
+
+(defn right-half
+  [theme]
+  {:flex             1
+   :background-color (colors/theme-colors colors/neutral-100 colors/white theme)})
 
 (defn secondary-overlay
   [secondary-color border?]

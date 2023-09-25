@@ -190,10 +190,10 @@
 (defn customization-color-option
   ([]
    (customization-color-option {}))
-  ([opts]
+  ([{:keys [feng-shui?] :as opts}]
    (merge {:key     :customization-color
            :type    :select
-           :options (->> colors/customization
+           :options (->> (merge colors/customization (when feng-shui? {:feng-shui nil}))
                          keys
                          sort
                          (map (fn [k]

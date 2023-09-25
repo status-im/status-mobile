@@ -19,8 +19,13 @@
     quo2.components.calendar.calendar.view
     quo2.components.calendar.calendar-day.view
     quo2.components.calendar.calendar-year.view
+<<<<<<< HEAD
     quo2.components.code.snippet.view
     quo2.components.code.snippet-preview.view
+=======
+    quo2.components.code.snippet
+    quo2.components.colors.color.view
+>>>>>>> 79612e265 (quo2: color picker)
     quo2.components.colors.color-picker.view
     quo2.components.common.notification-dot.view
     quo2.components.common.separator.view
@@ -176,7 +181,7 @@
 
 ;;;; Colors
 (def color-picker quo2.components.colors.color-picker.view/view)
-(def picker-colors quo2.components.colors.color-picker.view/picker-colors)
+(def color quo2.components.colors.color.view/view)
 
 ;;;; Community
 (def community-card-view-item quo2.components.community.community-card-view/view)
