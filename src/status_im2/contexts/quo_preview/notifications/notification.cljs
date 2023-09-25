@@ -76,7 +76,7 @@
     :duration 3000
     :type     :notification}])
 
-(defn preview-notification
+(defn view
   []
   (fn []
     [preview/preview-container
