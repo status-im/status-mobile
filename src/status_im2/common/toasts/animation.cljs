@@ -17,7 +17,7 @@
 
 (def linear-transition
   (-> ^js reanimated/linear-transition
-      .springify
+      (.springify)
       (.damping 20)
       (.stiffness 170)))
 
