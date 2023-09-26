@@ -28,6 +28,8 @@
    {:keys [height saved-height last-height]}
    {:keys [max-height]}
    {:keys [input-content-height]}]
+  (reanimated/set-shared-value saved-height input-content-height)
+  (reanimated/set-shared-value last-height input-content-height)
   (when (or @maximized? (>= input-content-height max-height))
     (reanimated/animate height max-height)
     (reanimated/set-shared-value saved-height max-height)
@@ -85,13 +87,12 @@
 
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
-   {:keys [chat-input audio] :as subscriptions}]
+   {:keys [audio] :as subscriptions}]
   (rn/use-effect
    (fn []
-     (maximized-effect state animations dimensions chat-input)
      (layout-effect state)
      (kb-default-height-effect state)
-     (background-effect state animations dimensions chat-input)
+     (background-effect state animations dimensions subscriptions)
      (link-preview-effect state)
      (audio-effect state animations audio)
      (empty-effect state animations subscriptions)
@@ -100,6 +101,7 @@
    [max-height])
   (rn/use-effect
    (fn []
+     (maximized-effect state animations dimensions subscriptions)
      (reenter-screen-effect state dimensions subscriptions))
    [max-height subscriptions]))
 
