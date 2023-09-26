@@ -61,11 +61,11 @@
   [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [author chat-name community-id chat-id
                 message read timestamp album-messages]} notification
-        community-chat?                                                                       (not (string/blank? community-id))
-        community                                                                             (rf/sub [:communities/community community-id])
-        community-name                                                                        (:name community)
-        community-image                                                                       (get-in community [:images :thumbnail :uri])
-        media-server-port                                                                     (rf/sub [:mediaserver/port])]
+        community-chat?                                 (not (string/blank? community-id))
+        community                                       (rf/sub [:communities/community community-id])
+        community-name                                  (:name community)
+        community-image                                 (get-in community [:images :thumbnail :uri])
+        media-server-port                               (rf/sub [:mediaserver/port])]
     [swipeable props
      [gesture/touchable-without-feedback
       {:on-press (fn []
@@ -113,4 +113,6 @@
 
                                                       :else
                                                       nil)
-                              :body                 (get-message-content message album-messages media-server-port)}}]]]))
+                              :body                 (get-message-content message
+                                                                         album-messages
+                                                                         media-server-port)}}]]]))
