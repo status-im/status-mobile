@@ -13,25 +13,22 @@
 
 (defn view
   "Options
-   - `default-selected?` Default selected color name.
-   - `selected` Selected color name.
+   - `default-selected` Default selected color name.
    - `on-change` Callback called when a color is selected `(fn [color-name])`.
    - `blur?` Boolean to enable blur background support.}"
-  [{:keys [default-selected?]}]
-  (let [internal-selected (reagent/atom default-selected?)]
-    (fn [{:keys [blur? on-change selected feng-shui?]}]
-      (when (and (not (nil? selected)) (not= @internal-selected selected))
-        (reset! internal-selected selected))
+  [{:keys [default-selected]}]
+  (let [selected (reagent/atom default-selected)]
+    (fn [{:keys [blur? on-change feng-shui?]}]
       [rn/scroll-view
        {:horizontal                        true
         :shows-horizontal-scroll-indicator false}
        (doall (map (fn [color]
                      [color/view
-                      {:selected? (= color @internal-selected)
-                       :on-press  #(on-change-handler internal-selected % on-change)
+                      {:selected? (= color @selected)
+                       :on-press  #(on-change-handler selected % on-change)
                        :blur?     blur?
                        :key       color
                        :color     color}])
                    ;; TODO: using :feng-shui? temporarily while b & w is being developed.
-                   ;; https://github.com/status-im/status-mobile/issues/15442
+                   ;; https://github.com/status-im/status-mobile/discussions/16676
                    (if feng-shui? (conj color-list :feng-shui) color-list)))])))

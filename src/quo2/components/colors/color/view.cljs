@@ -9,21 +9,19 @@
 (defn- feng-shui
   [{:keys [color theme]}]
   [rn/view
-   {:accessibile         true
-    :accessibility-label color
+   {:accessibility-label color
     :style               (style/feng-shui theme)}
    [rn/view {:style (style/left-half theme)}]
    [rn/view {:style (style/right-half theme)}]])
 
 (defn- view-internal
   [{:keys [color
-           secondary-color
            selected?
            on-press
            blur?
            theme]
     :as   props}]
-  (let [border?   (and (not blur?) (and secondary-color (not selected?)))
+  (let [border?   (and (not blur?) (not selected?))
         hex-color (if (= :feng-shui color)
                     (colors/theme-colors colors/neutral-100 colors/white theme)
                     (colors/theme-colors (colors/custom-color color 50)
@@ -36,22 +34,17 @@
       :on-press            #(on-press color)}
      (if (and (= :feng-shui color) (not selected?))
        [feng-shui
-        (merge props
-               {:hex-color hex-color
-                :border?   border?})]
+        (assoc props
+               :hex-color hex-color
+               :border?   border?)]
        [rn/view
-        {:accessibile         true
-         :accessibility-label color
+        {:accessibility-label color
          :style               (style/color-circle hex-color border?)}
-        (when (and secondary-color (not selected?))
-          [rn/view
-           {:style (style/secondary-overlay secondary-color border?)}])
         (when selected?
           [icon/icon :i/check
            {:size  20
-            :color (or secondary-color
-                       (if (= :feng-shui color)
-                         (colors/theme-colors colors/white colors/neutral-100 theme)
-                         colors/white))}])])]))
+            :color (if (= :feng-shui color)
+                     (colors/theme-colors colors/white colors/neutral-100 theme)
+                     colors/white)}])])]))
 
 (def view (quo.theme/with-theme view-internal))

@@ -51,12 +51,3 @@
   [theme]
   {:flex             1
    :background-color (colors/theme-colors colors/neutral-100 colors/white theme)})
-
-(defn secondary-overlay
-  [secondary-color border?]
-  {:width            (if border? 18 20)
-   :height           40
-   :position         :absolute
-   :right            0
-   :background-color secondary-color})
-
