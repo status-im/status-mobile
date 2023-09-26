@@ -10,8 +10,12 @@
     [reagent.core :as reagent]
     [quo2.foundations.common :as common]
     [quo2.components.wallet.token-input.style :as style]
+<<<<<<< HEAD
     [quo2.components.tags.network-tags.view :as network-tag]
     [quo2.components.dividers.divider-line.view :as divider-line]))
+=======
+    [quo2.components.tags.network-tags.view :as network-tag]))
+>>>>>>> afdc05d94 (token input followup)
 
 (defn calc-value
   [crypto? currency token value conversion]
@@ -25,7 +29,11 @@
         value     (reagent/atom 0)
         crypto?   (reagent/atom true)
         input-ref (atom nil)]
+<<<<<<< HEAD
     (fn [{:keys [theme token currency conversion networks title customization-color]}]
+=======
+    (fn [{:keys [theme token currency conversion networks title]}]
+>>>>>>> afdc05d94 (token input followup)
       [rn/view {:style (style/main-container width)}
        [rn/view {:style style/amount-container}
         [rn/pressable

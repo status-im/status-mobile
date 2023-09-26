@@ -11,8 +11,11 @@
    {:source (resources/get-network :optimism)}
    {:source (resources/get-network :ethereum)}])
 
+<<<<<<< HEAD
 (def title "Max: 200 SNT")
 
+=======
+>>>>>>> afdc05d94 (token input followup)
 (def descriptor
   [{:label   "Token:"
     :key     :token
@@ -31,12 +34,20 @@
 
 (defn preview
   []
+<<<<<<< HEAD
   (let [state (reagent/atom {:token               :eth
                              :currency            :usd
                              :conversion          0.02
                              :networks            networks
                              :title               title
                              :customization-color :blue})]
+=======
+  (let [state (reagent/atom {:token      :eth
+                             :currency   :usd
+                             :conversion 0.02
+                             :networks   networks
+                             :title      "Max: 200 SNT"})]
+>>>>>>> afdc05d94 (token input followup)
     (fn []
       [preview/preview-container
        {:state      state
