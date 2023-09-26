@@ -8,7 +8,6 @@
     [quo2.foundations.colors :as quo2.colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im.ethereum.core :as ethereum]
     [utils.i18n :as i18n]
     [status-im.ui.components.animation :as animation]
     [status-im.ui.components.icons.icons :as icons]
@@ -22,7 +21,8 @@
     [status-im.ui.screens.wallet.collectibles.views :as collectibles.views]
     [status-im.ui.screens.wallet.transactions.views :as history]
     [status-im2.config :as config]
-    [utils.re-frame :as rf])
+    [utils.re-frame :as rf]
+    [utils.address :as address])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))
@@ -61,7 +61,7 @@
         :style           {:width       (/ window-width 3)
                           :line-height 22
                           :color       colors/white-transparent-70-persist}}
-       (ethereum/normalized-hex address)]]
+       (address/normalized-hex address)]]
      [react/view {:position :absolute :top 12 :right 12}
       [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet/share-popover address])}
        [icons/icon :main-icons/share

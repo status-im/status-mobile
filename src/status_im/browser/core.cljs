@@ -9,7 +9,6 @@
     [status-im.browser.permissions :as browser.permissions]
     [status-im.browser.webview-ref :as webview-ref]
     [status-im2.constants :as constants]
-    [status-im.ethereum.core :as ethereum]
     [status-im.ethereum.ens :as ens]
     [utils.i18n :as i18n]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
@@ -25,7 +24,9 @@
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.debounce :as debounce]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [utils.ethereum.chain :as chain]
+    [utils.address :as address]))
 
 (rf/defn update-browser-option
   [{:keys [db]} option-key option-value]
@@ -91,7 +92,7 @@
           host        (url/url-host current-url)]
       (if (and (not resolved-url) (ens/is-valid-eth-name? host))
         {:db                              (update db :browser/options assoc :resolving? true)
-         :browser/resolve-ens-contenthash {:chain-id (ethereum/chain-id db)
+         :browser/resolve-ens-contenthash {:chain-id (chain/chain-id db)
                                            :ens-name host
                                            :cb       resolve-ens-contenthash-callback}}
         {:db (update db :browser/options assoc :url (or resolved-url current-url) :resolving? false)}))))
@@ -352,12 +353,19 @@
                 :id      (int id)
                 :result  result}}})
 
+(defn utf8-to-hex
+  [s]
+  (let [hex (native-module/utf8-to-hex (str s))]
+    (if (empty? hex)
+      nil
+      hex)))
+
 (defn normalize-message
   "NOTE (andrey) there is no spec for this, so this implementation just to be compatible with MM"
   [message]
   (if (string/starts-with? message "0x")
     message
-    (ethereum/utf8-to-hex message)))
+    (utf8-to-hex message)))
 
 (defn normalize-sign-message-params
   "NOTE (andrey) we need this function, because params may be mixed up"
@@ -365,9 +373,9 @@
   (let [[first-param second-param] params]
     (when (and (string? first-param) (string? second-param))
       (cond
-        (ethereum/address? first-param)
+        (address/address? first-param)
         [first-param (if typed? second-param (normalize-message second-param))]
-        (ethereum/address? second-param)
+        (address/address? second-param)
         [second-param (if typed? first-param (normalize-message first-param))]))))
 
 (rf/defn send-to-bridge

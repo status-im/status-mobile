@@ -3,7 +3,6 @@
             [clojure.string :as string]
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
-            [status-im.ethereum.core :as ethereum]
             status-im.events
             status-im2.events
             [status-im.multiaccounts.logout.core :as logout]
@@ -12,7 +11,8 @@
             status-im2.navigation.core
             status-im2.subs.root ; so integration tests can run independently
             [taoensso.timbre :as log]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [native-module.core :as native-module]))
 
 (def password "testabc")
 
@@ -52,7 +52,7 @@
   []
   (rf/dispatch-sync [:wallet.accounts/start-adding-new-account {:type :generate}])
   (rf/dispatch-sync [:set-in [:add-account :account :name] account-name])
-  (rf/dispatch [:wallet.accounts/add-new-account (ethereum/sha3 password)]))
+  (rf/dispatch [:wallet.accounts/add-new-account (native-module/sha3 password)]))
 
 (defn assert-new-account-created
   []

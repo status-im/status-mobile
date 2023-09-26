@@ -1,7 +1,6 @@
 (ns status-im2.contexts.profile.login.events
   (:require
     [utils.re-frame :as rf]
-    [status-im.ethereum.core :as ethereum]
     [utils.security.core :as security]
     [re-frame.core :as re-frame]
     [native-module.core :as native-module]
@@ -40,7 +39,7 @@
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (:profile/login db)]
     {:db     (assoc-in db [:profile/login :processing] true)
-     ::login [key-uid (ethereum/sha3 (security/safe-unmask-data password))]}))
+     ::login [key-uid (native-module/sha3 (security/safe-unmask-data password))]}))
 
 (rf/defn login-local-paired-user
   {:events [:profile.login/local-paired-user]}

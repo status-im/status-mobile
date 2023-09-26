@@ -6,8 +6,7 @@
     [react-native.async-storage :as async-storage]
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.contact.db :as contact.db]
-    [status-im.ethereum.core :as ethereum]
-    [status-im.ethereum.eip55 :as eip55]
+    [utils.ethereum.eip.eip55 :as eip55]
     [status-im.ethereum.ens :as ens]
     [status-im.ethereum.stateofus :as stateofus]
     [status-im.ethereum.tokens :as tokens]
@@ -31,7 +30,8 @@
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [status-im.utils.mobile-sync :as utils.mobile-sync]
-    [native-module.core :as native-module]))
+    [native-module.core :as native-module]
+    [utils.ethereum.chain :as chain]))
 
 (defn get-balance
   [{:keys [address on-success on-error]}]
@@ -158,8 +158,8 @@
   (let [addresses (map (comp string/lower-case :address)
                        (get db :profile/wallet-accounts))
         chain-id  (-> db
-                      ethereum/current-network
-                      ethereum/network->chain-id)]
+                      chain/current-network
+                      chain/network->chain-id)]
     (when (get-in db [:profile/profile :opensea-enabled?])
       {:json-rpc/call (map
                        (fn [address]
@@ -186,7 +186,7 @@
 (rf/defn fetch-collectible-assets-by-owner-and-collection
   {:events [::fetch-collectible-assets-by-owner-and-collection]}
   [{:keys [db]} address collectible-slug limit]
-  (let [chain-id (ethereum/network->chain-id (ethereum/current-network db))]
+  (let [chain-id (chain/network->chain-id (chain/current-network db))]
     {:db            (assoc-in db [:wallet/fetching-collection-assets collectible-slug] true)
      :json-rpc/call [{:method     "wallet_getOpenseaAssetsByOwnerAndCollection"
                       :params     [chain-id address collectible-slug limit]
@@ -243,7 +243,7 @@
   (let [addresses                        (or addresses
                                              (map (comp string/lower-case :address) wallet-accounts))
         {:keys [:wallet/visible-tokens]} profile
-        chain                            (ethereum/chain-keyword db)
+        chain                            (chain/chain-keyword db)
         assets                           (get visible-tokens chain)
         tokens                           (->> (vals all-tokens)
                                               (remove #(or (:hidden? %)
@@ -310,7 +310,7 @@
 
 (rf/defn update-toggle-in-settings
   [{{:profile/keys [profile] :as db} :db :as cofx} symbol checked?]
-  (let [chain          (ethereum/chain-keyword db)
+  (let [chain          (chain/chain-keyword db)
         visible-tokens (get profile :wallet/visible-tokens)]
     (rf/merge cofx
               (multiaccounts.update/multiaccount-update
@@ -355,7 +355,7 @@
 (rf/defn configure-token-balance-and-visibility
   {:events [::tokens-found]}
   [{:keys [db] :as cofx} balances]
-  (let [chain                (ethereum/chain-keyword db)
+  (let [chain                (chain/chain-keyword db)
         visible-tokens       (get-in db [:profile/profile :wallet/visible-tokens])
         chain-visible-tokens (into (or (config/default-visible-tokens chain)
                                        #{})
@@ -459,11 +459,12 @@
         {:keys [symbol decimals]}
         (if (seq contract)
           (get all-tokens contract)
-          (tokens/native-currency (ethereum/get-current-network db)))
+          (tokens/native-currency (chain/get-current-network db)))
         amount-text (str (money/internal->formatted value symbol decimals))]
     {:db       (assoc db
                       :wallet/prepare-transaction
-                      {:from               (ethereum/get-default-account (:profile/wallet-accounts db))
+                      {:from               (wallet.utils/get-default-account (:profile/wallet-accounts
+                                                                              db))
                        :to                 (or (get-in db [:contacts/contacts identity])
                                                (-> identity
                                                    contact.db/public-key->new-contact
@@ -503,7 +504,7 @@
    :signing/update-gas-price {:success-callback
                               #(re-frame/dispatch
                                 [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
-                              :network-id (get-in (ethereum/current-network db)
+                              :network-id (get-in (chain/current-network db)
                                                   [:config :NetworkId])}})
 
 (rf/defn prepare-transaction-from-chat
@@ -517,7 +518,7 @@
                 contact.db/enrich-contact))]
     (cond-> {:db       (assoc db
                               :wallet/prepare-transaction
-                              {:from       (ethereum/get-default-account
+                              {:from       (wallet.utils/get-default-account
                                             (:profile/wallet-accounts db))
                                :to         contact
                                :symbol     :ETH
@@ -525,7 +526,7 @@
              :dispatch [:open-modal :prepare-send-transaction]}
       ens-verified
       (assoc ::resolve-address
-             {:chain-id (ethereum/chain-id db)
+             {:chain-id (chain/chain-id db)
               :ens-name (if (= (.indexOf ^js name ".") -1)
                           (stateofus/subdomain name)
                           name)
@@ -538,7 +539,7 @@
   (let [identity (:current-chat-id db)]
     {:db       (assoc db
                       :wallet/prepare-transaction
-                      {:from             (ethereum/get-default-account (:profile/wallet-accounts db))
+                      {:from             (wallet.utils/get-default-account (:profile/wallet-accounts db))
                        :to               (or (get-in db [:contacts/contacts identity])
                                              (-> identity
                                                  contact.db/public-key->new-contact
@@ -561,7 +562,7 @@
    :signing/update-gas-price {:success-callback
                               #(re-frame/dispatch
                                 [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
-                              :network-id (get-in (ethereum/current-network db)
+                              :network-id (get-in (chain/current-network db)
                                                   [:config :NetworkId])}})
 
 (rf/defn cancel-transaction-command
@@ -671,13 +672,15 @@
    nil
    (get-in db [:wallet :accounts])))
 
+(defn custom-rpc-node? [{:keys [id]}] (= 45 (count id)))
+
 (defn get-restart-interval
   [db]
   (let [max-block       (get-max-block-with-transfer db)
         custom-interval (get db :wallet-service/custom-interval)]
     (cond
-      (ethereum/custom-rpc-node?
-       (ethereum/current-network db))
+      (custom-rpc-node?
+       (chain/current-network db))
       ms-2-min
 
       (and max-block
@@ -690,8 +693,8 @@
 
 (defn get-watching-interval
   [db]
-  (if (ethereum/custom-rpc-node?
-       (ethereum/current-network db))
+  (if (custom-rpc-node?
+       (chain/current-network db))
     ms-2-min
     ms-10-min))
 
@@ -734,7 +737,7 @@
     :as   params}]
   (when (:profile/profile db)
     (let [syncing-allowed? (utils.mobile-sync/syncing-allowed? cofx)
-          binance-chain?   (ethereum/binance-chain? db)]
+          binance-chain?   (chain/binance-chain? db)]
       (log/info "restart-wallet-service"
                 "force-restart?"   force-restart?
                 "syncing-allowed?" syncing-allowed?
@@ -778,7 +781,7 @@
 (rf/defn transaction-included
   {:events [::transaction-included]}
   [{:keys [db] :as cofx} address tx-hash]
-  (if (ethereum/binance-chain? db)
+  (if (chain/binance-chain? db)
     (load-transaction-by-hash cofx address tx-hash)
     (restart cofx true)))
 
@@ -813,7 +816,7 @@
 (rf/defn watch-tx
   {:events [:watch-tx]}
   [{:keys [db] :as cofx} address tx-id]
-  (let [chain-id (ethereum/chain-id db)]
+  (let [chain-id (chain/chain-id db)]
     {::start-watching [[address tx-id chain-id]]}))
 
 (rf/defn clear-timeouts
@@ -889,8 +892,8 @@
 (rf/defn stop-fetching-on-empty-tx-history
   [{:keys [db now] :as cofx} transfers]
   (let [non-empty-history? (get db :wallet/non-empty-tx-history?)
-        custom-node?       (ethereum/custom-rpc-node?
-                            (ethereum/current-network db))
+        custom-node?       (custom-rpc-node?
+                            (chain/current-network db))
         until-ms           (get db :wallet/keep-watching-until-ms)]
     (when-not (and until-ms (> until-ms now))
       (rf/merge
@@ -1056,7 +1059,7 @@
   [network-id tokens]
   (mapv #(-> %
              (update :symbol keyword)
-             ((partial tokens/update-icon (ethereum/chain-id->chain-keyword (int network-id)))))
+             ((partial tokens/update-icon (chain/chain-id->chain-keyword (int network-id)))))
         tokens))
 
 (re-frame/reg-fx
@@ -1166,7 +1169,8 @@
    (fn [already-seen]
      (when (and (not already-seen)
                 (boolean (get invalid-addrr
-                              (ethereum/sha3 (string/lower-case (ethereum/default-address db))))))
+                              (native-module/sha3 (string/lower-case (wallet.utils/default-address
+                                                                      db))))))
        (utils.utils/show-popup
         (i18n/label :t/warning)
         (i18n/label :t/ens-username-invalid-name-warning)
@@ -1190,7 +1194,7 @@
     ;; NOTE: Local notifications should be enabled only after wallet was started
     ::enable-local-notifications nil
     :dispatch-n                  [(when (or (not (utils.mobile-sync/syncing-allowed? cofx))
-                                            (ethereum/binance-chain? db))
+                                            (chain/binance-chain? db))
                                     [:transaction/get-fetched-transfers])]}
    (check-invalid-ens)
    (initialize-tokens tokens custom-tokens)
@@ -1211,7 +1215,7 @@
      (get-cached-balances scan-all-tokens?))
    (when-not (get db :wallet/new-account)
      (restart-wallet-service nil))
-   (when (ethereum/binance-chain? db)
+   (when (chain/binance-chain? db)
      (request-current-block-update))
    (prices/update-prices)))
 

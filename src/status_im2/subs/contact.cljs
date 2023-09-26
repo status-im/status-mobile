@@ -3,14 +3,14 @@
             [quo2.theme :as theme]
             [re-frame.core :as re-frame]
             [status-im.contact.db :as contact.db]
-            [status-im.ethereum.core :as ethereum]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im2.constants :as constants]
             [utils.collection]
             [utils.i18n :as i18n]
-            [utils.image-server :as image-server]))
+            [utils.image-server :as image-server]
+            [utils.address :as address]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts
@@ -295,7 +295,7 @@
  :<- [:contacts/contacts]
  :<- [:multiaccount/contact]
  (fn [[contacts multiaccount] [_ address]]
-   (if (ethereum/address= address (:public-key multiaccount))
+   (if (address/address= address (:public-key multiaccount))
      multiaccount
      (contact.db/find-contact-by-address contacts address))))
 

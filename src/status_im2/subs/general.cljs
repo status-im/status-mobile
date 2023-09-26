@@ -1,12 +1,12 @@
 (ns status-im2.subs.general
   (:require [re-frame.core :as re-frame]
             [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.utils.build :as build]
             [status-im.utils.mobile-sync :as mobile-network-utils]
-            [status-im2.constants :as constants]))
+            [status-im2.constants :as constants]
+            [utils.ethereum.chain :as chain]))
 
 (re-frame/reg-sub
  :visibility-status-updates/visibility-status-update
@@ -50,26 +50,26 @@
 (re-frame/reg-sub
  :custom-rpc-node
  :<- [:current-network]
- (fn [network]
-   (ethereum/custom-rpc-node? network)))
+ (fn [{:keys [id]}]
+   (= 45 (count id))))
 
 (re-frame/reg-sub
  :chain-keyword
  :<- [:current-network]
  (fn [network]
-   (ethereum/network->chain-keyword network)))
+   (chain/network->chain-keyword network)))
 
 (re-frame/reg-sub
  :chain-name
  :<- [:current-network]
  (fn [network]
-   (ethereum/network->chain-name network)))
+   (chain/network->chain-name network)))
 
 (re-frame/reg-sub
  :chain-id
  :<- [:current-network]
  (fn [network]
-   (ethereum/network->chain-id network)))
+   (chain/network->chain-id network)))
 
 (re-frame/reg-sub
  :mainnet?
@@ -220,7 +220,7 @@
  :ethereum/chain-keyword
  :<- [:current-network]
  (fn [network]
-   (ethereum/network->chain-keyword network)))
+   (chain/network->chain-keyword network)))
 
 (re-frame/reg-sub
  :ethereum/native-currency

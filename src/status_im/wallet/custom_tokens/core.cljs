@@ -2,13 +2,14 @@
   (:require [clojure.string :as string]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [utils.re-frame :as rf]
             [status-im.wallet.core :as wallet]
             [status-im.wallet.prices :as prices]
-            [status-im2.navigation.events :as navigation]))
+            [status-im2.navigation.events :as navigation]
+            [utils.ethereum.chain :as chain]
+            [utils.address :as address]))
 
 (re-frame/reg-fx
  :wallet.custom-token/contract-address-paste
@@ -28,7 +29,7 @@
 (rf/defn contract-address-is-changed
   {:events [:wallet.custom-token/contract-address-is-pasted]}
   [{:keys [db]} contract]
-  (if (ethereum/address? contract)
+  (if (address/address? contract)
     (if (token-in-list? db contract)
       {:db (assoc db
                   :wallet/custom-token-screen
@@ -37,7 +38,7 @@
                              :wallet/custom-token-screen
                              {:contract contract :in-progress? true})
        :json-rpc/call [{:method     "wallet_discoverToken"
-                        :params     [(ethereum/chain-id db) contract]
+                        :params     [(chain/chain-id db) contract]
                         :on-success #(re-frame/dispatch [:wallet.custom-token/token-discover-result %])
                         :on-error   #(re-frame/dispatch [:wallet.custom-token/not-supported])}]})
     {:db (assoc db

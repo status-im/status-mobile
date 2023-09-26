@@ -4,8 +4,7 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
-    [status-im.ethereum.core :as ethereum]
-    [status-im.ethereum.eip55 :as eip55]
+    [utils.ethereum.eip.eip55 :as eip55]
     [status-im.ethereum.tokens :as tokens]
     [utils.i18n :as i18n]
     [status-im.keycard.card :as keycard.card]
@@ -22,7 +21,10 @@
     [status-im.wallet.prices :as prices]
     [status-im2.common.json-rpc.events :as json-rpc]
     [taoensso.timbre :as log]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [utils.address :as address]
+    [status-im.wallet.utils :as wallet.utils]
+    [utils.ethereum.chain :as chain]))
 
 (re-frame/reg-fx
  :signing/send-transaction-fx
@@ -65,7 +67,7 @@
   (let [to (utils.hex/normalize-hex to)]
     (or
      (get-in db [:contacts/contacts to])
-     {:address (ethereum/normalized-hex to)})))
+     {:address (address/normalized-hex to)})))
 
 (rf/defn change-password
   {:events [:signing.ui/password-is-changed]}
@@ -81,8 +83,9 @@
   [{{:signing/keys [sign tx] :as db} :db}]
   (let [{{:keys [data typed? from v4]} :message} tx
         {:keys [in-progress? password]}          sign
-        from                                     (or from (ethereum/default-address db))
-        hashed-password                          (ethereum/sha3 (security/safe-unmask-data password))]
+        from                                     (or from (wallet.utils/default-address db))
+        hashed-password                          (native-module/sha3 (security/safe-unmask-data
+                                                                      password))]
     (when-not in-progress?
       (merge
        {:db (update db :signing/sign assoc :error nil :in-progress? true)}
@@ -105,10 +108,11 @@
   (let [{:keys [in-progress? password]}          sign
         {:keys [tx-obj gas gasPrice maxPriorityFeePerGas
                 maxFeePerGas message nonce]}     tx
-        hashed-password                          (ethereum/sha3 (security/safe-unmask-data password))
+        hashed-password                          (native-module/sha3 (security/safe-unmask-data
+                                                                      password))
         {:keys [action username custom-domain?]} registration
         {:keys [public-key]}                     (:profile/profile db)
-        chain-id                                 (ethereum/chain-id db)]
+        chain-id                                 (chain/chain-id db)]
     (if message
       (sign-message cofx)
       (let [tx-obj-to-send  (merge tx-obj
@@ -255,13 +259,13 @@
                 :value   value
                 :amount  (str eth-amount)
                 :token   (tokens/asset-for (:wallet/all-tokens db)
-                                           (ethereum/get-current-network db)
+                                           (chain/get-current-network db)
                                            :ETH)}
                (not (nil? token))
                token
                :else
                {:to      to
-                :contact {:address (ethereum/normalized-hex to)}})))))
+                :contact {:address (address/normalized-hex to)}})))))
 
 (defn prepare-tx
   [db {{:keys [data gas gasPrice maxFeePerGas maxPriorityFeePerGas] :as tx-obj} :tx-obj :as tx}]
@@ -275,6 +279,18 @@
                             (money/bignumber maxFeePerGas))
     :maxPriorityFeePerGas (when maxPriorityFeePerGas
                             (money/bignumber maxPriorityFeePerGas))}))
+
+(defn hex-to-utf8
+  [s]
+  (let [utf8 (native-module/hex-to-utf8 s)]
+    (if (empty? utf8)
+      nil
+      utf8)))
+
+(defn hex->text
+  "Converts a hexstring to UTF8 text."
+  [data]
+  (or (hex-to-utf8 data) data))
 
 (rf/defn show-sign
   [{:keys [db] :as cofx}]
@@ -297,7 +313,7 @@
                                                    :formatted-data (if typed?
                                                                      (types/js->pretty-json
                                                                       (types/json->js data))
-                                                                     (ethereum/hex->text data))
+                                                                     (hex->text data))
                                                    :keycard-step   (when pinless? :connect)})
         :show-signing-sheet nil}
        #(when-not wallet-set-up-passed?
@@ -338,7 +354,7 @@
           {:success-callback #(re-frame/dispatch
                                [:wallet.send/update-gas-price-success :signing/tx % tx-obj])
            :error-callback   #(re-frame/dispatch [:signing/update-gas-price-error %])
-           :network-id       (get-in (ethereum/current-network db)
+           :network-id       (get-in (chain/current-network db)
                                      [:config :NetworkId])}})))))
 
 (rf/defn check-queue
@@ -355,7 +371,7 @@
                     ;; big-int
                     :params [chat-id (str value) contract transaction-hash
                              (or (:result (types/json->clj signature))
-                                 (ethereum/normalized-hex signature))]
+                                 (address/normalized-hex signature))]
                     :js-response true
                     :on-success
                     #(re-frame/dispatch [:transport/message-sent %])}]})
@@ -366,7 +382,7 @@
   {:json-rpc/call [{:method "wakuext_acceptRequestTransaction"
                     :params [transaction-hash message-id
                              (or (:result (types/json->clj signature))
-                                 (ethereum/normalized-hex signature))]
+                                 (address/normalized-hex signature))]
                     :js-response true
                     :on-success
                     #(re-frame/dispatch [:transport/message-sent %])}]})
@@ -496,7 +512,7 @@
 
 (defn normalize-tx-obj
   [db tx]
-  (update-in tx [:tx-obj :from] #(eip55/address->checksum (or % (ethereum/default-address db)))))
+  (update-in tx [:tx-obj :from] #(eip55/address->checksum (or % (wallet.utils/default-address db)))))
 
 (rf/defn sign
   "Signing transaction or message, shows signing sheet
@@ -516,7 +532,7 @@
   [{:keys [db] :as cofx} {:keys [to amount from token]}]
   (let [{:keys [symbol address]} token
         amount-hex               (str "0x" (native-module/number-to-hex amount))
-        to-norm                  (ethereum/normalized-hex (if (string? to) to (:address to)))
+        to-norm                  (address/normalized-hex (if (string? to) to (:address to)))
         from-address             (:address from)
         identity                 (:current-chat-id db)
         db                       (dissoc db :wallet/prepare-transaction :signing/edit-fee)]
@@ -530,7 +546,7 @@
                          :chat-id  identity
                          :command? true
                          :value    amount-hex}
-                        {:to       (ethereum/normalized-hex address)
+                        {:to       (address/normalized-hex address)
                          :from     from-address
                          :chat-id  identity
                          :command? true
@@ -566,7 +582,7 @@
                              :chat-id    chat-id
                              :command?   true
                              :value      amount-hex}
-                            {:to         (ethereum/normalized-hex address)
+                            {:to         (address/normalized-hex address)
                              :from       from-address
                              :command?   true
                              :message-id (:id request-parameters)
@@ -578,7 +594,7 @@
   [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice maxFeePerGas maxPriorityFeePerGas]}]
   (let [{:keys [symbol address]} token
         amount-hex               (str "0x" (native-module/number-to-hex amount))
-        to-norm                  (ethereum/normalized-hex (if (string? to) to (:address to)))
+        to-norm                  (address/normalized-hex (if (string? to) to (:address to)))
         from-address             (:address from)]
     (rf/merge cofx
               {:db (dissoc db :wallet/prepare-transaction :signing/edit-fee)}
@@ -596,7 +612,7 @@
                                (if (= symbol :ETH)
                                  {:to    to-norm
                                   :value amount-hex}
-                                 {:to   (ethereum/normalized-hex address)
+                                 {:to   (address/normalized-hex address)
                                   :data (native-module/encode-transfer to-norm amount-hex)}))}))))
 
 (re-frame/reg-fx
