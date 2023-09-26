@@ -61,7 +61,8 @@
                         :chatId                    :chat-id
                         :contactVerificationStatus :contact-verification-status
                         :communityId               :community-id
-                        :membershipStatus          :membership-status})
+                        :membershipStatus          :membership-status
+                        :albumMessages             :album-messages})
       (update :last-message #(when % (messages/<-rpc %)))
       (update :message #(when % (messages/<-rpc %)))
       (update :reply-message #(when % (messages/<-rpc %)))
