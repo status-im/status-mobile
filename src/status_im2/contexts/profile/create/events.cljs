@@ -3,7 +3,7 @@
             [native-module.core :as native-module]
             [utils.security.core :as security]
             [re-frame.core :as re-frame]
-            [status-im.transport.core :as transport]))
+            [status-im2.contexts.profile.config :as profile.config]))
 
 (re-frame/reg-fx
  ::create-profile-and-login
@@ -15,8 +15,8 @@
   {:events [:profile.create/create-and-login]}
   [_ {:keys [display-name password image-path color]}]
   {::create-profile-and-login
-   (merge (profile.config/create)
-          {:displayName        display-name
-           :password           (native-module/sha3 (security/safe-unmask-data password))
-           :imagePath          (profile.config/strip-file-prefix image-path)
-           :customizationColor color})})
+   (assoc (profile.config/create)
+          :displayName        display-name
+          :password           (native-module/sha3 (security/safe-unmask-data password))
+          :imagePath          (profile.config/strip-file-prefix image-path)
+          :customizationColor color)})
