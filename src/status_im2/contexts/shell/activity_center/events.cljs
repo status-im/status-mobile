@@ -1,5 +1,6 @@
 (ns status-im2.contexts.shell.activity-center.events
   (:require [quo2.foundations.colors :as colors]
+            [re-frame.core :as re-frame]
             [status-im.data-store.activities :as activities]
             [status-im.data-store.chats :as data-store.chats]
             [status-im2.common.toasts.events :as toasts]
@@ -21,20 +22,22 @@
 
 ;;;; Navigation
 
-(rf/defn open-activity-center
-  {:events [:activity-center/open]}
-  [{:keys [db]} {:keys [filter-type filter-status]}]
-  {:db             (cond-> db
-                     filter-status
-                     (assoc-in [:activity-center :filter :status] filter-status)
+(defn open-activity-center
+  [{:keys [db]} [{:keys [filter-type filter-status]}]]
+  {:db (cond-> db
+         filter-status
+         (assoc-in [:activity-center :filter :status] filter-status)
 
-                     filter-type
-                     (assoc-in [:activity-center :filter :type] filter-type))
-   :dispatch       [:open-modal :activity-center {}]
-   ;; We delay marking as seen so that the user doesn't see the unread bell icon
-   ;; change while the Activity Center modal is opening.
-   :dispatch-later [{:ms       1000
-                     :dispatch [:activity-center/mark-as-seen]}]})
+         filter-type
+         (assoc-in [:activity-center :filter :type] filter-type))
+   :fx [[:dispatch [:open-modal :activity-center {}]]
+        ;; We delay marking as seen so that the user doesn't see the unread bell icon
+        ;; change while the Activity Center modal is opening.
+        [:dispatch-later
+         [{:ms       1000
+           :dispatch [:activity-center/mark-as-seen]}]]]})
+
+(re-frame/reg-event-fx :activity-center/open open-activity-center)
 
 ;;;; Misc
 
@@ -527,7 +530,8 @@
                        (not dismissed))
                   (toasts/upsert cofx
                                  {:user            user-avatar
-                                  :user-public-key chat-id ;; user public key who accepted the request
+                                  ;; user public key who accepted the request
+                                  :user-public-key chat-id
                                   :icon-color      colors/success-50-opa-40
                                   :title           (i18n/label :t/contact-request-accepted-toast
                                                                {:name (or name (:alias message))})})

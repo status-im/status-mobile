@@ -1,9 +1,13 @@
 (ns status-im2.setup.interceptors
   (:require [re-frame.core :as re-frame]
-            [re-frame.std-interceptors :as std-interceptors]))
+            [re-frame.std-interceptors :as std-interceptors]
+            [utils.re-frame :as rf]))
 
 (defn register-global-interceptors
   []
+  (re-frame/reg-global-interceptor rf/debug-handlers-names)
+  (re-frame/reg-global-interceptor (re-frame/inject-cofx :now))
+
   ;; Interceptor `trim-v` removes the first element of the event vector.
   ;;
   ;; Without the interceptor:
