@@ -12,10 +12,15 @@
    {:source (resources/get-network :ethereum)}])
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 (def title "Max: 200 SNT")
 
 =======
 >>>>>>> afdc05d94 (token input followup)
+=======
+(def title "Max: 200 SNT")
+
+>>>>>>> ffc214f89 (lint)
 (def descriptor
   [{:label   "Token:"
     :key     :token
@@ -46,8 +51,12 @@
                              :currency   :usd
                              :conversion 0.02
                              :networks   networks
+<<<<<<< HEAD
                              :title      "Max: 200 SNT"})]
 >>>>>>> afdc05d94 (token input followup)
+=======
+                             :title      title})]
+>>>>>>> ffc214f89 (lint)
     (fn []
       [preview/preview-container
        {:state      state
