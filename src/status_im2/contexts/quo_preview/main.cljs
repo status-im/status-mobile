@@ -27,6 +27,7 @@
     [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
     [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
+    [status-im2.contexts.quo-preview.code.snippet-preview :as code-snippet-preview]
     [status-im2.contexts.quo-preview.graph.interactive-graph :as interactive-graph]
     [status-im2.contexts.quo-preview.graph.wallet-graph :as wallet-graph]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
@@ -177,7 +178,9 @@
                        {:name      :calendar-year
                         :component calendar-year/view}]
    :code              [{:name      :snippet
-                        :component code-snippet/view}]
+                        :component code-snippet/view}
+                       {:name      :snippet-preview
+                        :component code-snippet-preview/view}]
    :colors            [{:name      :color-picker
                         :component color-picker/view}]
    :community         [{:name      :community-card-view
