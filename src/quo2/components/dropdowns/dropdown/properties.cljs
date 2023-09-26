@@ -53,8 +53,8 @@
 (defn- grey-photo
   [theme active? size]
   {:left-icon-color    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
-   :right-icon-color   {:color   (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
-                        :color-2 (colors/theme-colors colors/neutral-100 colors/white theme)}
+   :right-icon-color   (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
+   :right-icon-color-2 (colors/theme-colors colors/neutral-100 colors/white theme)
    :label-color        (colors/theme-colors colors/neutral-100 colors/white theme)
    :blur-overlay-color (when (and (= theme :dark) (nil? (sizes-to-exclude-blur-in-photo-bg size)))
                          (if active? colors/neutral-80-opa-50 colors/neutral-80-opa-40))
@@ -68,52 +68,52 @@
 
 (defn- grey-blur
   [theme active?]
-  {:left-icon-color  (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-70 theme)
-   :right-icon-color {:color   (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
-                      :color-2 (colors/theme-colors colors/neutral-100 colors/white theme)}
-   :label-color      (colors/theme-colors colors/neutral-100 colors/white theme)
-   :background-color (if active?
-                       (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
-                       (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme))})
+  {:left-icon-color    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-70 theme)
+   :right-icon-color   (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
+   :right-icon-color-2 (colors/theme-colors colors/neutral-100 colors/white theme)
+   :label-color        (colors/theme-colors colors/neutral-100 colors/white theme)
+   :background-color   (if active?
+                         (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
+                         (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme))})
 
 (defn- outline-blur
   [theme active?]
-  {:left-icon-color  (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
-   :right-icon-color {:color   (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
-                      :color-2 (colors/theme-colors colors/neutral-100 colors/white theme)}
-   :label-color      (colors/theme-colors colors/neutral-100 colors/white theme)
-   :border-color     (if active?
-                       (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 theme)
-                       (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme))})
+  {:left-icon-color    (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
+   :right-icon-color   (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
+   :right-icon-color-2 (colors/theme-colors colors/neutral-100 colors/white theme)
+   :label-color        (colors/theme-colors colors/neutral-100 colors/white theme)
+   :border-color       (if active?
+                         (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 theme)
+                         (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme))})
 
 (defn- outline
   [theme active?]
-  {:left-icon-color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-   :right-icon-color {:color   (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
-                      :color-2 (colors/theme-colors colors/neutral-100 colors/white theme)}
-   :label-color      (colors/theme-colors colors/neutral-100 colors/white theme)
-   :border-color     (if active?
-                       (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)
-                       (colors/theme-colors colors/neutral-30 colors/neutral-70 theme))})
+  {:left-icon-color    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+   :right-icon-color   (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+   :right-icon-color-2 (colors/theme-colors colors/neutral-100 colors/white theme)
+   :label-color        (colors/theme-colors colors/neutral-100 colors/white theme)
+   :border-color       (if active?
+                         (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)
+                         (colors/theme-colors colors/neutral-30 colors/neutral-70 theme))})
 
 (defn- grey
   [theme active?]
-  {:left-icon-color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-   :right-icon-color {:color   (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
-                      :color-2 (colors/theme-colors colors/neutral-100 colors/white theme)}
-   :label-color      (colors/theme-colors colors/neutral-100 colors/white theme)
-   :background-color (if active?
-                       (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
-                       (colors/theme-colors colors/neutral-5 colors/neutral-90 theme))})
+  {:left-icon-color    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+   :right-icon-color   (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+   :right-icon-color-2 (colors/theme-colors colors/neutral-100 colors/white theme)
+   :label-color        (colors/theme-colors colors/neutral-100 colors/white theme)
+   :background-color   (if active?
+                         (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+                         (colors/theme-colors colors/neutral-5 colors/neutral-90 theme))})
 
 (defn- ghost
   [theme active?]
-  {:left-icon-color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-   :right-icon-color {:color   (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
-                      :color-2 (colors/theme-colors colors/neutral-100 colors/white theme)}
-   :label-color      (colors/theme-colors colors/neutral-100 colors/white theme)
-   :background-color (when active?
-                       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
+  {:left-icon-color    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+   :right-icon-color   (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+   :right-icon-color-2 (colors/theme-colors colors/neutral-100 colors/white theme)
+   :label-color        (colors/theme-colors colors/neutral-100 colors/white theme)
+   :background-color   (when active?
+                         (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
 
 (defn get-colors
   [{:keys [customization-color theme type state background size]}]
@@ -125,5 +125,6 @@
       (= type :outline)                            (outline theme active?)
       (= type :grey)                               (grey theme active?)
       (= type :ghost)                              (ghost theme active?)
-      (= type :customization)                      (custom-color-type theme customization-color active?)
-      :else                                        nil)))
+      (= type :customization)                      (custom-color-type theme
+                                                                      customization-color
+                                                                      active?))))

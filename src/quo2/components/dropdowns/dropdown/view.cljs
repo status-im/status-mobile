@@ -15,10 +15,11 @@
            icon?     false
            emoji?    false
            icon-name :i/placeholder}
-    :as   props} children]
+    :as   props}
+   text]
   (let [{:keys [icon-size text-size emoji-size]
          :as   size-properties} (properties/sizes size)
-        {:keys [left-icon-color right-icon-color label-color blur-type
+        {:keys [left-icon-color right-icon-color right-icon-color-2 label-color blur-type
                 blur-overlay-color]
          :as   colors}          (properties/get-colors props)
         right-icon              (if (= state :active) :i/pullup :i/dropdown)
@@ -36,33 +37,31 @@
          :blur-type     blur-type
          :overlay-color blur-overlay-color
          :style         style/blur-view}])
-
-     (when (and icon? (not emoji?))
-       [icon/icon
-        icon-name
-        {:accessibility-label :left-icon
-         :color               left-icon-color
-         :size                icon-size
-         :container-style     style/left-icon}])
-
      (if emoji?
        [rn/text
         {:adjusts-font-size-to-fit true
          :style                    {:font-size emoji-size}}
-        children]
-       [text/text
-        {:size            text-size
-         :weight          :medium
-         :number-of-lines 1
-         :style           (style/right-icon label-color)}
-        children])
-
-     (when-not emoji?
-       [icon/icon
-        right-icon
-        (merge {:size                icon-size
-                :accessibility-label :right-icon}
-               right-icon-color)])]))
+        text]
+       [:<>
+        (when icon?
+          [icon/icon
+           icon-name
+           {:accessibility-label :left-icon
+            :color               left-icon-color
+            :size                icon-size
+            :container-style     style/left-icon}])
+        [text/text
+         {:size            text-size
+          :weight          :medium
+          :number-of-lines 1
+          :style           (style/right-icon label-color)}
+         text]
+        [icon/icon
+         right-icon
+         {:size                icon-size
+          :accessibility-label :right-icon
+          :color               right-icon-color
+          :color-2             right-icon-color-2}]])]))
 
 (def view
   "Props:
@@ -75,5 +74,5 @@
     - icon-name:  keyword
     - on-press:   function
    
-   Children: string - used as label or emoji (for emoji only)"
+    Child: string - used as label or emoji (for emoji only)"
   (theme/with-theme view-internal))

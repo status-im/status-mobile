@@ -69,11 +69,14 @@
         (when (= :photo (:background @state))
           [rn/image
            {:source (resources/get-mock-image :dark-blur-bg)
-            :style  {:position :absolute
-                     :top      12
-                     :left     0
-                     :right    0
-                     :bottom   0}}])
+            :style  {:position      :absolute
+                     :top           12
+                     :left          20
+                     :right         0
+                     :bottom        0
+                     :border-radius 12}
+            :height 250
+            :width  "100%"}])
         [quo/dropdown
          (assoc @state :on-press #(js/alert "Pressed dropdown"))
          @label]])]))
