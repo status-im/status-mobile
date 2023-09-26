@@ -9,7 +9,8 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [quo2.foundations.common :as common]
-    [quo2.components.wallet.token-input.style :as style]))
+    [quo2.components.wallet.token-input.style :as style]
+    [quo2.components.tags.network-tags.view :as network-tag]))
 
 (defn calc-value
   [crypto? currency token value conversion]
@@ -23,7 +24,7 @@
         value     (reagent/atom 0)
         crypto?   (reagent/atom true)
         input-ref (atom nil)]
-    (fn [{:keys [theme token currency conversion]}]
+    (fn [{:keys [theme token currency conversion networks title]}]
       [rn/view {:style (style/main-container width)}
        [rn/view {:style style/amount-container}
         [rn/pressable
@@ -50,6 +51,7 @@
           (string/upper-case (clj->js (if @crypto? token currency)))]]
         [button/button
          {:icon                true
+          :icon-only?          true
           :size                32
           :on-press            #(swap! crypto? not)
           :type                :outline
@@ -57,7 +59,7 @@
          :i/reorder]]
        [rn/view {:style (style/divider width theme)}]
        [rn/view {:style style/data-container}
-        [text/text "[WIP] NETWORK TAG"]
+        [network-tag/view {:networks networks :title title}]
         [text/text
          {:size   :paragraph-2
           :weight :medium

@@ -1,9 +1,15 @@
 (ns status-im2.contexts.quo-preview.wallet.token-input
   (:require
     [quo2.core :as quo]
+    [quo2.foundations.resources :as resources]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
+
+(def networks
+  [{:source (resources/get-network :arbitrum)}
+   {:source (resources/get-network :optimism)}
+   {:source (resources/get-network :ethereum)}])
 
 (def descriptor
   [{:label   "Token:"
@@ -25,7 +31,9 @@
   []
   (let [state (reagent/atom {:token      :eth
                              :currency   :usd
-                             :conversion 0.02})]
+                             :conversion 0.02
+                             :networks   networks
+                             :title      "Max: 200 SNT"})]
     (fn []
       [preview/preview-container
        {:state      state
@@ -36,4 +44,5 @@
         [rn/view
          {:style {:flex        1
                   :margin-top  50
-                  :align-items :center}} [quo/token-input @state]]]])))
+                  :align-items :center}}
+         [quo/token-input @state]]]])))
