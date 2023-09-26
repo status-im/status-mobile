@@ -8,7 +8,7 @@
 ;; selection of sink asset."
 (re-frame/reg-event-fx
  ::open-asset-selector-modal
- (fn [{:keys [db]} [_ source?]]
+ (fn [{:keys [db]} [source?]]
    {:db (assoc db :wallet/modal-selecting-source-token? source?)
     :fx [[:dispatch [:open-modal :swap-asset-selector {}]]]}))
 

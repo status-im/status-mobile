@@ -6,7 +6,7 @@
           `(utils.re-frame/register-handler-fx
             ~event
             ~interceptors
-            (fn [cofx# [_# ~@argsyms]] (~name cofx# ~@argsyms))))
+            (fn [cofx# [~@argsyms]] (~name cofx# ~@argsyms))))
         events))
 
 (defn- fully-qualified-name

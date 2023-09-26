@@ -30,7 +30,7 @@
 
 (re-frame/reg-event-fx
  :open-modal
- (fn [{:keys [db]} [_ component screen-params]]
+ (fn [{:keys [db]} [component screen-params]]
    {:db (-> db
             (assoc :view-id component)
             (all-screens-params component screen-params))

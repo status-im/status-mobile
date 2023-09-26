@@ -199,7 +199,7 @@
 
 (re-frame/reg-event-fx
  ::show-nft-details
- (fn [{:keys [db]} [_ asset]]
+ (fn [{:keys [db]} [asset]]
    {:db (assoc db :wallet/selected-collectible asset)
     :fx [[:dispatch [:open-modal :nft-details {}]]]}))
 
