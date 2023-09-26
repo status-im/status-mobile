@@ -11,6 +11,8 @@
    {:source (resources/get-network :optimism)}
    {:source (resources/get-network :ethereum)}])
 
+(def title "Max: 200 SNT")
+
 (def descriptor
   [{:label   "Token:"
     :key     :token
@@ -33,7 +35,7 @@
                              :currency   :usd
                              :conversion 0.02
                              :networks   networks
-                             :title      "Max: 200 SNT"})]
+                             :title      title})]
     (fn []
       [preview/preview-container
        {:state      state
