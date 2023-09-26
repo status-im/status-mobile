@@ -216,19 +216,22 @@
 (def user-message-content (quo.theme/with-theme user-message-content-internal))
 
 (defn on-long-press
-  [message-data context keyboard-shown?]
+  [{:keys [deleted? deleted-for-me?] :as message-data} context keyboard-shown?]
   (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch [:show-bottom-sheet
-                {:content       (drawers/reactions-and-actions message-data context)
+                {:content (drawers/reactions-and-actions message-data context)
                  :border-radius 16
-                 :selected-item (fn []
-                                  [rn/view {:pointer-events :none}
-                                   [user-message-content
-                                    {:message-data                 message-data
-                                     :context                      context
-                                     :keyboard-shown?              keyboard-shown?
-                                     :show-reactions?              true
-                                     :in-reaction-and-action-menu? true}]])}]))
+                 :selected-item
+                 (if (or deleted? deleted-for-me?)
+                   (fn [] [content.deleted/deleted-message message-data])
+                   (fn []
+                     [rn/view {:pointer-events :none}
+                      [user-message-content
+                       {:message-data    message-data
+                        :context         context
+                        :keyboard-shown? keyboard-shown?
+                        :show-reactions? true
+                        :show-user-info? true}]]))}]))
 
 (defn system-message?
   [content-type]
@@ -251,7 +254,13 @@
      [system-message-content message-data]
 
      (or deleted? deleted-for-me?)
-     [content.deleted/deleted-message message-data]
+     [content.deleted/deleted-message
+      (assoc message-data
+             :on-long-press
+             #(on-long-press message-data
+                             context
+                             keyboard-shown?))
+      context]
 
      :else
      [user-message-content

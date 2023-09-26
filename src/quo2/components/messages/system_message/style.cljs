@@ -87,6 +87,9 @@
 (def system-message-pinned-content-pinned-by
   {:flex-shrink 1})
 
+(def system-message-deleted-animation-start-bg-color colors/danger-50-opa-5)
+(def system-message-deleted-animation-end-bg-color colors/danger-50-opa-0)
+
 (def system-message-wrapper
   {:padding-horizontal 12
    :padding-vertical   8

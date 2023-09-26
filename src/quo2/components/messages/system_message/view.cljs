@@ -7,6 +7,7 @@
     [quo2.components.messages.system-message.style :as style]
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
     [utils.i18n :as i18n]))
 
 (defn sm-icon
@@ -150,13 +151,40 @@
 
 (def system-message-pinned (quo.theme/with-theme system-message-pinned-internal))
 
+(defn f-system-message
+  [{:keys [type animate-bg-color? on-long-press] :as data}]
+  (let [animated-bg-color (reanimated/use-shared-value
+                           style/system-message-deleted-animation-start-bg-color)
+        wrapper           (if (or on-long-press animate-bg-color?)
+                            reanimated/touchable-opacity
+                            rn/view)
+        animated-style    (reanimated/apply-animations-to-style
+                           {:background-color animated-bg-color}
+                           (assoc style/system-message-wrapper
+                                  :background-color
+                                  animated-bg-color))]
+
+    (when animate-bg-color?
+      (reanimated/animate-shared-value-with-delay
+       animated-bg-color
+       style/system-message-deleted-animation-end-bg-color
+       0
+       :linear
+       1000))
+
+    [wrapper
+     {:style         (if animate-bg-color?
+                       animated-style
+                       style/system-message-wrapper)
+      :on-long-press on-long-press}
+     (case type
+       :pinned          [system-message-pinned data]
+       :deleted         [system-message-deleted data]
+       :contact-request [system-message-contact-request data]
+       :added           [system-message-added data]
+       :removed         [system-message-removed data]
+       nil)]))
+
 (defn system-message
-  [{:keys [type] :as data}]
-  [rn/view {:style style/system-message-wrapper}
-   (case type
-     :pinned          [system-message-pinned data]
-     :deleted         [system-message-deleted data]
-     :contact-request [system-message-contact-request data]
-     :added           [system-message-added data]
-     :removed         [system-message-removed data]
-     nil)])
+  [message]
+  [:f> f-system-message message])

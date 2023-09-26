@@ -191,6 +191,7 @@
 (def system-yellow "#FFD60A")
 
 ;;50 with transparency
+(def danger-50-opa-0 (alpha danger-50 0))
 (def danger-50-opa-5 (alpha danger-50 0.05))
 (def danger-50-opa-10 (alpha danger-50 0.1))
 (def danger-50-opa-20 (alpha danger-50 0.2))
