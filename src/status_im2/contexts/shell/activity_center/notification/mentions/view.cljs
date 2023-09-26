@@ -17,13 +17,14 @@
             :style               style/tag-text
             :accessibility-label :activity-message-body
             :size                :paragraph-1}]
-          (map-indexed (fn [index {:keys [type literal]}]
+          (map-indexed (fn [index {:keys [type literal destination]}]
                          ^{:key index}
                          (case type
                            "mention" [quo/text
                                       {:style style/mention-text
                                        :size  :paragraph-1}
                                       (str "@" (rf/sub [:messages/resolve-mention literal]))]
+                           "link"    destination
                            literal))
                        parsed-text-children))))
 
