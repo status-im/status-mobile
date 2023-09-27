@@ -87,12 +87,12 @@
 
 (defn initialize
   [props state animations {:keys [max-height] :as dimensions}
-   {:keys [audio] :as subscriptions}]
+   {:keys [chat-input audio] :as subscriptions}]
   (rn/use-effect
    (fn []
      (layout-effect state)
      (kb-default-height-effect state)
-     (background-effect state animations dimensions subscriptions)
+     (background-effect state animations dimensions chat-input)
      (link-preview-effect state)
      (audio-effect state animations audio)
      (empty-effect state animations subscriptions)
