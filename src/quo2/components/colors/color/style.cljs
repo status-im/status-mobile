@@ -2,12 +2,13 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (def color-button-common
-  {:width         48
-   :height        48
-   :border-width  4
-   :border-radius 24
-   :transform     [{:rotate "45deg"}]
-   :border-color  :transparent})
+  {:width             48
+   :height            48
+   :border-width      4
+   :border-radius     24
+   :margin-horizontal 4
+   :transform         [{:rotate "45deg"}]
+   :border-color      :transparent})
 
 (defn color-button
   [color selected?]
