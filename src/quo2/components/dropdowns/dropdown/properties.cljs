@@ -34,19 +34,19 @@
 
 (defn- custom-color-type
   [theme customization-color active?]
-  {:left-icon-color  colors/white-opa-70
-   :right-icon-color {:color   colors/white-opa-20
-                      :color-2 colors/white}
-   :label-color      colors/white
-   :background-color (if active?
-                       (colors/theme-colors
-                        (colors/custom-color customization-color 60)
-                        (colors/custom-color customization-color 50)
-                        theme)
-                       (colors/theme-colors
-                        (colors/custom-color customization-color 50)
-                        (colors/custom-color customization-color 60)
-                        theme))})
+  {:left-icon-color    colors/white-opa-70
+   :right-icon-color   colors/white-opa-20
+   :right-icon-color-2 colors/white
+   :label-color        colors/white
+   :background-color   (if active?
+                         (colors/theme-colors
+                          (colors/custom-color customization-color 60)
+                          (colors/custom-color customization-color 50)
+                          theme)
+                         (colors/theme-colors
+                          (colors/custom-color customization-color 50)
+                          (colors/custom-color customization-color 60)
+                          theme))})
 
 (def sizes-to-exclude-blur-in-photo-bg #{:size-40})
 
