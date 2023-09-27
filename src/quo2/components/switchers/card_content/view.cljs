@@ -14,7 +14,7 @@
   [{:keys                           [type content customization-color]
     {:keys [text duration photos community-avatar
             community-name source]} :content}]
-  [rn/view {:style {:flex 1 :max-width 108}}
+  [rn/view {:style {:max-width 108}}
    (case type
      :message
      [text/text
