@@ -1,7 +1,8 @@
 (ns status-im2.contexts.quo-preview.navigation.top-nav
-  (:require [quo2.foundations.colors :as colors]
+  (:require [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
-            [quo2.core :as quo]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
@@ -44,8 +45,9 @@
            :customization-color      customization-color
            :notification-count       notification-count
            :jump-to?                 jump-to?
-           :avatar-props             {:online?   true
-                                      :full-name "Test User"}
+           :avatar-props             {:online?         true
+                                      :full-name       "Test User"
+                                      :profile-picture (resources/mock-images :user-picture-female2)}
            :avatar-on-press          #(js/alert "avatar pressed")
            :scan-on-press            #(js/alert "scan pressed")
            :activity-center-on-press #(js/alert "activity-center pressed")
