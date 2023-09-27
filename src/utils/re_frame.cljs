@@ -21,15 +21,6 @@
              (log/debug "Handling re-frame event: " (first (interceptor/get-coeffect context :event)))
              context)))
 
-(defn register-handler-fx
-  ([name handler]
-   (register-handler-fx name nil handler))
-  ([name interceptors handler]
-   (re-frame/reg-event-fx
-    name
-    [debug-handlers-names (re-frame/inject-cofx :now) interceptors]
-    handler)))
-
 (defn- update-db
   [cofx fx]
   (if-let [db (:db fx)]

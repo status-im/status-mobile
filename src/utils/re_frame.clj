@@ -3,10 +3,10 @@
 (defn- register-events
   [events interceptors name argsyms]
   (mapv (fn [event]
-          `(utils.re-frame/register-handler-fx
-            ~event
-            ~interceptors
-            (fn [cofx# [~@argsyms]] (~name cofx# ~@argsyms))))
+          `(re-frame.core/reg-event-fx
+             ~event
+             ~interceptors
+             (fn [cofx# [~@argsyms]] (~name cofx# ~@argsyms))))
         events))
 
 (defn- fully-qualified-name
