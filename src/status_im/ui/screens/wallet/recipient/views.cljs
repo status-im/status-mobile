@@ -4,7 +4,6 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.stateofus :as stateofus]
             [utils.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon]
@@ -17,7 +16,8 @@
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.utils.utils :as utils]
             [utils.debounce :as debounce]
-            [utils.string :as utils.string])
+            [utils.string :as utils.string]
+            [utils.address :as address])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- recipient-topbar
@@ -317,7 +317,7 @@
                  :size  :small
                  :align :center
                  :color :secondary}
-                (when-not (ethereum/address? address)
+                (when-not (address/address? address)
                   (str (stateofus/username-with-domain address) " • "))
                 [quo/text
                  {:monospace true

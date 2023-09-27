@@ -1,11 +1,11 @@
 (ns status-im.network.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [status-im.node.core :as node]
             [utils.re-frame :as rf]
-            [status-im2.navigation.events :as navigation]))
+            [status-im2.navigation.events :as navigation]
+            [utils.ethereum.chain :as chain]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")
@@ -136,7 +136,7 @@
   [random-id network-name sym upstream-url chain-type chain-id]
   (let [data-dir (str "/ethereum/" (name chain-type) "_rpc")
         config   {:NetworkId      (or (when chain-id (int chain-id))
-                                      (ethereum/chain-keyword->chain-id chain-type))
+                                      (chain/chain-keyword->chain-id chain-type))
                   :DataDir        data-dir
                   :UpstreamConfig {:Enabled true
                                    :URL     upstream-url}}]

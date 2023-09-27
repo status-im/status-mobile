@@ -189,10 +189,6 @@
     (-> (sanitize-passphrase s)
         (string/split #" "))))
 
-(defn words->passphrase
-  [v]
-  (string/join " " v))
-
 (def valid-word-counts #{12 15 18 21 24})
 
 (defn valid-word-counts?

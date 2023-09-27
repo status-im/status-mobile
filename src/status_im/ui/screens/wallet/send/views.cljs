@@ -5,7 +5,6 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.commands.core :as commands]
-            [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
@@ -20,7 +19,8 @@
             [status-im.ui.screens.wallet.send.styles :as styles]
             [utils.money :as money]
             [status-im.utils.utils :as utils]
-            [status-im.wallet.utils :as wallet.utils]))
+            [status-im.wallet.utils :as wallet.utils]
+            [utils.address :as address]))
 
 (defn header
   [{:keys [label small-screen?]}]
@@ -232,7 +232,7 @@
                   prices [:prices]
                   wallet-currency [:wallet/currency]
                   window-width [:dimensions/window-width]]
-    (let [to-norm (ethereum/normalized-hex (if (string? to) to (:address to)))]
+    (let [to-norm (address/normalized-hex (if (string? to) to (:address to)))]
       [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
        [:<>
         [quo2/page-nav

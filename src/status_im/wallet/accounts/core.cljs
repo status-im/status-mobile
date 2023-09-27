@@ -5,8 +5,7 @@
     [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [status-im.ens.core :as ens.core]
-    [status-im.ethereum.core :as ethereum]
-    [status-im.ethereum.eip55 :as eip55]
+    [utils.ethereum.eip.eip55 :as eip55]
     [status-im.ethereum.eip681 :as eip681]
     [status-im.ethereum.mnemonic :as mnemonic]
     [status-im.ethereum.stateofus :as stateofus]
@@ -23,7 +22,9 @@
     [status-im.wallet.prices :as prices]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [utils.ethereum.chain :as chain]
+    [utils.address :as address]))
 
 (rf/defn start-adding-new-account
   {:events [:wallet.accounts/start-adding-new-account]}
@@ -249,7 +250,7 @@
   [{:keys [db] :as cofx}]
   (let [address (get-in db [:add-account :address])]
     (account-generated cofx
-                       {:address (eip55/address->checksum (ethereum/normalized-hex address))
+                       {:address (eip55/address->checksum (address/normalized-hex address))
                         :type    :watch})))
 
 (rf/defn add-new-account-password-verifyied
@@ -282,7 +283,7 @@
     (cond-> {:db (assoc-in db [:add-account :address] account)}
       name?
       (assoc ::ens.core/resolve-address
-             [(ethereum/chain-id db)
+             [(chain/chain-id db)
               (stateofus/ens-name-parse account)
               #(re-frame/dispatch
                 [:wallet.accounts/set-account-to-watch %])]))))
@@ -336,7 +337,7 @@
 (re-frame/reg-fx
  :key-storage/delete-imported-key
  (fn [{:keys [key-uid address password on-success on-error]}]
-   (let [hashed-pass (ethereum/sha3 (security/safe-unmask-data password))]
+   (let [hashed-pass (native-module/sha3 (security/safe-unmask-data password))]
      (native-module/delete-imported-key
       key-uid
       (string/lower-case (subs address 2))

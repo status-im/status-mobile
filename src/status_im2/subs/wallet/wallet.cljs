@@ -1,12 +1,12 @@
 (ns status-im2.subs.wallet.wallet
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
             [status-im.utils.currency :as currency]
             [utils.money :as money]
             [status-im2.config :as config]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [status-im.wallet.utils :as wallet.utils]))
 
 (re-frame/reg-sub
  :balance
@@ -19,7 +19,7 @@
  :<- [:wallet]
  :<- [:profile/wallet-accounts]
  (fn [[wallet accounts]]
-   (get-in wallet [:accounts (:address (ethereum/get-default-account accounts)) :balance])))
+   (get-in wallet [:accounts (:address (wallet.utils/get-default-account accounts)) :balance])))
 
 (re-frame/reg-sub
  :balances

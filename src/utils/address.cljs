@@ -1,7 +1,32 @@
 (ns utils.address
-  ;; TODO move to status-im2
-  (:require [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip55 :as eip55]))
+  (:require [utils.ethereum.eip.eip55 :as eip55]
+            [clojure.string :as string]
+            [native-module.core :as native-module]))
+
+(def hex-prefix "0x")
+
+(defn normalized-hex
+  [hex]
+  (when hex
+    (if (string/starts-with? hex hex-prefix)
+      hex
+      (str hex-prefix hex))))
+
+(defn naked-address
+  [s]
+  (when s
+    (string/replace s hex-prefix "")))
+
+(defn address?
+  [address]
+  (native-module/address? address))
+
+(defn address=
+  [address1 address2]
+  (and address1
+       address2
+       (= (string/lower-case (normalized-hex address1))
+          (string/lower-case (normalized-hex address2)))))
 
 (defn get-shortened-key
   "Takes first and last 4 digits from address including leading 0x
@@ -13,7 +38,7 @@
 (defn get-shortened-checksum-address
   [address]
   (when address
-    (get-shortened-key (eip55/address->checksum (ethereum/normalized-hex address)))))
+    (get-shortened-key (eip55/address->checksum (normalized-hex address)))))
 
 (defn get-abbreviated-profile-url
   "The goal here is to generate a string that begins with

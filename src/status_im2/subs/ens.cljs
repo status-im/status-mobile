@@ -2,8 +2,9 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ens.core :as ens]
-            [status-im.ethereum.core :as ethereum]
-            [utils.money :as money]))
+            [utils.money :as money]
+            [utils.ethereum.chain :as chain]
+            [utils.address :as address]))
 
 (re-frame/reg-sub
  :ens/preferred-name
@@ -37,7 +38,7 @@
  :<- [:wallet]
  (fn [[{:keys [custom-domain? username address]}
        chain default-account public-key chain-id wallet]]
-   (let [address (or address (ethereum/normalized-hex (:address default-account)))
+   (let [address (or address (address/normalized-hex (:address default-account)))
          balance (get-in wallet [:accounts address :balance])]
      {:address           address
       :username          username
@@ -47,9 +48,9 @@
       :amount-label      (ens-amount-label chain-id)
       :sufficient-funds? (money/sufficient-funds?
                           (money/formatted->internal (money/bignumber 10)
-                                                     (ethereum/chain-keyword->snt-symbol chain)
+                                                     (chain/chain-keyword->snt-symbol chain)
                                                      18)
-                          (get balance (ethereum/chain-keyword->snt-symbol chain)))})))
+                          (get balance (chain/chain-keyword->snt-symbol chain)))})))
 
 (re-frame/reg-sub
  :ens/confirmation-screen

@@ -2,7 +2,6 @@
   (:require [re-frame.core :as re-frame]
             [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.contact.db :as contact.db]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
             [utils.i18n :as i18n]
@@ -13,7 +12,9 @@
             [utils.money :as money]
             [status-im.utils.universal-links.utils :as links]
             [status-im.utils.wallet-connect :as wallet-connect]
-            [status-im2.navigation.events :as navigation]))
+            [status-im2.navigation.events :as navigation]
+            [utils.ethereum.chain :as chain]
+            [status-im.wallet.utils :as wallet.utils]))
 
 ;; FIXME(Ferossgp): Should be part of QR scanner not wallet
 (rf/defn toggle-flashlight
@@ -66,7 +67,7 @@
          :wallet/prepare-transaction
          (cond-> {:to      address
                   :to-name (or name (find-address-name db address))
-                  :from    (ethereum/get-default-account
+                  :from    (wallet.utils/get-default-account
                             (get db :profile/wallet-accounts))}
            gas       (assoc :gas (money/bignumber gas))
            gas-limit (assoc :gas (money/bignumber gas-limit))
@@ -106,7 +107,7 @@
                       {:success-callback
                        #(re-frame/dispatch
                          [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
-                       :network-id (get-in (ethereum/current-network db)
+                       :network-id (get-in (chain/current-network db)
                                            [:config :NetworkId])}})
                    (when (and chain-id (not= current-chain-id chain-id))
                      {:ui/show-error (i18n/label :t/wallet-invalid-chain-id
@@ -129,7 +130,7 @@
       ;; if there are no ens-names, we dispatch request-uri-parsed immediately
       (request-uri-parsed cofx message uri)
       {::resolve-addresses
-       {:chain-id (ethereum/chain-id db)
+       {:chain-id (chain/chain-id db)
         :ens-names ens-names
         :callback
         (fn [addresses]

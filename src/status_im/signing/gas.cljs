@@ -2,14 +2,14 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [status-im.popover.core :as popover]
             [status-im.signing.eip1559 :as eip1559]
             [utils.re-frame :as rf]
             [utils.money :as money]
             [status-im2.common.json-rpc.events :as json-rpc]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.ethereum.chain :as chain]))
 
 (def min-gas-price-wei ^js (money/bignumber 1))
 
@@ -409,7 +409,7 @@
                          (check-base-fee
                           (assoc fee-history
                                  :testnet?
-                                 (ethereum/testnet?
+                                 (chain/testnet?
                                   (get-in networks [current-network :config :NetworkId]))))]
                      (merge {:max-priority-fee
                              (max-priority-fee-hex (money/bignumber %) current-base-fee)}
