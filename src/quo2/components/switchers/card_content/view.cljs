@@ -66,7 +66,7 @@
 
      :code
      [snippet-preview/view
-      {:language  (:language content)}
+      {:language (:language content)}
       content]
 
      nil)])
