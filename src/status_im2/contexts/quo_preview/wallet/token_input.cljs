@@ -40,12 +40,16 @@
 (defn preview
   []
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9ed173b80 (design review)
   (let [state (reagent/atom {:token               :eth
                              :currency            :usd
                              :conversion          0.02
                              :networks            networks
                              :title               title
                              :customization-color :blue})]
+<<<<<<< HEAD
 =======
   (let [state (reagent/atom {:token      :eth
                              :currency   :usd
@@ -57,6 +61,8 @@
 =======
                              :title      title})]
 >>>>>>> ffc214f89 (lint)
+=======
+>>>>>>> 9ed173b80 (design review)
     (fn []
       [preview/preview-container
        {:state      state
