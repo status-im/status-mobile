@@ -480,7 +480,7 @@ used in the new code in `src/status_im2/`. Don't use
   [cofx id]
   (rf/merge cofx
             (reset-community-id-input id)
-            (bottom-sheet/hide-bottom-sheet-old)
+            (bottom-sheet/hide-bottom-sheet)
             (navigation/open-modal :invite-people-community {:invite? true})))
 
 ;; good

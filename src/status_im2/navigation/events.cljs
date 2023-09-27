@@ -28,8 +28,7 @@
   [_ comp-id]
   {:navigate-to-within-stack comp-id})
 
-(re-frame/reg-event-fx
- :open-modal
+(re-frame/reg-event-fx :open-modal
  (fn [{:keys [db]} [component screen-params]]
    {:db (-> db
             (assoc :view-id component)

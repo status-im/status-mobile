@@ -456,15 +456,13 @@
   [{:keys [db]}]
   {:db (assoc db :communities/create-channel {})})
 
-(re-frame/reg-event-fx
- :communities/invite-people-pressed
+(re-frame/reg-event-fx :communities/invite-people-pressed
  (fn [{:keys [db]} [id]]
    {:db (assoc db :communities/community-id-input id)
     :fx [[:dispatch [:hide-bottom-sheet]]
          [:dispatch [:open-modal :invite-people-community {:invite? true}]]]}))
 
-(re-frame/reg-event-fx
- :communities/share-community-pressed
+(re-frame/reg-event-fx :communities/share-community-pressed
  (fn [{:keys [db]} [id]]
    {:db (assoc db :communities/community-id-input id)
     :fx [[:dispatch [:hide-bottom-sheet]]

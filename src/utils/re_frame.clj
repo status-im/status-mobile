@@ -4,9 +4,9 @@
   [events interceptors name argsyms]
   (mapv (fn [event]
           `(re-frame.core/reg-event-fx
-             ~event
-             ~interceptors
-             (fn [cofx# [~@argsyms]] (~name cofx# ~@argsyms))))
+            ~event
+            ~interceptors
+            (fn [cofx# [~@argsyms]] (~name cofx# ~@argsyms))))
         events))
 
 (defn- fully-qualified-name

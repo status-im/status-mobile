@@ -249,8 +249,7 @@
                     :on-success (fn [on-ramps]
                                   (re-frame/dispatch [::crypto-loaded on-ramps]))}]})
 
-(re-frame/reg-event-fx
- :buy-crypto.ui/open-screen
+(re-frame/reg-event-fx :buy-crypto.ui/open-screen
  (fn []
    {:fx [[:dispatch [:wallet/keep-watching]]
          [:dispatch [:open-modal :buy-crypto nil]]]}))

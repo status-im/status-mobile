@@ -6,8 +6,7 @@
 
 ;; "source? true" means we are selecting the source asset. false implies
 ;; selection of sink asset."
-(re-frame/reg-event-fx
- ::open-asset-selector-modal
+(re-frame/reg-event-fx ::open-asset-selector-modal
  (fn [{:keys [db]} [source?]]
    {:db (assoc db :wallet/modal-selecting-source-token? source?)
     :fx [[:dispatch [:open-modal :swap-asset-selector {}]]]}))

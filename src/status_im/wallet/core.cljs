@@ -197,8 +197,7 @@
                       :on-success #(re-frame/dispatch [::collectible-assets-fetch-success address
                                                        collectible-slug %])}]}))
 
-(re-frame/reg-event-fx
- ::show-nft-details
+(re-frame/reg-event-fx ::show-nft-details
  (fn [{:keys [db]} [asset]]
    {:db (assoc db :wallet/selected-collectible asset)
     :fx [[:dispatch [:open-modal :nft-details {}]]]}))
@@ -609,8 +608,7 @@
             {:db (assoc-in db [:wallet/prepare-transaction field] value)}
             (bottom-sheet/hide-bottom-sheet-old)))
 
-(re-frame/reg-event-fx
- :wallet.send/navigate-to-recipient-code
+(re-frame/reg-event-fx :wallet.send/navigate-to-recipient-code
  (fn [{:keys [db]}]
    {:db (-> db (assoc :wallet/recipient {}))
     :fx [[:dispatch [:bottom-sheet/hide-old]]
