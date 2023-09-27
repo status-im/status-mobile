@@ -390,7 +390,7 @@
                        {:name      :share-qr-code
                         :component share-qr-code/preview-share-qr-code}]
    :switchers         [{:name      :group-messaging-card
-                        :component group-messaging-card/preview-group-messaging-card}
+                        :component group-messaging-card/view}
                        {:name      :switcher-cards
                         :component switcher-cards/preview-switcher-cards}]
    :tabs              [{:name      :segmented

@@ -1,7 +1,5 @@
 (ns status-im2.contexts.quo-preview.switcher.group-messaging-card
-  (:require [quo.react-native :as rn]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]
             [status-im2.common.resources :as resources]))
@@ -44,11 +42,14 @@
    {:label "Last Message"
     :key   :last-message
     :type  :text}
+   {:label "Avatar:"
+    :key   :avatar?
+    :type  :boolean}
    (preview/customization-color-option)])
 
 ;; Mock data
 (def sticker {:source (resources/get-mock-image :sticker)})
-(def community-avatar {:source (resources/get-mock-image :community-logo)})
+(def community-avatar (resources/get-mock-image :community-logo))
 (def gif {:source (resources/get-mock-image :gif)})
 (def coinbase-community (resources/get-mock-image :coinbase))
 (def photos-list
@@ -114,31 +115,18 @@
    {:content (merge (get-mock-content data)
                     {:mention-count (when (= (:status data) :mention) (:counter-label data))})}))
 
-(defn cool-preview
+(defn view
   []
   (let [state (reagent/atom {:title               "Hester, John, Steven, and 2 others"
                              :type                :message
                              :status              :read
                              :last-message        "Hello there, there is a new message"
                              :customization-color :camel
-                             :avatar              true
+                             :avatar?             false
                              :counter-label       5})]
     (fn []
-      [rn/touchable-without-feedback {:on-press rn/dismiss-keyboard!}
-       [rn/view {:style {:padding-bottom 150}}
-        [preview/customizer state descriptor]
-        [rn/view
-         {:style {:padding-vertical 60
-                  :align-items      :center}}
-         [quo/group-messaging-card (get-mock-data @state)]]]])))
-
-(defn preview-group-messaging-card
-  []
-  [rn/view
-   {:style {:flex             1
-            :background-color (colors/theme-colors colors/white colors/neutral-90)}}
-   [rn/flat-list
-    {:flex                         1
-     :keyboard-should-persist-taps :always
-     :header                       [cool-preview]
-     :key-fn                       str}]])
+      [preview/preview-container {:state state :descriptor descriptor}
+       [quo/group-messaging-card
+        (cond-> (get-mock-data @state)
+          (:avatar? @state)
+          (assoc :avatar community-avatar))]])))
