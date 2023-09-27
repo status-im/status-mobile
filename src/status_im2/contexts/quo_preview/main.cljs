@@ -31,6 +31,7 @@
     [status-im2.contexts.quo-preview.graph.interactive-graph :as interactive-graph]
     [status-im2.contexts.quo-preview.graph.wallet-graph :as wallet-graph]
     [status-im2.contexts.quo-preview.colors.color-picker :as color-picker]
+    [status-im2.contexts.quo-preview.colors.color :as color]
     [status-im2.contexts.quo-preview.community.community-card-view :as community-card]
     [status-im2.contexts.quo-preview.community.community-membership-list-view :as
      community-membership-list-view]
@@ -183,7 +184,9 @@
                        {:name      :snippet-preview
                         :component code-snippet-preview/view}]
    :colors            [{:name      :color-picker
-                        :component color-picker/view}]
+                        :component color-picker/view}
+                       {:name      :color
+                        :component color/view}]
    :community         [{:name      :community-card-view
                         :component community-card/view}
                        {:name      :community-membership-list-view
