@@ -124,7 +124,9 @@
                               loading-indicator-page-loading-height)]
     (when (or loading-messages? (not all-loaded?))
       [rn/view {:padding-top top-spacing}
-       [quo/skeleton-list (skeleton-list-props :messages parent-height true)]])))
+       ;; Only use animated loading skeleton for ios
+       ;; https://github.com/status-im/status-mobile/issues/17426
+       [quo/skeleton-list (skeleton-list-props :messages parent-height platform/ios?)]])))
 
 (defn list-header
   [insets able-to-send-message? theme]
