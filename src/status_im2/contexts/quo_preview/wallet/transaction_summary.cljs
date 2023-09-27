@@ -12,6 +12,13 @@
    :amount     1500
    :token-logo (quo.resources/get-token :snt)})
 
+(def asset-eth
+  {:size       24
+   :type       :token
+   :token-name "ETH"
+   :amount     75
+   :token-logo (quo.resources/get-token :eth)})
+
 (def asset-dai
   {:size       24
    :type       :token
@@ -38,6 +45,13 @@
    :account-name "Piggy bank"
    :emoji        "🐷"})
 
+(def collectibles-vault
+  {:size                24
+   :type                :account
+   :account-name        "Collectibles vault"
+   :customization-color :orange
+   :emoji               "🎮"})
+
 (def aretha-gosling
   {:size            24
    :type            :default
@@ -48,6 +62,12 @@
   {:size            24
    :type            :default
    :full-name       "James Bond"
+   :profile-picture (resources/mock-images :user-picture-male4)})
+
+(def mark-libot
+  {:size            24
+   :type            :default
+   :full-name       "Mark Libot"
    :profile-picture (resources/mock-images :user-picture-male4)})
 
 (def mainnet
@@ -90,6 +110,8 @@
 (def context-tags
   [{:key   asset-snt
     :value "SNT"}
+   {:key   asset-eth
+    :value "ETH"}
    {:key   asset-dai
     :value "UNK"}
    {:key   asset-collectible
@@ -98,8 +120,12 @@
     :value "Account: Trip to Vegas"}
    {:key   piggy-bank
     :value "Account: Piggy bank"}
+   {:key   collectibles-vault
+    :value "Account: Collectibles vault"}
    {:key   aretha-gosling
     :value "Person: Aretha Gosling"}
+   {:key   mark-libot
+    :value "Person: Mark Libot"}
    {:key   james-bond
     :value "Person: James Bond"}
    {:key   mainnet
