@@ -7,7 +7,7 @@
             [quo2.components.markdown.text :as text]
             [quo2.components.list-items.preview-list.view :as preview-list]
             [quo2.components.tags.context-tag.view :as tag]
-            [quo2.components.code.snippet :as snippet]
+            [quo2.components.code.snippet-preview.view :as snippet-preview]
             [utils.i18n :as i18n]))
 
 (defn content-view
@@ -65,9 +65,8 @@
        :size    24}]
 
      :code
-     [snippet/snippet
-      {:language  (:language content)
-       :max-lines 0}
+     [snippet-preview/view
+      {:language  (:language content)}
       content]
 
      nil)])
