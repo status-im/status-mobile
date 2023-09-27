@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.events-test
   (:require [cljs.test :refer-macros [deftest is testing]]
             [status-im2.contexts.chat.events :as chat]
-            [status-im.utils.clocks :as utils.clocks]))
+            [utils.datetime :as datetime]))
 
 (deftest clear-history-test
   (let [chat-id "1"
@@ -30,7 +30,7 @@
                                        true)]
         (is (= 100 (get-in actual [:db :chats chat-id :deleted-at-clock-value])))))
     (testing "it set the deleted-at-clock-value to now the chat has no messages nor previous deleted-at"
-      (with-redefs [utils.clocks/send (constantly 42)]
+      (with-redefs [datetime/timestamp (constantly 42)]
         (let [actual (chat/clear-history (update-in cofx
                                                     [:db :chats chat-id]
                                                     assoc
