@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [status-im.browser.core :as browser]
-    [status-im2.contexts.chat.events :as chat.events]
     [status-im.chat.models.message :as models.message]
     [status-im.chat.models.reactions :as models.reactions]
     [status-im.communities.core :as models.communities]
@@ -23,6 +22,7 @@
     [status-im.wallet.core :as wallet]))
 
 (rf/defn process-next
+  {:events [:transport/process-next]}
   [cofx ^js response-js sync-handler]
   (if sync-handler
     (sync-handler cofx response-js true)
@@ -58,9 +58,8 @@
       (seq chats)
       (do
         (js-delete response-js "chats")
-        (rf/merge cofx
-                  (process-next response-js sync-handler)
-                  (chat.events/ensure-chats (map data-store.chats/<-rpc (types/js->clj chats)))))
+        {:fx [[:dispatch [:transport/process-next response-js sync-handler]]
+              [:dispatch [:chat/ensure-chats (map data-store.chats/<-rpc (types/js->clj chats))]]]})
 
       (seq messages)
       (models.message/receive-many cofx response-js)

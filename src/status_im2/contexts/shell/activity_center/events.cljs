@@ -5,7 +5,6 @@
             [status-im.data-store.chats :as data-store.chats]
             [status-im2.common.toasts.events :as toasts]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.events :as chat.events]
             [status-im2.contexts.shell.activity-center.notification-types :as types]
             [taoensso.timbre :as log]
             [utils.collection :as collection]
@@ -211,13 +210,14 @@
                     :on-error   [:activity-center/process-notification-failure notification-id
                                  :notification/accept]}]})
 
-(rf/defn accept-notification-success
-  {:events [:activity-center.notifications/accept-success]}
-  [{:keys [db] :as cofx} notification-id {:keys [chats]}]
+(defn accept-notification-success
+  [{:keys [db]} [notification-id {:keys [chats]}]]
   (when-let [notification (get-notification db notification-id)]
-    (rf/merge cofx
-              (chat.events/ensure-chats (map data-store.chats/<-rpc chats))
-              (notifications-reconcile [(assoc notification :read true :accepted true)]))))
+    (let [new-notifications [(assoc notification :read true :accepted true)]]
+      {:fx [[:dispatch [:chat/ensure-chats (map data-store.chats/<-rpc chats)]]
+            [:dispatch [:activity-center.notifications/reconcile new-notifications]]]})))
+
+(re-frame/reg-event-fx :activity-center.notifications/accept-success accept-notification-success)
 
 (rf/defn dismiss-notification
   {:events [:activity-center.notifications/dismiss]}
