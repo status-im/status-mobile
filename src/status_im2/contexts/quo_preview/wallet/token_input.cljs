@@ -31,11 +31,12 @@
 
 (defn preview
   []
-  (let [state (reagent/atom {:token      :eth
-                             :currency   :usd
-                             :conversion 0.02
-                             :networks   networks
-                             :title      title})]
+  (let [state (reagent/atom {:token               :eth
+                             :currency            :usd
+                             :conversion          0.02
+                             :networks            networks
+                             :title               title
+                             :customization-color :blue})]
     (fn []
       [preview/preview-container
        {:state      state
