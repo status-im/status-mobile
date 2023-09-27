@@ -19,7 +19,8 @@
     quo2.components.calendar.calendar.view
     quo2.components.calendar.calendar-day.view
     quo2.components.calendar.calendar-year.view
-    quo2.components.code.snippet
+    quo2.components.code.snippet.view
+    quo2.components.code.snippet-preview.view
     quo2.components.colors.color-picker.view
     quo2.components.common.notification-dot.view
     quo2.components.common.separator.view
@@ -166,7 +167,8 @@
 (def calendar-year quo2.components.calendar.calendar-year.view/view)
 
 ;;;; Code
-(def snippet quo2.components.code.snippet/snippet)
+(def snippet quo2.components.code.snippet.view/view)
+(def snippet-preview quo2.components.code.snippet-preview.view/view)
 
 ;;;; Cards
 (def small-option-card quo2.components.onboarding.small-option-card.view/small-option-card)

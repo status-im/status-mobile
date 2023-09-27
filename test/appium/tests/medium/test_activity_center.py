@@ -33,9 +33,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_2.add_a_contact_chat_bottom_sheet_button.click()
         self.home_2.element_by_translation_id("paste").click()
         self.home_2.element_by_translation_id("user-found").wait_for_visibility_of_element(10)
-        # TODO: Blocked by 15500
-        # if not self.home_2.element_by_text(self.username_1).is_element_displayed():
-        #     self.errors.append("Username is not shown on 'Add contact' page after entering valid public key")
+        if not self.home_2.element_by_text(self.username_1).is_element_displayed(30):
+            self.errors.append("Username is not shown on 'Add contact' page after entering valid public key")
         chat = self.home_2.get_chat_view()
 
         chat.view_profile_new_contact_button.click_until_presence_of_element(chat.profile_block_contact_button)
