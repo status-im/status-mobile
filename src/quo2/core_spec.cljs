@@ -37,6 +37,7 @@
     [quo2.components.links.link-preview.component-spec]
     [quo2.components.links.url-preview-list.component-spec]
     [quo2.components.links.url-preview.component-spec]
+    [quo2.components.list-items.account.component-spec]
     [quo2.components.list-items.channel.component-spec]
     [quo2.components.list-items.community.component-spec]
     [quo2.components.list-items.dapp.component-spec]
