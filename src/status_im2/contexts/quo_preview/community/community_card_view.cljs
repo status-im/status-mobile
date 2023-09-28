@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.community.community-card-view
-  (:require [quo.design-system.colors :as quo.colors]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]
@@ -13,7 +12,7 @@
    "Status is a secure messaging app, crypto wallet and web3 browser built with the state of the art technology"
    :cover (resources/get-mock-image :community-cover)
    :community-icon (resources/get-mock-image :status-logo)
-   :color (rand-nth quo.colors/chat-colors)
+   :customization-color :blue
    :tokens [{:id 1 :group [{:id 1 :token-icon (resources/get-mock-image :status-logo)}]}]
    :tags [{:id        1
            :tag-label (i18n/label :t/music)
