@@ -93,9 +93,9 @@
    (case action
      :arrow    [icon/icon :i/chevron-right (style/color blur? theme)]
      :button   [button/button
-                {:type     :outline
-                 :size     24
-                 :on-press (:on-press action-props)}
+                (merge action-props
+                       {:type     :outline
+                        :size     24})
                 (:button-text action-props)]
      :selector [selectors/toggle action-props]
      nil)])

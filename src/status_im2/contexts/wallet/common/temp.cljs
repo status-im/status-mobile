@@ -79,8 +79,21 @@
 (defn create-account-state
   [name]
   [{:title        (keypair-string name)
-    :button-props {:title (i18n/label :t/edit)}
-    :left-icon    :i/placeholder}
-   {:title        (i18n/label :t/derivation-path)
-    :button-props {:title (i18n/label :t/edit)}
-    :left-icon    :i/derivated-path}])
+    :image        :avatar
+    :image-props  {:full-name           "A Y"
+                   :size                :xxs
+                   :customization-color :blue}
+    :action       :button
+    :action-props {:on-press    #(js/alert "Button pressed!")
+                   :button-text (i18n/label :t/edit)}
+    :description :text
+    :description-props {:text (i18n/label :t/on-device)}}
+   {:title       (i18n/label :t/derivation-path)
+    :image       :icon
+    :image-props :i/derivated-path
+    :action       :button
+    :action-props {:on-press    #(js/alert "Button pressed!")
+                   :button-text (i18n/label :t/edit)
+                   :icon-left :i/placeholder}
+    :description :text
+    :description-props {:text "m / 44’ / 60’ / 0’ / 0’ / 2"}}])

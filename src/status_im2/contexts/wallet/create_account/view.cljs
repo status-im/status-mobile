@@ -66,8 +66,10 @@
          (i18n/label :t/colour)]
         [quo/color-picker
          {:default-selected @account-color
-          :on-change        #(reset! account-color %)}]]
-       [rn/view {:style (style/divider-line theme)}]
+          :on-change        #(reset! account-color %)
+          :container-style {:padding-horizontal 12
+                            :padding-vertical 12}}]]
+       [quo/divider-line {:container-style style/divider-line}]
        [quo/category
         {:list-type :settings
          :label     (i18n/label :t/origin)
