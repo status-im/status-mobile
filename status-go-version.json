@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.167.6",
-    "commit-sha1": "e1354016a08fed9272841901578aee2c48b564e7",
-    "src-sha256": "05mf13illjq4ykkpb7b0wa012y7bf8gs0cwh4163s8vcnmxdjj4b"
+    "version": "feature/update-waku-nodes",
+    "commit-sha1": "b8041fc80c0c91988a61d5306b0949dc16968639",
+    "src-sha256": "1b1hazknyaydngdjrmmhw2i5649n55f5jwsxg2hncqnxxcaqxfk2"
 }
