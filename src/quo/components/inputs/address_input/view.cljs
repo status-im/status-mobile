@@ -61,10 +61,14 @@
         value    (reagent/atom "")
         focused? (atom false)]
     (fn [{:keys [scanned-value theme blur? on-change-text on-blur on-focus on-clear on-scan on-detect-ens
-                 ens-regex
-                 valid-ens?]}]
+                 on-detect-address
+                 ens-regex address-regex
+                 valid-ens-or-address?]}]
       (let [on-change              (fn [text]
-                                     (let [ens? (boolean (re-matches ens-regex text))]
+                                     (let [ens?     (when ens-regex
+                                                      (boolean (re-matches ens-regex text)))
+                                           address? (when address-regex
+                                                      (boolean (re-matches address-regex text)))]
                                        (if (> (count text) 0)
                                          (reset! status :typing)
                                          (reset! status :active))
@@ -73,7 +77,10 @@
                                          (on-change-text text))
                                        (when (and ens? on-detect-ens)
                                          (reset! status :loading)
-                                         (on-detect-ens text))))
+                                         (on-detect-ens text))
+                                       (when (and address? on-detect-address)
+                                         (reset! status :loading)
+                                         (on-detect-address text))))
             on-paste               (fn []
                                      (clipboard/get-string
                                       (fn [clipboard]
@@ -145,12 +152,12 @@
              {:on-press on-clear
               :blur?    blur?
               :theme    theme}]])
-         (when (and (= @status :loading) (not valid-ens?))
+         (when (and (= @status :loading) (not valid-ens-or-address?))
            [rn/view
             {:style               style/buttons-container
              :accessibility-label :loading-button-container}
             [loading-icon blur? theme]])
-         (when (and (= @status :loading) valid-ens?)
+         (when (and (= @status :loading) valid-ens-or-address?)
            [rn/view
             {:style               style/buttons-container
              :accessibility-label :positive-button-container}

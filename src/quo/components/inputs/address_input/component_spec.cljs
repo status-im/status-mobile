@@ -6,11 +6,12 @@
     [test-helpers.component :as h]))
 
 (def ens-regex #"^(?=.{5,255}$)([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$")
+(def address-regex #"^0x[a-fA-F0-9]{40}$")
 
 (h/describe "Address input"
   (h/test "default render"
     (with-redefs [clipboard/get-string #(% "")]
-      (h/render [address-input/address-input {:ens-regex ens-regex}])
+      (h/render [address-input/address-input])
       (h/is-truthy (h/get-by-label-text :address-text-input))))
 
   (h/test "on focus with blur? false"
@@ -152,11 +153,37 @@
           on-detect-ens (h/mock-fn)]
       (with-redefs [clipboard/get-string #(% clipboard)]
         (h/render [address-input/address-input
-                   {:on-detect-ens on-detect-ens
-                    :valid-ens?    true
-                    :ens-regex     ens-regex}])
+                   {:on-detect-ens         on-detect-ens
+                    :valid-ens-or-address? true
+                    :ens-regex             ens-regex}])
         (h/wait-for #(h/is-truthy (h/get-by-label-text :paste-button)))
         (h/fire-event :press (h/get-by-label-text :paste-button))
         (h/wait-for #(h/is-falsy (h/get-by-label-text :clear-button)))
         (h/wait-for #(h/is-truthy (h/get-by-label-text :positive-button-container)))
-        (h/was-called on-detect-ens)))))
+        (h/was-called on-detect-ens))))
+
+  (h/test "address loading state and call on-detect-address"
+    (let [clipboard         "0x2f88d65f3cb52605a54a833ae118fb1363acccd2"
+          on-detect-address (h/mock-fn)]
+      (with-redefs [clipboard/get-string #(% clipboard)]
+        (h/render [address-input/address-input
+                   {:on-detect-address on-detect-address
+                    :address-regex     address-regex}])
+        (h/wait-for #(h/is-truthy (h/get-by-label-text :paste-button)))
+        (h/fire-event :press (h/get-by-label-text :paste-button))
+        (h/wait-for #(h/is-falsy (h/get-by-label-text :clear-button)))
+        (h/wait-for #(h/is-truthy (h/get-by-label-text :loading-button-container)))
+        (h/was-called on-detect-address))))
+
+  (h/test "address valid state and call on-detect-address"
+    (let [clipboard         "0x2f88d65f3cb52605a54a833ae118fb1363acccd2"
+          on-detect-address (h/mock-fn)]
+      (with-redefs [clipboard/get-string #(% clipboard)]
+        (h/render [address-input/address-input
+                   {:on-detect-address on-detect-address
+                    :address-regex     address-regex}])
+        (h/wait-for #(h/is-truthy (h/get-by-label-text :paste-button)))
+        (h/fire-event :press (h/get-by-label-text :paste-button))
+        (h/wait-for #(h/is-falsy (h/get-by-label-text :clear-button)))
+        (h/wait-for #(h/is-truthy (h/get-by-label-text :positive-button-container)))
+        (h/was-called on-detect-address)))))
