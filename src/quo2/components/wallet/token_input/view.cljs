@@ -51,7 +51,7 @@
            :weight :semi-bold
            :style  {:color          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
                     :margin-right   8
-                    :padding-bottom 1}}
+                    :padding-bottom 2}}
           (string/upper-case (clj->js (if @crypto? token currency)))]]
         [button/button
          {:icon                true
