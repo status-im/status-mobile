@@ -256,11 +256,9 @@
                        {:name      :title-input
                         :component title-input/view}]
    :numbered-keyboard [{:name      :keyboard-key
-                        :options   {:insets {:top? true}}
-                        :component keyboard-key/preview-keyboard-key}
+                        :component keyboard-key/view}
                        {:name      :numbered-keyboard
-                        :options   {:insets {:top? true}}
-                        :component numbered-keyboard/preview-numbered-keyboard}]
+                        :component numbered-keyboard/view}]
    :links             [{:name      :url-preview
                         :options   {:insets {:top? true}}
                         :component url-preview/view}
@@ -316,9 +314,9 @@
                        {:name      :notification
                         :component notification/view}]
    :onboarding        [{:name      :small-option-card
-                        :component small-option-card/preview-small-option-card}]
+                        :component small-option-card/view}]
    :password          [{:name      :tips
-                        :component tips/preview-tips}]
+                        :component tips/view}]
    :profile           [{:name      :profile-card
                         :component profile-card/preview-profile-card}
                        {:name      :collectible
