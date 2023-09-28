@@ -38,34 +38,40 @@
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
 
-(defn calculate-raw-balance 
+(defn calculate-raw-balance
   [rawBalance decimals]
   (/ (js/parseInt rawBalance) (Math/pow 10 (js/parseInt decimals))))
 
 (defn calculate-balance
   [{:keys [address]}]
-  (let [tokens (rf/sub [:wallet-2/tokens])
-        token  (get tokens (keyword (string/lower-case address)))
+  (let [tokens       (rf/sub [:wallet-2/tokens])
+        token        (get tokens (keyword (string/lower-case address)))
         total-values (atom 0)]
     (doseq [item token]
       (let [total-value-per-token (atom 0)]
         (doseq [balances (vals (:balancesPerChain item))]
-          (reset! total-value-per-token (+ (calculate-raw-balance (:rawBalance balances) (:decimals item)) @total-value-per-token)))
-        (reset! total-values (+ (* @total-value-per-token (get-in item [:marketValuesPerCurrency :USD :price])) @total-values))))
+          (reset! total-value-per-token (+ (calculate-raw-balance (:rawBalance balances)
+                                                                  (:decimals item))
+                                           @total-value-per-token)))
+        (reset! total-values (+ (* @total-value-per-token
+                                   (get-in item [:marketValuesPerCurrency :USD :price]))
+                                @total-values))))
     (.toFixed @total-values 2)))
 
 (defn refactor-data
   []
-  (let [accounts (rf/sub [:profile/wallet-accounts])
-        loading? (rf/sub [:wallet-2/tokens-loading?])
+  (let [accounts            (rf/sub [:profile/wallet-accounts])
+        loading?            (rf/sub [:wallet-2/tokens-loading?])
         refactored-accounts (mapv (fn [account]
-                                   (merge account {:type :empty
-                                                   :customization-color :blue
-                                                   :on-press            #(rf/dispatch [:navigate-to :wallet-accounts])
-                                                   :loading? loading?
-                                                   :balance (str "$" (calculate-balance account))})) 
-                                  accounts)] 
-        (merge refactored-accounts add-account-placeholder)))
+                                    (merge account
+                                           {:type                :empty
+                                            :customization-color :blue
+                                            :on-press            #(rf/dispatch [:navigate-to
+                                                                                :wallet-accounts])
+                                            :loading?            loading?
+                                            :balance             (str "$" (calculate-balance account))}))
+                                  accounts)]
+    (merge refactored-accounts add-account-placeholder)))
 
 (defn reagent-render
   []
@@ -108,4 +114,4 @@
   (reagent/create-class
    (let [accounts (rf/sub [:profile/wallet-accounts])]
      {:component-did-mount #(rf/dispatch [:wallet-2/get-wallet-tokens accounts])
-      :reagent-render reagent-render})))
+      :reagent-render      reagent-render})))
