@@ -3,12 +3,14 @@
             [quo2.components.dropdowns.dropdown.style :as style]
             [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
+            [quo2.foundations.customization-colors :as customization-colors]
             [quo2.theme :as theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]))
 
 (defn- view-internal
-  [{:keys [type size state background on-press icon-name icon? emoji? accessibility-label]
+  [{:keys [type size state background customization-color theme on-press icon-name icon? emoji?
+           accessibility-label]
     :or   {type      :grey
            size      :size-40
            state     :default
@@ -17,12 +19,13 @@
            icon-name :i/placeholder}
     :as   props}
    text]
-  (let [{:keys [icon-size text-size emoji-size]
+  (let [{:keys [icon-size text-size emoji-size border-radius]
          :as   size-properties} (properties/sizes size)
         {:keys [left-icon-color right-icon-color right-icon-color-2 label-color blur-type
                 blur-overlay-color]
          :as   colors}          (properties/get-colors props)
         right-icon              (if (= state :active) :i/pullup :i/dropdown)
+        customization-type?     (= type :customization)
         show-blur-background?   (and (= background :photo)
                                      (= type :grey)
                                      (nil? (properties/sizes-to-exclude-blur-in-photo-bg size)))]
@@ -37,6 +40,12 @@
          :blur-type     blur-type
          :overlay-color blur-overlay-color
          :style         style/blur-view}])
+     (when customization-type?
+       [customization-colors/overlay
+        {:customization-color customization-color
+         :theme               theme
+         :pressed?            (= state :active)
+         :border-radius       border-radius}])
      (if emoji?
        [rn/text
         {:adjusts-font-size-to-fit true

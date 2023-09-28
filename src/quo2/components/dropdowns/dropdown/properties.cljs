@@ -33,20 +33,12 @@
              :text-size        :paragraph-2}})
 
 (defn- custom-color-type
-  [theme customization-color active?]
+  [customization-color]
   {:left-icon-color    colors/white-opa-70
    :right-icon-color   colors/white-opa-20
    :right-icon-color-2 colors/white
    :label-color        colors/white
-   :background-color   (if active?
-                         (colors/theme-colors
-                          (colors/custom-color customization-color 60)
-                          (colors/custom-color customization-color 50)
-                          theme)
-                         (colors/theme-colors
-                          (colors/custom-color customization-color 50)
-                          (colors/custom-color customization-color 60)
-                          theme))})
+   :background-color   (colors/custom-color customization-color 50)})
 
 (def sizes-to-exclude-blur-in-photo-bg #{:size-40})
 
@@ -125,6 +117,4 @@
       (= type :outline)                            (outline theme active?)
       (= type :grey)                               (grey theme active?)
       (= type :ghost)                              (ghost theme active?)
-      (= type :customization)                      (custom-color-type theme
-                                                                      customization-color
-                                                                      active?))))
+      (= type :customization)                      (custom-color-type customization-color))))
