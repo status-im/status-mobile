@@ -69,10 +69,14 @@
            :style  {:color          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
                     :margin-right   8
 <<<<<<< HEAD
+<<<<<<< HEAD
                     :padding-bottom 2}}
 =======
                     :padding-bottom 1}}
 >>>>>>> 9ed173b80 (design review)
+=======
+                    :padding-bottom 2}}
+>>>>>>> 9265b484d (design review)
           (string/upper-case (clj->js (if @crypto? token currency)))]]
         [button/button
          {:icon                true
