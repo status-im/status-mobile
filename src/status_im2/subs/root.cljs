@@ -142,5 +142,9 @@
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
 (reg-root-key-sub :contract-communities :contract-communities)
 
+;;; Wallet 2
+(reg-root-key-sub :wallet-2/tokens :wallet-2/tokens)
+(reg-root-key-sub :wallet-2/tokens-loading? :wallet-2/tokens-loading?)
+
 ;; activity center
 (reg-root-key-sub :activity-center :activity-center)
