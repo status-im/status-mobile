@@ -181,3 +181,29 @@
   (rf/merge cofx
             (navigation/init-root :profiles)
             (biometric/show-message code)))
+
+(rf/defn verify-database-password
+  {:events [:profile.login/verify-database-password]}
+  [_ entered-password cb]
+  (let [hashed-password (-> entered-password
+                            security/safe-unmask-data
+                            native-module/sha3)]
+    {:json-rpc/call [{:method     "accounts_verifyPassword"
+                      :params     [hashed-password]
+                      :on-success #(do (rf/dispatch [:profile.login/verified-database-password %]) (cb))
+                      :on-error   #(log/error "accounts_verifyPassword error" %)}]}))
+
+(rf/defn verify-database-password-success
+  {:events [:profile.login/verified-database-password]}
+  [{:keys [db] :as cofx} valid?]
+  (if valid?
+    (do
+      {:db (update db
+                   :profile/login
+                   dissoc
+                   :processing :error)})
+    {:db (update db
+                 :profile/login
+                 #(-> %
+                      (dissoc :processing)
+                      (assoc :error "Invalid password")))}))

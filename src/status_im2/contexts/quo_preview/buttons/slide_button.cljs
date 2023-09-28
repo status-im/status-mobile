@@ -6,8 +6,8 @@
 (def descriptor
   [{:key     :size
     :type    :select
-    :options [{:key :large}
-              {:key :small}]}
+    :options [{:key :size/s-48}
+              {:key :size/s-40}]}
    {:key  :disabled?
     :type :boolean}
    (preview/customization-color-option {:key :color})])
@@ -16,10 +16,8 @@
   []
   (let [state     (reagent/atom {:disabled? false
                                  :color     :blue
-                                 :size      :large})
+                                 :size      :size/s-48})
         color     (reagent/cursor state [:color])
-        disabled? (reagent/cursor state [:disabled?])
-        size      (reagent/cursor state [:size])
         complete? (reagent/atom false)]
     (fn []
       [preview/preview-container
@@ -31,8 +29,8 @@
           {:track-text          "We gotta slide"
            :track-icon          :face-id
            :customization-color @color
-           :size                @size
-           :disabled?           @disabled?
+           :size                (:size @state)
+           :disabled?           (:disabled? @state)
            :on-complete         (fn []
                                   (js/setTimeout (fn [] (reset! complete? true))
                                                  1000)
