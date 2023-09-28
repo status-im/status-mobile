@@ -23,6 +23,7 @@
     [group-avatar/view
      {:customization-color customization-color
       :picture             avatar
+      :icon-name           :i/members
       :size                :size-48}]]
    [rn/view {:style style/content-container}
     [card-main-info/view
