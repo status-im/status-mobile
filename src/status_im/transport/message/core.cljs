@@ -58,8 +58,8 @@
       (seq chats)
       (do
         (js-delete response-js "chats")
-        {:fx [[:dispatch [:transport/process-next response-js sync-handler]]
-              [:dispatch [:chat/ensure-chats (map data-store.chats/<-rpc (types/js->clj chats))]]]})
+        {:fx [[:dispatch [:chat/ensure-chats (map data-store.chats/<-rpc (types/js->clj chats))]]
+              [:dispatch [:transport/process-next response-js sync-handler]]]})
 
       (seq messages)
       (models.message/receive-many cofx response-js)
