@@ -4,10 +4,10 @@
 (defn container-border-color
   [{:keys [state blur? theme pressed?]}]
   (let [default-color (if blur?
-                        colors/neutral-80-opa-5
+                        (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
                         (colors/theme-colors colors/neutral-30 colors/neutral-70 theme))
         active-color  (if blur?
-                        colors/neutral-80-opa-10
+                        (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
                         (colors/theme-colors colors/neutral-40 colors/neutral-60 theme))]
     (condp = state
       :disabled default-color

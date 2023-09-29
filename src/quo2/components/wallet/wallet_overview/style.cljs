@@ -16,13 +16,6 @@
   {:flex-direction :row
    :padding-top    4})
 
-(def network-dropdown
-  {:border-color  colors/neutral-50
-   :border-width  1
-   :border-radius 10
-   :width         68
-   :height        32})
-
 (defn color-metrics
   [metrics theme]
   (if (= metrics :positive)
