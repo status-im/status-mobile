@@ -152,7 +152,9 @@
 (def system-message-pinned (quo.theme/with-theme system-message-pinned-internal))
 
 (defn f-system-message
-  [{:keys [type animate-bg-color? on-long-press] :as data}]
+  [{:keys [type animate-bg-color? bg-color-animation-duration on-long-press]
+    :or   {bg-color-animation-duration 1000}
+    :as   data}]
   (let [animated-bg-color (reanimated/use-shared-value
                            style/system-message-deleted-animation-start-bg-color)
         wrapper           (if (or on-long-press animate-bg-color?)
@@ -170,7 +172,7 @@
        style/system-message-deleted-animation-end-bg-color
        0
        :linear
-       1000))
+       bg-color-animation-duration))
 
     [wrapper
      {:style         (if animate-bg-color?
