@@ -1,12 +1,12 @@
 (ns status-im2.subs.wallet.signing
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
             [utils.i18n :as i18n]
             [status-im.signing.gas :as signing.gas]
             [utils.money :as money]
-            [status-im.wallet.db :as wallet.db]))
+            [status-im.wallet.db :as wallet.db]
+            [utils.ethereum.chain :as chain]))
 
 (re-frame/reg-sub
  ::send-transaction
@@ -41,7 +41,7 @@
  :wallet/binance-chain?
  :<- [:current-network]
  (fn [network]
-   (ethereum/binance-chain-id? (get-in network [:config :NetworkId]))))
+   (chain/binance-chain-id? (get-in network [:config :NetworkId]))))
 
 (re-frame/reg-sub
  :signing/fee

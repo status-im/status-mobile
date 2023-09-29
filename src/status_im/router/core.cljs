@@ -4,7 +4,6 @@
             [re-frame.core :as re-frame]
             [status-im2.contexts.chat.events :as chat.events]
             [status-im2.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
             [status-im.utils.deprecated-types :as types]
@@ -14,7 +13,9 @@
             [utils.url :as url]
             [status-im.utils.wallet-connect :as wallet-connect]
             [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+            [utils.security.core :as security]
+            [utils.ethereum.chain :as chain]
+            [utils.address :as address]))
 
 (def ethereum-scheme "ethereum:")
 
@@ -93,7 +94,7 @@
            (string? user-id)
            (not (string/blank? user-id))
            (not= user-id "0x"))
-      (let [chain-id   (ethereum/chain-keyword->chain-id chain)
+      (let [chain-id   (chain/chain-keyword->chain-id chain)
             ens-name   (stateofus/ens-name-parse user-id)
             on-success #(match-contact-async chain {:user-id % :ens-name ens-name} callback)]
         (ens/pubkey chain-id ens-name on-success))
@@ -244,7 +245,7 @@
       (= handler :wallet-account)
       (cb (match-wallet-account route-params))
 
-      (ethereum/address? uri)
+      (address/address? uri)
       (cb (address->eip681 uri))
 
       (url/url? uri)

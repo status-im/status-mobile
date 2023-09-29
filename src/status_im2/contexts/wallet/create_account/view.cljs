@@ -65,8 +65,8 @@
           :style  (style/color-label theme)}
          (i18n/label :t/colour)]
         [quo/color-picker
-         {:selected  @account-color
-          :on-change #(reset! account-color %)}]]
+         {:default-selected @account-color
+          :on-change        #(reset! account-color %)}]]
        [rn/view {:style (style/divider-line theme)}]
        [quo/category
         {:list-type :settings

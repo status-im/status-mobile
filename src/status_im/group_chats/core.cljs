@@ -20,10 +20,11 @@
 
 (rf/defn handle-chat-removed
   {:events [:chat-removed]}
-  [cofx response]
+  [cofx response chat-id]
   (rf/merge cofx
             {:db         (dissoc (:db cofx) :current-chat-id)
-             :dispatch-n [[:sanitize-messages-and-process-response response]
+             :dispatch-n [[:shell/close-switcher-card chat-id]
+                          [:sanitize-messages-and-process-response response]
                           [:pop-to-root :shell-stack]]}
             (activity-center/notifications-fetch-unread-count)))
 
@@ -117,7 +118,7 @@
   {:json-rpc/call [{:method      "wakuext_leaveGroupChat"
                     :params      [nil chat-id true]
                     :js-response true
-                    :on-success  #(re-frame/dispatch [:chat-removed %])}]})
+                    :on-success  #(re-frame/dispatch [:chat-removed % chat-id])}]})
 
 (rf/defn remove
   "Remove chat"

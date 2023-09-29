@@ -402,6 +402,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702808)
+    @marks.xfail(reason="Data delivery issue")
     def test_group_chat_offline_pn(self):
         for i in range(1, 3):
             self.homes[i].navigate_back_to_home_view()

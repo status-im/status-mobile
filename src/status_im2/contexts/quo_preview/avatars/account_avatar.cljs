@@ -11,21 +11,16 @@
               {:key :watch-only}]}
    {:key     :size
     :type    :select
-    :options [{:key   16
-               :value "16"}
-              {:key   20
-               :value "20"}
-              {:key   24
-               :value "24"}
-              {:key   28
-               :value "28"}
-              {:key   32
-               :value "32"}
-              {:key   48
-               :value "48"}
-              {:key   80
-               :value "80"}]}
-   {:key :emoji :type :text}
+    :options [{:key 16}
+              {:key 20}
+              {:key 24}
+              {:key 28}
+              {:key 32}
+              {:key 48}
+              {:key :size-64}
+              {:key 80}]}
+   {:key  "Emoji"
+    :type :text}
    (preview/customization-color-option)])
 
 (defn view
@@ -40,7 +35,8 @@
         :descriptor                descriptor
         :component-container-style {:align-items     :center
                                     :justify-content :center}}
-       [quo/account-avatar @state]
+       [quo/account-avatar @state
+       ]
        [quo/button
         {:type            :grey
          :container-style {:margin-top 30}

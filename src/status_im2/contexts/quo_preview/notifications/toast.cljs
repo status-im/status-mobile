@@ -3,6 +3,7 @@
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]
             [utils.re-frame :as rf]))
 
@@ -67,6 +68,14 @@
     :text       "This is an example toast"
     :duration   30000}])
 
+(defn toast-button-with-user-avatar
+  []
+  [toast-button
+   "Toast: with user-avatar"
+   {:text "This is an example toast"
+    :user {:profile-picture (resources/mock-images :user-picture-female2)
+           :size            :small}}])
+
 (defn update-toast-button
   []
   (let [suffix (reagent/atom 0)]
@@ -98,5 +107,6 @@
      [toast-button-with-undo-action]
      [toast-button-multiline]
      [toast-button-30s-duration]
+     [toast-button-with-user-avatar]
      [update-toast-button]
      [update-toast-button]]]])

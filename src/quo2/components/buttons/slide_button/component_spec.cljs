@@ -1,7 +1,6 @@
 (ns quo2.components.buttons.slide-button.component-spec
   (:require [quo2.components.buttons.slide-button.view :as slide-button]
             [quo2.components.buttons.slide-button.constants :as constants]
-            [quo2.components.buttons.slide-button.utils :as utils]
             ["@testing-library/react-native" :as rtl]
             ["react-native-gesture-handler/jest-utils" :as gestures-jest]
             [reagent.core :as r]
@@ -82,16 +81,10 @@
       (h/has-style track-mock {:opacity constants/disable-opacity})))
 
   (h/test "render the small button"
-    (h/render [slide-button/view (assoc default-props :size :small)])
+    (h/render [slide-button/view (assoc default-props :size :size/s-40)])
     (let [mock         (h/get-by-test-id :slide-button-track)
           small-height (:track-height constants/small-dimensions)]
       (h/has-style mock {:height small-height})))
-
-  (h/test "render with the correct customization-color"
-    (h/render [slide-button/view (assoc default-props :customization-color :purple)])
-    (let [track-mock   (h/get-by-test-id :slide-button-track)
-          purple-color (utils/slider-color :track :purple)]
-      (h/has-style track-mock {:backgroundColor purple-color})))
 
   (h/test
     "calls on-complete when dragged"

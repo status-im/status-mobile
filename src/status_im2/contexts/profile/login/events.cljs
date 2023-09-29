@@ -1,7 +1,6 @@
 (ns status-im2.contexts.profile.login.events
   (:require
     [utils.re-frame :as rf]
-    [status-im.ethereum.core :as ethereum]
     [utils.security.core :as security]
     [re-frame.core :as re-frame]
     [native-module.core :as native-module]
@@ -40,7 +39,7 @@
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (:profile/login db)]
     {:db     (assoc-in db [:profile/login :processing] true)
-     ::login [key-uid (ethereum/sha3 (security/safe-unmask-data password))]}))
+     ::login [key-uid (native-module/sha3 (security/safe-unmask-data password))]}))
 
 (rf/defn login-local-paired-user
   {:events [:profile.login/local-paired-user]}
@@ -182,3 +181,29 @@
   (rf/merge cofx
             (navigation/init-root :profiles)
             (biometric/show-message code)))
+
+(rf/defn verify-database-password
+  {:events [:profile.login/verify-database-password]}
+  [_ entered-password cb]
+  (let [hashed-password (-> entered-password
+                            security/safe-unmask-data
+                            native-module/sha3)]
+    {:json-rpc/call [{:method     "accounts_verifyPassword"
+                      :params     [hashed-password]
+                      :on-success #(do (rf/dispatch [:profile.login/verified-database-password %]) (cb))
+                      :on-error   #(log/error "accounts_verifyPassword error" %)}]}))
+
+(rf/defn verify-database-password-success
+  {:events [:profile.login/verified-database-password]}
+  [{:keys [db] :as cofx} valid?]
+  (if valid?
+    (do
+      {:db (update db
+                   :profile/login
+                   dissoc
+                   :processing :error)})
+    {:db (update db
+                 :profile/login
+                 #(-> %
+                      (dissoc :processing)
+                      (assoc :error "Invalid password")))}))

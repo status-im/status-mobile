@@ -3,8 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im2.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip55 :as eip55]
+            [utils.ethereum.eip.eip55 :as eip55]
             [utils.i18n :as i18n]
             [status-im.keycard.common :as common]
             status-im.keycard.fx
@@ -19,7 +18,8 @@
             [status-im.utils.deprecated-types :as types]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+            [utils.security.core :as security]
+            [utils.address :as address]))
 
 (rf/defn pair*
   [_ password]
@@ -203,7 +203,7 @@
                   :address              address
                   :public-key           public-key
                   :keycard-instance-uid instance-uid
-                  :key-uid              (ethereum/normalized-hex key-uid)
+                  :key-uid              (address/normalized-hex key-uid)
                   :keycard-pairing      pairing
                   :keycard-paired-on    paired-on
                   :chat-key             whisper-private-key}
@@ -272,9 +272,9 @@
         settings        {:keycard-instance-uid instance-uid
                          :keycard-paired-on    paired-on
                          :keycard-pairing      pairing}
-        password        (ethereum/sha3 (security/safe-unmask-data (get-in db
-                                                                          [:keycard
-                                                                           :migration-password])))
+        password        (native-module/sha3 (security/safe-unmask-data (get-in db
+                                                                               [:keycard
+                                                                                :migration-password])))
         encryption-pass (get-in db [:keycard :profile/profile :encryption-public-key])
         login-params    {:key-uid           key-uid
                          :multiaccount-data (types/clj->json account)
@@ -316,20 +316,20 @@
               (assoc-in
                [:keycard :profile/profile]
                (-> account-data
-                   (update :address ethereum/normalized-hex)
-                   (update :whisper-address ethereum/normalized-hex)
-                   (update :wallet-address ethereum/normalized-hex)
-                   (update :wallet-root-address ethereum/normalized-hex)
-                   (update :public-key ethereum/normalized-hex)
-                   (update :whisper-public-key ethereum/normalized-hex)
-                   (update :wallet-public-key ethereum/normalized-hex)
-                   (update :wallet-root-public-key ethereum/normalized-hex)
+                   (update :address address/normalized-hex)
+                   (update :whisper-address address/normalized-hex)
+                   (update :wallet-address address/normalized-hex)
+                   (update :wallet-root-address address/normalized-hex)
+                   (update :public-key address/normalized-hex)
+                   (update :whisper-public-key address/normalized-hex)
+                   (update :wallet-public-key address/normalized-hex)
+                   (update :wallet-root-public-key address/normalized-hex)
                    (update :instance-uid #(get-in db [:keycard :profile/profile :instance-uid] %))))
               (assoc-in [:keycard :multiaccount-wallet-address] (:wallet-address account-data))
               (assoc-in [:keycard :multiaccount-whisper-public-key] (:whisper-public-key account-data))
               (assoc-in [:keycard :pin :status] nil)
               (assoc-in [:keycard :application-info :key-uid]
-                        (ethereum/normalized-hex (:key-uid account-data)))
+                        (address/normalized-hex (:key-uid account-data)))
               (update :keycard dissoc :recovery-phrase :creating-backup? :converting-account?)
               (update-in [:keycard :secrets] dissoc :pin :puk :password :mnemonic)
               (assoc :multiaccounts/new-installation-id (random-guid-generator)))}

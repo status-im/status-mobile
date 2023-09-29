@@ -2,7 +2,6 @@
   (:require [utils.re-frame :as rf]
             [native-module.core :as native-module]
             [status-im2.contexts.profile.config :as profile.config]
-            [status-im.ethereum.core :as ethereum]
             [utils.security.core :as security]
             [re-frame.core :as re-frame]
             [status-im2.contexts.shell.jump-to.utils :as shell.utils]
@@ -26,7 +25,7 @@
   {::create-profile-and-login
    (merge (profile.config/create)
           {:displayName        display-name
-           :password           (ethereum/sha3 (security/safe-unmask-data password))
+           :password           (native-module/sha3 (security/safe-unmask-data password))
            :imagePath          (profile.config/strip-file-prefix image-path)
            :customizationColor color})})
 

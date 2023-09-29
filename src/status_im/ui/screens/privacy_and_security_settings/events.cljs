@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.privacy-and-security-settings.events
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [native-module.core :as native-module]
             [utils.re-frame :as rf]
@@ -20,7 +19,7 @@
    (let [hashed-password
          (-> masked-password
              security/safe-unmask-data
-             ethereum/sha3)]
+             native-module/sha3)]
      (native-module/verify
       address
       hashed-password

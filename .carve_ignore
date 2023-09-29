@@ -136,11 +136,6 @@ quo.animated/re-timing
 quo.design-system.colors/white
 quo.design-system.colors/black
 status-im.transport.core-test/messages
-status-im.ethereum.core/sidechain?
-status-im.ethereum.core/network-with-upstream-rpc?
-status-im.ethereum.core/current-address
-status-im.ethereum.core/network->network-name
-status-im.ethereum.core/estimate-gas
 quo.core/animated-header
 quo.core/safe-area-provider
 quo.core/safe-area-consumer

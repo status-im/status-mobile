@@ -470,7 +470,8 @@
 (defn sha3
   [s]
   (log/debug "[native-module] sha3")
-  (.sha3 ^js (status) s))
+  (when s
+    (.sha3 ^js (status) (str s))))
 
 (defn utf8-to-hex
   [s]
@@ -491,8 +492,9 @@
 (defn address?
   [address]
   (log/debug "[native-module] address?")
-  (let [result (.isAddress ^js (status) address)]
-    (types/json->clj result)))
+  (when address
+    (let [result (.isAddress ^js (status) address)]
+      (types/json->clj result))))
 
 (defn to-checksum-address
   [address]

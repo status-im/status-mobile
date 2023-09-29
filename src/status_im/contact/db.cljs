@@ -2,8 +2,8 @@
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [status-im2.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.utils.gfycat.core :as gfycat]))
+            [status-im.utils.gfycat.core :as gfycat]
+            [utils.address :as address]))
 
 (defn public-key->new-contact
   [public-key]
@@ -31,7 +31,7 @@
 
 (defn- contact-by-address
   [[addr contact] address]
-  (when (ethereum/address= addr address)
+  (when (address/address= addr address)
     contact))
 
 (defn find-contact-by-address

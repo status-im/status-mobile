@@ -17,6 +17,7 @@
 
 (defn hide
   [translate-y bg-opacity window-height on-close]
+  (rf/dispatch [:dismiss-keyboard])
   (when (fn? on-close)
     (on-close))
   ;; it will be better to use animation callback, but it doesn't work

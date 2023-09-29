@@ -2,12 +2,12 @@
   (:require ["react-native" :as rn]
             ["react-native-status-keycard" :default status-keycard]
             [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum]
             [status-im.keycard.keycard :as keycard]
             [native-module.core :as native-module]
             [react-native.platform :as platform]
             [status-im.utils.deprecated-types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.address :as address]))
 
 (defonce event-emitter
   (if platform/ios?
@@ -114,7 +114,7 @@
       (then (fn [response]
               (let [info (-> response
                              (js->clj :keywordize-keys true)
-                             (update :key-uid ethereum/normalized-hex))]
+                             (update :key-uid address/normalized-hex))]
                 (on-success info))))
       (catch on-failure)))
 
@@ -125,7 +125,7 @@
       (then (fn [response]
               (let [info (-> response
                              (js->clj :keywordize-keys true)
-                             (update :key-uid ethereum/normalized-hex))]
+                             (update :key-uid address/normalized-hex))]
                 (on-success info))))
       (catch on-failure)))
 

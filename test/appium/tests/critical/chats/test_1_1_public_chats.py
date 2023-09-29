@@ -1365,12 +1365,13 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
             "Message 1", "Message 2", "Message 3", "Message 4"
 
     @marks.testrail_id(702783)
+    @marks.xfail(reason="Data delivery issue")
     def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
         # self.chat_2.jump_to_card_by_text(self.username_1)
         # self.chat_1.jump_to_card_by_text(self.username_2)
         self.home_1.just_fyi('Turn on airplane mode and check that offline status is shown on home view')
+        app_package = self.home_1.driver.current_package
         for home in self.homes:
-            app_package = self.home_1.driver.current_package
             home.toggle_airplane_mode()
             if not home.chats_tab.is_element_displayed() and not home.chat_floating_screen.is_element_displayed():
                 home.driver.activate_app(app_package)

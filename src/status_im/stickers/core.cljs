@@ -2,11 +2,12 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im2.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
             [status-im2.config :as config]
             [utils.re-frame :as rf]
             [status-im.utils.utils :as utils]
-            [status-im2.navigation.events :as navigation]))
+            [status-im2.navigation.events :as navigation]
+            [utils.ethereum.chain :as chain]
+            [status-im.wallet.utils :as wallet.utils]))
 
 (re-frame/reg-fx
  :stickers/set-pending-timeout-fx
@@ -21,14 +22,14 @@
    cofx
    {:db            (assoc-in db [:stickers/packs id :status] constants/sticker-pack-status-installed)
     :json-rpc/call [{:method     "stickers_install"
-                     :params     [(ethereum/chain-id db) id]
+                     :params     [(chain/chain-id db) id]
                      :on-success #()}]}))
 
 (rf/defn load-packs
   {:events [:stickers/load-packs]}
   [{:keys [db]}]
   {:json-rpc/call [{:method     "stickers_market"
-                    :params     [(ethereum/chain-id db)]
+                    :params     [(chain/chain-id db)]
                     :on-success #(re-frame/dispatch [:stickers/stickers-market-success %])}
                    {:method     "stickers_installed"
                     :params     []
@@ -44,7 +45,7 @@
   {:events [:stickers/buy-pack]}
   [{db :db} pack-id]
   {:json-rpc/call [{:method     "stickers_buyPrepareTx"
-                    :params     [(ethereum/chain-id db) (ethereum/default-address db) (int pack-id)]
+                    :params     [(chain/chain-id db) (wallet.utils/default-address db) (int pack-id)]
                     :on-success #(re-frame/dispatch [:signing.ui/sign
                                                      {:tx-obj    %
                                                       :on-result [:stickers/pending-pack pack-id]}])}]})
@@ -58,7 +59,7 @@
                                         (update :stickers/packs-pending conj id))
    :stickers/set-pending-timeout-fx nil
    :json-rpc/call                   [{:method     "stickers_addPending"
-                                      :params     [(ethereum/chain-id db) (int id)]
+                                      :params     [(chain/chain-id db) (int id)]
                                       :on-success #()}]})
 
 (rf/defn pending-timeout
@@ -66,7 +67,7 @@
   [{{:stickers/keys [packs-pending] :as db} :db}]
   (when (seq packs-pending)
     {:json-rpc/call [{:method     "stickers_processPending"
-                      :params     [(ethereum/chain-id db)]
+                      :params     [(chain/chain-id db)]
                       :on-success #(re-frame/dispatch [:stickers/stickers-process-pending-success
                                                        %])}]}))
 

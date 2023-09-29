@@ -3,8 +3,6 @@
             [reagent.core :as reagent]
             [test-helpers.component :as h]))
 
-(def color-list [:blue :yellow :turquoise :copper :sky :camel :orange :army :pink :purple :magenta])
-
 (h/describe "color-picker"
   (h/test "color picker rendered"
     (h/render [color-picker/view])
@@ -26,6 +24,6 @@
     (h/render [color-picker/view])
     (js/Promise.all (map (fn [color]
                            (h/is-truthy (h/get-all-by-label-text color)))
-                         color-list))))
+                         color-picker/color-list))))
 
 

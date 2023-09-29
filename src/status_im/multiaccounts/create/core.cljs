@@ -3,8 +3,7 @@
             [re-frame.core :as re-frame]
             [status-im2.constants :as constants]
             [status-im.data-store.settings :as data-store.settings]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip55 :as eip55]
+            [utils.ethereum.eip.eip55 :as eip55]
             [utils.i18n :as i18n]
             [native-module.core :as native-module]
             [status-im.node.core :as node]
@@ -210,7 +209,7 @@
                 (save-account-and-login
                  key-uid
                  multiaccount-data
-                 (ethereum/sha3 (security/safe-unmask-data password))
+                 (native-module/sha3 (security/safe-unmask-data password))
                  settings
                  (node/get-new-config db)
                  accounts-data)))))

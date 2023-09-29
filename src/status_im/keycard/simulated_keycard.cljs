@@ -3,7 +3,6 @@
             [re-frame.core :as re-frame]
             [re-frame.db :as re-frame.db]
             [status-im2.constants :as constants]
-            [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [status-im.keycard.keycard :as keycard]
             [status-im.multiaccounts.create.core :as multiaccounts.create]
@@ -11,12 +10,13 @@
             [status-im.node.core :as node]
             [status-im.utils.deprecated-types :as types]
             [status-im.utils.utils :as utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.address :as address]))
 
 (def kk1-password "000000")
 (def default-pin "111111")
 (def default-puk "000000000000")
-(def account-password (ethereum/sha3 "no password"))
+(def account-password (native-module/sha3 "no password"))
 
 (def initial-state
   {:card-connected?  false
@@ -476,7 +476,7 @@
                       (let [signature (-> res
                                           types/json->clj
                                           :result
-                                          ethereum/normalized-hex)]
+                                          address/normalized-hex)]
                         (on-success signature)))))
                  (native-module/sign-typed-data
                   data
@@ -486,7 +486,7 @@
                     (let [signature (-> res
                                         types/json->clj
                                         :result
-                                        ethereum/normalized-hex)]
+                                        address/normalized-hex)]
                       (on-success signature))))))))
 
 (defn sign-typed-data
