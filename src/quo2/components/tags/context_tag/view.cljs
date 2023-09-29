@@ -108,7 +108,7 @@
 
      :audio
      [tag-skeleton {:theme theme :text (str duration)}
-      [rn/view {:style style/audio-tag-icon-container}
+      [rn/view {:style (style/audio-tag-icon-container customization-color theme)}
        [icons/icon :i/play {:color style/audio-tag-icon-color :size 12}]]]
 
      :group

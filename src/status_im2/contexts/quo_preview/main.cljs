@@ -131,6 +131,7 @@
     [status-im2.contexts.quo-preview.settings.section-label :as section-label]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
+    [status-im2.contexts.quo-preview.switcher.group-messaging-card :as group-messaging-card]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
     [status-im2.contexts.quo-preview.tabs.account-selector :as account-selector]
     [status-im2.contexts.quo-preview.tabs.segmented-tab :as segmented]
@@ -362,8 +363,6 @@
                         :component react/preview-react}]
    :record-audio      [{:name      :record-audio
                         :component record-audio/preview-record-audio}]
-   :switcher          [{:name      :switcher-cards
-                        :component switcher-cards/preview-switcher-cards}]
    :selectors         [{:name      :disclaimer
                         :component disclaimer/preview-disclaimer}
                        {:name      :filter
@@ -390,6 +389,10 @@
                         :component qr-code/preview-qr-code}
                        {:name      :share-qr-code
                         :component share-qr-code/preview-share-qr-code}]
+   :switchers         [{:name      :group-messaging-card
+                        :component group-messaging-card/view}
+                       {:name      :switcher-cards
+                        :component switcher-cards/preview-switcher-cards}]
    :tabs              [{:name      :segmented
                         :component segmented/preview-segmented}
                        {:name      :tabs
