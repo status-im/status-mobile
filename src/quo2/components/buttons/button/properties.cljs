@@ -1,6 +1,8 @@
 (ns quo2.components.buttons.button.properties
   (:require [quo2.foundations.colors :as colors]))
 
+(def backgrounds #{:photo :blur})
+
 (defn custom-color-type
   [customization-color icon-only?]
   {:icon-color       colors/white-opa-70
