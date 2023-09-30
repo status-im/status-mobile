@@ -2,8 +2,8 @@
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]
-    [utils.i18n :as i18n]
     [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn user-xxx-deleted-this-message
@@ -55,13 +55,16 @@
    {:keys [message-pin-enabled in-pinned-view?]}]
   (let [pub-key            (rf/sub [:multiaccount/public-key])
         deleted-by-me?     (= (or deleted-by from) pub-key)
-        ;; enable long press only when message pinned and user has permission to unpin
-        on-long-press      (when (or (and (or in-pinned-view? pinned) message-pin-enabled)
-                                     (and (not deleted?) deleted-for-me?))
-                             on-long-press)
         animation-duration (when-let [deleted-till (or deleted-undoable-till
                                                        deleted-for-me-undoable-till)]
-                             (- deleted-till (datetime/timestamp)))]
+                             (- deleted-till (datetime/timestamp)))
+        ;; enable long press only when
+        ;; undo delete timer timedout
+        ;; message pinned and user has permission to unpin
+        on-long-press      (when (and (not animation-duration)
+                                      (or (and (or in-pinned-view? pinned) message-pin-enabled)
+                                          (and (not deleted?) deleted-for-me?)))
+                             on-long-press)]
     (if (and deleted? (not deleted-by-me?))
       [deleted-by-message
        (assoc message
