@@ -364,7 +364,7 @@ component-test-watch: export BABEL_ENV := test
 component-test-watch: ##@ Watch tests and re-run no changes to cljs files
 	rm -rf ./component-spec
 	yarn install
-	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js' -e cljs
+	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js --testEnvironment node ' -e cljs
 
 component-test: export TARGET := clojure
 component-test: export COMPONENT_TEST := true
@@ -373,7 +373,7 @@ component-test: ##@test Run component tests once in NodeJS
 	rm -rf ./component-spec
 	yarn install
 	yarn shadow-cljs compile component-test && \
-	jest --config=test/jest/jest.config.js
+	jest --clearCache && jest --config=test/jest/jest.config.js --testEnvironment node
 
 #--------------
 # Other
