@@ -9,6 +9,7 @@
     quo2.components.avatars.user-avatar.view
     quo2.components.avatars.wallet-user-avatar
     quo2.components.banners.banner.view
+    quo2.components.browser.browser-input.view
     quo2.components.buttons.button.view
     quo2.components.buttons.composer-button.view
     quo2.components.buttons.dynamic-button.view
@@ -16,13 +17,12 @@
     quo2.components.buttons.slide-button.view
     quo2.components.buttons.wallet-button.view
     quo2.components.buttons.wallet-ctas.view
-    quo2.components.browser.browser-input.view
-    quo2.components.calendar.calendar.view
     quo2.components.calendar.calendar-day.view
     quo2.components.calendar.calendar-year.view
     quo2.components.code.snippet.view
     quo2.components.code.snippet-preview.view
     quo2.components.colors.color.view
+    quo2.components.calendar.calendar.view
     quo2.components.colors.color-picker.view
     quo2.components.common.notification-dot.view
     quo2.components.common.separator.view
@@ -41,6 +41,7 @@
     quo2.components.dividers.new-messages
     quo2.components.dividers.strength-divider.view
     quo2.components.drawers.action-drawers.view
+    quo2.components.drawers.bottom-actions.view
     quo2.components.drawers.documentation-drawers.view
     quo2.components.drawers.drawer-buttons.view
     quo2.components.drawers.drawer-top.view
@@ -109,6 +110,7 @@
     quo2.components.selectors.react-selector.view
     quo2.components.selectors.selectors.view
     quo2.components.settings.accounts.view
+    quo2.components.settings.category.view
     quo2.components.settings.data-item.view
     quo2.components.settings.privacy-option.view
     quo2.components.settings.reorder-item.view
@@ -220,6 +222,7 @@
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
 (def drawer-top quo2.components.drawers.drawer-top.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
+(def bottom-actions quo2.components.drawers.bottom-actions.view/view)
 
 ;;;; Dropdowns
 (def dropdown quo2.components.dropdowns.dropdown.view/view)

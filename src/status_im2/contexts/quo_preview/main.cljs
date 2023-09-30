@@ -52,8 +52,8 @@
     [status-im2.contexts.quo-preview.dividers.strength-divider :as
      strength-divider]
     [status-im2.contexts.quo-preview.drawers.action-drawers :as action-drawers]
-    [status-im2.contexts.quo-preview.drawers.documentation-drawers :as
-     documentation-drawers]
+    [status-im2.contexts.quo-preview.drawers.bottom-actions :as bottom-actions]
+    [status-im2.contexts.quo-preview.drawers.documentation-drawers :as documentation-drawers]
     [status-im2.contexts.quo-preview.drawers.drawer-buttons :as drawer-buttons]
     [status-im2.contexts.quo-preview.drawers.drawer-top :as drawer-top]
     [status-im2.contexts.quo-preview.drawers.permission-drawers :as
@@ -259,7 +259,10 @@
                        {:name      :drawer-top
                         :component drawer-top/view}
                        {:name      :permission-drawers
-                        :component permission-drawers/view}]
+                        :component permission-drawers/view}
+                       {:name :bottom-actions
+                        :component
+                        bottom-actions/view}]
    :dropdowns         [{:name      :dropdown
                         :component dropdown/view}
                        {:name      :network-dropdown
