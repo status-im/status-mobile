@@ -12,6 +12,7 @@ stdenv.mkDerivation {
     "patchBuildIdPhase"
     "patchKeyChainPhase"
     "patchReactNativeCameraKitPhase"
+    "patchJestPhase"
     "installPhase"
   ];
 
@@ -54,6 +55,14 @@ stdenv.mkDerivation {
           '-Wl,--build-id' \
           '-Wl,--build-id=none'
     '';
+
+  # Remove when we upgrade jest to 29
+    patchJestPhase = ''
+      substituteInPlace ./node_modules/react-native/jest/setup.js --replace \
+          'jest.now()' \
+          'Date.now'
+    '';
+
 
   installPhase = ''
     mkdir -p $out
