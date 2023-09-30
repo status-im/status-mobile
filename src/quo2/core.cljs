@@ -3,6 +3,7 @@
   (:require
     quo2.components.avatars.account-avatar.view
     quo2.components.avatars.channel-avatar.view
+    quo2.components.avatars.collection-avatar.view
     quo2.components.avatars.group-avatar.view
     quo2.components.avatars.icon-avatar
     quo2.components.avatars.user-avatar.view
@@ -150,6 +151,7 @@
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
 (def user-avatar quo2.components.avatars.user-avatar.view/user-avatar)
 (def wallet-user-avatar quo2.components.avatars.wallet-user-avatar/wallet-user-avatar)
+(def collection-avatar quo2.components.avatars.collection-avatar.view/view)
 
 ;;;; Banner
 (def banner quo2.components.banners.banner.view/view)
