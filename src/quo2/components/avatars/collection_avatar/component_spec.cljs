@@ -1,9 +1,8 @@
 (ns quo2.components.avatars.collection-avatar.component-spec
   (:require [quo2.components.avatars.collection-avatar.view :as collection-avatar]
-            [status-im2.common.resources :as resources]
             [test-helpers.component :as h]))
 
-(defonce bored-ape (resources/get-mock-image :bored-ape))
+(defonce bored-ape (js/require "../resources/images/mock2/bored-ape.png"))
 
 (h/describe "collection avatar"
   (h/describe "Profile picture"
