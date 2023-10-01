@@ -20,7 +20,7 @@
    :blur        :grey})
 
 (defn- page-nav-base
-  [{:keys [margin-top background on-press accessibility-label icon-name overlay-shown?]
+  [{:keys [margin-top background on-press accessibility-label icon-name behind-overlay?]
     :or   {background :white}}
    & children]
   (into [rn/view {:style (style/container margin-top)}
@@ -30,9 +30,9 @@
              :icon-only?          true
              :size                32
              :on-press            on-press
-             :background          (if overlay-shown?
+             :background          (if behind-overlay?
                                     :blur
-                                    (when (button-properties/backgrounds background) background))
+                                    (button-properties/backgrounds background))
              :accessibility-label accessibility-label}
             icon-name])]
         children))
@@ -40,7 +40,7 @@
 (defn- right-section-spacing [] [rn/view {:style style/right-actions-spacing}])
 
 (defn- add-right-buttons-xf
-  [max-actions background overlay-shown?]
+  [max-actions background behind-overlay?]
   (comp (filter map?)
         (take max-actions)
         (map (fn [{:keys [icon-name label] :as button-props}]
@@ -50,7 +50,7 @@
                        :icon-only? icon-name
                        :size       32
                        :accessible true
-                       :background (if overlay-shown?
+                       :background (if behind-overlay?
                                      :blur
                                      (when (button-properties/backgrounds background) background)))
                 (or label icon-name)]))
@@ -69,7 +69,7 @@
 
 (defn- right-content
   [{:keys [background content max-actions min-size? support-account-switcher? account-switcher
-           overlay-shown?]
+           behind-overlay?]
     :or   {support-account-switcher? true}}]
   [rn/view (when min-size? {:style style/right-content-min-size})
    (cond
@@ -78,7 +78,7 @@
 
      (coll? content)
      (into [rn/view {:style style/right-actions-container}]
-           (add-right-buttons-xf max-actions background overlay-shown?)
+           (add-right-buttons-xf max-actions background behind-overlay?)
            content)
 
      :else
@@ -175,7 +175,7 @@
       shown-name]]))
 
 (defn- view-internal
-  [{:keys [type right-side background text-align account-switcher overlay-shown?]
+  [{:keys [type right-side background text-align account-switcher behind-overlay?]
     :or   {type       :no-title
            text-align :center
            right-side :none
@@ -185,7 +185,7 @@
     :no-title
     [page-nav-base props
      [right-content
-      {:background background :content right-side :max-actions 3 :overlay-shown? overlay-shown?}]]
+      {:background background :content right-side :max-actions 3 :behind-overlay? behind-overlay?}]]
 
     :title
     (let [centered? (= text-align :center)]
