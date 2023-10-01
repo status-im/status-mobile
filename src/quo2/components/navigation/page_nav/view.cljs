@@ -20,7 +20,7 @@
    :blur        :grey})
 
 (defn- page-nav-base
-  [{:keys [margin-top background on-press accessibility-label icon-name]
+  [{:keys [margin-top background on-press accessibility-label icon-name overlay-shown?]
     :or   {background :white}}
    & children]
   (into [rn/view {:style (style/container margin-top)}
@@ -30,7 +30,7 @@
              :icon-only?          true
              :size                32
              :on-press            on-press
-             :background          (when (button-properties/backgrounds background) background)
+             :background          (if overlay-shown? :blur (when (button-properties/backgrounds background) background))
              :accessibility-label accessibility-label}
             icon-name])]
         children))
@@ -38,7 +38,7 @@
 (defn- right-section-spacing [] [rn/view {:style style/right-actions-spacing}])
 
 (defn- add-right-buttons-xf
-  [max-actions background]
+  [max-actions background overlay-shown?]
   (comp (filter map?)
         (take max-actions)
         (map (fn [{:keys [icon-name label] :as button-props}]
@@ -48,7 +48,7 @@
                        :icon-only? icon-name
                        :size       32
                        :accessible true
-                       :background (when (button-properties/backgrounds background) background))
+                       :background (if overlay-shown? :blur (when (button-properties/backgrounds background) background)))
                 (or label icon-name)]))
         (interpose [right-section-spacing])))
 
@@ -64,7 +64,7 @@
    emoji])
 
 (defn- right-content
-  [{:keys [background content max-actions min-size? support-account-switcher? account-switcher]
+  [{:keys [background content max-actions min-size? support-account-switcher? account-switcher overlay-shown?]
     :or   {support-account-switcher? true}}]
   [rn/view (when min-size? {:style style/right-content-min-size})
    (cond
@@ -73,7 +73,7 @@
 
      (coll? content)
      (into [rn/view {:style style/right-actions-container}]
-           (add-right-buttons-xf max-actions background)
+           (add-right-buttons-xf max-actions background overlay-shown?)
            content)
 
      :else
@@ -170,7 +170,7 @@
       shown-name]]))
 
 (defn- view-internal
-  [{:keys [type right-side background text-align account-switcher]
+  [{:keys [type right-side background text-align account-switcher overlay-shown?]
     :or   {type       :no-title
            text-align :center
            right-side :none
@@ -179,7 +179,7 @@
   (case type
     :no-title
     [page-nav-base props
-     [right-content {:background background :content right-side :max-actions 3}]]
+     [right-content {:background background :content right-side :max-actions 3 :overlay-shown? overlay-shown?}]]
 
     :title
     (let [centered? (= text-align :center)]

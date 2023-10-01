@@ -312,9 +312,10 @@
         ;; user is on this page
         initial-joined?      joined]
     (fn [{:keys [id name images] :as community} pending?]
-      (let [cover      {:uri (get-in images [:banner :uri])}
-            logo       {:uri (get-in images [:thumbnail :uri])}
-            collapsed? (and initial-joined? (:joined community))]
+      (let [cover          {:uri (get-in images [:banner :uri])}
+            logo           {:uri (get-in images [:thumbnail :uri])}
+            collapsed?     (and initial-joined? (:joined community))
+            overlay-shown? (boolean (:sheets (rf/sub [:bottom-sheet])))]
         [scroll-page/scroll-page
          {:cover-image                    cover
           :collapsed?                     collapsed?
@@ -324,7 +325,8 @@
           :on-scroll                      #(reset! scroll-height %)
           :navigate-back?                 true
           :background-color               (colors/theme-colors colors/white colors/neutral-95)
-          :height                         148}
+          :height                         148
+          :overlay-shown?                 overlay-shown?}
          [sticky-category-header
           {:enabled (> @scroll-height @first-channel-height)
            :label   (pick-first-category-by-height
@@ -336,8 +338,7 @@
           pending?
           {:on-category-layout              (partial add-category-height categories-heights)
            :collapsed?                      collapsed?
-           :on-first-channel-height-changed
-           ;; Here we set the height of the component and we filter out the
+           :on-first-channel-height-changed ;; Here we set the height of the component and we filter out the
            ;; categories, as some might have been removed
            (fn [height categories]
              (swap! categories-heights select-keys categories)
