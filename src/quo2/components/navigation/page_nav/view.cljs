@@ -30,7 +30,9 @@
              :icon-only?          true
              :size                32
              :on-press            on-press
-             :background          (if overlay-shown? :blur (when (button-properties/backgrounds background) background))
+             :background          (if overlay-shown?
+                                    :blur
+                                    (when (button-properties/backgrounds background) background))
              :accessibility-label accessibility-label}
             icon-name])]
         children))
@@ -48,7 +50,9 @@
                        :icon-only? icon-name
                        :size       32
                        :accessible true
-                       :background (if overlay-shown? :blur (when (button-properties/backgrounds background) background)))
+                       :background (if overlay-shown?
+                                     :blur
+                                     (when (button-properties/backgrounds background) background)))
                 (or label icon-name)]))
         (interpose [right-section-spacing])))
 
@@ -64,7 +68,8 @@
    emoji])
 
 (defn- right-content
-  [{:keys [background content max-actions min-size? support-account-switcher? account-switcher overlay-shown?]
+  [{:keys [background content max-actions min-size? support-account-switcher? account-switcher
+           overlay-shown?]
     :or   {support-account-switcher? true}}]
   [rn/view (when min-size? {:style style/right-content-min-size})
    (cond
@@ -179,7 +184,8 @@
   (case type
     :no-title
     [page-nav-base props
-     [right-content {:background background :content right-side :max-actions 3 :overlay-shown? overlay-shown?}]]
+     [right-content
+      {:background background :content right-side :max-actions 3 :overlay-shown? overlay-shown?}]]
 
     :title
     (let [centered? (= text-align :center)]
