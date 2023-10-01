@@ -4,7 +4,8 @@
     [utils.i18n :as i18n]
     ["react-native-image-crop-picker" :default image-picker]
     [status-im.multiaccounts.core]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [react-native.permissions :as permissions]))
 
 (def crop-size 1000)
 
@@ -45,9 +46,24 @@
 (defn pick-pic
   [update-profile-pic-callback]
   (rf/dispatch [:hide-bottom-sheet])
-  (show-image-picker
-   #(update-profile-pic-callback (.-path ^js %))
-   crop-opts))
+
+  (permissions/permission-granted?
+   :read-external-storage
+   (fn [granted]
+     (if granted
+       (show-image-picker
+        #(update-profile-pic-callback (.-path ^js %))
+        crop-opts)
+       (permissions/request-permissions
+        {:permissions [:read-external-storage]
+         :on-allowed  (fn []
+                        (show-image-picker
+                         #(update-profile-pic-callback (.-path ^js %))
+                         crop-opts))
+         :on-denied   (fn [error]
+                        (js/console.log "Permission denied"))})))
+   (fn [error]
+     (js/console.log "Error checking permission:" error))))
 
 (defn take-pic
   [update-profile-pic-callback]
