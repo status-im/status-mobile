@@ -65,17 +65,18 @@
                  gradient-cover? customization-color]
           :or   {border-radius 12}}]
       (let [{window-height :height} (rn/get-window)
-            bg-opacity (reanimated/use-shared-value 0)
-            translate-y (reanimated/use-shared-value window-height)
-            sheet-gesture (get-sheet-gesture translate-y bg-opacity window-height on-close)
-            sheet-bottom-margin
-            (when (< @item-height
-                     (- window-height
-                        @sheet-height
-                        (:top insets)
-                        bottom-margin))
-              bottom-margin)
-            top (- window-height (:top insets) (:bottom insets) sheet-bottom-margin)]
+            bg-opacity              (reanimated/use-shared-value 0)
+            translate-y             (reanimated/use-shared-value window-height)
+            sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height on-close)
+            sheet-bottom-margin     (< @item-height
+                                       (- window-height @sheet-height (:top insets) bottom-margin))
+            top                     (- window-height (:top insets) (:bottom insets) @sheet-height)
+            bottom                  (if sheet-bottom-margin
+                                      (+ @sheet-height bottom-margin (:bottom insets))
+                                      (:bottom insets))]
+        (js/console.log (str "item height " @item-height))
+        (js/console.log (str "sheet height " @sheet-height))
+        (js/console.log (str "sheet-bottom-margin  " bottom))
         (rn/use-effect
          #(if hide?
             (hide translate-y bg-opacity window-height on-close)
@@ -108,18 +109,17 @@
              [rn/view {:style style/gradient-bg}
               [quo/gradient-cover {:customization-color customization-color}]])
            (when shell?
-             [blur/ios-view {:style style/shell-bg}]) 
+             [blur/ios-view {:style style/shell-bg}])
            (when selected-item
              [rn/view
               {:on-layout #(reset! item-height (.-nativeEvent.layout.height ^js %))
-               :style (style/selected-item theme top @sheet-height sheet-bottom-margin border-radius)}
+               :style
+               (style/selected-item theme top bottom sheet-bottom-margin border-radius)}
               [selected-item]])
 
            [rn/view
-            {:style     (when selected-item
-                          (style/sheet-content theme padding-bottom-override insets sheet-bottom-margin))
-             :on-layout #(reset! sheet-height
-                                 (.-nativeEvent.layout.height ^js %))}
+            {:style     (style/sheet-content theme padding-bottom-override insets bottom-margin)
+             :on-layout #(reset! sheet-height (.-nativeEvent.layout.height ^js %))}
             [rn/view {:style (style/handle theme)}]
             [content]]]]]))))
 

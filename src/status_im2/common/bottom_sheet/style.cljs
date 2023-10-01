@@ -45,21 +45,17 @@
    :bottom           0})
 
 (defn sheet-content
-  [theme padding-bottom-override insets sheet-bottom-margin]
-  {:position                :absolute
-   :background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
-   :bottom                  0
-   :left                    0
-   :right                   0
+  [theme padding-bottom-override insets bottom-margin]
+  {:background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
    :border-top-left-radius  20
    :border-top-right-radius 20
-   :padding-bottom          (or padding-bottom-override (+ (:bottom insets) sheet-bottom-margin))})
+   :padding-bottom          (or padding-bottom-override (+ (:bottom insets) bottom-margin))})
 
 (defn selected-item
-  [theme top sheet-height sheet-bottom-margin border-radius]
+  [theme top bottom sheet-bottom-margin border-radius]
   {:position          :absolute
    :top               (when-not sheet-bottom-margin (- 0 top))
-   :bottom            (when sheet-bottom-margin (+ sheet-height sheet-bottom-margin))
+   :bottom            bottom
    :overflow          :hidden
    :left              0
    :right             0
