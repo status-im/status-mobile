@@ -120,7 +120,7 @@
             [rn/view {:style style/standard-auth}
              [standard-auth/view
               {:blur?                 true
-               :size                  :size/s-40
+               :size                  :size-40
                :track-text            (i18n/label :t/slide-to-reveal-code)
                :customization-color   customization-color
                :on-enter-password     on-enter-password
