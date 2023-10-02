@@ -26,6 +26,9 @@
       (let [slider-width-shared-value   (reanimated/use-shared-value 4)
             slider-height-shared-value  (reanimated/use-shared-value 32)
             slider-opacity-shared-value (reanimated/use-shared-value 0)
+            network-bar-shared-value    (reanimated/interpolate amount-shared-value
+                                                                [0 total-amount]
+                                                                [0 total-width])
             width->amount               #(/ (* % total-amount) total-width)]
         [rn/touchable-without-feedback
          {:on-press #(when (and (not @detecting-gesture?) allow-press?)
@@ -33,7 +36,7 @@
                        (reset! detecting-gesture? true)
                        (animation/show-slider slider-opacity-shared-value))}
          [reanimated/view
-          {:style               (style/network-bar props)
+          {:style               (style/network-bar props network-bar-shared-value)
            :accessibility-label :network-routing-bar}
           [gesture/gesture-detector
            {:gesture

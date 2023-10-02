@@ -27,12 +27,11 @@
     :z-index            -1}))
 
 (defn network-bar
-  [{:keys                         [total-amount total-width max-width on-top?
-                                   bar-division? theme]
-    {:keys [color translate-x-shared-value
-            amount-shared-value]} :bar}]
+  [{:keys                                    [max-width on-top? bar-division? theme]
+    {:keys [color translate-x-shared-value]} :bar}
+   width-shared-value]
   (reanimated/apply-animations-to-style
-   {:width     (reanimated/interpolate amount-shared-value [0 total-amount] [0 total-width])
+   {:width     width-shared-value
     :transform [{:translate-x translate-x-shared-value}]}
    {:max-width          max-width
     :flex-direction     :row
