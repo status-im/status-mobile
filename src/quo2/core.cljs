@@ -147,11 +147,11 @@
 ;;;; Avatar
 (def account-avatar quo2.components.avatars.account-avatar.view/view)
 (def channel-avatar quo2.components.avatars.channel-avatar.view/view)
+(def collection-avatar quo2.components.avatars.collection-avatar.view/view)
 (def group-avatar quo2.components.avatars.group-avatar.view/view)
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
 (def user-avatar quo2.components.avatars.user-avatar.view/user-avatar)
 (def wallet-user-avatar quo2.components.avatars.wallet-user-avatar/wallet-user-avatar)
-(def collection-avatar quo2.components.avatars.collection-avatar.view/view)
 
 ;;;; Banner
 (def banner quo2.components.banners.banner.view/view)

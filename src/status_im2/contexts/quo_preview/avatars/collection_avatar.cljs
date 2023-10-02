@@ -11,14 +11,11 @@
     :options [{:key   (resources/get-mock-image :bored-ape)
                :value "Bored ape"}
               {:key   (resources/get-mock-image :ring)
-               :value "Circle"}
-             ]}
-  ])
+               :value "Circle"}]}])
 
 (defn view
   []
-  (let [state (reagent/atom {:image (resources/get-mock-image :bored-ape)
-                            })]
+  (let [state (reagent/atom {:image (resources/get-mock-image :bored-ape)})]
     (fn []
       [preview/preview-container
        {:state                     state

@@ -1,8 +1,7 @@
 (ns quo2.components.avatars.collection-avatar.view
   (:require [quo2.components.avatars.collection-avatar.style :as style]
             [quo2.theme :as quo.theme]
-            [react-native.fast-image :as fast-image]
-  ))
+            [react-native.fast-image :as fast-image]))
 
 (defn- view-internal
   "Opts:
