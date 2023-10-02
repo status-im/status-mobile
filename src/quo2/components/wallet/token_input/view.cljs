@@ -10,17 +10,8 @@
     [reagent.core :as reagent]
     [quo2.foundations.common :as common]
     [quo2.components.wallet.token-input.style :as style]
-<<<<<<< HEAD
-<<<<<<< HEAD
     [quo2.components.tags.network-tags.view :as network-tag]
     [quo2.components.dividers.divider-line.view :as divider-line]))
-=======
-    [quo2.components.tags.network-tags.view :as network-tag]))
->>>>>>> afdc05d94 (token input followup)
-=======
-    [quo2.components.tags.network-tags.view :as network-tag]
-    [quo2.components.dividers.divider-line.view :as divider-line]))
->>>>>>> 9ed173b80 (design review)
 
 (defn calc-value
   [crypto? currency token value conversion]
@@ -34,15 +25,7 @@
         value     (reagent/atom 0)
         crypto?   (reagent/atom true)
         input-ref (atom nil)]
-<<<<<<< HEAD
-<<<<<<< HEAD
     (fn [{:keys [theme token currency conversion networks title customization-color]}]
-=======
-    (fn [{:keys [theme token currency conversion networks title]}]
->>>>>>> afdc05d94 (token input followup)
-=======
-    (fn [{:keys [theme token currency conversion networks title customization-color]}]
->>>>>>> 9ed173b80 (design review)
       [rn/view {:style (style/main-container width)}
        [rn/view {:style style/amount-container}
         [rn/pressable
@@ -68,15 +51,7 @@
            :weight :semi-bold
            :style  {:color          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
                     :margin-right   8
-<<<<<<< HEAD
-<<<<<<< HEAD
                     :padding-bottom 2}}
-=======
-                    :padding-bottom 1}}
->>>>>>> 9ed173b80 (design review)
-=======
-                    :padding-bottom 2}}
->>>>>>> 9265b484d (design review)
           (string/upper-case (clj->js (if @crypto? token currency)))]]
         [button/button
          {:icon                true
