@@ -32,8 +32,9 @@
                        (on-press)
                        (reset! detecting-gesture? true)
                        (animation/show-slider slider-opacity-shared-value))}
-         [reanimated/view {:style               (style/network-bar props)
-                           :accessibility-label :network-routing-bar}
+         [reanimated/view
+          {:style               (style/network-bar props)
+           :accessibility-label :network-routing-bar}
           [gesture/gesture-detector
            {:gesture
             (-> (gesture/gesture-pan)
