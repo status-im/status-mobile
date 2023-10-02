@@ -85,7 +85,8 @@
                    :customization-color :blue}
     :action       :button
     :action-props {:on-press    #(js/alert "Button pressed!")
-                   :button-text (i18n/label :t/edit)}
+                   :button-text (i18n/label :t/edit)
+                   :alignment    :flex-start}
     :description :text
     :description-props {:text (i18n/label :t/on-device)}}
    {:title       (i18n/label :t/derivation-path)
@@ -94,6 +95,7 @@
     :action       :button
     :action-props {:on-press    #(js/alert "Button pressed!")
                    :button-text (i18n/label :t/edit)
-                   :icon-left :i/placeholder}
+                   :icon-left :i/placeholder
+                   :alignment    :flex-start}
     :description :text
     :description-props {:text "m / 44’ / 60’ / 0’ / 0’ / 2"}}])
