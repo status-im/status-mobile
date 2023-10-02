@@ -32,7 +32,8 @@
                        (on-press)
                        (reset! detecting-gesture? true)
                        (animation/show-slider slider-opacity-shared-value))}
-         [reanimated/view {:style (style/network-bar props)}
+         [reanimated/view {:style               (style/network-bar props)
+                           :accessibility-label :network-routing-bar}
           [gesture/gesture-detector
            {:gesture
             (-> (gesture/gesture-pan)
@@ -162,8 +163,9 @@
   (let [total-width (reagent/atom nil)]
     (fn [{:keys [networks container-style theme] :as params}]
       [rn/view
-       {:style     (style/container container-style theme)
-        :on-layout #(reset! total-width (oops/oget % "nativeEvent.layout.width"))}
+       {:accessibility-label :network-routing
+        :style               (style/container container-style theme)
+        :on-layout           #(reset! total-width (oops/oget % "nativeEvent.layout.width"))}
        (when @total-width
          ^{:key (str "network-routing-" (count networks))}
          [:f> network-routing-bars (assoc params :total-width @total-width)])])))
