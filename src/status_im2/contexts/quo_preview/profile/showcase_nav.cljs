@@ -12,20 +12,17 @@
                 :id   index}))))
 
 (def descriptor
-  [{:type :number
-    :key  :previews-length}
+  [{:type :number :key :previews-length}
    {:type    :select
     :key     :state
-    :options [{:key   :default
-               :value "default"}
-              {:key   :scroll
-               :value "scroll"}]}])
+    :options [{:key :default}
+              {:key :scroll}]}])
 
 (defn view
   []
   (let [state           (reagent/atom {:state           :default
                                        :previews-length 10
-                                       :active-id       0})
+                                       :active-id       3})
         component-state (reagent/cursor state [:state])
         previews-length (reagent/cursor state [:previews-length])
         active-id       (reagent/cursor state [:active-id])
@@ -36,8 +33,7 @@
         :descriptor                descriptor
         :component-container-style {:padding-horizontal 0}}
        [quo/showcase-nav
-        {:default-active 3
-         :state          @component-state
-         :active-id      @active-id
-         :data           (take (or @previews-length 1) nav-data)
-         :on-press       #(swap! state assoc :active-id %)}]])))
+        {:state     @component-state
+         :active-id @active-id
+         :data      (take (or @previews-length 1) nav-data)
+         :on-press  #(swap! state assoc :active-id %)}]])))
