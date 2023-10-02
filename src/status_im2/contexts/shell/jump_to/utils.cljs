@@ -131,3 +131,7 @@
                         (not (home-stack-open?)))
                   :light
                   :dark)]))
+
+(defn store-ref
+  [id ref]
+  (reset! state/refs (assoc @state/refs id ref)))

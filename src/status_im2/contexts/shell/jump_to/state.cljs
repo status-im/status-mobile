@@ -8,6 +8,9 @@
 (def shared-values-atom (atom nil))
 (def jump-to-list-ref (atom nil))
 
+;; Stores refs of home list items and switcher cards for position calculations
+(def refs (atom nil))
+
 (def home-stack-state (atom shell.constants/close-with-animation))
 (def floating-screens-state (atom {}))
 

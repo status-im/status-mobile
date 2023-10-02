@@ -80,7 +80,7 @@
 
 (defn floating-screen-derived-values
   [screen-id {:keys [width height]} switcher-card-left-position switcher-card-top-position
-   home-list-floating-screen-width]
+   home-list-floating-screen-width shared-data]
   (let [screen-state (reanimated/use-shared-value
                       (if (utils/floating-screen-open? screen-id)
                         shell.constants/open-screen-without-animation
@@ -91,7 +91,7 @@
                             width
                             switcher-card-left-position
                             shell.constants/home-list-item-left-position)
-     :screen-top           (worklets.shell/floating-screen-top screen-state switcher-card-top-position)
+     :screen-top           (worklets.shell/floating-screen-top screen-state switcher-card-top-position shared-data)
      :screen-z-index       (worklets.shell/floating-screen-z-index screen-state)
      :screen-width         (worklets.shell/floating-screen-width screen-state
                                                                  width
@@ -112,11 +112,13 @@
   (let [{:keys [width] :as dimensions} (utils/dimensions)
         switcher-card-left-position (/ (- width (* 2 shell.constants/switcher-card-size)) 3)
         switcher-card-top-position (+ (safe-area/get-top) 120)
+        shared-data (reanimated/use-shared-value (clj->js {}))
         home-list-floating-screen-width (* width
                                            (/ shell.constants/home-list-community-icon-size
                                               shell.constants/community-overview-community-icon-size))
         shared-values
-        {:selected-stack-id (reanimated/use-shared-value
+        {:shared-data       shared-data
+         :selected-stack-id (reanimated/use-shared-value
                              (name (or @state/selected-stack-id :communities-stack)))
          :home-stack-state  (reanimated/use-shared-value @state/home-stack-state)}]
     ;; Whenever shell stack is created, calculate shared values function is called
@@ -135,11 +137,13 @@
                                           dimensions
                                           switcher-card-left-position
                                           switcher-card-top-position
-                                          home-list-floating-screen-width)
+                                          home-list-floating-screen-width
+                                          shared-data)
         shell.constants/chat-screen      (floating-screen-derived-values
                                           shell.constants/chat-screen
                                           dimensions
                                           switcher-card-left-position
                                           switcher-card-top-position
-                                          home-list-floating-screen-width)}))
+                                          home-list-floating-screen-width
+                                          shared-data)}))
     @state/shared-values-atom))

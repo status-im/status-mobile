@@ -73,8 +73,8 @@
                home-list-item-left-position))
 
 (defn floating-screen-top
-  [screen-state switcher-card-top-position]
-  (.screenTop ^js floating-screen-worklets screen-state switcher-card-top-position))
+  [screen-state switcher-card-top-position shared-data]
+  (.screenTop ^js floating-screen-worklets screen-state switcher-card-top-position shared-data))
 
 (defn floating-screen-width
   [screen-state screen-width switcher-card-size home-list-floating-screen-width]

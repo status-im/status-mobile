@@ -45,16 +45,39 @@
 
 (re-frame/reg-fx
  :shell/set-floating-screen-postition
- (fn [{:keys [screen-id left-position top-position]}]
-   (print screen-id left-position top-position)
-   (when left-position
-     (reanimated/set-shared-value
-      (get-in @state/shared-values-atom [screen-id :screen-left])
-      left-position))
-   (when top-position
-     (reanimated/set-shared-value
-      (get-in @state/shared-values-atom [screen-id :screen-top])
-      top-position))))
+ (fn [{:keys [screen-id id]}]
+   (let [ref (get @state/refs id)]
+     (when ref
+       (.measure
+        ^js
+        ref
+        (fn [_ _ _ _ _ page-y]
+          ;; Not needed for community
+          ;; (reanimated/set-shared-value
+          ;;  (get-in @state/shared-values-atom [screen-id :screen-left])
+          ;;  page-x)
+          (reanimated/set-shared-value
+           (get-in @state/shared-values-atom [screen-id :screen-top])
+           page-y)))))))
+
+(re-frame/reg-fx
+ :shell/test-navigation
+ (fn []
+   (let [ref (get @state/refs "0x030ff9b70f02f405a702ccb1ed662f7fa2c51d299c59694449d54f51de65016651")]
+     (print @state/refs)
+     (when ref
+       (.measure
+        ^js
+        ref
+        (fn [_ _ _ _ _ page-y]
+          ;; Not needed for community
+          ;; (reanimated/set-shared-value
+          ;;  (get-in @state/shared-values-atom [screen-id :screen-left])
+          ;;  page-x)
+          (print page-y)
+          (reanimated/set-shared-value
+           (:shared-data @state/shared-values-atom)
+           (clj->js {:top page-y}))))))))
 
 ;;;; Events
 
@@ -219,7 +242,8 @@
     (if (and (not @navigation.state/curr-modal)
              (shell.utils/shell-navigation? current-view-id)
              (or chat-screen-open? community-screen-open?))
-      {:db         (assoc-in
+      {:shell/test-navigation nil
+       :db         (assoc-in
                     db
                     [:shell/floating-screens
                      (if chat-screen-open? shell.constants/chat-screen shell.constants/community-screen)
@@ -270,10 +294,8 @@
 
 (rf/defn set-floating-screen-postition-and-navigate
   {:events [:shell/set-floating-screen-postition-and-navigate]}
-  [{:keys [db]} {:keys [screen-id id left-position top-position] :as params}]
-  (print screen-id left-position top-position id)
+  [_ {:keys [screen-id id] :as params}]
   {:shell/set-floating-screen-postition params
    :dispatch                            (if (= screen-id shell.constants/chat-screen)
                                           [:chat/navigate-to-chat id]
                                           [:navigate-to screen-id id])})
-

@@ -33,13 +33,17 @@ export function screenLeft(screenState, screenWidth, switcherCardLeftPosition, h
   });
 }
 
-export function screenTop(screenState, switcherCardTopPosition) {
+export function screenTop(screenState, switcherCardTopPosition, sharedData) {
   return useDerivedValue(function () {
     'worklet';
+    console.log("----------------------- top", sharedData)    
+    const topPosition = sharedData.value.top ?? 0;
+    console.log("----------------------- top", topPosition)    
     switch (screenState.value) {
       case constants.CLOSE_SCREEN_WITH_SHELL_ANIMATION:
-      case constants.CLOSE_SCREEN_WITH_COLLAPSE_ANIMATION:
         return withTiming(switcherCardTopPosition, constants.EASE_OUT_EASING);
+    case constants.CLOSE_SCREEN_WITH_COLLAPSE_ANIMATION:
+      return withTiming(topPosition, constants.EASE_OUT_EASING);
       case constants.OPEN_SCREEN_WITH_SHELL_ANIMATION:
       case constants.OPEN_SCREEN_WITH_EXPAND_ANIMATION:
         return withTiming(0, constants.EASE_OUT_EASING);

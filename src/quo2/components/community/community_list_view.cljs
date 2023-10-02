@@ -88,20 +88,8 @@
 
 (def communities-list-view-item (quo.theme/with-theme communities-list-view-item-internal))
 
-(defn- calculate-item-postition-and-open-community
-  [item-ref on-press]
-  (when @item-ref
-    (.measure
-     ^js
-     @item-ref
-     (fn [_ _ _ _ _ page-y]
-       (on-press page-y)))))
-
 (defn- communities-membership-list-item-internal
-  []
-  (let [item-ref (atom nil)]
-    (fn
-      [{:keys [theme customization-color on-press] :as props}
+  [{:keys [theme customization-color store-ref] :as props}
        bottom-sheet?
        {:keys [name
                muted
@@ -119,9 +107,8 @@
                                 theme)
                :style          {:border-radius 12
                                 :margin-left   12}
-               :ref            #(reset! item-ref %)}
-              props
-              {:on-press #(calculate-item-postition-and-open-community item-ref on-press)})
+               :ref            #(store-ref %)}
+              props)
        [rn/view (merge (style/membership-info-container) style)
         [community-icon/community-icon
          {:images images} 32]
@@ -155,6 +142,6 @@
              :customization-color   customization-color
              :muted?                muted
              :unread-mentions-count unviewed-mentions-count
-             :unread-messages?      (pos? unviewed-messages-count)}])]]])))
+             :unread-messages?      (pos? unviewed-messages-count)}])]]])
 
 (def communities-membership-list-item (quo.theme/with-theme communities-membership-list-item-internal))

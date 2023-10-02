@@ -5,6 +5,7 @@
             [react-native.core :as rn]
             [react-native.reanimated :as reanimated]
             [status-im2.common.home.banner.view :as common.banner]
+            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
             [status-im2.common.home.empty-state.view :as common.empty-state]
             [status-im2.common.home.header-spacing.view :as common.header-spacing]
             [status-im2.common.resources :as resources]
@@ -25,13 +26,12 @@
     [quo/communities-membership-list-item
      {:customization-color customization-color
       :style               {:padding-horizontal 20}
-      :on-press            (fn [top-position]
-                             (debounce/dispatch-and-chill
+      :store-ref           #(shell.utils/store-ref id %)
+      :on-press            #(debounce/dispatch-and-chill
                               [:shell/set-floating-screen-postition-and-navigate
-                               {:screen-id    :community-overview
-                                :id           id
-                                :top-position top-position}]
-                              500))
+                               {:screen-id :community-overview
+                                :id        id}]
+                              500)
       :on-long-press       #(rf/dispatch
                              [:show-bottom-sheet
                               {:content       (fn []
