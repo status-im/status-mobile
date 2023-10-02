@@ -101,7 +101,8 @@
   (let [state (get @state/floating-screens-state screen-id)]
     (or (= state shell.constants/open-screen-with-slide-animation)
         (= state shell.constants/open-screen-with-shell-animation)
-        (= state shell.constants/open-screen-without-animation))))
+        (= state shell.constants/open-screen-without-animation)
+        (= state shell.constants/open-screen-with-expand-animation))))
 
 ;;; Navigation
 (defn shell-navigation?

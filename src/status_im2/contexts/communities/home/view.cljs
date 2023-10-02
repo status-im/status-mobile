@@ -8,12 +8,14 @@
             [status-im2.common.home.empty-state.view :as common.empty-state]
             [status-im2.common.home.header-spacing.view :as common.header-spacing]
             [status-im2.common.resources :as resources]
+            [status-im2.contexts.shell.jump-to.animation :as jump-to.animation]
             [status-im2.contexts.communities.actions.community-options.view :as options]
             [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
             [utils.debounce :as debounce]
             [utils.i18n :as i18n]
             [utils.number]
             [utils.re-frame :as rf]))
+
 
 (defn item-render
   [{:keys [id] :as item}]
@@ -23,7 +25,13 @@
     [quo/communities-membership-list-item
      {:customization-color customization-color
       :style               {:padding-horizontal 20}
-      :on-press            #(debounce/dispatch-and-chill [:navigate-to :community-overview id] 500)
+      :on-press            (fn [top-position]
+                             (debounce/dispatch-and-chill
+                              [:shell/set-floating-screen-postition-and-navigate
+                               {:screen-id    :community-overview
+                                :id           id
+                                :top-position top-position}]
+                              500))
       :on-long-press       #(rf/dispatch
                              [:show-bottom-sheet
                               {:content       (fn []

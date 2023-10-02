@@ -65,24 +65,39 @@
 
 ;; Derived values for floating screen
 (defn floating-screen-left
-  [screen-state screen-width switcher-card-left-position]
-  (.screenLeft ^js floating-screen-worklets screen-state screen-width switcher-card-left-position))
+  [screen-state screen-width switcher-card-left-position home-list-item-left-position]
+  (.screenLeft ^js floating-screen-worklets
+               screen-state
+               screen-width
+               switcher-card-left-position
+               home-list-item-left-position))
 
 (defn floating-screen-top
   [screen-state switcher-card-top-position]
   (.screenTop ^js floating-screen-worklets screen-state switcher-card-top-position))
 
 (defn floating-screen-width
-  [screen-state screen-width switcher-card-size]
-  (.screenWidth ^js floating-screen-worklets screen-state screen-width switcher-card-size))
+  [screen-state screen-width switcher-card-size home-list-floating-screen-width]
+  (.screenWidth ^js floating-screen-worklets
+                screen-state
+                screen-width
+                switcher-card-size
+                home-list-floating-screen-width))
 
 (defn floating-screen-height
-  [screen-state screen-height switcher-card-size]
-  (.screenHeight ^js floating-screen-worklets screen-state screen-height switcher-card-size))
+  [screen-state screen-height switcher-card-size home-list-item-height]
+  (.screenHeight ^js floating-screen-worklets
+                 screen-state
+                 screen-height
+                 switcher-card-size
+                 home-list-item-height))
 
 (defn floating-screen-border-radius
-  [screen-state]
-  (.screenBorderRadius ^js floating-screen-worklets screen-state))
+  [screen-state switcher-card-border-radius home-list-item-border-radius]
+  (.screenBorderRadius ^js floating-screen-worklets
+                       screen-state
+                       switcher-card-border-radius
+                       home-list-item-border-radius))
 
 (defn floating-screen-z-index
   [screen-state]

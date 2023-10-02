@@ -88,59 +88,73 @@
 
 (def communities-list-view-item (quo.theme/with-theme communities-list-view-item-internal))
 
-(defn- communities-membership-list-item-internal
-  [{:keys [theme customization-color] :as props}
-   bottom-sheet?
-   {:keys [name
-           muted
-           unviewed-messages-count
-           unviewed-mentions-count
-           status
-           images
-           tokens
-           locked?
-           style]}]
-  [rn/touchable-highlight
-   (merge {:underlay-color (colors/theme-colors
-                            colors/neutral-5
-                            colors/neutral-95
-                            theme)
-           :style          {:border-radius 12
-                            :margin-left   12}}
-          props)
-   [rn/view (merge (style/membership-info-container) style)
-    [community-icon/community-icon
-     {:images images} 32]
-    [rn/view
-     {:flex            1
-      :margin-left     12
-      :justify-content :center}
-     [text/text
-      {:accessibility-label :chat-name-text
-       :number-of-lines     1
-       :ellipsize-mode      :tail
-       :weight              :semi-bold
-       :size                :paragraph-1
-       :style               (when muted
-                              {:color (colors/theme-colors
-                                       colors/neutral-40
-                                       colors/neutral-60
-                                       theme)})}
-      name]]
+(defn- calculate-item-postition-and-open-community
+  [item-ref on-press]
+  (when @item-ref
+    (.measure
+     ^js
+     @item-ref
+     (fn [_ _ _ _ _ page-y]
+       (on-press page-y)))))
 
-    [rn/view
-     {:justify-content :center
-      :margin-right    (when bottom-sheet?
-                         16)}
-     (if (= status :gated)
-       [community-view/permission-tag-container
-        {:locked? locked?
-         :tokens  tokens}]
-       [notification-view
-        {:theme                 theme
-         :customization-color   customization-color
-         :muted?                muted
-         :unread-mentions-count unviewed-mentions-count
-         :unread-messages?      (pos? unviewed-messages-count)}])]]])
+(defn- communities-membership-list-item-internal
+  []
+  (let [item-ref (atom nil)]
+    (fn
+      [{:keys [theme customization-color on-press] :as props}
+       bottom-sheet?
+       {:keys [name
+               muted
+               unviewed-messages-count
+               unviewed-mentions-count
+               status
+               images
+               tokens
+               locked?
+               style]}]
+      [rn/touchable-highlight
+       (merge {:underlay-color (colors/theme-colors
+                                colors/neutral-5
+                                colors/neutral-95
+                                theme)
+               :style          {:border-radius 12
+                                :margin-left   12}
+               :ref            #(reset! item-ref %)}
+              props
+              {:on-press #(calculate-item-postition-and-open-community item-ref on-press)})
+       [rn/view (merge (style/membership-info-container) style)
+        [community-icon/community-icon
+         {:images images} 32]
+        [rn/view
+         {:flex            1
+          :margin-left     12
+          :justify-content :center}
+         [text/text
+          {:accessibility-label :chat-name-text
+           :number-of-lines     1
+           :ellipsize-mode      :tail
+           :weight              :semi-bold
+           :size                :paragraph-1
+           :style               (when muted
+                                  {:color (colors/theme-colors
+                                           colors/neutral-40
+                                           colors/neutral-60
+                                           theme)})}
+          name]]
+
+        [rn/view
+         {:justify-content :center
+          :margin-right    (when bottom-sheet?
+                             16)}
+         (if (= status :gated)
+           [community-view/permission-tag-container
+            {:locked? locked?
+             :tokens  tokens}]
+           [notification-view
+            {:theme                 theme
+             :customization-color   customization-color
+             :muted?                muted
+             :unread-mentions-count unviewed-mentions-count
+             :unread-messages?      (pos? unviewed-messages-count)}])]]])))
 
 (def communities-membership-list-item (quo.theme/with-theme communities-membership-list-item-internal))

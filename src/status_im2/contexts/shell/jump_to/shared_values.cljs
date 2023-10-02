@@ -79,30 +79,42 @@
                                 (:scale home-stack-position))}))
 
 (defn floating-screen-derived-values
-  [screen-id {:keys [width height]} switcher-card-left-position switcher-card-top-position]
+  [screen-id {:keys [width height]} switcher-card-left-position switcher-card-top-position
+   home-list-floating-screen-width]
   (let [screen-state (reanimated/use-shared-value
                       (if (utils/floating-screen-open? screen-id)
                         shell.constants/open-screen-without-animation
                         shell.constants/close-screen-without-animation))]
     {:screen-state         screen-state
-     :screen-left          (worklets.shell/floating-screen-left screen-state
-                                                                width
-                                                                switcher-card-left-position)
+     :screen-left          (worklets.shell/floating-screen-left
+                            screen-state
+                            width
+                            switcher-card-left-position
+                            shell.constants/home-list-item-left-position)
      :screen-top           (worklets.shell/floating-screen-top screen-state switcher-card-top-position)
      :screen-z-index       (worklets.shell/floating-screen-z-index screen-state)
      :screen-width         (worklets.shell/floating-screen-width screen-state
                                                                  width
-                                                                 shell.constants/switcher-card-size)
-     :screen-border-radius (worklets.shell/floating-screen-border-radius screen-state)
-     :screen-height        (worklets.shell/floating-screen-height screen-state
-                                                                  height
-                                                                  shell.constants/switcher-card-size)}))
+                                                                 shell.constants/switcher-card-size
+                                                                 home-list-floating-screen-width)
+     :screen-border-radius (worklets.shell/floating-screen-border-radius
+                            screen-state
+                            shell.constants/switcher-card-border-radius
+                            shell.constants/home-list-item-border-radius)
+     :screen-height        (worklets.shell/floating-screen-height
+                            screen-state
+                            height
+                            shell.constants/switcher-card-size
+                            shell.constants/home-list-item-height)}))
 
 (defn calculate-and-set-shared-values
   []
   (let [{:keys [width] :as dimensions} (utils/dimensions)
         switcher-card-left-position (/ (- width (* 2 shell.constants/switcher-card-size)) 3)
         switcher-card-top-position (+ (safe-area/get-top) 120)
+        home-list-floating-screen-width (* width
+                                           (/ shell.constants/home-list-community-icon-size
+                                              shell.constants/community-overview-community-icon-size))
         shared-values
         {:selected-stack-id (reanimated/use-shared-value
                              (name (or @state/selected-stack-id :communities-stack)))
@@ -122,10 +134,12 @@
                                           shell.constants/community-screen
                                           dimensions
                                           switcher-card-left-position
-                                          switcher-card-top-position)
+                                          switcher-card-top-position
+                                          home-list-floating-screen-width)
         shell.constants/chat-screen      (floating-screen-derived-values
                                           shell.constants/chat-screen
                                           dimensions
                                           switcher-card-left-position
-                                          switcher-card-top-position)}))
+                                          switcher-card-top-position
+                                          home-list-floating-screen-width)}))
     @state/shared-values-atom))

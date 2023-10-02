@@ -186,7 +186,7 @@
 
       "")))
 
-(defn open-screen
+(defn open-screen-legacy
   [card-type id channel-id]
   (cond
     (#{shell.constants/one-to-one-chat-card
@@ -195,29 +195,40 @@
     (rf/dispatch [:chat/navigate-to-chat id])
 
     (= card-type shell.constants/community-channel-card)
-    (if config/shell-navigation-disabled?
-      (do
-        (rf/dispatch [:navigate-to :community-overview id])
-        (js/setTimeout
-         #(rf/dispatch [:chat/navigate-to-chat channel-id])
-         100))
-      (rf/dispatch [:chat/navigate-to-chat channel-id]))
+    (do
+      (rf/dispatch [:navigate-to :community-overview id])
+      (js/setTimeout
+       #(rf/dispatch [:chat/navigate-to-chat channel-id])
+       100))
 
     (= card-type shell.constants/community-card)
     (rf/dispatch [:navigate-to :community-overview id])))
 
 (defn calculate-card-position-and-open-screen
   [card-ref card-type id channel-id]
-  (when @card-ref
-    (.measure
-     ^js
-     @card-ref
-     (fn [_ _ _ _ page-x page-y]
-       (animation/set-floating-screen-position
-        page-x
-        page-y
-        card-type)
-       (open-screen card-type id channel-id)))))
+  (if config/shell-navigation-disabled?
+    (open-screen-legacy card-type id channel-id)
+    (let [screen-id (cond
+                      (#{shell.constants/one-to-one-chat-card
+                         shell.constants/private-group-chat-card
+                         shell.constants/community-channel-card}
+                       card-type)
+                      shell.constants/chat-screen
+
+                      (= card-type shell.constants/community-card)
+                      shell.constants/community-screen
+
+                      :else nil)]
+      (when (and screen-id @card-ref)
+        (.measure
+         ^js
+         @card-ref
+         (fn [_ _ _ _ page-x page-y]
+           (rf/dispatch [:shell/set-floating-screen-postition-and-navigate
+                         {:screen-id     screen-id
+                          :id            (or channel-id id)
+                          :left-position page-x
+                          :top-position  page-y}])))))))
 
 ;; Screens Card
 (defn screens-card

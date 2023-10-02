@@ -4,9 +4,10 @@
             [status-im2.config :as config]
             [status-im.utils.core :as utils]
             [status-im2.constants :as constants]
+            [react-native.reanimated :as reanimated]
+            [status-im2.navigation.state :as navigation.state]
             [status-im2.contexts.shell.jump-to.state :as state]
             [status-im2.contexts.shell.jump-to.utils :as shell.utils]
-            [status-im2.navigation.state :as navigation.state]
             [status-im2.contexts.shell.jump-to.animation :as animation]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [status-im.data-store.switcher-cards :as switcher-cards-store]))
@@ -41,6 +42,19 @@
  :shell/reset-state
  (fn []
    (reset! state/floating-screens-state {})))
+
+(re-frame/reg-fx
+ :shell/set-floating-screen-postition
+ (fn [{:keys [screen-id left-position top-position]}]
+   (print screen-id left-position top-position)
+   (when left-position
+     (reanimated/set-shared-value
+      (get-in @state/shared-values-atom [screen-id :screen-left])
+      left-position))
+   (when top-position
+     (reanimated/set-shared-value
+      (get-in @state/shared-values-atom [screen-id :screen-top])
+      top-position))))
 
 ;;;; Events
 
@@ -175,7 +189,7 @@
                                          (case current-view-id
                                            :shell shell.constants/open-screen-with-shell-animation
                                            :chat  shell.constants/open-screen-without-animation
-                                           shell.constants/open-screen-with-slide-animation))})
+                                           shell.constants/open-screen-with-expand-animation))})
        :dispatch-n (cond-> []
                      (not hidden-screen?)
                      (conj [:set-view-id go-to-view-id])
@@ -210,7 +224,7 @@
                     [:shell/floating-screens
                      (if chat-screen-open? shell.constants/chat-screen shell.constants/community-screen)
                      :animation]
-                    (or animation shell.constants/close-screen-with-slide-animation))
+                    (or animation shell.constants/close-screen-with-collapse-animation))
        :dispatch-n (cond-> [[:set-view-id
                              (cond
                                (and chat-screen-open? community-screen-open?)
@@ -253,3 +267,13 @@
             (update :shell/loaded-screens dissoc screen-id))}
    (when (= screen-id shell.constants/chat-screen)
      {:dispatch [:chat/close]})))
+
+(rf/defn set-floating-screen-postition-and-navigate
+  {:events [:shell/set-floating-screen-postition-and-navigate]}
+  [{:keys [db]} {:keys [screen-id id left-position top-position] :as params}]
+  (print screen-id left-position top-position id)
+  {:shell/set-floating-screen-postition params
+   :dispatch                            (if (= screen-id shell.constants/chat-screen)
+                                          [:chat/navigate-to-chat id]
+                                          [:navigate-to screen-id id])})
+

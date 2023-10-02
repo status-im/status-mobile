@@ -1,8 +1,19 @@
 (ns status-im2.contexts.shell.jump-to.constants)
 
 (def ^:const shell-animation-time 200)
-(def ^:const switcher-card-size 160)
 (def ^:const floating-shell-button-height 44)
+
+;; Switcher
+(def ^:const switcher-card-size 160)
+(def ^:const switcher-card-border-radius 20)
+
+;; Home List Item
+(def ^:const home-list-item-left-position 8)
+(def ^:const home-list-item-height 48) ;; 48/56 for few communities
+(def ^:const home-list-item-border-radius 12)
+(def ^:const home-list-community-icon-size 32)
+
+(def ^:const community-overview-community-icon-size 80)
 
 ;; Bottom tabs
 (def ^:const bottom-tabs-container-height-android 57)
@@ -64,6 +75,8 @@
 (def ^:const open-screen-with-slide-animation 3)
 (def ^:const close-screen-with-shell-animation 4)
 (def ^:const open-screen-with-shell-animation 5)
+(def ^:const close-screen-with-collapse-animation 6)
+(def ^:const open-screen-with-expand-animation 7)
 
 ;; Floating Screen gesture
 (def ^:const gesture-width 30)

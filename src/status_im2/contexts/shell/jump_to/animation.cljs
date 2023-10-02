@@ -82,24 +82,3 @@
            (rf/dispatch [:shell/floating-screen-closed screen-id])))
        dispatch-time
        floating-screen-open?))))
-
-(defn set-floating-screen-position
-  [left top card-type]
-  (let [screen-id (cond
-                    (#{shell.constants/one-to-one-chat-card
-                       shell.constants/private-group-chat-card
-                       shell.constants/community-channel-card}
-                     card-type)
-                    shell.constants/chat-screen
-
-                    (= card-type shell.constants/community-card)
-                    shell.constants/community-screen
-
-                    :else nil)]
-    (when screen-id
-      (reanimated/set-shared-value
-       (get-in @state/shared-values-atom [screen-id :screen-left])
-       left)
-      (reanimated/set-shared-value
-       (get-in @state/shared-values-atom [screen-id :screen-top])
-       top))))
