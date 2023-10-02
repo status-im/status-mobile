@@ -21,8 +21,8 @@
 
 ;; domains should be without the trailing slash
 (def domains
-  {:external "https://join.status.im"
-   :internal "status-im:/"})
+  {:external "https://status.app"
+   :internal "status-app:/"})
 
 (def links
   {:private-chat       "%s/p/%s"
@@ -212,9 +212,8 @@
                       (.then dispatch-url))
                  200)
   (.addEventListener ^js react/linking "url" url-event-listener)
-  ;;StartSearchForLocalPairingPeers() shouldn't be called ATM from the UI
-  ;;It can be called after the error "route ip+net: netlinkrib: permission denied" is fixed on status-go
-  ;;side
+  ;;StartSearchForLocalPairingPeers() shouldn't be called ATM from the UI It can be called after the
+  ;;error "route ip+net: netlinkrib: permission denied" is fixed on status-go side
   #_(native-module/start-searching-for-local-pairing-peers
      #(log/info "[local-pairing] errors from local-pairing-preflight-outbound-check ->" %)))
 

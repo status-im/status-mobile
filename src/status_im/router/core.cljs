@@ -20,11 +20,13 @@
 
 (def ethereum-scheme "ethereum:")
 
-(def uri-schemes ["status-im://" "status-im:"])
+(def uri-schemes ["status-app://" "status-app:"])
 
-(def web-prefixes ["https://" "http://" "https://www." "http://www."])
+(def web-prefixes
+  ["https://" ;; "http://" "https://www." "http://www."
+  ])
 
-(def web2-domain "join.status.im")
+(def web2-domain "status.app")
 
 (def web-urls (map #(str % web2-domain "/") web-prefixes))
 
@@ -64,9 +66,24 @@
   (let [url (goog.Uri. url)]
     (url/query->map (.getQuery url))))
 
+(defn parse-fragment
+  [url]
+  (let [url      (goog.Uri. url)
+        fragment (.getFragment url)]
+    (when-not (string/blank? fragment)
+      fragment)))
+
 (defn match-uri
   [uri]
-  (assoc (bidi/match-route routes uri) :uri uri :query-params (parse-query-params uri)))
+  (let [fragment (parse-fragment uri)
+        ens?     (ens/is-valid-eth-name? fragment)]
+    (cond-> (assoc (bidi/match-route routes uri)
+                   :uri          uri
+                   :query-params (parse-query-params uri))
+      ens?
+      (assoc :ens-name fragment)
+      fragment
+      (assoc :chat-key fragment))))
 
 (defn match-contact-async
   [chain {:keys [user-id ens-name]} callback]
@@ -211,7 +228,7 @@
 
 (defn handle-uri
   [chain chats uri cb]
-  (let [{:keys [handler route-params query-params]} (match-uri uri)]
+  (let [{:keys [handler route-params query-params chat-key ens-name]} (match-uri uri)]
     (log/info "[router] uri " uri " matched " handler " with " route-params)
     (cond
 
@@ -222,7 +239,7 @@
       (cb (match-eip681 uri))
 
       (= handler :user)
-      (match-contact-async chain route-params cb)
+      (match-contact-async chain (assoc route-params :user-id chat-key :ens-name ens-name) cb)
 
       (= handler :private-chat)
       (match-private-chat-async chain route-params cb)
