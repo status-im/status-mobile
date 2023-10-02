@@ -39,7 +39,7 @@
           (not show-reactions?)
           show-user-info?)
     [avatar/avatar from :small]
-    [rn/view {:padding-top 2 :width 32}]))
+    [rn/view {:padding-top 4 :width 32}]))
 
 (defn author
   [{:keys [response-to
