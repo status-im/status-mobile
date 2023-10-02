@@ -34,6 +34,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>status-im</string>
+				<string>status-app</string>
 			</array>
 		</dict>
 		<dict>

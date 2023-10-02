@@ -1,27 +1,27 @@
 (ns status-im.utils.universal-links.core
   (:require [clojure.string :as string]
             [goog.string :as gstring]
+            [native-module.core :as native-module]
             [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
             [status-im.group-chats.core :as group-chats]
-            [utils.i18n :as i18n]
             [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.router.core :as router]
             [status-im.ui.components.react :as react]
-            [utils.re-frame :as rf]
             [status-im.wallet.choose-recipient.core :as choose-recipient]
+            [status-im2.constants :as constants]
             [status-im2.navigation.events :as navigation]
             [taoensso.timbre :as log]
-            [native-module.core :as native-module]
-            [utils.ethereum.chain :as chain]))
+            [utils.ethereum.chain :as chain]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link
 
 ;; domains should be without the trailing slash
 (def domains
-  {:external "https://join.status.im"
-   :internal "status-im:/"})
+  {:external "https://status.app"
+   :internal "status-app:/"})
 
 (def links
   {:private-chat       "%s/p/%s"
@@ -211,9 +211,8 @@
                       (.then dispatch-url))
                  200)
   (.addEventListener ^js react/linking "url" url-event-listener)
-  ;;StartSearchForLocalPairingPeers() shouldn't be called ATM from the UI
-  ;;It can be called after the error "route ip+net: netlinkrib: permission denied" is fixed on status-go
-  ;;side
+  ;;StartSearchForLocalPairingPeers() shouldn't be called ATM from the UI It can be called after the
+  ;;error "route ip+net: netlinkrib: permission denied" is fixed on status-go side
   #_(native-module/start-searching-for-local-pairing-peers
      #(log/info "[local-pairing] errors from local-pairing-preflight-outbound-check ->" %)))
 

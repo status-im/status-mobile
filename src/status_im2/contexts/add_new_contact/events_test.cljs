@@ -10,8 +10,8 @@
 (def ckey "zQ3shWj4WaBdf2zYKCkXe6PHxDxNTzZyid1i75879Ue9cX9gA")
 (def ens "esep")
 (def ens-stateofus-eth (str ens ".stateofus.eth"))
-(def link-ckey (str "https://join.status.im/u/" ckey))
-(def link-ens (str "https://join.status.im/u/" ens))
+(def link-ckey (str "https://status.app/u/" ckey))
+(def link-ens (str "https://status.app/u/" ens))
 
 ;;; unit tests (no app-db involved)
 

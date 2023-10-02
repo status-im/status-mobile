@@ -18,32 +18,32 @@
                           :query-params (when (= 3 (count expected)) (last expected))
                           :uri          uri})
 
-   "status-im://u/statuse2e"
+   "status-app://u/statuse2e"
     [:user {:user-id "statuse2e"}]
 
-   (str "status-im://user/" public-key)
+   (str "status-app://user/" public-key)
     [:user {:user-id public-key}]
 
-   "status-im://b/www.cryptokitties.co"
+   "status-app://b/www.cryptokitties.co"
     [:browser {:domain "www.cryptokitties.c"}]
 
-   (str "status-im://g/args?a=" public-key "&a1=" chat-name-url "&a2=" chat-id)
+   (str "status-app://g/args?a=" public-key "&a1=" chat-name-url "&a2=" chat-id)
     [:group-chat {:params "arg"} {"a" public-key "a1" chat-name "a2" chat-id}]
 
-   (str "https://join.status.im/g/args?a=" public-key "&a1=" chat-name-url "&a2=" chat-id)
+   (str "https://status.app/g/args?a=" public-key "&a1=" chat-name-url "&a2=" chat-id)
     [:group-chat {:params "arg"} {"a" public-key "a1" chat-name "a2" chat-id}]
 
-   "https://join.status.im/u/statuse2e"
+   "https://status.app/u/statuse2e"
     [:user {:user-id "statuse2e"}]
 
-   (str "https://join.status.im/user/" public-key)
+   (str "https://status.app/user/" public-key)
     [:user {:user-id public-key}]
 
    ;; Last char removed by: https://github.com/juxt/bidi/issues/104
-   "https://join.status.im/b/www.cryptokitties.co"
+   "https://status.app/b/www.cryptokitties.co"
     [:browser {:domain "www.cryptokitties.c"}]
 
-   "https://join.status.im/b/https://www.google.com/"
+   "https://status.app/b/https://www.google.com/"
     [:browser {:domain "https://www.google.co"}]
 
    "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"

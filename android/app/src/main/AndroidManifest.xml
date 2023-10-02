@@ -62,8 +62,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http" android:host="join.status.im" />
-                <data android:scheme="https" android:host="join.status.im" />
+                <data android:scheme="http" android:host="status.app" />
+                <data android:scheme="https" android:host="status.app" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

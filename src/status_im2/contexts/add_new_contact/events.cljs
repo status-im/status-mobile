@@ -1,17 +1,17 @@
 (ns status-im2.contexts.add-new-contact.events
   (:require [clojure.string :as string]
-            [utils.re-frame :as rf]
-            [utils.transforms :as transforms]
+            [native-module.core :as native-module]
             [re-frame.core :as re-frame]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
-            [native-module.core :as native-module]
-            [status-im2.navigation.events :as navigation]
-            [utils.validators :as validators]
-            [status-im2.contexts.contacts.events :as data-store.contacts]
             [status-im2.constants :as constants]
+            [status-im2.contexts.contacts.events :as data-store.contacts]
+            [status-im2.navigation.events :as navigation]
+            [utils.ethereum.chain :as chain]
+            [utils.re-frame :as rf]
             [utils.string :as utils.string]
-            [utils.ethereum.chain :as chain]))
+            [utils.transforms :as transforms]
+            [utils.validators :as validators]))
 
 (defn init-contact
   "Create a new contact (persisted to app-db as [:contacts/new-identity]).
@@ -33,7 +33,7 @@
        (zipmap (repeat nil))))
   ([kv] (-> (init-contact) (merge kv))))
 
-(def url-regex #"^https?://join.status.im/u/(.+)")
+(def url-regex #"^https?://status.app/u/(.+)")
 
 (defn ->id
   [{:keys [input] :as contact}]
