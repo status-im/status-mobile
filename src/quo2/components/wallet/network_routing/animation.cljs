@@ -42,7 +42,7 @@
                         (- pressed-bar-timing 20))))
 
 (defn move-next-bars
-  [{:keys [bars bars-widths-negative number-previous-bars extra-offset]}]
+  [{:keys [bars bars-widths-negative number-previous-bars extra-offset add-new-timeout]}]
   (doseq [[bar-idx bar] (map-indexed vector bars)
           :let          [number-bars-before (+ number-previous-bars
                                                (inc bar-idx))
@@ -50,7 +50,8 @@
                                                  (reduce +)
                                                  (* 1.05))]]
     (reanimated/animate (:translate-x-shared-value bar) new-translation-x pressed-bar-timing)
-    (js/setTimeout
+    (add-new-timeout
+     :fix-next-bars-position
      #(let [translate-x-value (reanimated/get-shared-value (:translate-x-shared-value bar))
             hidden-position   (- translate-x-value extra-offset)]
         (reanimated/set-shared-value (:translate-x-shared-value bar) hidden-position))
@@ -67,21 +68,22 @@
   (reanimated/animate max-limit-bar-opacity 0 max-limit-bar-timing))
 
 (defn reset-bars-positions
-  [bars unlock-press-fn]
+  [bars unlock-press-fn add-new-timeout]
   (let [bars-reset-timing 500]
     (doseq [{:keys [translate-x-shared-value]} bars]
       (reanimated/animate translate-x-shared-value 0 bars-reset-timing))
-    (js/setTimeout unlock-press-fn bars-reset-timing)))
+    (add-new-timeout :unlock-press unlock-press-fn bars-reset-timing)))
 
 (defn align-bars-off-screen
-  [{:keys [new-network-values network-bars amount->width]}]
+  [{:keys [new-network-values network-bars amount->width add-new-timeout]}]
   (let [width-to-off-screen (->> new-network-values
                                  (reduce #(- %1 (:amount %2)) 0)
                                  (amount->width))]
     (doseq [[{new-amount :amount} bar] (map vector new-network-values network-bars)]
       (reanimated/set-shared-value (:amount-shared-value bar) new-amount)
       (reanimated/set-shared-value (:translate-x-shared-value bar) (* 2 width-to-off-screen))
-      (js/setTimeout
+      (add-new-timeout
+       :align-bars
        #(reanimated/set-shared-value (:translate-x-shared-value bar) width-to-off-screen)
        1))))
 
@@ -97,14 +99,18 @@
     (reanimated/animate translate-x-shared-value new-translation-x hide-bar-timing)))
 
 (defn update-bar-values-and-reset-animations
-  [{:keys [new-network-values network-bars amount->width reset-values-fn
+  [{:keys [new-network-values network-bars amount->width reset-values-fn add-new-timeout
            lock-press-fn unlock-press-fn]}]
   (lock-press-fn)
-  (js/setTimeout
+  (add-new-timeout
+   :update-bars-values
    (fn []
      (align-bars-off-screen {:new-network-values new-network-values
                              :network-bars       network-bars
-                             :amount->width      amount->width})
+                             :amount->width      amount->width
+                             :add-new-timeout    add-new-timeout})
      (reset-values-fn)
-     (js/setTimeout #(reset-bars-positions network-bars unlock-press-fn) 100))
+     (add-new-timeout :reset-bars
+                      #(reset-bars-positions network-bars unlock-press-fn add-new-timeout)
+                      100))
    hide-bar-timing))
