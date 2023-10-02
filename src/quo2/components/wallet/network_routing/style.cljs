@@ -19,7 +19,7 @@
     :top                0
     :bottom             0
     :left               0
-    :background-color   (str color "10")
+    :background-color   (colors/alpha color 0.1)
     :width              width
     :border-right-width 1
     :border-style       :dashed
