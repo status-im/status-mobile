@@ -22,7 +22,7 @@ buildGoPackage {
     runHook preBuild
     go build \
       -buildmode='c-archive' \
-      -tags='gowaku_skip_migrations' \
+      -tags='gowaku_skip_migrations gowaku_no_rln' \
       -o "$out/libstatus.a" \
       $NIX_BUILD_TOP/main.go
     runHook postBuild
