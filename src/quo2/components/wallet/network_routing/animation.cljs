@@ -13,12 +13,12 @@
 
 (defn increase-slider
   [width-shared-value height-shared-value]
-  (reanimated/animate width-shared-value 8 300)
+  (reanimated/animate width-shared-value 8 slider-timing)
   (reanimated/animate height-shared-value 40 slider-timing))
 
 (defn decrease-slider
   [width-shared-value height-shared-value]
-  (reanimated/animate width-shared-value 4 300)
+  (reanimated/animate width-shared-value 4 slider-timing)
   (reanimated/animate height-shared-value 32 slider-timing))
 
 (def ^:private pressed-bar-timing 600)
