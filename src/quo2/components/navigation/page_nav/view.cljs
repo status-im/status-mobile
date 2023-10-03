@@ -175,13 +175,8 @@
       shown-name]]))
 
 (defn- view-internal
-  [{:keys [type right-side background text-align account-switcher behind-overlay?] ;; behind-overlay is
-                                                                                   ;; necessary for us to
-                                                                                   ;; know if the
-                                                                                   ;; page-nav buttons
-                                                                                   ;; are under the
-                                                                                   ;; bottom sheet
-                                                                                   ;; overlay or not.
+  "behind-overlay is necessary for us to know if the page-nav buttons are under the bottom sheet overlay or not."
+  [{:keys [type right-side background text-align account-switcher behind-overlay?]
     :or   {type       :no-title
            text-align :center
            right-side :none
