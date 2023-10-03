@@ -11,7 +11,7 @@
   [invalid?]
   {:padding-left   12
    :padding-right  7
-   :min-height     40
+   :min-height     38
    :flex           1
    :flex-direction :row
    :border-width   1
@@ -25,9 +25,10 @@
   (merge typography/monospace
          typography/paragraph-1
          {:flex                1
+          :padding-top         6
           :padding-bottom      8
           :color               colors/white
-          :text-align-vertical :center}))
+          :text-align-vertical :top}))
 
 (def label-texts-container
   {:flex-direction :row
