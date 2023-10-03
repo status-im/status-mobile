@@ -322,7 +322,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(703503)
     @marks.xfail(
-        reason="Request to Join Community button color issue: https://github.com/status-im/status-mobile/issues/17295")
+        reason="Request to Join Community button color issue:17295")
     def test_community_discovery(self):
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
@@ -797,8 +797,9 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel_2.chat_message_input.send_keys(message_text)
         self.channel_2.send_message_button.click()
         chat_element_1 = self.channel_1.chat_element_by_text(message_text)
-        if not chat_element_1.is_element_displayed(sec=10) or chat_element_1.replied_message_text != emoji_unicode:
-            self.errors.append('Reply message was not received by the sender')
+        chat_element_1.wait_for_element(60)
+        if chat_element_1.replied_message_text != emoji_unicode:
+            self.errors.append('Reply message is not reply to original message!')
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702844)
@@ -1089,7 +1090,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
     @marks.testrail_id(702786)
-    @marks.xfail(reason="Issue with username in PN, https://github.com/status-im/status-mobile/issues/17396")
+    @marks.xfail(reason="Issue with username in PN 17396")
     def test_community_mentions_push_notification(self):
         self.home_1.navigate_back_to_home_view()
         self.device_1.open_notification_bar()
