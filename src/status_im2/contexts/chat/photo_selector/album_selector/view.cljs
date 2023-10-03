@@ -33,7 +33,9 @@
       [quo/text
        {:size  :paragraph-2
         :style {:color (colors/theme-colors colors/neutral-50 colors/neutral-40)}}
-       (when size (str size " " (i18n/label :t/images)))]]
+       (when size (str size " " (if (= size 1)
+                                  (i18n/label :t/image)
+                                  (i18n/label :t/images))))]]
      (when selected?
        [rn/view
         {:style {:position :absolute
