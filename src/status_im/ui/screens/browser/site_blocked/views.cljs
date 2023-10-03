@@ -2,10 +2,10 @@
   (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.browser.site-blocked.styles :as styles])
+            [status-im.ui.screens.browser.site-blocked.styles :as styles]
+            [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview view
@@ -20,7 +20,8 @@
      (i18n/label :t/browsing-site-blocked-title)]
     [react/nested-text {:style styles/description-text}
      (i18n/label :t/browsing-site-blocked-description1)
-     [{:on-press #(.openURL ^js react/linking "status-im://chat/public/status")
+     ;; NOTE: this link is broken
+     [{:on-press #(.openURL ^js react/linking "status-app://chat/public/status")
        :style    styles/chat-link-text}
       "#status"]
      (i18n/label :t/browsing-site-blocked-description2)]
