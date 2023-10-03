@@ -67,7 +67,7 @@
            :uri   (get-in (first (:edges res-recent)) [:node :image :uri])}])
        ;; Get albums, then loop over albums and get each one's cover (first photo)
        (cameraroll/get-albums
-        {:assetType "All"}
+        {:assetType :Photos}
         (fn [res-albums]
           (let [response-count (count res-albums)]
             (if (pos? response-count)
