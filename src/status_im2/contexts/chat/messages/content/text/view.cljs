@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.messages.content.text.view
   (:require
-    [quo.platform]
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.platform :as platform]
