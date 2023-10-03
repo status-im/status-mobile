@@ -91,6 +91,7 @@
   (native-module/deserialize-and-compress-key
    community-id
    (fn [deserialized-key]
+     (rf/dispatch [:chat.ui/resolve-community-info (str deserialized-key)])
      (rf/dispatch [:handle-navigation-to-desktop-community-from-mobile (str deserialized-key)]))))
 
 (rf/defn handle-community-chat
