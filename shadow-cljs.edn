@@ -129,6 +129,7 @@
     ;; needed because we use deref in tests
     :static-fns    false
     :optimizations :simple
+    :warnings      {:fn-deprecated false}
     :infer-externs true}}
 
   ;; mock.js-dependencies is mocking the react-native libraries
