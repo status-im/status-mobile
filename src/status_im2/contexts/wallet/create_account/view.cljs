@@ -57,6 +57,7 @@
          :disabled?       false
          :default-value   "Account 2"
          :container-style style/title-input-container}]
+       [quo/divider-line]
        [rn/view
         {:style style/color-picker-container}
         [quo/text
@@ -67,9 +68,9 @@
         [quo/color-picker
          {:default-selected @account-color
           :on-change        #(reset! account-color %)
-          :container-style {:padding-horizontal 12
-                            :padding-vertical 12}}]]
-       [quo/divider-line {:container-style style/divider-line}]
+          :container-style  {:padding-horizontal 12
+                             :padding-vertical   12}}]]
+       [quo/divider-line]
        [quo/category
         {:list-type :settings
          :label     (i18n/label :t/origin)

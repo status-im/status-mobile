@@ -22,7 +22,7 @@
       [rn/scroll-view
        {:horizontal                        true
         :shows-horizontal-scroll-indicator false
-        :content-container-style container-style}
+        :content-container-style           container-style}
        (doall (map (fn [color]
                      [color/view
                       {:selected? (= color @selected)

@@ -24,17 +24,17 @@
    :padding-bottom     16})
 
 (def color-picker-container
-  {:padding-vertical   12})
+  {:padding-vertical 12})
 
 (defn color-label
   [theme]
-  {:color          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-   :padding-bottom 4
+  {:color              (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+   :padding-bottom     4
    :padding-horizontal 20})
 
 (def divider-line
-  {:margin-top         12
-   :margin-bottom      8})
+  {:margin-top    12
+   :margin-bottom 8})
 
 (defn slide-button-container
   [bottom]

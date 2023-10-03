@@ -94,8 +94,8 @@
      :arrow    [icon/icon :i/chevron-right (style/color blur? theme)]
      :button   [button/button
                 (merge action-props
-                       {:type     :outline
-                        :size     24})
+                       {:type :outline
+                        :size 24})
                 (:button-text action-props)]
      :selector [selectors/toggle action-props]
      nil)])

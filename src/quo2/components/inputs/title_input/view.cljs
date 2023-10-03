@@ -39,7 +39,7 @@
         [rn/text-input
          {:style
           (text/text-style
-           {:size   :heading-2
+           {:size   :heading-1
             :weight :semi-bold
             :style  (style/title-text theme)})
           :default-value default-value
