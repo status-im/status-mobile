@@ -16,7 +16,7 @@ We believe in a medium of pure free trade, economies with fair, permission-less 
 
 We want to take responsibility for our data, the way we conduct ourselves privately and promote this way of life to a mass audience.
 
-We want deep insights into our own economies so we can make informed, data-driven decisions on how to make our lives better. The Ethereum blockchain, Smart Contracts, Swarm and Whisper provides us a path forward.
+We want deep insights into our own economies so we can make informed, data-driven decisions on how to make our lives better. The Ethereum blockchain, Smart Contracts, Swarm and Whisper provide us a path forward.
 
 If this interests you, **help us make Status a reality** - anyone can contribute and we need everyone at any skill level to participate.
 
