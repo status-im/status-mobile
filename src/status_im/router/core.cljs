@@ -19,11 +19,9 @@
 
 (def ethereum-scheme "ethereum:")
 
-(def uri-schemes ["status-app://" "status-app:"])
+(def uri-schemes ["status-app://"])
 
-(def web-prefixes
-  ["https://" ;; "http://" "https://www." "http://www."
-  ])
+(def web-prefixes ["https://" "http://" "https://www." "http://www."])
 
 (def web2-domain "status.app")
 
@@ -88,16 +86,16 @@
 
         fragment (parse-fragment uri)
         ens? (ens/is-valid-eth-name? fragment)
-        {:keys [handler route-params] :as parsed} (bidi/match-route routes uri-without-equal-in-path)]
-    (cond-> (assoc parsed
-                   :uri          uri
-                   :query-params (parse-query-params uri))
+
+        {:keys [handler route-params] :as parsed}
+        (assoc (bidi/match-route routes uri-without-equal-in-path)
+               :uri          uri
+               :query-params (parse-query-params uri))]
+    (cond-> parsed
       ens?
       (assoc-in [:route-params :ens-name] fragment)
 
-      (and (or (= handler :community)
-               (= handler :community-chat))
-           fragment)
+      (and (or (= handler :community) (= handler :community-chat)) fragment)
       (assoc-in [:route-params :community-id] fragment)
 
       (and equal-end-of-base64url (= handler :community) (:community-data route-params))
