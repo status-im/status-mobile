@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.record-audio.record-audio
-  (:require [quo2.components.record-audio.record-audio.view :as record-audio]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]
@@ -12,7 +11,7 @@
 
 (defonce record-audio-permission-granted (reagent/atom false))
 
-(defn preview-record-audio
+(defn view
   []
   (let [message                            (reagent/atom
                                             "Press & hold the mic button to start recording...")
@@ -41,13 +40,11 @@
                                                       :t/audio-recorder-permissions-error)))
                                                   50)}]))]
     (fn []
-      [preview/preview-container
+      [preview/preview-container {:component-container-style {:justify-content :center}}
        [rn/view
-        {:padding-top      150
-         :align-items      :center
-         :background-color :transparent
-         :flex-direction   :row}
-        [record-audio/record-audio
+        {:align-items     :center
+         :justify-content :center}
+        [quo/record-audio
          {:record-audio-permission-granted    @record-audio-permission-granted
           :on-send                            on-send
           :on-start-recording                 on-start-recording
@@ -56,4 +53,4 @@
           :on-check-audio-permissions         on-check-audio-permissions
           :on-request-record-audio-permission on-request-record-audio-permission
           :max-duration-ms                    constants/audio-max-duration-ms}]]
-       [quo/text {:style {:margin-horizontal 20}} @message]])))
+       [quo/text @message]])))

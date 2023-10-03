@@ -7,13 +7,17 @@
     (colors/theme-colors colors/neutral-80-opa-40 colors/white-opa-40 theme)
     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))
 
-(def audio-tag-icon-container
+(defn audio-tag-icon-container
+  [customization-color theme]
   {:width            20
    :height           20
    :border-radius    10
    :align-items      :center
    :justify-content  :center
-   :background-color colors/primary-50})
+   :background-color (colors/theme-colors
+                      (colors/custom-color customization-color 50)
+                      (colors/custom-color customization-color 60)
+                      theme)})
 
 (def audio-tag-icon-color colors/white)
 

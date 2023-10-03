@@ -2307,6 +2307,7 @@
     "mint": "Mint",
     "via": "via",
     "x-counter": "x{{counter}}",
+    "code-snippet": "Code snippet",
     "name-ens-or-address": "Name, ENS, or address",
     "emoji-search-placeholder": "Search emojis",
     "emoji-recent": "Recent",

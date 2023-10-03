@@ -10,6 +10,7 @@
      :as animated-header-list]
     [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
     [status-im2.contexts.quo-preview.avatars.channel-avatar :as channel-avatar]
+    [status-im2.contexts.quo-preview.avatars.collection-avatar :as collection-avatar]
     [status-im2.contexts.quo-preview.avatars.group-avatar :as group-avatar]
     [status-im2.contexts.quo-preview.avatars.icon-avatar :as icon-avatar]
     [status-im2.contexts.quo-preview.avatars.user-avatar :as user-avatar]
@@ -131,6 +132,7 @@
     [status-im2.contexts.quo-preview.settings.section-label :as section-label]
     [status-im2.contexts.quo-preview.share.qr-code :as qr-code]
     [status-im2.contexts.quo-preview.share.share-qr-code :as share-qr-code]
+    [status-im2.contexts.quo-preview.switcher.group-messaging-card :as group-messaging-card]
     [status-im2.contexts.quo-preview.switcher.switcher-cards :as switcher-cards]
     [status-im2.contexts.quo-preview.tabs.account-selector :as account-selector]
     [status-im2.contexts.quo-preview.tabs.segmented-tab :as segmented]
@@ -182,6 +184,8 @@
                         :component wallet-user-avatar/view}
                        {:name      :channel-avatar
                         :component channel-avatar/view}
+                       {:name      :collection-avatar
+                        :component collection-avatar/view}
                        {:name      :account-avatar
                         :component account-avatar/view}]
    :banner            [{:name      :banner
@@ -351,27 +355,25 @@
    :password          [{:name      :tips
                         :component tips/view}]
    :profile           [{:name      :profile-card
-                        :component profile-card/preview-profile-card}
+                        :component profile-card/view}
                        {:name      :collectible
-                        :component collectible/preview-collectible}
+                        :component collectible/view}
                        {:name      :select-profile
-                        :component select-profile/preview-select-profile}
+                        :component select-profile/view}
                        {:name      :showcase-nav
                         :component showcase-nav/view}]
    :reactions         [{:name      :react
-                        :component react/preview-react}]
+                        :component react/view}]
    :record-audio      [{:name      :record-audio
-                        :component record-audio/preview-record-audio}]
-   :switcher          [{:name      :switcher-cards
-                        :component switcher-cards/preview-switcher-cards}]
+                        :component record-audio/view}]
    :selectors         [{:name      :disclaimer
-                        :component disclaimer/preview-disclaimer}
+                        :component disclaimer/view}
                        {:name      :filter
-                        :component filter/preview}
+                        :component filter/view}
                        {:name      :selectors
-                        :component selectors/preview-selectors}
+                        :component selectors/view}
                        {:name      :select-reactions
-                        :component selector-reactions/preview}]
+                        :component selector-reactions/view}]
    :settings          [{:name      :privacy-option
                         :component privacy-option/preview-options}
                        {:name      :accounts
@@ -390,6 +392,10 @@
                         :component qr-code/preview-qr-code}
                        {:name      :share-qr-code
                         :component share-qr-code/preview-share-qr-code}]
+   :switchers         [{:name      :group-messaging-card
+                        :component group-messaging-card/view}
+                       {:name      :switcher-cards
+                        :component switcher-cards/preview-switcher-cards}]
    :tabs              [{:name      :segmented
                         :component segmented/preview-segmented}
                        {:name      :tabs
@@ -431,14 +437,14 @@
 
 (defn- category-view
   []
-  (let [open?     (reagent/atom false)
-        on-change #(swap! open? not)]
+  (let [open?    (reagent/atom false)
+        on-press #(swap! open? not)]
     (fn [category]
       [rn/view {:style {:margin-vertical 8}}
        [quo/dropdown
-        {:selected  @open?
-         :on-change on-change
-         :type      :grey}
+        {:type     :grey
+         :state    (if @open? :active :default)
+         :on-press on-press}
         (name (key category))]
        (when @open?
          (for [{category-name :name} (val category)]

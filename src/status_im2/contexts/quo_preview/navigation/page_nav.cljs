@@ -173,7 +173,7 @@
                                      {:icon-name :i/mention :on-press #(js/alert "A MENTION!")}]
                 :title              "Page title"
                 :text-align         :center
-                :dropdown-on-change #(js/alert "Dropdown pressed!")
+                :dropdown-on-press  #(js/alert "Dropdown pressed!")
                 :dropdown-selected? false
                 :dropdown-text      "Recent"
                 :token-logo         (resources/get-mock-image :status-logo)
@@ -187,7 +187,10 @@
                 :community-name     "Rarible"
                 :community-logo     (resources/get-mock-image :coinbase)
                 :network-name       "Mainnet"
-                :network-logo       (resources/get-mock-image :diamond)})]
+                :network-logo       (resources/get-mock-image :diamond)
+                :account-switcher   {:customization-color :purple
+                                     :on-press            #(js/alert "Pressed Account Switcher")
+                                     :emoji               "🍑"}})]
     (fn []
       [preview/preview-container
        {:state                     state

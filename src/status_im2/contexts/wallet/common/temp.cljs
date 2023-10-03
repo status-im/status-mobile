@@ -1,10 +1,15 @@
 (ns status-im2.contexts.wallet.common.temp
-  (:require
-    [quo2.core :as quo]
-    [react-native.core :as rn]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im2.contexts.wallet.common.utils :as utils]))
+  (:require [quo2.core :as quo]
+            [quo2.foundations.resources :as quo.resources]
+            [react-native.core :as rn]
+            [status-im2.contexts.wallet.common.utils :as utils]
+            [utils.i18n :as i18n]
+            [utils.re-frame :as rf]))
+
+(def networks
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}])
 
 (defn wallet-temporary-navigation
   []
@@ -31,7 +36,8 @@
    :begin-date        "16 May"
    :end-date          "25 May"
    :currency-change   "€0.00"
-   :percentage-change "0.00%"})
+   :percentage-change "0.00%"
+   :networks          networks})
 
 (def tokens
   [{:token               :snt

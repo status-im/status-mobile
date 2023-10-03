@@ -9,7 +9,9 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [quo2.foundations.common :as common]
-    [quo2.components.wallet.token-input.style :as style]))
+    [quo2.components.wallet.token-input.style :as style]
+    [quo2.components.tags.network-tags.view :as network-tag]
+    [quo2.components.dividers.divider-line.view :as divider-line]))
 
 (defn calc-value
   [crypto? currency token value conversion]
@@ -23,7 +25,7 @@
         value     (reagent/atom 0)
         crypto?   (reagent/atom true)
         input-ref (atom nil)]
-    (fn [{:keys [theme token currency conversion]}]
+    (fn [{:keys [theme token currency conversion networks title customization-color]}]
       [rn/view {:style (style/main-container width)}
        [rn/view {:style style/amount-container}
         [rn/pressable
@@ -42,22 +44,26 @@
            :max-length             12
            :default-value          @value
            :on-change-text         #(reset! value %)
-           :style                  style/text-input}]
+           :style                  (style/text-input theme)
+           :selection-color        customization-color}]
          [text/text
           {:size   :paragraph-2
            :weight :semi-bold
-           :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+           :style  {:color          (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+                    :margin-right   8
+                    :padding-bottom 2}}
           (string/upper-case (clj->js (if @crypto? token currency)))]]
         [button/button
          {:icon                true
+          :icon-only?          true
           :size                32
           :on-press            #(swap! crypto? not)
           :type                :outline
           :accessibility-label :reorder}
          :i/reorder]]
-       [rn/view {:style (style/divider width theme)}]
+       [divider-line/view {:container-style {:margin-vertical 8}}]
        [rn/view {:style style/data-container}
-        [text/text "[WIP] NETWORK TAG"]
+        [network-tag/view {:networks networks :title title}]
         [text/text
          {:size   :paragraph-2
           :weight :medium
