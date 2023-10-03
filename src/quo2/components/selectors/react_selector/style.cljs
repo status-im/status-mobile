@@ -5,7 +5,7 @@
   [pinned? theme]
   (let [border-color (if pinned?
                        (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
-                       (colors/theme-colors colors/neutral-20 colors/neutral-70))]
+                       (colors/theme-colors colors/neutral-20 colors/neutral-70 theme))]
     (cond-> {:justify-content    :center
              :align-items        :center
              :padding-horizontal 7
