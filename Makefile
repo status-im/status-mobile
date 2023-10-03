@@ -308,11 +308,21 @@ define find_all_clojure_files
 $$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort <(git ls-files --deleted)) | grep -e \.clj$$ -e \.cljs$$ -e \.cljc$$ -e \.edn)
 endef
 
+# Lint Clojure files with clj-kondo.
+#
+# Args:
+#   $1: When equal to true, print warnings.
+define lint_clojure_files
+	$(if $(filter true,$1), \
+			clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src, \
+			clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src | grep -v ': warning: ')
+endef
+
 lint: export TARGET := clojure
 lint: ##@test Run code style checks
 	@sh scripts/lint-re-frame-in-quo-components.sh && \
 	sh scripts/lint-old-quo-usage.sh && \
-	clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src && \
+	$(call lint_clojure_files, $(CLJ_LINTER_PRINT_WARNINGS)) && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
 	sh scripts/lint-trailing-newline.sh && \
