@@ -3,6 +3,7 @@
   (:require
     quo2.components.avatars.account-avatar.view
     quo2.components.avatars.channel-avatar.view
+    quo2.components.avatars.collection-avatar.view
     quo2.components.avatars.group-avatar.view
     quo2.components.avatars.icon-avatar
     quo2.components.avatars.user-avatar.view
@@ -93,6 +94,7 @@
     quo2.components.numbered-keyboard.numbered-keyboard.view
     quo2.components.onboarding.small-option-card.view
     quo2.components.password.tips.view
+    quo2.components.profile.collectible.view
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
     quo2.components.profile.showcase-nav.view
@@ -145,6 +147,7 @@
 ;;;; Avatar
 (def account-avatar quo2.components.avatars.account-avatar.view/view)
 (def channel-avatar quo2.components.avatars.channel-avatar.view/view)
+(def collection-avatar quo2.components.avatars.collection-avatar.view/view)
 (def group-avatar quo2.components.avatars.group-avatar.view/view)
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
 (def user-avatar quo2.components.avatars.user-avatar.view/user-avatar)
@@ -297,6 +300,7 @@
 (def tips quo2.components.password.tips.view/view)
 
 ;;;; Profile
+(def collectible quo2.components.profile.collectible.view/collectible)
 (def profile-card quo2.components.profile.profile-card.view/profile-card)
 (def select-profile quo2.components.profile.select-profile.view/view)
 (def showcase-nav quo2.components.profile.showcase-nav.view/view)
@@ -315,6 +319,9 @@
 (def filter quo2.components.selectors.filter.view/view)
 (def reactions quo2.components.selectors.reactions.view/view)
 (def checkbox quo2.components.selectors.selectors.view/checkbox)
+(def toggle quo2.components.selectors.selectors.view/toggle)
+(def radio quo2.components.selectors.selectors.view/radio)
+(def checkbox-prefill quo2.components.selectors.selectors.view/checkbox-prefill)
 
 ;;;; Settings
 (def account quo2.components.settings.accounts.view/account)

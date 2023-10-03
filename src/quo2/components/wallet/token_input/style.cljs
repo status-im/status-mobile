@@ -20,11 +20,13 @@
   {:width  32
    :height 32})
 
-(def text-input
+(defn text-input
+  [theme]
   (merge typography/heading-1
          {:font-weight  "600"
-          :margin-left  4
+          :margin-left  8
           :margin-right (if platform/ios? 6 4)
+          :color        (colors/theme-colors colors/neutral-100 colors/white theme)
           :padding      0
           :text-align   :center
           :height       "100%"}))
@@ -39,6 +41,6 @@
 (def data-container
   {:padding-top        4
    :padding-horizontal 20
-   :height             28
    :flex-direction     :row
-   :justify-content    :space-between})
+   :justify-content    :space-between
+   :align-items        :center})

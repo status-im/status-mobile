@@ -10,6 +10,7 @@
      :as animated-header-list]
     [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
     [status-im2.contexts.quo-preview.avatars.channel-avatar :as channel-avatar]
+    [status-im2.contexts.quo-preview.avatars.collection-avatar :as collection-avatar]
     [status-im2.contexts.quo-preview.avatars.group-avatar :as group-avatar]
     [status-im2.contexts.quo-preview.avatars.icon-avatar :as icon-avatar]
     [status-im2.contexts.quo-preview.avatars.user-avatar :as user-avatar]
@@ -183,6 +184,8 @@
                         :component wallet-user-avatar/view}
                        {:name      :channel-avatar
                         :component channel-avatar/view}
+                       {:name      :collection-avatar
+                        :component collection-avatar/view}
                        {:name      :account-avatar
                         :component account-avatar/view}]
    :banner            [{:name      :banner
@@ -352,25 +355,25 @@
    :password          [{:name      :tips
                         :component tips/view}]
    :profile           [{:name      :profile-card
-                        :component profile-card/preview-profile-card}
+                        :component profile-card/view}
                        {:name      :collectible
-                        :component collectible/preview-collectible}
+                        :component collectible/view}
                        {:name      :select-profile
-                        :component select-profile/preview-select-profile}
+                        :component select-profile/view}
                        {:name      :showcase-nav
                         :component showcase-nav/view}]
    :reactions         [{:name      :react
-                        :component react/preview-react}]
+                        :component react/view}]
    :record-audio      [{:name      :record-audio
-                        :component record-audio/preview-record-audio}]
+                        :component record-audio/view}]
    :selectors         [{:name      :disclaimer
-                        :component disclaimer/preview-disclaimer}
+                        :component disclaimer/view}
                        {:name      :filter
-                        :component filter/preview}
+                        :component filter/view}
                        {:name      :selectors
-                        :component selectors/preview-selectors}
+                        :component selectors/view}
                        {:name      :select-reactions
-                        :component selector-reactions/preview}]
+                        :component selector-reactions/view}]
    :settings          [{:name      :privacy-option
                         :component privacy-option/preview-options}
                        {:name      :accounts
