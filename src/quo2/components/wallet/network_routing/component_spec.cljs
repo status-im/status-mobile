@@ -5,12 +5,11 @@
             [test-helpers.component :as h]))
 
 (h/describe "Network-routing tests"
-  (let [network       {:amount 250 :max-amount 300 :color "#758EEB"}
+  (let [network       {:amount 250 :max-amount 300 :network-name :unknown}
         default-props {:networks           [network network network]
                        :total-amount       500
                        :requesting-data?   false
-                       :on-amount-selected (fn [_new-amount _network-idx]
-                                             nil)}]
+                       :on-amount-selected (fn [_new-amount _network-idx] nil)}]
     (h/test "Renders Default"
       (h/render [network-routing/view default-props])
       (h/is-truthy (h/get-by-label-text :network-routing)))

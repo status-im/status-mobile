@@ -24,21 +24,21 @@
   [{:keys [total-amount number-networks] :as descriptor-state}]
   (let [initial-amount   (/ total-amount number-networks)
         networks         (reagent/atom
-                          [{:amount     initial-amount
-                            :max-amount (descriptor-state :max-amount-0)
-                            :color      "#758EEB"}
-                           {:amount     initial-amount
-                            :max-amount (descriptor-state :max-amount-1)
-                            :color      "#E76E6E"}
-                           {:amount     initial-amount
-                            :max-amount (descriptor-state :max-amount-2)
-                            :color      "#6BD5F0"}
-                           {:amount     initial-amount
-                            :max-amount (descriptor-state :max-amount-3)
-                            :color      "#50AF4D"}
-                           {:amount     initial-amount
-                            :max-amount (descriptor-state :max-amount-4)
-                            :color      "#DCBA27"}])
+                          [{:amount       initial-amount
+                            :max-amount   (descriptor-state :max-amount-0)
+                            :network-name :ethereum}
+                           {:amount       initial-amount
+                            :max-amount   (descriptor-state :max-amount-1)
+                            :network-name :arbitrum}
+                           {:amount       initial-amount
+                            :max-amount   (descriptor-state :max-amount-2)
+                            :network-name :xDai}
+                           {:amount       initial-amount
+                            :max-amount   (descriptor-state :max-amount-3)
+                            :network-name :optimism}
+                           {:amount       initial-amount
+                            :max-amount   (descriptor-state :max-amount-4)
+                            :network-name :polygon}])
         requesting-data? (reagent/atom false)]
     (fn []
       (let [asked-networks (vec (take number-networks @networks))

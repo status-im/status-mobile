@@ -12,23 +12,23 @@
          :overflow         :hidden))
 
 (defn max-limit-bar
-  [{:keys [opacity-shared-value color width]}]
+  [{:keys [opacity-shared-value network-name width]}]
   (reanimated/apply-animations-to-style
    {:opacity opacity-shared-value}
    {:position           :absolute
     :top                0
     :bottom             0
     :left               0
-    :background-color   (colors/alpha color 0.1)
+    :background-color   (colors/custom-color network-name nil 10)
     :width              width
     :border-right-width 1
     :border-style       :dashed
-    :border-right-color color
+    :border-right-color (colors/custom-color network-name nil)
     :z-index            -1}))
 
 (defn network-bar
-  [{:keys                                    [max-width on-top? bar-division? theme]
-    {:keys [color translate-x-shared-value]} :bar}
+  [{:keys                                           [max-width on-top? bar-division? theme]
+    {:keys [network-name translate-x-shared-value]} :bar}
    width-shared-value]
   (reanimated/apply-animations-to-style
    {:width     width-shared-value
@@ -36,7 +36,7 @@
    {:max-width          max-width
     :flex-direction     :row
     :justify-content    :flex-end
-    :background-color   color
+    :background-color   (colors/custom-color network-name nil)
     :z-index            (if on-top? 1 0)
     :border-right-width (if bar-division? 0 1)
     :border-color       (colors/theme-colors colors/white colors/neutral-95 theme)}))

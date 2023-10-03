@@ -156,13 +156,13 @@
                                (when on-amount-selected
                                  (on-amount-selected new-amount @selected-network-idx)))}]))
 
-         (let [{:keys [max-amount color]} (some->> @selected-network-idx
-                                                   (nth network-bars))
-               limit-bar-width            (amount->width max-amount)]
+         (let [{:keys [max-amount network-name]} (some->> @selected-network-idx
+                                                          (nth network-bars))
+               limit-bar-width                   (amount->width max-amount)]
            [reanimated/view
             {:style (style/max-limit-bar
                      {:opacity-shared-value bar-opacity-shared-value
-                      :color                color
+                      :network-name         network-name
                       :width                limit-bar-width})}])]))))
 
 
