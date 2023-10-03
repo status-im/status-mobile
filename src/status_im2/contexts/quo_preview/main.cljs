@@ -10,6 +10,7 @@
      :as animated-header-list]
     [status-im2.contexts.quo-preview.avatars.account-avatar :as account-avatar]
     [status-im2.contexts.quo-preview.avatars.channel-avatar :as channel-avatar]
+    [status-im2.contexts.quo-preview.avatars.collection-avatar :as collection-avatar]
     [status-im2.contexts.quo-preview.avatars.group-avatar :as group-avatar]
     [status-im2.contexts.quo-preview.avatars.icon-avatar :as icon-avatar]
     [status-im2.contexts.quo-preview.avatars.user-avatar :as user-avatar]
@@ -183,6 +184,8 @@
                         :component wallet-user-avatar/view}
                        {:name      :channel-avatar
                         :component channel-avatar/view}
+                       {:name      :collection-avatar
+                        :component collection-avatar/view}
                        {:name      :account-avatar
                         :component account-avatar/view}]
    :banner            [{:name      :banner
