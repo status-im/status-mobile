@@ -4,7 +4,7 @@ This document provides information on how to start developing Status App.
 
 # Getting Started
 
-To start developing start a shell for platform you are interested in.
+To start developing start a shell for the platform you are interested in.
 ```
 make shell TARGET=android
 ```
@@ -55,7 +55,7 @@ Some manual steps are necessary for [developing on a physical iOS Device](#physi
 
 # Build release
 
-To build the app, your can simply run on of the following:
+To build the app, you can simply run on of the following:
 ```
 make release-android
 make release-ios
@@ -88,9 +88,9 @@ https://facebook.github.io/react-native/docs/getting-started.html
 
 ## Configure GitHub Account
 
-The optimal way of pushing to GitHubis using SSH instead of user/pass auth.
+The optimal way of pushing to GitHub is using SSH instead of user/pass auth.
 
-It's recommented that you [add your public SSH key to your GitHub account](https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account).
+It's recommended that you [add your public SSH key to your GitHub account](https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account).
 
 ## Configure GPG Keys for signing commits
 
