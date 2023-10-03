@@ -80,11 +80,12 @@
   (log/info "universal-links: handling community" community-id)
   (navigation/navigate-to cofx :community {:community-id community-id}))
 
-
 (rf/defn handle-navigation-to-desktop-community-from-mobile
   {:events [:handle-navigation-to-desktop-community-from-mobile]}
   [cofx deserialized-key]
-  (navigation/navigate-to cofx :community-overview deserialized-key))
+  (rf/merge
+   cofx
+   {:dispatch [:communities/navigate-to-community deserialized-key]}))
 
 (rf/defn handle-desktop-community
   [cofx {:keys [community-id]}]
