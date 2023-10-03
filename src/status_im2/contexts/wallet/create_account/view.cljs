@@ -76,7 +76,7 @@
          :label     (i18n/label :t/origin)
          :data      (temp/create-account-state display-name)}]
        [quo/slide-button
-        {:track-text          (i18n/label :t/slide-create)
+        {:track-text          (i18n/label :t/slide-to-sign)
          :track-icon          :face-id
          :customization-color @account-color
          :on-complete         (fn []

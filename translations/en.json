@@ -2300,7 +2300,7 @@
     "add-address-description": "Watch a public address or ENS name",
     "colour": "Colour",
     "origin": "Origin",
-    "slide-create": "Slide to create account",
+    "slide-to-sign": "Slide to sign",
     "user-keypair": "{{name}}'s Keypair",
     "trip-accounts": "Trip accounts",
     "destroy": "Destroy",
