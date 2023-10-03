@@ -4,6 +4,7 @@
             [quo2.components.buttons.button.properties :as button-properties]
             [quo2.components.dropdowns.dropdown.view :as dropdown]
             [quo2.components.dropdowns.dropdown.properties :as dropdown-properties]
+            [quo2.components.dropdowns.network-dropdown.view :as network-dropdown]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.navigation.page-nav.style :as style]
@@ -174,6 +175,14 @@
        :number-of-lines 1}
       shown-name]]))
 
+(defn- wallet-networks-center
+  [{:keys [networks networks-on-press background]}]
+  [rn/view {:style (style/center-content-container true)}
+   [network-dropdown/view
+    {:state    :default
+     :on-press networks-on-press
+     :blur?    (= background :blur)} networks]])
+
 (defn- view-internal
   "behind-overlay is necessary for us to know if the page-nav buttons are under the bottom sheet overlay or not."
   [{:keys [type right-side background text-align account-switcher behind-overlay?]
@@ -237,13 +246,7 @@
 
     :wallet-networks
     [page-nav-base props
-     ;; TODO: use wallet-networks when available (issue #16946)
-     [rn/view {:style (style/center-content-container true)}
-      [text/text
-       {:weight          :regular
-        :size            :paragraph-1
-        :number-of-lines 1}
-       "NETWORK DROPDOWN"]]
+     [wallet-networks-center props]
      [right-content
       {:background       background
        :content          right-side
@@ -305,7 +308,8 @@
     - description
     - picture: a valid rn/image `:source` value
   `:wallet-network`
-    (Not implemented yet)
+    - networks: a vector of network image source
+    - networks-on-press: a callback
   `:community`
     - community-name
     - community-logo: a valid rn/image `:source` value
