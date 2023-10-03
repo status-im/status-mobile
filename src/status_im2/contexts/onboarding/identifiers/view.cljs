@@ -60,6 +60,6 @@
          :on-press            #(rf/dispatch [:navigate-to-within-stack
                                              [:enable-notifications :new-to-status]])
          :container-style     style/button}
-        (i18n/label :t/skip)]]]]))
+        (i18n/label :t/continue)]]]]))
 
 (defn view [props] [:f> f-view props])
