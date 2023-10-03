@@ -19,13 +19,13 @@
       :profile
       [user-avatar/user-avatar
        (assoc props
-              :size              :medium
+              :size              :size-64
               :status-indicator? false
               :online?           false
               :ring?             false)]
 
       :wallet-account
-      [account-avatar/view (assoc props :size 48 :type :default)]
+      [account-avatar/view (assoc props :size :size-64 :type :default)]
 
       :community
       [rn/image
@@ -33,10 +33,10 @@
         :source (:picture props)}]
 
       :channel
-      [channel-avatar/view (assoc props :locked? nil :size :size/l)]
+      [channel-avatar/view (assoc props :locked? nil :size :size-64)]
 
       :saved-address
-      [wallet-avatar/wallet-user-avatar (assoc props :size :large)]
+      [wallet-avatar/wallet-user-avatar (assoc props :size :size-64)]
 
       nil)]])
 
