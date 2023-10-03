@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.share.qr-code
-  (:require [quo.components.text :as text]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -101,5 +100,5 @@
             (update :customization-color colors/custom-color 60))]
 
          [rn/view {:style {:margin 12}}
-          [text/text "URL:"]
-          [text/text (:url @state)]]]))))
+          [quo/text "URL:"]
+          [quo/text (:url @state)]]]))))
