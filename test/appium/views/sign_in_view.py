@@ -223,6 +223,8 @@ class SignInView(BaseView):
                     username="test user"):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s', enable_notification: '%s')" %
                          (password, str(keycard), str(enable_notifications)), device=False)
+        if self.element_by_text('CONTINUE').is_element_displayed(5):
+            self.element_by_text('CONTINUE').click()
         if second_user:
             self.show_profiles_button.wait_and_click(20)
             self.plus_profiles_button.click()
@@ -293,6 +295,7 @@ class SignInView(BaseView):
             if keycard_view.connect_selected_card_button.is_element_displayed():
                 keycard_view.connect_selected_card_button.click()
         else:
+            self.password_input.wait_for_visibility_of_element(10)
             self.password_input.send_keys(password)
             self.login_button.click()
         self.driver.info("## Signed in successfully!", device=False)
