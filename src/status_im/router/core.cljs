@@ -48,16 +48,16 @@
 
 (def routes
   [""
-   {handled-schemes {"b/"                  browser-extractor
-                     "browser/"            browser-extractor
-                     ["p/" :chat-id]       :private-chat
-                     ["cr/" :community-id] :community-requests
-                     ["c/" :community-id]  :community
-                     ["cc/" :chat-id]      :community-chat
-                     "g/"                  group-chat-extractor
-                     ["wallet/" :account]  :wallet-account
-                     ["u/" :user-id]       :user
-                     ["user/" :user-id]    :user}
+   {handled-schemes {"b/"                   browser-extractor
+                     "browser/"             browser-extractor
+                     ["p/" :chat-id]        :private-chat
+                     ["cr/" :community-id]  :community-requests
+                     ["c/" :community-data] :community
+                     ["cc/" :chat-data]     :community-chat
+                     "g/"                   group-chat-extractor
+                     ["wallet/" :account]   :wallet-account
+                     ["u/" :user-data]      :user
+                     ["user/" :user-id]     :user}
     ethereum-scheme eip-extractor}])
 
 (defn parse-query-params
@@ -74,15 +74,43 @@
 
 (defn match-uri
   [uri]
-  (let [fragment (parse-fragment uri)
-        ens?     (ens/is-valid-eth-name? fragment)]
-    (cond-> (assoc (bidi/match-route routes uri)
+  ;;
+  (let [;; bidi has trouble parse path with `=` in it extract `=` here and add back to parsed
+        ;; base64url regex based on https://datatracker.ietf.org/doc/html/rfc4648#section-5 may
+        ;; include invalid base64 (invalid length, length of any base64 encoded string must be a
+        ;; multiple of 4)
+        ;; equal-end-of-base64url can be `=`, `==`, `nil`
+        equal-end-of-base64url
+        (last (re-find #"^(https|status-app)://(status\.app/)?(c|cc|u)/([a-zA-Z0-9_-]+)(={0,2})#" uri))
+
+        uri-without-equal-in-path
+        (if equal-end-of-base64url (string/replace-first uri equal-end-of-base64url "") uri)
+
+        fragment (parse-fragment uri)
+        ens? (ens/is-valid-eth-name? fragment)
+        {:keys [handler route-params] :as parsed} (bidi/match-route routes uri-without-equal-in-path)]
+    (cond-> (assoc parsed
                    :uri          uri
                    :query-params (parse-query-params uri))
       ens?
-      (assoc :ens-name fragment)
-      fragment
-      (assoc :chat-key fragment))))
+      (assoc-in [:route-params :ens-name] fragment)
+
+      (and (or (= handler :community)
+               (= handler :community-chat))
+           fragment)
+      (assoc-in [:route-params :community-id] fragment)
+
+      (and equal-end-of-base64url (= handler :community) (:community-data route-params))
+      (update-in [:route-params :community-data] #(str % equal-end-of-base64url))
+
+      (and equal-end-of-base64url (= handler :community-chat) (:chat-data route-params))
+      (update-in [:route-params :chat-data] #(str % equal-end-of-base64url))
+
+      (and equal-end-of-base64url (= handler :user) (:user-data route-params))
+      (update-in [:route-params :user-data] #(str % equal-end-of-base64url))
+
+      (and (= handler :user) fragment)
+      (assoc-in [:route-params :user-id] fragment))))
 
 (defn match-contact-async
   [chain {:keys [user-id ens-name]} callback]
@@ -227,7 +255,7 @@
 
 (defn handle-uri
   [chain chats uri cb]
-  (let [{:keys [handler route-params query-params chat-key ens-name]} (match-uri uri)]
+  (let [{:keys [handler route-params query-params]} (match-uri uri)]
     (log/info "[router] uri " uri " matched " handler " with " route-params)
     (cond
 
@@ -237,8 +265,8 @@
       (= handler :ethereum)
       (cb (match-eip681 uri))
 
-      (= handler :user)
-      (match-contact-async chain (assoc route-params :user-id chat-key :ens-name ens-name) cb)
+      (and (= handler :user) (:user-id route-params))
+      (match-contact-async chain route-params cb)
 
       (= handler :private-chat)
       (match-private-chat-async chain route-params cb)
@@ -252,12 +280,17 @@
       (= handler :community-requests)
       (cb {:type handler :community-id (:community-id route-params)})
 
-      (= handler :community)
+      (and (= handler :community) (:community-id route-params))
       (cb {:type         (community-route-type route-params)
            :community-id (:community-id route-params)})
 
-      (= handler :community-chat)
-      (cb {:type handler :chat-id (:chat-id route-params)})
+      ;; ;; TODO: jump to community overview for now, should jump to community channel
+      ;; (and (= handler :community-chat) (:chat-id route-params))
+      ;; (cb {:type handler :chat-id (:chat-id route-params)})
+
+      (and (= handler :community-chat) (:community-id route-params))
+      (cb {:type         (community-route-type route-params)
+           :community-id (:community-id route-params)})
 
       (= handler :wallet-account)
       (cb (match-wallet-account route-params))
