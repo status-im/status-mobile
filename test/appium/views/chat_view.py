@@ -517,7 +517,7 @@ class PreviewMessage(ChatElementByText):
     def preview_image(self):
         class PreviewImage(SilentButton):
             def __init__(self, driver, parent_locator: str):
-                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='member-photo']")
+                super().__init__(driver, prefix=parent_locator, xpath="//*[@content-desc='thumbnail']")
 
         return PreviewMessage.return_element_or_empty(PreviewImage(self.driver, self.locator))
 

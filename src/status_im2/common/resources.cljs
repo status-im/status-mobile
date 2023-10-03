@@ -82,6 +82,7 @@
 
 (def mock-images
   {:diamond               (js/require "../resources/images/mock2/diamond.png")
+   :bored-ape             (js/require "../resources/images/mock2/bored-ape.png")
    :coinbase              (js/require "../resources/images/mock2/coinbase.png")
    :collectible           (js/require "../resources/images/mock2/collectible.png")
    :contact               (js/require "../resources/images/mock2/contact.png")

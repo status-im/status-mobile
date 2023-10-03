@@ -309,7 +309,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.drivers, self.loop = create_shared_drivers(1)
         self.sign_in = SignInView(self.drivers[0])
         self.username = 'first user'
-        self.discovery_community_attributes = "Contributors' test community", 'test anything here', 'Web3', 'Software dev'
 
         self.home = self.sign_in.create_user(username=self.username)
         self.home.communities_tab.click_until_presence_of_element(self.home.plus_community_button)
@@ -322,23 +321,41 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel = self.community_view.get_channel(self.channel_name).click()
 
     @marks.testrail_id(703503)
-    @marks.xfail(reason="https://github.com/status-im/status-mobile/issues/17175", run=False)
+    @marks.xfail(
+        reason="Request to Join Community button color issue: https://github.com/status-im/status-mobile/issues/17295")
     def test_community_discovery(self):
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
         self.home.discover_communities_button.click()
-        for text in self.discovery_community_attributes:
-            if not self.home.element_by_text(text).is_element_displayed(10):
-                self.errors.append("%s in not in Discovery!" % text)
-        self.home.element_by_text(self.discovery_community_attributes[0]).click()
-        element_templates = {
-            self.community_view.join_button: 'discovery_join_button.png',
-            self.community_view.get_channel_avatar(): 'discovery_general_channel.png',
-        }
-        for element, template in element_templates.items():
-            if element.is_element_differs_from_template(template):
-                element.save_new_screenshot_of_element('%s_different.png' % element.name)
-                self.errors.append("Element %s is different from expected template %s!" % (element.locator, template))
+        self.home.community_card_item.wait_for_visibility_of_element(30)
+
+        if len(self.home.community_card_item.find_elements()) > 1:
+            contributors_test_community_attributes = "Contributors' test community", 'test anything here', \
+                'Web3', 'Software dev'
+            for text in contributors_test_community_attributes:
+                if not self.home.element_by_text(text).is_element_displayed(10):
+                    self.errors.append("'%s' text is not in Discovery!" % text)
+            self.home.element_by_text(contributors_test_community_attributes[0]).click()
+            element_templates = {
+                self.community_view.join_button: 'discovery_join_button.png',
+                self.community_view.get_channel_avatar(): 'discovery_general_channel.png',
+            }
+            for element, template in element_templates.items():
+                if element.is_element_differs_from_template(template):
+                    element.save_new_screenshot_of_element('%s_different.png' % template.split('.')[0])
+                    self.errors.append(
+                        "Element %s is different from expected template %s!" % (element.locator, template))
+            self.community_view.navigate_back_to_home_view()
+            self.home.communities_tab.click()
+            self.home.discover_communities_button.click()
+            self.home.community_card_item.wait_for_visibility_of_element(30)
+            self.home.swipe_up()
+
+        status_ccs_community_attributes = '(old) Status CCs', 'Community for Status CCs', 'Ethereum', \
+            'Software dev', 'Web3'
+        for text in status_ccs_community_attributes:
+            if not self.community_view.element_by_text(text).is_element_displayed(10):
+                self.errors.append("'%s' text is not shown for (old) Status CCs!" % text)
         self.errors.verify_no_errors()
 
     @marks.testrail_id(702846)
@@ -839,8 +856,8 @@ class TestCommunityMultipleDeviceMerged(MultipleSharedDeviceTestCase):
             self.channel_2.send_message_button.click()
             message = self.channel_1.get_preview_message_by_text(url)
             message.wait_for_element(60)
-            # if not message.preview_image:
-            #     self.errors.append("No preview is shown for %s" % link_data['url'])
+            if not message.preview_image:
+                self.errors.append("No preview image is shown for %s" % url)
             shown_title = message.preview_title.text
             if shown_title != data['title']:
                 self.errors.append("Title is not equal expected for '%s', actual is '%s'" % (url, shown_title))
@@ -1072,7 +1089,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.channel_2 = self.community_2.get_channel(self.channel_name).click()
 
     @marks.testrail_id(702786)
-    @marks.xfail(reason="Issue with username in PN, issue #6 in 15500")
+    @marks.xfail(reason="Issue with username in PN, https://github.com/status-im/status-mobile/issues/17396")
     def test_community_mentions_push_notification(self):
         self.home_1.navigate_back_to_home_view()
         self.device_1.open_notification_bar()

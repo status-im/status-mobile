@@ -1,7 +1,8 @@
 (ns status-im2.contexts.quo-preview.list-items.user-list
-  (:require [reagent.core :as reagent]
+  (:require [quo2.core :as quo]
+            [reagent.core :as reagent]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]
-            [quo2.core :as quo]
             [utils.address :as address]))
 
 (def descriptor
@@ -27,6 +28,7 @@
   (let [state (reagent/atom {:primary-name   "Alisher Yakupov"
                              :short-chat-key (address/get-shortened-compressed-key
                                               "zQ3ssgRy5TtB47MMiMKMKaGyaawkCgMqqbrnAUYrZJ1sgt5N")
+                             :photo-path     (resources/mock-images :user-picture-female2)
                              :ens-verified   true
                              :contact?       false
                              :verified?      false

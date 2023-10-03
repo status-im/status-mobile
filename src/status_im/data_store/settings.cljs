@@ -1,6 +1,6 @@
 (ns status-im.data-store.settings
   (:require [status-im.data-store.visibility-status-updates :as visibility-status-updates]
-            [status-im.ethereum.eip55 :as eip55]
+            [utils.ethereum.eip.eip55 :as eip55]
             [status-im2.config :as config]
             [clojure.set :as set]))
 

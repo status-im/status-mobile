@@ -1,7 +1,7 @@
 (ns status-im.commands.core
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im.wallet.utils :as wallet.utils]))
 
 (rf/defn handle-prepare-accept-request-address-for-transaction
   {:events [::prepare-accept-request-address-for-transaction]}
@@ -9,7 +9,8 @@
   {:db                    (assoc db
                                  :commands/select-account
                                  {:message message
-                                  :from    (ethereum/get-default-account (:profile/wallet-accounts db))})
+                                  :from    (wallet.utils/get-default-account (:profile/wallet-accounts
+                                                                              db))})
    :show-select-acc-sheet nil})
 
 (rf/defn set-selected-account

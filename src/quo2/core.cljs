@@ -3,6 +3,7 @@
   (:require
     quo2.components.avatars.account-avatar.view
     quo2.components.avatars.channel-avatar.view
+    quo2.components.avatars.collection-avatar.view
     quo2.components.avatars.group-avatar.view
     quo2.components.avatars.icon-avatar
     quo2.components.avatars.user-avatar.view
@@ -19,7 +20,9 @@
     quo2.components.calendar.calendar.view
     quo2.components.calendar.calendar-day.view
     quo2.components.calendar.calendar-year.view
-    quo2.components.code.snippet
+    quo2.components.code.snippet.view
+    quo2.components.code.snippet-preview.view
+    quo2.components.colors.color.view
     quo2.components.colors.color-picker.view
     quo2.components.common.notification-dot.view
     quo2.components.common.separator.view
@@ -42,7 +45,7 @@
     quo2.components.drawers.drawer-buttons.view
     quo2.components.drawers.drawer-top.view
     quo2.components.drawers.permission-context.view
-    quo2.components.dropdowns.dropdown
+    quo2.components.dropdowns.dropdown.view
     quo2.components.dropdowns.network-dropdown.view
     quo2.components.empty-state.empty-state.view
     quo2.components.gradient.gradient-cover.view
@@ -62,12 +65,14 @@
     quo2.components.links.link-preview.view
     quo2.components.links.url-preview-list.view
     quo2.components.links.url-preview.view
+    quo2.components.list-items.account.view
     quo2.components.list-items.account-list-card.view
     quo2.components.list-items.channel.view
     quo2.components.list-items.community.view
     quo2.components.list-items.dapp.view
     quo2.components.list-items.menu-item
     quo2.components.list-items.preview-list.view
+    quo2.components.list-items.saved-address.view
     quo2.components.list-items.token-value.view
     quo2.components.list-items.user-list
     quo2.components.loaders.skeleton-list.view
@@ -89,6 +94,7 @@
     quo2.components.numbered-keyboard.numbered-keyboard.view
     quo2.components.onboarding.small-option-card.view
     quo2.components.password.tips.view
+    quo2.components.profile.collectible.view
     quo2.components.profile.profile-card.view
     quo2.components.profile.select-profile.view
     quo2.components.profile.showcase-nav.view
@@ -106,8 +112,10 @@
     quo2.components.settings.reorder-item.view
     quo2.components.settings.settings-item.view
     quo2.components.settings.category.view
+    quo2.components.settings.section-label.view
     quo2.components.share.qr-code.view
     quo2.components.share.share-qr-code.view
+    quo2.components.switchers.group-messaging-card.view
     quo2.components.tabs.account-selector
     quo2.components.tabs.segmented-tab
     quo2.components.tabs.tabs.view
@@ -140,6 +148,7 @@
 ;;;; Avatar
 (def account-avatar quo2.components.avatars.account-avatar.view/view)
 (def channel-avatar quo2.components.avatars.channel-avatar.view/view)
+(def collection-avatar quo2.components.avatars.collection-avatar.view/view)
 (def group-avatar quo2.components.avatars.group-avatar.view/view)
 (def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
 (def user-avatar quo2.components.avatars.user-avatar.view/user-avatar)
@@ -166,7 +175,8 @@
 (def calendar-year quo2.components.calendar.calendar-year.view/view)
 
 ;;;; Code
-(def snippet quo2.components.code.snippet/snippet)
+(def snippet quo2.components.code.snippet.view/view)
+(def snippet-preview quo2.components.code.snippet-preview.view/view)
 
 ;;;; Cards
 (def small-option-card quo2.components.onboarding.small-option-card.view/small-option-card)
@@ -174,7 +184,7 @@
 
 ;;;; Colors
 (def color-picker quo2.components.colors.color-picker.view/view)
-(def picker-colors quo2.components.colors.color-picker.view/picker-colors)
+(def color quo2.components.colors.color.view/view)
 
 ;;;; Community
 (def community-card-view-item quo2.components.community.community-card-view/view)
@@ -209,7 +219,7 @@
 (def permission-context quo2.components.drawers.permission-context.view/view)
 
 ;;;; Dropdowns
-(def dropdown quo2.components.dropdowns.dropdown/dropdown)
+(def dropdown quo2.components.dropdowns.dropdown.view/view)
 (def network-dropdown quo2.components.dropdowns.network-dropdown.view/view)
 
 ;;;; Empty State
@@ -251,6 +261,7 @@
 (def url-preview-list quo2.components.links.url-preview-list.view/view)
 
 ;;;; List items
+(def account-item quo2.components.list-items.account.view/view)
 (def account-list-card quo2.components.list-items.account-list-card.view/view)
 (def channel quo2.components.list-items.channel.view/view)
 (def dapp quo2.components.list-items.dapp.view/view)
@@ -258,6 +269,7 @@
 (def preview-list quo2.components.list-items.preview-list.view/view)
 (def user-list quo2.components.list-items.user-list/user-list)
 (def community-list-item quo2.components.list-items.community.view/view)
+(def saved-address quo2.components.list-items.saved-address.view/view)
 (def token-value quo2.components.list-items.token-value.view/view)
 
 ;;;; Loaders
@@ -289,6 +301,7 @@
 (def tips quo2.components.password.tips.view/view)
 
 ;;;; Profile
+(def collectible quo2.components.profile.collectible.view/collectible)
 (def profile-card quo2.components.profile.profile-card.view/profile-card)
 (def select-profile quo2.components.profile.select-profile.view/view)
 (def showcase-nav quo2.components.profile.showcase-nav.view/view)
@@ -305,18 +318,25 @@
 (def react quo2.components.selectors.react.view/view)
 (def react-selector quo2.components.selectors.react-selector.view/view)
 (def checkbox quo2.components.selectors.selectors.view/checkbox)
+(def toggle quo2.components.selectors.selectors.view/toggle)
+(def radio quo2.components.selectors.selectors.view/radio)
+(def checkbox-prefill quo2.components.selectors.selectors.view/checkbox-prefill)
 
 ;;;; Settings
-(def privacy-option quo2.components.settings.privacy-option.view/view)
 (def account quo2.components.settings.accounts.view/account)
-(def settings-item quo2.components.settings.settings-item.view/view)
-(def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
 (def category quo2.components.settings.category.view/category)
 (def data-item quo2.components.settings.data-item.view/view)
+(def privacy-option quo2.components.settings.privacy-option.view/view)
+(def reorder-item quo2.components.settings.reorder-item.view/reorder-item)
+(def section-label quo2.components.settings.section-label.view/view)
+(def settings-item quo2.components.settings.settings-item.view/view)
 
 ;;;; Share
 (def qr-code quo2.components.share.qr-code.view/qr-code)
 (def share-qr-code quo2.components.share.share-qr-code.view/view)
+
+;;;; SWITCHER
+(def group-messaging-card quo2.components.switchers.group-messaging-card.view/view)
 
 ;;;; Tabs
 (def tabs quo2.components.tabs.tabs.view/view)

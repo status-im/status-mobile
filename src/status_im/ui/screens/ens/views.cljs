@@ -6,7 +6,6 @@
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ens.core :as ens]
-    [status-im.ethereum.core :as ethereum]
     [status-im.ethereum.ens :as ethereum.ens]
     [status-im.ethereum.stateofus :as stateofus]
     [status-im.ethereum.tokens :as tokens]
@@ -23,7 +22,8 @@
     [status-im.ui.screens.profile.components.views :as profile.components]
     [status-im.ui.screens.wallet.send.sheets :as sheets]
     [status-im.utils.utils :as utils]
-    [utils.debounce :as debounce])
+    [utils.debounce :as debounce]
+    [utils.address :as address])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- link
@@ -547,7 +547,7 @@
        (when-not pending?
          [section
           {:title   (i18n/label :t/wallet-address)
-           :content (ethereum/normalized-hex address)}])
+           :content (address/normalized-hex address)}])
        (when-not pending?
          [react/view {:style {:margin-top 14}}
           [section

@@ -4,7 +4,9 @@
 (defn get-color
   [type customization-color theme]
   (case type
-    :default   (colors/custom-color customization-color 50)
+    :default   (colors/theme-colors (colors/custom-color customization-color 50)
+                                    (colors/custom-color customization-color 60)
+                                    theme)
     :secondary (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
     :grey      (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
     :outline   (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)

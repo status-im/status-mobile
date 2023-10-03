@@ -6,7 +6,6 @@
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ethereum.core :as ethereum]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im.ui.components.icons.icons :as icons]
@@ -15,7 +14,8 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.screens.wallet.account-settings.views :as account-settings]
-            [utils.security.core :as security]))
+            [utils.security.core :as security]
+            [native-module.core :as native-module]))
 
 (defn add-account-topbar
   [type]
@@ -179,7 +179,7 @@
                                 {:view {:content pin
                                         :height  256}}])
            #(re-frame/dispatch [:wallet.accounts/add-new-account
-                                (ethereum/sha3 @entered-password)]))
+                                (native-module/sha3 @entered-password)]))
          :disabled
          (or add-account-disabled?
              (and

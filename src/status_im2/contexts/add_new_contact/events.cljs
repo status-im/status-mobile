@@ -3,7 +3,6 @@
             [utils.re-frame :as rf]
             [utils.transforms :as transforms]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
             [native-module.core :as native-module]
@@ -11,7 +10,8 @@
             [utils.validators :as validators]
             [status-im2.contexts.contacts.events :as data-store.contacts]
             [status-im2.constants :as constants]
-            [utils.string :as utils.string]))
+            [utils.string :as utils.string]
+            [utils.ethereum.chain :as chain]))
 
 (defn init-contact
   "Create a new contact (persisted to app-db as [:contacts/new-identity]).
@@ -115,7 +115,7 @@
                           (dispatcher :contacts/set-new-identity-error input)}}
       :resolve-ens      {:db (assoc db :contacts/new-identity contact)
                          :contacts/resolve-public-key-from-ens
-                         {:chain-id (ethereum/chain-id db)
+                         {:chain-id (chain/chain-id db)
                           :ens ens
                           :on-success
                           (dispatcher :contacts/set-new-identity-success input)

@@ -1,5 +1,5 @@
 (ns status-im.ethereum.subscriptions
-  (:require [status-im.ethereum.eip55 :as eip55]
+  (:require [utils.ethereum.eip.eip55 :as eip55]
             [status-im.ethereum.transactions.core :as transactions]
             [utils.re-frame :as rf]
             [status-im.wallet.core :as wallet.core]

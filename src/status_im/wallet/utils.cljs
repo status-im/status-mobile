@@ -24,3 +24,13 @@
   (name (or (:symbol-exchange m)
             (:symbol-display m)
             (:symbol m))))
+
+(defn get-default-account
+  [accounts]
+  (some #(when (:wallet %) %) accounts))
+
+(defn default-address
+  [db]
+  (-> (get db :profile/wallet-accounts)
+      get-default-account
+      :address))

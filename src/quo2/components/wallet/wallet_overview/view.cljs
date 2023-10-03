@@ -1,10 +1,11 @@
 (ns quo2.components.wallet.wallet-overview.view
-  (:require [quo2.components.icon :as icons]
+  (:require [quo2.components.dropdowns.network-dropdown.view :as network-dropdown]
+            [quo2.components.icon :as icon]
             [quo2.components.markdown.text :as text]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]
             [quo2.components.wallet.wallet-overview.style :as style]
-            [quo2.theme :as quo.theme]))
+            [quo2.theme :as quo.theme]
+            [react-native.core :as rn]
+            [utils.i18n :as i18n]))
 
 (def ^:private time-frames
   {:one-week     (i18n/label :t/one-week-int)
@@ -15,22 +16,13 @@
 
 (defn- loading-bars
   [bars theme]
-  (map (fn [{:keys [width height margin]}]
-         [rn/view {:style (style/loading-bar width height margin theme)}])
-       bars))
-
-;; temporary placeholder for network dropdown component
-(defn- network-dropdown-temporary
-  []
-  [:<>
-   [rn/view
-    {:style (merge style/network-dropdown
-                   {:justify-content :center
-                    :align-items     :center})}
-    [text/text "[WIP]"]]])
+  (map-indexed (fn [index {:keys [width height margin]}]
+                 ^{:key index}
+                 [rn/view {:style (style/loading-bar width height margin theme)}])
+               bars))
 
 (defn- view-info-top
-  [{:keys [state balance theme]}]
+  [{:keys [state balance theme networks dropdown-on-press dropdown-state]}]
   [rn/view {:style style/container-info-top}
    (if (= state :loading)
      (loading-bars [{:width 201 :height 20 :margin 0}] theme)
@@ -39,7 +31,11 @@
        :size   :heading-1
        :style  (style/style-text-heading theme)}
       balance])
-   [network-dropdown-temporary]])
+   [network-dropdown/view
+    {:state    (or dropdown-state :default)
+     :blur?    true
+     :on-press dropdown-on-press}
+    networks]])
 
 (defn- view-metrics
   [{:keys [metrics currency-change percentage-change theme]}]
@@ -59,7 +55,7 @@
      :style  {:color        (style/color-metrics metrics theme)
               :margin-right 4}}
     currency-change]
-   [icons/icon
+   [icon/icon
     (if (= metrics :positive) :i/positive :i/negative)
     {:color (style/color-metrics metrics theme)
      :size  16}]])
@@ -90,7 +86,7 @@
         :size   :paragraph-2
         :style  (style/style-text-paragraph theme)}
        begin-date]
-      [icons/icon :i/positive-right
+      [icon/icon :i/positive-right
        {:color (style/color-text-paragraph theme)
         :size  16}]
       [text/text

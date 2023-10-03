@@ -14,16 +14,22 @@
 
 ;; NOTE: Replies support text, image and stickers only.
 (defn- get-message-content
-  [{:keys [content-type] :as message}]
+  [{:keys [content-type] :as message} album-messages media-server-port]
   (case content-type
     constants/content-type-text [quo/text {:style style/tag-text}
                                  (get-in message [:content :text])]
 
     constants/content-type-image
-    (let [image           (get-in message [:content :image])
-          image-local-url (url/replace-port image (rf/sub [:mediaserver/port]))
-          photos          (when image-local-url [{:uri image-local-url}])]
-      [quo/activity-logs-photos {:photos photos}])
+    (let [images           (or album-messages message)
+          image-urls       (if album-messages
+                             (map :image images)
+                             [(get-in message [:content :image])])
+          image-local-urls (map (fn [url]
+                                  {:uri (url/replace-port url media-server-port)})
+                                image-urls)]
+      [quo/activity-logs-photos
+       {:photos       image-local-urls
+        :message-text (get-in message [:content :text])}])
 
     constants/content-type-sticker [old-message/sticker message]
 
@@ -54,11 +60,12 @@
 (defn view
   [{:keys [notification set-swipeable-height customization-color] :as props}]
   (let [{:keys [author chat-name community-id chat-id
-                message read timestamp]} notification
-        community-chat?                  (not (string/blank? community-id))
-        community                        (rf/sub [:communities/community community-id])
-        community-name                   (:name community)
-        community-image                  (get-in community [:images :thumbnail :uri])]
+                message read timestamp album-messages]} notification
+        community-chat?                                 (not (string/blank? community-id))
+        community                                       (rf/sub [:communities/community community-id])
+        community-name                                  (:name community)
+        community-image                                 (get-in community [:images :thumbnail :uri])
+        media-server-port                               (rf/sub [:mediaserver/port])]
     [swipeable props
      [gesture/touchable-without-feedback
       {:on-press (fn []
@@ -106,4 +113,6 @@
 
                                                       :else
                                                       nil)
-                              :body                 (get-message-content message)}}]]]))
+                              :body                 (get-message-content message
+                                                                         album-messages
+                                                                         media-server-port)}}]]]))

@@ -70,7 +70,7 @@
   [sliding-complete?]
   (reset! sliding-complete? true))
 
-(defn- reset-track-position
+(defn reset-track-position
   [x-pos]
   (animate-spring x-pos 0))
 

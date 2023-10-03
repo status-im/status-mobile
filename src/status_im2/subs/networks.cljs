@@ -1,13 +1,13 @@
 (ns status-im2.subs.networks
   (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im2.config :as config]))
+            [status-im2.config :as config]
+            [utils.ethereum.chain :as chain]))
 
 (defn- filter-networks
   [network-type]
   (fn [network]
-    (let [chain-id (ethereum/network->chain-id network)
-          testnet? (ethereum/testnet? chain-id)
+    (let [chain-id (chain/network->chain-id network)
+          testnet? (chain/testnet? chain-id)
           custom?  (:custom? network)]
       (case network-type
         :custom  custom?

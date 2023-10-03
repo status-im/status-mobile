@@ -23,6 +23,9 @@
              (= type "mention")
              (rf/sub [:messages/resolve-mention literal])
 
+             (= type "status-tag")
+             (str "#" literal)
+
              (seq children)
              (get-quoted-text-with-mentions children)
 

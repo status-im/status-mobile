@@ -1,6 +1,5 @@
 (ns status-im.keycard.login
   (:require [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im.ethereum.core :as ethereum]
             [status-im.keycard.common :as common]
             status-im.keycard.fx
             [status-im.keycard.onboarding :as onboarding]
@@ -9,7 +8,8 @@
             [utils.re-frame :as rf]
             [status-im.utils.deprecated-types :as types]
             [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.address :as address]))
 
 (rf/defn login-got-it-pressed
   {:events [:keycard.login.pin.ui/got-it-pressed
@@ -162,7 +162,7 @@
            (assoc-in [:keycard :pin :status] nil)
            (assoc-in [:keycard :pin :login] [])
            (assoc-in [:keycard :profile/profile]
-                     (update account-data :whisper-public-key ethereum/normalized-hex))
+                     (update account-data :whisper-public-key address/normalized-hex))
            (assoc-in [:keycard :flow] nil)
            (update :profile/login  assoc
                    :password       encryption-public-key

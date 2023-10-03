@@ -4,8 +4,8 @@
             [utils.re-frame :as rf]
             [status-im.multiaccounts.core :as multiaccounts]
             [utils.i18n :as i18n]
-            [status-im.ethereum.core :as ethereum]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [native-module.core :as native-module]))
 
 (defn view
   []
@@ -37,5 +37,5 @@
             (i18n/label :t/oops-wrong-password)])
          [quo/button
           {:container-style {:margin-bottom 12 :margin-top 40}
-           :on-press        #((:on-press button) (ethereum/sha3 @entered-password))}
+           :on-press        #((:on-press button) (native-module/sha3 @entered-password))}
           (:label button)]]))))

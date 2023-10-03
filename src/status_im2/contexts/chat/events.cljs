@@ -13,14 +13,14 @@
             [status-im.chat.models.loading :as loading]
             [status-im.data-store.chats :as chats-store]
             [status-im2.contexts.contacts.events :as contacts-store]
-            [status-im.utils.clocks :as utils.clocks]
             [utils.transforms :as transforms]
             [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
             [re-frame.core :as re-frame]
             [react-native.async-storage :as async-storage]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [status-im2.common.muting.helpers :refer [format-mute-till]]))
+            [status-im2.common.muting.helpers :refer [format-mute-till]]
+            [utils.datetime :as datetime]))
 
 (defn- get-chat
   [cofx chat-id]
@@ -126,7 +126,7 @@
                                    0
                                    (or (:clock-value last-message)
                                        deleted-at-clock-value
-                                       (utils.clocks/send 0)))]
+                                       (datetime/timestamp)))]
     {:db (-> db
              (assoc-in [:messages chat-id] {})
              (update-in [:message-lists] dissoc chat-id)

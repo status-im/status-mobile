@@ -1,13 +1,13 @@
 (ns status-im.wallet.prices
   (:require [clojure.set :as set]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.tokens :as tokens]
             [status-im.utils.currency :as currency]
             [utils.re-frame :as rf]
             [status-im.utils.prices :as prices]
             [status-im.wallet.utils :as wallet.utils]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.ethereum.chain :as chain]))
 
 (defn assoc-error-message
   [db error-type err]
@@ -54,7 +54,7 @@
      :profile/profile
      :as db}
     :db}]
-  (let [chain    (ethereum/chain-keyword db)
+  (let [chain    (chain/chain-keyword db)
         mainnet? (= :mainnet chain)
         assets   (get visible-tokens chain #{})
         tokens   (tokens-symbols assets all-tokens)
@@ -63,7 +63,7 @@
       {:wallet/get-prices
        {:from          (if mainnet?
                          (conj tokens "ETH")
-                         [(-> (tokens/native-currency (ethereum/get-current-network db))
+                         [(-> (tokens/native-currency (chain/get-current-network db))
                               (wallet.utils/exchange-symbol))])
         :to            [(:code currency)]
         :mainnet?      mainnet?

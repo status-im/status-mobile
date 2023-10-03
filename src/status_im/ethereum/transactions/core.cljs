@@ -1,24 +1,24 @@
 (ns status-im.ethereum.transactions.core
   (:require [cljs.spec.alpha :as spec]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.decode :as decode]
-            [status-im.ethereum.eip55 :as eip55]
+            [utils.ethereum.eip.eip55 :as eip55]
             [status-im.ethereum.encode :as encode]
             [utils.re-frame :as rf]
             [status-im.utils.mobile-sync :as utils.mobile-sync]
             [status-im.wallet.core :as wallet]
             [status-im2.common.json-rpc.events :as json-rpc]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [utils.ethereum.chain :as chain]))
 
 (def confirmations-count-threshold 12)
 
 (def etherscan-supported?
-  #{(ethereum/chain-keyword->chain-id :mainnet)
-    (ethereum/chain-keyword->chain-id :goerli)})
+  #{(chain/chain-keyword->chain-id :mainnet)
+    (chain/chain-keyword->chain-id :goerli)})
 
-(def binance-mainnet-chain-id (ethereum/chain-keyword->chain-id :bsc))
-(def binance-testnet-chain-id (ethereum/chain-keyword->chain-id :bsc-testnet))
+(def binance-mainnet-chain-id (chain/chain-keyword->chain-id :bsc))
+(def binance-testnet-chain-id (chain/chain-keyword->chain-id :bsc-testnet))
 
 (def network->subdomain {5 "goerli"})
 

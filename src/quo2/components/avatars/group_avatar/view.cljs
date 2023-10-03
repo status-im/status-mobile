@@ -28,9 +28,10 @@
     (let [container-size (get-in sizes [size :container])
           icon-size      (get-in sizes [size :icon])]
       [rn/view
-       {:style (style/container {:container-size      container-size
-                                 :customization-color customization-color
-                                 :theme               theme})}
+       {:accessibility-label :group-avatar
+        :style               (style/container {:container-size      container-size
+                                               :customization-color customization-color
+                                               :theme               theme})}
        (if picture
          [fast-image/fast-image
           {:source picture

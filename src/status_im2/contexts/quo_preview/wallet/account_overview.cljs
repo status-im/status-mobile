@@ -37,13 +37,7 @@
    {:label "Account name"
     :key   :account-name
     :type  :text}
-   {:label   "Customization color:"
-    :key     :customization-color
-    :type    :select
-    :options (map (fn [color]
-                    (let [k (get color :name)]
-                      {:key k :value k}))
-                  (quo/picker-colors))}
+   (preview/customization-color-option)
    {:label   "Account"
     :key     :account
     :type    :select

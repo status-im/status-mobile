@@ -1,6 +1,6 @@
 (ns status-im.ethereum.tokens
   (:require [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum])
+            [utils.ethereum.chain :as chain])
   (:require-macros [status-im.ethereum.macros :as ethereum.macros :refer [resolve-icons]]))
 
 (def default-native-currency
@@ -42,7 +42,7 @@
 
 (defn native-currency
   [{sym :symbol :as current-network}]
-  (let [chain (ethereum/network->chain-keyword current-network)]
+  (let [chain (chain/network->chain-keyword current-network)]
     (get all-native-currencies chain (default-native-currency sym))))
 
 (defn ethereum?

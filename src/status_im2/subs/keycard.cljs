@@ -1,9 +1,9 @@
 (ns status-im2.subs.keycard
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [status-im.keycard.common :as common]
-            [utils.datetime :as datetime]))
+            [utils.datetime :as datetime]
+            [utils.address :as address]))
 
 (re-frame/reg-sub
  :keycard/nfc-enabled?
@@ -116,7 +116,7 @@
 (re-frame/reg-sub
  :keycard-multiaccount-whisper-public-key
  (fn [db]
-   (ethereum/normalized-hex (get-in db [:keycard :multiaccount-whisper-public-key]))))
+   (address/normalized-hex (get-in db [:keycard :multiaccount-whisper-public-key]))))
 
 (re-frame/reg-sub
  :keycard-paired-on

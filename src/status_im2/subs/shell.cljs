@@ -231,10 +231,18 @@
                   (update-in [:community-stack :unviewed-mentions-count] + unviewed-mentions-count))
 
               (and (not muted)
-                   (#{constants/private-group-chat-type constants/one-to-one-chat-type} chat-type))
+                   (= chat-type constants/private-group-chat-type))
               (-> acc
                   (update-in [:chats-stack :unviewed-messages-count] + unviewed-messages-count)
                   (update-in [:chats-stack :unviewed-mentions-count] + unviewed-mentions-count))
+
+              (and (not muted)
+                   (= chat-type constants/one-to-one-chat-type))
+              ;; Note - for 1-1 chats, all unread messages are counted as mentions and shown with counter
+              (-> acc
+                  (update-in [:chats-stack :unviewed-messages-count] + unviewed-messages-count)
+                  (update-in [:chats-stack :unviewed-mentions-count] + unviewed-messages-count))
+
               :else
               acc))
           {:chats-stack     {:unviewed-messages-count 0 :unviewed-mentions-count 0}
@@ -248,8 +256,10 @@
        :counter-label          (:unviewed-mentions-count community-stack)}
       :chats-stack
       {:new-notifications?     (pos? (:unviewed-messages-count chats-stack))
-       :notification-indicator :counter
-       :counter-label          (:unviewed-messages-count chats-stack)}})))
+       :notification-indicator (if (pos? (:unviewed-mentions-count chats-stack))
+                                 :counter
+                                 :unread-dot)
+       :counter-label          (:unviewed-mentions-count chats-stack)}})))
 
 ;; Floating screens
 (re-frame/reg-sub
