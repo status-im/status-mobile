@@ -129,7 +129,13 @@
                                                                                 context
                                                                                 keyboard-shown?))
             response-to                                  (:response-to content)
-            height                                       (rf/sub [:dimensions/window-height])]
+            height                                       (rf/sub [:dimensions/window-height])
+            {window-width :width}                        (rn/get-window)
+            message-container-data                       {:window-width           window-width
+                                                          :padding-right          20
+                                                          :padding-left           20
+                                                          :avatar-container-width 32
+                                                          :message-margin-left    8}]
         [rn/touchable-highlight
          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
                                  :message-sending
@@ -182,10 +188,10 @@
                [audio/audio-message message-data context]
 
                constants/content-type-image
-               [image/image-message 0 message-data context]
+               [image/image-message 0 message-data context 0 message-container-data]
 
                constants/content-type-album
-               [album/album-message message-data context on-long-press]
+               [album/album-message message-data context on-long-press message-container-data]
 
                [not-implemented/not-implemented
                 [content.unknown/unknown-content message-data]])
@@ -209,6 +215,7 @@
   (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch [:show-bottom-sheet
                 {:content       (drawers/reactions-and-actions message-data context)
+                 :border-radius 16
                  :selected-item (fn []
                                   [rn/view {:pointer-events :none}
                                    [user-message-content
