@@ -18,10 +18,11 @@
    - `blur?` Boolean to enable blur background support.}"
   [{:keys [default-selected]}]
   (let [selected (reagent/atom default-selected)]
-    (fn [{:keys [blur? on-change feng-shui?]}]
+    (fn [{:keys [blur? on-change feng-shui? container-style]}]
       [rn/scroll-view
        {:horizontal                        true
-        :shows-horizontal-scroll-indicator false}
+        :shows-horizontal-scroll-indicator false
+        :content-container-style           container-style}
        (doall (map (fn [color]
                      [color/view
                       {:selected? (= color @selected)

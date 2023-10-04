@@ -28,7 +28,7 @@
   [{:keys [description-props blur? theme]}]
   (let [{:keys [text icon]} description-props]
     [rn/view
-     {:style style/sub-container}
+     {:style (style/sub-container :center)}
      [text/text
       {:size  :paragraph-2
        :style (style/color blur? theme)}
@@ -93,15 +93,15 @@
    (case action
      :arrow    [icon/icon :i/chevron-right (style/color blur? theme)]
      :button   [button/button
-                {:type     :outline
-                 :size     24
-                 :on-press (:on-press action-props)}
+                (merge action-props
+                       {:type :outline
+                        :size 24})
                 (:button-text action-props)]
      :selector [selectors/toggle action-props]
      nil)])
 
 (defn- internal-view
-  [{:keys [title on-press accessibility-label] :as props}]
+  [{:keys [title on-press action-props accessibility-label] :as props}]
   [rn/pressable
    {:style               (style/container props)
     :on-press            on-press
@@ -112,7 +112,7 @@
      [text/text {:weight :medium} title]
      [description-component props]
      [tag-component props]]]
-   [rn/view {:style style/sub-container}
+   [rn/view {:style (style/sub-container (:alignment action-props))}
     [label-component props]
     [action-component props]]])
 
