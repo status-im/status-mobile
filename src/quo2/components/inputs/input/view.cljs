@@ -58,7 +58,7 @@
    :label :char-limit :on-char-limit-reach :icon-name :multiline? :on-focus :on-blur])
 
 (defn- base-input
-  [{:keys [on-change-text on-char-limit-reach container-style]}]
+  [{:keys [on-change-text on-char-limit-reach container-style weight]}]
   (let [status              (reagent/atom :default)
         internal-on-focus   #(reset! status :focus)
         internal-on-blur    #(reset! status :default)
@@ -99,7 +99,7 @@
               :small?         small?
               :icon-name      icon-name}])
           [rn/text-input
-           (cond-> {:style                  (style/input colors-by-status small? @multiple-lines?)
+           (cond-> {:style                  (style/input colors-by-status small? @multiple-lines? weight)
                     :accessibility-label    :input
                     :placeholder-text-color (:placeholder colors-by-status)
                     :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
