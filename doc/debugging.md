@@ -62,7 +62,21 @@ To get unencrypted database you need to export it first:
    ```
 - save generated `export.db` file
 
-Now you can find the path to `export.db` and open it with preferred db viewer.
+Now you can locate the `export.db` and open it with preferred db viewer.
+
+**Android:**
+
+```sh
+adb root
+adb pull /storage/emulated/0/Android/data/im.status.ethereum.debug/files/Download/export.db /path/to/store/export.db
+```
+
+```
+If you're using a release build, change the path to /storage/emulated/0/Android/data/im.status.ethereum/files/Download
+```
+
+**iOS**
+
 ```
 cd ~/Library/Developer/CoreSimulator/Devices
 find ./ -name export.db
