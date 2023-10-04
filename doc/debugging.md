@@ -71,9 +71,7 @@ adb root
 adb pull /storage/emulated/0/Android/data/im.status.ethereum.debug/files/Download/export.db /path/to/store/export.db
 ```
 
-```
-If you're using a release build, change the path to /storage/emulated/0/Android/data/im.status.ethereum/files/Download
-```
+If you're using a release build, change the path to `/storage/emulated/0/Android/data/im.status.ethereum/files/Download`
 
 **iOS**
 
