@@ -61,15 +61,28 @@
 
 (defn- f-album-selector
   [{:keys [scroll-enabled on-scroll]} album? selected-album top]
-  (let [albums          (rf/sub [:camera-roll/albums])
-        albums-sections [{:title no-title :data (:smart-albums albums)}
-                         {:title (i18n/label :t/my-albums) :data (:my-albums albums)}]
-        window-height   (:height (rn/get-window))]
+  (let [albums                           (rf/sub [:camera-roll/albums])
+        add-recent-count-to-recent-album (-> albums
+                                             :smart-albums
+                                             first
+                                             (assoc :count
+                                                    (reduce
+                                                     (fn [total-album-count curr-album]
+                                                       (+ total-album-count (:count curr-album)))
+                                                     0
+                                                     (:my-albums albums))))
+        albums-sections                  [{:title no-title
+                                           :data  [add-recent-count-to-recent-album]}
+                                          {:title (i18n/label :t/my-albums)
+                                           :data  (:my-albums albums)}]
+        window-height                    (:height (rn/get-window))]
     [reanimated/view {:style (style/selector-container top)}
      [gesture/section-list
       {:data                           albums-sections
        :sections                       albums-sections
-       :render-data                    {:album? album? :selected-album selected-album :top top}
+       :render-data                    {:album?         album?
+                                        :selected-album selected-album
+                                        :top            top}
        :render-fn                      render-album
        :sticky-section-headers-enabled false
        :render-section-header-fn       section-header
