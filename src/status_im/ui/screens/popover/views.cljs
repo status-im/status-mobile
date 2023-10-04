@@ -8,7 +8,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
             [status-im.ui.screens.keycard.views :as keycard.views]
-            [status-im.ui.screens.profile.user.views :as profile.user]
+            [status-im.ui.screens.profile.user.views-v2 :as profile.user]
             [status-im.ui.screens.reset-password.views :as reset-password.views]
             [status-im.ui.screens.signing.sheets :as signing-sheets]
             [status-im.ui.screens.signing.views :as signing]
@@ -52,10 +52,10 @@
         request-close     (fn []
                             (when-not (:prevent-closing? @current-popover)
                               (reset! clear-timeout
-                                      (js/setTimeout
-                                       #(do (reset! current-popover nil)
-                                            (re-frame/dispatch [:hide-popover]))
-                                       300))
+                                (js/setTimeout
+                                 #(do (reset! current-popover nil)
+                                      (re-frame/dispatch [:hide-popover]))
+                                 300))
                               (hide-panel-anim
                                bottom-anim-value
                                alpha-value
@@ -163,4 +163,4 @@
   []
   (views/letsubs [current-popover         [:popover/popover]
                   {window-height :height} [:dimensions/window]]
-                 [popover-view current-popover window-height]))
+    [popover-view current-popover window-height]))

@@ -10,37 +10,41 @@
   [react/view
    {:style styles/top-background-view}])
 
-(defn button [{:keys [icon accessibility-label on-press]}]
+(defn button
+  [{:keys [icon accessibility-label on-press style]}]
   [header/header-action
-   {:icon icon
-    :on-press on-press
+   {:icon                icon
+    :on-press            on-press
     :accessibility-label accessibility-label
-    :style styles/header-icon-style}])
+    :style               (merge styles/header-icon-style style)}])
 
-(defn fixed-toolbar [{:keys [on-close on-switch-profile on-show-qr on-share]}]
+(defn fixed-toolbar
+  [{:keys [on-close on-switch-profile on-show-qr on-share]}]
   [react/view
    {:style styles/toolbar}
    [button
-    {:icon :main-icons/close
+    {:icon                :main-icons/close
      :accessibility-label :close-header-button
-     :on-press on-close}]
+     :on-press            on-close
+     :style               {:margin-left 20}}]
    [react/view
     {:style styles/right-accessories}
     [button
-     {:icon :main-icons/multi-profile
+     {:icon                :main-icons/multi-profile
       :accessibility-label :multi-profile-header-button
-      :on-press on-switch-profile}]
+      :on-press            on-switch-profile}]
     [button
-     {:icon :main-icons/qr2
+     {:icon                :main-icons/qr2
       :accessibility-label :qr-header-button
-      :on-press on-show-qr}]
+      :on-press            on-show-qr
+      :style               {:margin-left 14}}]
     [button
-     {:icon :main-icons/share
+     {:icon                :main-icons/share
       :accessibility-label :share-header-button
-      :on-press on-share}]]])
+      :on-press            on-share}]]])
 
 (defn user-info
-  [{:keys [emoji-hash, account, public-key about]}]
+  [{:keys [emoji-hash account public-key about]}]
   [react/view
    [react/view
     {:style styles/avatar}
@@ -50,14 +54,14 @@
     {:style styles/user-info}
     [quo/text
      {:weight :semi-bold
-      :size :xx-large
-      :style {:margin-top 16}}
+      :size   :xx-large
+      :style  {:margin-top 16}}
      (multiaccounts/displayed-name account)]
     [quo/text
-     {:size :large
+     {:size  :large
       :style {:margin-top 8}}
      about]
     [quo/text
-     {:size :large
+     {:size  :large
       :style {:margin-top 8}}
      emoji-hash]]])

@@ -14,16 +14,19 @@
   [quo/separator])
 
 (defn list-item
-  [{:keys [icon, title, title-color, accessibility-label, chevron, accessory, on-press]}]
+  [{:keys [icon title title-color accessibility-label chevron accessory on-press title-style]}]
   [quo/list-item
    {:icon                icon
     :icon-bg-color       "transparent"
+    :icon-size           32
     :icon-color          (:text-03 @colors/theme)
     :title               title
     :title-color         title-color
+    :title-style         (merge {:padding-horizontal 0} title-style)
     :accessibility-label accessibility-label
     :chevron             chevron
-    :container-style     {:background-color "#242D3F"}
+    :size                50
+    :container-style     styles/list-item-container
     :accessory           accessory
     :on-press            on-press}])
 
@@ -35,9 +38,9 @@
      :title               (i18n/label :t/edit-profile)
      :accessibility-label :edit-profile-settings-button
      :chevron             true
-    ;;  TODO: No edit profile action
-    ;;  :on-press            #(re-frame/dispatch [:navigate-to :edit])
-     }]
+     ;;  TODO: No edit profile action
+     ;;  :on-press            #(re-frame/dispatch [:navigate-to :edit])
+    }]
    separator
    [list-item
     {:icon                :main-icons/key-profile
@@ -58,7 +61,7 @@
      :chevron             true
      :accessory           (when mnemonic
                             [components.common/counter {:size 22} 1])
-    ;;  TODO: Chat home doesn't look great
+     ;;  TODO: Chat home doesn't look great
      :on-press            #(re-frame/dispatch [:navigate-to :chat-home])}]
    separator
    [list-item
@@ -68,9 +71,9 @@
      :chevron             true
      :accessory           (when mnemonic
                             [components.common/counter {:size 22} 1])
-    ;;  TODO: Community home doesn't work correctly
-    ;;  :on-press            #(re-frame/dispatch [:navigate-to :community-home])
-     }]
+     ;;  TODO: Community home doesn't work correctly
+     ;;  :on-press            #(re-frame/dispatch [:navigate-to :community-home])
+    }]
    separator
    [list-item
     {:icon                :main-icons/wallet-profile
@@ -79,7 +82,7 @@
      :chevron             true
      :accessory           (when mnemonic
                             [components.common/counter {:size 22} 1])
-    ;;  TODO: Wallet screen needs back button
+     ;;  TODO: Wallet screen needs back button
      :on-press            #(re-frame/dispatch [:navigate-to :wallet])}]
    separator
    [list-item
@@ -96,7 +99,7 @@
      :title               (i18n/label :t/browser)
      :accessibility-label :browser-settings-button
      :chevron             true
-    ;;  TODO: Needs back button?
+     ;;  TODO: Needs back button?
      :on-press            #(re-frame/dispatch [:navigate-to :browser])}]
    separator
    [list-item
@@ -140,9 +143,9 @@
      :title               (i18n/label :t/language-and-currency)
      :accessibility-label :language-settings-button
      :chevron             true
-    ;;  TODO: No language screen
-    ;;  :on-press            #(re-frame/dispatch [:navigate-to :appearance])
-     }]])
+     ;;  TODO: No language screen
+     ;;  :on-press            #(re-frame/dispatch [:navigate-to :appearance])
+    }]])
 
 (def advanced-settings-group
   [react/view
@@ -168,12 +171,15 @@
     {:title               (i18n/label :t/about-app)
      :accessibility-label :about-button
      :chevron             true
+     :title-style         {:margin-horizontal 16}
      :on-press            #(re-frame/dispatch [:navigate-to :about-app])}]
    separator
    [list-item
     {:title               (i18n/label :t/status-help)
      :accessibility-label :help-button
-     :chevron             true
+     :chevron             false
+     :accessory           [icons/icon :main-icons/external {:color colors/gray}]
+     :title-style         {:margin-horizontal 16}
      :on-press            #(re-frame/dispatch [:navigate-to :help-center])}]])
 
 (def logout-item
@@ -184,6 +190,6 @@
     :accessibility-label :log-out-button}
    [icons/icon :main-icons/log-out {:color fcolors/danger-60}]
    [text/text
-    {:style {:color fcolors/danger-60
+    {:style {:color       fcolors/danger-60
              :margin-left 8}}
     (i18n/label :t/logout)]])

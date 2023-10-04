@@ -21,50 +21,50 @@
   []
   (views/letsubs [{:keys [address ens-name]} [:popover/popover]
                   width                      (reagent/atom nil)]
-                 (let [link (universal-links/generate-link :user :external (or ens-name address))]
-                   [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
-                    [react/view {:style {:padding-top 16 :padding-horizontal 16}}
-                     (when @width
-                       [qr-code-viewer/qr-code-view (- @width 32) address])
-                     (when ens-name
-                       [react/view
-                        [copyable-text/copyable-text-view
-                         {:label           :t/ens-username
-                          :container-style {:margin-top 12 :margin-bottom 4}
-                          :copied-text     ens-name}
-                         [quo/text
-                          {:monospace           true
-                           :accessibility-label :ens-username}
-                          ens-name]]
-                        [react/view
-                         {:height            1
-                          :margin-top        12
-                          :margin-horizontal -16
-                          :background-color  colors/gray-lighter}]])
-                     [copyable-text/copyable-text-view
-                      {:label           :t/chat-key
-                       :container-style {:margin-top 12 :margin-bottom 4}
-                       :copied-text     address}
-                      [quo/text
-                       {:number-of-lines     1
-                        :ellipsize-mode      :middle
-                        :accessibility-label :chat-key
-                        :monospace           true}
-                       address]]]
-                    [react/view styles/share-link-button
-                     [quo/button
-                      {:on-press            (fn []
-                                              (re-frame/dispatch [:hide-popover])
-                                              (js/setTimeout
-                                               #(list-selection/open-share {:message link})
-                                               250))
-                       :accessibility-label :share-my-contact-code-button}
-                      (i18n/label :t/share-link)]]])))
+    (let [link (universal-links/generate-link :user :external (or ens-name address))]
+      [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
+       [react/view {:style {:padding-top 16 :padding-horizontal 16}}
+        (when @width
+          [qr-code-viewer/qr-code-view (- @width 32) address])
+        (when ens-name
+          [react/view
+           [copyable-text/copyable-text-view
+            {:label           :t/ens-username
+             :container-style {:margin-top 12 :margin-bottom 4}
+             :copied-text     ens-name}
+            [quo/text
+             {:monospace           true
+              :accessibility-label :ens-username}
+             ens-name]]
+           [react/view
+            {:height            1
+             :margin-top        12
+             :margin-horizontal -16
+             :background-color  colors/gray-lighter}]])
+        [copyable-text/copyable-text-view
+         {:label           :t/chat-key
+          :container-style {:margin-top 12 :margin-bottom 4}
+          :copied-text     address}
+         [quo/text
+          {:number-of-lines     1
+           :ellipsize-mode      :middle
+           :accessibility-label :chat-key
+           :monospace           true}
+          address]]]
+       [react/view styles/share-link-button
+        [quo/button
+         {:on-press            (fn []
+                                 (re-frame/dispatch [:hide-popover])
+                                 (js/setTimeout
+                                  #(list-selection/open-share {:message link})
+                                  250))
+          :accessibility-label :share-my-contact-code-button}
+         (i18n/label :t/share-link)]]])))
 
 (defn items
   [{:keys [mnemonic]}]
   [react/view
-   {:style styles/items-container}
+   {:style styles/container-style}
 
    profile-list-item/personal-info-group
 
@@ -103,21 +103,21 @@
        components/top-background-view
 
        [components/fixed-toolbar
-        {:on-share #(list-selection/open-share {:message link})
-         :on-close #(re-frame/dispatch [:navigate-back])
-        ;;  TODO: No action for switch account
+        {:on-share          #(list-selection/open-share {:message link})
+         :on-close          #(re-frame/dispatch [:navigate-back])
+         ;;  TODO: No action for switch account
          :on-switch-profile nil
-         :on-show-qr on-share}]
+         :on-show-qr        on-share}]
 
        [react/scroll-view
         [components/user-info
-         {:on-share on-share
-          :has-picture has-picture
+         {:on-share            on-share
+          :has-picture         has-picture
           :customization-color customization-color
-          :account account
-          :emoji-hash (string/join emoji-hash)
-          :ens-verified ens-verified
-          :public-key public-key
-          :compressed-key compressed-key}]
+          :account             account
+          :emoji-hash          (string/join emoji-hash)
+          :ens-verified        ens-verified
+          :public-key          public-key
+          :compressed-key      compressed-key}]
         [items
          {:mnemonic mnemonic}]]])))

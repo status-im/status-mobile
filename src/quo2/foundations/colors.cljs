@@ -123,7 +123,7 @@
 
 (def magenta "#EC266C")
 ;; with transparency
-(def magenta-opa-40 (alpha magenta 0.4))
+(def magenta-opa-40 (alpha "#EC266C" 0.4))
 
 
 ;;;;Blur

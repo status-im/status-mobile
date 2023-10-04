@@ -43,13 +43,13 @@
   [size]
   (case size
     :small 36
-    40))
+    (min size 40)))
 
 (defn size->container-size
   [size]
   (case size
     :small 52
-    64))
+    (min size 64)))
 
 (defn size->single-title-size
   [size]
@@ -70,29 +70,31 @@
         children))
 
 (defn icon-column
-  [{:keys [icon icon-bg-color icon-color size icon-container-style]}]
+  [{:keys [icon icon-bg-color icon-color icon-size icon-container-style]}]
   (when icon
-    (let [icon-size (size->icon-size size)]
+    (let [_icon-size (size->icon-size icon-size)]
       [rn/view {:style (or icon-container-style (:tiny spacing/padding-horizontal))}
        (cond
          (vector? icon)
          icon
          (keyword? icon)
          [rn/view
-          {:style {:width            icon-size
-                   :height           icon-size
+          {:style {:width            _icon-size
+                   :height           _icon-size
                    :align-items      :center
                    :justify-content  :center
-                   :border-radius    (/ icon-size 2)
+                   :border-radius    (/ _icon-size 2)
                    :background-color icon-bg-color}}
           [icons/icon icon {:color icon-color}]])])))
 
 (defn title-column
   [{:keys [title text-color subtitle subtitle-max-lines subtitle-secondary
            title-accessibility-label size text-size title-text-weight
+           title-style
            right-side-present?]}]
   [rn/view
    {:style (merge (:tiny spacing/padding-horizontal)
+                  title-style
                   ;; make left-side title grow if nothing is present on right-side
                   (when-not right-side-present?
                     {:flex            1
@@ -215,8 +217,10 @@
 
 (defn list-item
   [{:keys [theme accessory disabled subtitle-max-lines icon icon-container-style
+           icon-size
            left-side-alignment icon-color icon-bg-color
            title subtitle subtitle-secondary active on-press on-long-press chevron size text-size
+           title-style
            accessory-text accessibility-label title-accessibility-label accessory-style
            haptic-feedback haptic-type error animated animated-accessory? title-text-weight
            container-style
@@ -267,10 +271,12 @@
       [container {:size size :container-style container-style}
        [left-side
         {:icon-color                icon-color
+         :icon-size                 icon-size
          :text-color                (if on-press
                                       text-color
                                       (:text-color (themes :main)))
          :left-side-alignment       left-side-alignment
+         :title-style               title-style
          :icon-bg-color             icon-bg-color
          :title-accessibility-label title-accessibility-label
          :icon                      icon

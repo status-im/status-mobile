@@ -80,7 +80,7 @@
    :flex            1})
 
 (defn header-action
-  [{:keys [icon label on-press disabled accessibility-label]}]
+  [{:keys [icon label on-press disabled accessibility-label style]}]
   [button/button
    (merge {:on-press on-press
            :disabled disabled}
@@ -89,7 +89,8 @@
                    :theme :icon}
             label {:type :secondary})
           (when accessibility-label
-            {:accessibility-label accessibility-label}))
+            {:accessibility-label accessibility-label})
+          {:style style})
    (cond
      icon  icon
      label label)])
