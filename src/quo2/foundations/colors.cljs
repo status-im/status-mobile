@@ -121,6 +121,11 @@
 (def white-opa-90 (alpha white 0.9))
 (def white-opa-95 (alpha white 0.95))
 
+(def magenta "#EC266C")
+;; with transparency
+(def magenta-opa-40 (alpha magenta 0.4))
+
+
 ;;;;Blur
 (def white-70-blur (alpha white 0.7))
 (def white-70-blur-opaque (alpha-opaque white 0.7))
