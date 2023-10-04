@@ -45,6 +45,30 @@ To do this:
 
 ![geth.log path](images/debugging/geth-path.png)
 
+## Inspecting database content
+
+Encrypted database can be found using commands:
+```
+cd ~/Library/Developer/CoreSimulator/Devices
+find ./ -name accounts.sql
+```
+
+To get unencrypted database you need to export it first:
+- open the status app in simulator
+- on login screen enter the correct password without logging in
+- using repl execute statement to export db:
+   ```
+   (re-frame.core/dispatch [:multiaccounts.login.ui/export-db-submitted])
+   ```
+- save generated `export.db` file
+
+Now you can find the path to `export.db` and open it with preferred db viewer.
+```
+cd ~/Library/Developer/CoreSimulator/Devices
+find ./ -name export.db
+```
+
+
 
 ## Tips
 ### From @ilmotta:
@@ -62,3 +86,4 @@ Also to inspect logs in a more flexible manner, instead of the strict output fro
 ```
 adb logcat | grep 'ReactNativeJS\|StatusModule\|GoLog'
 ```
+
