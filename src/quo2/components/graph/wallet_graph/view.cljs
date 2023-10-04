@@ -55,7 +55,7 @@
        [rn/view {:accessibility-label :line-chart}
         [charts/line-chart
          {:height                  96
-          :width                   (+ width 1)
+          :width                   (inc width)
           :max-value               max-value
           :min-value               0
           :adjust-to-width         true

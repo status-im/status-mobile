@@ -3,7 +3,7 @@
 
 (defn get-border-color
   [{:keys [pressed? theme]}]
-  (if (= pressed? true)
+  (if pressed?
     (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)
     (colors/theme-colors colors/neutral-30 colors/neutral-70 theme)))
 

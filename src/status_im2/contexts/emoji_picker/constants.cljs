@@ -16,7 +16,9 @@
 (def ^:const emoji-row-separator-height 16)
 
 (def ^:const emoji-item-margin-right
-  (/ (- (:width (rn/get-window)) (* emoji-row-padding-horizontal 2) (* emoji-size emojis-per-row))
-     (- emojis-per-row 1)))
+  (/ (- (:width (rn/get-window))
+        (* emoji-row-padding-horizontal 2)
+        (* emoji-size emojis-per-row))
+     (dec emojis-per-row)))
 
 (def ^:const item-height (+ emoji-size emoji-row-separator-height))

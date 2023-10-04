@@ -5,8 +5,8 @@
   [{:keys [pressed? blur? theme]}]
   (cond
     (and pressed? blur?) (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-20 theme)
-    (= pressed? true)    (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)
-    (= blur? true)       (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
+    pressed?             (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)
+    blur?                (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)
     :else                (colors/theme-colors colors/neutral-30 colors/neutral-70 theme)))
 
 (defn get-label-color

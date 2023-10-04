@@ -301,9 +301,10 @@
 (defn card
   [{:keys [type] :as data}]
   (cond
-    (= type shell.constants/empty-card)
+    (= type shell.constants/empty-card) ; Placeholder
     [empty-card]
 
+    ;; Screens Card
     (#{shell.constants/one-to-one-chat-card
        shell.constants/private-group-chat-card
        shell.constants/community-card
@@ -311,19 +312,19 @@
      type)
     [screens-card data]
 
-    (= type shell.constants/browser-card)
+    (= type shell.constants/browser-card) ; Browser Card
     [browser-card data]
 
-    (= type shell.constants/wallet-card)
+    (= type shell.constants/wallet-card) ; Wallet Card
     [wallet-card data]
 
-    (= type shell.constants/wallet-collectible)
+    (= type shell.constants/wallet-collectible) ; Wallet Card
     [wallet-collectible data]
 
-    (= type shell.constants/wallet-graph)
+    (= type shell.constants/wallet-graph) ; Wallet Card
     [wallet-graph data]
 
-    (= type shell.constants/communities-discover)
+    (= type shell.constants/communities-discover) ; Home Card
     [communities-discover data]
 
     :else
