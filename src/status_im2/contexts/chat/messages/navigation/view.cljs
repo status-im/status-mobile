@@ -59,10 +59,11 @@
         :background          :blur
         :size                32
         :accessibility-label :back-button
+        :style               (style/button-container {:margin-left 20})}
         :on-press            #(do
                                 (when config/shell-navigation-disabled?
                                   (rf/dispatch [:chat/close]))
-                                (rf/dispatch [:navigate-back]))}
+                                (rf/dispatch [:navigate-back]))
        :i/arrow-left]
       [reanimated/view
        {:style (style/animated-header all-loaded? translate-animation title-opacity-animation)}
