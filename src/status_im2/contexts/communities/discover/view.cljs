@@ -206,8 +206,7 @@
         featured-communities-count (count featured-communities)]
     (fn []
       [scroll-page/scroll-page
-       {:name             (i18n/label :t/discover-communities)
-        :theme            theme
+       {:theme            theme
         :on-scroll        #(reset! scroll-height %)
         :background-color (colors/theme-colors
                            colors/white

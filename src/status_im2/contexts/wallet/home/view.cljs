@@ -46,7 +46,7 @@
 (defn view
   []
   (let [top          (safe-area/get-top)
-        selected-tab (reagent/atom (:id (first tabs-data)))]
+        selected-tab (reagent/atom (:id (second tabs-data)))]
     (fn []
       [rn/view
        {:style {:margin-top top
@@ -56,12 +56,13 @@
        [rn/pressable
         {:on-long-press #(rf/dispatch [:show-bottom-sheet {:content temp/wallet-temporary-navigation}])}
         [quo/wallet-graph {:time-frame :empty}]]
-       [rn/flat-list
-        {:style      style/accounts-list
-         :data       account-cards
-         :horizontal true
-         :separator  [rn/view {:style {:width 12}}]
-         :render-fn  quo/account-card}]
+       [rn/view {:style style/accounts-container}
+        [rn/flat-list
+         {:style      style/accounts-list
+          :data       account-cards
+          :horizontal true
+          :separator  [rn/view {:style {:width 12}}]
+          :render-fn  quo/account-card}]]
        [quo/tabs
         {:style          style/tabs
          :size           32
@@ -72,12 +73,19 @@
          :assets       [rn/flat-list
                         {:render-fn               quo/token-value
                          :data                    temp/tokens
+                         :key                     :assets-list
                          :content-container-style {:padding-horizontal 8}}]
-         :collectibles [quo/empty-state
-                        {:title           (i18n/label :t/no-collectibles)
-                         :description     (i18n/label :t/no-collectibles-description)
-                         :placeholder?    true
-                         :container-style style/empty-container-style}]
+         :collectibles [rn/flat-list
+                        {:render-fn               (fn [item]
+                                                    [quo/collectible
+                                                     {:images   [(:image item)]
+                                                      :on-press #(rf/dispatch [:navigate-to
+                                                                               :wallet-collectibles])}])
+                         :data                    temp/collectibles
+                         :key                     :collectibles-list
+                         :key-fn                  :id
+                         :num-columns             2
+                         :content-container-style {:padding-horizontal 8}}]
          [quo/empty-state
           {:title           (i18n/label :t/no-activity)
            :description     (i18n/label :t/empty-tab-description)

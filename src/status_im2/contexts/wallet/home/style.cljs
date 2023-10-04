@@ -5,6 +5,9 @@
    :padding-top        8
    :padding-bottom     12})
 
+(def accounts-container
+  {:height 112})
+
 (def accounts-list
   {:padding-horizontal 20
    :padding-top        32
