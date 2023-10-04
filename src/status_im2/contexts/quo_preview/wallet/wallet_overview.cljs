@@ -1,5 +1,6 @@
 (ns status-im2.contexts.quo-preview.wallet.wallet-overview
   (:require [quo2.core :as quo]
+            [quo2.foundations.resources :as quo.resources]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -41,6 +42,11 @@
               {:key   :negative
                :value "Negative"}]}])
 
+(def ^:private networks-list
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}])
+
 (defn preview-wallet-overview
   []
   (let [state (reagent/atom {:state             :default
@@ -61,4 +67,7 @@
          {:padding-vertical 60
           :flex-direction   :row
           :justify-content  :center}
-         [quo/wallet-overview @state]]]])))
+         [quo/wallet-overview
+          (assoc @state
+                 :networks          networks-list
+                 :dropdown-on-press #(js/alert "On pressed dropdown"))]]]])))

@@ -15,5 +15,5 @@
                 :networks [{:source "network-icon1.png"}
                            {:source "network-icon2.png"}
                            {:source "network-icon3.png"}]
-                :size     :size/s-32}])
+                :size     :size-32}])
     (h/is-truthy (h/get-by-text "Multiple Networks"))))

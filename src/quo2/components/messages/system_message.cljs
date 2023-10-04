@@ -21,7 +21,7 @@
   [rn/view
    {:margin-right 8}
    [icon-avatar/icon-avatar
-    {:size    :size/s-32
+    {:size    :size-32
      :icon    icon
      :color   color
      :opacity opacity}]])

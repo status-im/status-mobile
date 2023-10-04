@@ -66,4 +66,5 @@
           {:margin-top 2})))
 
 (def emoji-hash
-  {:margin-top 12})
+  {:margin-top  12
+   :line-height 20.5})

@@ -2,7 +2,7 @@
   (:require [quo.core :as quo]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [status-im.ethereum.eip55 :as eip55]
+            [utils.ethereum.eip.eip55 :as eip55]
             [status-im.ethereum.eip681 :as eip681]
             [utils.i18n :as i18n]
             [status-im.ui.components.copyable-text :as copyable-text]

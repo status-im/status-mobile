@@ -311,6 +311,7 @@ endef
 lint: export TARGET := clojure
 lint: ##@test Run code style checks
 	@sh scripts/lint-re-frame-in-quo-components.sh && \
+	sh scripts/lint-old-quo-usage.sh \
 	clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
@@ -360,6 +361,7 @@ component-test-watch: export TARGET := clojure
 component-test-watch: export COMPONENT_TEST := true
 component-test-watch: export BABEL_ENV := test
 component-test-watch: ##@ Watch tests and re-run no changes to cljs files
+	rm -rf ./component-spec
 	yarn install
 	nodemon --exec 'yarn shadow-cljs compile component-test && jest --config=test/jest/jest.config.js' -e cljs
 
@@ -367,6 +369,7 @@ component-test: export TARGET := clojure
 component-test: export COMPONENT_TEST := true
 component-test: export BABEL_ENV := test
 component-test: ##@test Run component tests once in NodeJS
+	rm -rf ./component-spec
 	yarn install
 	yarn shadow-cljs compile component-test && \
 	jest --config=test/jest/jest.config.js

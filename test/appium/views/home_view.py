@@ -317,6 +317,9 @@ class HomeView(BaseView):
             self.driver,
             xpath="(//*[@content-desc='link-to-profile']/preceding-sibling::*[1]/android.widget.TextView)[1]")
 
+        # Discover communities
+        self.community_card_item = BaseElement(self.driver, accessibility_id="community-card-item")
+
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing to complete')
         while True:

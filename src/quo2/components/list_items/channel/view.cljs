@@ -38,7 +38,7 @@
         :on-press-in         #(reset! pressed? true)
         :on-press-out        #(reset! pressed? false)}
        [channel-avatar/view
-        {:size                :size/l
+        {:size                :size-32
          :locked?             locked?
          :full-name           name
          :customization-color customization-color

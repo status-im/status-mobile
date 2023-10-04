@@ -1,6 +1,5 @@
 (ns status-im.ethereum.stateofus
   (:require [clojure.string :as string]
-            [status-im.ethereum.core :as ethereum]
             [status-im.ethereum.ens :as ens]
             [status-im2.config :as config]))
 
@@ -33,23 +32,9 @@
    (when config/test-stateofus?
      {:goerli "0xD1f7416F91E7Eb93dD96A61F12FC092aD6B67B11"})))
 
-(def registrars-cache (atom {}))
-
-(defn get-registrar
-  [chain callback]
-  (if-let [contract (get @registrars-cache chain)]
-    (callback contract)
-    (ens/owner
-     (ethereum/chain-keyword->chain-id chain)
-     domain
-     (fn [addr]
-       (let [addr (or addr (get old-registrars chain))]
-         (swap! registrars-cache assoc chain addr)
-         (callback addr))))))
-
 (defn get-cached-registrar
   [chain]
-  (get @registrars-cache chain (get old-registrars chain)))
+  (get old-registrars chain))
 
 (defn lower-case?
   [s]

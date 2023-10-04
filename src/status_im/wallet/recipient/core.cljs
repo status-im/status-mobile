@@ -1,8 +1,7 @@
 (ns status-im.wallet.recipient.core
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
-            [status-im.ethereum.eip55 :as eip55]
+            [utils.ethereum.eip.eip55 :as eip55]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
             [utils.i18n :as i18n]
@@ -12,7 +11,9 @@
             [status-im.utils.utils :as utils]
             [status-im2.common.json-rpc.events :as json-rpc]
             [status-im2.navigation.events :as navigation]
-            [utils.string :as utils.string]))
+            [utils.string :as utils.string]
+            [utils.ethereum.chain :as chain]
+            [utils.address :as address]))
 
 ;;NOTE we want to handle only last resolve
 (def resolve-last-id (atom nil))
@@ -40,7 +41,7 @@
     (reset! resolve-last-id nil)
     (let [recipient (utils.string/safe-trim raw-recipient)]
       (cond
-        (ethereum/address? recipient)
+        (address/address? recipient)
         (let [checksum (eip55/address->checksum recipient)]
           (if (eip55/valid-address-checksum? checksum)
             (rf/merge cofx
@@ -67,7 +68,7 @@
             (do
               (reset! resolve-last-id (random/id))
               {::resolve-address
-               {:chain-id (ethereum/chain-id db)
+               {:chain-id (chain/chain-id db)
                 :ens-name ens-name
                 :cb       #(re-frame/dispatch [::recipient-address-resolved % @resolve-last-id])}})
             {:db (assoc-in db [:wallet/recipient :searching] false)}))

@@ -5,17 +5,27 @@
 
 (defn outer-container
   [{:keys [size color]}]
-  (let [size (if (= size :size/l) 32 24)]
-    {:width            size
-     :height           size
-     :border-radius    size
+  (let [container-size (case size
+                         :size-64 64
+                         :size-32 32
+                         24)]
+    {:width            container-size
+     :height           container-size
+     :border-radius    container-size
      :justify-content  :center
      :align-items      :center
      :background-color (colors/theme-alpha color 0.1 0.1)}))
 
+(defn emoji-size
+  [size]
+  {:font-size (case size
+                :size-64 24
+                :size-32 15
+                11)})
+
 (defn lock-container
   [size]
-  (let [distance (if (= size :size/l) 20 12)]
+  (let [distance (if (= size :size-32) 20 12)]
     {:position         :absolute
      :left             distance
      :top              distance

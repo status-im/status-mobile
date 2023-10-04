@@ -9,7 +9,7 @@
     colors/white))
 
 (defn card
-  [customization-color watch-only? metrics? theme]
+  [{:keys [customization-color watch-only? metrics? theme pressed?]}]
   {:width              162
    :height             (if metrics? 88 68)
    :background-color   (if watch-only?
@@ -21,7 +21,10 @@
    :border-radius      16
    :border-width       1
    :border-color       (if watch-only?
-                         (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
+                         (colors/theme-colors
+                          (if pressed? colors/neutral-80-opa-10 colors/neutral-80-opa-5)
+                          (if pressed? colors/white-opa-10 colors/white-opa-5)
+                          theme)
                          colors/neutral-80-opa-10)
    :padding-horizontal 12
    :padding-top        6
@@ -67,10 +70,13 @@
    :margin-horizontal 4})
 
 (defn add-account-container
-  [theme metrics?]
+  [{:keys [theme metrics? pressed?]}]
   {:width              161
    :height             (if metrics? 88 68)
-   :border-color       (colors/theme-colors colors/neutral-20 colors/white-opa-5 theme)
+   :border-color       (colors/theme-colors
+                        (if pressed? colors/neutral-40 colors/neutral-30)
+                        (if pressed? colors/neutral-70 colors/neutral-80)
+                        theme)
    :border-width       1
    :border-style       :dashed
    :align-items        :center
@@ -84,7 +90,7 @@
    :line-height 20})
 
 (defn loader-view
-  [width height watch-only? theme]
+  [{:keys [width height watch-only? theme]}]
   {:width            width
    :height           height
    :background-color (if (and watch-only? (= :light theme)) colors/neutral-80-opa-5 colors/white-opa-10)
@@ -93,3 +99,6 @@
 (def loader-container
   {:flex-direction :row
    :align-items    :center})
+
+(def metrics-icon-container
+  {:margin-left 4})

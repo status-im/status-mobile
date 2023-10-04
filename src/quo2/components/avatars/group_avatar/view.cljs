@@ -7,30 +7,31 @@
             [quo2.components.avatars.group-avatar.style :as style]))
 
 (def sizes
-  {:size/s-20 {:icon      12
-               :container 20}
-   :size/s-28 {:icon      16
-               :container 28}
-   :size/s-32 {:icon      16
-               :container 32}
-   :size/s-48 {:icon      20
-               :container 48}
-   :size/s-80 {:icon      32
-               :container 80}})
+  {:size-20 {:icon      12
+             :container 20}
+   :size-28 {:icon      16
+             :container 28}
+   :size-32 {:icon      16
+             :container 32}
+   :size-48 {:icon      20
+             :container 48}
+   :size-80 {:icon      32
+             :container 80}})
 
 (defn- view-internal
   [_]
   (fn [{:keys [size theme customization-color picture icon-name]
-        :or   {size                :size/s-20
+        :or   {size                :size-20
                customization-color :blue
                picture             nil
                icon-name           :i/group}}]
     (let [container-size (get-in sizes [size :container])
           icon-size      (get-in sizes [size :icon])]
       [rn/view
-       {:style (style/container {:container-size      container-size
-                                 :customization-color customization-color
-                                 :theme               theme})}
+       {:accessibility-label :group-avatar
+        :style               (style/container {:container-size      container-size
+                                               :customization-color customization-color
+                                               :theme               theme})}
        (if picture
          [fast-image/fast-image
           {:source picture

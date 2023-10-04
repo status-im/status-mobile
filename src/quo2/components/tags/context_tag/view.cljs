@@ -91,30 +91,31 @@
      :default
      [tag-skeleton {:theme theme :size size :text full-name}
       [user-avatar/user-avatar
-       {:full-name         full-name
-        :profile-picture   profile-picture
-        :size              (if (= size 24) :xxs 28)
-        :status-indicator? false
-        :ring?             false}]]
+       {:full-name           full-name
+        :profile-picture     profile-picture
+        :size                (if (= size 24) :xxs 28)
+        :status-indicator?   false
+        :ring?               false
+        :customization-color customization-color}]]
 
      :multiuser
-     [preview-list/view {:type :user :size 20}
+     [preview-list/view {:type :user :size :size-20}
       users]
 
      :multinetwork
-     [preview-list/view {:type :network :size 20}
-      (map #(hash-map :profile-picture %) networks)]
+     [preview-list/view {:type :network :size :size-20}
+      networks]
 
      :audio
      [tag-skeleton {:theme theme :text (str duration)}
-      [rn/view {:style style/audio-tag-icon-container}
+      [rn/view {:style (style/audio-tag-icon-container customization-color theme)}
        [icons/icon :i/play {:color style/audio-tag-icon-color :size 12}]]]
 
      :group
      [tag-skeleton {:theme theme :size size :text group-name}
       [group-avatar/view
        {:icon-name           :i/members
-        :size                (if (= size 24) :size/s-20 :size/s-28)
+        :size                (if (= size 24) :size-20 :size-28)
         :customization-color (colors/custom-color customization-color 50)}]]
 
      (:channel :community)

@@ -6,7 +6,6 @@
             [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
             [status-im.utils.deprecated-types :as types]
-            [status-im.async-storage.core :as async-storage]
             [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.bottom-sheet.events :as bottom-sheet]
@@ -814,51 +813,6 @@
                     :js-response true
                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                     :on-error    #(log/error "failed to reorder community category" %)}]})
-
-(defn category-hash
-  [public-key community-id category-id]
-  (hash (str public-key community-id category-id)))
-
-(rf/defn store-category-state
-  {:events [::store-category-state]}
-  [{:keys [db]} community-id category-id state-open?]
-  (let [public-key (get-in db [:profile/profile :public-key])
-        hash       (category-hash public-key community-id category-id)]
-    {::async-storage/set! {hash state-open?}}))
-
-(rf/defn update-category-states-in-db
-  {:events [::category-states-loaded]}
-  [{:keys [db]} community-id hashes states]
-  (let [public-key     (get-in db [:profile/profile :public-key])
-        categories-old (get-in db [:communities community-id :categories])
-        categories     (reduce (fn [acc [category-id category]]
-                                 (let [hash             (get hashes category-id)
-                                       state            (get states hash)
-                                       category-updated (assoc category :state state)]
-                                   (assoc acc category-id category-updated)))
-                               {}
-                               categories-old)]
-    {:db (update-in db [:communities community-id :categories] merge categories)}))
-
-(rf/defn load-category-states
-  {:events [:communities/load-category-states]}
-  [{:keys [db]} community-id]
-  (let [public-key            (get-in db [:profile/profile :public-key])
-        categories            (get-in db [:communities community-id :categories])
-        {:keys [keys hashes]} (reduce (fn [acc category]
-                                        (let [category-id (get category 0)
-                                              hash        (category-hash
-                                                           public-key
-                                                           community-id
-                                                           category-id)]
-                                          (-> acc
-                                              (assoc-in [:hashes category-id] hash)
-                                              (update :keys #(conj % hash)))))
-                                      {}
-                                      categories)]
-    {::async-storage/get {:keys keys
-                          :cb   #(re-frame/dispatch
-                                  [::category-states-loaded community-id hashes %])}}))
 
 ;; Note - dispatch is used to make sure we are opening community once `pop-to-root` is processed.
 ;; Don't directly merge effects using `navigation/navigate-to`, because it will work in debug and

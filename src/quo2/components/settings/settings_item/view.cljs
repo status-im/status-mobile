@@ -28,7 +28,7 @@
   [{:keys [description-props blur? theme]}]
   (let [{:keys [text icon]} description-props]
     [rn/view
-     {:style style/sub-container}
+     {:style (style/sub-container :center)}
      [text/text
       {:size  :paragraph-2
        :style (style/color blur? theme)}
@@ -65,7 +65,7 @@
                 :label           (:label tag-props)
                 :no-icon?        true
                 :size            :small
-                :container-style {:margin-top 8}}]
+                :container-style style/status-tag-container}]
     :context  [context-tag/view
                (merge tag-props
                       {:type            :icon
@@ -83,7 +83,8 @@
                label-props]
      :color   [rn/view
                {:style (style/label-dot label-props)}]
-     :preview [preview-list/view {:type (:type label-props)} (:data label-props)]
+     :preview [preview-list/view {:type (:type label-props) :size :size-24}
+               (:data label-props)]
      nil)])
 
 (defn action-component
@@ -92,26 +93,26 @@
    (case action
      :arrow    [icon/icon :i/chevron-right (style/color blur? theme)]
      :button   [button/button
-                {:type     :outline
-                 :size     24
-                 :on-press (:on-press action-props)}
+                (merge action-props
+                       {:type :outline
+                        :size 24})
                 (:button-text action-props)]
      :selector [selectors/toggle action-props]
      nil)])
 
 (defn- internal-view
-  [{:keys [title on-press accessibility-label] :as props}]
+  [{:keys [title on-press action-props accessibility-label] :as props}]
   [rn/pressable
    {:style               (style/container props)
     :on-press            on-press
     :accessibility-label accessibility-label}
-   [rn/view {:style style/sub-container}
+   [rn/view {:style (style/left-sub-container props)}
     [image-component props]
     [rn/view {:style style/left-container}
      [text/text {:weight :medium} title]
      [description-component props]
      [tag-component props]]]
-   [rn/view {:style style/sub-container}
+   [rn/view {:style (style/sub-container (:alignment action-props))}
     [label-component props]
     [action-component props]]])
 

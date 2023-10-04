@@ -10,11 +10,12 @@
       (colors/alpha colors/black (if pressed? 0 0.2)))))
 
 (defn overlay
-  [{:keys [theme pressed? customization-color]}]
+  [{:keys [theme pressed? customization-color border-radius]}]
   [rn/view
    {:position         :absolute
     :top              0
     :left             0
     :right            0
     :bottom           0
+    :border-radius    border-radius
     :background-color (get-overlay-color theme pressed? customization-color)}])

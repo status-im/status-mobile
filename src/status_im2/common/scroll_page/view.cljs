@@ -24,7 +24,7 @@
 
 (defn f-scroll-page-header
   [scroll-height height name page-nav-right-side logo sticky-header top-nav title-colum navigate-back?
-   collapsed?]
+   collapsed? overlay-shown?]
   (let [input-range         [0 10]
         output-range        [-208 -45]
         y                   (reanimated/use-shared-value scroll-height)
@@ -69,12 +69,13 @@
         [rn/view {:style {:margin-top 0}}
          top-nav]
         [quo/page-nav
-         (cond-> {:margin-top 44
-                  :type       :no-title
-                  :background (if (= 1 (reanimated/get-shared-value opacity-animation))
-                                :blur
-                                :photo)
-                  :right-side page-nav-right-side}
+         (cond-> {:margin-top     44
+                  :type           :no-title
+                  :background     (if (= 1 (reanimated/get-shared-value opacity-animation))
+                                    :blur
+                                    :photo)
+                  :right-side     page-nav-right-side
+                  :overlay-shown? overlay-shown?}
            navigate-back? (assoc :icon-name :i/close
                                  :on-press  #(rf/dispatch [:navigate-back])))])
       (when title-colum
@@ -106,12 +107,12 @@
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
     (fn [{:keys [name theme cover-image logo page-nav-right-section-buttons on-scroll
                  collapsed?
-                 height top-nav title-colum background-color navigate-back?]}
+                 height top-nav title-colum background-color navigate-back? overlay-shown?]}
          sticky-header
          children]
       [:<>
        [:f> f-scroll-page-header @scroll-height height name page-nav-right-section-buttons
-        logo sticky-header top-nav title-colum navigate-back? collapsed?]
+        logo sticky-header top-nav title-colum navigate-back? collapsed? overlay-shown?]
        [rn/scroll-view
         {:content-container-style           {:flex-grow 1}
          :content-inset-adjustment-behavior :never

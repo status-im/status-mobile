@@ -7,7 +7,8 @@
 (def descriptor
   [{:key     :size
     :type    :select
-    :options [{:key :size/l :value "Large"}
+    :options [{:key :size-64}
+              {:key :size-32}
               {:key :default}]}
    {:key  :emoji
     :type :text}
@@ -22,7 +23,7 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:size                :size/l
+  (let [state (reagent/atom {:size                :size-32
                              :locked-state        :not-set
                              :emoji               "🍑"
                              :full-name           "Some channel"

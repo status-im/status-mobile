@@ -1,7 +1,10 @@
 (ns quo2.components.navigation.page-nav.view
   (:require [quo2.components.avatars.group-avatar.view :as group-avatar]
             [quo2.components.buttons.button.view :as button]
-            [quo2.components.dropdowns.dropdown :as dropdown]
+            [quo2.components.buttons.button.properties :as button-properties]
+            [quo2.components.dropdowns.dropdown.view :as dropdown]
+            [quo2.components.dropdowns.dropdown.properties :as dropdown-properties]
+            [quo2.components.dropdowns.network-dropdown.view :as network-dropdown]
             [quo2.components.icon :as icons]
             [quo2.components.markdown.text :as text]
             [quo2.components.navigation.page-nav.style :as style]
@@ -18,7 +21,7 @@
    :blur        :grey})
 
 (defn- page-nav-base
-  [{:keys [margin-top background on-press accessibility-label icon-name]
+  [{:keys [margin-top background on-press accessibility-label icon-name behind-overlay?]
     :or   {background :white}}
    & children]
   (into [rn/view {:style (style/container margin-top)}
@@ -28,6 +31,9 @@
              :icon-only?          true
              :size                32
              :on-press            on-press
+             :background          (if behind-overlay?
+                                    :blur
+                                    (button-properties/backgrounds background))
              :accessibility-label accessibility-label}
             icon-name])]
         children))
@@ -35,7 +41,7 @@
 (defn- right-section-spacing [] [rn/view {:style style/right-actions-spacing}])
 
 (defn- add-right-buttons-xf
-  [max-actions background]
+  [max-actions background behind-overlay?]
   (comp (filter map?)
         (take max-actions)
         (map (fn [{:keys [icon-name label] :as button-props}]
@@ -45,24 +51,35 @@
                        :icon-only? icon-name
                        :size       32
                        :accessible true
-                       :background (when (#{:photo :blur} background) background))
+                       :background (if behind-overlay?
+                                     :blur
+                                     (when (button-properties/backgrounds background) background)))
                 (or label icon-name)]))
         (interpose [right-section-spacing])))
 
+(defn- account-switcher-content
+  [{:keys [customization-color on-press emoji state]}]
+  [dropdown/view
+   {:type                :customization
+    :customization-color customization-color
+    :state               (or state :default)
+    :size                :size-32
+    :on-press            on-press
+    :emoji?              true}
+   emoji])
+
 (defn- right-content
-  [{:keys [background content max-actions min-size? support-account-switcher?]
+  [{:keys [background content max-actions min-size? support-account-switcher? account-switcher
+           behind-overlay?]
     :or   {support-account-switcher? true}}]
   [rn/view (when min-size? {:style style/right-content-min-size})
    (cond
-     ;; TODO: use account-switcher when available (issue #16456)
      (and support-account-switcher? (= content :account-switcher))
-     [rn/pressable
-      {:style    style/account-switcher-placeholder
-       :on-press #(js/alert "Not implemented yet")}]
+     [account-switcher-content account-switcher]
 
      (coll? content)
      (into [rn/view {:style style/right-actions-container}]
-           (add-right-buttons-xf max-actions background)
+           (add-right-buttons-xf max-actions background behind-overlay?)
            content)
 
      :else
@@ -78,17 +95,19 @@
     title]])
 
 (defn- dropdown-center
-  [{:keys [theme background dropdown-on-change dropdown-selected? dropdown-text]}]
-  (let [dropdown-type (cond
-                        (= background :photo)                      :grey
-                        (and (= theme :dark) (= background :blur)) :grey
-                        :else                                      :ghost)]
+  [{:keys [theme background dropdown-on-press dropdown-selected? dropdown-text]}]
+  (let [dropdown-type  (cond
+                         (= background :photo)                      :grey
+                         (and (= theme :dark) (= background :blur)) :grey
+                         :else                                      :ghost)
+        dropdown-state (if dropdown-selected? :active :default)]
     [rn/view {:style (style/center-content-container true)}
-     [dropdown/dropdown
-      {:type      dropdown-type
-       :size      32
-       :on-change dropdown-on-change
-       :selected  dropdown-selected?}
+     [dropdown/view
+      {:type       dropdown-type
+       :state      dropdown-state
+       :size       :size-32
+       :background (when (dropdown-properties/backgrounds background) background)
+       :on-press   dropdown-on-press}
       dropdown-text]]))
 
 (defn- token-center
@@ -156,8 +175,17 @@
        :number-of-lines 1}
       shown-name]]))
 
+(defn- wallet-networks-center
+  [{:keys [networks networks-on-press background]}]
+  [rn/view {:style (style/center-content-container true)}
+   [network-dropdown/view
+    {:state    :default
+     :on-press networks-on-press
+     :blur?    (= background :blur)} networks]])
+
 (defn- view-internal
-  [{:keys [type right-side background text-align]
+  "behind-overlay is necessary for us to know if the page-nav buttons are under the bottom sheet overlay or not."
+  [{:keys [type right-side background text-align account-switcher behind-overlay?]
     :or   {type       :no-title
            text-align :center
            right-side :none
@@ -166,35 +194,37 @@
   (case type
     :no-title
     [page-nav-base props
-     [right-content {:background background :content right-side :max-actions 3}]]
+     [right-content
+      {:background background :content right-side :max-actions 3 :behind-overlay? behind-overlay?}]]
 
     :title
     (let [centered? (= text-align :center)]
       [page-nav-base props
        [title-center (assoc props :centered? centered?)]
        [right-content
-        {:background  background
-         :content     right-side
-         :max-actions (if centered? 1 3)
-         :min-size?   centered?}]])
+        {:background       background
+         :content          right-side
+         :max-actions      (if centered? 1 3)
+         :min-size?        centered?
+         :account-switcher account-switcher}]])
 
     :dropdown
     [page-nav-base props
      [dropdown-center props]
-     [rn/view {:style style/right-actions-container}
-      (let [{button-icon :icon-name :as button-props} (first right-side)]
-        [button/button
-         (assoc button-props
-                :type       (button-type background)
-                :icon-only? true
-                :size       32
-                :accessible true)
-         button-icon])]]
+     [right-content
+      {:background                background
+       :content                   right-side
+       :max-actions               1
+       :support-account-switcher? false}]]
 
     :token
     [page-nav-base props
      [token-center props]
-     [right-content {:background background :content right-side :max-actions 3}]]
+     [right-content
+      {:background       background
+       :content          right-side
+       :max-actions      3
+       :account-switcher account-switcher}]]
 
     :channel
     [page-nav-base props
@@ -216,18 +246,13 @@
 
     :wallet-networks
     [page-nav-base props
-     ;; TODO: use wallet-networks when available (issue #16946)
-     [rn/view {:style (style/center-content-container true)}
-      [text/text
-       {:weight          :regular
-        :size            :paragraph-1
-        :number-of-lines 1}
-       "NETWORK DROPDOWN"]]
+     [wallet-networks-center props]
      [right-content
-      {:background  background
-       :content     right-side
-       :max-actions 1
-       :min-size?   true}]]
+      {:background       background
+       :content          right-side
+       :max-actions      1
+       :min-size?        true
+       :account-switcher account-switcher}]]
 
     (:community :network)
     [page-nav-base props
@@ -255,12 +280,19 @@
          :on-press            (fn callback [] nil)
          :accessibility-label \"an optional label\"}
 
+  - account-switcher (optional)
+      - props to render dropdown component (emoji only) e.g.:
+       {:customization-color :purple
+        :on-press            (fn [] nil)
+        :state               :default (inherit dropdown states)
+        :emoji               \"🍑\"}
+
   Depending on the `type` selected, different properties are accepted:
   `:title`
     - title
     - text-align: `:center` or `:left`
    `:dropdown`
-    - dropdown-on-change: a callback
+    - dropdown-on-press:  a callback
     - dropdown-selected?: a boolean
     - dropdown-text
   `:token`
@@ -276,7 +308,8 @@
     - description
     - picture: a valid rn/image `:source` value
   `:wallet-network`
-    (Not implemented yet)
+    - networks: a vector of network image source
+    - networks-on-press: a callback
   `:community`
     - community-name
     - community-logo: a valid rn/image `:source` value

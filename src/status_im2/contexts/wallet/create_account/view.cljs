@@ -57,6 +57,7 @@
          :disabled?       false
          :default-value   "Account 2"
          :container-style style/title-input-container}]
+       [quo/divider-line]
        [rn/view
         {:style style/color-picker-container}
         [quo/text
@@ -65,15 +66,17 @@
           :style  (style/color-label theme)}
          (i18n/label :t/colour)]
         [quo/color-picker
-         {:selected  @account-color
-          :on-change #(reset! account-color %)}]]
-       [rn/view {:style (style/divider-line theme)}]
+         {:default-selected @account-color
+          :on-change        #(reset! account-color %)
+          :container-style  {:padding-horizontal 12
+                             :padding-vertical   12}}]]
+       [quo/divider-line]
        [quo/category
         {:list-type :settings
          :label     (i18n/label :t/origin)
          :data      (temp/create-account-state display-name)}]
        [quo/slide-button
-        {:track-text          (i18n/label :t/slide-create)
+        {:track-text          (i18n/label :t/slide-to-sign)
          :track-icon          :face-id
          :customization-color @account-color
          :on-complete         (fn []

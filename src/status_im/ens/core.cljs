@@ -5,8 +5,7 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]
     [status-im.bottom-sheet.events :as bottom-sheet]
-    [status-im.ethereum.core :as ethereum]
-    [status-im.ethereum.eip55 :as eip55]
+    [utils.ethereum.eip.eip55 :as eip55]
     [status-im.ethereum.ens :as ens]
     [status-im.ethereum.stateofus :as stateofus]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
@@ -15,7 +14,9 @@
     [status-im.utils.random :as random]
     [status-im2.navigation.events :as navigation]
     [status-im2.constants :as constants]
-    [taoensso.timbre :as log]))
+    [taoensso.timbre :as log]
+    [utils.ethereum.chain :as chain]
+    [status-im.wallet.utils :as wallet.utils]))
 
 (defn fullname
   [custom-domain? username]
@@ -102,7 +103,7 @@
   [{:keys [db] :as cofx} custom-domain? username redirect-to-summary? connected?]
   (let [name     (fullname custom-domain? username)
         names    (get-in db [:ens/names] [])
-        chain-id (ethereum/chain-id db)]
+        chain-id (chain/chain-id db)]
     (rf/merge cofx
               (cond-> {:dispatch-n [[:ens/update-usernames [{:username name :chain-id chain-id}]]]}
                 connected?           (assoc :json-rpc/call
@@ -124,9 +125,9 @@
   {:events [::set-pub-key]}
   [{:keys [db]}]
   (let [{:keys [username address custom-domain?]} (:ens/registration db)
-        address                                   (or address (ethereum/default-address db))
+        address                                   (or address (wallet.utils/default-address db))
         {:keys [public-key]}                      (:profile/profile db)
-        chain-id                                  (ethereum/chain-id db)
+        chain-id                                  (chain/chain-id db)
         username                                  (fullname custom-domain? username)]
     {:db            (assoc-in db [:ens/registration :action] constants/ens-action-type-set-pub-key)
      :json-rpc/call [{:method     "ens_setPubKeyPrepareTx"
@@ -192,7 +193,7 @@
   (let [{:keys [username]}
         (:ens/registration db)
         {:keys [public-key]} (:profile/profile db)
-        chain-id (ethereum/chain-id db)]
+        chain-id (chain/chain-id db)]
     {:db            (assoc-in db [:ens/registration :action] constants/ens-action-type-register)
      :json-rpc/call [{:method     "ens_registerPrepareTx"
                       :params     [chain-id {:from address} username public-key]
@@ -225,6 +226,12 @@
       :searching)
     :else :invalid))
 
+(defn addresses-without-watch
+  [db]
+  (into #{}
+        (remove #(= (:type %) :watch)
+                (map #(eip55/address->checksum (:address %)) (get db :profile/wallet-accounts)))))
+
 ;;NOTE we want to handle only last resolve
 (def resolve-last-id (atom nil))
 
@@ -243,8 +250,8 @@
      (when (= state :searching)
        (let [{:profile/keys [profile]} db
              {:keys [public-key]}      profile
-             addresses                 (ethereum/addresses-without-watch db)
-             chain-id                  (ethereum/chain-id db)]
+             addresses                 (addresses-without-watch db)
+             chain-id                  (chain/chain-id db)]
          {::resolve-owner [chain-id
                            (fullname custom-domain? username)
                            #(on-resolve-owner
@@ -266,8 +273,8 @@
             ;; we reset navigation so that navigate back doesn't return
             ;; into the registration flow
             (navigation/navigate-back-to :my-profile)
-            (navigation/navigate-to :ens-main {})
-  ))
+            (navigation/navigate-to :ens-main {})))
+
 
 (rf/defn switch-domain-type
   {:events [::switch-domain-type]}
@@ -320,7 +327,7 @@
 (rf/defn navigate-to-name
   {:events [::navigate-to-name]}
   [{:keys [db] :as cofx} username]
-  (let [chain-id (ethereum/chain-id db)]
+  (let [chain-id (chain/chain-id db)]
     (rf/merge cofx
               {::get-expiration-time
                [chain-id

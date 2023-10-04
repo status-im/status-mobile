@@ -140,4 +140,3 @@
    :overflow          "hidden"
    :border-radius     radius
    :background-color  colors/danger-50-opa-20})
-

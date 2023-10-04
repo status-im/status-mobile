@@ -2,6 +2,7 @@
   (:require [quo2.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
+            [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
@@ -28,9 +29,10 @@
   [state]
   (merge @state
          {:child        (when (= (:type @state) :pinned) [rn/text (:content @state)])
-          :display-name (:pinned-by @state)}))
+          :display-name (:pinned-by @state)
+          :photo-path   (resources/mock-images :user-picture-female2)}))
 
-(defn preview-system-message
+(defn view
   []
   (let [state (reagent/atom {:type      :pinned
                              :pinned-by "Steve"

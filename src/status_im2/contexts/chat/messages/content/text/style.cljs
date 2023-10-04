@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.text.style
   (:require [quo2.foundations.colors :as colors]
-            [quo.platform :as platform]))
+            [react-native.platform :as platform]))
 
 (def block
   {:border-radius      6

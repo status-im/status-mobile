@@ -68,7 +68,7 @@
 (def neutral-80-opa-20 (alpha neutral-80 0.2))
 (def neutral-80-opa-30 (alpha neutral-80 0.3))
 (def neutral-80-opa-40 (alpha neutral-80 0.4))
-(def neutral-80-opa-50 (alpha neutral-80 0.4))
+(def neutral-80-opa-50 (alpha neutral-80 0.5))
 (def neutral-80-opa-60 (alpha neutral-80 0.6))
 (def neutral-80-opa-70 (alpha neutral-80 0.7))
 (def neutral-80-opa-80 (alpha neutral-80 0.8))
@@ -220,7 +220,7 @@
                60 "#CC6438"}
    :army      {50 "#216266"
                60 "#1A4E52"}
-   :pink      {50 "#F66F8F"
+   :flamingo  {50 "#F66F8F"
                60 "#C55972"}
    :purple    {50 "#7140FD"
                60 "#5A33CA"}

@@ -3,12 +3,13 @@
             [clojure.string :as string]
             [quo2.theme :as theme]
             [re-frame.core :as re-frame]
-            [status-im.ethereum.core :as ethereum]
             [status-im.fleet.core :as fleet]
             [status-im.multiaccounts.db :as multiaccounts.db]
             [status-im2.constants :as constants]
             [utils.image-server :as image-server]
-            [utils.security.core :as security]))
+            [utils.security.core :as security]
+            [status-im.wallet.utils :as wallet.utils]
+            [utils.address :as address]))
 
 (re-frame/reg-sub
  :profile/customization-color
@@ -40,7 +41,7 @@
  (fn [[multiaccounts port font-file] [_ target-key-uid]]
    (let [{:keys [images ens-name?] :as multiaccount} (get multiaccounts target-key-uid)
          image-name                                  (-> images first :type)
-         override-ring?                              (not ens-name?)]
+         override-ring?                              (when ens-name? false)]
      (when multiaccount
        {:fn
         (if image-name
@@ -77,7 +78,7 @@
  :multiaccount/default-account
  :<- [:profile/wallet-accounts]
  (fn [accounts]
-   (ethereum/get-default-account accounts)))
+   (wallet.utils/get-default-account accounts)))
 
 (re-frame/reg-sub
  :multiaccount/visible-accounts
@@ -208,7 +209,7 @@
          :generate
          false
          :watch
-         (or (not (ethereum/address? address))
+         (or (not (address/address? address))
              (some #(when (= (:address %) address) %) accounts))
          :key
          (string/blank? (security/safe-unmask-data private-key))

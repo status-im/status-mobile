@@ -1,13 +1,19 @@
 (ns status-im2.contexts.wallet.account.view
-  (:require [react-native.core :as rn]
-            [quo2.core :as quo]
+  (:require [quo2.core :as quo]
+            [quo2.foundations.resources :as quo.resources]
+            [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
+            [status-im2.contexts.wallet.account.style :as style]
+            [status-im2.contexts.wallet.account.tabs.view :as tabs]
             [status-im2.contexts.wallet.common.temp :as temp]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.wallet.account.style :as style]
-            [status-im2.contexts.wallet.account.tabs.view :as tabs]))
+            [utils.re-frame :as rf]))
+
+(def ^:private networks-list
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}])
 
 (def tabs-data
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
@@ -26,14 +32,16 @@
        {:style {:flex       1
                 :margin-top top}}
        [quo/page-nav
-        {:align-mid?            true
-         :mid-section           {:type :text-only :main-text ""}
-         :left-section          {:type     :grey
-                                 :icon     :i/close
-                                 :on-press #(rf/dispatch [:navigate-back])}
-         :right-section-buttons [{:type     :grey
-                                  :label    "[WIP]"
-                                  :on-press #(rf/dispatch [:open-modal :how-to-pair])}]}]
+        {:type              :wallet-networks
+         :background        :blur
+         :icon-name         :i/close
+         :on-press          #(rf/dispatch [:navigate-back])
+         :networks          networks-list
+         :networks-on-press #(js/alert "Pressed Networks")
+         :right-side        :account-switcher
+         :account-switcher  {:customization-color :purple
+                             :on-press            #(js/alert "Pressed Account Switcher")
+                             :emoji               "🍑"}}]
        [quo/account-overview temp/account-overview-state]
        [quo/wallet-graph {:time-frame :empty}]
        [quo/wallet-ctas
