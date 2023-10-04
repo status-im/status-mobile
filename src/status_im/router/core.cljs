@@ -6,7 +6,6 @@
             [status-im.ethereum.eip681 :as eip681]
             [status-im.ethereum.ens :as ens]
             [status-im.ethereum.stateofus :as stateofus]
-            [status-im.utils.deprecated-types :as types]
             [status-im.utils.wallet-connect :as wallet-connect]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.events :as chat.events]
@@ -14,6 +13,7 @@
             [utils.address :as address]
             [utils.ethereum.chain :as chain]
             [utils.security.core :as security]
+            [utils.transforms :as transforms]
             [utils.url :as url]
             [utils.validators :as validators]))
 
@@ -126,7 +126,7 @@
        user-id
        constants/deserialization-key
        (fn [response]
-         (let [{:keys [error]} (types/json->clj response)]
+         (let [{:keys [error]} (transforms/json->clj response)]
            (when-not error
              (match-contact-async
               chain
