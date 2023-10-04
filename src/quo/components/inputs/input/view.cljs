@@ -1,31 +1,32 @@
-(ns quo.components.inputs.input.view
-  (:require
-    [oops.core :as oops]
-    [quo.components.icon :as icon]
-    [quo.components.inputs.input.style :as style]
-    [quo.components.markdown.text :as text]
-    [quo.theme :as quo.theme]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]))
+(ns quo2.components.inputs.input.view
+  (:require [oops.core :as oops]
+            [quo.components.icon :as icon]
+            [quo.components.inputs.input.style :as style]
+            [quo.components.markdown.text :as text]
+            [quo.theme :as quo.theme]
+            [react-native.core :as rn]
+            [react-native.platform :as platform]
+            [reagent.core :as reagent]))
 
 (defn- label-&-counter
   [{:keys [label current-chars char-limit variant-colors]}]
-  (let [count-text (when char-limit (str current-chars "/" char-limit))]
-    [rn/view
-     {:accessibility-label :input-labels
-      :style               style/texts-container}
-     [rn/view {:style style/label-container}
-      [text/text
-       {:style  (style/label-color variant-colors)
-        :weight :medium
-        :size   :paragraph-2}
-       label]]
+  [rn/view
+   {:accessibility-label :input-labels
+    :style               style/texts-container}
+   [rn/view {:style style/label-container}
+    [text/text
+     {:style  (style/label-color variant-colors)
+      :weight :medium
+      :size   :paragraph-2}
+     label]]
+   (when-let [count-text (some->> char-limit
+                                  (str current-chars "/"))]
      [rn/view {:style style/counter-container}
       [text/text
        {:style  (style/counter-color current-chars char-limit variant-colors)
         :weight :regular
         :size   :paragraph-2}
-       count-text]]]))
+       count-text]])])
 
 (defn- left-accessory
   [{:keys [variant-colors small? icon-name]}]
@@ -56,16 +57,19 @@
 (def ^:private custom-props
   "Custom properties that must be removed from properties map passed to InputText."
   [:type :blur? :theme :error? :right-icon :left-icon :disabled? :small? :button
-   :label :char-limit :on-char-limit-reach :icon-name :multiline? :on-focus :on-blur])
+   :label :char-limit :on-char-limit-reach :icon-name :multiline? :on-focus :on-blur
+   :container-style])
 
 (defn- base-input
-  [{:keys [on-change-text on-char-limit-reach container-style weight]}]
+  [{:keys [on-change-text on-char-limit-reach weight]}]
   (let [status              (reagent/atom :default)
         internal-on-focus   #(reset! status :focus)
         internal-on-blur    #(reset! status :default)
         multiple-lines?     (reagent/atom false)
-        set-multiple-lines! #(let [height (oops/oget % "nativeEvent.contentSize.height")]
-                               (if (> height 57)
+        set-multiple-lines! #(let [height     (oops/oget % "nativeEvent.contentSize.height")
+                                   ;; In Android height comes with padding
+                                   min-height (if platform/android? 40 22)]
+                               (if (> height min-height)
                                  (reset! multiple-lines? true)
                                  (reset! multiple-lines? false)))
         char-count          (reagent/atom 0)
@@ -76,7 +80,7 @@
                                 (when (>= amount-chars char-limit)
                                   (on-char-limit-reach amount-chars))))]
     (fn [{:keys [blur? theme error? right-icon left-icon disabled? small? button
-                 label char-limit multiline? clearable? on-focus on-blur]
+                 label char-limit multiline? clearable? on-focus on-blur container-style]
           :as   props}]
       (let [status-kw        (cond
                                disabled? :disabled
@@ -92,8 +96,7 @@
              :label          label
              :current-chars  @char-count
              :char-limit     char-limit}])
-         [rn/view
-          {:style (style/input-container colors-by-status small? disabled?)}
+         [rn/view {:style (style/input-container colors-by-status small? disabled?)}
           (when-let [{:keys [icon-name]} left-icon]
             [left-accessory
              {:variant-colors variant-colors
@@ -160,7 +163,7 @@
   - :icon-name - The name of an icon to display at the left of the input.
   - :error? - Boolean to specify it this input marks an error.
   - :disabled? - Boolean to specify if this input is disabled or not.
-  - :clearable? - Booolean to specify if this input has a clear button at the end.
+  - :clearable? - Boolean to specify if this input has a clear button at the end.
   - :on-clear - Function executed when the clear button is pressed.
   - :button - Map containing `:on-press` & `:text` keys, if provided renders a button
   - :label - A string to set as label for this input.
