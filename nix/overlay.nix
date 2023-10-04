@@ -38,6 +38,19 @@ in {
     };
   });
 
+  # Clojure's linter receives frequent upgrades, and we want to take advantage
+  # of the latest available rules.
+  clj-kondo = super.clj-kondo.override rec {
+    buildGraalvmNativeImage = args: super.buildGraalvmNativeImage (args // rec {
+      inherit (args) pname;
+      version = "2023.09.07";
+      src = super.fetchurl {
+        url = "https://github.com/clj-kondo/${pname}/releases/download/v${version}/${pname}-${version}-standalone.jar";
+        sha256 = "sha256-F7ePdITYKkGB6nsR3EFJ7zLDCUoT0g3i+AAjXzBd624=";
+      };
+    });
+  };
+
   # Checks fail on darwin.
   git-lfs = super.git-lfs.overrideAttrs (old: {
     doCheck = false;
