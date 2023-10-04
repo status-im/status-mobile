@@ -2,10 +2,16 @@
   (:require [clojure.string :as string]
             [quo2.core :as quo]
             [quo2.foundations.colors :as colors]
+            [quo2.foundations.resources :as quo.resources]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.common.resources :as resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
+
+(def ^:private networks
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}])
 
 (def ^:private descriptor
   [{:key     :type
@@ -190,7 +196,8 @@
                 :network-logo       (resources/get-mock-image :diamond)
                 :account-switcher   {:customization-color :purple
                                      :on-press            #(js/alert "Pressed Account Switcher")
-                                     :emoji               "🍑"}})]
+                                     :emoji               "🍑"}
+                :networks           networks})]
     (fn []
       [preview/preview-container
        {:state                     state

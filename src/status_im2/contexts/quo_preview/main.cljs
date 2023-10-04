@@ -89,6 +89,7 @@
     [status-im2.contexts.quo-preview.list-items.dapp :as dapp]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.saved-address :as saved-address]
+    [status-im2.contexts.quo-preview.list-items.saved-contact-address :as saved-contact-address]
     [status-im2.contexts.quo-preview.list-items.token-value :as token-value]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.list-items.community-list :as
@@ -316,6 +317,8 @@
                         :component preview-lists/view}
                        {:name      :saved-address
                         :component saved-address/view}
+                       {:name      :saved-contact-address
+                        :component saved-contact-address/view}
                        {:name      :token-value
                         :component token-value/view}
                        {:name      :user-list

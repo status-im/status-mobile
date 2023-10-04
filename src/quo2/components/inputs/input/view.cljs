@@ -58,7 +58,7 @@
    :label :char-limit :on-char-limit-reach :icon-name :multiline? :on-focus :on-blur])
 
 (defn- base-input
-  [{:keys [on-change-text on-char-limit-reach]}]
+  [{:keys [on-change-text on-char-limit-reach container-style weight]}]
   (let [status              (reagent/atom :default)
         internal-on-focus   #(reset! status :focus)
         internal-on-blur    #(reset! status :default)
@@ -84,21 +84,22 @@
             colors-by-status (style/status-colors status-kw blur? theme)
             variant-colors   (style/variants-colors blur? theme)
             clean-props      (apply dissoc props custom-props)]
-        [:<>
+        [rn/view {:style {:flex 1}}
          (when (or label char-limit)
            [label-&-counter
             {:variant-colors variant-colors
              :label          label
              :current-chars  @char-count
              :char-limit     char-limit}])
-         [rn/view {:style (style/input-container colors-by-status small? disabled?)}
+         [rn/view
+          {:style (merge (style/input-container colors-by-status small? disabled?) container-style)}
           (when-let [{:keys [icon-name]} left-icon]
             [left-accessory
              {:variant-colors variant-colors
               :small?         small?
               :icon-name      icon-name}])
           [rn/text-input
-           (cond-> {:style                  (style/input colors-by-status small? @multiple-lines?)
+           (cond-> {:style                  (style/input colors-by-status small? @multiple-lines? weight)
                     :accessibility-label    :input
                     :placeholder-text-color (:placeholder colors-by-status)
                     :keyboard-appearance    (quo.theme/theme-value :light :dark theme)

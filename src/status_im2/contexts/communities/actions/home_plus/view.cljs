@@ -9,13 +9,13 @@
    [(concat [{:icon                :i/download
               :accessibility-label :import-community
               :label               "Import community"
-              :on-press            #(rf/dispatch [:navigate-to :community-import])}
-             {:icon                :i/communities
-              :accessibility-label :create-community
-              :label               "Create community (only for e2e)"
-              :on-press            #(rf/dispatch [:legacy-only-for-e2e/open-create-community])}]
+              :on-press            #(rf/dispatch [:navigate-to :community-import])}]
             (when config/fast-create-community-enabled?
               [{:icon                :i/communities
+                :accessibility-label :create-community
+                :label               "Create community (only for e2e)"
+                :on-press            #(rf/dispatch [:legacy-only-for-e2e/open-create-community])}
+               {:icon                :i/communities
                 :accessibility-label :create-closed-community
                 :label               "Create closed community"
                 :on-press            #(rf/dispatch [:fast-create-community/create-closed-community])}
