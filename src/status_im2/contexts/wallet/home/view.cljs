@@ -22,6 +22,7 @@
       :accessibility-label :add-a-contact
       :label               (i18n/label :t/add-address)
       :sub-label           (i18n/label :t/add-address-description)
+      :on-press            #(rf/dispatch [:navigate-to :wallet-address-watch])
       :add-divider?        true}]]])
 
 (def account-cards
