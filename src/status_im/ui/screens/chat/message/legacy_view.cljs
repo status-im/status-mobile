@@ -199,10 +199,11 @@
 (defn contact-request-status-label
   [state]
   [rn/view {:style (style/contact-request-status-label state)}
-   (case state
+   (condp = state
      constants/contact-request-message-state-pending  [contact-request-status-pending]
      constants/contact-request-message-state-accepted [contact-request-status-accepted]
-     constants/contact-request-message-state-declined [contact-request-status-declined])])
+     constants/contact-request-message-state-declined [contact-request-status-declined]
+     nil)])
 
 ;;;; SYSTEM
 

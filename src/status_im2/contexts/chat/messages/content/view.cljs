@@ -173,8 +173,7 @@
                       :max-height  (when-not show-reactions?
                                      (* 0.4 height))}}
              [author message-data show-reactions? show-user-info?]
-             (case content-type
-
+             (condp = content-type
                constants/content-type-text
                [content.text/text-content message-data context]
 

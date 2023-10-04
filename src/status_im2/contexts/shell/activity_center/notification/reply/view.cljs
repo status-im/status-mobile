@@ -15,9 +15,10 @@
 ;; NOTE: Replies support text, image and stickers only.
 (defn- get-message-content
   [{:keys [content-type] :as message} album-messages media-server-port]
-  (case content-type
-    constants/content-type-text [quo/text {:style style/tag-text}
-                                 (get-in message [:content :text])]
+  (condp = content-type
+    constants/content-type-text
+    [quo/text {:style style/tag-text}
+     (get-in message [:content :text])]
 
     constants/content-type-image
     (let [images           (or album-messages message)
@@ -31,7 +32,8 @@
        {:photos       image-local-urls
         :message-text (get-in message [:content :text])}])
 
-    constants/content-type-sticker [old-message/sticker message]
+    constants/content-type-sticker
+    [old-message/sticker message]
 
     constants/content-type-system-pinned-message
     [not-implemented/not-implemented
@@ -40,9 +42,10 @@
 
     ;; NOTE: The following type (system-text) doesn't have a design yet.
     ;; https://github.com/status-im/status-mobile/issues/14915
-    constants/content-type-system-text [not-implemented/not-implemented
-                                        [quo/text {:style style/tag-text}
-                                         (get-in message [:content :text])]]
+    constants/content-type-system-text
+    [not-implemented/not-implemented
+     [quo/text {:style style/tag-text}
+      (get-in message [:content :text])]]
 
     nil))
 

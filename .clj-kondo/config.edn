@@ -9,7 +9,8 @@
                 status-im.utils.styles/defn    clojure.core/defn
                 test-helpers.unit/deftest-sub  clojure.core/defn
                 taoensso.tufte/defnp           clojure.core/defn}
- :linters      {:clj-kondo-config              {:level :error}
+ :linters      {:case-symbol-test              {:level :error}
+                :clj-kondo-config              {:level :error}
                 :cond-else                     {:level :error}
                 :consistent-alias              {:level   :error
                                                 :aliases {clojure.string  string
