@@ -54,34 +54,6 @@
       "iyKACkQKB0Rvb2RsZXMSJ0NvbG9yaW5nIHRoZSB3b3JsZCB3aXRoIGpveSDigKIg4bSXIOKAohiYohsiByMxMzFEMkYqAwEhMwM="
       :community-id "zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11"}]
 
-   "status-app://u/statuse2e"
-    [:user {:user-data "statuse2e"}]
-
-   (str "status-app://user/" public-key)
-    [:user {:user-id public-key}]
-
-   "status-app://b/www.cryptokitties.co"
-    [:browser {:domain "www.cryptokitties.c"}]
-
-   (str "status-app://g/args?a=" public-key "&a1=" chat-name-url "&a2=" chat-id)
-    [:group-chat {:params "arg"} {"a" public-key "a1" chat-name "a2" chat-id}]
-
-   (str "https://status.app/g/args?a=" public-key "&a1=" chat-name-url "&a2=" chat-id)
-    [:group-chat {:params "arg"} {"a" public-key "a1" chat-name "a2" chat-id}]
-
-   "https://status.app/u/statuse2e"
-    [:user {:user-data "statuse2e"}]
-
-   (str "https://status.app/user/" public-key)
-    [:user {:user-id public-key}]
-
-   ;; Last char removed by: https://github.com/juxt/bidi/issues/104
-   "https://status.app/b/www.cryptokitties.co"
-    [:browser {:domain "www.cryptokitties.c"}]
-
-   "https://status.app/b/https://www.google.com/"
-    [:browser {:domain "https://www.google.co"}]
-
    "ethereum:0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"
     [:ethereum {:address "0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7"}]
 

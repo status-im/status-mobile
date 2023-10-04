@@ -29,14 +29,6 @@
 
 (def handled-schemes (set (into uri-schemes web-urls)))
 
-(def browser-extractor
-  {[#"(.*)" :domain] {""  :browser
-                      "/" :browser}})
-
-(def group-chat-extractor
-  {[#"(.*)" :params] {""  :group-chat
-                      "/" :group-chat}})
-
 (def eip-extractor
   {#{[:prefix "-" :address]
      [:address]}
@@ -46,16 +38,9 @@
 
 (def routes
   [""
-   {handled-schemes {"b/"                   browser-extractor
-                     "browser/"             browser-extractor
-                     ["p/" :chat-id]        :private-chat
-                     ["cr/" :community-id]  :community-requests
-                     ["c/" :community-data] :community
+   {handled-schemes {["c/" :community-data] :community
                      ["cc/" :chat-data]     :community-chat
-                     "g/"                   group-chat-extractor
-                     ["wallet/" :account]   :wallet-account
-                     ["u/" :user-data]      :user
-                     ["user/" :user-id]     :user}
+                     ["u/" :user-data]      :user}
     ethereum-scheme eip-extractor}])
 
 (defn parse-query-params
@@ -252,13 +237,14 @@
     :community))
 
 (defn handle-uri
-  [chain chats uri cb]
-  (let [{:keys [handler route-params query-params]} (match-uri uri)]
+  [chain _chats uri cb]
+  (let [{:keys [handler route-params]} (match-uri uri)]
     (log/info "[router] uri " uri " matched " handler " with " route-params)
     (cond
 
-      (= handler :browser)
-      (cb (match-browser uri route-params))
+      ;; ;; NOTE: removed in `match-uri`, might need this in the future
+      ;; (= handler :browser)
+      ;; (cb (match-browser uri route-params))
 
       (= handler :ethereum)
       (cb (match-eip681 uri))
@@ -266,17 +252,20 @@
       (and (= handler :user) (:user-id route-params))
       (match-contact-async chain route-params cb)
 
-      (= handler :private-chat)
-      (match-private-chat-async chain route-params cb)
+      ;; ;; NOTE: removed in `match-uri`, might need this in the future
+      ;; (= handler :private-chat)
+      ;; (match-private-chat-async chain route-params cb)
 
-      (= handler :group-chat)
-      (cb (match-group-chat chats query-params))
+      ;; ;; NOTE: removed in `match-uri`, might need this in the future
+      ;; (= handler :group-chat)
+      ;; (cb (match-group-chat chats query-params))
 
       (validators/valid-public-key? uri)
       (match-contact-async chain {:user-id uri} cb)
 
-      (= handler :community-requests)
-      (cb {:type handler :community-id (:community-id route-params)})
+      ;; ;; NOTE: removed in `match-uri`, might need this in the future
+      ;; (= handler :community-requests)
+      ;; (cb {:type handler :community-id (:community-id route-params)})
 
       (and (= handler :community) (:community-id route-params))
       (cb {:type         (community-route-type route-params)
@@ -290,8 +279,9 @@
       (cb {:type         (community-route-type route-params)
            :community-id (:community-id route-params)})
 
-      (= handler :wallet-account)
-      (cb (match-wallet-account route-params))
+      ;; ;; NOTE: removed in `match-uri`, might need this in the future
+      ;; (= handler :wallet-account)
+      ;; (cb (match-wallet-account route-params))
 
       (address/address? uri)
       (cb (address->eip681 uri))
