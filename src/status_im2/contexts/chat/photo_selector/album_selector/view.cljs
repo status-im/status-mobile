@@ -61,21 +61,13 @@
 
 (defn- f-album-selector
   [{:keys [scroll-enabled on-scroll]} album? selected-album top]
-  (let [albums                           (rf/sub [:camera-roll/albums])
-        add-recent-count-to-recent-album (-> albums
-                                             :smart-albums
-                                             first
-                                             (assoc :count
-                                                    (reduce
-                                                     (fn [total-album-count curr-album]
-                                                       (+ total-album-count (:count curr-album)))
-                                                     0
-                                                     (:my-albums albums))))
-        albums-sections                  [{:title no-title
-                                           :data  [add-recent-count-to-recent-album]}
-                                          {:title (i18n/label :t/my-albums)
-                                           :data  (:my-albums albums)}]
-        window-height                    (:height (rn/get-window))]
+  (let [albums             (rf/sub [:camera-roll/albums])
+        total-photos-count (rf/sub [:camera-roll/total-photos-count])
+        albums-sections    [{:title no-title
+                             :data  [(assoc (:smart-album albums) :count total-photos-count)]}
+                            {:title (i18n/label :t/my-albums)
+                             :data  (:my-albums albums)}]
+        window-height      (:height (rn/get-window))]
     [reanimated/view {:style (style/selector-container top)}
      [gesture/section-list
       {:data                           albums-sections

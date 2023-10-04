@@ -91,6 +91,16 @@
 (reg-root-key-sub :new-chat-name :new-chat-name)
 (reg-root-key-sub :chat/inputs :chat/inputs)
 (reg-root-key-sub :chat/memberships :chat/memberships)
+<<<<<<< HEAD
+=======
+(reg-root-key-sub :camera-roll/photos :camera-roll/photos)
+(reg-root-key-sub :camera-roll/end-cursor :camera-roll/end-cursor)
+(reg-root-key-sub :camera-roll/has-next-page :camera-roll/has-next-page)
+(reg-root-key-sub :camera-roll/loading-more :camera-roll/loading-more)
+(reg-root-key-sub :camera-roll/albums :camera-roll/albums)
+(reg-root-key-sub :camera-roll/total-photos-count :camera-roll/total-photos-count)
+(reg-root-key-sub :camera-roll/selected-album :camera-roll/selected-album)
+>>>>>>> 408e1326a (Flexsurfer's approach)
 (reg-root-key-sub :group-chat/invitations :group-chat/invitations)
 (reg-root-key-sub :chats/mention-suggestions :chats/mention-suggestions)
 (reg-root-key-sub :chat/inputs-with-mentions :chat/inputs-with-mentions)

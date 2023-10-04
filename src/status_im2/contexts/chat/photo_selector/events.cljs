@@ -56,16 +56,16 @@
 
 (defn get-albums
   [callback]
-  (let [albums (atom {:smart-albums []
-                      :my-albums    []})]
+  (let [albums (atom {:smart-album []
+                      :my-albums   []})]
     ;; Get the "recent" album first
     (cameraroll/get-photos
      {:first 1 :groupTypes "All"}
      (fn [res-recent]
        (swap! albums assoc
-         :smart-albums
-         [{:title (i18n/label :t/recent)
-           :uri   (get-in (first (:edges res-recent)) [:node :image :uri])}])
+         :smart-album
+         {:title (i18n/label :t/recent)
+          :uri   (get-in (first (:edges res-recent)) [:node :image :uri])})
        ;; Get albums, then loop over albums and get each one's cover (first photo)
        (cameraroll/get-albums
         {:assetType :Photos}
@@ -91,7 +91,14 @@
 (rf/defn on-camera-roll-get-albums
   {:events [:on-camera-roll-get-albums]}
   [{:keys [db]} albums]
-  {:db (assoc db :camera-roll/albums albums)})
+  {:db (-> db
+           (assoc :camera-roll/albums albums)
+           (assoc :camera-roll/total-photos-count
+                  (reduce
+                   (fn [total-album-count curr-album]
+                     (+ total-album-count (:count curr-album)))
+                   0
+                   (:my-albums albums))))})
 
 (rf/defn camera-roll-get-albums
   {:events [:photo-selector/camera-roll-get-albums]}
