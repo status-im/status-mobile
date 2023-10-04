@@ -76,12 +76,14 @@
            (i18n/label :t/setup-syncing)]]
          [rn/view {:style style/qr-container}
           (if (sync-utils/valid-connection-string? @code)
-            ;; TODO: margin-horizontal 12
             [qr-codes/qr-code {:url @code}]
-            [rn/image
-             {:source (resources/get-image :qr-code)
-              :height 220
-              :width  "100%"}])
+            [rn/view {:style {:flex-direction :row}}
+             [rn/image
+              {:source (resources/get-image :qr-code)
+               :style  {:width            "100%"
+                        :background-color colors/white-opa-70
+                        :border-radius    12
+                        :aspect-ratio     1}}]])
           (when (sync-utils/valid-connection-string? @code)
             [rn/view
              {:style style/valid-cs-container}
