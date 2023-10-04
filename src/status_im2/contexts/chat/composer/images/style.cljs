@@ -7,18 +7,20 @@
    :padding-right  12})
 
 (def remove-photo-container
-  {:width            14
-   :height           14
-   :border-radius    7
+  {:width            15
+   :height           15
+   :border-radius    8
    :background-color colors/neutral-50
+   :border-width     1
+   :border-color     colors/white
    :position         :absolute
    :top              5
-   :right            5
+   :right            9
    :justify-content  :center
    :align-items      :center})
 
 (def small-image
   {:width         56
    :height        56
-   :border-radius 8})
+   :border-radius 12})
 
