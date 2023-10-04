@@ -1,8 +1,7 @@
-(ns status-im.ui.screens.profile.user.components
+(ns status-im2.contexts.profile.profiles.components
   (:require [status-im.ui.components.react :as react]
-            [quo.components.header :as header]
             [quo.core :as quo]
-            [status-im.ui.screens.profile.user.styles :as styles]
+            [status-im2.contexts.profile.profiles.style :as styles]
             [status-im2.contexts.chat.messages.avatar.view :as avatar]
             [status-im.multiaccounts.core :as multiaccounts]))
 
@@ -12,7 +11,7 @@
 
 (defn button
   [{:keys [icon accessibility-label on-press style]}]
-  [header/header-action
+  [quo/header-action
    {:icon                icon
     :on-press            on-press
     :accessibility-label accessibility-label

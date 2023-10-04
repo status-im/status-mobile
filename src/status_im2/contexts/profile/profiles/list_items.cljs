@@ -1,13 +1,12 @@
-(ns status-im.ui.screens.profile.user.list-items
+(ns status-im2.contexts.profile.profiles.list-items
   (:require [quo.core :as quo]
             [quo.design-system.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.profile.user.styles :as styles]
+            [status-im2.contexts.profile.profiles.style :as styles]
             [utils.i18n :as i18n]
             [status-im.ui.components.icons.icons :as icons]
-            [quo.components.text :as text]
             [quo2.foundations.colors :as fcolors]))
 
 (def separator
@@ -189,7 +188,7 @@
     #(re-frame/dispatch [:multiaccounts.logout.ui/logout-pressed])
     :accessibility-label :log-out-button}
    [icons/icon :main-icons/log-out {:color fcolors/danger-60}]
-   [text/text
+   [quo/text
     {:style {:color       fcolors/danger-60
              :margin-left 8}}
     (i18n/label :t/logout)]])

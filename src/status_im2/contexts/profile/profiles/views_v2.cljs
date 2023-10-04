@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.profile.user.views-v2
+(ns status-im2.contexts.profile.profiles.views-v2
   (:require [clojure.string :as string]
             [quo.core :as quo]
             [quo.design-system.colors :as colors]
@@ -7,9 +7,9 @@
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.list-selection :as list-selection]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.profile.user.components :as components]
-            [status-im.ui.screens.profile.user.list-items :as profile-list-item]
-            [status-im.ui.screens.profile.user.styles :as styles]
+            [status-im2.contexts.profile.profiles.components :as components]
+            [status-im2.contexts.profile.profiles.list-items :as profile-list-item]
+            [status-im2.contexts.profile.profiles.style :as styles]
             [status-im.utils.universal-links.utils :as universal-links]
             [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
             [status-im2.config :as config]

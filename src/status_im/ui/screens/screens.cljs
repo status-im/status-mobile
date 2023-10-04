@@ -51,7 +51,7 @@
     [status-im.ui.screens.profile.contact.views :as contact]
     [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
     [status-im.ui.screens.profile.seed.views :as profile.seed]
-    [status-im.ui.screens.profile.user.views-v2 :as profile.user]
+    [status-im2.contexts.profile.profiles.views-v2 :as profile.user]
     [status-im.ui.screens.progress.views :as progress]
     [status-im.ui.screens.qr-scanner.views :as qr-scanner]
     [status-im.ui.screens.reset-password.views :as reset-password]

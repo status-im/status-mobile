@@ -8,7 +8,7 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
             [status-im.ui.screens.keycard.views :as keycard.views]
-            [status-im.ui.screens.profile.user.views-v2 :as profile.user]
+            [status-im2.contexts.profile.profiles.views-v2 :as profile.user]
             [status-im.ui.screens.reset-password.views :as reset-password.views]
             [status-im.ui.screens.signing.sheets :as signing-sheets]
             [status-im.ui.screens.signing.views :as signing]
