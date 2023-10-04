@@ -2300,7 +2300,7 @@
     "add-address-description": "Watch a public address or ENS name",
     "colour": "Colour",
     "origin": "Origin",
-    "slide-create": "Slide to create account",
+    "slide-to-sign": "Slide to sign",
     "user-keypair": "{{name}}'s Keypair",
     "trip-accounts": "Trip accounts",
     "destroy": "Destroy",
@@ -2328,5 +2328,8 @@
     "no-saved-addresses": "No saved addresses",
     "you-like-to-type-43-characters": "You like to type 43 characters?",
     "no-other-accounts": "No other accounts",
-    "here-is-a-cat-in-a-box-instead": "Here’s a cat in a box instead"
+    "here-is-a-cat-in-a-box-instead": "Here’s a cat in a box instead",
+    "accounts-count": "{{count}} accounts",
+    "enter-eth": "Enter any ETH address or ENS name.",
+    "eth-or-ens": "ETH address or ENS name."
 }

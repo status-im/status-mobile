@@ -82,8 +82,8 @@
    :size  20})
 
 (defn input
-  [colors-by-status small? multiple-lines?]
-  (let [base-props (assoc (text/text-style {:size :paragraph-1 :weight :regular})
+  [colors-by-status small? multiple-lines? weight]
+  (let [base-props (assoc (text/text-style {:size :paragraph-1 :weight (or weight :regular)})
                           :flex             1
                           :padding-right    0
                           :padding-left     (if small? 4 8)

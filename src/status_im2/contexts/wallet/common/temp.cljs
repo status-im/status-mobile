@@ -1,10 +1,13 @@
 (ns status-im2.contexts.wallet.common.temp
-  (:require [quo2.core :as quo]
-            [quo2.foundations.resources :as quo.resources]
-            [react-native.core :as rn]
-            [status-im2.contexts.wallet.common.utils :as utils]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [quo2.foundations.resources :as quo.resources]
+    [react-native.core :as rn]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.wallet.common.utils :as utils]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def networks
   [{:source (quo.resources/get-network :ethereum)}
@@ -78,9 +81,24 @@
 
 (defn create-account-state
   [name]
-  [{:title        (keypair-string name)
-    :button-props {:title (i18n/label :t/edit)}
-    :left-icon    :i/placeholder}
-   {:title        (i18n/label :t/derivation-path)
-    :button-props {:title (i18n/label :t/edit)}
-    :left-icon    :i/derivated-path}])
+  [{:title             (keypair-string name)
+    :image             :avatar
+    :image-props       {:full-name           "A Y"
+                        :size                :xxs
+                        :customization-color :blue}
+    :action            :button
+    :action-props      {:on-press    #(js/alert "Button pressed!")
+                        :button-text (i18n/label :t/edit)
+                        :alignment   :flex-start}
+    :description       :text
+    :description-props {:text (i18n/label :t/on-device)}}
+   {:title             (i18n/label :t/derivation-path)
+    :image             :icon
+    :image-props       :i/derivated-path
+    :action            :button
+    :action-props      {:on-press    #(js/alert "Button pressed!")
+                        :button-text (i18n/label :t/edit)
+                        :icon-left   :i/placeholder
+                        :alignment   :flex-start}
+    :description       :text
+    :description-props {:text (string/replace constants/path-default-wallet #"/" " / ")}}])

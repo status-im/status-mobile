@@ -13,9 +13,10 @@
   {:flex-direction :row
    :align-items    (if (or tag description) :flex-start :center)})
 
-(def sub-container
+(defn sub-container
+  [align-action]
   {:flex-direction :row
-   :align-items    :center})
+   :align-items    (or align-action :center)})
 
 (def left-container
   {:margin-left     12
