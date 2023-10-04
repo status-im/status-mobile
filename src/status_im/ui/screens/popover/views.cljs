@@ -52,10 +52,10 @@
         request-close     (fn []
                             (when-not (:prevent-closing? @current-popover)
                               (reset! clear-timeout
-                                (js/setTimeout
-                                 #(do (reset! current-popover nil)
-                                      (re-frame/dispatch [:hide-popover]))
-                                 300))
+                                      (js/setTimeout
+                                       #(do (reset! current-popover nil)
+                                            (re-frame/dispatch [:hide-popover]))
+                                       300))
                               (hide-panel-anim
                                bottom-anim-value
                                alpha-value
@@ -163,4 +163,4 @@
   []
   (views/letsubs [current-popover         [:popover/popover]
                   {window-height :height} [:dimensions/window]]
-    [popover-view current-popover window-height]))
+                 [popover-view current-popover window-height]))
