@@ -1,6 +1,6 @@
 {
   "name": "StatusIm-Mobile",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "modules/react-native-status/nodejs/bindings.js",
   "private": true,
   "scripts": {
