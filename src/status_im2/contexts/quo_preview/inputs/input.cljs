@@ -22,7 +22,7 @@
     :type :boolean}
    {:key  :small?
     :type :boolean}
-   {:key  :multiline
+   {:key  :multiline?
     :type :boolean}
    {:key  :button
     :type :boolean}
@@ -53,10 +53,11 @@
     (fn []
       (let [blank-label? (string/blank? (:label @state))]
         [preview/preview-container
-         {:state                 state
-          :descriptor            descriptor
-          :blur?                 (:blur? @state)
-          :show-blur-background? true}
+         {:component-container-style {:margin-bottom 200}
+          :state                     state
+          :descriptor                descriptor
+          :blur?                     (:blur? @state)
+          :show-blur-background?     true}
          [quo/input
           (cond-> (assoc @state
                          :on-clear?      #(swap! state assoc :value "")
