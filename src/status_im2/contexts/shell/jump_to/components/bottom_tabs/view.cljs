@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.jump-to.components.bottom-tabs.view
   (:require [quo2.core :as quo]
-            [quo2.theme :as theme]
             [utils.re-frame :as rf]
+            [quo2.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.gesture :as gesture]
             [react-native.platform :as platform]
@@ -59,7 +59,7 @@
                                                                         shared-values))]
     (utils/load-stack @state/selected-stack-id)
     (reanimated/set-shared-value (:pass-through? shared-values) pass-through?)
-    [theme/provider {:theme :dark}
+    [quo.theme/provider {:theme :dark}
      [reanimated/view
       {:style (style/bottom-tabs-container pass-through? (:bottom-tabs-height shared-values))}
       (when pass-through?
