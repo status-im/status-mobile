@@ -90,7 +90,7 @@
          :community-logo (:avatar data)
          :community-name (:community-name data)}]
 
-       (constants/content-type-link) ;; Components not available
+       constants/content-type-link ;; Components not available
        ;; Code snippet content type is not supported yet
        [:<>]
 
