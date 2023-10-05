@@ -61,7 +61,7 @@
     (if (>= current-progress drag-limit)
       drag-limit
       (-> (quot current-progress progress-threshold)
-          (+ 1)
+          inc
           (* progress-threshold)))))
 
 (defn get-previous-progress
@@ -70,7 +70,7 @@
     (if (< current-progress progress-threshold)
       0
       (-> (quot current-progress progress-threshold)
-          (- 1)
+          dec
           (* progress-threshold)))))
 
 (defn use-initialize-animation

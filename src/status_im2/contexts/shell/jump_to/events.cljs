@@ -57,7 +57,7 @@
   (case view-id
     :chat
     (let [chat (get-in db [:chats id])]
-      (case (:chat-type chat)
+      (condp = (:chat-type chat)
         constants/one-to-one-chat-type
         {:card-id       id
          :switcher-card {:type      shell.constants/one-to-one-chat-card

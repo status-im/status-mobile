@@ -110,9 +110,8 @@
   [index {:keys [opacity-value border-value full-screen-scale transparent? props]} portrait?]
   (let [{:keys [small-list-ref timers text-sheet-lock?]} props
         opacity                                          (reanimated/get-shared-value opacity-value)
-        scale-value                                      (+ 1
-                                                            (/ constants/margin
-                                                               (:width (rn/get-window))))]
+        scale-value                                      (inc (/ constants/margin
+                                                                 (:width (rn/get-window))))]
     (if (= opacity 1)
       (do
         (js/clearTimeout (:show-0 @timers))

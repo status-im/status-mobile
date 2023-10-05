@@ -99,7 +99,7 @@
 
 (defn get-mock-content
   [data]
-  (case (:content-type data)
+  (condp = (:content-type data)
     constants/content-type-text
     (:last-message data)
 
@@ -135,16 +135,19 @@
               :community-channel      {:emoji "🍑" :channel-name "# random"}
               :community-info         {:type :kicked}
               :data                   (get-mock-content data)}}
-   (case type
-     shell.constants/one-to-one-chat-card
+   (cond
+     (= type shell.constants/one-to-one-chat-card)
      {:avatar-params {:full-name (:title data)}}
 
-     shell.constants/private-group-chat-card
+     (= type shell.constants/private-group-chat-card)
      {}
 
-     (shell.constants/community-card
-      shell.constants/community-channel-card)
+     (#{shell.constants/community-card
+        shell.constants/community-channel-card}
+      type)
      {:avatar-params community-avatar}
+
+     :else
      {})))
 
 (defn preview-switcher-cards

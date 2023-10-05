@@ -35,7 +35,7 @@
                                        community-info community-channel]
     {:keys [text parsed-text source]} :data}]
   [rn/view {:style (style/content-container new-notifications?)}
-   (case type
+   (condp = type
      shell.constants/community-card
      (case (:type community-info)
        :pending             [quo/status-tag
@@ -52,7 +52,7 @@
      shell.constants/community-channel-card
      [channel-card (assoc community-channel :customization-color color-50)]
 
-     (case content-type
+     (condp = content-type
        constants/content-type-text
        [quo/text
         {:size            :paragraph-2
@@ -90,7 +90,7 @@
          :community-logo (:avatar data)
          :community-name (:community-name data)}]
 
-       (constants/content-type-link) ;; Components not available
+       constants/content-type-link ;; Components not available
        ;; Code snippet content type is not supported yet
        [:<>]
 
@@ -114,21 +114,22 @@
 
 (defn avatar
   [avatar-params type customization-color]
-  (case type
-    shell.constants/one-to-one-chat-card
+  (cond
+    (= type shell.constants/one-to-one-chat-card)
     [quo/user-avatar
      (merge {:size              :medium
              :status-indicator? false}
             avatar-params)]
 
-    shell.constants/private-group-chat-card
+    (= type shell.constants/private-group-chat-card)
     [quo/group-avatar
      {:customization-color customization-color
       :size                :size-48
       :override-theme      :dark}]
 
-    (shell.constants/community-card
-     shell.constants/community-channel-card)
+    (#{shell.constants/community-card
+       shell.constants/community-channel-card}
+     type)
     (cond
       (:source avatar-params)
       [fast-image/fast-image
@@ -144,18 +145,19 @@
          :style  {:color colors/white-opa-70}}
         (string/upper-case (first (:name avatar-params)))]])
 
+    :else
     nil))
 
 (defn subtitle
   [type {:keys [content-type data]}]
-  (case type
+  (condp = type
     shell.constants/community-card
     (i18n/label :t/community)
 
     shell.constants/community-channel-card
     (i18n/label :t/community-channel)
 
-    (case content-type
+    (condp = content-type
       constants/content-type-text
       (i18n/label :t/message)
 
@@ -298,29 +300,32 @@
 
 (defn card
   [{:keys [type] :as data}]
-  (case type
-    shell.constants/empty-card            ;; Placeholder
+  (cond
+    (= type shell.constants/empty-card) ; Placeholder
     [empty-card]
 
-    (shell.constants/one-to-one-chat-card ;; Screens Card
-     shell.constants/private-group-chat-card
-     shell.constants/community-card
-     shell.constants/community-channel-card)
+    ;; Screens Card
+    (#{shell.constants/one-to-one-chat-card
+       shell.constants/private-group-chat-card
+       shell.constants/community-card
+       shell.constants/community-channel-card}
+     type)
     [screens-card data]
 
-    shell.constants/browser-card         ;; Browser Card
+    (= type shell.constants/browser-card) ; Browser Card
     [browser-card data]
 
-    shell.constants/wallet-card          ;; Wallet Card
+    (= type shell.constants/wallet-card) ; Wallet Card
     [wallet-card data]
 
-    shell.constants/wallet-collectible   ;; Wallet Card
+    (= type shell.constants/wallet-collectible) ; Wallet Card
     [wallet-collectible data]
 
-    shell.constants/wallet-graph         ;; Wallet Card
+    (= type shell.constants/wallet-graph) ; Wallet Card
     [wallet-graph data]
 
-    shell.constants/communities-discover ;; Home Card
+    (= type shell.constants/communities-discover) ; Home Card
     [communities-discover data]
 
+    :else
     nil))

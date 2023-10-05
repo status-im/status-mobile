@@ -122,7 +122,7 @@
            :style  {:color      (colors/theme-colors colors/neutral-50 colors/neutral-40)
                     :margin-top 2}}
           (str " "
-               (case (or content-type contentType)
+               (condp = (or content-type contentType)
                  constant/content-type-image   (if (pos? album-images-count)
                                                  (i18n/label :t/album-images-count
                                                              {:album-images-count album-images-count})

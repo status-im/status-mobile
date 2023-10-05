@@ -50,13 +50,10 @@
            [admin/view props]
 
            (some types/membership [type])
-           (case type
+           (condp = type
              types/private-group-chat [membership/view props]
-
              types/community-request  [community-request/view props]
-
              types/community-kicked   [community-kicked/view props]
-
              nil)
 
            :else

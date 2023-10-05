@@ -101,7 +101,7 @@
 
 (defn get-access-type
   [access]
-  (case access
+  (condp = access
     constants/community-no-membership-access   :open
     constants/community-invitation-only-access :invite-only
     constants/community-on-request-access      :request-access
@@ -339,8 +339,8 @@
           {:on-category-layout              (partial add-category-height categories-heights)
            :collapsed?                      collapsed?
            :on-first-channel-height-changed
-           ;; Here we set the height of the component and we filter out the categories, as some might
-           ;; have been removed.
+           ;; Here we set the height of the component and we filter out the categories, as some
+           ;; might have been removed.
            (fn [height categories]
              (swap! categories-heights select-keys categories)
              (reset! first-channel-height height))}]]))))

@@ -26,13 +26,13 @@
 (def mock-current-time-epoch 1655731506000)
 
 (deftest is-24-hour-locale-en-test
-  (is (= (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "en")) false)))
+  (is (false? (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "en")))))
 
 (deftest is-24-hour-locale-it-test
-  (is (= (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "it")) true)))
+  (is (true? (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "it")))))
 
 (deftest is-24-hour-locale-nb-test
-  (is (= (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "nb-NO")) true)))
+  (is (true? (#'utils.datetime/is-24-hour-locsym (i18n-goog/locale-symbols "nb-NO")))))
 
 (deftest to-short-str-today-test
   (with-redefs [t/*ms-fn*                 (constantly epoch-plus-3d)

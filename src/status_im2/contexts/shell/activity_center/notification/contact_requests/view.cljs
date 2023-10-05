@@ -83,7 +83,7 @@
         :context             [(i18n/label :t/contact-request-outgoing)
                               [common/user-avatar-tag chat-id]]
         :message             {:body (get-in message [:content :text])}
-        :items               (case contact-request-state
+        :items               (condp = contact-request-state
                                constants/contact-request-message-state-pending
                                [{:type    :status
                                  :subtype :pending
@@ -115,7 +115,7 @@
                 (i18n/label :t/contact-request-sent)]
       :message {:body (get-in message [:content :text])}
       :items
-      (case (:contact-request-state message)
+      (condp = (:contact-request-state message)
         constants/contact-request-message-state-accepted
         [{:type    :status
           :subtype :positive
@@ -143,6 +143,7 @@
           :label               (i18n/label :t/accept)
           :accessibility-label :accept-contact-request
           :on-press            #(rf/dispatch [:activity-center.contact-requests/accept id])}]
+
         nil)}]))
 
 (defn view

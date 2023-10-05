@@ -74,7 +74,7 @@
                                :blur?          true
                                :community-logo community-image
                                :community-name community-name}]]
-       :items               (case membership-status
+       :items               (condp = membership-status
                               constants/activity-center-membership-status-accepted
                               [{:type    :status
                                 :subtype :positive
