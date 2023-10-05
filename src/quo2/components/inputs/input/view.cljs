@@ -84,7 +84,7 @@
             colors-by-status (style/status-colors status-kw blur? theme)
             variant-colors   (style/variants-colors blur? theme)
             clean-props      (apply dissoc props custom-props)]
-        [rn/view {:style {:flex 1}}
+        [rn/view {:style container-style}
          (when (or label char-limit)
            [label-&-counter
             {:variant-colors variant-colors
@@ -92,7 +92,7 @@
              :current-chars  @char-count
              :char-limit     char-limit}])
          [rn/view
-          {:style (merge (style/input-container colors-by-status small? disabled?) container-style)}
+          {:style (style/input-container colors-by-status small? disabled?)}
           (when-let [{:keys [icon-name]} left-icon]
             [left-accessory
              {:variant-colors variant-colors
