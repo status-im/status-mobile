@@ -31,14 +31,15 @@
 (def delivery-state-showing-time-ms 3000)
 
 (defn avatar-container
-  [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions? show-user-info?]
+  [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions?
+   show-user-info?]
   (if (or (and (seq (:response-to content))
                quoted-message)
           last-in-group?
           pinned-by
           (not show-reactions?)
           show-user-info?)
-    [avatar/avatar from :small]
+    [avatar/avatar {:public-key from :size :small :hide-ring? show-user-info?}]
     [rn/view {:padding-top 4 :width 32}]))
 
 (defn author
