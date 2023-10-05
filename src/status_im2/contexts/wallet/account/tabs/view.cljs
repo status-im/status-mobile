@@ -2,13 +2,11 @@
   (:require
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
-    [quo2.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im2.contexts.wallet.account.style :as style]
     [status-im2.contexts.wallet.common.temp :as temp]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
-
 
 (defn description
   []

@@ -145,6 +145,7 @@
 (def network-names [:ethereum :optimism :arbitrum])
 
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
+
 (def data-item-state
   {:blur?               false
    :description         :default
