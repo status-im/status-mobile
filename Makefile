@@ -309,10 +309,11 @@ $$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort 
 endef
 
 lint: export TARGET := clojure
+lint: export CLJ_LINTER_PRINT_WARNINGS ?= false
 lint: ##@test Run code style checks
 	@sh scripts/lint-re-frame-in-quo-components.sh && \
-	sh scripts/lint-old-quo-usage.sh \
-	clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src && \
+	sh scripts/lint-old-quo-usage.sh && \
+	clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src $(if $(filter $(CLJ_LINTER_PRINT_WARNINGS),true),,| grep -v ': warning: ') && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
 	sh scripts/lint-trailing-newline.sh && \

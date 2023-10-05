@@ -34,7 +34,8 @@
           :button          {:on-press (fn [] (clipboard/get-string #(reset! input-value %)))
                             :text     (i18n/label :t/paste)}
           :placeholder     (str "0x123abc... " (string/lower-case (i18n/label :t/or)) " bob.eth")
-          :container-style {:margin-right 12}
+          :container-style {:margin-right 12
+                            :flex         1}
           :weight          :monospace
           :on-change       #(reset! input-value %)
           :default-value   @input-value}]
