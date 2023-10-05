@@ -23,6 +23,7 @@
     [status-im.wallet.core :as wallet]))
 
 (rf/defn process-next
+  {:events [:transport/process-next]}
   [cofx ^js response-js sync-handler]
   (if sync-handler
     (sync-handler cofx response-js true)
@@ -60,7 +61,7 @@
         (js-delete response-js "chats")
         (rf/merge cofx
                   (process-next response-js sync-handler)
-                  (chat.events/ensure-chats (map data-store.chats/<-rpc (types/js->clj chats)))))
+                  #(chat.events/ensure-chats % [(map data-store.chats/<-rpc (types/js->clj chats))])))
 
       (seq messages)
       (models.message/receive-many cofx response-js)

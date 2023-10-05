@@ -1,13 +1,10 @@
 (ns status-im.stickers.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [status-im2.config :as config]
-            [utils.re-frame :as rf]
+  (:require [re-frame.core :as re-frame]
             [status-im.utils.utils :as utils]
-            [status-im2.navigation.events :as navigation]
+            [status-im.wallet.utils :as wallet.utils]
+            [status-im2.constants :as constants]
             [utils.ethereum.chain :as chain]
-            [status-im.wallet.utils :as wallet.utils]))
+            [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  :stickers/set-pending-timeout-fx
@@ -114,12 +111,6 @@
   {:events [:stickers/stickers-recent-success]}
   [{:keys [db]} packs]
   {:db (assoc db :stickers/recent-stickers packs)})
-
-(rf/defn open-sticker-pack
-  {:events [:stickers/open-sticker-pack]}
-  [{{:networks/keys [current-network]} :db :as cofx} id]
-  (when (and id (or config/stickers-test-enabled? (string/starts-with? current-network "mainnet")))
-    (navigation/open-modal cofx :stickers-pack {:id id})))
 
 (rf/defn select-pack
   {:events [:stickers/select-pack]}
