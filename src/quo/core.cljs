@@ -16,7 +16,6 @@
 
 (def text text/text)
 (def header header/header)
-(def header-action header/header-action)
 (def animated-header animated-header/header)
 (def text-input text-input/text-input)
 (def tooltip tooltip/tooltip)

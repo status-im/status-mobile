@@ -10,6 +10,7 @@
     [status-im.ui.screens.bootnodes-settings.edit-bootnode.views :as edit-bootnode]
     [status-im.ui.screens.bootnodes-settings.views :as bootnodes-settings]
     [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
+    [status-im.ui.screens.browser.stack :as browser]
     [status-im.ui.screens.bug-report :as bug-report]
     [status-im.ui.screens.communities.create :as communities.create]
     [status-im.ui.screens.communities.import :as communities.import]
@@ -51,7 +52,6 @@
     [status-im.ui.screens.profile.contact.views :as contact]
     [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
     [status-im.ui.screens.profile.seed.views :as profile.seed]
-    [status-im2.contexts.profile.profiles.views-v2 :as profile.user]
     [status-im.ui.screens.progress.views :as progress]
     [status-im.ui.screens.qr-scanner.views :as qr-scanner]
     [status-im.ui.screens.reset-password.views :as reset-password]
@@ -74,12 +74,7 @@
     [status-im.ui.screens.wallet.settings.views :as wallet-settings]
     [status-im.ui.screens.wallet.swap.views :as wallet.swap]
     [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-    [status-im2.contexts.chat.group-details.view :as group-details]
-    [status-im2.contexts.chat.home.view :as chat-home]
-    [status-im2.contexts.communities.home.view :as communities-home]
-    [status-im2.contexts.shell.share.view :as share-view]
-    [status-im.ui.screens.browser.stack :as browser]
-    [status-im2.navigation.options :as options]))
+    [status-im2.contexts.chat.group-details.view :as group-details]))
 
 (defn right-button-options
   [id icon]
@@ -115,11 +110,6 @@
     :component stickers/pack}
 
    ;; Community (legacy only for e2e needed)
-   {:name      :community-home
-    :options   {:topBar {:title {:text (i18n/label :t/import-community-title)}}
-                :insets {:top?    true
-                         :bottom? true}}
-    :component communities-home/view}
    {:name      :community-members
     ;;TODO custom subtitle
     :options   {:insets {:top? true}}
@@ -230,9 +220,6 @@
 
    ;;PROFILE
 
-   {:name      :my-profile
-    :options   {:topBar {:visible false}}
-    :component profile.user/my-profile}
    {:name      :contacts-list
     :options   {:topBar {:title {:text (i18n/label :t/contacts)}}
                 :insets {:top? true}}
@@ -433,11 +420,6 @@
                 :insets {:bottom? true
                          :top?    true}}
     :component contact/nickname-view}
-
-   {:name      :chat-home
-    :options   {:topBar {:title {:text (i18n/label :t/chat)}}
-                :insets {:top? true}}
-    :component chat-home/view}
 
    ;[Group chat] Add participants
    {:name      :add-participants-toggle-list
@@ -685,9 +667,6 @@
                 :insets {:bottom? true
                          :top?    true}}
     :component manage-all-connections/views}
-   {:name      :share-view
-    :options   options/transparent-screen-options
-    :component share-view/view}
    ;; BUG REPORT
    {:name      :bug-report
     :options   {:insets {:top? true}}

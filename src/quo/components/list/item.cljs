@@ -43,13 +43,13 @@
   [size]
   (case size
     :small 36
-    (min size 40)))
+    40))
 
 (defn size->container-size
   [size]
   (case size
     :small 52
-    (min size 64)))
+    64))
 
 (defn size->single-title-size
   [size]
@@ -70,20 +70,20 @@
         children))
 
 (defn icon-column
-  [{:keys [icon icon-bg-color icon-color icon-size icon-container-style]}]
+  [{:keys [icon icon-bg-color icon-color size icon-container-style]}]
   (when icon
-    (let [_icon-size (size->icon-size icon-size)]
+    (let [icon-size (size->icon-size size)]
       [rn/view {:style (or icon-container-style (:tiny spacing/padding-horizontal))}
        (cond
          (vector? icon)
          icon
          (keyword? icon)
          [rn/view
-          {:style {:width            _icon-size
-                   :height           _icon-size
+          {:style {:width            icon-size
+                   :height           icon-size
                    :align-items      :center
                    :justify-content  :center
-                   :border-radius    (/ _icon-size 2)
+                   :border-radius    (/ icon-size 2)
                    :background-color icon-bg-color}}
           [icons/icon icon {:color icon-color}]])])))
 

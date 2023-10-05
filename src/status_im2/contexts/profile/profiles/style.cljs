@@ -73,12 +73,12 @@
 (def radius 16)
 
 (def top-background-view
-  {:background-color colors/magenta-opa-40
+  {:background-color (colors/custom-color :magenta 50 40)
    :position         :absolute
    :top              0
    :left             0
    :height           400
-   :width            400
+   :right            0
    :z-index          -1})
 
 (def toolbar
@@ -126,8 +126,7 @@
 (def list-item-container
   {:background-color "#242D3F"
    :padding-left     -12
-   :padding-right    6
-   :height           50})
+   :padding-right    6})
 
 (def logout-container
   {:align-items       :center
@@ -139,4 +138,4 @@
    :margin-bottom     64
    :overflow          "hidden"
    :border-radius     radius
-   :background-color  colors/danger-50-opa-20})
+   :background-color  (colors/custom-color :danger 50 20)})

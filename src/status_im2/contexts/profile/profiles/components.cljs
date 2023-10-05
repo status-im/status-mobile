@@ -1,66 +1,70 @@
 (ns status-im2.contexts.profile.profiles.components
-  (:require [status-im.ui.components.react :as react]
-            [quo.core :as quo]
+  (:require [react-native.core :as rn]
+            [quo2.core :as quo]
             [status-im2.contexts.profile.profiles.style :as styles]
             [status-im2.contexts.chat.messages.avatar.view :as avatar]
             [status-im.multiaccounts.core :as multiaccounts]))
 
 (def top-background-view
-  [react/view
+  [rn/view
    {:style styles/top-background-view}])
 
 (defn button
   [{:keys [icon accessibility-label on-press style]}]
-  [quo/header-action
-   {:icon                icon
-    :on-press            on-press
+  [quo/button
+   {:icon-only?          true
+    :type                :grey
+    :background          :blur
+    :size                32
+    :container-style     style
     :accessibility-label accessibility-label
-    :style               (merge styles/header-icon-style style)}])
+    :on-press            on-press}
+   icon])
 
 (defn fixed-toolbar
   [{:keys [on-close on-switch-profile on-show-qr on-share]}]
-  [react/view
+  [rn/view
    {:style styles/toolbar}
    [button
-    {:icon                :main-icons/close
+    {:icon                :i/close
      :accessibility-label :close-header-button
      :on-press            on-close
      :style               {:margin-left 20}}]
-   [react/view
+   [rn/view
     {:style styles/right-accessories}
     [button
-     {:icon                :main-icons/multi-profile
+     {:icon                :i/multi-profile
       :accessibility-label :multi-profile-header-button
       :on-press            on-switch-profile}]
     [button
-     {:icon                :main-icons/qr2
+     {:icon                :i/qr-code
       :accessibility-label :qr-header-button
       :on-press            on-show-qr
-      :style               {:margin-left 14}}]
+      :style               {:margin-horizontal 14}}]
     [button
-     {:icon                :main-icons/share
+     {:icon                :i/share
       :accessibility-label :share-header-button
       :on-press            on-share}]]])
 
 (defn user-info
   [{:keys [emoji-hash account public-key about]}]
-  [react/view
-   [react/view
+  [rn/view
+   [rn/view
     {:style styles/avatar}
     [avatar/avatar public-key :big]]
 
-   [react/view
+   [rn/view
     {:style styles/user-info}
     [quo/text
-     {:weight :semi-bold
-      :size   :xx-large
+     {:size   :heading-1
+      :weight :semi-bold
       :style  {:margin-top 16}}
      (multiaccounts/displayed-name account)]
     [quo/text
-     {:size  :large
+     {:size  :paragraph-1
       :style {:margin-top 8}}
      about]
     [quo/text
-     {:size  :large
+     {:size  :paragraph-1
       :style {:margin-top 8}}
      emoji-hash]]])

@@ -27,6 +27,7 @@
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.welcome.view :as welcome]
     [status-im2.contexts.profile.profiles.view :as profiles]
+    [status-im2.contexts.profile.profiles.views :as my-profile]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.activity-center.view :as activity-center]
     [status-im2.contexts.shell.jump-to.view :as shell]
@@ -128,6 +129,12 @@
                  :layout options/onboarding-layout}
      :on-focus  [:onboarding/overlay-dismiss]
      :component profiles/view}
+
+    {:name      :my-profile
+     :options   {:theme  :dark
+                 :layout options/onboarding-layout}
+     :on-focus  [:onboarding/overlay-dismiss]
+     :component my-profile/my-profile}
 
     {:name      :new-to-status
      :options   {:theme                  :dark
