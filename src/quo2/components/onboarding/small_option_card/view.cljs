@@ -1,55 +1,71 @@
 (ns quo2.components.onboarding.small-option-card.view
   (:require [quo2.components.markdown.text :as text]
             [quo2.components.onboarding.small-option-card.style :as style]
+            [quo2.components.buttons.button.view :as button]
             [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]))
 
-(defn- texts
-  [{:keys [title subtitle]}]
-  [rn/view {:style style/text-container}
-   [text/text
-    {:style           style/title
-     :size            :paragraph-1
-     :weight          :semi-bold
-     :number-of-lines 1}
-    title]
-   [text/text
-    {:style           style/subtitle
-     :size            :paragraph-2
-     :weight          :regular
-     :number-of-lines 1}
-    subtitle]])
-
 (defn- icon-variant
-  [{:keys [title subtitle image]}]
-  [rn/view {:style style/icon-variant}
+  [{:keys [title subtitle image accessibility-label on-press]}]
+  [rn/pressable
+   {:accessibility-label accessibility-label
+    :style               style/icon-variant
+    :underlay-color      colors/white-opa-5
+    :on-press            on-press}
    [rn/view {:style style/icon-variant-image-container}
     [fast-image/fast-image
      {:accessibility-label :small-option-card-icon-image
       :style               style/icon-variant-image
       :resize-mode         :contain
       :source              image}]]
-   [texts
-    {:title    title
-     :subtitle subtitle}]])
+   [rn/view {:style style/text-container}
+    [text/text
+     {:style           style/icon-title
+      :size            :paragraph-1
+      :weight          :semi-bold
+      :number-of-lines 1}
+     title]
+    [text/text
+     {:style           style/subtitle
+      :size            :paragraph-2
+      :weight          :regular
+      :number-of-lines 1}
+     subtitle]]])
 
 (defn- main-variant
-  [{:keys [title subtitle image max-height]}]
+  [{:keys [title subtitle button-label image max-height accessibility-label on-press]}]
   [rn/view {:style style/main-variant}
    [rn/view {:style style/main-variant-text-container}
-    [texts
-     {:title    title
-      :subtitle subtitle}]]
+    [text/text
+     {:style           style/main-title
+      :size            :heading-2
+      :weight          :semi-bold
+      :number-of-lines 1}
+     title]
+    [text/text
+     {:style           style/subtitle
+      :size            :paragraph-2
+      :weight          :regular
+      :number-of-lines 1}
+     subtitle]]
    [fast-image/fast-image
     {:accessibility-label :small-option-card-main-image
-     :style               {:flex 1 :max-height max-height}
+     :style               (style/main-variant-image max-height)
      :resize-mode         :contain
-     :source              image}]])
+     :source              image}]
+   [button/button
+    {:on-press            on-press
+     :accessibility-label accessibility-label
+     :type                :grey
+     :size                40
+     :container-style     style/main-button
+     :theme               :dark
+     :background          :blur}
+    button-label]])
 
 (defn small-option-card
-  "Variants: `:main` or `:icon`"
-  [{:keys [variant title subtitle image max-height on-press accessibility-label]
+  [{:keys [variant title subtitle button-label image max-height on-press accessibility-label]
     :or   {variant :main accessibility-label :small-option-card}}]
   (let [main-variant?  (= variant :main)
         card-component (if main-variant? main-variant icon-variant)
@@ -57,18 +73,12 @@
                          (not main-variant?) style/icon-variant-height
                          max-height          (min max-height style/main-variant-height)
                          :else               style/main-variant-height)]
-    [rn/view
-     [rn/touchable-highlight
-      {:accessibility-label accessibility-label
-       :style               style/touchable-overlay
-       :active-opacity      1
-       :underlay-color      colors/white-opa-5
-       :on-press            on-press}
-      [rn/view {:style (style/card card-height)}
-       [card-component
-        {:title      title
-         :subtitle   subtitle
-         :image      image
-         :max-height max-height}]]]
-     (when main-variant?
-       [rn/view {:style style/main-variant-extra-space}])]))
+    [rn/view {:style (style/card card-height)}
+     [card-component
+      {:title               title
+       :subtitle            subtitle
+       :button-label        button-label
+       :on-press            on-press
+       :accessibility-label accessibility-label
+       :image               image
+       :max-height          max-height}]]))

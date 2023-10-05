@@ -21,7 +21,7 @@
    :color         colors/white-opa-70})
 
 (def subtitle-container
-  {:margin-top 16})
+  {:margin-top 24})
 
 (def doc-main-content
   {:color         colors/white
