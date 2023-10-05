@@ -32,14 +32,17 @@
 
 (defn avatar-container
   [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions?
-   show-user-info? in-pinned-view?]
+   in-reaction-and-action-menu? in-pinned-view?]
   (if (or (and (seq (:response-to content))
                quoted-message)
           last-in-group?
           pinned-by
           (not show-reactions?)
-          show-user-info?)
-    [avatar/avatar {:public-key from :size :small :hide-ring? (or in-pinned-view? show-user-info?)}]
+          in-reaction-and-action-menu?)
+    [avatar/avatar
+     {:public-key from
+      :size       :small
+      :hide-ring? (or in-pinned-view? in-reaction-and-action-menu?)}]
     [rn/view {:padding-top 4 :width 32}]))
 
 (defn author
@@ -51,12 +54,12 @@
            from
            timestamp]}
    show-reactions?
-   show-user-info?]
+   in-reaction-and-action-menu?]
   (when (or (and (seq response-to) quoted-message)
             last-in-group?
             pinned-by
             (not show-reactions?)
-            show-user-info?)
+            in-reaction-and-action-menu?)
     (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
       [quo/author
@@ -112,7 +115,8 @@
 (defn- user-message-content-internal
   []
   (let [show-delivery-state? (reagent/atom false)]
-    (fn [{:keys [message-data context keyboard-shown? show-reactions? show-user-info? theme]}]
+    (fn [{:keys [message-data context keyboard-shown? show-reactions? in-reaction-and-action-menu?
+                 theme]}]
       (let [{:keys [content-type quoted-message content
                     outgoing outgoing-status pinned-by]} message-data
             first-image                                  (first (:album message-data))
@@ -164,7 +168,8 @@
           [rn/view
            {:style {:padding-horizontal 4
                     :flex-direction     :row}}
-           [avatar-container message-data show-reactions? show-user-info? (:in-pinned-view? context)]
+           [avatar-container message-data show-reactions? in-reaction-and-action-menu?
+            (:in-pinned-view? context)]
            (into
             (if show-reactions?
               [rn/view]
@@ -173,7 +178,7 @@
                       :flex        1
                       :max-height  (when-not show-reactions?
                                      (* 0.4 height))}}
-             [author message-data show-reactions? show-user-info?]
+             [author message-data show-reactions? in-reaction-and-action-menu?]
              (condp = content-type
                constants/content-type-text
                [content.text/text-content message-data context]
@@ -219,11 +224,11 @@
                  :selected-item (fn []
                                   [rn/view {:pointer-events :none}
                                    [user-message-content
-                                    {:message-data    message-data
-                                     :context         context
-                                     :keyboard-shown? keyboard-shown?
-                                     :show-reactions? true
-                                     :show-user-info? true}]])}]))
+                                    {:message-data                 message-data
+                                     :context                      context
+                                     :keyboard-shown?              keyboard-shown?
+                                     :show-reactions?              true
+                                     :in-reaction-and-action-menu? true}]])}]))
 
 (defn system-message?
   [content-type]
