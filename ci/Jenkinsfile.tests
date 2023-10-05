@@ -48,7 +48,7 @@ pipeline {
           steps {
             sh """#!/bin/bash
               set -eo pipefail
-              make lint 2>&1 | tee ${LOG_FILE}
+              make lint CLJ_LINTER_PRINT_WARNINGS=true 2>&1 | tee ${LOG_FILE}
             """
           }
         }

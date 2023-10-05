@@ -90,7 +90,7 @@ Press the green run button
 
 <img src="images/ide-setup/8_REPL_6.png" width=75% />
 
-You should now see an dialog with the following message:
+You should now see a dialog with the following message:
 
 ```shell
 Connecting to remote nREPL server...

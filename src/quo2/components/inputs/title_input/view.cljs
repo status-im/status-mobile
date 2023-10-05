@@ -20,6 +20,7 @@
            placeholder
            max-length
            default-value
+           size
            theme
            container-style]
     :or   {max-length    0
@@ -39,7 +40,7 @@
         [rn/text-input
          {:style
           (text/text-style
-           {:size   :heading-1
+           {:size   (or size :heading-1)
             :weight :semi-bold
             :style  (style/title-text theme)})
           :default-value default-value

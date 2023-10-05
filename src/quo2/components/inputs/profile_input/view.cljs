@@ -49,5 +49,6 @@
       [title-input/view
        (merge title-input-props
               {:blur?               true
+               :size                :heading-2
                :placeholder         placeholder
                :customization-color customization-color})]]]))
