@@ -3,8 +3,7 @@
 
 (defn container
   [size card? blur? theme]
-  {:flex               1
-   :flex-direction     :row
+  {:flex-direction     :row
    :justify-content    :space-between
    :padding-vertical   (when (= size :default) 8)
    :padding-horizontal (when (= size :default) 12)

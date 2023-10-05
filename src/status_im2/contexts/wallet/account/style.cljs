@@ -4,10 +4,10 @@
   {:padding-left     20
    :padding-vertical 12})
 
-(def wip
-  {:justify-content :center
-   :align-items     :center
-   :flex            1})
+(def about-tab
+  {:flex               1
+   :padding-horizontal 20
+   :padding-vertical   8})
 
 (def empty-container-style
   {:justify-content :center

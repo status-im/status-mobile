@@ -72,10 +72,10 @@
                              :icon                :i/placeholder
                              :emoji               "🎮"
                              :customization-color :yellow
-                             :communities-list    communities-list})
-        blur? (reagent/cursor state [:blur?])]
+                             :communities-list    communities-list})]
     (fn []
       [preview/preview-container
+<<<<<<< HEAD
        {:state      state
         :descriptor descriptor}
        (when @blur?
@@ -92,3 +92,11 @@
                  :padding-vertical  10
                  :margin-horizontal 20}}
         [quo/data-item @state]]])))
+=======
+       {:state                 state
+        :descriptor            descriptor
+        :blur?                 (:blur? @state)
+        :show-blur-background? true
+        :blur-dark-only?       true}
+       [quo/data-item @state]])))
+>>>>>>> 8ddc42bc2 (wallet about tab)
