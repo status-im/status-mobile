@@ -32,14 +32,14 @@
 
 (defn avatar-container
   [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions?
-   show-user-info?]
+   show-user-info? in-pinned-view?]
   (if (or (and (seq (:response-to content))
                quoted-message)
           last-in-group?
           pinned-by
           (not show-reactions?)
           show-user-info?)
-    [avatar/avatar {:public-key from :size :small :hide-ring? show-user-info?}]
+    [avatar/avatar {:public-key from :size :small :hide-ring? (or in-pinned-view? show-user-info?)}]
     [rn/view {:padding-top 4 :width 32}]))
 
 (defn author
@@ -164,7 +164,7 @@
           [rn/view
            {:style {:padding-horizontal 4
                     :flex-direction     :row}}
-           [avatar-container message-data show-reactions? show-user-info?]
+           [avatar-container message-data show-reactions? show-user-info? (:in-pinned-view? context)]
            (into
             (if show-reactions?
               [rn/view]
