@@ -229,11 +229,13 @@
               :icon                (:icon action)
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
-                                     (when on-press (on-press)))}]))
-        (when-not (empty? danger-actions)
-          [quo/separator])
+                                     (when on-press (on-press)))}]))]
 
-        ;; DANGER ACTIONS
+       (when-not (empty? danger-actions)
+         [quo/separator {:style {:margin-vertical 8}}])
+
+       ;; DANGER ACTIONS
+       [rn/view {:style {:padding-horizontal 8}}
         (for [action danger-actions]
           (let [on-press (:on-press action)]
             ^{:key (:id action)}
@@ -244,11 +246,13 @@
               :icon                (:icon action)
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
-                                     (when on-press (on-press)))}]))
-        (when-not (empty? admin-actions)
-          [quo/separator])
+                                     (when on-press (on-press)))}]))]
 
-        ;; ADMIN ACTIONS
+       (when-not (empty? admin-actions)
+         [quo/separator {:style {:margin-vertical 8}}])
+
+       ;; ADMIN ACTIONS
+       [rn/view {:style {:padding-horizontal 8}}
         (for [action admin-actions]
           (let [on-press (:on-press action)]
             ^{:key (:id action)}
