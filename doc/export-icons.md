@@ -12,4 +12,4 @@
     [vector-icons/icon :icon-name {:color ...}] 
     ```
     2x@2x
-4. If you want paltform specific icon use `.android` or `.ios` suffixes.  Example `icon_name@2x.android.png`.:w
+4. If you want platform specific icon use `.android` or `.ios` suffixes.  Example `icon_name@2x.android.png`.:w

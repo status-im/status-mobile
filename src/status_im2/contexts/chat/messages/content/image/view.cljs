@@ -9,17 +9,29 @@
     [utils.url :as url]))
 
 (defn calculate-dimensions
-  [width height]
-  (let [max-width  (if (> width height) (* 2 constants/image-size) (* 1.5 constants/image-size))
-        max-height (if (> width height) (* 1.5 constants/image-size) (* 2 constants/image-size))]
+  [width height max-container-width max-container-height]
+  (let [max-width  (if (> width height) max-container-width (* 1.5 constants/image-size))
+        max-height (if (> width height) max-container-height (* 2 constants/image-size))]
     {:width (min width max-width) :height (min height max-height)}))
 
 (defn image-message
-  [index {:keys [content image-width image-height message-id] :as message} {:keys [on-long-press]}]
-  (let [insets            (safe-area/get-insets)
-        dimensions        (calculate-dimensions (or image-width 1000) (or image-height 1000))
-        shared-element-id (rf/sub [:shared-element-id])
-        image-local-url   (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
+  [index {:keys [content image-width image-height message-id] :as message} {:keys [on-long-press]}
+   message-container-data]
+  (let [insets                        (safe-area/get-insets)
+        {:keys [window-width padding-left padding-right avatar-container-width
+                message-margin-left]} message-container-data
+        max-container-width           (- window-width
+                                         padding-left
+                                         padding-right
+                                         avatar-container-width
+                                         message-margin-left)
+        max-container-height          (* (/ image-height image-width) max-container-width)
+        dimensions                    (calculate-dimensions image-width
+                                                            image-height
+                                                            max-container-width
+                                                            max-container-height)
+        shared-element-id             (rf/sub [:shared-element-id])
+        image-local-url               (url/replace-port (:image content) (rf/sub [:mediaserver/port]))]
     [:<>
      (when (= index 0)
        [text/text-content message])

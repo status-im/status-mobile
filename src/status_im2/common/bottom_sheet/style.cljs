@@ -25,7 +25,7 @@
    :border-top-right-radius 20
    :overflow                (when-not selected-item :hidden)
    :flex                    1
-   :padding-bottom          (or padding-bottom-override (+ bottom 8))
+   :padding-bottom          (or padding-bottom-override (+ bottom))
    :background-color        (if shell?
                               :transparent
                               (colors/theme-colors colors/white colors/neutral-95 theme))})
@@ -44,14 +44,21 @@
    :top              0
    :bottom           0})
 
+(defn sheet-content
+  [theme padding-bottom-override insets bottom-margin]
+  {:background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
+   :border-top-left-radius  20
+   :border-top-right-radius 20
+   :padding-bottom          (or padding-bottom-override (+ (:bottom insets) bottom-margin))})
+
 (defn selected-item
-  [theme window-height sheet-height {:keys [top]}]
+  [theme top bottom sheet-bottom-margin border-radius]
   {:position          :absolute
-   :bottom            10
-   :max-height        (- window-height sheet-height top)
+   :top               (when-not sheet-bottom-margin (- 0 top))
+   :bottom            bottom
    :overflow          :hidden
    :left              0
    :right             0
-   :border-radius     12
+   :border-radius     border-radius
    :margin-horizontal 8
-   :background-color  (colors/theme-colors colors/white colors/neutral-95 theme)})
+   :background-color  (colors/theme-colors colors/white colors/neutral-90 theme)})

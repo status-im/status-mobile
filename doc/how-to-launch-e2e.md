@@ -19,7 +19,7 @@ For now we support e2e for Android only.
 ## What's happening when any e2e job is running
 Whenever we need to push set of test scripts we create 16 parallel sessions (max, but depending on amount of cases that are included in job) and each thread: 1) uploads Android .apk file to SauceLabs -> 2) runs through the test steps -> 3) receives results whether test failed on particular step or succeeded with no errors -> 3) Parse test results and push them as a Github comment (if the suite ran against respective PR) and into TestRail.
 
-We push **whole automation test suite (currently 155, amout is changing)** against each nightly build (if the nightly builds job succeeded). Results of the test run are saved in TestRail.
+We push **whole automation test suite (currently 155, amount is changing)** against each nightly build (if the nightly builds job succeeded). Results of the test run are saved in TestRail.
 And also we push set of autotests whenever PR with successful builds got moved in to `E2E Tests` column from [Pipeline for QA dashboard ](https://github.com/status-im/status-react/projects/7). 
 In that case we save results in TestRail as well and push a comment with test results in a respective PR.
 
@@ -49,8 +49,8 @@ Params to specify:
 - apk: [url_to_apk_build_here]
 - pr_id: pull request number (e.g. 1234)
 - branch: branch name from which the test are taken (in most of cases `develop`)
-- keyword expression: tests by area (let's say `ens` or `chat`, thay can be combined`ens or chat or send_tx`. All keywords can be found in testrail, ping Chu for details)
-- test_marks: tests by priorities (by default: `critical or high or medium`, which corresponds the whole suite; to lauch the same suite as in PRs, use `critical or high`)
+- keyword expression: tests by area (let's say `ens` or `chat`, they can be combined`ens or chat or send_tx`. All keywords can be found in testrail, ping Chu for details)
+- test_marks: tests by priorities (by default: `critical or high or medium`, which corresponds the whole suite; to launch the same suite as in PRs, use `critical or high`)
 - testrail_case_id: here is the list of test cases which you may find in test rail (4-digit value)
 
 For easier access you can hit `Rerun tests` in GH comment and testrail_case_id/ apk_name/ pr_id  will be filled automatically. For making sure that tests are being rerun on most recent e2e build it is recommended to paste link to the last e2e build in apk_name field. The list of PR builds can be found in Jenkins Builds block on PR page. 
