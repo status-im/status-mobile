@@ -36,7 +36,7 @@
     :background-color :transparent
     :height           48
     :border-color     :black
-    :border-width     3
+    :border-width     2
     :border-radius    44}))
 
 (def picture-avatar-mask
