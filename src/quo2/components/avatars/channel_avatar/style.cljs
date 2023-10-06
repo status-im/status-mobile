@@ -24,7 +24,7 @@
                 :size-32 15
                 11)})
 
-(defn lock-container
+(defn badge-container
   [size theme]
   (let [distance (if (= size :size-32) 20 12)]
     {:position         :absolute
@@ -34,6 +34,6 @@
      :border-radius    (* 2 lock-icon-size)
      :padding          2}))
 
-(def lock-icon
+(def badge-icon
   {:width  lock-icon-size
    :height lock-icon-size})

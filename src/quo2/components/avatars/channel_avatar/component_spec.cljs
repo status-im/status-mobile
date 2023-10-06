@@ -8,22 +8,22 @@
     (h/render [component/view])
     (h/is-truthy (h/query-by-label-text :initials))
     (h/is-null (h/query-by-label-text :emoji))
-    (h/is-null (h/query-by-label-text :lock)))
+    (h/is-null (h/query-by-role :channel-avatar-badge)))
 
-  (h/test "with emoji, no lock set, large size"
+  (h/test "with emoji, no badge, large size"
     (let [emoji "🍓"]
       (h/render [component/view {:emoji emoji :size :size-32}])
       (h/is-null (h/query-by-label-text :initials))
       (h/is-truthy (h/query-by-text emoji))
-      (h/is-null (h/query-by-label-text :lock))))
+      (h/is-null (h/query-by-role :channel-avatar-badge))))
 
-  (h/test "locked"
-    (h/render [component/view {:locked? true}])
-    (h/is-truthy (h/query-by-label-text :lock)))
+  (h/test "with locked badge"
+    (h/render [component/view {:badge :locked}])
+    (h/is-truthy (h/query-by-role :channel-avatar-badge-locked)))
 
-  (h/test "unlocked"
-    (h/render [component/view {:locked? false}])
-    (h/is-truthy (h/query-by-label-text :lock)))
+  (h/test "with unlocked badge"
+    (h/render [component/view {:badge :unlocked}])
+    (h/is-truthy (h/query-by-label-text :channel-avatar-badge-unlocked)))
 
   (h/test "no emoji, smaller size"
     (h/render [component/view {:full-name "Status Mobile"}])

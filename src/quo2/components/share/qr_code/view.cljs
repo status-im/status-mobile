@@ -34,7 +34,7 @@
         :source (:picture props)}]
 
       :channel
-      [channel-avatar/view (assoc props :locked? nil :size :size-64)]
+      [channel-avatar/view (assoc props :badge nil :size :size-64)]
 
       :saved-address
       [wallet-avatar/wallet-user-avatar (assoc props :size :size-64)]

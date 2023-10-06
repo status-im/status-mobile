@@ -40,7 +40,7 @@
         :on-press-out        #(reset! pressed? false)}
        [channel-avatar/view
         {:size                :size-32
-         :locked?             locked?
+         :badge               (if locked? :locked :unlocked)
          :full-name           name
          :customization-color customization-color
          :emoji               emoji}]

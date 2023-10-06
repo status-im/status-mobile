@@ -22,23 +22,24 @@
                                 :weight :medium))
      (utils.string/get-initials channel-name amount-initials)]))
 
-(defn- lock
-  [locked? size theme]
-  ;; When `locked?` is nil, we must not display the unlocked icon.
-  (when (boolean? locked?)
-    [rn/view
-     {:accessibility-label :lock
-      :style               (style/lock-container size theme)}
-     [icons/icon (if locked? :i/locked :i/unlocked)
-      {:color           (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
-       :container-style style/lock-icon
-       :size            12}]]))
+(defn- badge-icon
+  [{:keys [badge size theme]}]
+  [rn/view
+   {:accessibility-label :channel-avatar-badge
+    :style               (style/badge-container size theme)}
+   [icons/icon
+    (case badge
+      :locked   :i/locked
+      :unlocked :i/unlocked)
+    {:color               (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)
+     :container-style     style/badge-icon
+     :size                12
+     :accessibility-label (keyword (str "channel-avatar-badge-" (name badge)))}]])
 
 (defn- view-internal
   "Options:
 
-  :size - keyword (default nil) - Container size, for the moment,
-  only :size/l (meaning large) is supported.
+  :size - keyword (defaults to 24) - Container size (:size-32 :size-64)
 
   :emoji - string (default nil)
 
@@ -46,13 +47,12 @@
   community channel, then the default color should be the community custom
   color.
 
-  :locked? - nil/bool (default nil) - When true/false display a locked/unlocked
-  icon respectively. When nil does not show icon.
+  :badge - keyword (default nil) shows a badge next to the avatar (:locked :unlocked)
 
   :full-name - string (default nil) - When :emoji is blank, this value will be
   used to extract the initials.
   "
-  [{:keys [size emoji customization-color locked? full-name theme]}]
+  [{:keys [size emoji customization-color badge full-name theme]}]
   [rn/view
    {:accessibility-label :channel-avatar
     :style               (style/outer-container {:theme               theme
@@ -68,6 +68,10 @@
       {:style               (style/emoji-size size)
        :accessibility-label :emoji}
       (string/trim emoji)])
-   [lock locked? size theme]])
+   (when (keyword? badge)
+     [badge-icon
+      {:badge badge
+       :size  size
+       :theme theme}])])
 
 (def view (quo.theme/with-theme view-internal))
