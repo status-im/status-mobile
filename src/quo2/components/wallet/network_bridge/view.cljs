@@ -12,7 +12,7 @@
 
 (defn network-bridge-add
   [{:keys [network state theme]}]
-  [rn/view {:style (merge (style/container network state) (style/add-container theme))}
+  [rn/view {:style (merge (style/container network state theme) (style/add-container theme))}
    [icon/icon :i/add-circle {:size 12 :no-color true}]])
 
 (defn view-internal
@@ -21,7 +21,7 @@
     (if (= status :add)
       [network-bridge-add args]
       [rn/view
-       {:style               (style/container network status)
+       {:style               (style/container network status theme)
         :accessible          true
         :accessibility-label :container}
        (if (= status :loading)

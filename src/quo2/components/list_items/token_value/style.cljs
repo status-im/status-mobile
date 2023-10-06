@@ -9,7 +9,7 @@
    :border-radius      12
    :flex-direction     :row
    :justify-content    :space-between
-   :background-color   (colors/custom-color-by-theme color 50 50 bg-opacity bg-opacity theme)})
+   :background-color   (colors/resolve-color color theme bg-opacity)})
 
 (defn metric-text
   [status theme]
@@ -25,17 +25,13 @@
    :border-radius     2
    :margin-horizontal 4
    :background-color  (case status
-                        :positive (colors/theme-colors colors/success-50-opa-40
-                                                       colors/success-60-opa-40
-                                                       theme)
-                        :negative (colors/theme-colors colors/danger-50-opa-40
-                                                       colors/danger-50-opa-40
-                                                       theme)
+                        :positive (colors/resolve-color :success theme 40)
+                        :negative (colors/resolve-color :danger theme 40)
                         (colors/theme-colors colors/neutral-80-opa-40 colors/neutral-50-opa-40 theme))})
 
 (defn arrow-icon
   [status theme]
   {:size  16
    :color (if (= status :positive)
-            (colors/theme-colors colors/success-50 colors/success-60 theme)
-            (colors/theme-colors colors/danger-50 colors/danger-60 theme))})
+            (colors/resolve-color :success theme)
+            (colors/resolve-color :danger theme))})

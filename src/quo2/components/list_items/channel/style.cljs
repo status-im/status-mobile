@@ -32,10 +32,7 @@
    :align-items        :center
    :overflow           :hidden
    :background-color   (if pressed?
-                         (colors/theme-colors
-                          (colors/custom-color customization-color 50 5)
-                          (colors/custom-color customization-color 60 5)
-                          theme)
+                         (colors/resolve-color customization-color theme 5)
                          :transparent)
    :flex-direction     :row})
 

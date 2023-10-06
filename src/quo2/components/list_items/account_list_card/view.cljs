@@ -31,7 +31,8 @@
                  ^{:key (str network)}
                  [text/text
                   {:size  :paragraph-2
-                   :style {:color (get colors/networks network)}} (str (subs (name network) 0 3) ":")])
+                   :style {:color (colors/resolve-color network theme)}}
+                  (str (subs (name network) 0 3) ":")])
                networks)
           [text/text
            {:size  :paragraph-2

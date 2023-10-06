@@ -223,8 +223,7 @@
                60 "#BD1E56"}})
 
 ;;;; Networks
-
-(def networks
+(def ^:private networks
   {:ethereum "#758EEB"
    :optimism "#E76E6E"
    :arbitrum "#6BD5F0"
@@ -234,8 +233,8 @@
    :polygon  "#AD71F3"
    :unknown  "#EEF2F5"})
 
-(def colors-map
-  (merge {:primary {50 primary-50 ;; User can also use primary color as customisation color
+(def ^:private colors-map
+  (merge {:primary {50 primary-50
                     60 primary-60}
           :beige   {50 "#CAAE93"
                     60 "#AA927C"}
@@ -245,8 +244,6 @@
                     60 "#805141"}
           :red     {50 "#F46666"
                     60 "#CD5656"}
-          :magenta {50 "#EC266C"
-                    60 "#BD1E56"}
           :indigo  {50 "#496289"
                     60 "#3D5273"}
           :danger  {50 danger-50
@@ -260,7 +257,34 @@
   [s]
   (and (string? s) (string/starts-with? s "#")))
 
-(def custom-color
+(defn- get-from-colors-map
+  [color suffix]
+  (let [color-without-suffix (get colors-map color)
+        resolved-color?      (hex-string? color-without-suffix)]
+    (if resolved-color?
+      color-without-suffix
+      (get-in colors-map [color suffix]))))
+
+(defn- resolve-color*
+  "(resolve-color color theme opacity)
+   color   hex string or keyword (resolves from custom, network and semantic colors)
+   theme  :light/:dark
+   opacity 0-100 (optional) - if set theme is ignored and goes to 50 suffix internally"
+  ([color theme]
+   (resolve-color* color theme nil))
+  ([color theme opacity]
+   (let [suffix (cond
+                  (not (keyword? color))        nil
+                  (or opacity (= theme :light)) 50
+                  :else                         60)]
+     (cond-> color
+       suffix  (get-from-colors-map suffix)
+       opacity (alpha (/ opacity 100))))))
+
+(def resolve-color (memoize resolve-color*))
+
+(def ^{:deprecated true :superseded-by "resolve-color"}
+     custom-color
   "(custom-color color suffix opacity)
    color   :primary/:purple/...
    suffix  50/60
@@ -280,25 +304,6 @@
         (if opacity
           (alpha resolved-color (/ opacity 100))
           resolved-color))))))
-
-(defn custom-color-by-theme
-
-  "(custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark)
-   color         :primary/:purple/...
-   suffix-light  50/60
-   suffix-dark   50/60
-   opacity-light 0-100 (optional)
-   opacity-dark  0-100 (optional)
-   theme         :light/:dark (optional)"
-  {:deprecated true :superseded-by "theme/colors"}
-  ([color suffix-light suffix-dark]
-   (custom-color-by-theme color suffix-light suffix-dark nil nil (theme/get-theme)))
-  ([color suffix-light suffix-dark opacity-light opacity-dark]
-   (custom-color-by-theme color suffix-light suffix-dark opacity-light opacity-dark (theme/get-theme)))
-  ([color suffix-light suffix-dark opacity-light opacity-dark theme]
-   (if (= theme :dark)
-     (custom-color color suffix-dark opacity-dark)
-     (custom-color color suffix-light opacity-light))))
 
 (def shadow "rgba(9,16,28,0.08)")
 

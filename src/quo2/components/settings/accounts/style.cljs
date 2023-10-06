@@ -9,19 +9,17 @@
    :width         160})
 
 (defn background-top
-  [custom-color]
+  [custom-color theme]
   {:position                :absolute
    :top                     0
    :border-top-left-radius  16
    :border-top-right-radius 16
    :width                   160
    :height                  64
-   :background-color        (-> colors/customization
-                                (get-in [custom-color 50])
-                                (colors/alpha 0.2))})
+   :background-color        (colors/resolve-color custom-color theme 20)})
 
 (defn background-bottom
-  []
+  [theme]
   {:position         :absolute
    :top              40
    :border-radius    16
@@ -29,10 +27,11 @@
    :height           120
    :background-color (colors/theme-colors
                       colors/white
-                      colors/neutral-90)})
+                      colors/neutral-90
+                      theme)})
 
 (defn avatar-border
-  []
+  [theme]
   {:margin          2
    :justify-content :center
    :align-items     :center
@@ -42,23 +41,27 @@
    :border-width    2
    :border-color    (colors/theme-colors
                      colors/white
-                     colors/neutral-90)})
+                     colors/neutral-90
+                     theme)})
 
 (def menu-button-container
   {:justify-content :center
    :align-items     :center
    :align-self      :flex-start})
+
 (defn menu-button-color
-  []
+  [theme]
   {:background-color (colors/theme-colors
                       colors/white-opa-40
-                      colors/neutral-80-opa-40)})
+                      colors/neutral-80-opa-40
+                      theme)})
 
 (defn address-text
-  []
+  [theme]
   {:color (colors/theme-colors
            colors/neutral-50
-           colors/neutral-40)})
+           colors/neutral-40
+           theme)})
 
 (def card-top
   {:flex-direction  :row

@@ -4,7 +4,7 @@
 (def lock-icon-size 12)
 
 (defn outer-container
-  [{:keys [size color]}]
+  [{:keys [size customization-color theme]}]
   (let [container-size (case size
                          :size-64 64
                          :size-32 32
@@ -14,7 +14,7 @@
      :border-radius    container-size
      :justify-content  :center
      :align-items      :center
-     :background-color (colors/theme-alpha color 0.1 0.1)}))
+     :background-color (colors/resolve-color customization-color theme 10)}))
 
 (defn emoji-size
   [size]
@@ -24,12 +24,12 @@
                 11)})
 
 (defn lock-container
-  [size]
+  [size theme]
   (let [distance (if (= size :size-32) 20 12)]
     {:position         :absolute
      :left             distance
      :top              distance
-     :background-color (colors/theme-colors colors/white colors/neutral-95)
+     :background-color (colors/theme-colors colors/white colors/neutral-95 theme)
      :border-radius    (* 2 lock-icon-size)
      :padding          2}))
 

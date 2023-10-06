@@ -4,25 +4,25 @@
 ;; Example themes:
 ;; https://github.com/react-syntax-highlighter/react-syntax-highlighter/tree/master/src/styles/hljs
 (defn highlight-theme
-  [theme-key]
-  (case theme-key
-    :hljs-comment      (colors/theme-colors colors/neutral-40 colors/neutral-60)
-    :hljs-title        (colors/custom-color-by-theme :sky 50 60)
-    :hljs-keyword      (colors/custom-color-by-theme :green 50 60)
-    :hljs-string       (colors/custom-color-by-theme :turquoise 50 60)
-    :hljs-literal      (colors/custom-color-by-theme :turquoise 50 60)
-    :hljs-number       (colors/custom-color-by-theme :turquoise 50 60)
-    :hljs-symbol       (colors/custom-color-by-theme :orange 50 50)
-    :hljs-builtin-name (colors/custom-color-by-theme :pink 50 50)
+  [class-name theme]
+  (case class-name
+    :hljs-comment      (colors/theme-colors colors/neutral-40 colors/neutral-60 theme)
+    :hljs-title        (colors/resolve-color :sky theme)
+    :hljs-keyword      (colors/resolve-color :green theme)
+    :hljs-string       (colors/resolve-color :turquoise theme)
+    :hljs-literal      (colors/resolve-color :turquoise theme)
+    :hljs-number       (colors/resolve-color :turquoise theme)
+    :hljs-symbol       (colors/resolve-color :orange theme)
+    :hljs-builtin-name (colors/resolve-color :pink theme)
     :line-number       colors/neutral-40
     nil))
 
 (defn text-style
-  [class-names preview?]
+  [class-names preview? theme]
   (let [text-color (->> class-names
                         (map keyword)
                         (some (fn [class-name]
-                                (when-let [text-color (highlight-theme class-name)]
+                                (when-let [text-color (highlight-theme class-name theme)]
                                   text-color))))]
     (cond-> {:flex-shrink 1
              :line-height 18}
@@ -30,8 +30,8 @@
       text-color (assoc :color text-color))))
 
 (defn border-color
-  []
-  (colors/theme-colors colors/neutral-20 colors/neutral-80))
+  [theme]
+  (colors/theme-colors colors/neutral-20 colors/neutral-80 theme))
 
 (defn container
   [preview? theme]
@@ -43,7 +43,7 @@
     {:overflow         :hidden
      :padding          8
      :background-color (colors/theme-colors colors/white colors/neutral-80-opa-40 theme)
-     :border-color     (border-color)
+     :border-color     (border-color theme)
      :border-width     1
      :border-radius    16}))
 
@@ -68,14 +68,14 @@
                     :background-color (colors/theme-colors colors/neutral-10 colors/neutral-70 theme))))
 
 (defn divider
-  [line-number-width]
+  [line-number-width theme]
   {:position         :absolute
    :bottom           0
    :top              0
    :left             (+ line-number-width 7 7)
    :width            1
    :z-index          2
-   :background-color (border-color)})
+   :background-color (border-color theme)})
 
 (def line {:flex-direction :row})
 
@@ -100,8 +100,4 @@
    :right    8
    :z-index  1})
 
-(defn gradient-color [] (colors/theme-colors colors/white colors/neutral-80))
-
-(defn button-background-color
-  []
-  (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5))
+(defn gradient-color [theme] (colors/theme-colors colors/white colors/neutral-80 theme))

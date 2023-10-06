@@ -2,20 +2,21 @@
   (:require [quo2.components.icon :as icons]
             [quo2.components.selectors.selectors.style :as style]
             [react-native.core :as rn]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [quo2.theme :as quo.theme]))
 
 (defn- handle-press
   [on-change checked-atom checked?]
   (when checked-atom (swap! checked-atom not))
   (when on-change (on-change (not checked?))))
 
-(defn- selector
+(defn- selector-internal
   [{:keys [default-checked? checked?]}]
   (let [controlled-component? (some? checked?)
         internal-checked?     (when-not controlled-component?
                                 (reagent/atom (or default-checked? false)))]
     (fn [{:keys [checked? disabled? blur? customization-color on-change container-style
-                 label-prefix outer-style-fn inner-style-fn icon-style-fn]
+                 label-prefix outer-style-fn inner-style-fn icon-style-fn theme]
           :or   {customization-color :blue}}]
       (let [actual-checked?     (if controlled-component? checked? @internal-checked?)
             accessibility-label (str label-prefix "-" (if actual-checked? "on" "off"))
@@ -24,7 +25,8 @@
                                                  :disabled?           disabled?
                                                  :blur?               blur?
                                                  :container-style     container-style
-                                                 :customization-color customization-color})]
+                                                 :customization-color customization-color
+                                                 :theme               theme})]
         [rn/touchable-without-feedback
          (when-not disabled?
            {:on-press #(handle-press on-change internal-checked? actual-checked?)})
@@ -35,11 +37,14 @@
            :accessibility-role                :checkbox
            :testID                            test-id}
           [rn/view
-           {:style (inner-style-fn {:checked?            actual-checked?
+           {:style (inner-style-fn {:theme               theme
+                                    :checked?            actual-checked?
                                     :blur?               blur?
                                     :customization-color customization-color})}
            (when (and icon-style-fn actual-checked?)
-             [icons/icon :i/check-small (icon-style-fn actual-checked? blur?)])]]]))))
+             [icons/icon :i/check-small (icon-style-fn actual-checked? blur? theme)])]]]))))
+
+(def ^:private selector (quo.theme/with-theme selector-internal))
 
 (defn toggle
   [props]
@@ -74,3 +79,4 @@
           :outer-style-fn style/checkbox-prefill
           :inner-style-fn style/common-checkbox-inner
           :icon-style-fn  style/checkbox-prefill-check)])
+

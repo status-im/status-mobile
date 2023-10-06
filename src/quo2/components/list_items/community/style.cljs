@@ -51,7 +51,7 @@
                                 colors/white-opa-5
 
                                 (and pressed? (#{:engage :share} type))
-                                (colors/theme-alpha customization-color 0.05 0.05)
+                                (colors/resolve-color customization-color theme 5)
 
                                 (and (not pressed?) (= type :discover) (not blur?))
                                 (colors/theme-colors colors/white colors/neutral-90 theme)

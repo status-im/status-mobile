@@ -2,7 +2,8 @@
   (:require [clojure.string :as string]
             [quo2.components.markdown.text :as text]
             [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+            [react-native.core :as rn]
+            [quo2.theme :as quo.theme]))
 
 (def circle-sizes
   {:small   20
@@ -25,10 +26,10 @@
    :size-64 :medium
    :x-large :medium})
 
-(defn wallet-user-avatar
-  "params, first name, last name, color, size
+(defn- view-internal
+  "params, first name, last name, customization-color, size
    and if it's dark or not!"
-  [{:keys [f-name l-name customization-color size monospace? uppercase?]
+  [{:keys [f-name l-name customization-color size theme monospace? uppercase?]
     :or   {f-name     "John"
            l-name     "Doe"
            size       :x-large
@@ -42,11 +43,11 @@
                            (#(if uppercase? (string/upper-case %) %))
                            (subs 0 1))
         circle-color   (if customization-color
-                         (colors/custom-color customization-color 50 20)
-                         (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5))
+                         (colors/resolve-color customization-color theme 20)
+                         (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme))
         text-color     (if customization-color
-                         (colors/custom-color-by-theme customization-color 50 60)
-                         (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70))]
+                         (colors/resolve-color customization-color theme)
+                         (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme))]
     [rn/view
      {:style {:width            circle-size
               :height           circle-size
@@ -62,3 +63,5 @@
       (if small?
         (str f-name-initial)
         (str f-name-initial l-name-initial))]]))
+
+(def wallet-user-avatar (quo.theme/with-theme view-internal))

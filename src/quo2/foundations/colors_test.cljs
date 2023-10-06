@@ -2,26 +2,29 @@
   (:require [cljs.test :refer-macros [deftest testing is]]
             [quo2.foundations.colors :as colors]))
 
-(deftest custom-color-resolver-test
-  (testing "community color - resolves a hex string and ignores suffix of 50"
-    (is (= "#fff" (colors/custom-color "#fff" 50))))
-  (testing "community color - resolves a hex string and ignores suffix of 60"
-    (is (= "#fff" (colors/custom-color "#fff" 60))))
-  (testing "user/wallet/chat colors - resolves a keyword from the customization map with suffix 50"
-    (is (= (get-in colors/customization [:blue 50]) (colors/custom-color :blue 50))))
-  (testing "user/wallet/chat colors - resolves a keyword from the colors map with suffix 60"
-    (is (= (get-in colors/customization [:blue 60]) (colors/custom-color :blue 60))))
-  (testing "network colors - resolves a keyword with from the networks map which has no suffix"
-    (is (= (:ethereum colors/networks) (colors/custom-color :ethereum nil)))))
+(deftest resolve-color-test
+  (testing "community color - resolves a hex string and ignores theme"
+    (is (= "#fff" (colors/resolve-color "#fff" :light))))
+  (testing "community color - resolves a hex string and ignores theme"
+    (is (= "#fff" (colors/resolve-color "#fff" :dark))))
+  (testing "user/wallet/chat colors - resolves a keyword from the customization map with light theme"
+    (is (= "#2A4AF5" (colors/resolve-color :blue :light))))
+  (testing "user/wallet/chat colors - resolves a keyword from the colors map with dark theme"
+    (is (= "#223BC4" (colors/resolve-color :blue :dark))))
+  (testing "network colors - resolves a keyword with from the networks map"
+    (is (= "#758EEB" (colors/resolve-color :ethereum :light)))))
 
-(deftest custom-color-resolver-with-opacity-test
-  (testing "community color with 10% opacity- resolves a hex string and ignores suffix of 50"
-    (is (= "rgba(255,15,NaN,0.1)" (colors/custom-color "#fff" 50 10))))
-  (testing "community color with 10% opacity- resolves a hex string and ignores suffix of 50"
-    (is (= "rgba(255,15,NaN,0.9)" (colors/custom-color "#fff" 50 90))))
+(deftest resolve-color-with-opacity-test
+  (testing "community color with 10% opacity- resolves a hex string and ignores theme"
+    (is (= "rgba(255,15,NaN,0.1)" (colors/resolve-color "#fff" :light 10))))
+  (testing "community color with 10% opacity- resolves a hex string and ignores theme"
+    (is (= "rgba(255,15,NaN,0.9)" (colors/resolve-color "#fff" :light 90))))
   (testing
-    "user/wallet/chat colors with 10% opacity - resolves a keyword from the colors map with suffix 50"
-    (is (= "rgba(42,74,245,0.1)" (colors/custom-color :blue 50 10))))
+    "user/wallet/chat colors with 10% opacity - resolves a keyword from the colors map with light theme"
+    (is (= "rgba(42,74,245,0.1)" (colors/resolve-color :blue :light 10))))
   (testing
-    "network colors with 10% opacity - resolves a keyword with from the networks map which has no suffix"
-    (is (= "rgba(117,142,235,0.1)" (colors/custom-color :ethereum nil 10)))))
+    "user/wallet/chat colors with 10% opacity - resolves a keyword from the colors map with dark theme"
+    (is (= "rgba(42,74,245,0.1)" (colors/resolve-color :blue :dark 10))))
+  (testing
+    "when using opacity theme is ignored and uses the light suffix resolver"
+    (is (colors/resolve-color :blue :light 10) (colors/resolve-color :blue :dark 10))))
