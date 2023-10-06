@@ -14,7 +14,8 @@
 (defn chat-key-text
   []
   {:color       (colors/theme-colors colors/neutral-40 colors/neutral-50)
-   :margin-left 8})
+   :margin-left 8
+   :padding-top 1})
 
 (defn middle-dot-chat-key
   []

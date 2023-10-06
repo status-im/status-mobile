@@ -5,6 +5,7 @@
             [shadow.test :as st]
             [shadow.test.env :as env]
             [utils.re-frame :as rf]
+            [status-im2.setup.interceptors :as interceptors]
             status-im2.setup.i18n-resources))
 
 (defonce repl? (atom false))
@@ -113,6 +114,7 @@
 (defn ^:export main
   [& args]
   (reset-test-data!)
+  (interceptors/register-global-interceptors)
   (rf/set-mergeable-keys #{:filters/load-filters
                            :pairing/set-installation-metadata
                            :dispatch-n

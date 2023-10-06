@@ -25,7 +25,7 @@
 
 (defn- rpc->type
   [{:keys [type name] :as chat}]
-  (case type
+  (condp = type
     notification-types/reply
     (assoc chat
            :chat-name name

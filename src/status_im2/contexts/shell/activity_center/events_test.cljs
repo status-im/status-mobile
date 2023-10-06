@@ -13,18 +13,18 @@
 
 (deftest open-activity-center-test
   (testing "opens the activity center with default filters"
-    (is (= {:db             {}
-            :dispatch       [:open-modal :activity-center {}]
-            :dispatch-later [{:ms 1000 :dispatch [:activity-center/mark-as-seen]}]}
-           (events/open-activity-center {:db {}} nil))))
+    (is (= {:db {}
+            :fx [[:dispatch [:open-modal :activity-center {}]]
+                 [:dispatch-later [{:ms 1000 :dispatch [:activity-center/mark-as-seen]}]]]}
+           (events/open-activity-center {:db {}} [nil]))))
 
   (testing "opens the activity center with filters enabled"
-    (is (= {:db             {:activity-center {:filter {:status :unread :type types/contact-request}}}
-            :dispatch       [:open-modal :activity-center {}]
-            :dispatch-later [{:ms 1000 :dispatch [:activity-center/mark-as-seen]}]}
+    (is (= {:db {:activity-center {:filter {:status :unread :type types/contact-request}}}
+            :fx [[:dispatch [:open-modal :activity-center {}]]
+                 [:dispatch-later [{:ms 1000 :dispatch [:activity-center/mark-as-seen]}]]]}
            (events/open-activity-center {:db {}}
-                                        {:filter-type   types/contact-request
-                                         :filter-status :unread})))))
+                                        [{:filter-type   types/contact-request
+                                          :filter-status :unread}])))))
 
 (deftest process-notification-failure-test
   (testing "logs and returns nil"
@@ -120,7 +120,7 @@
                      {:notifications [{:id   "0x1"
                                        :read false
                                        :type types/one-to-one-chat}]}}}]
-      (is (nil? (events/accept-notification-success cofx "0x99" nil)))))
+      (is (nil? (events/accept-notification-success cofx ["0x99" nil])))))
 
   (testing "marks notification as accepted and read, then reconciles"
     (let [notif-1          {:id "0x1" :type types/private-group-chat}
@@ -128,13 +128,9 @@
           notif-2-accepted (assoc notif-2 :accepted true :read true)
           cofx             {:db {:activity-center {:filter        {:type types/no-type :status :all}
                                                    :notifications [notif-2 notif-1]}}}]
-      (is (= {:db         {:activity-center {:filter        {:type 0 :status :all}
-                                             :notifications [notif-2-accepted notif-1]}
-                           :chats           {}
-                           :chats-home-list nil}
-              :dispatch-n [[:activity-center.notifications/fetch-unread-count]
-                           [:activity-center.notifications/fetch-pending-contact-requests]]}
-             (events/accept-notification-success cofx (:id notif-2) nil))))))
+      (is (= {:fx [[:dispatch [:chat/ensure-chats []]]
+                   [:dispatch [:activity-center.notifications/reconcile [notif-2-accepted]]]]}
+             (events/accept-notification-success cofx [(:id notif-2) nil]))))))
 
 (deftest dismiss-notification-test
   (is (= {:json-rpc/call
@@ -375,11 +371,9 @@
           notif-3 {:id "0x3" :read false :type types/private-group-chat :author author}
           cofx    {:db {:activity-center
                         {:notifications
-                         [notif-3 ; will be ignored because it's not a contact
-                                  ; request
+                         [notif-3 ; will be ignored because it's not a contact request
                           notif-2 ; will be removed
-                          notif-1 ; will be ignored because it's not from the
-                                  ; same author
+                          notif-1 ; will be ignored because it's not from the same author
                          ]}}}]
       (is (= {:db {:activity-center {:notifications [notif-3 notif-1]}}}
              (events/notifications-remove-pending-contact-request cofx author))))))

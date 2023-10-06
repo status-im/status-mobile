@@ -104,9 +104,9 @@
               (fn [acc e]
                 (render-inline acc e chat-id style-override mention-first))
               [quo/text
-               {:size  :paragraph-1
-                :style {:margin-bottom (if mention-first (if platform/ios? 4 0) 2)
-                        :margin-top    (if mention-first (if platform/ios? -4 0) 2)
+               {:style {:size          :paragraph-1
+                        :margin-bottom (if mention-first (if platform/ios? 4 0) 2)
+                        :margin-top    (if mention-first (if platform/ios? -4 0) -1)
                         :color         (when (seq style-override) colors/white)}}]
               children)])
 

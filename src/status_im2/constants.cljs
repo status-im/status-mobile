@@ -236,17 +236,17 @@
   {2        {0 image-size
              1 image-size}
    3        {0 [(* image-size 2) (* image-size 1.25)]
-             1 [(- image-size 0.5) (- (* image-size 0.75) 1)]
-             2 [(- image-size 0.5) (- (* image-size 0.75) 1)]}
+             1 [(- image-size 0.5) (dec (* image-size 0.75))]
+             2 [(- image-size 0.5) (dec (* image-size 0.75))]}
    4        {0 image-size
              1 image-size
              2 image-size
              3 image-size}
    5        {0 image-size
              1 image-size
-             2 (- (* image-size 0.67) 1)
-             3 (- (* image-size 0.67) 1)
-             4 (- (* image-size 0.67) 1)}
+             2 (dec (* image-size 0.67))
+             3 (dec (* image-size 0.67))
+             4 (dec (* image-size 0.67))}
    :default {0 image-size
              1 image-size
              2 (- (* image-size 0.5) 0.5)

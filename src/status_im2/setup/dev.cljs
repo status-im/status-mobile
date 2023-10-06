@@ -35,6 +35,7 @@
   []
   (rf/set-mergeable-keys #{:filters/load-filters
                            :pairing/set-installation-metadata
+                           :fx
                            :dispatch-n
                            :status-im.ens.core/verify-names
                            :shh/send-direct-message

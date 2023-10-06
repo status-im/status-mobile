@@ -54,7 +54,6 @@
     status-im2.contexts.shell.jump-to.events
     status-im2.contexts.onboarding.events
     status-im.chat.models.gaps
-    [status-im2.navigation.events :as navigation]
     [status-im2.common.theme.core :as theme]
     [react-native.core :as rn]
     [react-native.platform :as platform]
@@ -250,10 +249,7 @@
                     :on-success (fn [on-ramps]
                                   (re-frame/dispatch [::crypto-loaded on-ramps]))}]})
 
-(rf/defn open-buy-crypto-screen
-  {:events [:buy-crypto.ui/open-screen]}
-  [cofx]
-  (rf/merge
-   cofx
-   (navigation/open-modal :buy-crypto nil)
-   (wallet/keep-watching-history)))
+(re-frame/reg-event-fx :buy-crypto.ui/open-screen
+ (fn []
+   {:fx [[:dispatch [:wallet/keep-watching]]
+         [:dispatch [:open-modal :buy-crypto nil]]]}))

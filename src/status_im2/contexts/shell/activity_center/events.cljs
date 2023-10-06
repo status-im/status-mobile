@@ -1,10 +1,10 @@
 (ns status-im2.contexts.shell.activity-center.events
   (:require [quo2.foundations.colors :as colors]
+            [re-frame.core :as re-frame]
             [status-im.data-store.activities :as activities]
             [status-im.data-store.chats :as data-store.chats]
             [status-im2.common.toasts.events :as toasts]
             [status-im2.constants :as constants]
-            [status-im2.contexts.chat.events :as chat.events]
             [status-im2.contexts.shell.activity-center.notification-types :as types]
             [taoensso.timbre :as log]
             [utils.collection :as collection]
@@ -21,20 +21,22 @@
 
 ;;;; Navigation
 
-(rf/defn open-activity-center
-  {:events [:activity-center/open]}
-  [{:keys [db]} {:keys [filter-type filter-status]}]
-  {:db             (cond-> db
-                     filter-status
-                     (assoc-in [:activity-center :filter :status] filter-status)
+(defn open-activity-center
+  [{:keys [db]} [{:keys [filter-type filter-status]}]]
+  {:db (cond-> db
+         filter-status
+         (assoc-in [:activity-center :filter :status] filter-status)
 
-                     filter-type
-                     (assoc-in [:activity-center :filter :type] filter-type))
-   :dispatch       [:open-modal :activity-center {}]
-   ;; We delay marking as seen so that the user doesn't see the unread bell icon
-   ;; change while the Activity Center modal is opening.
-   :dispatch-later [{:ms       1000
-                     :dispatch [:activity-center/mark-as-seen]}]})
+         filter-type
+         (assoc-in [:activity-center :filter :type] filter-type))
+   :fx [[:dispatch [:open-modal :activity-center {}]]
+        ;; We delay marking as seen so that the user doesn't see the unread bell icon
+        ;; change while the Activity Center modal is opening.
+        [:dispatch-later
+         [{:ms       1000
+           :dispatch [:activity-center/mark-as-seen]}]]]})
+
+(re-frame/reg-event-fx :activity-center/open open-activity-center)
 
 ;;;; Misc
 
@@ -208,13 +210,14 @@
                     :on-error   [:activity-center/process-notification-failure notification-id
                                  :notification/accept]}]})
 
-(rf/defn accept-notification-success
-  {:events [:activity-center.notifications/accept-success]}
-  [{:keys [db] :as cofx} notification-id {:keys [chats]}]
+(defn accept-notification-success
+  [{:keys [db]} [notification-id {:keys [chats]}]]
   (when-let [notification (get-notification db notification-id)]
-    (rf/merge cofx
-              (chat.events/ensure-chats (map data-store.chats/<-rpc chats))
-              (notifications-reconcile [(assoc notification :read true :accepted true)]))))
+    (let [new-notifications [(assoc notification :read true :accepted true)]]
+      {:fx [[:dispatch [:chat/ensure-chats (map data-store.chats/<-rpc chats)]]
+            [:dispatch [:activity-center.notifications/reconcile new-notifications]]]})))
+
+(re-frame/reg-event-fx :activity-center.notifications/accept-success accept-notification-success)
 
 (rf/defn dismiss-notification
   {:events [:activity-center.notifications/dismiss]}
@@ -527,7 +530,8 @@
                        (not dismissed))
                   (toasts/upsert cofx
                                  {:user            user-avatar
-                                  :user-public-key chat-id ;; user public key who accepted the request
+                                  ;; user public key who accepted the request
+                                  :user-public-key chat-id
                                   :icon-color      colors/success-50-opa-40
                                   :title           (i18n/label :t/contact-request-accepted-toast
                                                                {:name (or name (:alias message))})})

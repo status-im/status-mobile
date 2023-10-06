@@ -80,15 +80,15 @@
              (:invitation-admin chat)))))
 
 (rf/defn leave-removed-chat
+  {:events [:chat/leave-removed-chat]}
   [{{:keys [view-id current-chat-id chats]} :db
     :as                                     cofx}]
   (when (and (= view-id :chat)
              (not (contains? chats current-chat-id)))
     (navigation/navigate-back cofx)))
 
-(rf/defn ensure-chats
-  "Add chats to db and update"
-  [{:keys [db] :as cofx} chats]
+(defn ensure-chats
+  [{:keys [db] :as cofx} [chats]]
   (let [{:keys [all-chats chats-home-list removed-chats]}
         (reduce
          (fn [acc {:keys [chat-id profile-public-key timeline? community-id active muted] :as chat}]
@@ -103,18 +103,18 @@
           :chats-home-list #{}
           :removed-chats   #{}}
          (map (map-chats cofx) chats))]
-    (rf/merge
-     cofx
-     (merge {:db (-> db
-                     (update :chats merge all-chats)
-                     (update :chats-home-list set/union chats-home-list)
-                     (update :chats #(apply dissoc % removed-chats))
-                     (update :chats-home-list set/difference removed-chats))}
-            (when (not-empty removed-chats)
-              {:clear-message-notifications
-               [removed-chats
-                (get-in db [:profile/profile :remote-push-notifications-enabled?])]}))
-     leave-removed-chat)))
+    {:db (-> db
+             (update :chats merge all-chats)
+             (update :chats-home-list set/union chats-home-list)
+             (update :chats #(apply dissoc % removed-chats))
+             (update :chats-home-list set/difference removed-chats))
+     :fx [(when (not-empty removed-chats)
+            [:clear-message-notifications
+             [removed-chats
+              (get-in db [:profile/profile :remote-push-notifications-enabled?])]])
+          [:dispatch [:chat/leave-removed-chat]]]}))
+
+(re-frame/reg-event-fx :chat/ensure-chats ensure-chats)
 
 (rf/defn clear-history
   "Clears history of the particular chat"

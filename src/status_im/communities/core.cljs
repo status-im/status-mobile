@@ -6,7 +6,6 @@
             [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
             [status-im.utils.deprecated-types :as types]
-            [status-im.ui.components.emoji-thumbnail.styles :as emoji-thumbnail-styles]
             [status-im.utils.universal-links.core :as universal-links]
             [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im2.common.toasts.events :as toasts]
@@ -457,50 +456,17 @@
   [{:keys [db]}]
   {:db (assoc db :communities/create-channel {})})
 
-(rf/defn invite-people-pressed
-  {:events [:communities/invite-people-pressed]}
-  [cofx id]
-  (rf/merge cofx
-            (reset-community-id-input id)
-            (bottom-sheet/hide-bottom-sheet-old)
-            (navigation/open-modal :invite-people-community {:invite? true})))
+(re-frame/reg-event-fx :communities/invite-people-pressed
+ (fn [{:keys [db]} [id]]
+   {:db (assoc db :communities/community-id-input id)
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch [:open-modal :invite-people-community {:invite? true}]]]}))
 
-(rf/defn share-community-pressed
-  {:events [:communities/share-community-pressed]}
-  [cofx id]
-  (rf/merge cofx
-            (reset-community-id-input id)
-            (bottom-sheet/hide-bottom-sheet-old)
-            (navigation/open-modal :invite-people-community {})))
-
-(rf/defn create-channel-pressed
-  {:events [::create-channel-pressed]}
-  [{:keys [db] :as cofx} id]
-  (rf/merge cofx
-            (reset-community-id-input id)
-            (reset-channel-info)
-            (rf/dispatch [::create-channel-fields
-                          (rand-nth emoji-thumbnail-styles/emoji-picker-default-thumbnails)])
-            (navigation/open-modal :create-community-channel {:community-id id})))
-
-(rf/defn edit-channel-pressed
-  {:events [::edit-channel-pressed]}
-  [{:keys [db] :as cofx} community-id chat-name description color emoji chat-id category-id position]
-  (let [{:keys [color emoji]} (if (string/blank? emoji)
-                                (rand-nth emoji-thumbnail-styles/emoji-picker-default-thumbnails)
-                                {:color color :emoji emoji})]
-    (rf/merge cofx
-              {:db (assoc db
-                          :communities/create-channel
-                          {:name            chat-name
-                           :description     description
-                           :color           color
-                           :community-id    community-id
-                           :emoji           emoji
-                           :edit-channel-id chat-id
-                           :category-id     category-id
-                           :position        position})}
-              (navigation/open-modal :edit-community-channel nil))))
+(re-frame/reg-event-fx :communities/share-community-pressed
+ (fn [{:keys [db]} [id]]
+   {:db (assoc db :communities/community-id-input id)
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch [:open-modal :invite-people-community {}]]]}))
 
 (rf/defn community-created
   {:events [::community-created]}

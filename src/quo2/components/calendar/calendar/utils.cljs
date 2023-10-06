@@ -6,7 +6,7 @@
 (defn generate-years
   [current-year]
   (let [current-year current-year]
-    (reverse (vec (range (- current-year 100) (+ current-year 1))))))
+    (reverse (vec (range (- current-year 100) (inc current-year))))))
 
 (defn current-year
   []

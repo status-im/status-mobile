@@ -26,7 +26,8 @@
                             :landscape
                             :portrait)
         images-count      (count (:album message))
-        ;; album images are always square, except when we have 3 images, then they must be rectangular
+        ;; album images are always square, except when we have 3 images, then they must be
+        ;; rectangular
         ;; (portrait or landscape)
         portrait?         (and (= images-count rectangular-style-count) (= album-style :portrait))]
     (if (and albumize? (> images-count 1))
@@ -61,7 +62,7 @@
                                       (< index constants/max-album-photos))
                              :shared-element)}]
               (when (and (> images-count constants/max-album-photos)
-                         (= index (- constants/max-album-photos 1)))
+                         (= index (dec constants/max-album-photos)))
                 [rn/view
                  {:style style/overlay}
                  [quo/text

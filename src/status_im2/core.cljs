@@ -15,6 +15,7 @@
     [status-im2.setup.dev :as dev]
     [status-im2.setup.global-error :as global-error]
     [status-im2.common.log :as log]
+    [status-im2.setup.interceptors :as interceptors]
     [react-native.async-storage :as async-storage]
     [native-module.core :as native-module]
     [status-im.notifications.local :as notifications]
@@ -43,16 +44,16 @@
   (i18n-resources/load-language "en")
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
   (utils.universal-links/initialize)
+  (interceptors/register-global-interceptors)
 
   ;; Shell
   (async-storage/get-item :selected-stack-id #(shell.utils/change-selected-stack-id % nil nil))
   (async-storage/get-item :screen-height #(reset! shell.state/screen-height %))
 
-  ;; Note - We have to enable layout animations manually at app startup,
-  ;; otherwise, they will be enabled at runtime when they are used and will cause few bugs.
-  ;; https://github.com/status-im/status-mobile/issues/16693
-  ;; We can remove this call, once reanimated library is upgraded to v3.
-  ;; Also, we can't move this call to reanimated.cljs file,
+  ;; Note - We have to enable layout animations manually at app startup, otherwise, they will be
+  ;; enabled at runtime when they are used and will cause few bugs.
+  ;; https://github.com/status-im/status-mobile/issues/16693. We can remove this call, once
+  ;; reanimated library is upgraded to v3. Also, we can't move this call to reanimated.cljs file,
   ;; because that causes component tests to fail. (as function is not mocked in library jestUtils)
   (reanimated/enable-layout-animations true)
 
