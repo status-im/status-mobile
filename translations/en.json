@@ -2332,8 +2332,8 @@
     "accounts-count": "{{count}} accounts",
     "enter-eth": "Enter any ETH address or ENS name.",
     "eth-or-ens": "ETH address or ENS name.",
-<<<<<<< HEAD
     "type-pairing-code": "Type or paste pairing code",
+<<<<<<< HEAD
 <<<<<<< HEAD
     "scan-sync-code-placeholder": "cs2:4FH...",
     "overview": "Overview",
@@ -2343,11 +2343,17 @@
 =======
     "scan-sync-code-placeholder": "cs2:4FH..."
 =======
+=======
+    "scan-sync-code-placeholder": "cs2:4FH...",
+>>>>>>> 5f4811935 (review)
     "view-on-eth": "View on Etherscan",
     "view-on-opt": "View on Optimism Explorer",
     "view-on-arb": "View on Arbiscan",
     "copy-address": "Copy address",
     "show-address-qr": "Show address QR"
+<<<<<<< HEAD
 >>>>>>> 777f273ea (wallet about tab)
 >>>>>>> 8ddc42bc2 (wallet about tab)
+=======
+>>>>>>> 5f4811935 (review)
 }
