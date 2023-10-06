@@ -361,8 +361,11 @@ class HomeView(BaseView):
     def handle_contact_request(self, username: str, action='accept'):
         if self.toast_content_element.is_element_displayed(10):
             self.toast_content_element.wait_for_invisibility_of_element()
-        if self.notifications_unread_badge.is_element_displayed(30):
-            self.open_activity_center_button.click_until_presence_of_element(self.close_activity_centre)
+        try:
+            self.notifications_unread_badge.wait_for_visibility_of_element(30)
+        except TimeoutException:
+            pass
+        self.open_activity_center_button.click_until_presence_of_element(self.close_activity_centre)
         chat_element = ActivityCenterElement(self.driver, username[:25])
         try:
             if action == 'accept':
@@ -376,6 +379,8 @@ class HomeView(BaseView):
                 chat_element.cancel_contact_request()
             else:
                 self.driver.fail("Illegal option for CR!")
+        except NoSuchElementException:
+            self.driver.fail("No contact request received from %s" % username)
         finally:
             self.close_activity_centre.wait_for_rendering_ended_and_click()
             self.chats_tab.wait_for_visibility_of_element()

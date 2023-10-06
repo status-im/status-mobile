@@ -131,7 +131,7 @@ class TestrailReport(BaseTestReport):
         test_cases['pr']['activity_centre_other'] = 51005
 
         ## Nightly e2e
-        # test_cases['nightly']['medium'] = 736
+        # test_cases['nightly']['activity_center'] = 736
         # test_cases['nightly']['chat'] = 50811
         # test_cases['nightly']['browser'] = 50826
         # test_cases['nightly']['profile'] = 50828
