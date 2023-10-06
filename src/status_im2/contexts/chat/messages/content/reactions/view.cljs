@@ -66,8 +66,9 @@
          :reactions       (map add-emoji-key reactions)
          :add-reaction?   true
          :use-case        (when pinned-by :pinned)
-         :on-press        #(on-press %)
+         :on-press        #(on-press (assoc % :message-id message-id))
          :on-long-press   #(on-long-press (assoc %
+                                                 :message-id      message-id
                                                  :theme           theme
                                                  :reactions-order (map :emoji-id reactions)))
          :on-press-add    #(on-press-add {:chat-id              chat-id
