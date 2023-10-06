@@ -2336,5 +2336,6 @@
     "scan-sync-code-placeholder": "cs2:4FH...",
     "overview": "Overview",
     "traits": "Traits",
-    "opensea": "OpenSea"
+    "opensea": "OpenSea",
+    "mainnet": "Mainnet"
 }

@@ -245,7 +245,7 @@
     {:name      :wallet-address-watch
      :component wallet-address-watch/view}
 
-    {:name      :wallet-collectibles
+    {:name      :wallet-collectible
      :component wallet-collectible/view}
 
     {:name      :wallet-create-account

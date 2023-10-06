@@ -317,25 +317,24 @@
             collapsed?     (and initial-joined? (:joined community))
             overlay-shown? (boolean (:sheets (rf/sub [:bottom-sheet])))]
         [scroll-page/scroll-page
-         {:cover-image      cover
-          :collapsed?       collapsed?
-          :logo             logo
-          :name             name
-          :on-scroll        #(reset! scroll-height %)
-          :navigate-back?   true
-          :background-color (colors/theme-colors colors/white colors/neutral-95)
-          :height           148
-          :overlay-shown?   overlay-shown?
-          :page-nav-props   {:type           :community
-                             :right-side     (page-nav-right-section-buttons id)
-                             :community-name name
-                             :community-logo logo}}
-         [sticky-category-header
-          {:enabled (> @scroll-height @first-channel-height)
-           :label   (pick-first-category-by-height
-                     @scroll-height
-                     @first-channel-height
-                     @categories-heights)}]
+         {:cover-image    cover
+          :collapsed?     collapsed?
+          :logo           logo
+          :name           name
+          :on-scroll      #(reset! scroll-height %)
+          :navigate-back? true
+          :height         148
+          :overlay-shown? overlay-shown?
+          :page-nav-props {:type           :community
+                           :right-side     (page-nav-right-section-buttons id)
+                           :community-name name
+                           :community-logo logo}
+          :sticky-header  [sticky-category-header
+                           {:enabled (> @scroll-height @first-channel-height)
+                            :label   (pick-first-category-by-height
+                                      @scroll-height
+                                      @first-channel-height
+                                      @categories-heights)}]}
          [community-content
           community
           pending?

@@ -8,6 +8,9 @@
 (def accounts-container
   {:height 112})
 
+(def overview-container
+  {:height 86})
+
 (def accounts-list
   {:padding-horizontal 20
    :padding-top        32

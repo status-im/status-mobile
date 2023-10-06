@@ -98,8 +98,7 @@
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
     (fn [{:keys [theme cover-image logo on-scroll
                  collapsed? height top-nav title-colum background-color navigate-back? page-nav-props
-                 overlay-shown?]}
-         sticky-header
+                 overlay-shown? sticky-header]}
          children]
       [:<>
        [:f> f-scroll-page-header
