@@ -1,11 +1,8 @@
 (ns status-im2.contexts.quo-preview.settings.data-item
   (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.common.resources :as resources]
-            [react-native.blur :as blur]))
+            [status-im2.common.resources :as resources]))
 
 (def descriptor
   [{:label "Blur:"
