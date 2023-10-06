@@ -1,14 +1,15 @@
 (ns status-im.wallet.swap.core
   (:require [re-frame.db :as re-frame.db]
+            [re-frame.core :as re-frame]
             [utils.re-frame :as rf]
             [status-im2.navigation.events :as navigation]))
 
-(rf/defn open-asset-selector-modal
-  "source? true signinfies we are selecting the source asset. false implies selection of sink asset"
-  {:events [::open-asset-selector-modal]}
-  [{:keys [db]} source?]
-  (rf/merge {:db (assoc db :wallet/modal-selecting-source-token? source?)}
-            (navigation/open-modal :swap-asset-selector {})))
+;; "source? true" means we are selecting the source asset. false implies
+;; selection of sink asset."
+(re-frame/reg-event-fx ::open-asset-selector-modal
+ (fn [{:keys [db]} [source?]]
+   {:db (assoc db :wallet/modal-selecting-source-token? source?)
+    :fx [[:dispatch [:open-modal :swap-asset-selector {}]]]}))
 
 (rf/defn set-from-token
   {:events [::set-from-token]}
@@ -48,4 +49,3 @@
        :wallet/all-tokens
        vals
        (map #(str (:name %) "-" (:symbol %)))))
-

@@ -15,7 +15,8 @@
             [utils.re-frame :as rf]))
 
 (defn f-view
-  [{:keys [scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path]}]
+  [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
+           back-icon]}]
   (let [{:keys [group-chat chat-id]} chat
         opacity-animation            (reanimated/interpolate scroll-y
                                                              [style/navigation-bar-height
@@ -46,22 +47,24 @@
 
      [reanimated/view {:style (style/animated-blur-view all-loaded? opacity-animation)}
       [blur/view
-       {:blur-amount 20
-        :blur-type   (colors/theme-colors :light :dark)
-        :blur-radius (if platform/ios? 20 10)
-        :style       {:flex 1}}]]
+       {:blur-amount   20
+        :blur-type     :transparent
+        :overlay-color (colors/theme-colors colors/white-70-blur colors/neutral-95-opa-70-blur theme)
+        :blur-radius   (if platform/ios? 20 10)
+        :style         {:flex 1}}]]
 
      [rn/view {:style style/header-container}
-      [rn/touchable-opacity
-       {:active-opacity      1
+      [quo/button
+       {:icon-only?          true
+        :type                :grey
+        :background          :blur
+        :size                32
+        :accessibility-label :back-button
         :on-press            #(do
                                 (when config/shell-navigation-disabled?
                                   (rf/dispatch [:chat/close]))
-                                (rf/dispatch [:navigate-back]))
-        :accessibility-label :back-button
-        :style               (style/button-container {:margin-left 20})}
-       [quo/icon :i/arrow-left
-        {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+                                (rf/dispatch [:navigate-back]))}
+       back-icon]
       [reanimated/view
        {:style (style/animated-header all-loaded? translate-animation title-opacity-animation)}
        [rn/view {:style style/header-content-container}
@@ -88,15 +91,17 @@
              :style           (style/header-status)}
             (i18n/label
              (if online? :t/online :t/offline))])]]]
-      [rn/touchable-opacity
-       {:active-opacity      1
-        :style               (style/button-container {:margin-right 20})
+      [quo/button
+       {:icon-only?          true
+        :type                :grey
+        :background          :blur
+        :size                32
         :accessibility-label :options-button
         :on-press            (fn []
                                (rf/dispatch [:dismiss-keyboard])
                                (rf/dispatch [:show-bottom-sheet
                                              {:content (fn [] [actions/chat-actions chat true])}]))}
-       [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white)}]]]
+       :i/options]]
      [:f>
       pin.banner/f-banner
       {:chat-id           chat-id

@@ -156,7 +156,7 @@
       {:data                    (sort-by :timestamp > profiles)
        :key-fn                  :key-uid
        :content-container-style {:padding-bottom 20}
-       :render-data             {:last-index        (- (count profiles) 1)
+       :render-data             {:last-index        (dec (count profiles))
                                  :set-hide-profiles set-hide-profiles}
        :render-fn               profile-card}]]))
 

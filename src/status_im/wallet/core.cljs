@@ -197,12 +197,10 @@
                       :on-success #(re-frame/dispatch [::collectible-assets-fetch-success address
                                                        collectible-slug %])}]}))
 
-(rf/defn show-nft-details
-  {:events [::show-nft-details]}
-  [cofx asset]
-  (rf/merge cofx
-            {:db (assoc (:db cofx) :wallet/selected-collectible asset)}
-            (navigation/open-modal :nft-details {})))
+(re-frame/reg-event-fx ::show-nft-details
+ (fn [{:keys [db]} [asset]]
+   {:db (assoc db :wallet/selected-collectible asset)
+    :fx [[:dispatch [:open-modal :nft-details {}]]]}))
 
 (defn rpc->token
   [tokens]
@@ -610,14 +608,11 @@
             {:db (assoc-in db [:wallet/prepare-transaction field] value)}
             (bottom-sheet/hide-bottom-sheet-old)))
 
-(rf/defn navigate-to-recipient-code
-  {:events [:wallet.send/navigate-to-recipient-code]}
-  [{:keys [db] :as cofx}]
-  (rf/merge cofx
-            {:db (-> db
-                     (assoc :wallet/recipient {}))}
-            (bottom-sheet/hide-bottom-sheet-old)
-            (navigation/open-modal :recipient nil)))
+(re-frame/reg-event-fx :wallet.send/navigate-to-recipient-code
+ (fn [{:keys [db]}]
+   {:db (-> db (assoc :wallet/recipient {}))
+    :fx [[:dispatch [:bottom-sheet/hide-old]]
+         [:dispatch [:open-modal :recipient nil]]]}))
 
 (rf/defn show-delete-account-confirmation
   {:events [:wallet.settings/show-delete-account-confirmation]}

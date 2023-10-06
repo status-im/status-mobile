@@ -2331,5 +2331,7 @@
     "here-is-a-cat-in-a-box-instead": "Here’s a cat in a box instead",
     "accounts-count": "{{count}} accounts",
     "enter-eth": "Enter any ETH address or ENS name.",
-    "eth-or-ens": "ETH address or ENS name."
+    "eth-or-ens": "ETH address or ENS name.",
+    "type-pairing-code": "Type or paste pairing code",
+    "scan-sync-code-placeholder": "cs2:4FH..."
 }

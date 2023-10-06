@@ -39,7 +39,10 @@
                                                    (str (when emoji (str emoji " ")) "# " chat-name)
                                                    :else (str emoji chat-name))
         online?                                  (rf/sub [:visibility-status-updates/online? chat-id])
-        photo-path                               (rf/sub [:chats/photo-path chat-id])]
+        photo-path                               (rf/sub [:chats/photo-path chat-id])
+        back-icon                                (if (= chat-type constants/one-to-one-chat-type)
+                                                   :i/close
+                                                   :i/arrow-left)]
     (rn/use-effect
      (fn []
        ;; If keyboard is shown then adjust `scroll-y`
@@ -71,6 +74,7 @@
 
      [messages.navigation/navigation-view
       {:scroll-y            scroll-y
+       :back-icon           back-icon
        :chat                chat
        :chat-screen-loaded? chat-screen-loaded?
        :all-loaded?         all-loaded?

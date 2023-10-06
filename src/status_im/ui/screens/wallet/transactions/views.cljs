@@ -34,7 +34,7 @@
     :pending  (transaction-icon :main-icons/arrow-right
                                 colors/black-transparent
                                 colors/gray)
-    (throw (str "Unknown transaction type: " k))))
+    (throw (js/Error. (str "Unknown transaction type: " k)))))
 
 (defn render-transaction
   [{:keys [label contact address contact-accessibility-label
