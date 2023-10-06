@@ -40,9 +40,9 @@
                                                    :else (str emoji chat-name))
         online?                                  (rf/sub [:visibility-status-updates/online? chat-id])
         photo-path                               (rf/sub [:chats/photo-path chat-id])
-        back-icon                                (when (or (= chat-type constants/one-to-one-chat-type)
-                                                           (= chat-type constants/community-chat-type))
-                                                   :i/close)]
+        back-icon                                (if (= chat-type constants/one-to-one-chat-type)
+                                                   :i/close
+                                                   :i/arrow-left)]
     (rn/use-effect
      (fn []
        ;; If keyboard is shown then adjust `scroll-y`

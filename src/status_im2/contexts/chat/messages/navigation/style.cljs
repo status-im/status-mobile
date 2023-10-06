@@ -5,16 +5,6 @@
 (defonce ^:const navigation-bar-height 100)
 (defonce ^:const header-offset 56)
 
-(defn button-container
-  [theme]
-  {:width            32
-   :height           32
-   :border-radius    10
-   :justify-content  :center
-   :align-items      :center
-   :background-color (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)})
-
-
 (defn background-view
   [theme]
   {:position         :absolute

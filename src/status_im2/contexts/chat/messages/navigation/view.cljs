@@ -15,8 +15,8 @@
             [utils.re-frame :as rf]))
 
 (defn f-view
-  [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path back-icon]
-    :or   {back-icon :i/arrow-left}}]
+  [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
+           back-icon]}]
   (let [{:keys [group-chat chat-id]} chat
         opacity-animation            (reanimated/interpolate scroll-y
                                                              [style/navigation-bar-height
@@ -54,16 +54,17 @@
         :style         {:flex 1}}]]
 
      [rn/view {:style style/header-container}
-      [rn/touchable-opacity
-       {:active-opacity      1
+      [quo/button
+       {:icon-only?          true
+        :type                :grey
+        :background          :blur
+        :size                32
+        :accessibility-label :back-button
         :on-press            #(do
                                 (when config/shell-navigation-disabled?
                                   (rf/dispatch [:chat/close]))
-                                (rf/dispatch [:navigate-back]))
-        :accessibility-label :back-button
-        :style               (style/button-container theme)}
-       [quo/icon back-icon
-        {:size 20 :color (colors/theme-colors colors/black colors/white)}]]
+                                (rf/dispatch [:navigate-back]))}
+       back-icon]
       [reanimated/view
        {:style (style/animated-header all-loaded? translate-animation title-opacity-animation)}
        [rn/view {:style style/header-content-container}
