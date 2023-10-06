@@ -15,7 +15,8 @@
             [utils.re-frame :as rf]))
 
 (defn f-view
-  [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path]}]
+  [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
+           back-icon]}]
   (let [{:keys [group-chat chat-id]} chat
         opacity-animation            (reanimated/interpolate scroll-y
                                                              [style/navigation-bar-height
@@ -63,7 +64,7 @@
                                 (when config/shell-navigation-disabled?
                                   (rf/dispatch [:chat/close]))
                                 (rf/dispatch [:navigate-back]))}
-       :i/arrow-left]
+       back-icon]
       [reanimated/view
        {:style (style/animated-header all-loaded? translate-animation title-opacity-animation)}
        [rn/view {:style style/header-content-container}
