@@ -3,12 +3,12 @@
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
             [status-im2.contexts.wallet.home.view :as wallet-new]
             [status-im2.contexts.chat.home.view :as chat]
+            [status-im2.contexts.browser.home.view :as browser-new]
             [status-im2.contexts.shell.jump-to.state :as state]
             [status-im2.contexts.shell.jump-to.utils :as utils]
             [status-im2.contexts.communities.home.view :as communities]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [status-im2.contexts.shell.jump-to.components.home-stack.style :as style]
-            [status-im.ui.screens.browser.stack :as browser.stack]
             [quo2.theme :as quo.theme]))
 
 (defn load-stack?
@@ -35,7 +35,7 @@
      :wallet-stack      (if @state/load-new-wallet?
                           [wallet-new/view]
                           [wallet.accounts/accounts-overview-old])
-     :browser-stack     [browser.stack/browser-stack]
+     :browser-stack     [browser-new/view]
      [:<>])])
 
 (defn lazy-screen
