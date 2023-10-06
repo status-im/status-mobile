@@ -16,7 +16,7 @@
           [quo/text
            {:size   :paragraph-2
             :weight :medium
-            :style  {:color (get colors/networks network)}}
+            :style  {:color (colors/custom-color network)}}
            (str (subs (name network) 0 3) (when (= network :arbitrum) "1") ":")])
         temp/network-names)
    [quo/text
@@ -80,6 +80,7 @@
     [rn/view {:style style/about-tab}
      [quo/data-item
       (merge temp/data-item-state
-             {:custom-description description
-              :on-press           #(rf/dispatch [:show-bottom-sheet {:content about-options}])})]
+             {:custom-subtitle description
+              :container-style {:margin-bottom 12}
+              :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])})]
      [quo/account-origin temp/account-origin-state]]))

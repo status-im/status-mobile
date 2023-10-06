@@ -147,8 +147,7 @@
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
 
 (def data-item-state
-  {:blur?               false
-   :description         :default
+  {:description         :default
    :icon-right?         true
    :icon                :i/options
    :card?               true
@@ -156,8 +155,7 @@
    :status              :default
    :size                :default
    :title               "Address"
-   :customization-color :yellow
-   :container-style     {:margin-bottom 12}})
+   :customization-color :yellow})
 
 (def account-origin-state
   {:type            :default-keypair

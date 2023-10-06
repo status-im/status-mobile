@@ -57,9 +57,10 @@
       (i18n/label :t/days)])])
 
 (defn- left-side
-  [{:keys [theme title status size blur? description custom-description icon subtitle label icon-color
+  [{:keys [theme title status size blur? description custom-subtitle icon subtitle label icon-color
            customization-color
-           emoji]}]
+           emoji]
+    :as   props}]
   [rn/view {:style style/left-side}
    [left-title
     {:title title
@@ -71,8 +72,8 @@
       {:size  size
        :blur? blur?
        :theme theme}]
-     (if custom-description
-       [custom-description]
+     (if custom-subtitle
+       [custom-subtitle props]
        [left-subtitle
         {:theme               theme
          :size                size
