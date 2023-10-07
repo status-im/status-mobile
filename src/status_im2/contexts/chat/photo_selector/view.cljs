@@ -94,6 +94,7 @@
   [{:keys [scroll-enabled on-scroll current-scroll close] :as sheet}]
   (rf/dispatch [:photo-selector/get-photos-for-selected-album])
   (rf/dispatch [:photo-selector/camera-roll-get-albums])
+  (when platform/ios? (rf/dispatch [:photo-selector/camera-roll-get-ios-photo-count]))
   (let [album?          (reagent/atom false)
         sending-image   (into [] (vals (rf/sub [:chats/sending-image])))
         selected-images (reagent/atom sending-image)

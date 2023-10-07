@@ -83,20 +83,39 @@
                        (callback @albums))))))
               (callback @albums)))))))))
 
+(defn get-photos-count-ios-fx
+  [cb]
+  (cameraroll/get-photos-count-ios cb))
+
 (re-frame/reg-fx
  :camera-roll-get-albums
  (fn []
    (get-albums #(re-frame/dispatch [:on-camera-roll-get-albums %]))))
+
+(re-frame/reg-fx
+ :camera-roll-get-photos-count-ios
+ (fn []
+   (get-photos-count-ios-fx #(re-frame/dispatch [:on-camera-roll-get-images-count-ios %]))))
 
 (rf/defn on-camera-roll-get-albums
   {:events [:on-camera-roll-get-albums]}
   [{:keys [db]} albums]
   {:db (assoc db :camera-roll/albums albums)})
 
+(rf/defn get-photos-count-ios
+  {:events [:on-camera-roll-get-images-count-ios]}
+  [{:keys [db]} count]
+  {:db (assoc db :camera-roll/ios-images-count count)})
+
 (rf/defn camera-roll-get-albums
   {:events [:photo-selector/camera-roll-get-albums]}
   [_]
   {:camera-roll-get-albums nil})
+
+(rf/defn camera-roll-get-ios-photo-count
+  {:events [:photo-selector/camera-roll-get-ios-photo-count]}
+  [_]
+  {:camera-roll-get-photos-count-ios nil})
 
 (rf/defn camera-roll-select-album
   {:events [:chat.ui/camera-roll-select-album]}
