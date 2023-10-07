@@ -21,11 +21,15 @@
     ^{:key icon-name}
     (if-let [svg-icon (icons.svg/get-icon icon-name size)]
       [svg-icon
-       {:size                size
-        :color               (when (valid-color? color) color)
-        :color-2             (when (valid-color? color-2) color-2)
-        :accessibility-label accessibility-label
-        :style               container-style}]
+       (cond-> {:size                size
+                :accessibility-label accessibility-label
+                :style               container-style}
+
+         (and color (valid-color? color))
+         (assoc :color color)
+
+         (and color-2 (valid-color? color-2))
+         (assoc :color-2 color-2))]
       [rn/image
        {:style
         (merge {:width  size
