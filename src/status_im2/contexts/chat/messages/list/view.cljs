@@ -24,7 +24,7 @@
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
-(defonce ^:const scroll-animation-input-range [50 125])
+(defonce ^:const scroll-animation-input-range [0 50])
 (defonce ^:const min-message-height 32)
 
 (defonce messages-list-ref (atom nil))

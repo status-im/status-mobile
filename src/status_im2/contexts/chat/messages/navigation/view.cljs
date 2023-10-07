@@ -20,8 +20,8 @@
            back-icon]}]
   (let [{:keys [group-chat chat-id]} chat
         opacity-animation            (reanimated/interpolate scroll-y
-                                                             [style/navigation-bar-height
-                                                              (+ style/navigation-bar-height 30)]
+                                                             [50
+                                                              80]
                                                              [0 1]
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "extend"})
@@ -32,13 +32,13 @@
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "extend"})
         translate-animation          (reanimated/interpolate scroll-y
-                                                             [(+ style/navigation-bar-height 25)
+                                                             [(- style/navigation-bar-height 20)
                                                               (+ style/navigation-bar-height 100)]
                                                              [50 0]
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "clamp"})
         title-opacity-animation      (reanimated/interpolate scroll-y
-                                                             [0 50]
+                                                             [130 180]
                                                              [0 1]
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "clamp"})]
