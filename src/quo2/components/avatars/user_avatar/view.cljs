@@ -35,7 +35,7 @@
    :indicator-size   status indicator outer radius, set to nil or 0 when no indicator
    :indicator-border `indicator-size`-`indicator-border` is the inner radius
    :indicator-color  color for status indicator
-   :theme   :light or :dark
+   :theme            :light or :dark
    :background-color intials avatar background color
    :color            intials avatar text color
    :size             intials avatar radius

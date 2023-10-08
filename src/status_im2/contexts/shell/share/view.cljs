@@ -1,17 +1,19 @@
 (ns status-im2.contexts.shell.share.view
-  (:require [utils.i18n :as i18n]
+  (:require [clojure.string :as string]
             [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im2.contexts.shell.share.style :as style]
-            [utils.re-frame :as rf]
-            [reagent.core :as reagent]
             [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
-            [status-im.ui.components.list-selection :as list-selection]
-            [utils.image-server :as image-server]
+            [react-native.core :as rn]
             [react-native.navigation :as navigation]
-            [clojure.string :as string]
+            [reagent.core :as reagent]
+            [status-im.multiaccounts.core :as multiaccounts]
+            [status-im.ui.components.list-selection :as list-selection]
+            [status-im2.common.qr-codes.view :as qr-codes]
+            [status-im2.contexts.shell.share.style :as style]
             [utils.address :as address]
+            [utils.i18n :as i18n]
+            [utils.image-server :as image-server]
+            [utils.re-frame :as rf]
             [react-native.platform :as platform]))
 
 (defn header
@@ -43,27 +45,24 @@
 
 (defn profile-tab
   [window-width]
-  (let [{:keys [emoji-hash
-                compressed-key
-                key-uid]} (rf/sub [:profile/profile])
-        port              (rf/sub [:mediaserver/port])
-        emoji-hash-string (string/join emoji-hash)
+  (let [{:keys [emoji-hash compressed-key customization-color display-name]
+         :as   profile}   (rf/sub [:profile/profile])
         qr-size           (int (- window-width 64))
+        profile-url       (str image-server/status-profile-base-url compressed-key)
+        profile-photo-uri (:uri (multiaccounts/displayed-photo profile))
         abbreviated-url   (address/get-abbreviated-profile-url
                            image-server/status-profile-base-url-without-https
                            compressed-key)
-        profile-url       (str image-server/status-profile-base-url compressed-key)
-        source-uri        (image-server/get-account-qr-image-uri
-                           {:key-uid    key-uid
-                            :public-key compressed-key
-                            :port       port
-                            :qr-size    qr-size})]
+        emoji-hash-string (string/join emoji-hash)]
     [:<>
      [rn/view {:style style/qr-code-container}
-      [quo/qr-code
-       {:source {:uri source-uri}
-        :width  qr-size
-        :height qr-size}]
+      [qr-codes/qr-code
+       {:url                 profile-url
+        :size                qr-size
+        :avatar              :profile
+        :full-name           display-name
+        :customization-color customization-color
+        :profile-picture     profile-photo-uri}]
       [rn/view {:style style/profile-address-container}
        [rn/view {:style style/profile-address-column}
         [quo/text
