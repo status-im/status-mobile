@@ -26,8 +26,8 @@
    :aspect-ratio     1})
 
 (def ^:private avatar-container-common
-  {:width            66
-   :height           66
+  {:width            68
+   :height           68
    :justify-content  :center
    :align-items      :center
    :background-color colors/white})
