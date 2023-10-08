@@ -62,14 +62,13 @@
        :text         (colors/theme-colors colors/neutral-100 colors/white theme)})))
 
 (defn input-container
-  [container-style colors-by-status small? disabled?]
-  (assoc container-style
-         :flex-direction     :row
-         :padding-horizontal 8
-         :border-width       1
-         :border-color       (:border-color colors-by-status)
-         :border-radius      (if small? 10 12)
-         :opacity            (if disabled? 0.3 1)))
+  [colors-by-status small? disabled?]
+  {:flex-direction     :row
+   :padding-horizontal 8
+   :border-width       1
+   :border-color       (:border-color colors-by-status)
+   :border-radius      (if small? 10 12)
+   :opacity            (if disabled? 0.3 1)})
 
 
 (defn left-icon-container
