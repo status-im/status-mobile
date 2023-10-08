@@ -75,6 +75,7 @@
             [rn/view {:style style/input-and-scan-container}
              [quo/input
               {:ref             #(reset! input-ref %)
+               :container-style {:flex 1}
                :multiline?      true
                :blur-on-submit  true
                :return-key-type :done
