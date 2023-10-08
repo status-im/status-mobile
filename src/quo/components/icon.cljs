@@ -37,8 +37,8 @@
          (cond-> {:size                size
                   :accessibility-label accessibility-label
                   :style               container-style}
-           (and color (valid-color? color))      (assoc :color color)
-           (and color-2 (valid-color? color-2))  (assoc :color-2 color-2))]
+           (and color (valid-color? color))     (assoc :color color)
+           (and color-2 (valid-color? color-2)) (assoc :color-2 color-2))]
         [rn/image
          {:style               (image-icon-style (assoc props :size size))
           :accessibility-label accessibility-label
