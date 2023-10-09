@@ -224,15 +224,17 @@
 
 (defn f-view-internal
   [{:keys [theme]}]
-  (let [featured-communities (rf/sub [:communities/featured-contract-communities])]
+  (let [featured-communities (rf/sub [:communities/featured-contract-communities])
+        customization-color  (rf/sub [:profile/customization-color])]
     [rn/view
      {:style (style/discover-screen-container (colors/theme-colors
                                                colors/white
-                                               colors/neutral-95))}
+                                               colors/neutral-95
+                                               theme))}
      [discover-screen-content featured-communities theme]
      [quo/floating-shell-button
       {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
-                 :customization-color :blue
+                 :customization-color customization-color
                  :label               (i18n/label :t/jump-to)}}
       {:position :absolute
        :bottom   34}]]))
