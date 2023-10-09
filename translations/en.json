@@ -2333,6 +2333,7 @@
     "enter-eth": "Enter any ETH address or ENS name.",
     "eth-or-ens": "ETH address or ENS name.",
     "type-pairing-code": "Type or paste pairing code",
+<<<<<<< HEAD
     "overview": "Overview",
     "traits": "Traits",
     "opensea": "OpenSea",
@@ -2343,4 +2344,9 @@
     "view-on-arb": "View on Arbiscan",
     "copy-address": "Copy address",
     "show-address-qr": "Show address QR"
+=======
+    "scan-sync-code-placeholder": "cs2:4FH...",
+    "visit-dapp": "Visit dApp",
+    "disconnect-dapp": "Disconnect dApp"
+>>>>>>> b39b6334c (feat: dapps tab)
 }
