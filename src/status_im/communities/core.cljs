@@ -782,18 +782,6 @@
                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                     :on-error    #(log/error "failed to reorder community category" %)}]})
 
-;; Note - dispatch is used to make sure we are opening community once `pop-to-root` is processed.
-;; Don't directly merge effects using `navigation/navigate-to`, because it will work in debug and
-;; release, but for e2e `pop-to-root` closes even currently opened community
-;; https://github.com/status-im/status-mobile/pull/16438#issuecomment-1623954774
-(rf/defn navigate-to-community
-  {:events [:communities/navigate-to-community]}
-  [cofx community-id]
-  (rf/merge
-   cofx
-   {:dispatch [:navigate-to :community-overview community-id]}
-   (navigation/pop-to-root :shell-stack)))
-
 (rf/defn member-role-updated
   {:events [:community.member/role-updated]}
   [cofx response-js]

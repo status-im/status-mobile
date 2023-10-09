@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.jump-to.components.floating-screens.view
   (:require [utils.re-frame :as rf]
             [react-native.core :as rn]
+            [quo2.theme :as quo.theme]
             [react-native.reanimated :as reanimated]
             [status-im2.contexts.chat.messages.view :as chat]
             [status-im2.contexts.shell.jump-to.state :as state]
@@ -8,12 +9,13 @@
             [status-im2.contexts.shell.jump-to.animation :as animation]
             [status-im2.contexts.shell.jump-to.constants :as shell.constants]
             [status-im2.contexts.communities.overview.view :as communities.overview]
-            [status-im2.contexts.shell.jump-to.components.floating-screens.style :as style]
-            [quo2.theme :as quo.theme]))
+            [status-im2.contexts.communities.discover.view :as communities.discover]
+            [status-im2.contexts.shell.jump-to.components.floating-screens.style :as style]))
 
 (def screens-map
-  {shell.constants/community-screen communities.overview/overview
-   shell.constants/chat-screen      chat/chat})
+  {shell.constants/chat-screen                 chat/chat
+   shell.constants/community-screen            communities.overview/overview
+   shell.constants/discover-communities-screen communities.discover/view})
 
 (defn f-screen
   [{:keys [screen-id id animation clock] :as screen-param}]
@@ -45,5 +47,6 @@
 (defn view
   []
   [:<>
+   [lazy-screen shell.constants/discover-communities-screen]
    [lazy-screen shell.constants/community-screen]
    [lazy-screen shell.constants/chat-screen]])

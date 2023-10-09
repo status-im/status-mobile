@@ -251,10 +251,10 @@
          [rn/text {:style {:color quo.colors/black}} description]]]
        [rn/view (style/community-view-button)
         [rn/touchable-opacity
-         {:on-press #(do (rf/dispatch
-                          [:communities/navigate-to-community
-                           (:id community)])
-                         (rf/dispatch [:chat/close]))}
+         {:on-press #(do
+                       (rf/dispatch [:pop-to-root :shell-stack])
+                       (rf/dispatch [:navigate-to :community-overview (:id community)])
+                       (rf/dispatch [:chat/close]))}
          [rn/text
           {:style {:text-align :center
                    :color      quo.colors/blue}} (i18n/label :t/view)]]]])))
