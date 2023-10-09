@@ -41,13 +41,16 @@
 
 (defn contact-two-names-by-identity
   [contact profile contact-identity]
-  (let [me? (= (:public-key profile) contact-identity)]
+  (let [{:keys [public-key preferred-name display-name]} profile
+        {:keys [primary-name secondary-name]}            contact
+        me?                                              (= public-key contact-identity)]
     (if me?
-      [(or (:preferred-name profile)
-           (:display-name profile)
-           (:primary-name contact)
-           (gfycat/generate-gfy contact-identity))]
-      [(:primary-name contact) (:secondary-name contact)])))
+      [(cond
+         (not (string/blank? preferred-name)) preferred-name
+         (not (string/blank? display-name))   display-name
+         (not (string/blank? primary-name))   primary-name
+         :else                                (gfycat/generate-gfy contact-identity))]
+      [primary-name secondary-name])))
 
 (defn displayed-photo
   [{:keys [images]}]
