@@ -206,19 +206,16 @@
         featured-communities-count (count featured-communities)]
     (fn []
       [scroll-page/scroll-page
-       {:name             (i18n/label :t/discover-communities)
-        :theme            theme
-        :on-scroll        #(reset! scroll-height %)
-        :background-color (colors/theme-colors
-                           colors/white
-                           colors/neutral-95)
-        :navigate-back?   :true
-        :height           (if (> @scroll-height 360)
-                            208
-                            148)}
-       [render-sticky-header
-        {:selected-tab  selected-tab
-         :scroll-height scroll-height}]
+       {:theme          theme
+        :on-scroll      #(reset! scroll-height %)
+        :navigate-back? :true
+        :height         (if (> @scroll-height 360)
+                          208
+                          148)
+        :sticky-header  [render-sticky-header
+                         {:selected-tab  selected-tab
+                          :scroll-height scroll-height}]}
+
        [render-communities
         selected-tab
         featured-communities-count

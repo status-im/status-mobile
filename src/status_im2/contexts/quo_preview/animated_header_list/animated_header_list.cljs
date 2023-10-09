@@ -3,6 +3,7 @@
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
+    [re-frame.core :as rf]
     [react-native.fast-image :as fast-image]
     [react-native.reanimated :as reanimated]
     [quo2.components.animated-header-flatlist.view :as animated-header-list]))
@@ -78,7 +79,7 @@
    :header-comp header-comp
    :title-comp title-comp
    :main-comp main-comp
-   :back-button-on-press #()})
+   :back-button-on-press #(rf/dispatch [:navigate-back])})
 
 (defn mock-screen
   []

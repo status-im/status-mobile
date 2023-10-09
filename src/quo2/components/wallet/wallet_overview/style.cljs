@@ -4,8 +4,8 @@
 (def container-info
   {:padding-horizontal 20
    :padding-top        12
-   :flex-grow          1
    :padding-bottom     32
+   :flex-grow          1
    :max-height         98})
 
 (def container-info-top

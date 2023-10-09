@@ -1,7 +1,6 @@
 (ns status-im2.contexts.communities.overview.view
   (:require [oops.core :as oops]
             [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
             [react-native.blur :as blur]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -317,22 +316,24 @@
             collapsed?     (and initial-joined? (:joined community))
             overlay-shown? (boolean (:sheets (rf/sub [:bottom-sheet])))]
         [scroll-page/scroll-page
-         {:cover-image                    cover
-          :collapsed?                     collapsed?
-          :logo                           logo
-          :page-nav-right-section-buttons (page-nav-right-section-buttons id)
-          :name                           name
-          :on-scroll                      #(reset! scroll-height %)
-          :navigate-back?                 true
-          :background-color               (colors/theme-colors colors/white colors/neutral-95)
-          :height                         148
-          :overlay-shown?                 overlay-shown?}
-         [sticky-category-header
-          {:enabled (> @scroll-height @first-channel-height)
-           :label   (pick-first-category-by-height
-                     @scroll-height
-                     @first-channel-height
-                     @categories-heights)}]
+         {:cover-image    cover
+          :collapsed?     collapsed?
+          :logo           logo
+          :name           name
+          :on-scroll      #(reset! scroll-height %)
+          :navigate-back? true
+          :height         148
+          :overlay-shown? overlay-shown?
+          :page-nav-props {:type           :community
+                           :right-side     (page-nav-right-section-buttons id)
+                           :community-name name
+                           :community-logo logo}
+          :sticky-header  [sticky-category-header
+                           {:enabled (> @scroll-height @first-channel-height)
+                            :label   (pick-first-category-by-height
+                                      @scroll-height
+                                      @first-channel-height
+                                      @categories-heights)}]}
          [community-content
           community
           pending?

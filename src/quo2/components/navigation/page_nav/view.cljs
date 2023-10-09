@@ -86,8 +86,8 @@
      nil)])
 
 (defn- title-center
-  [{:keys [centered? title]}]
-  [rn/view {:style (style/center-content-container centered?)}
+  [{:keys [centered? title center-opacity]}]
+  [rn/view {:style (style/center-content-container centered? center-opacity)}
    [text/text
     {:weight          :medium
      :size            :paragraph-1
@@ -95,13 +95,13 @@
     title]])
 
 (defn- dropdown-center
-  [{:keys [theme background dropdown-on-press dropdown-selected? dropdown-text]}]
+  [{:keys [theme background dropdown-on-press dropdown-selected? dropdown-text center-opacity]}]
   (let [dropdown-type  (cond
                          (= background :photo)                      :grey
                          (and (= theme :dark) (= background :blur)) :grey
                          :else                                      :ghost)
         dropdown-state (if dropdown-selected? :active :default)]
-    [rn/view {:style (style/center-content-container true)}
+    [rn/view {:style (style/center-content-container true center-opacity)}
      [dropdown/view
       {:type       dropdown-type
        :state      dropdown-state
@@ -111,8 +111,8 @@
       dropdown-text]]))
 
 (defn- token-center
-  [{:keys [theme background token-logo token-name token-abbreviation]}]
-  [rn/view {:style (style/center-content-container false)}
+  [{:keys [theme background token-logo token-name token-abbreviation center-opacity]}]
+  [rn/view {:style (style/center-content-container false center-opacity)}
    [rn/image {:style style/token-logo :source token-logo}]
    [text/text
     {:style           style/token-name
@@ -128,8 +128,8 @@
     token-abbreviation]])
 
 (defn- channel-center
-  [{:keys [theme background channel-emoji channel-name channel-icon]}]
-  [rn/view {:style (style/center-content-container false)}
+  [{:keys [theme background channel-emoji channel-name channel-icon center-opacity]}]
+  [rn/view {:style (style/center-content-container false center-opacity)}
    [rn/text {:style style/channel-emoji}
     channel-emoji]
    [text/text
@@ -141,11 +141,11 @@
    [icons/icon channel-icon {:size 16 :color (style/channel-icon-color theme background)}]])
 
 (defn- title-description-center
-  [{:keys [background theme picture title description]}]
-  [rn/view {:style (style/center-content-container false)}
+  [{:keys [background theme picture title description center-opacity]}]
+  [rn/view {:style (style/center-content-container false center-opacity)}
    (when picture
      [rn/view {:style style/group-avatar-picture}
-      [group-avatar/view {:picture picture :size 28}]])
+      [group-avatar/view {:picture picture :size :size-28}]])
    [rn/view {:style style/title-description-container}
     [text/text
      {:style           style/title-description-title
@@ -161,11 +161,11 @@
      description]]])
 
 (defn- community-network-center
-  [{:keys [type community-logo network-logo community-name network-name]}]
+  [{:keys [type community-logo network-logo community-name network-name center-opacity]}]
   (let [community? (= type :community)
         shown-logo (if community? community-logo network-logo)
         shown-name (if community? community-name network-name)]
-    [rn/view {:style (style/center-content-container false)}
+    [rn/view {:style (style/center-content-container false center-opacity)}
      [rn/image
       {:style  style/community-network-logo
        :source shown-logo}]
@@ -176,8 +176,8 @@
       shown-name]]))
 
 (defn- wallet-networks-center
-  [{:keys [networks networks-on-press background]}]
-  [rn/view {:style (style/center-content-container true)}
+  [{:keys [networks networks-on-press background center-opacity]}]
+  [rn/view {:style (style/center-content-container true center-opacity)}
    [network-dropdown/view
     {:state    :default
      :on-press networks-on-press

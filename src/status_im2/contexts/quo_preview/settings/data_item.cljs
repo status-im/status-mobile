@@ -78,8 +78,6 @@
       [preview/preview-container
        {:state      state
         :descriptor descriptor}
-       [rn/view {:style {:flex 1}}
-        [preview/customizer state descriptor]]
        (when @blur?
          [blur/view
           {:style         {:position         :absolute
