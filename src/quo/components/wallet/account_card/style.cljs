@@ -5,7 +5,7 @@
 (defn text-color
   [type theme]
   (if (and (or (= :missing-keypair type)
-               (= :watch-only type)) 
+               (= :watch-only type))
            (= :light theme))
     colors/neutral-100
     colors/white))
@@ -15,8 +15,12 @@
   {:width              162
    :background-color   (when (not= :watch-only type)
                          (colors/theme-colors
-                          (colors/custom-color customization-color 50 (when (= :missing-keypair type) (if pressed? 20 10)))
-                          (colors/custom-color customization-color 60 (when (= :missing-keypair type) (if pressed? 30 20)))
+                          (colors/custom-color customization-color
+                                               50
+                                               (when (= :missing-keypair type) (if pressed? 20 10)))
+                          (colors/custom-color customization-color
+                                               60
+                                               (when (= :missing-keypair type) (if pressed? 30 20)))
                           theme))
    :border-radius      16
    :border-width       1
@@ -57,7 +61,7 @@
 (defn metrics
   [type theme]
   {:color (if (and (or (= :missing-keypair type)
-                       (= :watch-only type)) 
+                       (= :watch-only type))
                    (= :light theme))
             colors/neutral-80-opa-60
             colors/white-opa-70)})
@@ -110,7 +114,7 @@
 
 (defn gradient-start-color
   [theme]
-  (colors/theme-colors 
+  (colors/theme-colors
    (colors/custom-color :army 50 0)
    colors/white-opa-2
    theme))
@@ -119,11 +123,11 @@
   (colors/custom-color :army 50 6))
 
 (def gradient-view
-  {:position               :absolute
-   :bottom 0
-   :top                    0
-   :left                   0
-   :right 0
+  {:position      :absolute
+   :bottom        0
+   :top           0
+   :left          0
+   :right         0
    :border-radius 16})
 
 (defn alert-icon-color

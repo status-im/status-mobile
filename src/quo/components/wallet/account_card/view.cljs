@@ -74,8 +74,9 @@
     [icon/icon
      :i/positive
      {:color (colors/theme-colors (if (or (= :missing-keypair type)
-                                          (= :watch-only type)) 
-                                    colors/neutral-50 colors/white-opa-70)
+                                          (= :watch-only type))
+                                    colors/neutral-50
+                                    colors/white-opa-70)
                                   colors/white-opa-70
                                   theme)
       :size  16}]]])
@@ -95,7 +96,7 @@
         on-press-out #(reset! pressed? false)]
     (fn [{:keys [name balance percentage-value loading? amount customization-color type emoji metrics?
                  theme on-press]}]
-      (let [watch-only? (= :watch-only type)
+      (let [watch-only?      (= :watch-only type)
             missing-keypair? (= :missing-keypair type)]
         (if loading?
           [loading-view
@@ -127,7 +128,8 @@
                :style  (style/account-name type theme)}
               name]
              (when watch-only? [icon/icon :i/reveal {:color colors/neutral-50 :size 12}])
-             (when missing-keypair? [icon/icon :i/alert {:color (style/alert-icon-color theme) :size 12}])]]
+             (when missing-keypair?
+               [icon/icon :i/alert {:color (style/alert-icon-color theme) :size 12}])]]
            [text/text
             {:size   :heading-2
              :weight :semi-bold
@@ -140,7 +142,7 @@
                 [metrics-info type theme amount])])
            (when watch-only?
              [gradiant-overview theme])
-           ])))))
+          ])))))
 
 (defn- add-account-view
   []
@@ -169,10 +171,10 @@
 (defn- view-internal
   [{:keys [type] :as props}]
   (case type
-    :watch-only  [user-account props]
-    :add-account [add-account-view props]
-    :default     [user-account props]
-    :empty       [user-account props]
+    :watch-only      [user-account props]
+    :add-account     [add-account-view props]
+    :default         [user-account props]
+    :empty           [user-account props]
     :missing-keypair [user-account props]
     nil))
 

@@ -82,16 +82,16 @@
      :metrics?         true
      :type             :watch-only
      :emoji            "💸"}
-    
+
     :missing-keypair
-    {:name             "Trip to Vegas"
-     :balance          "€2,269.12"
-     :percentage-value "16.9%"
-     :amount           "€570.24"
-     :metrics?         true
+    {:name                "Trip to Vegas"
+     :balance             "€2,269.12"
+     :percentage-value    "16.9%"
+     :amount              "€570.24"
+     :metrics?            true
      :customization-color :turquoise
-     :type             :missing-keypair
-     :emoji            "🎲"}
+     :type                :missing-keypair
+     :emoji               "🎲"}
 
     :add-account
     {:customization-color :blue
