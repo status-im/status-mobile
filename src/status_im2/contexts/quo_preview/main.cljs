@@ -395,7 +395,7 @@
                        {:name      :section-label
                         :component section-label/preview}]
    :share             [{:name      :qr-code
-                        :component qr-code/preview-qr-code}
+                        :component qr-code/preview}
                        {:name      :share-qr-code
                         :component share-qr-code/preview-share-qr-code}]
    :switchers         [{:name      :group-messaging-card

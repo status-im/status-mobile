@@ -19,7 +19,7 @@
             [status-im.utils.gfycat.core :as gfy]
             [status-im.utils.universal-links.utils :as universal-links]
             [status-im.utils.utils :as utils]
-            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
+            [status-im2.common.qr-codes.view :as qr-codes]
             [status-im2.config :as config]
             [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
@@ -32,7 +32,9 @@
       [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
        [react/view {:style {:padding-top 16 :padding-horizontal 16}}
         (when @width
-          [qr-code-viewer/qr-code-view (- @width 32) address])
+          [qr-codes/qr-code
+           {:url  address
+            :size (- @width 32)}])
         (when ens-name
           [react/view
            [copyable-text/copyable-text-view
