@@ -45,6 +45,12 @@
    :full-name       "Aretha Gosling"
    :profile-picture (resources/mock-images :user-picture-female2)})
 
+(def jessica-stewart
+  {:size            24
+   :type            :default
+   :full-name       "Jessica Stewart"
+   :profile-picture (resources/mock-images :user-picture-female2)})
+
 (def james-bond
   {:size            24
    :type            :default
@@ -101,6 +107,8 @@
     :value "Account: Piggy bank"}
    {:key   aretha-gosling
     :value "Person: Aretha Gosling"}
+   {:key   jessica-stewart
+    :value "Person: Jessica Stewart"}
    {:key   james-bond
     :value "Person: James Bond"}
    {:key   mainnet
