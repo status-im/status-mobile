@@ -21,7 +21,7 @@
                        :size                :size-32
                        :emoji               account-avatar-emoji
                        :type                :default}]
-    :keypair         [icon-avatar/icon-avatar
+    :keypair         [icon-avatar/view
                       {:icon    icon-avatar
                        :border? true
                        :color   :neutral}]

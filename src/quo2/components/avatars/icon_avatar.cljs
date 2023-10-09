@@ -15,7 +15,7 @@
    :size-20 {:component 20
              :icon      12}})
 
-(defn icon-avatar-internal
+(defn view-internal
   [{:keys [size icon color opacity border? theme]
     :or   {opacity 20
            size    :size-32}}]
@@ -35,4 +35,4 @@
       {:size  icon-size
        :color icon-color}]]))
 
-(def icon-avatar (quo.theme/with-theme icon-avatar-internal))
+(def view (quo.theme/with-theme view-internal))

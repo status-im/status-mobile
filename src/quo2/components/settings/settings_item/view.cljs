@@ -54,7 +54,7 @@
    (case image
      :icon        [icon/icon image-props (style/color blur? theme)]
      :avatar      [user-avatar/view image-props]
-     :icon-avatar [icon-avatar/icon-avatar image-props]
+     :icon-avatar [icon-avatar/view image-props]
      nil)])
 
 (defn tag-component

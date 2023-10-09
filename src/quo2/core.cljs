@@ -155,7 +155,7 @@
 (def channel-avatar quo2.components.avatars.channel-avatar.view/view)
 (def collection-avatar quo2.components.avatars.collection-avatar.view/view)
 (def group-avatar quo2.components.avatars.group-avatar.view/view)
-(def icon-avatar quo2.components.avatars.icon-avatar/icon-avatar)
+(def icon-avatar quo2.components.avatars.icon-avatar/view)
 (def user-avatar quo2.components.avatars.user-avatar.view/view)
 (def wallet-user-avatar quo2.components.avatars.wallet-user-avatar/wallet-user-avatar)
 

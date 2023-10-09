@@ -34,7 +34,7 @@
       :ring?               true
       :size                :size-32
       :customization-color customization-color}]
-    [icon-avatar/icon-avatar
+    [icon-avatar/view
      {:size    :size-32
       :icon    :i/placeholder
       :border? true}]))

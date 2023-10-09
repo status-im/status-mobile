@@ -13,7 +13,7 @@
               {:key :size-48}]}
    {:key     :icon
     :type    :select
-    :options [{:key   :i/placeholder20
+    :options [{:key   :i/placeholder
                :value "Placeholder"}
               {:key :i/wallet}
               {:key :i/play}]}
@@ -22,7 +22,7 @@
 (defn view
   []
   (let [state (reagent/atom {:size  :size-48
-                             :icon  :i/placeholder20
+                             :icon  :i/placeholder
                              :color :primary})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}

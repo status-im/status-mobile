@@ -14,7 +14,7 @@
   [{:keys [icon color opacity]}]
   [rn/view
    {:style style/sm-icon-wrapper}
-   [icon-avatar/icon-avatar
+   [icon-avatar/view
     {:size    :size-32
      :icon    icon
      :color   color
