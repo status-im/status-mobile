@@ -2204,6 +2204,10 @@
   version "4.0.4"
   resolved "git+https://github.com/ibrkhalil/react-native-cameraroll.git#168ea9a575e3d0d78031c59597744c33d1993c46"
 
+"@react-native-community/cameraroll@git+https://github.com/ibrkhalil/react-native-cameraroll.git#refs/tags/4.0.5.2":
+  version "4.0.4"
+  resolved "git+https://github.com/ibrkhalil/react-native-cameraroll.git#8f5cb98cc5e754d8cc486ce09836c9e5d5249ae4"
+
 "@react-native-community/cli-clean@^8.0.4":
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-8.0.4.tgz#97e16a20e207b95de12e29b03816e8f2b2c80cc7"
