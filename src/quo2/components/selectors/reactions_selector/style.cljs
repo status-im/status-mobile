@@ -1,4 +1,4 @@
-(ns quo2.components.selectors.reactions.style
+(ns quo2.components.selectors.reactions-selector.style
   (:require [quo2.foundations.colors :as colors]))
 
 (defn container

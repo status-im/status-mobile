@@ -1,4 +1,4 @@
-(ns quo2.components.reactions.resource
+(ns quo2.components.selectors.reaction-resource
   (:require [clojure.java.io :as io]
             [clojure.string :as string]))
 

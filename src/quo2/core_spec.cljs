@@ -59,7 +59,7 @@
     [quo2.components.record-audio.soundtrack.component-spec]
     [quo2.components.selectors.disclaimer.component-spec]
     [quo2.components.selectors.filter.component-spec]
-    [quo2.components.selectors.reactions.component-spec]
+    [quo2.components.selectors.reactions-selector.component-spec]
     [quo2.components.selectors.selectors.component-spec]
     [quo2.components.settings.reorder-item.component-spec]
     [quo2.components.settings.settings-item.component-spec]

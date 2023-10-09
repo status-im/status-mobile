@@ -23,7 +23,6 @@
 (def ^:const content-type-link 101)
 (def ^:const content-type-album 102)
 
-
 (def ^:const contact-request-state-none 0)
 (def ^:const contact-request-state-mutual 1)
 (def ^:const contact-request-state-sent 2)

@@ -1,5 +1,5 @@
-(ns quo2.components.reactions.resource
-  (:require-macros [quo2.components.reactions.resource :refer [resolve-all-reactions]]))
+(ns quo2.components.selectors.reaction-resource
+  (:require-macros [quo2.components.selectors.reaction-resource :refer [resolve-all-reactions]]))
 
 (def ^:private reactions
   (resolve-all-reactions))

@@ -55,6 +55,16 @@
   {:flex-shrink 1
    :padding-top 12})
 
+(defn multi-select-option
+  []
+  (merge (field-container false)
+         {:justify-content  :space-between
+          :align-items      :space-between
+          :flex             1
+          :flex-direction   :row
+          :margin-vertical  4
+          :background-color (field-default-bg-color)}))
+
 (defn select-container
   []
   (merge (field-container false)
