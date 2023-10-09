@@ -60,7 +60,8 @@
     status-im2.contexts.chat.home.events
     status-im2.contexts.communities.home.events
     status-im.ui.components.invite.events
-    [status-im2.common.biometric.events :as biometric]))
+    [status-im2.common.biometric.events :as biometric]
+    status-im.ui.screens.notifications-settings.events))
 
 (re-frame/reg-fx
  :dismiss-keyboard

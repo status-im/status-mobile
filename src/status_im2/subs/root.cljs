@@ -236,7 +236,6 @@
 (reg-root-key-sub :delete-profile/keep-keys-on-keycard? :delete-profile/keep-keys-on-keycard?)
 
 ;; push notifications
-(reg-root-key-sub :push-notifications/servers :push-notifications/servers)
 (reg-root-key-sub :push-notifications/preferences :push-notifications/preferences)
 
 (reg-root-key-sub :buy-crypto/on-ramps :buy-crypto/on-ramps)

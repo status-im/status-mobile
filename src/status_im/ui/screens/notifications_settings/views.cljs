@@ -6,14 +6,14 @@
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
-            [status-im.notifications.core :as notifications]
+            [status-im2.contexts.push-notifications.events :as notifications]
             [status-im.ui.components.react :as react]))
 
 (defonce server (reagent/atom ""))
 
 (defn local-notifications
   []
-  (let [{:keys [enabled]} @(re-frame/subscribe [:notifications/wallet-transactions])]
+  (let [{:keys [enabled]} @(re-frame/subscribe [:push-notifications/wallet-transactions])]
     [:<>
      [quo/separator
       {:color (:ui-02 @quo-colors/theme)
@@ -25,7 +25,7 @@
        :accessibility-label :notifications-button
        :active              enabled
        :on-press            #(re-frame/dispatch
-                              [::notifications/switch-transaction-notifications enabled])
+                              [:push-notifications/switch-transaction-notifications enabled])
        :accessory           :switch}]]))
 
 (defn notifications-settings-ios
@@ -40,7 +40,7 @@
        :title               (i18n/label :t/show-notifications)
        :accessibility-label :notifications-button
        :active              remote-push-notifications-enabled?
-       :on-press            #(re-frame/dispatch [::notifications/switch
+       :on-press            #(re-frame/dispatch [:push-notifications/switch
                                                  (not remote-push-notifications-enabled?) true])
        :accessory           :switch}]
      [quo/separator
@@ -54,7 +54,7 @@
        :active              (and remote-push-notifications-enabled?
                                  (not push-notifications-from-contacts-only?))
        :on-press            #(re-frame/dispatch
-                              [::notifications/switch-non-contacts
+                              [:push-notifications/switch-non-contacts
                                (not push-notifications-from-contacts-only?)])
        :accessory           :switch}]
      [quo/list-item
@@ -64,7 +64,7 @@
        :active              (and remote-push-notifications-enabled?
                                  (not push-notifications-block-mentions?))
        :on-press            #(re-frame/dispatch
-                              [::notifications/switch-block-mentions
+                              [:push-notifications/switch-block-mentions
                                (not push-notifications-block-mentions?)])
        :accessory           :switch}]
      [local-notifications]]))
@@ -79,7 +79,7 @@
        :subtitle            (i18n/label :t/local-notifications-subtitle)
        :active              notifications-enabled?
        :on-press            #(re-frame/dispatch
-                              [::notifications/switch (not notifications-enabled?) false])
+                              [:push-notifications/switch (not notifications-enabled?) false])
        :accessory           :switch}]
      [local-notifications]]))
 
@@ -107,7 +107,7 @@
        :accessibility-label :send-push-notifications-button
        :active              send-push-notifications?
        :on-press            #(re-frame/dispatch
-                              [::notifications/switch-send-push-notifications
+                              [:push-notifications/switch-send-push-notifications
                                (not send-push-notifications?)])
        :accessory           :switch}]
      [quo/list-footer
@@ -120,7 +120,7 @@
        :active              (and remote-push-notifications-enabled?
                                  push-notifications-server-enabled?)
        :on-press            #(re-frame/dispatch
-                              [::notifications/switch-push-notifications-server-enabled
+                              [:push-notifications/switch-push-notifications-server-enabled
                                (not push-notifications-server-enabled?)])
        :accessory           :switch}]
      [quo/list-item
@@ -148,7 +148,7 @@
 (defview notifications-servers
   []
   (letsubs [servers [:push-notifications/servers]]
-    {:component-did-mount #(re-frame/dispatch [::notifications/fetch-servers])}
+    {:component-did-mount #(re-frame/dispatch [:push-notifications/fetch-servers])}
     [react/scroll-view
      {:style                   {:flex 1}
       :content-container-style {:padding-vertical 8}}
@@ -166,6 +166,6 @@
         :after    :main-icon/next
         :disabled (empty? @server)
         :on-press #(do
-                     (re-frame/dispatch [::notifications/add-server @server])
+                     (re-frame/dispatch [:push-notifications/add-server @server])
                      (reset! server ""))}
        (i18n/label :t/save)]]]))

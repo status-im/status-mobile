@@ -3,7 +3,6 @@
             [utils.validators :as validators]
             [taoensso.timbre :as log]
             [react-native.platform :as platform]
-            [react-native.core :as rn]
             [utils.transforms :as types]
             [clojure.string :as string]))
 
@@ -14,7 +13,7 @@
 
 (defn init
   [handler]
-  (.addListener ^js rn/device-event-emitter "gethEvent" #(handler (.-jsonEvent ^js %))))
+  (.addListener ^js (.-DeviceEventEmitter ^js react-native) "gethEvent" #(handler (.-jsonEvent ^js %))))
 
 (defn clear-web-data
   []

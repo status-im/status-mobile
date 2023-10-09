@@ -2,11 +2,11 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.transactions.core :as transactions]
             [utils.i18n :as i18n]
-            [status-im.notifications.core :as notifications]
             [utils.datetime :as datetime]
             [utils.money :as money]
             [status-im.wallet.db :as wallet.db]
-            [status-im.wallet.utils :as wallet.utils]))
+            [status-im.wallet.utils :as wallet.utils]
+            [status-im.notifications.wallet :as notifications.wallet]))
 
 (re-frame/reg-sub
  :wallet/accounts
@@ -236,11 +236,11 @@
               (* 100 (/ confirmations transactions/confirmations-count-threshold)))))))
 
 (re-frame/reg-sub
- :notifications/wallet-transactions
+ :push-notifications/wallet-transactions
  :<- [:push-notifications/preferences]
  (fn [pref]
-   (first (filter #(notifications/preference= %
-                                              {:service    "wallet"
-                                               :event      "transaction"
-                                               :identifier "all"})
+   (first (filter #(notifications.wallet/preference= %
+                                                     {:service    "wallet"
+                                                      :event      "transaction"
+                                                      :identifier "all"})
                   pref))))

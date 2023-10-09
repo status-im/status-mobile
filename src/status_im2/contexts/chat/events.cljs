@@ -109,9 +109,7 @@
              (update :chats #(apply dissoc % removed-chats))
              (update :chats-home-list set/difference removed-chats))
      :fx [(when (not-empty removed-chats)
-            [:clear-message-notifications
-             [removed-chats
-              (get-in db [:profile/profile :remote-push-notifications-enabled?])]])
+            [:effects/push-notifications-clear-message-notifications removed-chats])
           [:dispatch [:chat/leave-removed-chat]]]}))
 
 (re-frame/reg-event-fx :chat/ensure-chats ensure-chats)
@@ -286,9 +284,9 @@
   {:events [:chat.ui/remove-chat]}
   [{:keys [db now] :as cofx} chat-id]
   (rf/merge cofx
-            {:clear-message-notifications
-             [[chat-id] (get-in db [:profile/profile :remote-push-notifications-enabled?])]
-             :dispatch [:shell/close-switcher-card chat-id]}
+            {:effects/push-notifications-clear-message-notifications [chat-id]
+             :dispatch                                               [:shell/close-switcher-card
+                                                                      chat-id]}
             (deactivate-chat chat-id)
             (offload-messages chat-id)))
 
