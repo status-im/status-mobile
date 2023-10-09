@@ -113,14 +113,15 @@
   {:margin-left 4})
 
 (defn gradient-start-color
-  [theme]
+  [theme customization-color]
   (colors/theme-colors
-   (colors/custom-color :army 50 0)
+   (colors/custom-color customization-color 50 0)
    colors/white-opa-2
    theme))
 
-(def gradient-end-color
-  (colors/custom-color :army 50 6))
+(defn gradient-end-color
+  [customization-color]
+  (colors/custom-color customization-color 50 6))
 
 (def gradient-view
   {:position      :absolute

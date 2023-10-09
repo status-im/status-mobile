@@ -82,9 +82,10 @@
       :size  16}]]])
 
 (defn- gradiant-overview
-  [theme]
+  [theme customization-color]
   [linear-gradient/linear-gradient
-   {:colors [(style/gradient-start-color theme) style/gradient-end-color]
+   {:colors [(style/gradient-start-color theme customization-color)
+             (style/gradient-end-color customization-color)]
     :style  style/gradient-view
     :start  {:x 0 :y 0}
     :end    {:x 1 :y 0}}])
@@ -141,7 +142,7 @@
               (when (not= :empty type)
                 [metrics-info type theme amount])])
            (when watch-only?
-             [gradiant-overview theme])
+             [gradiant-overview theme customization-color])
           ])))))
 
 (defn- add-account-view

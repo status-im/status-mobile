@@ -25,7 +25,7 @@
       (h/is-truthy (h/get-by-text username))))
 
   (h/test "Renders Watch-Only"
-    (let [data (get-test-data {:type :watch-only 
+    (let [data (get-test-data {:type        :watch-only
                                :watch-only? true})]
       (h/render [account-card/view data])
       (h/is-truthy (h/get-by-text username))))
@@ -36,7 +36,7 @@
       (h/is-truthy (h/get-by-label-text :add-account))))
 
   (h/test "Renders Empty"
-    (let [data (get-test-data {:type :empty
+    (let [data (get-test-data {:type        :empty
                                :empty-type? true})]
       (h/render [account-card/view data])
       (h/is-truthy (h/get-by-text empty-username))))
@@ -55,19 +55,19 @@
       (h/was-called on-press)))
 
   (h/test "Renders component without metrics"
-    (let [data (get-test-data {:type :default
+    (let [data (get-test-data {:type     :default
                                :metrics? false})]
       (h/render [account-card/view data])
       (h/is-falsy (h/query-by-label-text :metrics))))
 
   (h/test "Renders loading state"
-    (let [data (get-test-data {:type :default
+    (let [data (get-test-data {:type     :default
                                :loading? true})]
       (h/render [account-card/view data])
       (h/is-truthy (h/get-by-label-text :loading))))
 
   (h/test "Renders loading state without metrics"
-    (let [data (get-test-data {:type :default
+    (let [data (get-test-data {:type     :default
                                :metrics? false
                                :loading? true})]
       (h/render [account-card/view data])

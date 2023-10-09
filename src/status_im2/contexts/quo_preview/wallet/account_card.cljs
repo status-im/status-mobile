@@ -75,13 +75,14 @@
      :emoji               "🍑"}
 
     :watch-only
-    {:name             "Ben’s fortune"
-     :balance          "€2,269.12"
-     :percentage-value "16.9%"
-     :amount           "€570.24"
-     :metrics?         true
-     :type             :watch-only
-     :emoji            "💸"}
+    {:name                "Ben’s fortune"
+     :balance             "€2,269.12"
+     :percentage-value    "16.9%"
+     :amount              "€570.24"
+     :metrics?            true
+     :type                :watch-only
+     :customization-color :army
+     :emoji               "💸"}
 
     :missing-keypair
     {:name                "Trip to Vegas"
