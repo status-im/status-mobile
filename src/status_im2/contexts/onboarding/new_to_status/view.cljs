@@ -21,15 +21,16 @@
        :weight :semi-bold}
       (i18n/label :t/new-to-status)]
      [quo/small-option-card
-      {:variant    :main
-       :title      (i18n/label :t/generate-keys)
-       :subtitle   (i18n/label :t/generate-keys-subtitle)
-       :image      (resources/get-image :generate-keys)
-       :max-height (- (:height window)
-                      (* 2 56) ;; two other list items
-                      (* 2 16) ;; spacing between items
-                      220)     ;; extra spacing (top bar)
-       :on-press   #(rf/dispatch [:onboarding-2/navigate-to-create-profile])}]
+      {:variant      :main
+       :title        (i18n/label :t/generate-keys)
+       :subtitle     (i18n/label :t/generate-keys-subtitle)
+       :button-label (i18n/label :t/lets-go)
+       :image        (resources/get-image :generate-keys)
+       :max-height   (- (:height window)
+                        (* 2 56) ;; two other list items
+                        (* 2 16) ;; spacing between items
+                        220)     ;; extra spacing (top bar)
+       :on-press     #(rf/dispatch [:onboarding-2/navigate-to-create-profile])}]
      [rn/view {:style style/subtitle-container}
       [quo/text
        {:style  style/subtitle
