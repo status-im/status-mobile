@@ -146,6 +146,7 @@
     [status-im2.contexts.quo-preview.tags.permission-tag :as permission-tag]
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
     [status-im2.contexts.quo-preview.tags.tags :as tags]
+    [status-im2.contexts.quo-preview.tags.tiny-tag :as tiny-tag]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.text-combinations.preview :as
      text-combinations]
@@ -420,6 +421,8 @@
                         :component status-tags/preview-status-tags}
                        {:name      :tags
                         :component tags/preview-tags}
+                       {:name      :tiny-tag
+                        :component tiny-tag/preview-tiny-tag}
                        {:name      :token-tag
                         :component token-tag/preview-token-tag}]
    :text-combinations [{:name      :text-combinations
