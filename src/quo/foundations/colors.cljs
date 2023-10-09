@@ -110,6 +110,7 @@
 
 ;; with transparency
 (def white-opa-0 (alpha white 0))
+(def white-opa-2 (alpha white 0.02))
 (def white-opa-5 (alpha white 0.05))
 (def white-opa-10 (alpha white 0.1))
 (def white-opa-20 (alpha white 0.2))

@@ -3,24 +3,25 @@
     [quo.foundations.colors :as colors]))
 
 (defn text-color
-  [watch-only? theme]
-  (if (and watch-only? (= :light theme))
+  [type theme]
+  (if (and (or (= :missing-keypair type)
+               (= :watch-only type)) 
+           (= :light theme))
     colors/neutral-100
     colors/white))
 
 (defn card
-  [{:keys [customization-color watch-only? metrics? theme pressed?]}]
+  [{:keys [customization-color type theme pressed?]}]
   {:width              162
-   :height             (if metrics? 88 68)
-   :background-color   (if watch-only?
-                         (colors/theme-colors colors/neutral-80-opa-5 colors/neutral-95 theme)
+   :background-color   (when (not= :watch-only type)
                          (colors/theme-colors
-                          (colors/custom-color customization-color 50)
-                          (colors/custom-color customization-color 60)
+                          (colors/custom-color customization-color 50 (when (= :missing-keypair type) (if pressed? 20 10)))
+                          (colors/custom-color customization-color 60 (when (= :missing-keypair type) (if pressed? 30 20)))
                           theme))
    :border-radius      16
    :border-width       1
-   :border-color       (if watch-only?
+   :border-color       (if (or (= :missing-keypair type)
+                               (= :watch-only type))
                          (colors/theme-colors
                           (if pressed? colors/neutral-80-opa-10 colors/neutral-80-opa-5)
                           (if pressed? colors/white-opa-10 colors/white-opa-5)
@@ -28,7 +29,7 @@
                          colors/neutral-80-opa-10)
    :padding-horizontal 12
    :padding-top        6
-   :padding-bottom     10})
+   :padding-bottom     9})
 
 (def profile-container
   {:margin-bottom  6
@@ -39,8 +40,8 @@
    :align-items    :center})
 
 (defn account-name
-  [watch-only? theme]
-  {:color       (text-color watch-only? theme)
+  [type theme]
+  {:color       (text-color type theme)
    :margin-left 2})
 
 (def watch-only-container
@@ -50,21 +51,25 @@
    :flex            1})
 
 (defn account-value
-  [watch-only? theme]
-  {:color (text-color watch-only? theme)})
+  [type theme]
+  {:color (text-color type theme)})
 
 (defn metrics
-  [watch-only? theme]
-  {:color (if (and watch-only? (= :light theme))
+  [type theme]
+  {:color (if (and (or (= :missing-keypair type)
+                       (= :watch-only type)) 
+                   (= :light theme))
             colors/neutral-80-opa-60
             colors/white-opa-70)})
 
 (defn separator
-  [watch-only? theme]
+  [type theme]
   {:width             2
    :height            2
    :border-radius     20
-   :background-color  (if (and watch-only? (= :light theme))
+   :background-color  (if (and (or (= :missing-keypair type)
+                                   (= :watch-only type))
+                               (= :light theme))
                         colors/neutral-80-opa-20
                         colors/white-opa-40)
    :margin-horizontal 4})
@@ -102,3 +107,25 @@
 
 (def metrics-icon-container
   {:margin-left 4})
+
+(defn gradient-start-color
+  [theme]
+  (colors/theme-colors 
+   (colors/custom-color :army 50 0)
+   colors/white-opa-2
+   theme))
+
+(def gradient-end-color
+  (colors/custom-color :army 50 6))
+
+(def gradient-view
+  {:position               :absolute
+   :bottom 0
+   :top                    0
+   :left                   0
+   :right 0
+   :border-radius 16})
+
+(defn alert-icon-color
+  [theme]
+  (colors/theme-colors colors/neutral-50 colors/white theme))
