@@ -127,6 +127,7 @@
     quo2.components.tags.status-tags
     quo2.components.tags.tag
     quo2.components.tags.tags
+    quo2.components.tags.tiny-tag.view
     quo2.components.tags.token-tag
     quo2.components.text-combinations.view
     quo2.components.wallet.account-card.view
@@ -353,6 +354,7 @@
 (def status-tag quo2.components.tags.status-tags/status-tag)
 (def tag quo2.components.tags.tag/tag)
 (def tags quo2.components.tags.tags/tags)
+(def tiny-tag quo2.components.tags.tiny-tag.view/view)
 (def token-tag quo2.components.tags.token-tag/tag)
 
 ;;;; Text combinations
