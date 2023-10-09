@@ -4,10 +4,10 @@
             [reagent.core :as reagent]
             [utils.ethereum.eip.eip55 :as eip55]
             [status-im.ethereum.eip681 :as eip681]
-            [utils.i18n :as i18n]
             [status-im.ui.components.copyable-text :as copyable-text]
-            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
-            [status-im.ui.components.react :as react])
+            [status-im.ui.components.react :as react]
+            [status-im2.common.qr-codes.view :as qr-codes]
+            [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-address
@@ -18,9 +18,9 @@
     [react/view {:on-layout #(reset! width (-> ^js % .-nativeEvent .-layout .-width))}
      [react/view {:style {:padding-top 16 :padding-horizontal 16}}
       (when @width
-        [qr-code-viewer/qr-code-view
-         (- @width 32)
-         (eip681/generate-uri address {:chain-id chain-id})])
+        [qr-codes/qr-code
+         {:url  (eip681/generate-uri address {:chain-id chain-id})
+          :size (- @width 32)}])
       [copyable-text/copyable-text-view
        {:label           :t/ethereum-address
         :container-style {:margin-top 12 :margin-bottom 4}

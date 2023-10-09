@@ -645,6 +645,10 @@ class BaseView(object):
     def reopen_app(self, password=common_password, sign_in=True):
         app_package = self.driver.current_package
         self.driver.terminate_app(app_package)
+        for _ in range(3):
+            if self.driver.query_app_state(app_package) == 1:
+                break
+            time.sleep(1)
         self.driver.activate_app(app_package)
         if sign_in:
             sign_in_view = self.get_sign_in_view()
