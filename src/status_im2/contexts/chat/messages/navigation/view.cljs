@@ -31,8 +31,8 @@
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "extend"})
         translate-animation          (reanimated/interpolate scroll-y
-                                                             [(+ style/navigation-bar-height 25)
-                                                              (+ style/navigation-bar-height 100)]
+                                                             [style/navigation-bar-height
+                                                              (+ style/navigation-bar-height 30)]
                                                              [50 0]
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "clamp"})
