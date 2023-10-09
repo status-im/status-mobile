@@ -39,6 +39,11 @@
       (h/render [account-card/view data])
       (h/is-truthy (h/get-by-text empty-username))))
 
+  (h/test "Renders Missing Keypair"
+    (let [data (get-test-data :missing-keypair false false false true)]
+      (h/render [account-card/view data])
+      (h/is-truthy (h/get-by-text username))))
+
   (h/test "Add account on press fires correctly"
     (let [on-press (h/mock-fn)
           data     {:type     :add-account
