@@ -5,4 +5,4 @@
 (defn view
   [props]
   [quo/empty-state
-   (merge props {:container-style style/empty-container-style})])
+   (assoc props :container-style style/empty-container-style)])
