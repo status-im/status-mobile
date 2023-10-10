@@ -9484,9 +9484,10 @@ react-native-hole-view@3.0.0-alpha3:
   resolved "https://registry.yarnpkg.com/react-native-hole-view/-/react-native-hole-view-3.0.0-alpha3.tgz#8eca30b04b3ef7abd3360b0b76d617eefea648a1"
   integrity sha512-GzKsirikGaDdynN/IA6tM2gfTZVvKOa4ISiKGcd34K3N/DrR0SLB62SOFRhhOisCcvTFZOegb4jyTQLg2+pCzg==
 
-"react-native-image-crop-picker@git+https://github.com/status-im/react-native-image-crop-picker.git#refs/tags/v0.36.2-status.0":
-  version "0.36.2"
-  resolved "git+https://github.com/status-im/react-native-image-crop-picker.git#d14a68dcb643328b91e783d3a83561e7d6e0bd25"
+react-native-image-crop-picker@0.40.0:
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.40.0.tgz#cf378a4cbdb64b9b6ff94399b8515ff3bdccbf9c"
+  integrity sha512-FpqiCS4CiPQp8qIorlELWKbpi1d9lyhJki9spZr4LShv9hk65GWo6tYJupfTV19o5XcRwJn8d4MHIUoyWMJRTQ==
 
 react-native-image-resizer@^1.2.3:
   version "1.2.3"
