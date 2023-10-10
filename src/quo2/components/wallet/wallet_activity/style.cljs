@@ -33,11 +33,14 @@
   [theme blur?]
   {:border-width       1
    :border-radius      6
-   :margin-right       8
+   :margin-right       4
    :padding-horizontal 2
    :border-color       (if-not blur?
                          (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
                          colors/white-opa-10)})
+
+(def timestamp-container
+  {:margin-left 4})
 
 (defn timestamp
   [theme blur?]
