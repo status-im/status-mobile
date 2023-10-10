@@ -2,12 +2,13 @@
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]
-    [status-im2.contexts.wallet.account.style :as style]
+    [status-im2.contexts.wallet.account.tabs.style :as style]
     [status-im2.contexts.wallet.common.temp :as temp]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [status-im2.contexts.wallet.account.tabs.about.view :as about]))
 
 (defn view
-  [selected-tab]
+  [{:keys [selected-tab]}]
   (case selected-tab
     :assets       [rn/flat-list
                    {:render-fn               quo/token-value
@@ -33,5 +34,4 @@
                     :description     (i18n/label :t/no-collectibles-description)
                     :placeholder?    true
                     :container-style style/empty-container-style}]
-    [rn/view {:style style/wip}
-     [quo/text "[WIP]"]]))
+    [about/view]))

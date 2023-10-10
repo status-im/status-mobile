@@ -2333,9 +2333,14 @@
     "enter-eth": "Enter any ETH address or ENS name.",
     "eth-or-ens": "ETH address or ENS name.",
     "type-pairing-code": "Type or paste pairing code",
-    "scan-sync-code-placeholder": "cs2:4FH...",
     "overview": "Overview",
     "traits": "Traits",
     "opensea": "OpenSea",
-    "mainnet": "Mainnet"
+    "mainnet": "Mainnet",
+    "scan-sync-code-placeholder": "cs2:4FH...",
+    "view-on-eth": "View on Etherscan",
+    "view-on-opt": "View on Optimism Explorer",
+    "view-on-arb": "View on Arbiscan",
+    "copy-address": "Copy address",
+    "show-address-qr": "Show address QR"
 }

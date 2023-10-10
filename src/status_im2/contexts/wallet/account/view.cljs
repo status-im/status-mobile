@@ -53,4 +53,4 @@
          :data           tabs-data
          :on-change      #(reset! selected-tab %)
          :scrollable?    true}]
-       [tabs/view @selected-tab]])))
+       [tabs/view {:selected-tab @selected-tab}]])))

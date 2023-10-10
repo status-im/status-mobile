@@ -1,11 +1,8 @@
 (ns status-im2.contexts.quo-preview.settings.data-item
   (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.common.resources :as resources]
-            [react-native.blur :as blur]))
+            [status-im2.common.resources :as resources]))
 
 (def descriptor
   [{:label "Blur:"
@@ -72,23 +69,12 @@
                              :icon                :i/placeholder
                              :emoji               "🎮"
                              :customization-color :yellow
-                             :communities-list    communities-list})
-        blur? (reagent/cursor state [:blur?])]
+                             :communities-list    communities-list})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       (when @blur?
-         [blur/view
-          {:style         {:position         :absolute
-                           :left             0
-                           :right            0
-                           :bottom           0
-                           :height           75
-                           :background-color colors/neutral-80-opa-70}
-           :overlay-color :transparent}])
-       [rn/view
-        {:style {:align-items       :center
-                 :padding-vertical  10
-                 :margin-horizontal 20}}
-        [quo/data-item @state]]])))
+       {:state                 state
+        :descriptor            descriptor
+        :blur?                 (:blur? @state)
+        :show-blur-background? true
+        :blur-dark-only?       true}
+       [quo/data-item @state]])))
