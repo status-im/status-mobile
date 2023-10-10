@@ -28,8 +28,7 @@
       [empty-tab/view
        {:title           (i18n/label :t/no-dapps)
         :description     (i18n/label :t/no-collectibles-description)
-        :placeholder?    true
-        :container-style style/empty-container-style}]
+        :placeholder?    true}]
       [rn/view {:style style/dapps-container}
        [rn/flat-list
         {:data      dapps-list
