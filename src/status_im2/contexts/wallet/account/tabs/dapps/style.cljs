@@ -8,8 +8,7 @@
 
 (defn dapps-list
   [theme]
-  {:margin-top    12
-   :border-radius 16
+  {:border-radius 16
    :border-width  1
    :border-color  (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)})
 
