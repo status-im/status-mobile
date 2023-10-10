@@ -13,7 +13,7 @@
      (assoc :background-color colors/primary-50-opa-5 :margin-bottom 4)
 
      (and (not in-pinned-view?) (or mentioned pinned-by last-in-group?))
-     (assoc :margin-top 8))))
+     (assoc :margin-top 4))))
 
 (defn user-message-content
   [{:keys [first-in-group? outgoing outgoing-status]}]
