@@ -26,9 +26,7 @@
   {:color                 (colors/theme-colors colors/primary-50
                                                colors/primary-60)
    :selection-color       :transparent
-   :suppress-highlighting true
-   ;;  :line-height           21
-  })
+   :suppress-highlighting true})
 
 (defn code
   []
