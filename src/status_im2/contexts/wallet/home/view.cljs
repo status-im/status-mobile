@@ -61,15 +61,15 @@
 (defn refactor-data
   [accounts loading?]
   (let [refactored-accounts (mapv (fn [account]
-                                    (merge account
-                                           {:type                :empty
-                                            :customization-color :blue
-                                            :on-press            #(rf/dispatch [:navigate-to
-                                                                                :wallet-accounts])
-                                            :loading?            loading?
-                                            :balance             (str "$" (calculate-balance account))}))
+                                    (assoc account
+                                           :type                :empty
+                                           :customization-color :blue
+                                           :on-press            #(rf/dispatch [:navigate-to
+                                                                               :wallet-accounts])
+                                           :loading?            loading?
+                                           :balance             (str "$" (calculate-balance account))))
                                   accounts)]
-    (merge refactored-accounts add-account-placeholder)))
+    (conj refactored-accounts add-account-placeholder)))
 
 (defn reagent-render
   [accounts]
