@@ -5,7 +5,8 @@
             [utils.i18n :as i18n]
             [status-im2.contexts.wallet.account.tabs.dapps.style :as style]
             [status-im2.contexts.wallet.common.temp :as temp]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]))
 
 (defn dapp-options
   []
@@ -24,7 +25,7 @@
   (let [dapps-list (temp/dapps-list {:on-press-icon #(rf/dispatch [:show-bottom-sheet
                                                                    {:content dapp-options}])})]
     (if (empty? dapps-list)
-      [quo/empty-state
+      [empty-tab/view
        {:title           (i18n/label :t/no-dapps)
         :description     (i18n/label :t/no-collectibles-description)
         :placeholder?    true

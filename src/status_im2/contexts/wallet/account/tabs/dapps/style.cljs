@@ -1,9 +1,11 @@
 (ns status-im2.contexts.wallet.account.tabs.dapps.style
   (:require
-    [quo2.foundations.colors :as colors]
-    [status-im2.contexts.wallet.account.style :as common-style]))
+    [quo2.foundations.colors :as colors]))
 
-(def empty-container-style common-style/empty-container-style)
+(def empty-container-style
+  {:justify-content :center
+   :flex            1
+   :margin-bottom   44})
 
 (def dapps-container
   {:padding-horizontal 20

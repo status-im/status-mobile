@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [quo2.core :as quo]
-    [quo2.foundations.resources :as resources]
     [quo2.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [status-im2.common.resources :as resources]
@@ -143,7 +142,6 @@
     :description       :text
     :description-props {:text (string/replace constants/path-default-wallet #"/" " / ")}}])
 
-<<<<<<< HEAD
 (def network-names [:ethereum :optimism :arbitrum])
 
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
@@ -166,19 +164,18 @@
    :derivation-path (string/replace constants/path-default-wallet #"/" " / ")
    :user-name       "Alisher Yakupov"
    :on-press        #(js/alert "pressed")})
-=======
+
 (defn dapps-list
   [{:keys [on-press-icon]}]
-  [{:dapp          {:avatar (resources/get-dapp :coingecko)
+  [{:dapp          {:avatar (quo.resources/get-dapp :coingecko)
                     :name   "Coingecko"
                     :value  "coingecko.com"}
     :state         :default
     :action        :icon
     :on-press-icon on-press-icon}
-   {:dapp          {:avatar (resources/get-dapp :uniswap)
+   {:dapp          {:avatar (quo.resources/get-dapp :uniswap)
                     :name   "Uniswap"
                     :value  "uniswap.org"}
     :state         :default
     :action        :icon
     :on-press-icon on-press-icon}])
->>>>>>> b39b6334c (feat: dapps tab)
