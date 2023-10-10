@@ -2,7 +2,7 @@
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]
-    [status-im2.contexts.wallet.account.style :as style]
+    [status-im2.contexts.wallet.account.tabs.style :as style]
     [status-im2.contexts.wallet.common.temp :as temp]
     [utils.i18n :as i18n]
     [status-im2.contexts.wallet.account.tabs.about.view :as about]))

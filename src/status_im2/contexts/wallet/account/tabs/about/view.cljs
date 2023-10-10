@@ -29,13 +29,16 @@
   [quo/action-drawer
    [[{:icon                :i/link
       :accessibility-label :view-on-eth
-      :label               (i18n/label :t/view-on-eth)}
+      :label               (i18n/label :t/view-on-eth)
+      :right-icon          :i/external}
      {:icon                :i/link
       :accessibility-label :view-on-opt
-      :label               (i18n/label :t/view-on-opt)}
+      :label               (i18n/label :t/view-on-opt)
+      :right-icon          :i/external}
      {:icon                :i/link
       :accessibility-label :view-on-arb
-      :label               (i18n/label :t/view-on-arb)}
+      :label               (i18n/label :t/view-on-arb)
+      :right-icon          :i/external}
      {:icon                :i/copy
       :accessibility-label :copy-address
       :label               (i18n/label :t/copy-address)}
