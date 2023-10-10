@@ -97,9 +97,6 @@
            {:style (reanimated/apply-animations-to-style
                     {:transform [{:translateY translate-y}]}
                     (style/sheet insets window-height selected-item))}
-           (when gradient-cover?
-             [rn/view {:style style/gradient-bg}
-              [quo/gradient-cover {:customization-color customization-color}]])
            (when shell?
              [blur/ios-view {:style style/shell-bg}])
            (when selected-item
@@ -112,6 +109,11 @@
            [rn/view
             {:style     (style/sheet-content theme padding-bottom-override insets shell? bottom-margin)
              :on-layout #(reset! sheet-height (.-nativeEvent.layout.height ^js %))}
+            (when gradient-cover?
+              [rn/view {:style style/gradient-bg}
+               [quo/gradient-cover
+                {:customization-color customization-color
+                 :opacity             0.4}]])
             [rn/view {:style (style/handle theme)}]
             [content]]]]]))))
 
