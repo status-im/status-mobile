@@ -2337,10 +2337,12 @@
     "traits": "Traits",
     "opensea": "OpenSea",
     "mainnet": "Mainnet",
-    "scan-sync-code-placeholder": "cs2:4FH...",
     "view-on-eth": "View on Etherscan",
     "view-on-opt": "View on Optimism Explorer",
     "view-on-arb": "View on Arbiscan",
     "copy-address": "Copy address",
-    "show-address-qr": "Show address QR"
+    "show-address-qr": "Show address QR",
+    "scan-sync-code-placeholder": "cs2:4FH...",
+    "visit-dapp": "Visit dApp",
+    "disconnect-dapp": "Disconnect dApp"
 }

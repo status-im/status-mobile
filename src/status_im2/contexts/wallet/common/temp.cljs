@@ -164,3 +164,18 @@
    :derivation-path (string/replace constants/path-default-wallet #"/" " / ")
    :user-name       "Alisher Yakupov"
    :on-press        #(js/alert "pressed")})
+
+(defn dapps-list
+  [{:keys [on-press-icon]}]
+  [{:dapp          {:avatar (quo.resources/get-dapp :coingecko)
+                    :name   "Coingecko"
+                    :value  "coingecko.com"}
+    :state         :default
+    :action        :icon
+    :on-press-icon on-press-icon}
+   {:dapp          {:avatar (quo.resources/get-dapp :uniswap)
+                    :name   "Uniswap"
+                    :value  "uniswap.org"}
+    :state         :default
+    :action        :icon
+    :on-press-icon on-press-icon}])

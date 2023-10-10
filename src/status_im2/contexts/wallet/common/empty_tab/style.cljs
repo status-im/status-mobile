@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.account.tabs.style)
+(ns status-im2.contexts.wallet.common.empty-tab.style)
 
 (def empty-container-style
   {:justify-content :center
