@@ -39,8 +39,8 @@
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
 
 (defn calculate-raw-balance
-  [rawBalance decimals]
-  (/ (js/parseInt rawBalance) (Math/pow 10 (js/parseInt decimals))))
+  [raw-balance decimals]
+  (/ (js/parseInt raw-balance) (Math/pow 10 (js/parseInt decimals))))
 
 (defn calculate-balance
   [{:keys [address]}]
