@@ -57,11 +57,11 @@
       (i18n/label :t/days)])])
 
 (defn- left-side
+  "The description can either be given as a string `description` or a component `custom-subtitle`"
   [{:keys [theme title status size blur? description custom-subtitle icon subtitle label icon-color
            customization-color
            emoji]
     :as   props}]
-  "The description can either be given as a string `description` or a component `custom-subtitle`"
   [rn/view {:style style/left-side}
    [left-title
     {:title title
