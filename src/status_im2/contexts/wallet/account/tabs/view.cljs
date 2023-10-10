@@ -16,17 +16,17 @@
                     :data                    temp/tokens
                     :content-container-style {:padding-horizontal 8}}]
     :collectibles [empty-tab/view
-                   {:title           (i18n/label :t/no-collectibles)
-                    :description     (i18n/label :t/no-collectibles-description)
-                    :placeholder?    true}]
+                   {:title        (i18n/label :t/no-collectibles)
+                    :description  (i18n/label :t/no-collectibles-description)
+                    :placeholder? true}]
     :activity     [empty-tab/view
-                   {:title           (i18n/label :t/no-activity)
-                    :description     (i18n/label :t/empty-tab-description)
-                    :placeholder?    true}]
+                   {:title        (i18n/label :t/no-activity)
+                    :description  (i18n/label :t/empty-tab-description)
+                    :placeholder? true}]
     :permissions  [empty-tab/view
-                   {:title           (i18n/label :t/no-permissions)
-                    :description     (i18n/label :t/no-collectibles-description)
-                    :placeholder?    true}]
+                   {:title        (i18n/label :t/no-permissions)
+                    :description  (i18n/label :t/no-collectibles-description)
+                    :placeholder? true}]
     :dapps        [dapps/view]
     [about/view]))
 

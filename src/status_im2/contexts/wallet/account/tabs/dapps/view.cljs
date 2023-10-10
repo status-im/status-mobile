@@ -26,9 +26,9 @@
                                                                    {:content dapp-options}])})]
     (if (empty? dapps-list)
       [empty-tab/view
-       {:title           (i18n/label :t/no-dapps)
-        :description     (i18n/label :t/no-collectibles-description)
-        :placeholder?    true}]
+       {:title        (i18n/label :t/no-dapps)
+        :description  (i18n/label :t/no-collectibles-description)
+        :placeholder? true}]
       [rn/view {:style style/dapps-container}
        [rn/flat-list
         {:data      dapps-list
