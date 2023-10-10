@@ -17,5 +17,6 @@
                 :flex       1}}
        [common.top-nav/view]
        [common.title-column/view
-        {:label (i18n/label :t/browser) :customization-color customization-color}]
+        {:label (i18n/label :t/browser)
+         :customization-color customization-color}]
       ])))

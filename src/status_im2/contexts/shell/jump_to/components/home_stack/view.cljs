@@ -3,7 +3,7 @@
             [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
             [status-im2.contexts.wallet.home.view :as wallet-new]
             [status-im2.contexts.chat.home.view :as chat]
-            [status-im2.contexts.browser.home.view :as browser-new]
+            [status-im2.contexts.browser.home.view :as browser]
             [status-im2.contexts.shell.jump-to.state :as state]
             [status-im2.contexts.shell.jump-to.utils :as utils]
             [status-im2.contexts.communities.home.view :as communities]
@@ -35,7 +35,7 @@
      :wallet-stack      (if @state/load-new-wallet?
                           [wallet-new/view]
                           [wallet.accounts/accounts-overview-old])
-     :browser-stack     [browser-new/view]
+     :browser-stack     [browser/view]
      [:<>])])
 
 (defn lazy-screen
