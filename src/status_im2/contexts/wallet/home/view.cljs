@@ -111,7 +111,7 @@
 
 (defn view
   []
-  (reagent/create-class
-   (let [accounts (rf/sub [:profile/wallet-accounts])]
-     {:component-did-mount #(rf/dispatch [:wallet-2/get-wallet-tokens accounts])
-      :reagent-render      reagent-render})))
+  (let [accounts (rf/sub [:profile/wallet-accounts])]
+    (rf/dispatch [:wallet-2/get-wallet-tokens accounts])
+    (fn []
+      [reagent-render])))
