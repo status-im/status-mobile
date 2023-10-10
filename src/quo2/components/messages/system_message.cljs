@@ -171,7 +171,7 @@
        :style           {:flex-shrink 1}
        :size            :paragraph-2}
       pinned-by]
-     [split-text (i18n/label :pinned-a-message) theme true]
+     [split-text (i18n/label :t/pinned-a-message) theme true]
      [sm-timestamp timestamp theme]]
     (when child child)]])
 

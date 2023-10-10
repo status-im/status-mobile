@@ -162,8 +162,7 @@
      (cond
        fetching? [nft-assets-skeleton num-assets]
 
-       ;; <shivekkhurana> OpenSea sometimes doesn't return an asset
-       ;; This condition handles it
+       ;; <shivekkhurana> OpenSea sometimes doesn't return an asset. This condition handles it
        (and (not fetching?)
             (not (seq assets)))
        [no-assets-error]
@@ -240,7 +239,7 @@
         [::multiaccounts.update/toggle-opensea-nfts-visiblity true])
       :theme :main
       :type :primary}
-     (i18n/label :display-collectibles)]]
+     (i18n/label :t/display-collectibles)]]
    [quo/text
     {:size  :small
      :color :secondary
@@ -285,14 +284,10 @@
 
      ;; TODO <shivekkhurana>: Enable txns
      ;; [quo/list-item {:title    (i18n/label :t/wallet-send)
-     ;;                 :icon     :main-icons/send
-     ;;                 :accessibility-label
-     ;;                 :nft-send
-     ;;                 :theme    :accent
+     ;;                 :icon     :main-icons/send :accessibility-label :nft-send :theme    :accent
      ;;                 :on-press #()}]
 
-     ;; TODO <shivekkhurana>: What to do with share?
-     ;; Share links or share image?
+     ;; TODO <shivekkhurana>: What to do with share? Share links or share image?
      ;; [quo/list-item {:title    (i18n/label :t/share)
      ;;                 :theme    :accent
      ;;                 :accessibility-label
@@ -307,7 +302,7 @@
      (when (is-image? nft)
        [toastable-highlight-view
         ;; the last string is an emoji. It might not show up in all editors but its there
-        {:toast-label (str (i18n/label :profile-picture-updated)) " " "😎"}
+        {:toast-label (str (i18n/label :t/profile-picture-updated)) " " "😎"}
         [quo/list-item
          {:title (i18n/label :t/use-as-profile-picture)
           :theme :accent

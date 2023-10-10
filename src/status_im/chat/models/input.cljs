@@ -6,7 +6,6 @@
             [status-im.chat.models.mentions :as mentions]
             [status-im.chat.models.message :as chat.message]
             [status-im.chat.models.message-content :as message-content]
-            [status-im.utils.utils :as utils]
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
             [taoensso.timbre :as log]
@@ -26,12 +25,6 @@
                                  original))))
 
 ;; effects
-(re-frame/reg-fx
- :show-cooldown-warning
- (fn [_]
-   (utils/show-popup nil
-                     (i18n/label :cooldown/warning-message)
-                     #())))
 
 (rf/defn set-chat-input-text
   "Set input text for current-chat. Takes db and input text and cofx

@@ -71,7 +71,7 @@
        :on-press #(rf/dispatch [:navigate-to :community
                                 {:from-chat    true
                                  :community-id (:id community)}])}
-      (i18n/label :view)]]))
+      (i18n/label :t/view)]]))
 
 (defn community-preview-loader
   [community-link]
@@ -149,7 +149,7 @@
    [quo/button
     {:type     :grey
      :on-press #(rf/dispatch [:open-modal :link-preview-settings])}
-    (i18n/label :enable)]
+    (i18n/label :t/enable)]
    [rn/view (style/separator)]
    [quo/button
     {:type     :grey

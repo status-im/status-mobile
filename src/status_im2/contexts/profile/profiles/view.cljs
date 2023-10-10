@@ -64,8 +64,8 @@
 (defn delete-profile-confirmation
   [key-uid context]
   [confirmation-drawer/confirmation-drawer
-   {:title               (i18n/label :remove-profile?)
-    :description         (i18n/label :remove-profile-confirm-message)
+   {:title               (i18n/label :t/remove-profile?)
+    :description         (i18n/label :t/remove-profile-confirm-message)
     :accessibility-label :remove-profile-confirm
     :context             context
     :button-text         (i18n/label :t/remove)
@@ -88,7 +88,7 @@
   [key-uid context]
   [quo/action-drawer
    [[{:icon                :i/delete
-      :label               (i18n/label :remove-profile-message)
+      :label               (i18n/label :t/remove-profile-message)
       :on-press            #(show-confirmation key-uid context)
       :accessibility-label :remove-profile
       :danger?             true}]]])

@@ -33,7 +33,7 @@
    [react/text
     {:style    styles/go-to-settings
      :on-press #(re-frame/dispatch [:mobile-network/navigate-to-settings])}
-    (i18n/label :mobile-network-go-to-settings)]])
+    (i18n/label :t/mobile-network-go-to-settings)]])
 
 (views/defview checkbox
   []
@@ -48,7 +48,7 @@
        :on-value-change #(re-frame/dispatch [:mobile-network/remember-choice? %])}]
      [react/view
       {:style styles/checkbox-text-container}
-      [react/text (i18n/label :mobile-network-sheet-remember-choice)]]]))
+      [react/text (i18n/label :t/mobile-network-sheet-remember-choice)]]]))
 
 (defn settings
   []
@@ -57,9 +57,9 @@
    [react/nested-text
     {:style    styles/settings-text
      :on-press #(re-frame/dispatch [:mobile-network/navigate-to-settings])}
-    (i18n/label :mobile-network-sheet-configure)
+    (i18n/label :t/mobile-network-sheet-configure)
     [{:style styles/settings-link}
-     (str " " (i18n/label :mobile-network-sheet-settings))]]])
+     (str " " (i18n/label :t/mobile-network-sheet-settings))]]])
 
 (defn hide-sheet-and-dispatch
   [event]

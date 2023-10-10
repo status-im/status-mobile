@@ -663,7 +663,7 @@
     :component keycard.pairing/change-pairing-code}
 
    {:name      :show-all-connections
-    :options   {:topBar {:title {:text (i18n/label :all-connections)}}
+    :options   {:topBar {:title {:text (i18n/label :t/all-connections)}}
                 :insets {:bottom? true
                          :top?    true}}
     :component manage-all-connections/views}

@@ -67,7 +67,7 @@
                    :imageErrorColor        :red
                    :sensorDescription      (i18n/label :t/biometric-auth-android-sensor-desc)
                    :sensorErrorDescription (i18n/label :t/biometric-auth-android-sensor-error-desc)
-                   :cancelText             (i18n/label :cancel)}))}
+                   :cancelText             (i18n/label :t/cancel)}))}
      options))))
 
 (rf/defn authenticate
