@@ -165,7 +165,6 @@
    :user-name       "Alisher Yakupov"
    :on-press        #(js/alert "pressed")})
 
-<<<<<<< HEAD
 (defn dapps-list
   [{:keys [on-press-icon]}]
   [{:dapp          {:avatar (quo.resources/get-dapp :coingecko)
@@ -180,7 +179,7 @@
     :state         :default
     :action        :icon
     :on-press-icon on-press-icon}])
-=======
+
 (def account-data
   {:title                "Trip to Vegas"
    :type                 :account
@@ -200,4 +199,3 @@
     :name                "My savings"
     :address             "0x43c...98d"
     :networks            [:ethereum]}])
->>>>>>> 28f928cc0 (wallet: account options)
