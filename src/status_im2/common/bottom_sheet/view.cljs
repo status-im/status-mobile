@@ -74,9 +74,6 @@
             bottom                  (if sheet-bottom-margin
                                       (+ @sheet-height bottom-margin (:bottom insets))
                                       (:bottom insets))]
-        (js/console.log (str "item height " @item-height))
-        (js/console.log (str "sheet height " @sheet-height))
-        (js/console.log (str "sheet-bottom-margin  " bottom))
         (rn/use-effect
          #(if hide?
             (hide translate-y bg-opacity window-height on-close)
