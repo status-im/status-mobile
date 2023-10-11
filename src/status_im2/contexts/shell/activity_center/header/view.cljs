@@ -40,7 +40,8 @@
       :accessibility-label :activity-center-open-more
       :on-press            #(rf/dispatch [:show-bottom-sheet
                                           {:content drawer/options
-                                           :theme   :dark}])}
+                                           :theme   :dark
+                                           :shell?  true}])}
      :i/options]]
    [quo/text
     {:size   :heading-1
