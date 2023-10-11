@@ -29,11 +29,6 @@
      cofx
      {:db (assoc db :network-status/initialized? true)}
      (cond
-       (and logged-in?
-            (utils/cellular? (:network/type db))
-            (not remember-syncing-choice?)
-            (not= :create-multiaccount (:view-id db)))
-
        ;; NOTE(rasom): When we log into account on-network-status-change is
        ;; dispatched, but that doesn't mean there was a status change, thus
        ;; no reason to restart wallet.
