@@ -40,23 +40,26 @@
 
 (defn calculate-raw-balance
   [raw-balance decimals]
-  (/ (js/parseInt raw-balance) (Math/pow 10 (js/parseInt decimals))))
+  (if (not (js/isNaN (js/parseInt raw-balance)))
+  (/ (js/parseInt raw-balance) (Math/pow 10 (js/parseInt decimals))) 0))
 
 (defn calculate-balance
   [{:keys [address]}]
   (let [tokens       (rf/sub [:wallet-2/tokens])
         token        (get tokens (keyword (string/lower-case address)))
-        total-values (atom 0)]
-    (doseq [item token]
-      (let [total-value-per-token (atom 0)]
-        (doseq [balances (vals (:balancesPerChain item))]
-          (reset! total-value-per-token (+ (calculate-raw-balance (:rawBalance balances)
-                                                                  (:decimals item))
-                                           @total-value-per-token)))
-        (reset! total-values (+ (* @total-value-per-token
-                                   (get-in item [:marketValuesPerCurrency :USD :price]))
-                                @total-values))))
-    (.toFixed @total-values 2)))
+        result       (reduce (fn [acc item]
+                               (let [total-value-per-token (reduce (fn [ac balances]
+                                                                     (+ (calculate-raw-balance (:rawBalance balances)
+                                                                                               (:decimals item))
+                                                                        ac))
+                                                                   0
+                                                                   (vals (:balancesPerChain item)))
+                                     total-values (* total-value-per-token
+                                                     (get-in item [:marketValuesPerCurrency :USD :price]))]
+                                 (+ acc total-values)))
+                             0
+                             token)] 
+    (.toFixed result 2)))
 
 (defn refactor-data
   [accounts loading?]

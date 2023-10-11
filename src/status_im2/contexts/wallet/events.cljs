@@ -6,7 +6,7 @@
  (fn [_ [accounts]]
    (let [params (map :address accounts)]
      {:json-rpc/call [{:method     "wallet_getWalletToken"
-                       :params     [(map :address accounts)]
+                       :params     [params]
                        :on-success [:wallet-2/get-wallet-token-success]
                        :on-error   (fn [error]
                                      (log/info "failed to get wallet token"
