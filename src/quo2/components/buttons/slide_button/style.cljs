@@ -2,8 +2,7 @@
   (:require
     [quo2.components.buttons.slide-button.constants :as constants]
     [quo2.components.buttons.slide-button.utils :as utils]
-    [react-native.reanimated :as reanimated]
-    [quo2.foundations.typography :as typography]))
+    [react-native.reanimated :as reanimated]))
 
 (def absolute-fill
   {:position :absolute
@@ -16,7 +15,7 @@
   [{:keys [interpolate-track thumb-size customization-color theme]}]
   (reanimated/apply-animations-to-style
    {:transform [{:translate-x (interpolate-track :track-clamp)}]}
-   {:background-color (utils/slider-color :main customization-color theme)
+   {:background-color (utils/main-color customization-color theme)
     :border-radius    12
     :height           thumb-size
     :width            thumb-size
@@ -46,7 +45,7 @@
     :justify-content :space-around}))
 
 (defn track
-  [{:keys [disabled? customization-color height theme]}]
+  [{:keys [disabled? customization-color height blur?]}]
   {:align-items      :flex-start
    :justify-content  :center
    :border-radius    14
@@ -54,7 +53,7 @@
    :align-self       :stretch
    :padding          constants/track-padding
    :opacity          (if disabled? 0.3 1)
-   :background-color (utils/slider-color :track customization-color theme)})
+   :background-color (utils/track-color customization-color blur?)})
 
 (defn track-cover
   [interpolate-track]
@@ -74,7 +73,5 @@
    :width           track-width})
 
 (defn track-text
-  [customization-color theme]
-  (-> typography/paragraph-1
-      (merge typography/font-medium)
-      (assoc :color (utils/slider-color :main customization-color theme))))
+  [customization-color theme blur?]
+  {:color (utils/text-color customization-color theme blur?)})

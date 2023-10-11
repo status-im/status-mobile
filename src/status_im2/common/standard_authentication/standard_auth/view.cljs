@@ -73,7 +73,7 @@
                                            :on-auth-success       on-auth-success
                                            :on-auth-fail          on-auth-fail
                                            :fallback-button-label fallback-button-label})
-         :track-icon          :i/face-id
+         :track-icon          (if biometric-auth? :i/face-id :password)
          :track-text          track-text}]])))
 
 (def view (quo.theme/with-theme view-internal))
