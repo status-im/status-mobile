@@ -10,6 +10,34 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
+(defn about-options
+  []
+  [rn/view
+   [quo/drawer-top temp/account-data]
+   [quo/action-drawer
+    [[{:icon                :i/edit
+       :accessibility-label :edit
+       :label               (i18n/label :t/edit-account)}
+      {:icon                :i/copy
+       :accessibility-label :copy-address
+       :label               (i18n/label :t/copy-address)}
+      {:icon                :i/share
+       :accessibility-label :share-account
+       :label               (i18n/label :t/share-account)}
+      {:icon                :i/delete
+       :accessibility-label :remove-account
+       :label               (i18n/label :t/remove-account)
+       :danger?             true}]]]
+   [quo/divider-line]
+   [rn/view
+    {:style {:padding-horizontal 20
+             :padding-top        12
+             :padding-bottom     8}}
+    [quo/section-label {:section (i18n/label :t/select-another-account)}]]
+   [rn/view {:style {:margin-horizontal 8}}
+    (for [account temp/other-accounts]
+      [quo/account-item {:account-props account}])]])
+
 (def ^:private networks-list
   [{:source (quo.resources/get-network :ethereum)}
    {:source (quo.resources/get-network :optimism)}
@@ -40,7 +68,8 @@
          :networks-on-press #(js/alert "Pressed Networks")
          :right-side        :account-switcher
          :account-switcher  {:customization-color :purple
-                             :on-press            #(js/alert "Pressed Account Switcher")
+                             :on-press            #(rf/dispatch [:show-bottom-sheet
+                                                                 {:content about-options}])
                              :emoji               "🍑"}}]
        [quo/account-overview temp/account-overview-state]
        [quo/wallet-graph {:time-frame :empty}]
