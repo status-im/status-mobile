@@ -53,9 +53,9 @@
                                (colors/theme-colors colors/white colors/neutral-95 theme))}))
 
 (defn selected-item
-  [theme top bottom sheet-bottom-margin border-radius]
+  [theme top bottom selected-item-smaller-than-sheet? border-radius]
   {:position          :absolute
-   :top               (when-not sheet-bottom-margin (- 0 top))
+   :top               (when-not selected-item-smaller-than-sheet? (- 0 top))
    :bottom            bottom
    :overflow          :hidden
    :left              0

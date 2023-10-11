@@ -64,16 +64,23 @@
          {:keys [content selected-item padding-bottom-override border-radius on-close shell?
                  gradient-cover? customization-color]
           :or   {border-radius 12}}]
-      (let [{window-height :height} (rn/get-window)
-            bg-opacity              (reanimated/use-shared-value 0)
-            translate-y             (reanimated/use-shared-value window-height)
-            sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height on-close)
-            sheet-bottom-margin     (< @item-height
-                                       (- window-height @sheet-height (:top insets) bottom-margin))
-            top                     (- window-height (:top insets) (:bottom insets) @sheet-height)
-            bottom                  (if sheet-bottom-margin
-                                      (+ @sheet-height bottom-margin (:bottom insets))
-                                      (:bottom insets))]
+      (let [{window-height :height}           (rn/get-window)
+            bg-opacity                        (reanimated/use-shared-value 0)
+            translate-y                       (reanimated/use-shared-value window-height)
+            sheet-gesture                     (get-sheet-gesture translate-y
+                                                                 bg-opacity
+                                                                 window-height
+                                                                 on-close)
+            selected-item-smaller-than-sheet? (< @item-height
+                                                 (- window-height
+                                                    @sheet-height
+                                                    (:top insets)
+                                                    (:bottom insets)
+                                                    bottom-margin))
+            top                               (- window-height (:top insets) @sheet-height)
+            bottom                            (if selected-item-smaller-than-sheet?
+                                                (+ @sheet-height bottom-margin)
+                                                (:bottom insets))]
         (rn/use-effect
          #(if hide?
             (hide translate-y bg-opacity window-height on-close)
@@ -103,7 +110,7 @@
              [rn/view
               {:on-layout #(reset! item-height (.-nativeEvent.layout.height ^js %))
                :style
-               (style/selected-item theme top bottom sheet-bottom-margin border-radius)}
+               (style/selected-item theme top bottom selected-item-smaller-than-sheet? border-radius)}
               [selected-item]])
 
            [rn/view
