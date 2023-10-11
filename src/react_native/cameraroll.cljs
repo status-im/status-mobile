@@ -1,5 +1,5 @@
 (ns react-native.cameraroll
-  (:require ["@react-native-camera-roll/camera-roll" :as CameraRoll]
+  (:require ["@react-native-camera-roll/camera-roll" :refer (CameraRoll)]
             [react-native.fs :as fs]
             [utils.transforms :as transforms]
             [taoensso.timbre :as log]))
