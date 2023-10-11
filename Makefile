@@ -328,6 +328,10 @@ lint-fix: ##@test Run code style checks and fix issues
 	sh scripts/lint-trailing-newline.sh --fix && \
 	yarn prettier
 
+clean-namespaces: export TARGET := clojure
+clean-namespaces: ##@ Clean up Clojure namespaces (remove unused & sort)
+	clojure-lsp clean-ns
+
 shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
 	yarn shadow-cljs server
