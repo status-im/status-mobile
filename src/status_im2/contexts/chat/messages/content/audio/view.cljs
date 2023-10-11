@@ -184,7 +184,7 @@
         :accessibility-label :audio-error-label
         :weight              :medium
         :size                :paragraph-2}
-       (i18n/label :error-loading-audio)]
+       (i18n/label :t/error-loading-audio)]
       [rn/view
        {:accessibility-label :audio-message-container
         :style               (style/container)}

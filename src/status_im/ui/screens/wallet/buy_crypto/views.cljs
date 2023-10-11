@@ -58,7 +58,7 @@
    (when (seq learn-more-url)
      [react/touchable-highlight {:on-press #(re-frame/dispatch [:browser.ui/open-url learn-more-url])}
       [react/view {:padding-vertical 11}
-       [quo/text {:color :link} (i18n/label :learn-more)]]])])
+       [quo/text {:color :link} (i18n/label :t/learn-more)]]])])
 
 (views/defview buy-crypto
   []
@@ -124,8 +124,8 @@
                                     site-url
                                     @webview-ref)
            :java-script-enabled   true
-           ;; This is to avoid crashes on android devices
-           ;; due to https://github.com/react-native-webview/react-native-webview/issues/1838
+           ;; This is to avoid crashes on android devices due to
+           ;; https://github.com/react-native-webview/react-native-webview/issues/1838
            ;; We can't disable hardware acceleration as we need to use camera
            :style                 {:opacity 0.99}
            :local-storage-enabled true
