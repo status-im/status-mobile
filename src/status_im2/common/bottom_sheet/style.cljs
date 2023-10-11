@@ -1,6 +1,5 @@
 (ns status-im2.common.bottom-sheet.style
   (:require [quo2.foundations.colors :as colors]
-            [quo2.foundations.shadows :as shadows]
             [quo2.theme :as theme]
             [react-native.platform :as platform]))
 
@@ -43,14 +42,12 @@
 
 (defn sheet-content
   [theme padding-bottom-override {:keys [bottom]} shell? bottom-margin]
-  (merge
-   (shadows/get 4 theme :inverted)
-   {:border-top-left-radius  20
-    :border-top-right-radius 20
-    :padding-bottom          (or padding-bottom-override (+ bottom bottom-margin))
-    :background-color        (if shell?
-                               :transparent
-                               (colors/theme-colors colors/white colors/neutral-95 theme))}))
+  {:border-top-left-radius  20
+   :border-top-right-radius 20
+   :padding-bottom          (or padding-bottom-override (+ bottom bottom-margin))
+   :background-color        (if shell?
+                              :transparent
+                              (colors/theme-colors colors/white colors/neutral-95 theme))})
 
 (defn selected-item
   [theme top bottom selected-item-smaller-than-sheet? border-radius]
