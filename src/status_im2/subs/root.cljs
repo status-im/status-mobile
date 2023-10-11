@@ -10,7 +10,8 @@
     status-im2.subs.onboarding
     status-im2.subs.pairing
     status-im2.subs.profile
-    status-im2.subs.shell))
+    status-im2.subs.shell
+    status-im2.subs.wallet-2.wallet))
 
 (defn reg-root-key-sub
   [sub-name db-key]
