@@ -74,7 +74,7 @@
                                   accounts)]
     (conj refactored-accounts add-account-placeholder)))
 
-(defn reagent-render
+(defn- view-internal
   [accounts]
   (let [top          (safe-area/get-top)
         selected-tab (reagent/atom (:id (first tabs-data)))
@@ -114,4 +114,4 @@
   (let [accounts (rf/sub [:profile/wallet-accounts])]
     (rf/dispatch [:wallet-2/get-wallet-token accounts])
     (fn []
-      [reagent-render accounts])))
+      [view-internal accounts])))
