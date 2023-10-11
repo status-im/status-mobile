@@ -74,27 +74,29 @@
             [quo/text (style/text-subtitle) (i18n/label :t/find-your-friends)]
             [rn/view {:style style/input-and-scan-container}
              [quo/input
-              {:ref             #(reset! input-ref %)
-               :container-style {:flex 1}
-               :multiline?      true
-               :blur-on-submit  true
-               :return-key-type :done
-               :label           (i18n/label :t/ens-or-chat-key)
-               :placeholder     (i18n/label :t/type-some-chat-key)
-               :clearable?      (not show-paste-button?)
-               :on-clear        clear-input
-               :button          (when show-paste-button?
-                                  {:on-press (fn []
-                                               (reset! default-value @clipboard)
-                                               (rf/dispatch
-                                                [:contacts/set-new-identity @clipboard nil]))
-                                   :text     (i18n/label :t/paste)})
-               :default-value   (or scanned @default-value input)
-               :on-change-text  (fn [v]
-                                  (reset! default-value v)
-                                  (debounce/debounce-and-dispatch
-                                   [:contacts/set-new-identity v nil]
-                                   600))}]
+              {:accessibility-label :enter-contact-code-input
+               :ref                 #(reset! input-ref %)
+               :container-style     {:flex 1}
+               :auto-capitalize     :none
+               :multiline?          true
+               :blur-on-submit      true
+               :return-key-type     :done
+               :label               (i18n/label :t/ens-or-chat-key)
+               :placeholder         (i18n/label :t/type-some-chat-key)
+               :clearable?          (not show-paste-button?)
+               :on-clear            clear-input
+               :button              (when show-paste-button?
+                                      {:on-press (fn []
+                                                   (reset! default-value @clipboard)
+                                                   (rf/dispatch
+                                                    [:contacts/set-new-identity @clipboard nil]))
+                                       :text     (i18n/label :t/paste)})
+               :default-value       (or scanned @default-value input)
+               :on-change-text      (fn [v]
+                                      (reset! default-value v)
+                                      (debounce/debounce-and-dispatch
+                                       [:contacts/set-new-identity v nil]
+                                       600))}]
              [rn/view {:style style/scan-button-gap}]
              [rn/view {:style style/scan-button-container}
               [quo/button
