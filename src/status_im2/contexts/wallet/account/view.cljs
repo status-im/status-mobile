@@ -10,7 +10,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn about-options
+(defn account-options
   []
   [rn/view
    [quo/drawer-top temp/account-data]
@@ -69,7 +69,7 @@
          :right-side        :account-switcher
          :account-switcher  {:customization-color :purple
                              :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                 {:content about-options}])
+                                                                 {:content account-options}])
                              :emoji               "🍑"}}]
        [quo/account-overview temp/account-overview-state]
        [quo/wallet-graph {:time-frame :empty}]
