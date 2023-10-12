@@ -14,7 +14,7 @@
                              :timestamp-near         "Mar 8 · 22:42"
                              :on-info-button-pressed identity
                              :on-press               #(println "fill gaps")
-                             :warning-label          (i18n/label :messages-gap-warning)})]
+                             :warning-label          (i18n/label :t/messages-gap-warning)})]
     (fn []
       [preview/preview-container
        {:state                     state

@@ -6,9 +6,13 @@
 
 (def text-container {:flex 1})
 
-(def title
+(def icon-title
   {:color  colors/white
    :height 22})
+
+(def main-title
+  {:color  colors/white
+   :height 26})
 
 (def subtitle
   {:color  colors/white-opa-70
@@ -33,21 +37,23 @@
    :height 32})
 
 (def main-variant
-  {:flex          1
-   :margin-bottom -8})
+  {:flex 1})
 
 (def main-variant-text-container
   {:height             62
    :padding-top        10
-   :padding-bottom     12
    :padding-horizontal 12})
 
-(def touchable-overlay {:border-radius 16})
+(defn main-variant-image
+  [max-height]
+  {:flex       1
+   :max-height max-height})
+
+(def main-button
+  {:padding-horizontal 12 :margin-bottom 12 :margin-top 8})
 
 (defn card
   [height]
   {:background-color colors/white-opa-5
    :border-radius    16
    :height           height})
-
-(def main-variant-extra-space {:height 8})

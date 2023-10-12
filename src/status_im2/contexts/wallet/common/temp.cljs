@@ -4,9 +4,11 @@
     [quo2.core :as quo]
     [quo2.foundations.resources :as quo.resources]
     [react-native.core :as rn]
+    [status-im2.common.resources :as resources]
     [status-im2.constants :as constants]
     [status-im2.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
+    [status-im2.common.resources :as status.resources]
     [utils.re-frame :as rf]))
 
 (def networks
@@ -26,9 +28,7 @@
    [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-create-account])}
     "Create Account"]
    [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-saved-addresses])}
-    "Saved Addresses"]
-   [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-collectibles])}
-    "Collectibles"]])
+    "Saved Addresses"]])
 
 (def wallet-overview-state
   {:state             :default
@@ -68,6 +68,45 @@
                           :percentage-change "0.00"
                           :fiat-change       "€0.00"}}])
 
+(def collectibles
+  [{:image (status.resources/get-mock-image :collectible1)
+    :id    1}
+   {:image (status.resources/get-mock-image :collectible2)
+    :id    2}
+   {:image (status.resources/get-mock-image :collectible3)
+    :id    3}
+   {:image (status.resources/get-mock-image :collectible4)
+    :id    4}
+   {:image (status.resources/get-mock-image :collectible5)
+    :id    5}
+   {:image (status.resources/get-mock-image :collectible6)
+    :id    6}])
+
+(def collectible-details
+  nil
+  #_{:name             "#5946"
+     :description      "Bored Ape Yacht Club"
+     :image            (status.resources/get-mock-image :collectible-monkey)
+     :collection-image (status.resources/get-mock-image :bored-ape)
+     :traits           [{:title    "Background"
+                         :subtitle "Blue"
+                         :id       1}
+                        {:title    "Clothes"
+                         :subtitle "Bayc T Black"
+                         :id       2}
+                        {:title    "Eyes"
+                         :subtitle "Sleepy"
+                         :id       3}
+                        {:title    "Fur"
+                         :subtitle "Black"
+                         :id       4}
+                        {:title    "Hat"
+                         :subtitle "Beanie"
+                         :id       5}
+                        {:title    "Mouth"
+                         :subtitle "Bored Pipe"
+                         :id       6}]})
+
 (def account-overview-state
   {:current-value       "€0.00"
    :account-name        "Account 1"
@@ -102,3 +141,41 @@
                         :alignment   :flex-start}
     :description       :text
     :description-props {:text (string/replace constants/path-default-wallet #"/" " / ")}}])
+
+(def network-names [:ethereum :optimism :arbitrum])
+
+(def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
+
+(def data-item-state
+  {:description         :default
+   :icon-right?         true
+   :icon                :i/options
+   :card?               true
+   :label               :none
+   :status              :default
+   :size                :default
+   :title               "Address"
+   :customization-color :yellow})
+
+(def account-origin-state
+  {:type            :default-keypair
+   :stored          :on-keycard
+   :profile-picture (resources/get-mock-image :user-picture-male5)
+   :derivation-path (string/replace constants/path-default-wallet #"/" " / ")
+   :user-name       "Alisher Yakupov"
+   :on-press        #(js/alert "pressed")})
+
+(defn dapps-list
+  [{:keys [on-press-icon]}]
+  [{:dapp          {:avatar (quo.resources/get-dapp :coingecko)
+                    :name   "Coingecko"
+                    :value  "coingecko.com"}
+    :state         :default
+    :action        :icon
+    :on-press-icon on-press-icon}
+   {:dapp          {:avatar (quo.resources/get-dapp :uniswap)
+                    :name   "Uniswap"
+                    :value  "uniswap.org"}
+    :state         :default
+    :action        :icon
+    :on-press-icon on-press-icon}])

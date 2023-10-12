@@ -105,34 +105,35 @@
            :menu-items @(:menu-items state)
            :style      (style/input-view state)}
           [rn/text-input
-           {:ref                      #(reset! (:input-ref props) %)
-            :default-value            @(:text-value state)
-            :on-focus                 #(handler/focus props state animations dimensions)
-            :on-blur                  #(handler/blur state animations dimensions subscriptions)
-            :on-content-size-change   #(handler/content-size-change %
-                                                                    state
-                                                                    animations
-                                                                    subscriptions
-                                                                    dimensions
-                                                                    (or keyboard-shown
-                                                                        (:edit subscriptions)))
-            :on-scroll                #(handler/scroll % props state animations dimensions)
-            :on-change-text           #(handler/change-text % props state)
-            :on-selection-change      #(handler/selection-change % props state)
-            :on-selection             #(selection/on-selection % props state)
-            :keyboard-appearance      (quo.theme/theme-value :light :dark)
-            :max-height               max-height
+           {:ref #(reset! (:input-ref props) %)
+            :default-value @(:text-value state)
+            :on-focus
+            #(handler/focus props state animations dimensions show-floating-scroll-down-button?)
+            :on-blur #(handler/blur state animations dimensions subscriptions)
+            :on-content-size-change #(handler/content-size-change %
+                                                                  state
+                                                                  animations
+                                                                  subscriptions
+                                                                  dimensions
+                                                                  (or keyboard-shown
+                                                                      (:edit subscriptions)))
+            :on-scroll #(handler/scroll % props state animations dimensions)
+            :on-change-text #(handler/change-text % props state)
+            :on-selection-change #(handler/selection-change % props state)
+            :on-selection #(selection/on-selection % props state)
+            :keyboard-appearance (quo.theme/theme-value :light :dark)
+            :max-height max-height
             :max-font-size-multiplier 1
-            :multiline                true
-            :placeholder              (i18n/label :t/type-something)
-            :placeholder-text-color   (colors/theme-colors colors/neutral-30 colors/neutral-50)
-            :style                    (style/input-text props
-                                                        state
-                                                        subscriptions
-                                                        {:max-height max-height
-                                                         :theme      theme})
-            :max-length               constants/max-text-size
-            :accessibility-label      :chat-message-input}]]
+            :multiline true
+            :placeholder (i18n/label :t/type-something)
+            :placeholder-text-color (colors/theme-colors colors/neutral-30 colors/neutral-50)
+            :style (style/input-text props
+                                     state
+                                     subscriptions
+                                     {:max-height max-height
+                                      :theme      theme})
+            :max-length constants/max-text-size
+            :accessibility-label :chat-message-input}]]
          (when chat-screen-loaded?
            [:<>
             [gradients/view props state animations show-bottom-gradient?]

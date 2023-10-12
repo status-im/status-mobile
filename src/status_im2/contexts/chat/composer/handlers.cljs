@@ -15,10 +15,11 @@
 
 (defn focus
   [{:keys [input-ref] :as props}
-   {:keys [text-value focused? lock-selection? saved-cursor-position gradient-z-index]}
-   {:keys [height saved-height last-height opacity background-y gradient-opacity container-opacity]
+   {:keys [text-value focused? lock-selection? saved-cursor-position]}
+   {:keys [height saved-height last-height opacity background-y container-opacity]
     :as   animations}
-   {:keys [max-height] :as dimensions}]
+   {:keys [max-height] :as dimensions}
+   show-floating-scroll-down-button?]
   (reset! focused? true)
   (rf/dispatch [:chat.ui/set-input-focused true])
   (reanimated/animate height (reanimated/get-shared-value last-height))
@@ -27,14 +28,12 @@
   (when (> (reanimated/get-shared-value last-height) (* constants/background-threshold max-height))
     (reanimated/animate opacity 1)
     (reanimated/set-shared-value background-y 0))
-  (when (= @gradient-z-index -1)
-    (reanimated/animate gradient-opacity 1)
-    (reset! gradient-z-index 1))
   (js/setTimeout #(reset! lock-selection? false) 300)
   (when (and (not-empty @text-value) @input-ref)
     (.setNativeProps ^js @input-ref
                      (clj->js {:selection {:start @saved-cursor-position :end @saved-cursor-position}})))
-  (kb/handle-refocus-emoji-kb-ios props animations dimensions))
+  (kb/handle-refocus-emoji-kb-ios props animations dimensions)
+  (reset! show-floating-scroll-down-button? false))
 
 (defn blur
   [{:keys [text-value focused? lock-selection? cursor-position saved-cursor-position gradient-z-index

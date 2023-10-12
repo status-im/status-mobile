@@ -4,7 +4,6 @@
     [quo2.components.settings.reorder-item.types :as types]
     [quo2.components.settings.reorder-item.view :as reorder-item]
     [quo2.foundations.colors :as colors]
-    [react-native.blur :as blur]
     [react-native.core :as rn]
     [quo2.components.settings.category.style :as style]
     [quo2.theme :as quo.theme]
@@ -20,8 +19,6 @@
   [{:keys [label data blur? theme]}]
   (reagent/with-let [atom-data (reagent/atom data)]
     [rn/view {:style style/container}
-     (when blur?
-       [rn/view (style/blur-container) [blur/view (style/blur-view)]])
      [text/text
       {:weight :medium
        :size   :paragraph-2

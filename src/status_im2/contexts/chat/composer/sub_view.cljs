@@ -47,7 +47,8 @@
          :label               (i18n/label :t/jump-to)
          :style               {:align-self :center}}}
        {}]]
-     (when @show-floating-scroll-down-button?
+     (when (and (not @focused?)
+                @show-floating-scroll-down-button?)
        [quo/floating-shell-button
         {:scroll-to-bottom {:on-press scroll-to-bottom-fn}}
         style/scroll-to-bottom-button])]))

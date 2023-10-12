@@ -64,19 +64,23 @@
          {:keys [content selected-item padding-bottom-override border-radius on-close shell?
                  gradient-cover? customization-color]
           :or   {border-radius 12}}]
-      (let [{window-height :height} (rn/get-window)
-            bg-opacity              (reanimated/use-shared-value 0)
-            translate-y             (reanimated/use-shared-value window-height)
-            sheet-gesture           (get-sheet-gesture translate-y bg-opacity window-height on-close)
-            sheet-bottom-margin     (< @item-height
-                                       (- window-height @sheet-height (:top insets) bottom-margin))
-            top                     (- window-height (:top insets) (:bottom insets) @sheet-height)
-            bottom                  (if sheet-bottom-margin
-                                      (+ @sheet-height bottom-margin (:bottom insets))
-                                      (:bottom insets))]
-        (js/console.log (str "item height " @item-height))
-        (js/console.log (str "sheet height " @sheet-height))
-        (js/console.log (str "sheet-bottom-margin  " bottom))
+      (let [{window-height :height}           (rn/get-window)
+            bg-opacity                        (reanimated/use-shared-value 0)
+            translate-y                       (reanimated/use-shared-value window-height)
+            sheet-gesture                     (get-sheet-gesture translate-y
+                                                                 bg-opacity
+                                                                 window-height
+                                                                 on-close)
+            selected-item-smaller-than-sheet? (< @item-height
+                                                 (- window-height
+                                                    @sheet-height
+                                                    (:top insets)
+                                                    (:bottom insets)
+                                                    bottom-margin))
+            top                               (- window-height (:top insets) @sheet-height)
+            bottom                            (if selected-item-smaller-than-sheet?
+                                                (+ @sheet-height bottom-margin)
+                                                (:bottom insets))]
         (rn/use-effect
          #(if hide?
             (hide translate-y bg-opacity window-height on-close)
@@ -99,27 +103,24 @@
           [reanimated/view
            {:style (reanimated/apply-animations-to-style
                     {:transform [{:translateY translate-y}]}
-                    (style/sheet insets
-                                 window-height
-                                 theme
-                                 padding-bottom-override
-                                 selected-item
-                                 shell?))}
-           (when gradient-cover?
-             [rn/view {:style style/gradient-bg}
-              [quo/gradient-cover {:customization-color customization-color}]])
+                    (style/sheet insets window-height selected-item))}
            (when shell?
              [blur/ios-view {:style style/shell-bg}])
            (when selected-item
              [rn/view
               {:on-layout #(reset! item-height (.-nativeEvent.layout.height ^js %))
                :style
-               (style/selected-item theme top bottom sheet-bottom-margin border-radius)}
+               (style/selected-item theme top bottom selected-item-smaller-than-sheet? border-radius)}
               [selected-item]])
 
            [rn/view
-            {:style     (style/sheet-content theme padding-bottom-override insets bottom-margin)
+            {:style     (style/sheet-content theme padding-bottom-override insets shell? bottom-margin)
              :on-layout #(reset! sheet-height (.-nativeEvent.layout.height ^js %))}
+            (when gradient-cover?
+              [rn/view {:style style/gradient-bg}
+               [quo/gradient-cover
+                {:customization-color customization-color
+                 :opacity             0.4}]])
             [rn/view {:style (style/handle theme)}]
             [content]]]]]))))
 

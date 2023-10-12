@@ -34,10 +34,9 @@
      item]))
 
 (def tabs-data
-  [{:id :joined :label (i18n/label :chats/joined) :accessibility-label :joined-tab}
+  [{:id :joined :label (i18n/label :t/joined) :accessibility-label :joined-tab}
    {:id :pending :label (i18n/label :t/pending) :accessibility-label :pending-tab}
    {:id :opened :label (i18n/label :t/opened) :accessibility-label :opened-tab}])
-
 
 (defn empty-state-content
   [theme]

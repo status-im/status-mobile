@@ -1,4 +1,6 @@
 (ns quo2.components.gradient.gradient-cover.style)
 
-(def root-container
-  {:height 252})
+(defn root-container
+  [opacity]
+  {:height  252
+   :opacity opacity})

@@ -22,7 +22,7 @@
 (defn- track-cover-interpolation
   [track-width thumb-size]
   {:in  [0 1]
-   :out [(/ thumb-size 2) track-width]})
+   :out [thumb-size (+ track-width thumb-size)]})
 
 (defn- arrow-icon-position-interpolation
   [thumb-size]

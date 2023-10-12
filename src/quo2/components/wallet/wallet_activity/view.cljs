@@ -56,7 +56,7 @@
         :size   :label
         :style  (style/transaction-counter theme)}
        (i18n/label :t/x-counter {:counter counter})]])
-   [rn/view
+   [rn/view {:style style/timestamp-container}
     [text/text
      {:weight :regular
       :size   :label

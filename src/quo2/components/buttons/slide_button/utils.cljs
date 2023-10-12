@@ -3,19 +3,30 @@
     [quo2.components.buttons.slide-button.constants :as constants]
     [quo2.foundations.colors :as colors]))
 
-(defn slider-color
-  "- `color-key`               `:main`/`:track`
-   - `customization-color` Customization color"
-  [color-key customization-color theme]
-  (let [colors-by-key {:main  (colors/theme-colors
-                               (colors/custom-color customization-color 50)
-                               (colors/custom-color customization-color 60)
-                               theme)
-                       :track (colors/theme-colors
-                               (colors/custom-color customization-color 50 10)
-                               (colors/custom-color customization-color 60 10)
-                               theme)}]
-    (color-key colors-by-key)))
+(defn main-color
+  "`customization-color` Customization color"
+  [customization-color theme]
+  (colors/theme-colors
+   (colors/custom-color customization-color 50)
+   (colors/custom-color customization-color 60)
+   theme))
+
+(defn track-color
+  "`customization-color` Customization color"
+  ([customization-color blur?]
+   (if blur?
+     colors/white-opa-5
+     (colors/custom-color customization-color 50 10))))
+
+(defn text-color
+  "`customization-color` Customization color"
+  [customization-color theme blur?]
+  (if blur?
+    colors/white-opa-40
+    (colors/theme-colors
+     (colors/custom-color customization-color 50)
+     (colors/custom-color customization-color 60)
+     theme)))
 
 (defn clamp-value
   [value min-value max-value]
@@ -34,8 +45,8 @@
 (defn get-dimensions
   [track-width size dimension-key]
   (let [default-dimensions (case size
-                             :size/s-40 constants/small-dimensions
-                             :size/s-48 constants/large-dimensions
+                             :size-40 constants/small-dimensions
+                             :size-48 constants/large-dimensions
                              constants/large-dimensions)]
     (-> default-dimensions
         (merge {:usable-track (calc-usable-track

@@ -12,12 +12,13 @@
    :align-items        :center})
 
 (defn center-content-container
-  [centered?]
+  [centered? center-opacity]
   {:flex              1
    :margin-horizontal 12
    :flex-direction    :row
    :align-items       :center
-   :justify-content   (if centered? :center :flex-start)})
+   :justify-content   (if centered? :center :flex-start)
+   :opacity           center-opacity})
 
 (def right-actions-container
   {:flex-direction :row})
@@ -79,6 +80,7 @@
      :text-align-vertical :center}))
 
 (def community-network-logo
-  {:width        24
-   :height       24
-   :margin-right 6})
+  {:width         24
+   :height        24
+   :border-radius 12
+   :margin-right  6})

@@ -11,11 +11,16 @@
                 [com.cognitect/transit-cljs "0.8.248"]
                 [mvxcvi/alphabase "1.0.0"]
                 [camel-snake-kebab "0.4.3"]
+
                 ;; Dev dependencies
                 [refactor-nrepl "2.5.0"]
                 [cider/cider-nrepl "0.25.3"]
                 [cider/piggieback "0.4.1"]
                 [re-frisk-remote "1.6.0"]
+
+                ;; Use the same version specified in the Nix dependency.
+                [clj-kondo/clj-kondo "2023.09.07"]
+
                 ;; We don't use the encore library, but re-frisk requires re-frisk/sente (fork of
                 ;; com.taoensso/sente), which in turn requires encore. We need to bump encore to
                 ;; 3.21.0+ to remove a warning displayed while shadow-cljs starts (commit

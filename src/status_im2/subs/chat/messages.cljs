@@ -92,8 +92,8 @@
             (and (= constants/private-group-chat-type chat-type) ; it's a private group chat
                  (or (not (pos? joined))                   ; we haven't joined
                      (>= (quot joined 1000) synced-from))) ; the history goes before we joined
-            (:gap-ids (peek messages-with-gaps)))          ; there's already a gap on top of the chat
-                                                           ; history
+            (:gap-ids (peek messages-with-gaps)))          ; there's already a gap on top of the
+                                                           ; chat history
       messages-with-gaps                                   ; don't add an extra gap
       (conj messages-with-gaps (last-gap chat-id synced-from)))))
 
@@ -186,7 +186,7 @@
 (defn message-text
   [{:keys [content-type] :as message}]
   (cond (= content-type constants/content-type-audio)
-        (i18n/label :audio-message)
+        (i18n/label :t/audio-message)
         :else
         (get-in message [:content :parsed-text])))
 

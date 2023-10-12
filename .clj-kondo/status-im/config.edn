@@ -1,0 +1,2 @@
+{:hooks   {:analyze-call {utils.i18n/label hooks.core/i18n-label}}
+ :linters {:status-im.linter/invalid-translation-keyword {:level :error}}}

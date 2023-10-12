@@ -57,8 +57,11 @@
       (i18n/label :t/days)])])
 
 (defn- left-side
-  [{:keys [theme title status size blur? description icon subtitle label icon-color customization-color
-           emoji]}]
+  "The description can either be given as a string `description` or a component `custom-subtitle`"
+  [{:keys [theme title status size blur? description custom-subtitle icon subtitle label icon-color
+           customization-color
+           emoji]
+    :as   props}]
   [rn/view {:style style/left-side}
    [left-title
     {:title title
@@ -70,19 +73,21 @@
       {:size  size
        :blur? blur?
        :theme theme}]
-     [left-subtitle
-      {:theme               theme
-       :size                size
-       :description         description
-       :icon                icon
-       :icon-color          icon-color
-       :blur?               blur?
-       :subtitle            subtitle
-       :customization-color customization-color
-       :emoji               emoji}])])
+     (if custom-subtitle
+       [custom-subtitle props]
+       [left-subtitle
+        {:theme               theme
+         :size                size
+         :description         description
+         :icon                icon
+         :icon-color          icon-color
+         :blur?               blur?
+         :subtitle            subtitle
+         :customization-color customization-color
+         :emoji               emoji}]))])
 
 (defn- right-side
-  [{:keys [label icon-right? icon-color communities-list]}]
+  [{:keys [label icon-right? icon icon-color communities-list]}]
   [rn/view {:style style/right-container}
    (case label
      :preview [preview-list/view
@@ -95,16 +100,15 @@
      nil)
    (when icon-right?
      [rn/view {:style (style/right-icon label)}
-      [icons/icon
-       (if (= :none label)
-         :i/copy
-         :i/chevron-right)
+      [icons/icon icon
        {:accessibility-label :icon-right
         :color               icon-color
         :size                20}]])])
 
 (def view-internal
-  (fn [{:keys [blur? card? icon-right? label status size theme on-press communities-list] :as props}]
+  (fn [{:keys [blur? card? icon-right? icon label status size theme on-press communities-list
+               container-style]
+        :as   props}]
     (let [icon-color (if (or blur? (= :dark theme))
                        colors/neutral-40
                        colors/neutral-50)]
@@ -114,12 +118,13 @@
          {:accessibility-label :data-item
           :disabled            (not icon-right?)
           :on-press            on-press
-          :style               (style/container size card? blur? theme)}
+          :style               (merge (style/container size card? blur? theme) container-style)}
          [left-side props]
          (when (and (= :default status) (not= :small size))
            [right-side
             {:label            label
              :icon-right?      icon-right?
+             :icon             icon
              :icon-color       icon-color
              :communities-list communities-list}])]))))
 

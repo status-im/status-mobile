@@ -79,7 +79,7 @@
        ;; line height specified here because of figma spec
        :line-height 20
        :font-size   14}}
-     (i18n/label :sharing-copied-to-clipboard)]]])
+     (i18n/label :t/sharing-copied-to-clipboard)]]])
 
 (defn copyable-text-view
   [{:keys [label container-style]} content]

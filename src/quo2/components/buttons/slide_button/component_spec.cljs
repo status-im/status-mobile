@@ -81,7 +81,7 @@
       (h/has-style track-mock {:opacity constants/disable-opacity})))
 
   (h/test "render the small button"
-    (h/render [slide-button/view (assoc default-props :size :size/s-40)])
+    (h/render [slide-button/view (assoc default-props :size :size-40)])
     (let [mock         (h/get-by-test-id :slide-button-track)
           small-height (:track-height constants/small-dimensions)]
       (h/has-style mock {:height small-height})))

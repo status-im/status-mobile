@@ -14,7 +14,6 @@
     [status-im2.contexts.quo-preview.avatars.group-avatar :as group-avatar]
     [status-im2.contexts.quo-preview.avatars.icon-avatar :as icon-avatar]
     [status-im2.contexts.quo-preview.avatars.user-avatar :as user-avatar]
-    [status-im2.contexts.quo-preview.selectors.reactions :as selector-reactions]
     [status-im2.contexts.quo-preview.avatars.wallet-user-avatar :as
      wallet-user-avatar]
     [status-im2.contexts.quo-preview.banners.banner :as banner]
@@ -120,11 +119,13 @@
     [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
     [status-im2.contexts.quo-preview.profile.select-profile :as select-profile]
     [status-im2.contexts.quo-preview.profile.showcase-nav :as showcase-nav]
-    [status-im2.contexts.quo-preview.reactions.react :as react]
     [status-im2.contexts.quo-preview.record-audio.record-audio :as record-audio]
     [status-im2.contexts.quo-preview.selectors.disclaimer :as disclaimer]
     [status-im2.contexts.quo-preview.selectors.filter :as filter]
     [status-im2.contexts.quo-preview.selectors.selectors :as selectors]
+    [status-im2.contexts.quo-preview.selectors.reactions-selector :as reactions-selector]
+    [status-im2.contexts.quo-preview.selectors.react-selector :as react-selector]
+    [status-im2.contexts.quo-preview.selectors.react :as react]
     [status-im2.contexts.quo-preview.settings.accounts :as accounts]
     [status-im2.contexts.quo-preview.settings.data-item :as data-item]
     [status-im2.contexts.quo-preview.settings.settings-item :as settings-item]
@@ -146,6 +147,7 @@
     [status-im2.contexts.quo-preview.tags.permission-tag :as permission-tag]
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
     [status-im2.contexts.quo-preview.tags.tags :as tags]
+    [status-im2.contexts.quo-preview.tags.tiny-tag :as tiny-tag]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
     [status-im2.contexts.quo-preview.text-combinations.preview :as
      text-combinations]
@@ -368,8 +370,6 @@
                         :component select-profile/view}
                        {:name      :showcase-nav
                         :component showcase-nav/view}]
-   :reactions         [{:name      :react
-                        :component react/view}]
    :record-audio      [{:name      :record-audio
                         :component record-audio/view}]
    :selectors         [{:name      :disclaimer
@@ -378,8 +378,12 @@
                         :component filter/view}
                        {:name      :selectors
                         :component selectors/view}
-                       {:name      :select-reactions
-                        :component selector-reactions/view}]
+                       {:name      :reactions-selector
+                        :component reactions-selector/preview}
+                       {:name      :react-selector
+                        :component (react-selector/preview-react-selector)}
+                       {:name      :react
+                        :component react/preview-react}]
    :settings          [{:name      :privacy-option
                         :component privacy-option/preview-options}
                        {:name      :accounts
@@ -395,7 +399,7 @@
                        {:name      :section-label
                         :component section-label/preview}]
    :share             [{:name      :qr-code
-                        :component qr-code/preview-qr-code}
+                        :component qr-code/preview}
                        {:name      :share-qr-code
                         :component share-qr-code/preview-share-qr-code}]
    :switchers         [{:name      :group-messaging-card
@@ -420,6 +424,8 @@
                         :component status-tags/preview-status-tags}
                        {:name      :tags
                         :component tags/preview-tags}
+                       {:name      :tiny-tag
+                        :component tiny-tag/preview-tiny-tag}
                        {:name      :token-tag
                         :component token-tag/preview-token-tag}]
    :text-combinations [{:name      :text-combinations

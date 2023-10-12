@@ -14,7 +14,7 @@
    :margin-vertical  8})
 
 (defn sheet
-  [{:keys [top bottom]} window-height theme padding-bottom-override selected-item shell?]
+  [{:keys [top]} window-height selected-item]
   {:position                :absolute
    :max-height              (- window-height top)
    :z-index                 1
@@ -24,11 +24,7 @@
    :border-top-left-radius  20
    :border-top-right-radius 20
    :overflow                (when-not selected-item :hidden)
-   :flex                    1
-   :padding-bottom          (or padding-bottom-override (+ bottom))
-   :background-color        (if shell?
-                              :transparent
-                              (colors/theme-colors colors/white colors/neutral-95 theme))})
+   :flex                    1})
 
 (def gradient-bg
   {:position :absolute
@@ -45,16 +41,18 @@
    :bottom           0})
 
 (defn sheet-content
-  [theme padding-bottom-override insets bottom-margin]
-  {:background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
-   :border-top-left-radius  20
+  [theme padding-bottom-override {:keys [bottom]} shell? bottom-margin]
+  {:border-top-left-radius  20
    :border-top-right-radius 20
-   :padding-bottom          (or padding-bottom-override (+ (:bottom insets) bottom-margin))})
+   :padding-bottom          (or padding-bottom-override (+ bottom bottom-margin))
+   :background-color        (if shell?
+                              :transparent
+                              (colors/theme-colors colors/white colors/neutral-95 theme))})
 
 (defn selected-item
-  [theme top bottom sheet-bottom-margin border-radius]
+  [theme top bottom selected-item-smaller-than-sheet? border-radius]
   {:position          :absolute
-   :top               (when-not sheet-bottom-margin (- 0 top))
+   :top               (when-not selected-item-smaller-than-sheet? (- 0 top))
    :bottom            bottom
    :overflow          :hidden
    :left              0

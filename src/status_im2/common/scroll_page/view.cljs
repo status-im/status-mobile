@@ -23,8 +23,8 @@
   (if collapsed? 50 170))
 
 (defn f-scroll-page-header
-  [scroll-height height name page-nav-right-side logo sticky-header top-nav title-colum navigate-back?
-   collapsed? overlay-shown?]
+  [{:keys [scroll-height height page-nav-right-section-buttons sticky-header
+           top-nav title-colum navigate-back? collapsed? page-nav-props overlay-shown?]}]
   (let [input-range         [0 10]
         output-range        [-208 -45]
         y                   (reanimated/use-shared-value scroll-height)
@@ -54,17 +54,6 @@
                :top      0
                :left     0
                :right    0}}
-      (when logo
-        [reanimated/view
-         {:style (style/sticky-header-title opacity-animation)}
-         [rn/image
-          {:source logo
-           :style  style/sticky-header-image}]
-         [quo/text
-          {:size   :paragraph-1
-           :weight :semi-bold
-           :style  {:line-height 21}}
-          name]])
       (if top-nav
         [rn/view {:style {:margin-top 0}}
          top-nav]
@@ -74,10 +63,12 @@
                   :background     (if (= 1 (reanimated/get-shared-value opacity-animation))
                                     :blur
                                     :photo)
-                  :right-side     page-nav-right-side
+                  :right-side     page-nav-right-section-buttons
+                  :center-opacity (reanimated/get-shared-value opacity-animation)
                   :overlay-shown? overlay-shown?}
            navigate-back? (assoc :icon-name :i/close
-                                 :on-press  #(rf/dispatch [:navigate-back])))])
+                                 :on-press  #(rf/dispatch [:navigate-back]))
+           page-nav-props (merge page-nav-props))])
       (when title-colum
         title-colum)
       sticky-header]]))
@@ -105,14 +96,21 @@
 (defn scroll-page
   [_ _ _]
   (let [scroll-height (reagent/atom negative-scroll-position-0)]
-    (fn [{:keys [name theme cover-image logo page-nav-right-section-buttons on-scroll
-                 collapsed?
-                 height top-nav title-colum background-color navigate-back? overlay-shown?]}
-         sticky-header
+    (fn [{:keys [theme cover-image logo on-scroll
+                 collapsed? height top-nav title-colum background-color navigate-back? page-nav-props
+                 overlay-shown? sticky-header]}
          children]
       [:<>
-       [:f> f-scroll-page-header @scroll-height height name page-nav-right-section-buttons
-        logo sticky-header top-nav title-colum navigate-back? collapsed? overlay-shown?]
+       [:f> f-scroll-page-header
+        {:scroll-height  @scroll-height
+         :height         height
+         :sticky-header  sticky-header
+         :top-nav        top-nav
+         :title-colum    title-colum
+         :navigate-back? navigate-back?
+         :collapsed?     collapsed?
+         :page-nav-props page-nav-props
+         :overlay-shown? overlay-shown?}]
        [rn/scroll-view
         {:content-container-style           {:flex-grow 1}
          :content-inset-adjustment-behavior :never

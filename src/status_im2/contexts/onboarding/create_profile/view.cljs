@@ -168,9 +168,9 @@
                                      (rf/dispatch [:dismiss-keyboard])
                                      (rf/dispatch
                                       [:show-bottom-sheet
-                                       {:content
-                                        (fn []
-                                          [method-menu/view on-change-profile-pic])}]))
+                                       {:content (fn []
+                                                   [method-menu/view on-change-profile-pic])
+                                        :shell?  true}]))
               :image-picker-props  {:profile-picture     (or
                                                           @profile-pic
                                                           (rf/sub
