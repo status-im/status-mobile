@@ -65,7 +65,7 @@
              :height           width
              :background-color (colors/resolve-color customization-color theme)
              :border-radius    (get-border-radius size)
-             :border-color     (if (= theme :light) colors/neutral-80-opa-5 colors/white-opa-5)
+             :border-color     (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
              :padding          (get-padding size)
              :align-items      :center
              :justify-content  :center}

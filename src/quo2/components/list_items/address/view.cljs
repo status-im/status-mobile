@@ -24,7 +24,7 @@
             [text/text
              {:size   :paragraph-1
               :weight :semi-bold
-              :style  {:color (get colors/networks network)}} (str (subs (name network) 0 3) ":")])
+              :style  {:color (colors/resolve-color network)}} (str (subs (name network) 0 3) ":")])
           networks)
      [text/text
       {:size   :paragraph-1
