@@ -182,7 +182,7 @@
    {:keys [height]}
    insets]
   (permissions/request-permissions
-   {:permissions [:read-external-storage :write-external-storage]
+   {:permissions [:read-media-images :write-external-storage]
     :on-allowed  (fn []
                    (when (and platform/android? @input-ref)
                      (.blur ^js @input-ref))

@@ -36,7 +36,7 @@
  :camera-roll-request-permissions-and-get-photos
  (fn [[num end-cursor album]]
    (permissions/request-permissions
-    {:permissions [:read-external-storage]
+    {:permissions [:read-media-images]
      :on-allowed
      (fn []
        (cameraroll/get-photos
