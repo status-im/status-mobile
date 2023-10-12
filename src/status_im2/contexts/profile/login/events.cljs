@@ -98,8 +98,7 @@
   {:events [:profile.login/get-chats-callback]}
   [{:keys [db] :as cofx}]
   (let [{:networks/keys [current-network networks]} db
-        notifications-enabled?                      (get-in db
-                                                            [:profile/profile :notifications-enabled?])
+        {:keys [notifications-enabled?]}            (:profile/profile db)
         current-network-config                      (get networks current-network)
         network-id                                  (str (get-in networks
                                                                  [current-network :config :NetworkId]))]

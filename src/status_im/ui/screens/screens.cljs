@@ -312,10 +312,6 @@
     :options   {:topBar {:title {:text (i18n/label :t/notification-settings)}}
                 :insets {:top? true}}
     :component notifications-settings/notifications-settings}
-   {:name      :notifications-servers
-    :options   {:topBar {:title {:text (i18n/label :t/notifications-servers)}}
-                :insets {:top? true}}
-    :component notifications-settings/notifications-servers}
    {:name      :sync-settings
     :options   {:topBar {:title {:text (i18n/label :t/sync-settings)}}
                 :insets {:top? true}}
@@ -474,17 +470,6 @@
                 :insets             {:bottom? true
                                      :top?    true}}
     :component notifications-settings/notifications-settings}
-
-   ;;TODO WHY MODAL?
-   ;[Profile] Notifications Advanced settings
-   {:name      :notifications-advanced-settings
-    :options   {:topBar             {:title {:text (i18n/label :t/notification-settings)}}
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}
-                :insets             {:bottom? true
-                                     :top?    true}}
-    :component notifications-settings/notifications-advanced-settings}
 
    ;[Wallet] Prepare Transaction
    {:name        :prepare-send-transaction
