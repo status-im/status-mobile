@@ -126,7 +126,8 @@
                :customization-color   customization-color
                :on-enter-password     on-enter-password
                :biometric-auth?       false
-               :fallback-button-label (i18n/label :t/reveal-sync-code)}]])]]
+               :auth-button-label     (i18n/label :t/reveal-sync-code)
+               :auth-button-icon-left :i/reveal}]])]]
         [rn/view {:style style/sync-code}
          [quo/divider-label {:tight? false} (i18n/label :t/have-a-sync-code?)]
          [quo/action-drawer

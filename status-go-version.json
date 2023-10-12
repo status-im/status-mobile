@@ -3,7 +3,13 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
+<<<<<<< HEAD
     "version": "v0.171.7",
     "commit-sha1": "74396b461df0c18593262a67c9fd79d706287f7a",
     "src-sha256": "1d46lav3g6m1f6ifpypjlsp2qm82c6yk4478awb8f68azpdkvcg5"
+=======
+    "version": "bug/creating-account",
+    "commit-sha1": "68c7e1e037866f50f82b743fe8660fdc59361ce2",
+    "src-sha256": "1601s1m5pkw8fwb2y3jlhhiw5h3jzj64mcrdrcz9c94yijfyy49f"
+>>>>>>> d2e8c2f6b (feat (wallet): add ability to create new account)
 }
