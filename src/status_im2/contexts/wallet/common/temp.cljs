@@ -185,7 +185,7 @@
    :type                 :account
    :networks             [{:name :ethereum :short :eth}
                           {:name :optimism :short :opt}
-                          {:name :arbitrum :short :arb}]
+                          {:name :arbitrum :short :arb1}]
    :description          "0x62b...0a5"
    :account-avatar-emoji "🍑"
    :customization-color  :purple})
