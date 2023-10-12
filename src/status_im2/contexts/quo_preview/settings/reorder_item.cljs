@@ -1,10 +1,9 @@
 (ns status-im2.contexts.quo-preview.settings.reorder-item
   (:require
     [quo2.core :as quo]
-    [react-native.core :as rn]
     [status-im2.common.resources :as resources]
     [quo2.foundations.resources :as quo2.resources]
-    [quo2.foundations.colors :as colors]
+    [status-im2.contexts.quo-preview.preview :as preview]
     [quo2.components.settings.reorder-item.types :as types]))
 
 (def mock-data
@@ -77,19 +76,9 @@
            :on-change      (fn [tab-id] (println tab-id))
            :default-active 1}}])
 
-
-(defn container
+(defn view
   []
-  {:padding-horizontal 38
-   :padding-vertical   20
-   :background-color   (colors/theme-colors
-                        colors/neutral-10
-                        colors/neutral-100)
-   :flex               1})
-
-(defn preview-reorder-item
-  []
-  [rn/scroll-view
-   {:style (container)}
-   (for [item mock-data]
-     [quo/reorder-item (item :data) (item :type)])])
+  (fn []
+    [preview/preview-container {}
+     (for [item mock-data]
+       [quo/reorder-item (item :data) (item :type)])]))

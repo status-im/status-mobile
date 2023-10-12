@@ -5,12 +5,8 @@
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Header:"
-    :key   :header
-    :type  :text}
-   {:label "Footer:"
-    :key   :footer
-    :type  :text}
+  [{:key :header :type :text}
+   {:key :footer :type :text}
    {:label "Line 1:"
     :key   :li1
     :type  :text}
@@ -21,7 +17,7 @@
     :key   :li3
     :type  :text}])
 
-(defn preview-options
+(defn view
   []
   (let [state (reagent/atom {:selected :contacts
                              :header   "header"
