@@ -15,8 +15,8 @@
                                                 :params params}))}]})))
 
 (re-frame/reg-event-fx :wallet-2/get-wallet-token-success
-  (fn [{:keys [db]} [data]]
-    {:db (assoc db
-                :wallet-2/tokens          data
-                :wallet-2/tokens-loading? false)}))
+ (fn [{:keys [db]} [data]]
+   {:db (assoc db
+               :wallet-2/tokens          data
+               :wallet-2/tokens-loading? false)}))
 

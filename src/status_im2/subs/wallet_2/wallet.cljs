@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im2.contexts.wallet.common.utils :as utils]))
 
-(re-frame/reg-sub 
+(re-frame/reg-sub
  :wallet-2/balances
  :<- [:profile/wallet-accounts]
  :<- [:wallet-2/tokens]
