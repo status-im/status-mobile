@@ -12,7 +12,7 @@
 
 (defn account-options
   []
-  [rn/view
+  [:<>
    [quo/drawer-top temp/account-data]
    [quo/action-drawer
     [[{:icon                :i/edit
@@ -34,9 +34,10 @@
              :padding-top        12
              :padding-bottom     8}}
     [quo/section-label {:section (i18n/label :t/select-another-account)}]]
-   [rn/view {:style {:margin-horizontal 8}}
-    (for [account temp/other-accounts]
-      [quo/account-item {:account-props account}])]])
+   [rn/flat-list
+    {:data      temp/other-accounts
+     :render-fn (fn [account] [quo/account-item {:account-props account}])
+     :style     {:margin-horizontal 8}}]])
 
 (def ^:private networks-list
   [{:source (quo.resources/get-network :ethereum)}

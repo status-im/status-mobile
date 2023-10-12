@@ -183,7 +183,9 @@
 (def account-data
   {:title                "Trip to Vegas"
    :type                 :account
-   :networks             [:ethereum :optimism :arbitrum]
+   :networks             [{:name :ethereum :short :eth}
+                          {:name :optimism :short :opt}
+                          {:name :arbitrum :short :arb}]
    :description          "0x62b...0a5"
    :account-avatar-emoji "🍑"
    :customization-color  :purple})
@@ -193,9 +195,10 @@
     :emoji               "🍿"
     :name                "New House"
     :address             "0x21a...49e"
-    :networks            [:ethereum :optimism]}
+    :networks            [{:name :ethereum :short :eth}
+                          {:name :optimism :short :opt}]}
    {:customization-color :blue
     :emoji               "🎮"
     :name                "My savings"
     :address             "0x43c...98d"
-    :networks            [:ethereum]}])
+    :networks            [{:name :ethereum :short :eth}]}])

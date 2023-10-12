@@ -36,8 +36,8 @@
   [text/text
    {:size   :paragraph-2
     :weight :regular
-    :style  (style/network-text-color network)}
-   (str (subs (name network) 0 3) (when (= network :arbitrum) "1") ":")])
+    :style  (style/network-text-color (:name network))}
+   (str (name (:short network)) ":")])
 
 (defn- keypair-subtitle
   [{:keys [theme blur? keycard?]}]

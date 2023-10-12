@@ -13,8 +13,8 @@
   [text/text
    {:size   :paragraph-2
     :weight :regular
-    :style  {:color (colors/custom-color network)}}
-   (str (subs (name network) 0 3) (when (= network :arbitrum) "1") ":")])
+    :style  {:color (colors/custom-color (:name network))}}
+   (str (name (:short network)) ":")])
 
 (defn- account-view
   [{:keys [account-props title-icon? blur? theme]
