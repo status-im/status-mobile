@@ -23,7 +23,7 @@
                 :top    10
                 :bottom 10}}
     [rn/view {:style style/remove-photo-inner-container}
-     [quo/icon :i/clear {:size 20 :color-2 colors/white}]]]])
+     [quo/icon :i/clear {:size 20 :color colors/neutral-50 :color-2 colors/white}]]]])
 
 (defn f-images-list
   []
