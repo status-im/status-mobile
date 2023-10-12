@@ -28,21 +28,25 @@
 (defn wallet-user-avatar
   "params, first name, last name, color, size
    and if it's dark or not!"
-  [{:keys [f-name l-name customization-color size]
-    :or   {f-name              "John"
-           l-name              "Doe"
-           customization-color :red
-           size                :x-large}}]
+  [{:keys [f-name l-name customization-color size monospace? uppercase?]
+    :or   {f-name     "John"
+           l-name     "Doe"
+           size       :x-large
+           uppercase? true}}]
   (let [circle-size    (size circle-sizes)
         small?         (= size :small)
         f-name-initial (-> f-name
-                           string/upper-case
+                           (#(if uppercase? (string/upper-case %) %))
                            (subs 0 1))
         l-name-initial (-> l-name
-                           string/upper-case
+                           (#(if uppercase? (string/upper-case %) %))
                            (subs 0 1))
-        circle-color   (colors/custom-color customization-color 50 20)
-        text-color     (colors/custom-color-by-theme customization-color 50 60)]
+        circle-color   (if customization-color
+                         (colors/custom-color customization-color 50 20)
+                         (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5))
+        text-color     (if customization-color
+                         (colors/custom-color-by-theme customization-color 50 60)
+                         (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70))]
     [rn/view
      {:style {:width            circle-size
               :height           circle-size
@@ -53,7 +57,7 @@
               :background-color circle-color}}
      [text/text
       {:size   (size font-sizes)
-       :weight (size font-weights)
+       :weight (if monospace? :monospace (size font-weights))
        :style  {:color text-color}}
       (if small?
         (str f-name-initial)

@@ -84,6 +84,7 @@
      account-item]
     [status-im2.contexts.quo-preview.list-items.account-list-card :as
      account-list-card]
+    [status-im2.contexts.quo-preview.list-items.address :as address]
     [status-im2.contexts.quo-preview.list-items.channel :as channel]
     [status-im2.contexts.quo-preview.list-items.dapp :as dapp]
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
@@ -308,6 +309,8 @@
                         :component account-item/view}
                        {:name      :account-list-card
                         :component account-list-card/view}
+                       {:name      :address
+                        :component address/view}
                        {:name      :channel
                         :component channel/view}
                        {:name      :community-list
