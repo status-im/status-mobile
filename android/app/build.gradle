@@ -3,6 +3,7 @@ apply plugin: "com.facebook.react"
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
+import com.android.build.OutputFile
 import com.sun.org.apache.xalan.internal.xsltc.compiler.Copy
 
 /*
@@ -28,7 +29,7 @@ react {
 
     /* Bundling */
     //   A list containing the node command and its flags. Default is just 'node'.
-    // nodeExecutableAndArgs = ["node"]
+    nodeExecutableAndArgs = ["node", "--max-old-space-size=16384" ]
     //
     //   The command to run when bundling. By default is 'bundle'
     // bundleCommand = "ram-bundle"
@@ -231,6 +232,23 @@ android {
             versionNameSuffix   ".pr"
             debuggable          false
             matchingFallbacks = ["release"]
+             // necessary to make react-native-config's code generation work
+             resValue "string", "build_config_package", "im.status.ethereum"
+        }
+    }
+
+    // applicationVariants are e.g. debug, release
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            // For each separate APK per architecture, set a unique version code as described here:
+
+            // https://developer.android.com/studio/build/configure-apk-splits.html
+            def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
+            def abi = output.getFilter(OutputFile.ABI)
+            if (abi != null) {  // null for the universal-debug, universal-release variants
+                output.versionCodeOverride = versionCodes.get(abi) + defaultConfig.versionCode
+            }
+
         }
     }
 
