@@ -53,10 +53,9 @@
   {:flex-direction :row
    :align-items    :flex-start})
 
-(def scan-button-gap {:width 12})
-
 (def scan-button-container
-  {:height          66
+  {:margin-left     12
+   :height          66
    :justify-content :flex-end})
 
 (def found-user
