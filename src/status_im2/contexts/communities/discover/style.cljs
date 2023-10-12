@@ -71,3 +71,7 @@
    :justify-content    :center
    :flex               1
    :background-color   :transparent})
+
+(def floating-shell-button
+  {:position :absolute
+   :bottom   34})
