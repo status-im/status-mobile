@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.keycard.pairing.views
-  (:require [quo.core :as quo]
-            [quo.react-native :as rn]
+  (:require [status-im.ui.components.core :as quo]
+            [react-native.core :as rn]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]

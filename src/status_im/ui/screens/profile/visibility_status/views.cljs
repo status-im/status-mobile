@@ -1,9 +1,9 @@
 (ns status-im.ui.screens.profile.visibility-status.views
   (:require-macros [status-im.utils.views :as views])
   (:require ["react-native" :refer (BackHandler)]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
+            [react-native.core :as rn]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im2.constants :as constants]

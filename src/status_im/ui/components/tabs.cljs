@@ -1,5 +1,5 @@
 (ns status-im.ui.components.tabs
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.react :as react]))
 
 (defn tab-title

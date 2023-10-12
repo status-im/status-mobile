@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.signing.sheets
   (:require-macros [status-im.utils.views :as views])
   (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]

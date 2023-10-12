@@ -1,7 +1,7 @@
 (ns status-im.wallet.accounts.core
   (:require
     [clojure.string :as string]
-    [quo.design-system.colors :as colors]
+    [status-im.ui.components.colors :as colors]
     [re-frame.core :as re-frame]
     [status-im2.constants :as constants]
     [status-im.ens.core :as ens.core]

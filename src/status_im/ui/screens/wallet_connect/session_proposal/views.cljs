@@ -1,9 +1,9 @@
 (ns status-im.ui.screens.wallet-connect.session-proposal.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.platform :as platform]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
+            [react-native.platform :as platform]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]

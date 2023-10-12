@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.offline-messaging-settings.styles
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [status-im.utils.styles :as styles]))
 
 (def wrapper

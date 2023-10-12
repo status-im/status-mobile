@@ -1,6 +1,6 @@
 (ns status-im.wallet.custom-tokens.core
   (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]

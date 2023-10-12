@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.browser.empty-tab.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
@@ -13,7 +13,8 @@
             [status-im.ui.screens.browser.empty-tab.styles :as styles]
             [status-im.ui.screens.browser.views :as browser]
             [status-im.ui.screens.wallet.components.views :as components]
-            [utils.url :as url])
+            [utils.url :as url]
+            [status-im.ui.components.list.item :as list.item])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn hide-sheet-and-dispatch
@@ -25,7 +26,7 @@
   [_]
   (let [loaded (reagent/atom nil)]
     (fn [{:keys [name url] :as bookmark}]
-      [quo/list-item
+      [list.item/list-item
        {:accessibility-label (keyword (str "fav-item" name))
         :on-press            #(re-frame/dispatch [:browser.ui/open-url url])
         :on-long-press       (fn []
@@ -33,14 +34,14 @@
                                 [:bottom-sheet/show-sheet-old
                                  {:content (fn []
                                              [react/view {:flex 1}
-                                              [quo/list-item
+                                              [list.item/list-item
                                                {:theme               :accent
                                                 :title               (i18n/label :t/open-in-new-tab)
                                                 :accessibility-label :open-in-new-tab
                                                 :icon                :main-icons/tabs
                                                 :on-press            #(hide-sheet-and-dispatch
                                                                        [:browser.ui/open-url url])}]
-                                              [quo/list-item
+                                              [list.item/list-item
                                                {:theme               :accent
                                                 :title               (i18n/label :t/edit)
                                                 :accessibility-label :edit-bookmark
@@ -48,7 +49,7 @@
                                                 :on-press            #(hide-sheet-and-dispatch
                                                                        [:open-modal :new-bookmark
                                                                         bookmark])}]
-                                              [quo/list-item
+                                              [list.item/list-item
                                                {:theme               :negative
                                                 :title               (i18n/label :t/delete)
                                                 :accessibility-label :delete-bookmark

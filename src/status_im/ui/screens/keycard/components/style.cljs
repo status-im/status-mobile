@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.keycard.components.style
-  (:require [quo.design-system.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def wrapper-style
   {:flex            1

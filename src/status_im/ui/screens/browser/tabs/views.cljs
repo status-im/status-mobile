@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.browser.tabs.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.list.item :as list.item]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
@@ -19,7 +19,7 @@
     (fn [{:keys [browser-id name url empty-tab]}]
       [react/view {:flex-direction :row :flex 1}
        [react/view {:flex 1}
-        [quo/list-item
+        [list.item/list-item
          {:on-press            #(if empty-tab
                                   (re-frame/dispatch [:browser.ui/open-empty-tab])
                                   (re-frame/dispatch [:browser.ui/browser-item-selected browser-id]))

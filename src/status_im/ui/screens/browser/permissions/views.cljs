@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.browser.permissions.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.browser.permissions :as browser.permissions]

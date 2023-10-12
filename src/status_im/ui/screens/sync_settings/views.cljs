@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.sync-settings.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.list.item :as list.item]))
 
 (views/defview sync-settings
   []
@@ -17,7 +18,7 @@
                   current-mailserver-name [:mailserver/current-name]]
     [react/scroll-view
      [quo/list-header (i18n/label :t/data-syncing)]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/mobile-network-settings)
        :accessibility-label :notifications-button
@@ -27,7 +28,7 @@
        :accessory-text      (if syncing-on-mobile-network?
                               (i18n/label :t/mobile-network-use-mobile)
                               (i18n/label :t/mobile-network-use-wifi))}]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/backup-settings)
        :accessibility-label :backup-settings-button
@@ -37,7 +38,7 @@
        :accessory-text      (if backup-enabled?
                               (i18n/label :t/backup-enabled)
                               (i18n/label :t/backup-disabled))}]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/default-sync-period)
        :accessibility-label :default-sync-period-button
@@ -57,7 +58,7 @@
                               (i18n/label :t/one-week)
                               (= default-sync-period constants/one-month)
                               (i18n/label :t/one-month))}]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :accessibility-label :offline-messages-settings-button
        :title               (i18n/label :t/history-nodes)
@@ -71,7 +72,7 @@
        :background-color colors/gray-lighter
        :margin-top       8}]
      [quo/list-header (i18n/label :t/device-syncing)]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/devices)
        :accessibility-label :pairing-settings-button

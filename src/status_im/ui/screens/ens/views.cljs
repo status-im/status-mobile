@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.ens.views
   (:require
     [clojure.string :as string]
-    [quo.core :as quo]
-    [quo.design-system.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.colors :as colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ens.core :as ens]
@@ -23,7 +23,8 @@
     [status-im.ui.screens.wallet.send.sheets :as sheets]
     [status-im.utils.utils :as utils]
     [utils.debounce :as debounce]
-    [utils.address :as address])
+    [utils.address :as address]
+    [status-im.ui.components.list.item :as list.item])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- link
@@ -285,7 +286,7 @@
 (defn render-account
   [address]
   (let [account @(re-frame/subscribe [:account-by-address address])]
-    [quo/list-item
+    [list.item/list-item
      {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
       :title    (:name account)
       :subtitle (utils/get-shortened-checksum-address (:address account))
@@ -557,7 +558,7 @@
         ;;TODO this is temporary fix for accounts with failed txs we still need this for regular ens
         ;;names (not pending) but we need to detach public key in the contract
         (when pending?
-          [quo/list-item
+          [list.item/list-item
            {:title    (i18n/label :t/ens-remove-username)
             ;:subtext       (i18n/label :t/ens-remove-hints)
             :icon     :main-icons/close
@@ -565,7 +566,7 @@
             :on-press #(re-frame/dispatch [::ens/remove-username name])}])
         (when (and (not custom-domain?) (not pending?))
           [react/view {:style {:margin-top 18}}
-           [quo/list-item
+           [list.item/list-item
             {:title    (i18n/label :t/ens-release-username)
              :theme    :accent
              :disabled (not releasable?)
@@ -657,7 +658,7 @@
   [{:keys [name action subtitle]}]
   (let [stateofus-username (stateofus/username name)
         s                  (or stateofus-username name)]
-    [quo/list-item
+    [list.item/list-item
      (merge {:title    s
              :subtitle (if subtitle
                          subtitle
@@ -682,7 +683,7 @@
             stateofus-username (stateofus/username name)
             s                  (or stateofus-username name)]
         ^{:key name}
-        [quo/list-item
+        [list.item/list-item
          {:accessibility-label (if (= name preferred-name)
                                  :primary-username
                                  :not-primary-username)
@@ -722,7 +723,7 @@
   [react/view {:style {:flex 1}}
    [react/scroll-view
     [react/view {:style {:margin-top 8}}
-     [quo/list-item
+     [list.item/list-item
       {:title    (i18n/label :t/ens-add-username)
        :theme    :accent
        :on-press #(re-frame/dispatch [::ens/add-username-pressed])

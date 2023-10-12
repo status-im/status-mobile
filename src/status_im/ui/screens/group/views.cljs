@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.group.views
   (:require [clojure.string :as string]
-            [quo.core :as quo]
+            [status-im.ui.components.core :as quo]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im2.constants :as constants]
@@ -14,13 +14,14 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.group.styles :as styles]
-            [utils.debounce :as debounce])
+            [utils.debounce :as debounce]
+            [status-im.ui.components.list.item :as list.item])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-contact
   [row]
   (let [{:keys [primary-name secondary-name]} row]
-    [quo/list-item
+    [list.item/list-item
      {:title    primary-name
       :subtitle secondary-name
       :icon     [chat-icon/contact-icon-contacts-tab row]}]))
@@ -54,7 +55,7 @@
   (fn [allow-new-users? subs-name {:keys [public-key] :as contact} on-toggle]
     (let [contact-selected?                     @(re-frame/subscribe [subs-name public-key])
           {:keys [primary-name secondary-name]} contact]
-      [quo/list-item
+      [list.item/list-item
        {:title     primary-name
         :subtitle  secondary-name
         :icon      [chat-icon/contact-icon-contacts-tab contact]

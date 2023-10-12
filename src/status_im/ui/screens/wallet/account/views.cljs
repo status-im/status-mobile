@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.wallet.account.views
   (:require
-    [quo.core :as quo]
-    [quo.design-system.colors :as colors]
-    [quo.design-system.spacing :as spacing]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.spacing :as spacing]
     [quo2.core :as quo2]
     [quo2.components.markdown.text :as quo2.text]
     [quo2.foundations.colors :as quo2.colors]

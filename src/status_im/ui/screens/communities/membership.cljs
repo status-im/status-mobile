@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.communities.membership
-  (:require [quo.core :as quo]
-            [quo.react-native :as rn]
+  (:require [status-im.ui.components.core :as quo]
+            [react-native.core :as rn]
             [status-im.communities.core :as communities]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im.ui.components.list.item :as list.item]))
 
 (def options
   {constants/community-on-request-access
@@ -18,7 +19,7 @@
 (defn option
   [{:keys [title description]} {:keys [selected on-select]}]
   [:<>
-   [quo/list-item
+   [list.item/list-item
     {:title     (i18n/label title)
      :size      :small
      :accessory :radio

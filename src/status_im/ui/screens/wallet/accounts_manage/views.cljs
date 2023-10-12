@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.wallet.accounts-manage.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [reagent.core :as reagent]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [utils.re-frame :as rf]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.list.item :as list.item]))
 
 (defn render-account
   [_]
@@ -15,7 +15,7 @@
       (not= (:hidden old-item) (:hidden new-item)))
     :reagent-render
     (fn [{:keys [hidden name address wallet] :as account}]
-      [quo/list-item
+      [list.item/list-item
        {:accessory           [icons/icon
                               (if hidden :main-icos/hide :main-icos/show)
                               (merge {:accessibility-label (if hidden :hide-icon :show-icon)}

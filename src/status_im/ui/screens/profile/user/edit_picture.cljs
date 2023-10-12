@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.profile.user.edit-picture
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.core :as multiaccounts]
             [status-im.ui.components.react :as react]
-            [status-im2.config :as config]))
+            [status-im2.config :as config]
+            [status-im.ui.components.list.item :as list.item]))
 
 (def crop-size 1000)
 (def crop-opts
@@ -31,13 +31,13 @@
   [has-picture]
   (fn []
     [:<>
-     [quo/list-item
+     [list.item/list-item
       {:accessibility-label :take-photo
        :theme               :accent
        :icon                :main-icons/camera
        :title               (i18n/label :t/profile-pic-take)
        :on-press            take-pic}]
-     [quo/list-item
+     [list.item/list-item
       {:accessibility-label :pick-photo
        :icon                :main-icons/gallery
        :theme               :accent
@@ -45,7 +45,7 @@
        :on-press            pick-pic}]
      (when (and config/enable-remove-profile-picture?
                 has-picture)
-       [quo/list-item
+       [list.item/list-item
         {:accessibility-label :remove-photo
          :icon                :main-icons/delete
          :theme               :accent

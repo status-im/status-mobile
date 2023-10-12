@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wakuv2-settings.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
+  (:require [status-im.ui.components.core :as quo]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.ui.components.list.views :as list]

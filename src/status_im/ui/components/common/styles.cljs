@@ -1,5 +1,5 @@
 (ns status-im.ui.components.common.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (defn logo-container
   [size]

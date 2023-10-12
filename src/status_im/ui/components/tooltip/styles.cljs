@@ -1,5 +1,5 @@
 (ns status-im.ui.components.tooltip.styles
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [status-im2.config :as config]
             [status-im.utils.styles :as styles]))
 

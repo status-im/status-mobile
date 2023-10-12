@@ -1,6 +1,6 @@
 (ns status-im.multiaccounts.core
   (:require [clojure.string :as string]
-            [quo.platform :as platform]
+            [react-native.platform :as platform]
             [re-frame.core :as re-frame]
             [status-im.bottom-sheet.events :as bottom-sheet]
             [status-im.multiaccounts.update.core :as multiaccounts.update]

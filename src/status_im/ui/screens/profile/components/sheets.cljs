@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.profile.components.sheets
-  (:require [quo.core :as quo]
+  (:require [status-im.ui.components.core :as quo]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]

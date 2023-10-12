@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.swap.views
   (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.ethereum.tokens :as tokens]
             [utils.i18n :as i18n]
@@ -16,7 +16,8 @@
             [status-im.ui.screens.wallet.components.views :as wallet.components]
             [utils.re-frame :as rf]
             [status-im.wallet.swap.core :as wallet.swap]
-            [status-im.wallet.utils :as wallet.utils]))
+            [status-im.wallet.utils :as wallet.utils]
+            [status-im.ui.components.list.item :as list.item]))
 
 (defn render-asset
   [{{:keys
@@ -25,7 +26,7 @@
     :token
     currency :currency
     on-press :on-press}]
-  [quo/list-item
+  [list.item/list-item
    {:title [quo/text {:weight :medium}
             [quo/text {:weight :inherit}
              (str (if amount
@@ -176,7 +177,7 @@
             :border-radius 12
             :margin-top    12
             :border-color  colors/gray-lighter}}
-   [quo/list-item
+   [list.item/list-item
     {:title title
      :subtitle body
      :active-background-enabled
@@ -346,7 +347,7 @@
         :on-change  #()
         :on-save    #()}]
 
-      [quo/list-item
+      [list.item/list-item
        {:title             (i18n/label :t/maximum-fee)
         :text-size         :base
         :title-text-weight :regular
@@ -383,7 +384,7 @@
         :on-change  #()
         :on-save    #()}]
 
-      [quo/list-item
+      [list.item/list-item
        {:title             (i18n/label :t/price-impact)
         :text-size         :base
         :title-text-weight :regular

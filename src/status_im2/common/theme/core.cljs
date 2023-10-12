@@ -1,10 +1,10 @@
 (ns status-im2.common.theme.core
-  (:require [quo.theme :as quo]
-            [quo2.theme :as quo2]
+  (:require [quo2.theme :as quo2]
             [utils.re-frame :as rf]
             [oops.core :refer [oget]]
             [react-native.core :as rn]
-            [react-native.platform :as platform]))
+            [react-native.platform :as platform]
+            [status-im.ui.components.colors :as legacy-colors]))
 
 (def device-theme (atom (rn/get-color-scheme)))
 
@@ -31,5 +31,8 @@
 
 (defn set-theme
   [value]
-  (quo/set-theme value)
-  (quo2/set-theme value))
+  (quo2/set-theme value)
+  (reset! legacy-colors/theme (case value
+                                :dark legacy-colors/dark-theme
+                                legacy-colors/light-theme))
+  (legacy-colors/set-legacy-theme-type value))

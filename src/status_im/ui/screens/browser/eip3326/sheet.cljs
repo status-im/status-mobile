@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.browser.eip3326.sheet
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.network.core :as network]

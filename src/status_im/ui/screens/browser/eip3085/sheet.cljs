@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.browser.eip3085.sheet
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.browser.styles :as styles])
+            [status-im.ui.screens.browser.styles :as styles]
+            [status-im.ui.components.list.item :as list.item])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview permissions-panel
@@ -42,7 +43,7 @@
      [react/scroll-view
       [copyable-text/copyable-text-view
        {:copied-text (:name (:new-network params))}
-       [quo/list-item
+       [list.item/list-item
         {:size                :small
          :accessibility-label :network-name
          :title               "Network Name"
@@ -50,7 +51,7 @@
          :accessory-text      (:name (:new-network params))}]]
       [copyable-text/copyable-text-view
        {:copied-text (get-in params [:new-network :config :UpstreamConfig :URL])}
-       [quo/list-item
+       [list.item/list-item
         {:size                :small
          :accessibility-label :network-url
          :title               "Network URL"
@@ -58,7 +59,7 @@
          :accessory-text      (get-in params [:new-network :config :UpstreamConfig :URL])}]]
       [copyable-text/copyable-text-view
        {:copied-text (str (get-in params [:new-network :config :NetworkId]))}
-       [quo/list-item
+       [list.item/list-item
         {:size                :small
          :accessibility-label :network-id
          :title               "Chain ID"

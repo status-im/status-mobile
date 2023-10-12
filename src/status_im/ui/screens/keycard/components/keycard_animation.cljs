@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.keycard.components.keycard-animation
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [reagent.core :as reagent]
             [status-im.keycard.card :as keycard-nfc]
             [status-im.react-native.resources :as resources]

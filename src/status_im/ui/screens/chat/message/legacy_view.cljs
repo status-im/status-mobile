@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.chat.message.legacy-view
   (:require
-    [quo.design-system.colors :as quo.colors]
-    [quo.react-native :as rn]
+    [status-im.ui.components.colors :as quo.colors]
+    [react-native.core :as rn]
     [status-im.react-native.resources :as resources]
     [status-im.ui.components.fast-image :as fast-image]
     [status-im.ui.screens.chat.message.gap :as message.gap]

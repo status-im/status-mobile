@@ -1,7 +1,7 @@
 (ns quo2.components.switchers.card-main-info.view
   (:require [quo2.components.markdown.text :as text]
             [quo2.components.switchers.card-main-info.style :as style]
-            [quo.react-native :as rn]))
+            [react-native.core :as rn]))
 
 (defn view
   [{:keys [title subtitle]}]

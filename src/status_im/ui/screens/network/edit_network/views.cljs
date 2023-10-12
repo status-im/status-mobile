@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.network.edit-network.views
-  (:require [quo.core :as quo]
+  (:require [status-im.ui.components.core :as quo]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.network.core :as network]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.network.edit-network.styles :as styles])
+            [status-im.ui.screens.network.edit-network.styles :as styles]
+            [status-im.ui.components.list.item :as list.item])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-network-type
@@ -14,7 +15,7 @@
                :mainnet (i18n/label :t/mainnet-network)
                :goerli  (i18n/label :t/goerli-network)
                :custom  (i18n/label :t/custom))]
-    [quo/list-item
+    [list.item/list-item
      {:title     name
       :accessory :radio
       :active    (= (get-in manage-network [:chain :value]) type)

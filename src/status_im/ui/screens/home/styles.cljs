@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.home.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def last-message-text
   {:flex        1

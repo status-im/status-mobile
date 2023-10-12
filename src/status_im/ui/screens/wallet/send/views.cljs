@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.wallet.send.views
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
-  (:require [quo.core :as quo]
+  (:require [status-im.ui.components.core :as quo]
             [quo2.core :as quo2]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im.commands.core :as commands]
             [utils.i18n :as i18n]
@@ -20,7 +20,8 @@
             [utils.money :as money]
             [status-im.utils.utils :as utils]
             [status-im.wallet.utils :as wallet.utils]
-            [utils.address :as address]))
+            [utils.address :as address]
+            [status-im.ui.components.list.item :as list.item]))
 
 (defn header
   [{:keys [label small-screen?]}]
@@ -61,7 +62,7 @@
 
 (defn render-account
   [account {:keys [amount decimals] :as token} event]
-  [quo/list-item
+  [list.item/list-item
    {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
     :title    (:name account)
     :subtitle (when token
@@ -78,14 +79,14 @@
 (defn render-contact
   [contact from-chat?]
   (if from-chat?
-    [quo/list-item
+    [list.item/list-item
      {:title    (multiaccounts/displayed-name contact)
       :subtitle [quo/text
                  {:monospace true
                   :color     :secondary}
                  (utils/get-shortened-checksum-address (:address contact))]
       :icon     [chat-icon/contact-icon-contacts-tab contact]}]
-    [quo/list-item
+    [list.item/list-item
      (merge {:title               (if-not contact
                                     (i18n/label :t/wallet-choose-recipient)
                                     [quo/text

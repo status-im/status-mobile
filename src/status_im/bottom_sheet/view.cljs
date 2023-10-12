@@ -1,6 +1,6 @@
 (ns status-im.bottom-sheet.view
   (:require [oops.core :refer [oget]]
-            [quo.react :as react]
+            [react-native.core :as react]
             [status-im.bottom-sheet.styles :as styles]
             [re-frame.core :as re-frame]
             [react-native.background-timer :as timer]
@@ -153,57 +153,57 @@
              handle-comp [gesture/gesture-detector {:gesture bottom-sheet-gesture}
                           [handle-view window-width override-theme]]]
 
-         (react/effect! #(do
-                           (cond
-                             (and
-                              (nil? @show-bottom-sheet?)
-                              visible?
-                              (some? @content-height)
-                              (> @content-height 0))
-                             (reset! show-bottom-sheet? true)
+         (react/use-effect #(do
+                              (cond
+                                (and
+                                 (nil? @show-bottom-sheet?)
+                                 visible?
+                                 (some? @content-height)
+                                 (> @content-height 0))
+                                (reset! show-bottom-sheet? true)
 
-                             (and @show-bottom-sheet? (not visible?))
-                             (close-bottom-sheet)))
-                        [@show-bottom-sheet? @content-height visible?])
-         (react/effect! #(do
-                           (when @show-bottom-sheet?
-                             (cond
-                               keyboard-shown
-                               (do
-                                 (reset! keyboard-was-shown? true)
-                                 (reset! expanded? true))
-                               (and @keyboard-was-shown? (not keyboard-shown))
-                               (reset! expanded? false))))
-                        [@show-bottom-sheet? @keyboard-was-shown? keyboard-shown])
-         (react/effect! #(do
-                           (when-not @gesture-running?
-                             (cond
-                               @show-bottom-sheet?
-                               (if @expanded?
-                                 (do
-                                   (reanimated/set-shared-value
-                                    bottom-sheet-dy
-                                    (with-animation (+ bg-height-expanded (.-value pan-y))))
-                                   ;; Workaround for
-                                   ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
-                                   ;; withTiming/withSpring callback not working on-expanded should
-                                   ;; be called as a callback of with-animation instead, once this
-                                   ;; issue has been resolved
-                                   (timer/set-timeout on-expanded animation-delay))
-                                 (do
-                                   (reanimated/set-shared-value
-                                    bottom-sheet-dy
-                                    (with-animation (+ bg-height (.-value pan-y))))
-                                   ;; Workaround for
-                                   ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
-                                   ;; withTiming/withSpring callback not working on-collapsed should
-                                   ;; be called as a callback of with-animation instead, once this
-                                   ;; issue has been resolved
-                                   (timer/set-timeout on-collapsed animation-delay)))
+                                (and @show-bottom-sheet? (not visible?))
+                                (close-bottom-sheet)))
+                           [@show-bottom-sheet? @content-height visible?])
+         (react/use-effect #(do
+                              (when @show-bottom-sheet?
+                                (cond
+                                  keyboard-shown
+                                  (do
+                                    (reset! keyboard-was-shown? true)
+                                    (reset! expanded? true))
+                                  (and @keyboard-was-shown? (not keyboard-shown))
+                                  (reset! expanded? false))))
+                           [@show-bottom-sheet? @keyboard-was-shown? keyboard-shown])
+         (react/use-effect #(do
+                              (when-not @gesture-running?
+                                (cond
+                                  @show-bottom-sheet?
+                                  (if @expanded?
+                                    (do
+                                      (reanimated/set-shared-value
+                                       bottom-sheet-dy
+                                       (with-animation (+ bg-height-expanded (.-value pan-y))))
+                                      ;; Workaround for
+                                      ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
+                                      ;; withTiming/withSpring callback not working on-expanded should
+                                      ;; be called as a callback of with-animation instead, once this
+                                      ;; issue has been resolved
+                                      (timer/set-timeout on-expanded animation-delay))
+                                    (do
+                                      (reanimated/set-shared-value
+                                       bottom-sheet-dy
+                                       (with-animation (+ bg-height (.-value pan-y))))
+                                      ;; Workaround for
+                                      ;; https://github.com/software-mansion/react-native-reanimated/issues/1758#issue-817145741
+                                      ;; withTiming/withSpring callback not working on-collapsed should
+                                      ;; be called as a callback of with-animation instead, once this
+                                      ;; issue has been resolved
+                                      (timer/set-timeout on-collapsed animation-delay)))
 
-                               (= @show-bottom-sheet? false)
-                               (reanimated/set-shared-value bottom-sheet-dy (with-animation 0)))))
-                        [@show-bottom-sheet? @expanded? @gesture-running?])
+                                  (= @show-bottom-sheet? false)
+                                  (reanimated/set-shared-value bottom-sheet-dy (with-animation 0)))))
+                           [@show-bottom-sheet? @expanded? @gesture-running?])
 
          [:<>
           [rn/touchable-without-feedback {:on-press (when backdrop-dismiss? close-bottom-sheet)}

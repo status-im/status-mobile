@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.reset-password.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.multiaccounts.reset-password.core :as reset-password]

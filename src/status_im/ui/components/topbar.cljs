@@ -1,6 +1,6 @@
 (ns status-im.ui.components.topbar
   (:require [re-frame.core :as re-frame]
-            [quo.core :as quo]
+            [status-im.ui.components.core :as quo]
             [quo2.foundations.colors :as quo2.colors]
             [react-native.safe-area :as safe-area]))
 

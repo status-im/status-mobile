@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.browser.views
   (:require
-    [quo.core :as quo]
-    [quo.design-system.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.colors :as colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.browser.core :as browser]

@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.profile.visibility-status.styles
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [quo2.foundations.colors :as quo2.colors]))
 
 (defn visibility-status-button-container
