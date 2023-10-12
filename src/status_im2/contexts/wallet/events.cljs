@@ -20,4 +20,3 @@
    {:db (assoc db
                :wallet-2/tokens          data
                :wallet-2/tokens-loading? false)}))
-
