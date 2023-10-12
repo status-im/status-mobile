@@ -1,13 +1,14 @@
 (ns status-im2.contexts.wallet.events
   (:require [taoensso.timbre :as log]
-            [re-frame.core :as re-frame]))
+            [re-frame.core :as re-frame]
+            [utils.re-frame :as rf]))
 
 (re-frame/reg-event-fx :wallet-2/get-wallet-token
  (fn [_ [accounts]]
    (let [params (map :address accounts)]
      {:json-rpc/call [{:method     "wallet_getWalletToken"
                        :params     [params]
-                       :on-success [:wallet-2/get-wallet-token-success]
+                       :on-success #(rf/dispatch [:wallet-2/get-wallet-token-success %])
                        :on-error   (fn [error]
                                      (log/info "failed to get wallet token"
                                                {:event  :wallet-2/get-wallet-token
