@@ -54,12 +54,12 @@
   [height max-height]
   (reanimated/apply-animations-to-style
    {:height height}
-   {:max-height max-height
-    :overflow   :hidden}))
+   {:max-height max-height}))
 
 (defn input-view
   [{:keys [recording?]}]
-  {:z-index    1
+  {:overflow   :hidden
+   :z-index    1
    :flex       1
    :display    (if @recording? :none :flex)
    :min-height constants/input-height})
