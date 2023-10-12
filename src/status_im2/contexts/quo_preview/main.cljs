@@ -31,6 +31,7 @@
     [status-im2.contexts.quo-preview.calendar.calendar-day :as calendar-day]
     [status-im2.contexts.quo-preview.calendar.calendar-year :as calendar-year]
     [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
+    [status-im2.contexts.quo-preview.browser.dApp-item :as dApp-item]
     [status-im2.contexts.quo-preview.code.snippet :as code-snippet]
     [status-im2.contexts.quo-preview.code.snippet-preview :as code-snippet-preview]
     [status-im2.contexts.quo-preview.colors.color :as color]
@@ -206,7 +207,9 @@
                        {:name      :wallet-ctas
                         :component wallet-ctas/view}]
    :browser           [{:name      :browser-input
-                        :component browser-input/view}]
+                        :component browser-input/view}
+                       {:name      :dApp-item
+                        :component dApp-item/view}]
    :calendar          [{:name      :calendar
                         :component calendar/view}
                        {:name      :calendar-day
