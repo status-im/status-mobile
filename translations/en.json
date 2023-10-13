@@ -2354,5 +2354,7 @@
     "buy-tokens": "Buy Tokens",
     "ramp-description": "Global crypto to fiat flow.",
     "moonpay-description": "The new standard for fiat to crypto, supports Apple Pay.",
-    "latamex-description": "Easily buy crypto in Argentina, Mexico and Brazil."
+    "latamex-description": "Easily buy crypto in Argentina, Mexico and Brazil.",
+    "account-info": "Account info",
+    "account-name-input-placeholder": "Account name"
 }

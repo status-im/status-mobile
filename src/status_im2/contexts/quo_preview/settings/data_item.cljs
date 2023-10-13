@@ -47,6 +47,7 @@
                              :title               "Label"
                              :subtitle            "Description"
                              :icon                :i/placeholder
+                             :right-icon          :i/chevron-right
                              :emoji               "🎮"
                              :customization-color :yellow
                              :communities-list    communities-list})]

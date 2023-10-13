@@ -37,6 +37,7 @@
     [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
     [status-im2.contexts.wallet.account.view :as wallet-accounts]
+    [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.address-watch.view :as wallet-address-watch]
     [status-im2.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
@@ -242,6 +243,9 @@
 
     {:name      :wallet-accounts
      :component wallet-accounts/view}
+
+    {:name      :wallet-edit-account
+     :component wallet-edit-account/view}
 
     {:name      :wallet-address-watch
      :component wallet-address-watch/view}

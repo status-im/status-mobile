@@ -18,7 +18,8 @@
    [quo/action-drawer
     [[{:icon                :i/edit
        :accessibility-label :edit
-       :label               (i18n/label :t/edit-account)}
+       :label               (i18n/label :t/edit-account)
+       :on-press            #(rf/dispatch [:navigate-to :wallet-edit-account])}
       {:icon                :i/copy
        :accessibility-label :copy-address
        :label               (i18n/label :t/copy-address)}
@@ -30,11 +31,9 @@
        :label               (i18n/label :t/remove-account)
        :danger?             true}]]]
    [quo/divider-line]
-   [rn/view
-    {:style {:padding-horizontal 20
-             :padding-top        12
-             :padding-bottom     8}}
-    [quo/section-label {:section (i18n/label :t/select-another-account)}]]
+   [quo/section-label
+    {:section         (i18n/label :t/select-another-account)
+     :container-style style/drawer-section-label}]
    [rn/flat-list
     {:data      temp/other-accounts
      :render-fn (fn [account] [quo/account-item {:account-props account}])
@@ -81,7 +80,9 @@
          :right-side        :account-switcher
          :account-switcher  {:customization-color :purple
                              :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                 {:content account-options}])
+                                                                 {:content             account-options
+                                                                  :gradient-cover?     true
+                                                                  :customization-color :purple}])
                              :emoji               "🍑"}}]
        [quo/account-overview temp/account-overview-state]
        [quo/wallet-graph {:time-frame :empty}]
