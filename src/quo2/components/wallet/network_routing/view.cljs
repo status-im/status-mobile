@@ -90,10 +90,6 @@
         press-locked?        (reagent/atom false)
         lock-press           #(reset! press-locked? true)
         unlock-press         #(reset! press-locked? false)
-        hide-bar-animations  (atom {})
-        add-hide-animation   (fn [k anim-props]
-                               (let [new-anim #(animation/hide-pressed-bar anim-props)]
-                                 (swap! hide-bar-animations assoc k new-anim)))
         reset-state-values   (fn []
                                (reset! selected-network-idx nil)
                                (reset! selecting-network? false))]
@@ -106,8 +102,8 @@
             last-bar-idx             (dec (count network-bars))]
         (rn/use-effect
          #(when (and (not requesting-data?) @selected-network-idx)
-            (when-let [hide-bar-animation (get @hide-bar-animations @selected-network-idx)]
-              (hide-bar-animation))
+            (let [bar (nth network-bars @selected-network-idx)]
+              (animation/hide-pressed-bar bar amount->width))
             (animation/update-bar-values-and-reset-animations
              {:new-network-values networks
               :network-bars       network-bars
@@ -125,11 +121,7 @@
                                                       (reanimated/get-shared-value)
                                                       (amount->width))
                                hide-division?     (or (= last-bar-idx bar-idx) @selecting-network?)
-                               this-bar-selected? (= @selected-network-idx bar-idx)
-                               ;; Side effect: adds this bar's animation to the atom
-                               _ (add-hide-animation bar-idx
-                                                     {:amount->width amount->width
-                                                      :bar           bar})]]
+                               this-bar-selected? (= @selected-network-idx bar-idx)]]
             ^{:key (str "network-bar-" bar-idx)}
             [:f> f-network-bar
              {:bar           bar
