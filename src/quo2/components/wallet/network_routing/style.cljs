@@ -23,7 +23,7 @@
     :width              width
     :border-right-width 1
     :border-style       :dashed
-    :border-right-color (colors/custom-color network-name nil)
+    :border-right-color (colors/custom-color network-name)
     :z-index            -1}))
 
 (defn network-bar
@@ -36,7 +36,7 @@
    {:max-width          max-width
     :flex-direction     :row
     :justify-content    :flex-end
-    :background-color   (colors/custom-color network-name nil)
+    :background-color   (colors/custom-color network-name)
     :z-index            (if on-top? 1 0)
     :border-right-width (if bar-division? 0 1)
     :border-color       (colors/theme-colors colors/white colors/neutral-95 theme)}))

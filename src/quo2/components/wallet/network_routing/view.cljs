@@ -10,6 +10,16 @@
     [reagent.core :as reagent]
     [utils.number]))
 
+(def ^:private timeouts (atom {}))
+
+(defn- add-new-timeout
+  [k f ms]
+  (letfn [(exec-fn-and-remove-timeout []
+            (f)
+            (swap! timeouts dissoc k))]
+    (js/clearTimeout (k @timeouts))
+    (swap! timeouts assoc k (js/setTimeout exec-fn-and-remove-timeout ms))))
+
 (defn- slider
   [slider-shared-values]
   [rn/view {:style style/slider-container}
@@ -58,7 +68,7 @@
                    (animation/decrease-slider slider-width-shared-value slider-height-shared-value)
                    (animation/hide-slider slider-opacity-shared-value)
                    (on-new-amount (reanimated/get-shared-value amount-shared-value))
-                   (reset! detecting-gesture? false))))}
+                   (add-new-timeout :turn-off-gesture #(reset! detecting-gesture? false) 20))))}
            [:f> slider
             {:width-shared-value   slider-width-shared-value
              :height-shared-value  slider-height-shared-value
@@ -87,8 +97,7 @@
         reset-state-values   (fn []
                                (reset! selected-network-idx nil)
                                (reset! selecting-network? false))]
-    (fn [{:keys [networks total-width total-amount requesting-data? on-amount-selected
-                 add-new-timeout-fn]}]
+    (fn [{:keys [networks total-width total-amount requesting-data? on-amount-selected]}]
       (let [bar-opacity-shared-value (reanimated/use-shared-value 0)
             network-bars             (map add-bar-shared-values networks)
             amount->width            #(* % (/ total-width total-amount))
@@ -106,7 +115,7 @@
                 :reset-values-fn    reset-state-values
                 :lock-press-fn      lock-press
                 :unlock-press-fn    unlock-press
-                :add-new-timeout    add-new-timeout-fn})))
+                :add-new-timeout    add-new-timeout})))
          [requesting-data?])
         [:<>
          (doall
@@ -147,7 +156,7 @@
                                     :bars-widths-negative bars-widths-negative
                                     :number-previous-bars (inc number-previous-bars)
                                     :extra-offset         (- bar-max-width bar-width)
-                                    :add-new-timeout      add-new-timeout-fn}))
+                                    :add-new-timeout      add-new-timeout}))
                                 (animation/show-max-limit-bar bar-opacity-shared-value)
                                 (reset! selecting-network? true)
                                 (reset! selected-network-idx bar-idx))
@@ -169,17 +178,7 @@
 
 (defn view-internal
   [{:keys [networks container-style theme] :as params}]
-  (reagent/with-let [timeouts        (atom {})
-                     set-timeout     (fn [k f ms]
-                                       (js/setTimeout (fn []
-                                                        (f)
-                                                        (swap! timeouts dissoc k))
-                                                      ms))
-                     add-new-timeout (fn [k f ms]
-                                       (when-let [existing-timeout (k @timeouts)]
-                                         (js/clearTimeout existing-timeout))
-                                       (swap! timeouts assoc k (set-timeout k f ms)))
-                     total-width     (reagent/atom nil)]
+  (reagent/with-let [total-width (reagent/atom nil)]
     [rn/view
      {:accessibility-label :network-routing
       :style               (style/container container-style theme)
@@ -187,9 +186,7 @@
      (when @total-width
        ^{:key (str "network-routing-" (count networks))}
        [:f> network-routing-bars
-        (assoc params
-               :total-width        @total-width
-               :add-new-timeout-fn add-new-timeout)])]
+        (assoc params :total-width @total-width)])]
     (finally
      (doseq [[_ living-timeout] @timeouts]
        (js/clearTimeout living-timeout)))))

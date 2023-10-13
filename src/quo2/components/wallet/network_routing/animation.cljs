@@ -51,7 +51,7 @@
                                                  (* 1.05))]]
     (reanimated/animate (:translate-x-shared-value bar) new-translation-x pressed-bar-timing)
     (add-new-timeout
-     :fix-next-bars-position
+     (keyword (str "fix-next-bars-position-" bar-idx))
      #(let [translate-x-value (reanimated/get-shared-value (:translate-x-shared-value bar))
             hidden-position   (- translate-x-value extra-offset)]
         (reanimated/set-shared-value (:translate-x-shared-value bar) hidden-position))
@@ -79,11 +79,11 @@
   (let [width-to-off-screen (->> new-network-values
                                  (reduce #(- %1 (:amount %2)) 0)
                                  (amount->width))]
-    (doseq [[{new-amount :amount} bar] (map vector new-network-values network-bars)]
+    (doseq [[bar-idx {new-amount :amount} bar] (map vector (range) new-network-values network-bars)]
       (reanimated/set-shared-value (:amount-shared-value bar) new-amount)
       (reanimated/set-shared-value (:translate-x-shared-value bar) (* 2 width-to-off-screen))
       (add-new-timeout
-       :align-bars
+       (keyword (str "align-bar-" bar-idx))
        #(reanimated/set-shared-value (:translate-x-shared-value bar) width-to-off-screen)
        1))))
 
