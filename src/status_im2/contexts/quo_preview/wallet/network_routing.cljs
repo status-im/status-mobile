@@ -1,5 +1,6 @@
 (ns status-im2.contexts.quo-preview.wallet.network-routing
   (:require [quo2.core :as quo]
+            [quo2.foundations.colors :as colors]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
@@ -61,13 +62,13 @@
                                    :fixed-index    selected-idx
                                    :current-values (mapv :amount asked-networks)
                                    :on-success     on-success-fn}))}]
-         (reduce (fn [acc {:keys [amount max-amount color]}]
+         (reduce (fn [acc {:keys [amount max-amount network-name]}]
                    (conj acc
                          [rn/view
                           {:style {:flex-direction  :row
                                    :margin-vertical 12}}
                           [rn/view
-                           {:style {:background-color color
+                           {:style {:background-color (colors/custom-color network-name)
                                     :width            24
                                     :height           24
                                     :margin-right     12}}]
@@ -89,5 +90,5 @@
     (fn []
       [preview/preview-container {:state descriptor-state :descriptor descriptor}
        [rn/view {:style {:flex 1 :margin-vertical 28}}
-        ^{:key (str "preview--network-routing-" (:number-networks @descriptor-state))}
+        ^{:key (str "preview-network-routing-" (:number-networks @descriptor-state))}
         [preview-internal @descriptor-state]]])))
