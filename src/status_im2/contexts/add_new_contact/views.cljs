@@ -1,6 +1,5 @@
 (ns status-im2.contexts.add-new-contact.views
   (:require [clojure.string :as string]
-            [oops.core :as oops]
             [quo.core :as quo]
             [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
@@ -57,7 +56,6 @@
                      input-ref      (atom nil)
                      clear-input    (fn []
                                       (reset! input-value nil)
-                                      (oops/ocall (deref input-ref) "clear")
                                       (rf/dispatch [:contacts/clear-new-identity]))
                      paste-on-input #(clipboard/get-string
                                       (fn [clipboard-text]
