@@ -139,7 +139,7 @@
                      {:request-id request-id
                       :unfurled   []
                       :cache      {}}}}]
-      (is (nil? (events/unfurl-parsed-urls-success cofx "banana" [preview-github])))))
+      (is (nil? (events/unfurl-parsed-urls-success cofx "banana" {:linkPreviews [preview-github]})))))
 
   (testing "reconciles new previews with existing ones"
     (let [cofx     {:db {:chat/link-previews
@@ -147,9 +147,10 @@
                           :unfurled   [preview-github
                                        {:url url-gitlab :loading? true}]
                           :cache      {url-github preview-github}}}}
-          {db :db} (events/unfurl-parsed-urls-success cofx
-                                                      request-id
-                                                      [preview-gitlab])]
+          {db :db} (events/unfurl-parsed-urls-success
+                    cofx
+                    request-id
+                    {:linkPreviews [preview-gitlab]})]
       (is (= {:chat/link-previews
               {:request-id request-id
                :unfurled   [preview-github preview-gitlab]
@@ -165,10 +166,11 @@
                                               preview-youtube
                                               {:url url-gitlab :loading? true}]
                                  :cache      {(:url preview-youtube) preview-youtube}}}}
-          {db :db}        (events/unfurl-parsed-urls-success cofx
-                                                             request-id
-                                                             [preview-github
-                                                              preview-youtube])]
+          {db :db}        (events/unfurl-parsed-urls-success
+                           cofx
+                           request-id
+                           {:linkPreviews [preview-github
+                                           preview-youtube]})]
       (is (= {:chat/link-previews
               {:request-id request-id
                :unfurled   [preview-github preview-youtube]
