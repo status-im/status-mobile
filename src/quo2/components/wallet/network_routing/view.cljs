@@ -147,7 +147,7 @@
                                    {:bars                 next-bars
                                     :bars-widths-negative bars-widths-negative
                                     :number-previous-bars (inc number-previous-bars)
-                                    :extra-offset         (- bar-max-width bar-width)
+                                    :extra-offset         (max 0 (- bar-max-width bar-width))
                                     :add-new-timeout      add-new-timeout}))
                                 (animation/show-max-limit-bar bar-opacity-shared-value)
                                 (reset! selecting-network? true)
@@ -158,8 +158,8 @@
                                  (on-amount-selected new-amount @selected-network-idx)))}]))
 
          (let [{:keys [max-amount network-name]} (some->> @selected-network-idx
-                                                          (nth network-bars))
-               limit-bar-width                   (amount->width max-amount)]
+                                                   (nth network-bars))
+               limit-bar-width (amount->width max-amount)]
            [reanimated/view
             {:style (style/max-limit-bar
                      {:opacity-shared-value bar-opacity-shared-value
