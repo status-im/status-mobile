@@ -87,13 +87,10 @@
 (defn f-network-routing-bars
   [_]
   (let [selected-network-idx (reagent/atom nil)
-        selecting-network?   (reagent/atom false)
         press-locked?        (reagent/atom false)
         lock-press           #(reset! press-locked? true)
         unlock-press         #(reset! press-locked? false)
-        reset-state-values   (fn []
-                               (reset! selected-network-idx nil)
-                               (reset! selecting-network? false))]
+        reset-state-values   #(reset! selected-network-idx nil)]
     (fn [{:keys [networks total-width total-amount requesting-data? on-amount-selected]}]
       (let [bar-opacity-shared-value (reanimated/use-shared-value 0)
             network-bars             (map add-bar-shared-values networks)
@@ -121,7 +118,7 @@
                                bar-width          (-> (:amount-shared-value bar)
                                                       (reanimated/get-shared-value)
                                                       (amount->width))
-                               hide-division?     (or (= last-bar-idx bar-idx) @selecting-network?)
+                               hide-division?     (or (= last-bar-idx bar-idx) @selected-network-idx)
                                this-bar-selected? (= @selected-network-idx bar-idx)]]
             ^{:key (str "network-bar-" bar-idx)}
             [:f> f-network-bar
@@ -131,10 +128,10 @@
               :total-amount  total-amount
               :bar-division? hide-division?
               :on-top?       this-bar-selected?
-              :allow-press?  (and (or (not @selecting-network?) this-bar-selected?)
+              :allow-press?  (and (or (not @selected-network-idx) this-bar-selected?)
                                   (not requesting-data?)
                                   (not @press-locked?))
-              :on-press      #(when-not @selecting-network?
+              :on-press      #(when-not @selected-network-idx
                                 (let [[previous-bars [_ & next-bars]] (split-at bar-idx network-bars)
                                       number-previous-bars            bar-idx]
                                   (animation/move-previous-bars
@@ -151,7 +148,6 @@
                                     :extra-offset         (max 0 (- bar-max-width bar-width))
                                     :add-new-timeout      add-new-timeout}))
                                 (animation/show-max-limit-bar bar-opacity-shared-value)
-                                (reset! selecting-network? true)
                                 (reset! selected-network-idx bar-idx))
               :on-new-amount (fn [new-amount]
                                (animation/hide-max-limit-bar bar-opacity-shared-value)
