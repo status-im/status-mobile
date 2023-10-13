@@ -292,6 +292,7 @@
      [rn/flat-list
       {:key-fn                            list-key-fn
        :ref                               list-ref
+       :bounces                           false
        :header                            [:<>
                                            [list-header insets (:able-to-send-message? context) theme]
                                            (when (= (:chat-type chat) constants/private-group-chat-type)
