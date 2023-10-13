@@ -2,7 +2,7 @@
   (:require [status-im.chat.models.message :as models.message]
             [status-im.ethereum.subscriptions :as ethereum.subscriptions]
             [status-im.mailserver.core :as mailserver]
-            [status-im.notifications.local :as local-notifications]
+            [status-im2.contexts.push-notifications.local.events :as local-notifications]
             [status-im.transport.message.core :as transport.message]
             [status-im.visibility-status-updates.core :as visibility-status-updates]
             [utils.re-frame :as rf]

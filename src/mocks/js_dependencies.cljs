@@ -323,7 +323,11 @@
 
 (def react-native-permissions #js {:default #js {}})
 
-(def push-notification-ios #js {:default #js {:abandonPermissions identity}})
+(def push-notification-ios
+  #js
+   {:default #js
+              {:abandonPermissions              identity
+               :removeAllDeliveredNotifications identity}})
 
 (def rn-emoji-keyboard
   #js {:EmojiKeyboard #js {}})

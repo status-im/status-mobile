@@ -9,7 +9,6 @@
     [status-im2.common.biometric.events :as biometric]
     [status-im2.contexts.profile.config :as profile.config]
     [taoensso.timbre :as log]
-    [status-im.notifications.core :as notifications]
     [status-im2.config :as config]
     [status-im.data-store.settings :as data-store.settings]
     [status-im.communities.core :as communities]
@@ -25,7 +24,8 @@
     [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
     [status-im.data-store.switcher-cards :as switcher-cards-store]
     [status-im.browser.core :as browser]
-    [status-im.group-chats.core :as group-chats]))
+    [status-im.group-chats.core :as group-chats]
+    [status-im2.contexts.push-notifications.events :as notifications]))
 
 (re-frame/reg-fx
  ::login
@@ -77,7 +77,7 @@
                           :networks/current-network current-network
                           :networks/networks        (merge networks config/default-networks-by-id)
                           :profile/profile          (merge profile settings))}
-              (notifications/load-notification-preferences)
+              (notifications/load-preferences)
               (data-store.chats/fetch-chats-preview
                {:on-success
                 #(do (re-frame/dispatch [:chats-list/load-success %])
@@ -98,12 +98,10 @@
   {:events [:profile.login/get-chats-callback]}
   [{:keys [db] :as cofx}]
   (let [{:networks/keys [current-network networks]} db
-        notifications-enabled? (get-in db [:profile/profile :notifications-enabled?])
-        current-network-config (get networks current-network)
-        network-id (str (get-in networks
-                                [current-network :config :NetworkId]))
-        remote-push-notifications-enabled?
-        (get-in db [:profile/profile :remote-push-notifications-enabled?])]
+        {:keys [notifications-enabled?]}            (:profile/profile db)
+        current-network-config                      (get networks current-network)
+        network-id                                  (str (get-in networks
+                                                                 [current-network :config :NetworkId]))]
     (rf/merge cofx
               (cond-> {:wallet/initialize-transactions-management-enabled nil
                        :wallet/initialize-wallet
@@ -114,8 +112,8 @@
                                               accounts tokens custom-tokens favourites]))]
                        :check-eip1559-activation {:network-id network-id}
                        :chat/open-last-chat (get-in db [:profile/profile :key-uid])}
-                (or notifications-enabled? remote-push-notifications-enabled?)
-                (assoc ::notifications/enable remote-push-notifications-enabled?))
+                notifications-enabled?
+                (assoc :effects/push-notifications-enable nil))
               (transport/start-messenger)
               (contacts/initialize-contacts)
               (browser/initialize-browser)

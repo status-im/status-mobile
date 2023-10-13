@@ -83,24 +83,26 @@
 (rf/defn handle-mark-all-read
   {:events [:chat.ui/mark-all-read-pressed :chat/mark-all-as-read]}
   [{db :db} chat-id]
-  {:db                          (mark-chat-all-read db chat-id)
-   :clear-message-notifications [[chat-id]
-                                 (get-in db [:profile/profile :remote-push-notifications-enabled?])]
-   :json-rpc/call               [{:method     "wakuext_markAllRead"
-                                  :params     [chat-id]
-                                  :on-success #(re-frame/dispatch [::mark-all-read-successful])}]})
+  {:db                                                     (mark-chat-all-read db chat-id)
+   :effects/push-notifications-clear-message-notifications [chat-id]
+   :json-rpc/call                                          [{:method "wakuext_markAllRead"
+                                                             :params [chat-id]
+                                                             :on-success
+                                                             #(re-frame/dispatch
+                                                               [::mark-all-read-successful])}]})
 
 (rf/defn handle-mark-mark-all-read-in-community
   {:events [:chat.ui/mark-all-read-in-community-pressed]}
   [{db :db} community-id]
   (let [community-chat-ids (map #(str community-id %)
                                 (keys (get-in db [:communities community-id :chats])))]
-    {:clear-message-notifications [community-chat-ids
-                                   (get-in db [:profile/profile :remote-push-notifications-enabled?])]
-     :json-rpc/call               [{:method     "wakuext_markAllReadInCommunity"
-                                    :params     [community-id]
-                                    :on-success #(re-frame/dispatch
-                                                  [::mark-all-read-in-community-successful %])}]}))
+    {:effects/push-notifications-clear-message-notifications community-chat-ids
+     :json-rpc/call                                          [{:method "wakuext_markAllReadInCommunity"
+                                                               :params [community-id]
+                                                               :on-success
+                                                               #(re-frame/dispatch
+                                                                 [::mark-all-read-in-community-successful
+                                                                  %])}]}))
 
 (rf/defn messages-loaded
   "Loads more messages for current chat"

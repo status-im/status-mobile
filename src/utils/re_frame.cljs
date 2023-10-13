@@ -78,3 +78,5 @@
 (def sub (comp deref re-frame/subscribe))
 
 (def dispatch re-frame/dispatch)
+
+(def reg-fx re-frame/reg-fx)

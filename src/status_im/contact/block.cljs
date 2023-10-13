@@ -41,17 +41,20 @@
               (map #(->> (chats-store/<-rpc %)
                          (clean-up-chat public-key))
                    (types/js->clj chats-js)))]
-    (apply rf/merge
-           cofx
-           {:db (-> db
-                    (update :chats dissoc public-key)
-                    (update :chats-home-list disj public-key)
-                    (assoc-in [:contacts/contacts public-key :added?] false))
-            :dispatch [:shell/close-switcher-card public-key]
-            :clear-message-notifications
-            [[public-key] (get-in db [:profile/profile :remote-push-notifications-enabled?])]}
-           (activity-center/notifications-fetch-unread-count)
-           fxs)))
+    (apply
+     rf/merge
+     cofx
+     {:db                                                     (->
+                                                                db
+                                                                (update :chats dissoc public-key)
+                                                                (update :chats-home-list disj public-key)
+                                                                (assoc-in [:contacts/contacts public-key
+                                                                           :added?]
+                                                                          false))
+      :dispatch                                               [:shell/close-switcher-card public-key]
+      :effects/push-notifications-clear-message-notifications [public-key]}
+     (activity-center/notifications-fetch-unread-count)
+     fxs)))
 
 (rf/defn block-contact
   {:events [:contact.ui/block-contact-confirmed]}

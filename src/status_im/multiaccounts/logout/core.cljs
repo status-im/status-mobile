@@ -2,7 +2,6 @@
   (:require [native-module.core :as native-module]
             [re-frame.core :as re-frame]
             [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.notifications.core :as notifications]
             [status-im.wallet.core :as wallet]
             [status-im2.common.keychain.events :as keychain]
             [status-im2.db :as db]
@@ -46,14 +45,13 @@
 (rf/defn logout
   {:events [:logout :multiaccounts.logout.ui/logout-confirmed
             :multiaccounts.update.callback/save-settings-success]}
-  [cofx]
+  [_]
   ;; we need to disable notifications before starting the logout process
-  (rf/merge cofx
-            {:dispatch-later [{:ms       100
-                               :dispatch [::logout-method
-                                          {:auth-method keychain/auth-method-none
-                                           :logout?     true}]}]}
-            (notifications/logout-disable)))
+  {:effects/push-notifications-disable nil
+   :dispatch-later                     [{:ms       100
+                                         :dispatch [::logout-method
+                                                    {:auth-method keychain/auth-method-none
+                                                     :logout?     true}]}]})
 
 (rf/defn show-logout-confirmation
   {:events [:multiaccounts.logout.ui/logout-pressed]}
