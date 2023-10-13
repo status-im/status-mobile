@@ -106,16 +106,16 @@
             last-bar-idx             (dec (count network-bars))]
         (rn/use-effect
          #(when (and (not requesting-data?) @selected-network-idx)
-            (let [hide-bar-animation (get @hide-bar-animations @selected-network-idx)]
-              (hide-bar-animation)
-              (animation/update-bar-values-and-reset-animations
-               {:new-network-values networks
-                :network-bars       network-bars
-                :amount->width      amount->width
-                :reset-values-fn    reset-state-values
-                :lock-press-fn      lock-press
-                :unlock-press-fn    unlock-press
-                :add-new-timeout    add-new-timeout})))
+            (when-let [hide-bar-animation (get @hide-bar-animations @selected-network-idx)]
+              (hide-bar-animation))
+            (animation/update-bar-values-and-reset-animations
+             {:new-network-values networks
+              :network-bars       network-bars
+              :amount->width      amount->width
+              :reset-values-fn    reset-state-values
+              :lock-press-fn      lock-press
+              :unlock-press-fn    unlock-press
+              :add-new-timeout    add-new-timeout}))
          [requesting-data?])
         [:<>
          (doall
