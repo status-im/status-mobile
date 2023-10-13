@@ -179,6 +179,7 @@
     :action        :icon
     :on-press-icon on-press-icon}])
 
+<<<<<<< HEAD
 (def account-data
   {:title                "Trip to Vegas"
    :type                 :account
@@ -201,3 +202,58 @@
     :name                "My savings"
     :address             "0x43c...98d"
     :networks            [{:name :ethereum :short :eth}]}])
+=======
+
+(def asset-snt
+  {:size       24
+   :type       :token
+   :token-name "SNT"
+   :amount     1500
+   :token-logo (quo.resources/get-token :snt)})
+
+(def piggy-bank
+  {:size         24
+   :type         :account
+   :account-name "Piggy bank"
+   :emoji        "🐷"})
+
+(def aretha-gosling
+  {:size            24
+   :type            :default
+   :full-name       "Aretha Gosling"
+   :profile-picture (resources/mock-images :user-picture-female2)})
+
+(def mainnet
+  {:size         24
+   :type         :network
+   :network-logo (quo.resources/get-network :ethereum)
+   :network-name "Mainnet"})
+
+(def activity-list
+  [{:date              "Today"
+    :transaction       :send
+    :timestamp         "Today 22:20"
+    :status            :pending
+    :counter           1
+    :first-tag         asset-snt
+    :second-tag-prefix :t/from
+    :second-tag        piggy-bank
+    :third-tag-prefix  :t/to
+    :third-tag         aretha-gosling
+    :fourth-tag-prefix :t/via
+    :fourth-tag        mainnet
+    :blur?             false}
+   {:date              "Yesterday"
+    :transaction       :receive
+    :timestamp         "Yesterday 22:20"
+    :status            :pending
+    :counter           1
+    :first-tag         asset-snt
+    :second-tag-prefix :t/from
+    :second-tag        piggy-bank
+    :third-tag-prefix  :t/to
+    :third-tag         aretha-gosling
+    :fourth-tag-prefix :t/via
+    :fourth-tag        mainnet
+    :blur?             false}])
+>>>>>>> f79bcf4a1 (acitivty tab)

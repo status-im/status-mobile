@@ -56,7 +56,9 @@
 (defn view
   []
   (let [top          (safe-area/get-top)
-        selected-tab (reagent/atom (:id (first tabs-data)))]
+        ;selected-tab (reagent/atom (:id (first tabs-data)))
+        selected-tab (reagent/atom :activity)
+        ]
     (fn []
       [rn/view
        {:style {:flex       1
