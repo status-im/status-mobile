@@ -90,8 +90,7 @@
 (def ^:private hide-bar-timing 400)
 
 (defn hide-pressed-bar
-  [{{:keys [translate-x-shared-value amount-shared-value]} :bar}
-   amount->width]
+  [{:keys [translate-x-shared-value amount-shared-value]} amount->width]
   (let [bar-width         (amount->width (reanimated/get-shared-value amount-shared-value))
         new-translation-x (- (reanimated/get-shared-value translate-x-shared-value)
                              bar-width)]
