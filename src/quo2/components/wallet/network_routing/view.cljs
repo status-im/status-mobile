@@ -20,12 +20,12 @@
     (js/clearTimeout (k @timeouts))
     (swap! timeouts assoc k (js/setTimeout exec-fn-and-remove-timeout ms))))
 
-(defn- slider
+(defn- f-slider
   [slider-shared-values]
   [rn/view {:style style/slider-container}
    [reanimated/view {:style (style/slider slider-shared-values)}]])
 
-(defn network-bar
+(defn f-network-bar
   [_]
   (let [detecting-gesture?      (reagent/atom false)
         amount-on-gesture-start (atom 0)]
@@ -69,7 +69,7 @@
                    (animation/hide-slider slider-opacity-shared-value)
                    (on-new-amount (reanimated/get-shared-value amount-shared-value))
                    (add-new-timeout :turn-off-gesture #(reset! detecting-gesture? false) 20))))}
-           [:f> slider
+           [:f> f-slider
             {:width-shared-value   slider-width-shared-value
              :height-shared-value  slider-height-shared-value
              :opacity-shared-value slider-opacity-shared-value}]]]]))))
@@ -83,7 +83,7 @@
 (def ^:private get-negative-amount
   (comp - reanimated/get-shared-value :amount-shared-value))
 
-(defn network-routing-bars
+(defn f-network-routing-bars
   [_]
   (let [selected-network-idx (reagent/atom nil)
         selecting-network?   (reagent/atom false)
@@ -131,7 +131,7 @@
                                                      {:amount->width amount->width
                                                       :bar           bar})]]
             ^{:key (str "network-bar-" bar-idx)}
-            [:f> network-bar
+            [:f> f-network-bar
              {:bar           bar
               :max-width     bar-max-width
               :total-width   total-width
@@ -185,7 +185,7 @@
       :on-layout           #(reset! total-width (oops/oget % "nativeEvent.layout.width"))}
      (when @total-width
        ^{:key (str "network-routing-" (count networks))}
-       [:f> network-routing-bars
+       [:f> f-network-routing-bars
         (assoc params :total-width @total-width)])]
     (finally
      (doseq [[_ living-timeout] @timeouts]
