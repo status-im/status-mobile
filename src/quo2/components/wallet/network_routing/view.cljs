@@ -41,10 +41,11 @@
                                                                 [0 total-width])
             width->amount               #(/ (* % total-amount) total-width)]
         [rn/touchable-without-feedback
-         {:on-press #(when (and (not @detecting-gesture?) allow-press?)
-                       (on-press)
-                       (reset! detecting-gesture? true)
-                       (animation/show-slider slider-opacity-shared-value))}
+         {:on-press (fn []
+                      (when (and (not @detecting-gesture?) allow-press?)
+                        (on-press)
+                        (reset! detecting-gesture? true)
+                        (animation/show-slider slider-opacity-shared-value)))}
          [reanimated/view
           {:style               (style/network-bar props network-bar-shared-value)
            :accessibility-label :network-routing-bar}
@@ -158,8 +159,8 @@
                                  (on-amount-selected new-amount @selected-network-idx)))}]))
 
          (let [{:keys [max-amount network-name]} (some->> @selected-network-idx
-                                                   (nth network-bars))
-               limit-bar-width (amount->width max-amount)]
+                                                          (nth network-bars))
+               limit-bar-width                   (amount->width max-amount)]
            [reanimated/view
             {:style (style/max-limit-bar
                      {:opacity-shared-value bar-opacity-shared-value
