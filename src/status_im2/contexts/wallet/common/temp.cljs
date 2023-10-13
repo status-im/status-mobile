@@ -179,3 +179,26 @@
     :state         :default
     :action        :icon
     :on-press-icon on-press-icon}])
+
+(def account-data
+  {:title                "Trip to Vegas"
+   :type                 :account
+   :networks             [{:name :ethereum :short :eth}
+                          {:name :optimism :short :opt}
+                          {:name :arbitrum :short :arb1}]
+   :description          "0x62b...0a5"
+   :account-avatar-emoji "🍑"
+   :customization-color  :purple})
+
+(def other-accounts
+  [{:customization-color :flamingo
+    :emoji               "🍿"
+    :name                "New House"
+    :address             "0x21a...49e"
+    :networks            [{:name :ethereum :short :eth}
+                          {:name :optimism :short :opt}]}
+   {:customization-color :blue
+    :emoji               "🎮"
+    :name                "My savings"
+    :address             "0x43c...98d"
+    :networks            [{:name :ethereum :short :eth}]}])

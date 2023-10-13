@@ -8,6 +8,14 @@
             [reagent.core :as reagent]
             [quo2.components.icon :as icon]))
 
+(defn- network-view
+  [network]
+  [text/text
+   {:size   :paragraph-2
+    :weight :regular
+    :style  {:color (colors/custom-color (:name network))}}
+   (str (name (:short network)) ":")])
+
 (defn- account-view
   [{:keys [account-props title-icon? blur? theme]
     :or   {title-icon? false}}]
@@ -30,6 +38,9 @@
                    colors/white-opa-40
                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}]])]
     [text/text {:size :paragraph-2}
+     (for [network (:networks account-props)]
+       ^{:key (str network)}
+       [network-view network])
      [text/text
       {:size   :paragraph-2
        :weight :monospace
