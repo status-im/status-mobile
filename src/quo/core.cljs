@@ -77,6 +77,7 @@
     quo.components.list-items.preview-list.view
     quo.components.list-items.saved-address.view
     quo.components.list-items.saved-contact-address.view
+    quo.components.list-items.token-network.view
     quo.components.list-items.token-value.view
     quo.components.list-items.user-list
     quo.components.loaders.skeleton-list.view
@@ -111,7 +112,6 @@
     quo.components.selectors.reactions-selector.view
     quo.components.selectors.selectors.view
     quo.components.settings.accounts.view
-    quo.components.settings.category.view
     quo.components.settings.category.view
     quo.components.settings.data-item.view
     quo.components.settings.privacy-option.view
@@ -278,6 +278,7 @@
 (def community-list-item quo.components.list-items.community.view/view)
 (def saved-address quo.components.list-items.saved-address.view/view)
 (def saved-contact-address quo.components.list-items.saved-contact-address.view/view)
+(def token-network quo.components.list-items.token-network.view/view)
 (def token-value quo.components.list-items.token-value.view/view)
 
 ;;;; Loaders
