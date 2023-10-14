@@ -174,8 +174,7 @@
       :on-layout           #(reset! total-width (oops/oget % "nativeEvent.layout.width"))}
      (when @total-width
        ^{:key (str "network-routing-" (count networks))}
-       [:f> f-network-routing-bars
-        (assoc params :total-width @total-width)])]
+       [:f> f-network-routing-bars (assoc params :total-width @total-width)])]
     (finally
      (doseq [[_ living-timeout] @timeouts]
        (js/clearTimeout living-timeout)))))

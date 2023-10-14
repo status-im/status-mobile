@@ -41,7 +41,7 @@
                             :max-amount   (descriptor-state :max-amount-4)
                             :network-name :polygon}])
         requesting-data? (reagent/atom false)]
-    (fn []
+    (fn [_]
       (let [asked-networks (vec (take number-networks @networks))
             on-success-fn  (fn [new-network-amounts]
                              (reset! requesting-data? false)
