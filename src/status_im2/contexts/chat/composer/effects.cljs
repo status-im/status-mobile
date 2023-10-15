@@ -112,7 +112,9 @@
      (let [edit-text        (get-in edit [:content :text])
            text-value-count (count @text-value)]
        (when (and edit @input-ref)
-         (.focus ^js @input-ref)
+         ;; A small setTimeout is necessary to ensure the statement is enqueued and will get executed ASAP.
+         ;; https://github.com/software-mansion/react-native-screens/issues/472
+         (js/setTimeout #(.focus ^js @input-ref) 10)
          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
          (reset! text-value edit-text)
          (reset! saved-cursor-position (if (zero? text-value-count)
@@ -129,7 +131,7 @@
      (when reply
        (reanimated/animate container-opacity 1))
      (when (and reply @input-ref)
-       (.focus ^js @input-ref)))
+       (js/setTimeout #(.focus ^js @input-ref) 10)))
    [(:message-id reply)]))
 
 (defn edit-mentions
