@@ -1,5 +1,5 @@
-(ns quo2.components.browser.dApp.item.view
-  (:require [quo2.components.browser.dApp.item.style :as style]
+(ns quo2.components.browser.dapp-item.view
+  (:require [quo2.components.browser.dapp-item.style :as style]
             [quo2.components.markdown.text :as text]
             [react-native.core :as rn]
             [react-native.fast-image :as fast-image]))

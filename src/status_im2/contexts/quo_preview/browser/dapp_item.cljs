@@ -1,7 +1,6 @@
-(ns status-im2.contexts.quo-preview.browser.dApp-item
+(ns status-im2.contexts.quo-preview.browser.dapp-item
   (:require [quo2.core :as quo]
             [quo2.foundations.resources :as quo.resources]
-            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -13,7 +12,7 @@
 (def zerion {:logo (quo.resources/get-dapp :zerion) :name "Zerion"})
 
 (def descriptor
-  [{:key     :dApp
+  [{:key     :dapp
     :type    :select
     :options [{:key   :coingecko
                :value "CoinGecko"}
@@ -30,21 +29,17 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:dApp :aave})
-        dApp  (reagent/cursor state [:dApp])]
+  (let [state (reagent/atom {:dapp :aave})
+        dapp  (reagent/cursor state [:dapp])]
     (fn []
       [preview/preview-container
        {:state      state
         :descriptor descriptor}
-       [rn/view
-        {:style {:flex        1
-                 :padding-top 40
-                 :align-items :center}}
-        [quo/browser-dApp-item
-         (case @dApp
-           :coingecko coingecko
-           :aave      aave
-           :1inch     oneInch
-           :zapper    zapper
-           :uniswap   uniswap
-           :zerion    zerion)]]])))
+       [quo/dapp-item
+        (case @dapp
+          :coingecko coingecko
+          :aave      aave
+          :1inch     oneInch
+          :zapper    zapper
+          :uniswap   uniswap
+          :zerion    zerion)]])))

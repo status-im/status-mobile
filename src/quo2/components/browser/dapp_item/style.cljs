@@ -1,4 +1,4 @@
-(ns quo2.components.browser.dApp.item.style)
+(ns quo2.components.browser.dapp-item.style)
 
 (def size 64)
 
