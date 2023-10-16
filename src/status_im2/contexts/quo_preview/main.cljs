@@ -166,6 +166,7 @@
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
     [status-im2.contexts.quo-preview.wallet.network-link :as network-link]
+    [status-im2.contexts.quo-preview.wallet.network-routing :as network-routing]
     [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
@@ -173,7 +174,6 @@
      transaction-summary]
     [status-im2.contexts.quo-preview.wallet.wallet-activity :as wallet-activity]
     [status-im2.contexts.quo-preview.wallet.wallet-overview :as wallet-overview]
-    [status-im2.contexts.quo-preview.wallet.network-routing :as network-routing]
     [utils.re-frame :as rf]))
 
 (def screens-categories
