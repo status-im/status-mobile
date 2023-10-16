@@ -26,7 +26,7 @@
         avatar               [quo/user-avatar
                               {:full-name           name
                                :profile-picture     profile-picture
-                               :size                :medium
+                               :size                :size-48
                                :status-indicator?   false
                                :customization-color customization-color}]]
     [rn/view

@@ -75,7 +75,7 @@
             {:full-name       display-name
              :online?         online?
              :profile-picture photo-path
-             :size            :small}]])
+             :size            :size-32}]])
         [rn/view {:style style/header-text-container}
          [rn/view {:style {:flex-direction :row}}
           [quo/text

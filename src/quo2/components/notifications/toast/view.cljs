@@ -79,7 +79,7 @@
                                  icon-color
                                  (assoc :color icon-color))]
                               user
-                              [user-avatar/user-avatar user])
+                              [user-avatar/view user])
        :title           title
        :text            text
        :right           (if undo-duration

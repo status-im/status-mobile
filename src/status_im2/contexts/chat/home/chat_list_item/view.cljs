@@ -176,7 +176,7 @@
           photo-path (rf/sub [:chats/photo-path chat-id])]
       [quo/user-avatar
        (cond-> {:full-name       full-name
-                :size            :small
+                :size            :size-32
                 :online?         online?
                 :profile-picture photo-path}
          muted?

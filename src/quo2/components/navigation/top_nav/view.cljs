@@ -80,11 +80,11 @@
   [rn/touchable-without-feedback {:on-press on-press}
    [rn/view
     {:accessibility-label :open-profile}
-    [user-avatar/user-avatar
+    [user-avatar/view
      (merge {:status-indicator?   true
              :ring?               true
              :customization-color customization-color
-             :size                :small}
+             :size                :size-32}
             avatar-props)]]])
 
 (defn- right-section

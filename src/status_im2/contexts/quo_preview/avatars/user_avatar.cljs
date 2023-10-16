@@ -8,13 +8,14 @@
 (def descriptor
   [{:key     :size
     :type    :select
-    :options [{:key :big}
+    :options [{:key :size-80}
               {:key :size-64}
-              {:key :medium}
-              {:key :small}
-              {:key :xs}
-              {:key :xxs}
-              {:key :xxxs}]}
+              {:key :size-48}
+              {:key :size-32}
+              {:key :size-28}
+              {:key :size-24}
+              {:key :size-20}
+              {:key :size-16}]}
    (preview/customization-color-option)
    {:key  :online?
     :type :boolean}
@@ -39,7 +40,7 @@
   (let [state (reagent/atom {:full-name           "A Y"
                              :status-indicator?   true
                              :online?             true
-                             :size                :medium
+                             :size                :size-48
                              :customization-color :blue})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}

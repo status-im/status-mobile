@@ -41,7 +41,7 @@
           in-reaction-and-action-menu?)
     [avatar/avatar
      {:public-key from
-      :size       :small
+      :size       :size-32
       :hide-ring? (or in-pinned-view? in-reaction-and-action-menu?)}]
     [rn/view {:padding-top 4 :width 32}]))
 
@@ -268,3 +268,4 @@
        :context         context
        :keyboard-shown? keyboard-shown?
        :show-reactions? true}])])
+Failed to zprint: clojure.lang.ExceptionInfo: Unmatched delimiter: ) [at line 46, column 43] {:msg "Unmatched delimiter: )", :row 46, :col 43}

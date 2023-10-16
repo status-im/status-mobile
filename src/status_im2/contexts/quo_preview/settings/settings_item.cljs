@@ -72,9 +72,9 @@
    {:image-props       (case (:image data)
                          :icon        :i/browser
                          :avatar      {:full-name           "A Y"
-                                       :size                :xxs
+                                       :size                :size-20
                                        :customization-color :blue}
-                         :icon-avatar {:size  :medium
+                         :icon-avatar {:size  :size-48
                                        :icon  :i/placeholder
                                        :color :blue}
                          nil)

@@ -8,20 +8,18 @@
     [react-native.fast-image :as fast-image]
     utils.string))
 
-(defn initials-avatar
-  [{:keys [full-name size customization-color theme]}]
-  (let [font-size       (get-in style/sizes [size :font-size])
-        amount-initials (if (#{:xs :xxs :xxxs} size) 1 2)]
-    [rn/view
-     {:accessibility-label :initials-avatar
-      :style               (style/initials-avatar size customization-color theme)}
-     [text/text
-      {:style  style/initials-avatar-text
-       :size   font-size
-       :weight :semi-bold}
-      (utils.string/get-initials full-name amount-initials)]]))
+(defn- initials-avatar
+  [{:keys [full-name size customization-color theme amount-initials font-size]}]
+  [rn/view
+   {:accessibility-label :initials-avatar
+    :style               (style/initials-avatar size customization-color theme)}
+   [text/text
+    {:style  style/initials-avatar-text
+     :size   font-size
+     :weight :semi-bold}
+    (utils.string/get-initials full-name amount-initials)]])
 
-(defn user-avatar-internal
+(defn view-internal
   "Render user avatar with `profile-picture`
   `profile-picture` should be one of {:uri profile-picture-uri} or {:fn profile-picture-fn}
 
@@ -66,17 +64,19 @@
         ;; https://github.com/status-im/status-mobile/issues/15553
         image-view         (if static? no-flicker-image/image fast-image/fast-image)
         font-size          (get-in style/sizes [size :font-size])
-        amount-initials    (if (#{:xs :xxs :xxxs} size) 1 2)
+        amount-initials    (if (#{:size-24 :size-20 :size-16} size) 1 2)
         sizes              (get style/sizes size)
         indicator-color    (get style/indicator-color (if online? :online :offline))
         profile-picture-fn (:fn profile-picture)]
 
     [rn/view {:style outer-styles :accessibility-label :user-avatar}
      (if (and full-name (not (or profile-picture-fn profile-picture)))
-       ;; this is for things that's not user-avatar
-       ;; but are currently using user-avatar to render the initials
-       ;; e.g. community avatar
-       [initials-avatar props]
+       ;; this is for things that's not user-avatar but are currently using user-avatar to render
+       ;; the initials e.g. community avatar e.g. community avatar
+       [initials-avatar
+        (assoc props
+               :amount-initials amount-initials
+               :font-size       font-size)]
        [image-view
         {:accessibility-label :profile-picture
          :style outer-styles
@@ -85,8 +85,7 @@
                {:uri (profile-picture-fn
                       {:length                   amount-initials
                        :full-name                full-name
-                       :font-size                (:font-size (text/text-style {:size
-                                                                               font-size}))
+                       :font-size                (:font-size (text/text-style {:size font-size}))
                        :indicator-size           (when status-indicator?
                                                    (:status-indicator sizes))
                        :indicator-border         (when status-indicator?
@@ -108,4 +107,4 @@
 
                :else {:uri profile-picture})}])]))
 
-(def user-avatar (quo2.theme/with-theme user-avatar-internal))
+(def view (quo2.theme/with-theme view-internal))

@@ -26,8 +26,8 @@
                        :border? true
                        :color   :neutral}]
 
-    :default-keypair [user-avatar/user-avatar
-                      {:size              :small
+    :default-keypair [user-avatar/view
+                      {:size              :size-32
                        :status-indicator? false
                        :profile-picture   profile-picture}]
     nil))

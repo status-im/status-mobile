@@ -45,11 +45,11 @@
     :accessibility-label :user-list
     :on-press            (when on-press on-press)
     :on-long-press       (when on-long-press on-long-press)}
-   [user-avatar/user-avatar
+   [user-avatar/view
     {:full-name       primary-name
      :profile-picture photo-path
      :online?         online?
-     :size            :small}]
+     :size            :size-32}]
    [rn/view {:style {:margin-left 8}}
     [author/author
      {:primary-name   primary-name

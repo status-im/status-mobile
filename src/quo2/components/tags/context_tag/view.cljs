@@ -91,10 +91,10 @@
    (case type
      :default
      [tag-skeleton {:theme theme :size size :text full-name}
-      [user-avatar/user-avatar
+      [user-avatar/view
        {:full-name           full-name
         :profile-picture     profile-picture
-        :size                (if (= size 24) :xxs 28)
+        :size                (if (= size 24) :size-24 :size-28)
         :status-indicator?   false
         :ring?               false
         :customization-color customization-color}]]

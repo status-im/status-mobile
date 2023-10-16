@@ -53,7 +53,7 @@
    {:style (style/image-container description tag image)}
    (case image
      :icon        [icon/icon image-props (style/color blur? theme)]
-     :avatar      [user-avatar/user-avatar image-props]
+     :avatar      [user-avatar/view image-props]
      :icon-avatar [icon-avatar/icon-avatar image-props]
      nil)])
 

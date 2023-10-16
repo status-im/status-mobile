@@ -17,7 +17,7 @@
         border-radius       (get-in properties/sizes
                                     [size-key :border-radius (properties/border-type type)])]
     (case type
-      :user                        [user-avatar/user-avatar
+      :user                        [user-avatar/view
                                     (assoc item
                                            :ring?             false
                                            :status-indicator? false

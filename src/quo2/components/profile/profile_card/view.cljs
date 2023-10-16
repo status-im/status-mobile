@@ -53,10 +53,10 @@
                  :border-bottom-radius border-bottom-radius})}
        [rn/view
         {:style style/card-header}
-        [user-avatar/user-avatar
+        [user-avatar/view
          {:full-name           name
           :profile-picture     profile-picture
-          :size                :medium
+          :size                :size-48
           :status-indicator?   false
           :customization-color customization-color
           :static?             true}]

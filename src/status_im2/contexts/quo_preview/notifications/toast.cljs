@@ -75,7 +75,7 @@
    "Toast: with user-avatar"
    {:text "This is an example toast"
     :user {:profile-picture (resources/mock-images :user-picture-female2)
-           :size            :small}}])
+           :size            :size-32}}])
 
 (defn update-toast-button
   []

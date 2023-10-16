@@ -43,7 +43,7 @@
         [quo/user-avatar
          {:full-name         primary-name
           :profile-picture   photo-path
-          :size              :xxs
+          :size              :size-20
           :status-indicator? false}]
         [quo/text
          {:weight :medium

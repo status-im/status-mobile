@@ -53,7 +53,7 @@
     {:style style/info-container}
     (if (= type :status-account)
       [account-avatar/view account-props]
-      [user-avatar/user-avatar account-props])
+      [user-avatar/view account-props])
     [rn/view {:style {:margin-left 8}}
      (when (not= type :account) [text/text {:weight :semi-bold} (:name account-props)])
      [rn/view

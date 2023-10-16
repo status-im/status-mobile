@@ -22,8 +22,8 @@
 (defn- row-icon
   [profile-picture type secondary-color]
   (case type
-    :default-keypair [user-avatar/user-avatar
-                      {:size            :xxs
+    :default-keypair [user-avatar/view
+                      {:size            :size-20
                        :ring?           false
                        :profile-picture profile-picture}]
     :recovery-phrase [icons/icon

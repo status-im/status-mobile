@@ -9,7 +9,7 @@
 (def sizes
   {:size-32 {:size                32
              :account-avatar-size :size-32
-             :user-avatar-size    :small
+             :user-avatar-size    :size-32
              :border-radius       {:rounded 16 :squared 10}
              :hole-radius         {:rounded 18 :squared 12}
              :margin-left         -8
@@ -18,7 +18,7 @@
              :hole-y              -2}
    :size-24 {:size                24
              :account-avatar-size :size-24
-             :user-avatar-size    :xs
+             :user-avatar-size    :size-24
              :border-radius       {:rounded 12 :squared 8}
              :hole-radius         {:rounded 13 :squared 9}
              :margin-left         -4
@@ -27,7 +27,7 @@
              :hole-y              -1}
    :size-20 {:size                20
              :account-avatar-size :size-24
-             :user-avatar-size    :xxs
+             :user-avatar-size    :size-24
              :border-radius       {:rounded 10 :squared 8}
              :hole-radius         {:rounded 11 :squared 9}
              :margin-left         -4
@@ -36,7 +36,7 @@
              :hole-y              -1}
    :size-16 {:size                16
              :account-avatar-size :size-24
-             :user-avatar-size    :xxxs
+             :user-avatar-size    :size-24
              :border-radius       {:rounded 8 :squared 8}
              :hole-radius         {:rounded 9 :squared 9}
              :margin-left         -4
@@ -45,7 +45,7 @@
              :hole-y              -1}
    :size-14 {:size                14
              :account-avatar-size :size-24
-             :user-avatar-size    :xxxs
+             :user-avatar-size    :size-24
              :border-radius       {:rounded 7 :squared 7}
              :hole-radius         {:rounded 8 :squared 8}
              :margin-left         -2

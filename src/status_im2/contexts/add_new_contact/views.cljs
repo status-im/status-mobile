@@ -24,7 +24,7 @@
         [quo/user-avatar
          {:full-name         primary-name
           :profile-picture   photo-path
-          :size              :small
+          :size              :size-32
           :status-indicator? false}]
         [rn/view style/found-user-text
          [quo/text

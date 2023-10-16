@@ -169,7 +169,7 @@
    [quo/user-avatar
     {:full-name         primary-name
      :profile-picture   (multiaccounts/displayed-photo contact)
-     :size              :small
+     :size              :size-32
      :status-indicator? false}]])
 
 (defn dapp-icon-permission

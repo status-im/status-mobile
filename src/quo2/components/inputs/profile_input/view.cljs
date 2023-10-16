@@ -29,13 +29,13 @@
                  :width        24
                  :height       24
                  :borderRadius 12}]}
-       [user-avatar/user-avatar
+       [user-avatar/view
         (assoc image-picker-props
                :customization-color customization-color
                :static?             true
                :status-indicator?   false
                :full-name           (if (seq full-name) full-name placeholder)
-               :size                :medium)]]
+               :size                :size-48)]]
       [buttons/button
        {:accessibility-label :select-profile-picture-button
         :type                :grey

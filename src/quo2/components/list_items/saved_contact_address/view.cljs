@@ -62,7 +62,7 @@
                                   (on-press))
           :accessibility-label :container}
          [rn/view {:style style/left-container}
-          [user-avatar/user-avatar (assoc contact-props :size :small)]
+          [user-avatar/view (assoc contact-props :size :size-32)]
           [rn/view {:style style/saved-contact-container}
            [rn/view
             {:style style/account-title-container}

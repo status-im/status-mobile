@@ -36,10 +36,10 @@
         :active-opacity      1
         :accessibility-label :select-profile}
        [rn/view {:style style/header}
-        [user-avatar/user-avatar
+        [user-avatar/view
          {:full-name         name
           :status-indicator? false
-          :size              :medium
+          :size              :size-48
           :profile-picture   profile-picture}]
         [rn/view {:style (style/select-radio @internal-selected?)}
          (when @internal-selected? [rn/view {:style style/select-radio-inner}])]]

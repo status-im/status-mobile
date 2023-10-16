@@ -510,7 +510,7 @@
               (let [user-avatar {:full-name         name
                                  :status-indicator? true
                                  :online?           nil
-                                 :size              :small
+                                 :size              :size-32
                                  :ring?             true}]
                 (cond
                   (and (not= author my-public-key)

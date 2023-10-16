@@ -118,7 +118,7 @@
   (cond
     (= type shell.constants/one-to-one-chat-card)
     [quo/user-avatar
-     (merge {:size              :medium
+     (merge {:size              :size-48
              :status-indicator? false}
             avatar-params)]
 

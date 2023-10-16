@@ -31,7 +31,7 @@
                                 :arbitrum 25}
                 :account-props {:full-name           "M L"
                                 :status-indicator?   false
-                                :size                :small
+                                :size                :size-32
                                 :customization-color :blue
                                 :name                "Mark Libot"
                                 :address             "0x0ah...78b"

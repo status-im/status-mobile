@@ -34,7 +34,7 @@
                    {:full-name           "A Y"
                     :status-indicator?   true
                     :online?             true
-                    :size                :small
+                    :size                :size-32
                     :customization-color :blue}]
     :title        "Alisher Yakupov accepted your contact request"
     :duration     4000
@@ -49,7 +49,7 @@
                {:full-name           "A Y"
                 :status-indicator?   true
                 :online?             true
-                :size                :small
+                :size                :size-32
                 :customization-color :blue}]
     :title    "Default to semibold title"
     :text     "The quick brown fox jumped over the lazy dog and ate a potatoe."
@@ -64,7 +64,7 @@
                {:full-name           "A Y"
                 :status-indicator?   true
                 :online?             true
-                :size                :small
+                :size                :size-32
                 :customization-color :blue}]
     :header   [rn/view
                [quo/info-message

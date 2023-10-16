@@ -29,10 +29,10 @@
     avatar-type         :type
     customization-color :customization-color}]
   (if (= avatar-type :default-keypair)
-    [user-avatar/user-avatar
+    [user-avatar/view
      {:full-name           full-name
       :ring?               true
-      :size                :small
+      :size                :size-32
       :customization-color customization-color}]
     [icon-avatar/icon-avatar
      {:size    :size-32

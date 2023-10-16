@@ -160,7 +160,7 @@
       {:full-name       display-name
        :online?         online?
        :profile-picture profile-picture
-       :size            :big}]]))
+       :size            :size-80}]]))
 
 (defn list-footer-avatar
   [props]
@@ -315,10 +315,10 @@
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
-                                            ;; NOTE(alwx): here we set the initial value of `scroll-y`
-                                            ;; which is needed because by default the chat is
-                                            ;; scrolled to the bottom and no initial `on-scroll`
-                                            ;; event is getting triggered
+                                            ;; NOTE(alwx): here we set the initial value of
+                                            ;; `scroll-y` which is needed because by default the
+                                            ;; chat is scrolled to the bottom and no initial
+                                            ;; `on-scroll` event is getting triggered
                                             (let [scroll-y-shared       (reanimated/get-shared-value
                                                                          scroll-y)
                                                   content-height-shared (reanimated/get-shared-value

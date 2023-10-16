@@ -39,7 +39,7 @@
                               :address             "0x0ah...78b"}
         user-props           {:full-name           "M L"
                               :status-indicator?   false
-                              :size                :small
+                              :size                :size-32
                               :ring-background     (resources/get-mock-image :ring)
                               :customization-color :blue
                               :name                "Mark Libot"

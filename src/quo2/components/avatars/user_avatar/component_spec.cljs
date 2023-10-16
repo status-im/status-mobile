@@ -9,10 +9,10 @@
   (h/describe "Profile picture"
     (h/test "Renders"
       (h/render
-       [user-avatar/user-avatar {:profile-picture mock-picture}])
+       [user-avatar/view {:profile-picture mock-picture}])
       (h/is-truthy (h/get-by-label-text :profile-picture)))
 
     (h/test "Renders even if `:full-name` is passed"
       (h/render
-       [user-avatar/user-avatar {:profile-picture mock-picture}])
+       [user-avatar/view {:profile-picture mock-picture}])
       (h/is-truthy (h/get-by-label-text :profile-picture)))))
