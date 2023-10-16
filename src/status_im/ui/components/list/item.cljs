@@ -172,7 +172,7 @@
    [title-column props]])
 
 (defn right-side
-  [{:keys [chevron active disabled accessory accessory-text accessory-style animated-accessory?]}]
+  [{:keys [chevron active disabled accessory accessory-text accessory-style]}]
   (when (or chevron accessory)
     [rn/view
      {:style (merge {:align-items     :center
@@ -191,10 +191,7 @@
      [rn/view {:style (:tiny spacing/padding-horizontal)}
       (case accessory
         :radio    [controls/radio {:value active :disabled disabled}]
-        :checkbox [(if animated-accessory?
-                     controls/animated-checkbox
-                     controls/checkbox)
-                   {:value active :disabled disabled}]
+        :checkbox [controls/checkbox {:value active :disabled disabled}]
         :switch   [controls/switch {:value active :disabled disabled}]
         :text     [text/text
                    {:color           :secondary

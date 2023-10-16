@@ -66,43 +66,45 @@
                  :else    theme)
         {:keys [icon-color background-color text-color border-color]}
         (themes theme')]
+    (println "theme" theme' background-color)
     [rn/touchable-without-feedback
-     (merge {:bg-color            background-color
-             :border-radius       border-radius
-             :type                type
-             :disabled            disabled
-             :accessibility-label accessibility-label}
-            (when border-color
-              {:border-color border-color
-               :border-width 1})
-            (when on-press
+     (merge (when on-press
               {:on-press on-press})
             (when on-long-press
               {:on-long-press on-long-press}))
-     [rn/view {:test-ID test-ID :style (merge (style-container type) style)}
-      (when before
-        [rn/view
-         [icons/icon before {:color icon-color}]])
-      (when loading
-        [rn/view {:style {:position :absolute}}
-         [rn/activity-indicator]])
-      [rn/view
-       {:style (merge (content-style type)
-                      (when loading
-                        {:opacity 0}))}
-       (cond
-         (= type :icon)
-         [icons/icon children {:color icon-color}]
+     [rn/view
+      (merge {:background-color    background-color
+              :border-radius       border-radius
+              :type                type
+              :disabled            disabled
+              :accessibility-label accessibility-label}
+             (when border-color
+               {:border-color border-color
+                :border-width 1}))
+      [rn/view {:test-ID test-ID :style (merge (style-container type) style)}
+       (when before
+         [rn/view
+          [icons/icon before {:color icon-color}]])
+       (when loading
+         [rn/view {:style {:position :absolute}}
+          [rn/activity-indicator]])
+       [rn/view
+        {:style (merge (content-style type)
+                       (when loading
+                         {:opacity 0}))}
+        (cond
+          (= type :icon)
+          [icons/icon children {:color icon-color}]
 
-         (string? children)
-         [text/text
-          {:weight          :medium
-           :number-of-lines 1
-           :style           {:color text-color}}
-          children]
+          (string? children)
+          [text/text
+           {:weight          :medium
+            :number-of-lines 1
+            :style           {:color text-color}}
+           children]
 
-         (vector? children)
-         children)]
-      (when after
-        [rn/view
-         [icons/icon after {:color icon-color}]])]]))
+          (vector? children)
+          children)]
+       (when after
+         [rn/view
+          [icons/icon after {:color icon-color}]])]]]))
