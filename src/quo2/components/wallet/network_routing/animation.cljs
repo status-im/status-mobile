@@ -52,9 +52,10 @@
     (reanimated/animate (:translate-x-shared-value bar) new-translation-x pressed-bar-timing)
     (add-new-timeout
      (keyword (str "fix-next-bars-position-" bar-idx))
-     #(let [translate-x-value (reanimated/get-shared-value (:translate-x-shared-value bar))
-            hidden-position   (- translate-x-value extra-offset)]
-        (reanimated/set-shared-value (:translate-x-shared-value bar) hidden-position))
+     (fn []
+       (let [translate-x-value (reanimated/get-shared-value (:translate-x-shared-value bar))
+             hidden-position   (- translate-x-value extra-offset)]
+         (reanimated/set-shared-value (:translate-x-shared-value bar) hidden-position)))
      pressed-bar-timing)))
 
 (def ^:private max-limit-bar-timing 300)

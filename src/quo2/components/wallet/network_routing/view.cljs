@@ -131,24 +131,25 @@
               :allow-press?  (and (or (not @selected-network-idx) this-bar-selected?)
                                   (not requesting-data?)
                                   (not @press-locked?))
-              :on-press      #(when-not @selected-network-idx
-                                (let [[previous-bars [_ & next-bars]] (split-at bar-idx network-bars)
-                                      number-previous-bars            bar-idx]
-                                  (animation/move-previous-bars
-                                   {:bars                 previous-bars
-                                    :bars-widths-negative bars-widths-negative})
-                                  (animation/move-pressed-bar
-                                   {:bar                  bar
-                                    :bars-widths-negative bars-widths-negative
-                                    :number-previous-bars number-previous-bars})
-                                  (animation/move-next-bars
-                                   {:bars                 next-bars
-                                    :bars-widths-negative bars-widths-negative
-                                    :number-previous-bars (inc number-previous-bars)
-                                    :extra-offset         (max 0 (- bar-max-width bar-width))
-                                    :add-new-timeout      add-new-timeout}))
-                                (animation/show-max-limit-bar bar-opacity-shared-value)
-                                (reset! selected-network-idx bar-idx))
+              :on-press      (fn []
+                               (when-not @selected-network-idx
+                                 (let [[previous-bars [_ & next-bars]] (split-at bar-idx network-bars)
+                                       number-previous-bars            bar-idx]
+                                   (animation/move-previous-bars
+                                    {:bars                 previous-bars
+                                     :bars-widths-negative bars-widths-negative})
+                                   (animation/move-pressed-bar
+                                    {:bar                  bar
+                                     :bars-widths-negative bars-widths-negative
+                                     :number-previous-bars number-previous-bars})
+                                   (animation/move-next-bars
+                                    {:bars                 next-bars
+                                     :bars-widths-negative bars-widths-negative
+                                     :number-previous-bars (inc number-previous-bars)
+                                     :extra-offset         (max 0 (- bar-max-width bar-width))
+                                     :add-new-timeout      add-new-timeout}))
+                                 (animation/show-max-limit-bar bar-opacity-shared-value)
+                                 (reset! selected-network-idx bar-idx)))
               :on-new-amount (fn [new-amount]
                                (animation/hide-max-limit-bar bar-opacity-shared-value)
                                (when on-amount-selected
