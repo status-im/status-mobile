@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.buy-crypto.views
-  (:require [quo.core :as quo]
+  (:require [status-im.ui.components.core :as quo]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
@@ -10,7 +10,8 @@
             [status-im.ui.components.webview :as components.webview]
             [status-im.ui.screens.browser.views :as browser.views]
             [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.wallet.buy-crypto.sheets :as sheets])
+            [status-im.ui.screens.wallet.buy-crypto.sheets :as sheets]
+            [status-im.ui.components.list.item :as list.item])
   (:require-macros [status-im.utils.views :as views]))
 
 (def learn-more-url "")
@@ -26,7 +27,7 @@
   [react/touchable-highlight
    {:on-press #(re-frame/dispatch [:open-modal :buy-crypto-website on-ramp])
     :style    {:flex 1}}
-   [quo/list-item
+   [list.item/list-item
     {:title               [react/view {:style {:flex 1}}
                            [quo/text
                             {:size   :large

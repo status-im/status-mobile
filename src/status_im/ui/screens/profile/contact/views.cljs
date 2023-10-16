@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.profile.contact.views
   (:require [clojure.string :as string]
-            [quo.components.list.item :as list-item]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [quo2.components.avatars.user-avatar.style :as user-avatar.style]
             [quo2.theme :as theme]
             [re-frame.core :as re-frame]
@@ -16,7 +15,8 @@
             [status-im.ui.screens.profile.components.sheets :as sheets]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im.ui.components.list.item :as list.item]))
 
 (defn actions
   [{:keys [public-key added? blocked? ens-name mutual?] :as contact} muted?]
@@ -66,7 +66,7 @@
 
 (defn pin-settings
   [public-key pin-count]
-  [quo/list-item
+  [list.item/list-item
    {:title               (i18n/label :t/pinned-messages)
     :size                :small
     :accessibility-label :pinned-messages-item
@@ -78,7 +78,7 @@
 
 (defn nickname-settings
   [{:keys [nickname]}]
-  [quo/list-item
+  [list.item/list-item
    {:title               (i18n/label :t/nickname)
     :size                :small
     :accessibility-label :profile-nickname-item
@@ -148,7 +148,7 @@
     :style               {:flex 1}
     :accessibility-label (str label "-item-button")}
    [react/view {:flex 1 :align-items :center}
-    [list-item/icon-column
+    [list.item/icon-column
      {:icon          icon
       :size          :small
       :icon-bg-color (if disabled

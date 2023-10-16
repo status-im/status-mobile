@@ -1,8 +1,9 @@
 (ns status-im.ui.screens.advanced-settings.views
-  (:require [quo.core :as quo]
+  (:require [status-im.ui.components.core :as quo]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
-            [status-im.ui.components.list.views :as list])
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.list.item :as list.item])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- normal-mode-settings-data
@@ -111,7 +112,7 @@
   [props]
   (if (= (:type props) :section-header)
     [quo/list-header (:title props)]
-    [quo/list-item props]))
+    [list.item/list-item props]))
 
 (views/defview advanced-settings
   []

@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.account-settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
@@ -10,7 +10,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
-            [utils.security.core :as security]))
+            [utils.security.core :as security]
+            [status-im.ui.components.list.item :as list.item]))
 
 (defn not-valid-password?
   [password]
@@ -166,7 +167,7 @@
        (when (#{:key :seed :watch} type)
          [react/view
           [react/view {:margin-bottom 8 :margin-top 28 :height 1 :background-color colors/gray-lighter}]
-          [quo/list-item
+          [list.item/list-item
            {:theme    :negative
             :title    (i18n/label :t/delete-account)
             :on-press #(if (= :watch type)

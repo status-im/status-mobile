@@ -2,8 +2,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [react-native.camera-kit :as camera-kit]
             [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]

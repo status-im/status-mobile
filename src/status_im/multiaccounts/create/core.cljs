@@ -1,5 +1,5 @@
 (ns status-im.multiaccounts.create.core
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [status-im2.constants :as constants]
             [status-im.data-store.settings :as data-store.settings]

@@ -1,5 +1,5 @@
 (ns status-im.ui.components.badge
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]))
 

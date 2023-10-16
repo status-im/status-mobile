@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.help-center.views
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.list.item :as list.item]))
 
 (def data
   [{:size :small
@@ -31,4 +31,4 @@
   [list/flat-list
    {:data      data
     :key-fn    (fn [_ i] (str i))
-    :render-fn quo/list-item}])
+    :render-fn list.item/list-item}])

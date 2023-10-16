@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.wallet.custom-tokens.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.topbar :as topbar]
+            [status-im.ui.components.list.item :as list.item]))
 
 (def debounce-timers (atom {}))
 
@@ -160,7 +161,7 @@
             :editable      false}]]]]]
       [react/view {:height 24}]
       (when custom?
-        [quo/list-item
+        [list.item/list-item
          {:theme    :negative
           :title    (i18n/label :t/remove-token)
           :icon     :main-icons/delete

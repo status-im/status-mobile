@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.privacy-and-security-settings.delete-profile
-  (:require [quo.core :as quo]
+  (:require [status-im.ui.components.core :as quo]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
@@ -8,7 +8,8 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.privacy-and-security-settings.events :as delete-profile]
-            [utils.security.core :as security]))
+            [utils.security.core :as security]
+            [status-im.ui.components.list.item :as list.item]))
 
 (defn valid-password?
   [password]
@@ -44,26 +45,26 @@
             {:weight :bold
              :size   :x-large}
             (i18n/label :t/delete-profile)]]
-          [quo/list-item
+          [list.item/list-item
            {:title (multiaccounts/displayed-name multiaccount)
             :icon  [chat-icon.screen/contact-icon-contacts-tab multiaccount]}]
           (when keycard?
             [react/view
              [quo/list-header (i18n/label :t/actions)]
-             [quo/list-item
+             [list.item/list-item
               {:title     (i18n/label :t/delete-keys-keycard)
                :accessory :checkbox
                :active    (not keep-keys-on-keycard?)
                :on-press  #(re-frame/dispatch [::delete-profile/keep-keys-on-keycard
                                                (not keep-keys-on-keycard?)])}]
-             [quo/list-item
+             [list.item/list-item
               {:title              (i18n/label :t/unpair-keycard)
                :subtitle           (i18n/label :t/unpair-keycard-warning)
                :subtitle-max-lines 4
                :disabled           true
                :active             true
                :accessory          :checkbox}]
-             [quo/list-item
+             [list.item/list-item
               {:title              (i18n/label :t/reset-database)
                :subtitle           (i18n/label :t/reset-database-warning-keycard)
                :subtitle-max-lines 4

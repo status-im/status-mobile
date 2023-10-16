@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.home.views.inner-item
   (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [quo2.components.markdown.text :as quo2.text]
             [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]

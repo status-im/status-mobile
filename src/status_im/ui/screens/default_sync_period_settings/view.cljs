@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.default-sync-period-settings.view
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im2.constants :as constants]
             [utils.i18n :as i18n]
             [status-im.ui.components.react :as react]
-            [status-im2.config :as config]))
+            [status-im2.config :as config]
+            [status-im.ui.components.list.item :as list.item]))
 
 (def titles
   {constants/two-mins   (i18n/label :t/two-minutes)
@@ -16,7 +16,7 @@
 
 (defn radio-item
   [id value]
-  [quo/list-item
+  [list.item/list-item
    {:active    (= value id)
     :accessory :radio
     :title     (get titles id)

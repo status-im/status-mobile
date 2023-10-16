@@ -1,6 +1,6 @@
 (ns status-im.ui.components.search-input.view
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
 

@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.manage-connections.views
-  (:require [quo.react-native :as rn]
+  (:require [react-native.core :as rn]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.manage-connections.styles :as styles]
             [status-im2.common.not-implemented :as not-implemented]))

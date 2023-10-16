@@ -8,10 +8,10 @@
             ["react-native-image-crop-picker" :default image-picker]
             ["react-native-linear-gradient" :default LinearGradient]
             ["react-native-navigation" :refer (Navigation)]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.colors :as colors]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]
-            [status-im.ui.components.typography :as typography]
+            [status-im.ui.components.text-style :as typography]
             [react-native.platform :as platform]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :as views]))

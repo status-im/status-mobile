@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.communities.import
-  (:require [quo.core :as quo]
-            [quo.react-native :as rn]
+  (:require [status-im.ui.components.core :as quo]
+            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
             [utils.i18n :as i18n]

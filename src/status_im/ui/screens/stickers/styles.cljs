@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.stickers.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def screen
   {:flex 1})

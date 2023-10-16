@@ -1,9 +1,9 @@
 (ns status-im.ui.components.profile-header.view
-  (:require [quo.animated :as animated]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.design-system.spacing :as spacing]
-            [quo.react-native :as rn]
+  (:require [react-native.reanimated :as animated]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.spacing :as spacing]
+            [react-native.core :as rn]
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.ui.components.icons.icons :as icons]))
 

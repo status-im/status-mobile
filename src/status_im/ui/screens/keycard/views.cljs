@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.keycard.views
   (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.bottom-sheet.events :as bottom-sheet]
@@ -19,7 +19,8 @@
             [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
             [utils.re-frame :as rf]
-            [status-im2.navigation.events :as navigation])
+            [status-im2.navigation.events :as navigation]
+            [status-im.ui.components.list.item :as list.item])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
@@ -449,7 +450,7 @@
 (defn- more-sheet-content
   []
   [react/view {:flex 1}
-   [quo/list-item
+   [list.item/list-item
     {:theme    :accent
      :title    (i18n/label :t/create-new-key)
      :icon     :main-icons/profile

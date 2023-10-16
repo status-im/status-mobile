@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wakuv2-settings.edit-node.styles
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [status-im.utils.styles :as styles]))
 
 (def edit-node-view

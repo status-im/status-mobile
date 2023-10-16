@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.chat.photos
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.fast-image :as fast-image]
             [status-im.ui.components.react :as react]
             [status-im.ui.screens.chat.styles.photos :as style]))

@@ -2,7 +2,7 @@
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [clojure.walk :as walk]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.colors :as colors]
             [quo2.foundations.colors :as quo2.colors]
             [re-frame.core :as re-frame]
             [status-im.utils.deprecated-types :as types]

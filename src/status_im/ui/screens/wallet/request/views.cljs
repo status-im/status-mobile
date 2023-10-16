@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.request.views
-  (:require [quo.core :as quo]
+  (:require [status-im.ui.components.core :as quo]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.ethereum.eip.eip55 :as eip55]

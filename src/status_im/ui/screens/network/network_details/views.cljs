@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.network.network-details.views
-  (:require [quo.core :as quo]
+  (:require [status-im.ui.components.core :as quo]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.network.core :as network]

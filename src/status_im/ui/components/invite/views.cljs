@@ -1,7 +1,8 @@
 (ns status-im.ui.components.invite.views
-  (:require [quo.core :as quo]
+  (:require [status-im.ui.components.core :as quo]
             [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]))
+            [utils.i18n :as i18n]
+            [status-im.ui.components.list.item :as list.item]))
 
 (defn button
   []
@@ -12,7 +13,7 @@
 
 (defn list-item
   [{:keys [accessibility-label]}]
-  [quo/list-item
+  [list.item/list-item
    {:theme               :accent
     :title               (i18n/label :t/invite-friends)
     :icon                :main-icons/share

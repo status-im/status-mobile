@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.screens
   (:require
-    [quo.design-system.colors :as colors]
+    [status-im.ui.components.colors :as colors]
     [utils.i18n :as i18n]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.screens.about-app.views :as about-app]

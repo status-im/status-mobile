@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.popover.views
   (:require-macros [status-im.utils.views :as views])
   (:require ["react-native" :refer (BackHandler)]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ui.components.animation :as anim]

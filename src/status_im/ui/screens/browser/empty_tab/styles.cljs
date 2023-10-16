@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.browser.empty-tab.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require [status-im.ui.components.colors :as colors]))
 
 (def input
   {:height  36

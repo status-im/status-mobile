@@ -1,5 +1,5 @@
 (ns status-im.ui.components.checkbox.view
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.checkbox.styles :as styles]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]))

@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.account.styles
   (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.animation :as animation]))
 
 (defn card

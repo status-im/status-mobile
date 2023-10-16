@@ -1,6 +1,6 @@
 (ns status-im.ui.components.bottom-panel.views
   (:require ["react-native" :refer (BackHandler)]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.colors :as colors]
             [reagent.core :as reagent]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.react :as react]

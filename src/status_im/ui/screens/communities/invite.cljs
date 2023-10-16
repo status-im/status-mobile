@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.communities.invite
   (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.react-native :as rn]
+            [status-im.ui.components.core :as quo]
+            [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im.communities.core :as communities]
             [status-im2.constants :as constants]
@@ -10,7 +10,8 @@
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.ui.components.topbar :as topbar]
             [utils.debounce :as debounce]
-            [utils.re-frame :as rf]))
+            [utils.re-frame :as rf]
+            [status-im.ui.components.list.item :as list.item]))
 
 (defn header
   [user-pk]
@@ -30,7 +31,7 @@
 (defn contacts-list-item
   [{:keys [public-key active] :as contact} _ _ {:keys [selected]}]
   (let [{:keys [primary-name secondary-name]} contact]
-    [quo/list-item
+    [list.item/list-item
      {:title     primary-name
       :subtitle  secondary-name
       :icon      [chat-icon.screen/contact-icon-contacts-tab contact]

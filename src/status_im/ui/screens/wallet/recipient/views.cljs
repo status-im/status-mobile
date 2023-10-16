@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.recipient.views
   (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
+            [status-im.ui.components.core :as quo]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.ethereum.stateofus :as stateofus]
@@ -17,7 +17,8 @@
             [status-im.utils.utils :as utils]
             [utils.debounce :as debounce]
             [utils.string :as utils.string]
-            [utils.address :as address])
+            [utils.address :as address]
+            [status-im.ui.components.list.item :as list.item])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- recipient-topbar
@@ -60,7 +61,7 @@
   (let [opened? (reagent/atom false)]
     (fn [title cnt content]
       [react/view {:padding-vertical 8}
-       [quo/list-item
+       [list.item/list-item
         {:title title
          :on-press #(swap! opened? not)
          :accessory
@@ -78,7 +79,7 @@
 
 (defn render-account
   [account]
-  [quo/list-item
+  [list.item/list-item
    {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
     :title    (:name account)
     :on-press #(re-frame/dispatch [:wallet.send/set-recipient (:address account)])
@@ -91,7 +92,7 @@
 
 (defn contacts-list-item
   [{:keys [name] :as contact}]
-  [quo/list-item
+  [list.item/list-item
    {:title    (:primary-name contact)
     :subtitle (:secondary-name contact)
     :on-press #(do
@@ -125,7 +126,7 @@
   [{:keys [from to type amount-text currency-text]}]
   (let [inbound? (= type :inbound)
         address  (if inbound? from to)]
-    [quo/list-item
+    [list.item/list-item
      {:title     [quo/text {:monospace true}
                   (utils/get-shortened-checksum-address address)]
       :on-press  #(re-frame/dispatch [:wallet.recipient/address-changed address])
@@ -153,7 +154,7 @@
   [{:keys [address name]}]
   (let [noname?       (string/blank? name)
         short-address (utils/get-shortened-checksum-address address)]
-    [quo/list-item
+    [list.item/list-item
      {:icon     [chat-icon/custom-icon-view-list
                  (if noname? " 2" name)
                  (rand-nth colors/chat-colors)]
@@ -178,7 +179,7 @@
        cnt
        [react/view
         ;;TODO implement later
-        #_[quo/list-item
+        #_[list/list-item
            {:title "Add favourite"
             :icon  :main-icons/add
             :theme :accent}]

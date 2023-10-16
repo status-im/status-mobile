@@ -1,5 +1,5 @@
 (ns status-im.ui.components.tooltip.views
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [status-im.ui.components.animation :as animation]
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.react :as react]

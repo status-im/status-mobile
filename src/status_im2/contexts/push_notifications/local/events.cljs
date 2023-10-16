@@ -1,8 +1,9 @@
 (ns status-im2.contexts.push-notifications.local.events
-  (:require [quo.platform :as platform]
-            [utils.re-frame :as rf]
+  (:require [utils.re-frame :as rf]
+            [react-native.platform :as platform]
             [status-im.notifications.wallet :as notifications.wallet]
             status-im2.contexts.push-notifications.local.effects))
+
 
 (defn foreground-chat?
   [{{:keys [current-chat-id view-id]} :db} chat-id]

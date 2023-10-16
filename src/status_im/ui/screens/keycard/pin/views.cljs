@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.keycard.pin.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]

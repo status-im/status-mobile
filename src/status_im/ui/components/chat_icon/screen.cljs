@@ -1,7 +1,7 @@
 (ns status-im.ui.components.chat-icon.screen
   (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
+            [status-im.ui.components.colors :as colors]
+            [react-native.core :as rn]
             [quo2.components.avatars.user-avatar.style :as user-avatar.style]
             [quo2.core :as quo]
             [quo2.theme :as theme]

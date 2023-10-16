@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.keycard.authentication-method.views
-  (:require [quo.components.separator :as separator]
-            [quo.design-system.colors :as colors]
+  (:require [status-im.ui.components.separator :as separator]
+            [status-im.ui.components.colors :as colors]
             [re-frame.core :as re-frame]
             [utils.i18n :as i18n]
             [status-im.react-native.resources :as resources]
