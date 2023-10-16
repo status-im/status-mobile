@@ -311,7 +311,8 @@
                                       :show-camera?     show-camera?
                                       :content-opacity  content-opacity
                                       :subtitle-opacity subtitle-opacity
-                                      :title-opacity    title-opacity})]
+                                      :title-opacity    title-opacity})
+            view-id                 (rf/sub [:view-id])]
 
         (rn/use-effect
          #(set-listener-torch-off-on-app-inactive torch?))
@@ -319,9 +320,10 @@
         (when animated?
           (rn/use-effect
            (fn []
-             (rn/hw-back-add-listener reset-animations-fn)
-             #(rn/hw-back-remove-listener reset-animations-fn))
-           [])
+             (when (= view-id :sign-in-intro)
+               (rn/hw-back-add-listener reset-animations-fn)
+               #(rn/hw-back-remove-listener reset-animations-fn)))
+           [view-id])
           (animation/animate-subtitle subtitle-opacity)
           (animation/animate-title title-opacity)
           (animation/animate-bottom bottom-view-translate-y))
