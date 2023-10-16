@@ -1,9 +1,7 @@
-(ns status-im2.contexts.wallet.account.tabs.activity.view
+(ns status-im2.contexts.wallet.common.activity.view
   (:require
     [quo2.core :as quo]
-    [quo2.foundations.resources :as quo.resources]
     [react-native.core :as rn]
-    [status-im2.common.resources :as resources]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
     [status-im2.contexts.wallet.common.temp :as temp]
     [utils.i18n :as i18n]))
@@ -26,4 +24,5 @@
         :placeholder? true}]
       [rn/flat-list
        {:data      activity-list
+        :style     {:flex 1}
         :render-fn activity-item}])))
