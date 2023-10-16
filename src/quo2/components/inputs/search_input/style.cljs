@@ -1,6 +1,7 @@
 (ns quo2.components.inputs.search-input.style
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]))
 
 (defn placeholder-color
   [state blur? override-theme]

@@ -1,16 +1,16 @@
 (ns quo2.components.animated-header-flatlist.view
   (:require
+    [oops.core :as oops]
+    [quo2.components.animated-header-flatlist.style :as style]
     [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
     [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
-    [react-native.fast-image :as fast-image]
-    [reagent.core :as reagent]
-    [quo2.foundations.colors :as colors]
-    [quo2.components.animated-header-flatlist.style :as style]
-    [oops.core :as oops]
-    [quo2.theme :as quo.theme]))
+    [reagent.core :as reagent]))
 
 (def header-height 234)
 (def cover-height 192)

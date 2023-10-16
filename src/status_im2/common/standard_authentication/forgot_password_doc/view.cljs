@@ -1,8 +1,9 @@
 (ns status-im2.common.standard-authentication.forgot-password-doc.view
-  (:require [status-im2.common.standard-authentication.forgot-password-doc.style :as style]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.common.standard-authentication.forgot-password-doc.style :as style]
+    [utils.i18n :as i18n]))
 
 (defn view
   [{:keys [shell?]}]

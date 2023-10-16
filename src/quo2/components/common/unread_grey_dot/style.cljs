@@ -1,5 +1,6 @@
 (ns quo2.components.common.unread-grey-dot.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def unread-grey-dot
   {:width            8

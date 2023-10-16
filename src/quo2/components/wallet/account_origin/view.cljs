@@ -1,12 +1,13 @@
 (ns quo2.components.wallet.account-origin.view
-  (:require [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [quo2.components.wallet.account-origin.style :as style]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.icon :as icons]
-            [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [utils.i18n :as i18n]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.wallet.account-origin.style :as style]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (defn- row-title
   [type user-name]

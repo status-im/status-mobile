@@ -1,6 +1,7 @@
 (ns quo2.components.drawers.bottom-actions.component-spec
-  (:require [quo2.components.drawers.bottom-actions.view :as bottom-actions]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.drawers.bottom-actions.view :as bottom-actions]
+    [test-helpers.component :as h]))
 
 (h/describe "bottom actions tests"
   (h/test "default render with no description and single action button"

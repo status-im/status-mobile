@@ -1,12 +1,13 @@
 (ns quo2.components.list-items.dapp.view
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
-            [quo2.components.list-items.dapp.style :as style]
-            [quo2.theme :as quo.theme]
-            [reagent.core :as reagent]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.list-items.dapp.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [reagent.core :as reagent]))
 
 (defn- view-internal
   []

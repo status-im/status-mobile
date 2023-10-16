@@ -1,17 +1,18 @@
 (ns status-im.ui.screens.browser.tabs.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.list.item :as list.item]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.plus-button :as components.plus-button]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as components]
-            [utils.url :as url]))
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.plus-button :as components.plus-button]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.components.views :as components]
+    [utils.i18n :as i18n]
+    [utils.url :as url]))
 
 (defn list-item
   [_]

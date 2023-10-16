@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.backup-settings.view
   (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [utils.datetime :as datetime]
-            [status-im.ui.components.list.item :as list.item]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]))
 
 (defn perform-backup!
   []

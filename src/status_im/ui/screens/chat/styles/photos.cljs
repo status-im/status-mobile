@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.styles.photos
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 (def default-size 36)
 

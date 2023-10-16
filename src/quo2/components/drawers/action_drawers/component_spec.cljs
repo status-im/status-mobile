@@ -1,6 +1,7 @@
 (ns quo2.components.drawers.action-drawers.component-spec
-  (:require [quo2.components.drawers.action-drawers.view :as action-drawer]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.drawers.action-drawers.view :as action-drawer]
+    [test-helpers.component :as h]))
 
 (h/describe "action drawer"
   (h/test "default render"

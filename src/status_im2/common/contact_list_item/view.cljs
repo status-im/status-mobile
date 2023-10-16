@@ -1,7 +1,8 @@
 (ns status-im2.common.contact-list-item.view
-  (:require [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [utils.address :as address]))
+  (:require
+    [quo2.core :as quo]
+    [utils.address :as address]
+    [utils.re-frame :as rf]))
 
 (defn contact-list-item
   [{:keys [on-press on-long-press accessory]}

@@ -1,14 +1,15 @@
 (ns status-im2.contexts.onboarding.intro.view
-  (:require [quo2.core :as quo]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [status-im2.contexts.onboarding.intro.style :as style]
-            [status-im2.contexts.onboarding.common.background.view :as background]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]
-            [utils.debounce :as debounce]
-            [status-im2.contexts.onboarding.common.overlay.view :as overlay]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.common.overlay.view :as overlay]
+    [status-im2.contexts.onboarding.intro.style :as style]
+    [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []

@@ -1,6 +1,7 @@
 (ns status-im2.contexts.syncing.enter-sync-code.style
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.foundations.typography :as typography]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [quo2.foundations.typography :as typography]))
 
 (def container-text-input
   {:flex-direction     :row

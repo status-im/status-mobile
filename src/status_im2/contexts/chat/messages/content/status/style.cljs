@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.status.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def status-container
   {:flex-direction :row

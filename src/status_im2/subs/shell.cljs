@@ -1,12 +1,13 @@
 (ns status-im2.subs.shell
-  (:require [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im2.common.resources :as resources]
-            [status-im2.config :as config]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im2.common.resources :as resources]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]))
 
 ;; Helper Functions
 (defn community-avatar

@@ -1,20 +1,21 @@
 (ns status-im2.contexts.shell.jump-to.components.jump-to-screen.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [react-native.blur :as blur]
-            [react-native.linear-gradient :as linear-gradient]
-            [react-native.safe-area :as safe-area]
-            [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.utils :as utils]
-            [status-im2.common.home.top-nav.view :as common.top-nav]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [status-im2.contexts.shell.jump-to.components.jump-to-screen.style :as style]
-            [status-im2.contexts.shell.jump-to.components.bottom-tabs.view :as bottom-tabs]
-            [status-im2.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as theme]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]
+    [react-native.safe-area :as safe-area]
+    [status-im2.common.home.top-nav.view :as common.top-nav]
+    [status-im2.contexts.shell.jump-to.components.bottom-tabs.view :as bottom-tabs]
+    [status-im2.contexts.shell.jump-to.components.jump-to-screen.style :as style]
+    [status-im2.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im2.contexts.shell.jump-to.state :as state]
+    [status-im2.contexts.shell.jump-to.utils :as utils]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn placeholder
   []

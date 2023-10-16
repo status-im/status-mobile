@@ -1,6 +1,7 @@
 (ns quo2.components.inputs.title-input.component-spec
-  (:require [quo2.components.inputs.title-input.view :as title-input]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.inputs.title-input.view :as title-input]
+    [test-helpers.component :as h]))
 
 (h/describe "input -> title-input component"
   (h/test "renders empty"

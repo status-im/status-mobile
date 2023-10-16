@@ -1,11 +1,12 @@
 (ns quo2.components.share.share-qr-code.view
-  (:require [quo2.components.share.share-qr-code.style :as style]
-            [quo2.components.share.qr-code.view :as qr-code]
-            [react-native.blur :as blur]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.buttons.button.view :as button]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.share.qr-code.view :as qr-code]
+    [quo2.components.share.share-qr-code.style :as style]
+    [quo2.foundations.colors :as colors]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]))
 
 (defn view
   [{:keys [qr-image-uri link-title url-on-press url-on-long-press qr-url share-on-press]}]

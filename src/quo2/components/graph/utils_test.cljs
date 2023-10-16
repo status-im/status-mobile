@@ -1,6 +1,7 @@
 (ns quo2.components.graph.utils-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [quo2.components.graph.utils :as utils]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [quo2.components.graph.utils :as utils]))
 
 (deftest find-highest-value
   (testing "Find highest value with a single map"

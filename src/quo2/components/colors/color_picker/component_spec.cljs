@@ -1,7 +1,8 @@
 (ns quo2.components.colors.color-picker.component-spec
-  (:require [quo2.components.colors.color-picker.view :as color-picker]
-            [reagent.core :as reagent]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.colors.color-picker.view :as color-picker]
+    [reagent.core :as reagent]
+    [test-helpers.component :as h]))
 
 (h/describe "color-picker"
   (h/test "color picker rendered"

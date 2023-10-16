@@ -1,15 +1,16 @@
 (ns status-im.ui.screens.chat.stickers.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.components.core :as quo]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.fast-image :as fast-image]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.stickers.styles :as styles]
-            [utils.debounce :as debounce]))
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.fast-image :as fast-image]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.chat.stickers.styles :as styles]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]))
 
 (def icon-size 28)
 (def icon-horizontal-margin 8)

@@ -1,9 +1,10 @@
 (ns status-im2.contexts.chat.lightbox.text-sheet.utils
-  (:require [react-native.gesture :as gesture]
-            [react-native.reanimated :as reanimated]
-            [oops.core :as oops]
-            [status-im2.contexts.chat.lightbox.constants :as constants]
-            [utils.worklets.lightbox :as worklet]))
+  (:require
+    [oops.core :as oops]
+    [react-native.gesture :as gesture]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.lightbox.constants :as constants]
+    [utils.worklets.lightbox :as worklet]))
 
 (defn sheet-gesture
   [{:keys [derived-value saved-top overlay-opacity gradient-opacity]}

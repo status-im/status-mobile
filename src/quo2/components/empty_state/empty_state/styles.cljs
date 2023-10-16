@@ -1,5 +1,6 @@
 (ns quo2.components.empty-state.empty-state.styles
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def container
   {:padding     12

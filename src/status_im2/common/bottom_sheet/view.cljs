@@ -1,16 +1,17 @@
 (ns status-im2.common.bottom-sheet.view
-  (:require [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [react-native.hooks :as hooks]
-            [react-native.reanimated :as reanimated]
-            [reagent.core :as reagent]
-            [status-im2.common.bottom-sheet.style :as style]
-            [utils.re-frame :as rf]))
+  (:require
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.hooks :as hooks]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [status-im2.common.bottom-sheet.style :as style]
+    [utils.re-frame :as rf]))
 
 (def duration 450)
 (def timing-options #js {:duration duration})

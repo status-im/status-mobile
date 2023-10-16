@@ -1,10 +1,11 @@
 (ns quo2.components.notifications.count-down-circle
-  (:require [goog.string :as gstring]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [react-native.svg :as svg]
-            [reagent.core :as reagent]))
+  (:require
+    [goog.string :as gstring]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.svg :as svg]
+    [reagent.core :as reagent]))
 
 (defn- get-path-props
   [size stroke-width rotation]

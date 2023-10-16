@@ -1,7 +1,8 @@
 (ns quo2.components.calendar.calendar.days-grid.utils-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [quo2.components.calendar.calendar.days-grid.utils :as utils]
-            [cljs-time.core :as time]))
+  (:require
+    [cljs-time.core :as time]
+    [cljs.test :refer-macros [deftest is testing]]
+    [quo2.components.calendar.calendar.days-grid.utils :as utils]))
 
 (deftest day-grid-test
   (let [day-grid-result (utils/day-grid "2023" "7")]

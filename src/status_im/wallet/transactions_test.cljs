@@ -1,6 +1,7 @@
 (ns status-im.wallet.transactions-test
-  (:require [cljs.test :refer-macros [deftest is]]
-            [status-im.ethereum.transactions.core :as transactions]))
+  (:require
+    [cljs.test :refer-macros [deftest is]]
+    [status-im.ethereum.transactions.core :as transactions]))
 
 (deftest get-transaction-details-url
   (is (= "https://etherscan.io/tx/asdfasdf"

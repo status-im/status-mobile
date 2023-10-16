@@ -1,15 +1,16 @@
 (ns quo2.components.settings.data-item.view
-  (:require [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [quo2.components.settings.data-item.style :as style]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.common.not-implemented.view :as not-implemented]
-            [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.list-items.preview-list.view :as preview-list]
-            [quo2.foundations.resources :as quo.resources]
-            [quo2.components.avatars.account-avatar.view :as account-avatar]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.components.avatars.account-avatar.view :as account-avatar]
+    [quo2.components.common.not-implemented.view :as not-implemented]
+    [quo2.components.icon :as icons]
+    [quo2.components.list-items.preview-list.view :as preview-list]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.settings.data-item.style :as style]
+    [quo2.foundations.colors :as colors]
+    [quo2.foundations.resources :as quo.resources]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (defn- left-loading
   [{:keys [size blur? theme]}]

@@ -1,14 +1,15 @@
 (ns quo2.components.profile.profile-card.view
-  (:require [utils.i18n :as i18n]
-            [react-native.core :as rn]
-            [quo2.components.icon :as icon]
-            [quo2.components.tags.tag :as tag]
-            [quo2.foundations.colors :as colors]
-            [react-native.hole-view :as hole-view]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.profile.profile-card.style :as style]
-            [quo2.components.avatars.user-avatar.view :as user-avatar]))
+  (:require
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.icon :as icon]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.profile.profile-card.style :as style]
+    [quo2.components.tags.tag :as tag]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.hole-view :as hole-view]
+    [utils.i18n :as i18n]))
 
 (defn- f-profile-card-component
   [{:keys [keycard-account? profile-picture name

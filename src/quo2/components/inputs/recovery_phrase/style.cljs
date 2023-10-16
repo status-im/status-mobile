@@ -1,6 +1,7 @@
 (ns quo2.components.inputs.recovery-phrase.style
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]))
 
 (def container
   {:min-height         40

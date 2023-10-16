@@ -1,18 +1,19 @@
 (ns status-im2.contexts.chat.messages.navigation.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [re-frame.db]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.common.home.actions.view :as actions]
-            [status-im2.config :as config]
-            [status-im2.contexts.chat.messages.navigation.style :as style]
-            [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [re-frame.db]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [status-im2.common.home.actions.view :as actions]
+    [status-im2.config :as config]
+    [status-im2.contexts.chat.messages.navigation.style :as style]
+    [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn f-view
   [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path

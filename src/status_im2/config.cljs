@@ -1,8 +1,9 @@
 (ns status-im2.config
-  (:require [clojure.string :as string]
-            [react-native.config :as react-native-config]
-            [status-im.ethereum.ens :as ens]
-            [utils.ethereum.chain :as chain]))
+  (:require
+    [clojure.string :as string]
+    [react-native.config :as react-native-config]
+    [status-im.ethereum.ens :as ens]
+    [utils.ethereum.chain :as chain]))
 
 (def get-config react-native-config/get-config)
 

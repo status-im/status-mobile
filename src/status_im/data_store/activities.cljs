@@ -1,8 +1,9 @@
 (ns status-im.data-store.activities
-  (:require [clojure.set :as set]
-            [status-im.data-store.messages :as messages]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.activity-center.notification-types :as notification-types]))
+  (:require
+    [clojure.set :as set]
+    [status-im.data-store.messages :as messages]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.activity-center.notification-types :as notification-types]))
 
 (defn mark-notifications-as-read
   [notifications]

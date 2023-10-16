@@ -3,6 +3,7 @@
     [oops.core :as oops]
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
     [react-native.background-timer :as background-timer]
     [react-native.core :as rn]
     [react-native.hooks :as hooks]
@@ -11,15 +12,14 @@
     [status-im.ui.screens.chat.group :as chat.group]
     [status-im.ui.screens.chat.message.gap :as message.gap]
     [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.constants :as composer.constants]
     [status-im2.contexts.chat.messages.content.view :as message]
     [status-im2.contexts.chat.messages.list.state :as state]
     [status-im2.contexts.chat.messages.list.style :as style]
-    [status-im2.contexts.chat.composer.constants :as composer.constants]
     [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
     [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [quo2.theme :as quo.theme]))
+    [utils.re-frame :as rf]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)

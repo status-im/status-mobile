@@ -1,8 +1,9 @@
 (ns status-im.data-store.pin-messages
-  (:require [clojure.set :as set]
-            [status-im.data-store.messages :as messages]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.set :as set]
+    [status-im.data-store.messages :as messages]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (defn <-rpc
   [message]

@@ -1,14 +1,15 @@
 (ns status-im2.contexts.chat.messages.content.album.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
-            [status-im2.contexts.chat.messages.content.album.style :as style]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.content.image.view :as image]
-            [status-im2.contexts.chat.messages.content.text.view :as text]
-            [utils.re-frame :as rf]
-            [utils.url :as url]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.content.album.style :as style]
+    [status-im2.contexts.chat.messages.content.image.view :as image]
+    [status-im2.contexts.chat.messages.content.text.view :as text]
+    [utils.re-frame :as rf]
+    [utils.url :as url]))
 
 (def rectangular-style-count 3)
 

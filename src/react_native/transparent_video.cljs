@@ -1,5 +1,6 @@
 (ns react-native.transparent-video
-  (:require [reagent.core :as reagent]
-            ["react-native-transparent-video" :default TV]))
+  (:require
+    ["react-native-transparent-video" :default TV]
+    [reagent.core :as reagent]))
 
 (def view (reagent/adapt-react-class TV))

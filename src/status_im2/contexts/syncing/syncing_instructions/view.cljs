@@ -1,11 +1,12 @@
 (ns status-im2.contexts.syncing.syncing-instructions.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.syncing.syncing-instructions.style :as style]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.syncing.syncing-instructions.style :as style]
+    [utils.i18n :as i18n]))
 
 (defn- render-element
   [[type value]]

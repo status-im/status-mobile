@@ -1,10 +1,11 @@
 (ns quo2.components.dividers.divider-label.view
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.components.dividers.divider-label.style :as style]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [quo2.components.counter.counter.view :as counter]
-            [quo2.components.icon :as icons]))
+  (:require
+    [quo2.components.counter.counter.view :as counter]
+    [quo2.components.dividers.divider-label.style :as style]
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- view-internal
   "Options:

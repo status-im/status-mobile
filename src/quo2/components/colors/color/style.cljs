@@ -1,5 +1,6 @@
 (ns quo2.components.colors.color.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def color-button-common
   {:width             48

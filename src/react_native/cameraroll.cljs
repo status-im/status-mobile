@@ -1,8 +1,9 @@
 (ns react-native.cameraroll
-  (:require ["@react-native-community/cameraroll" :as CameraRoll]
-            [react-native.fs :as fs]
-            [utils.transforms :as transforms]
-            [taoensso.timbre :as log]))
+  (:require
+    ["@react-native-community/cameraroll" :as CameraRoll]
+    [react-native.fs :as fs]
+    [taoensso.timbre :as log]
+    [utils.transforms :as transforms]))
 
 (defn get-photos
   [opts callback]

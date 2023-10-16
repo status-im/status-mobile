@@ -1,5 +1,6 @@
 (ns status-im2.contexts.communities.overview.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def screen-horizontal-padding 20)
 

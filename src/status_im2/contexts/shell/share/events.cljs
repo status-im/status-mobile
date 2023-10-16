@@ -1,7 +1,8 @@
 (ns status-im2.contexts.shell.share.events
-  (:require [utils.re-frame :as rf]
-            [status-im2.common.toasts.events :as toasts]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [status-im2.common.toasts.events :as toasts]
+    [utils.re-frame :as rf]))
 
 (rf/defn copy-text-and-show-toast
   {:events [:share/copy-text-and-show-toast]}

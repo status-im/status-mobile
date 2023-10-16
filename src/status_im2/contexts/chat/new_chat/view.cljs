@@ -1,17 +1,18 @@
 (ns status-im2.contexts.chat.new-chat.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [re-frame.core :as re-frame]
-            [react-native.gesture :as gesture]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]
-            [status-im2.common.contact-list.view :as contact-list]
-            [status-im2.common.resources :as resources]
-            [status-im2.common.contact-list-item.view :as contact-list-item]
-            [status-im2.contexts.chat.new-chat.styles :as style]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [status-im2.common.contact-list-item.view :as contact-list-item]
+    [status-im2.common.contact-list.view :as contact-list]
+    [status-im2.common.resources :as resources]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.new-chat.styles :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- no-contacts-view
   [{:keys [theme]}]

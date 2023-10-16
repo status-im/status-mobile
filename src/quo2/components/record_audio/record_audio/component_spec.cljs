@@ -1,9 +1,10 @@
 (ns quo2.components.record-audio.record-audio.component-spec
-  (:require [quo2.components.record-audio.record-audio.view :as record-audio]
-            [react-native.audio-toolkit :as audio]
-            [test-helpers.component :as h]
-            [reagent.core :as reagent]
-            [utils.datetime :as datetime]))
+  (:require
+    [quo2.components.record-audio.record-audio.view :as record-audio]
+    [react-native.audio-toolkit :as audio]
+    [reagent.core :as reagent]
+    [test-helpers.component :as h]
+    [utils.datetime :as datetime]))
 
 (h/describe "record audio component"
   (h/before-each

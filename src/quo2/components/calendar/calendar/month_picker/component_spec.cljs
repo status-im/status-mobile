@@ -1,6 +1,7 @@
 (ns quo2.components.calendar.calendar.month-picker.component-spec
-  (:require [quo2.components.calendar.calendar.month-picker.view :as month-picker]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.calendar.calendar.month-picker.view :as month-picker]
+    [test-helpers.component :as h]))
 
 (h/describe "month-picker component"
   (h/test "default render of month-picker component"

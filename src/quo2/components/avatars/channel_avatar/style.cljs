@@ -1,5 +1,6 @@
 (ns quo2.components.avatars.channel-avatar.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def lock-icon-size 12)
 

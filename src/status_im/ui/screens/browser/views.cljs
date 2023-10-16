@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.browser.views
   (:require
-    [status-im.ui.components.core :as quo]
-    [status-im.ui.components.colors :as colors]
     [re-frame.core :as re-frame]
+    [react-native.permissions :as components.permissions]
     [reagent.core :as reagent]
     [status-im.browser.core :as browser]
     [status-im.browser.webview-ref :as webview-ref]
-    [utils.i18n :as i18n]
     [status-im.qr-scanner.core :as qr-scanner]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
     [status-im.ui.components.connectivity.view :as connectivity]
+    [status-im.ui.components.core :as quo]
     [status-im.ui.components.icons.icons :as icons]
-    [react-native.permissions :as components.permissions]
     [status-im.ui.components.react :as react]
     [status-im.ui.components.tooltip.views :as tooltip]
     [status-im.ui.components.webview :as components.webview]
@@ -21,9 +20,10 @@
     [status-im.ui.screens.browser.site-blocked.views :as site-blocked.views]
     [status-im.ui.screens.browser.styles :as styles]
     [status-im.ui.screens.wallet.components.views :as components]
-    [utils.url :as url]
     [status-im.utils.js-resources :as js-res]
-    [utils.debounce :as debounce])
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.url :as url])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn toolbar-content

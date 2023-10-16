@@ -1,20 +1,21 @@
 (ns status-im.ui.screens.browser.empty-tab.views
-  (:require [status-im.ui.components.core :as quo]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.browser.accounts :as accounts]
-            [status-im.ui.screens.browser.empty-tab.styles :as styles]
-            [status-im.ui.screens.browser.views :as browser]
-            [status-im.ui.screens.wallet.components.views :as components]
-            [utils.url :as url]
-            [status-im.ui.components.list.item :as list.item])
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.common.common :as components.common]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.browser.accounts :as accounts]
+    [status-im.ui.screens.browser.empty-tab.styles :as styles]
+    [status-im.ui.screens.browser.views :as browser]
+    [status-im.ui.screens.wallet.components.views :as components]
+    [utils.i18n :as i18n]
+    [utils.url :as url])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn hide-sheet-and-dispatch

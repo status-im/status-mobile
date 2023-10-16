@@ -1,9 +1,10 @@
 (ns utils.datetime-test
-  (:require [cljs-time.coerce :as time-coerce]
-            [cljs-time.core :as t]
-            [cljs.test :refer-macros [deftest testing is]]
-            [utils.datetime :as datetime]
-            [utils.i18n-goog :as i18n-goog]))
+  (:require
+    [cljs-time.coerce :as time-coerce]
+    [cljs-time.core :as t]
+    [cljs.test :refer-macros [deftest testing is]]
+    [utils.datetime :as datetime]
+    [utils.i18n-goog :as i18n-goog]))
 
 (defn match
   [name symbols]

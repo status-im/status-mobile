@@ -1,9 +1,10 @@
 (ns status-im2.contexts.chat.messages.content.reactions.view
-  (:require [quo2.core :as quo]
-            [status-im2.constants :as constants]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.chat.messages.drawers.view :as drawers]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.theme :as quo.theme]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.drawers.view :as drawers]
+    [utils.re-frame :as rf]))
 
 (defn- on-press
   [{:keys [own message-id emoji-id emoji-reaction-id]}]

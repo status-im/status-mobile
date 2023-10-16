@@ -1,10 +1,11 @@
 (ns status-im.ui.screens.profile.user.edit-picture
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.react :as react]
-            [status-im2.config :as config]
-            [status-im.ui.components.list.item :as list.item]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im2.config :as config]
+    [utils.i18n :as i18n]))
 
 (def crop-size 1000)
 (def crop-opts

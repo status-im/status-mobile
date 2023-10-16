@@ -1,5 +1,6 @@
 (ns status-im2.contexts.communities.discover.style
-  (:require [react-native.platform :as platform]))
+  (:require
+    [react-native.platform :as platform]))
 
 (def screen-title-container
   {:height            56

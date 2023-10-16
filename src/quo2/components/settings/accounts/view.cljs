@@ -1,10 +1,11 @@
 (ns quo2.components.settings.accounts.view
-  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.settings.accounts.style :as style]
-            [react-native.core :as rn]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.components.avatars.account-avatar.view :as account-avatar]
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.settings.accounts.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn card-background
   [{:keys [customization-color theme]}]

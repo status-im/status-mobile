@@ -1,12 +1,13 @@
 (ns status-im2.contexts.wallet.account.tabs.dapps.view
-  (:require [quo2.core :as quo]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]
-            [status-im2.contexts.wallet.account.tabs.dapps.style :as style]
-            [status-im2.contexts.wallet.common.temp :as temp]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [status-im2.contexts.wallet.account.tabs.dapps.style :as style]
+    [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
+    [status-im2.contexts.wallet.common.temp :as temp]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn dapp-options
   []

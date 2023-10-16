@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.composer.link-preview.events-test
-  (:require [status-im2.contexts.chat.composer.link-preview.events :as events]
-            [cljs.test :refer [is deftest testing]]))
+  (:require
+    [cljs.test :refer [deftest is testing]]
+    [status-im2.contexts.chat.composer.link-preview.events :as events]))
 
 (def url-github "https://github.com")
 (def url-gitlab "https://gitlab.com")

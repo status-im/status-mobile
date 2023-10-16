@@ -1,6 +1,7 @@
 (ns quo2.components.browser.browser-input.component-spec
-  (:require [quo2.components.browser.browser-input.view :as browser-input]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.browser.browser-input.view :as browser-input]
+    [test-helpers.component :as h]))
 
 (h/describe "Browser input"
   (h/test "Renders empty in default state"

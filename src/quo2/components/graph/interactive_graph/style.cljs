@@ -1,5 +1,6 @@
 (ns quo2.components.graph.interactive-graph.style
-  (:require [quo2.foundations.typography :as typography]))
+  (:require
+    [quo2.foundations.typography :as typography]))
 
 (defn x-axis-label-text
   [width y-axis-label-text-color]

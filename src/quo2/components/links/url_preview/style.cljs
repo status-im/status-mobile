@@ -1,5 +1,6 @@
 (ns quo2.components.links.url-preview.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def horizontal-padding 12)
 

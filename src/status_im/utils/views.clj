@@ -1,5 +1,6 @@
 (ns status-im.utils.views
-  (:require [clojure.walk :as walk]))
+  (:require
+    [clojure.walk :as walk]))
 
 (defn atom?
   [sub]

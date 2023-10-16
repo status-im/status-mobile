@@ -1,7 +1,8 @@
 (ns status-im.subs.wallet.search
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.utils.currency :as currency]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.utils.currency :as currency]))
 
 (defn sort-by-timestamp
   [coll]

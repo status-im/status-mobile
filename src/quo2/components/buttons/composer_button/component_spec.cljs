@@ -1,6 +1,7 @@
 (ns quo2.components.buttons.composer-button.component-spec
-  (:require [quo2.components.buttons.composer-button.view :as composer-button]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.buttons.composer-button.view :as composer-button]
+    [test-helpers.component :as h]))
 
 (h/describe "button tests"
   (h/test "default render of composer button component"

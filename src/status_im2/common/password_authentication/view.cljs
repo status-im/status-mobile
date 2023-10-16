@@ -1,11 +1,12 @@
 (ns status-im2.common.password-authentication.view
-  (:require [react-native.core :as rn]
-            [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [utils.i18n :as i18n]
-            [reagent.core :as reagent]
-            [native-module.core :as native-module]))
+  (:require
+    [native-module.core :as native-module]
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []

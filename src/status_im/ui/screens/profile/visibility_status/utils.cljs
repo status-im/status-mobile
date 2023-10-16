@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.profile.visibility-status.utils
-  (:require [status-im.ui.components.colors :as colors]
-            [quo2.foundations.colors :as quo2.colors]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.ui.screens.profile.visibility-status.styles :as styles]
-            [utils.datetime :as datetime]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.foundations.colors :as quo2.colors]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.screens.profile.visibility-status.styles :as styles]
+    [status-im2.constants :as constants]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 ;; Specs:
 ;; :visibility-status-automatic

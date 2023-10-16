@@ -1,11 +1,12 @@
 (ns status-im2.contexts.shell.activity-center.notification.community-request.view
-  (:require [quo2.core :as quo]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.activity-center.notification.common.style :as common-style]
-            [status-im2.contexts.shell.activity-center.notification.common.view :as common]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.activity-center.notification.common.style :as common-style]
+    [status-im2.contexts.shell.activity-center.notification.common.view :as common]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- swipeable
   [{:keys [active-swipeable extra-fn]} child]

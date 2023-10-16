@@ -1,5 +1,6 @@
 (ns quo2.components.settings.reorder-item.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn item-container
   [blur?]

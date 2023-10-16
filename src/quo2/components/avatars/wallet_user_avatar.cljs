@@ -1,9 +1,10 @@
 (ns quo2.components.avatars.wallet-user-avatar
-  (:require [clojure.string :as string]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (def circle-sizes
   {:small   20

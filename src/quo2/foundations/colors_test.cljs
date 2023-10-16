@@ -1,6 +1,7 @@
 (ns quo2.foundations.colors-test
-  (:require [cljs.test :refer-macros [deftest testing is]]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [cljs.test :refer-macros [deftest testing is]]
+    [quo2.foundations.colors :as colors]))
 
 (deftest resolve-color-test
   (testing "community color - resolves a hex string and ignores theme"

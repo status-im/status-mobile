@@ -1,8 +1,9 @@
 (ns react-native.camera-kit
-  (:require ["react-native-camera-kit" :refer (Camera CameraType)]
-            [reagent.core :as reagent]
-            [oops.core :as oops]
-            [taoensso.timbre :as log]))
+  (:require
+    ["react-native-camera-kit" :refer (Camera CameraType)]
+    [oops.core :as oops]
+    [reagent.core :as reagent]
+    [taoensso.timbre :as log]))
 
 (def camera (reagent/adapt-react-class Camera))
 

@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.accounts.styles
-  (:require [clojure.string :as string]
-            [status-im.ui.components.colors :as colors]))
+  (:require
+    [clojure.string :as string]
+    [status-im.ui.components.colors :as colors]))
 
 (def dot-size 6)
 

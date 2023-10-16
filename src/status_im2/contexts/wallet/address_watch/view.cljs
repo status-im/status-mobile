@@ -7,9 +7,9 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im2.contexts.wallet.address-watch.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im2.contexts.wallet.address-watch.style :as style]))
+    [utils.re-frame :as rf]))
 
 (defn view-internal
   []

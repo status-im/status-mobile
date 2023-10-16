@@ -1,7 +1,7 @@
 (ns quo2.components.list-items.token-value.component-spec
   (:require
-    [test-helpers.component :as h]
-    [quo2.components.list-items.token-value.view :as token-value]))
+    [quo2.components.list-items.token-value.view :as token-value]
+    [test-helpers.component :as h]))
 
 (h/describe "List Items: Token Value"
   (h/test "Token label renders"

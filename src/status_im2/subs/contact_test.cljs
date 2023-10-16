@@ -1,9 +1,10 @@
 (ns status-im2.subs.contact-test
-  (:require [cljs.test :refer [is testing]]
-            [re-frame.db :as rf-db]
-            status-im2.subs.contact
-            [test-helpers.unit :as h]
-            [utils.re-frame :as rf]))
+  (:require
+    [cljs.test :refer [is testing]]
+    [re-frame.db :as rf-db]
+    status-im2.subs.contact
+    [test-helpers.unit :as h]
+    [utils.re-frame :as rf]))
 
 (def contacts-sample-data
   {:selected-contacts-count 1

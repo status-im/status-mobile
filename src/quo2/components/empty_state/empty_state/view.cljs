@@ -1,10 +1,11 @@
 (ns quo2.components.empty-state.empty-state.view
-  (:require [quo2.components.buttons.button.view :as button]
-            [quo2.components.empty-state.empty-state.styles :as styles]
-            [quo2.components.markdown.text :as text]
-            [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
-            [quo2.theme :as theme]))
+  (:require
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.empty-state.empty-state.styles :as styles]
+    [quo2.components.markdown.text :as text]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]))
 
 (defn- empty-state-internal
   [{:keys        [customization-color image title description blur? placeholder? container-style]

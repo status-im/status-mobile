@@ -1,20 +1,21 @@
 (ns status-im.ui.screens.popover.views
   (:require-macros [status-im.utils.views :as views])
-  (:require ["react-native" :refer (BackHandler)]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.ui.components.animation :as anim]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
-            [status-im.ui.screens.keycard.views :as keycard.views]
-            [status-im.ui.screens.profile.user.views :as profile.user]
-            [status-im.ui.screens.reset-password.views :as reset-password.views]
-            [status-im.ui.screens.signing.sheets :as signing-sheets]
-            [status-im.ui.screens.signing.views :as signing]
-            [status-im.ui.screens.wallet.request.views :as request]
-            [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]
-            [react-native.platform :as platform]))
+  (:require
+    ["react-native" :refer (BackHandler)]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [status-im.ui.components.animation :as anim]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
+    [status-im.ui.screens.keycard.views :as keycard.views]
+    [status-im.ui.screens.profile.user.views :as profile.user]
+    [status-im.ui.screens.reset-password.views :as reset-password.views]
+    [status-im.ui.screens.signing.sheets :as signing-sheets]
+    [status-im.ui.screens.signing.views :as signing]
+    [status-im.ui.screens.wallet.request.views :as request]
+    [status-im.ui.screens.wallet.signing-phrase.views :as signing-phrase]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]

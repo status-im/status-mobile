@@ -1,15 +1,16 @@
 (ns status-im2.common.bottom-sheet-screen.view
-  (:require [oops.core :as oops]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [react-native.hooks :as hooks]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.common.bottom-sheet-screen.style :as style]
-            [utils.re-frame :as rf]))
+  (:require
+    [oops.core :as oops]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.common.bottom-sheet-screen.style :as style]
+    [utils.re-frame :as rf]))
 
 (def ^:const drag-threshold 200)
 

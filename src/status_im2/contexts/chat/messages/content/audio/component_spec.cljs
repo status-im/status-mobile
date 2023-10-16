@@ -1,8 +1,9 @@
 (ns status-im2.contexts.chat.messages.content.audio.component-spec
-  (:require [status-im2.contexts.chat.messages.content.audio.view :as audio-message]
-            [test-helpers.component :as h]
-            [react-native.audio-toolkit :as audio]
-            [re-frame.core :as re-frame]))
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.audio-toolkit :as audio]
+    [status-im2.contexts.chat.messages.content.audio.view :as audio-message]
+    [test-helpers.component :as h]))
 
 (def message
   {:audio-duration-ms 5000

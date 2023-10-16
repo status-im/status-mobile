@@ -1,5 +1,6 @@
 (ns quo2.components.wallet.network-bridge.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn container
   [network state theme]

@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.wallet.send.sheets
   (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.wallet.accounts.common :as common]
-            [status-im.ui.components.list.item :as list.item]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.wallet.accounts.common :as common]))
 
 (defn asset
   [currency token]

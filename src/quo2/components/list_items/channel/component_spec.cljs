@@ -1,6 +1,7 @@
 (ns quo2.components.list-items.channel.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.list-items.channel.view :as channel]))
+  (:require
+    [quo2.components.list-items.channel.view :as channel]
+    [test-helpers.component :as h]))
 
 (h/describe "list-items/channel Component"
   (h/test "default render"

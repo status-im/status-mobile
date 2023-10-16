@@ -1,5 +1,6 @@
 (ns react-native.config
-  (:require ["react-native-config" :default react-native-config]))
+  (:require
+    ["react-native-config" :default react-native-config]))
 
 (def config (js->clj react-native-config :keywordize-keys true))
 

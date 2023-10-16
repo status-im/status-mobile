@@ -1,8 +1,9 @@
 (ns quo2.components.dividers.date
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.components.common.separator.view :as separator]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.common.separator.view :as separator]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]))
 
 (defn date
   [value]

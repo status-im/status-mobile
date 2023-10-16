@@ -1,11 +1,12 @@
 (ns status-im2.common.log
-  (:require [clojure.string :as string]
-            [native-module.core :as native-module]
-            [re-frame.core :as re-frame]
-            [utils.transforms :as transforms]
-            [status-im2.config :as config]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im2.config :as config]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (def logs-queue (atom #queue []))
 (def max-log-entries 1000)

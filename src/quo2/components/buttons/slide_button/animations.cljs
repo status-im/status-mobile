@@ -1,8 +1,8 @@
 (ns quo2.components.buttons.slide-button.animations
   (:require
-    [react-native.gesture :as gesture]
-    [quo2.components.buttons.slide-button.utils :as utils]
     [oops.core :as oops]
+    [quo2.components.buttons.slide-button.utils :as utils]
+    [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]))
 
 (def ^:private extrapolation

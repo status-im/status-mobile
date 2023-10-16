@@ -1,5 +1,6 @@
 (ns quo2.components.tabs.tab.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def tab-background-opacity 0.3)
 

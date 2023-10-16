@@ -1,8 +1,8 @@
 (ns status-im2.contexts.quo-preview.settings.settings-item
   (:require
     [quo2.core :as quo]
-    [status-im2.common.resources :as resources]
     [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor

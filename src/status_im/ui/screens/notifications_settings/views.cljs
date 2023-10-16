@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.notifications-settings.views
-  (:require [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [utils.re-frame :as rf]
-            [status-im.ui.components.list.item :as list.item]
-            [status-im.ui.components.core :as quo]
-            [status-im.ui.components.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require
+    [react-native.platform :as platform]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn local-notifications
   []

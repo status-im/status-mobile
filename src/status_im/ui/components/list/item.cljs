@@ -1,12 +1,13 @@
 (ns status-im.ui.components.list.item
-  (:require [status-im.ui.components.controls.view :as controls]
-            [status-im.ui.components.text :as text]
-            [status-im.ui.components.tooltip :as tooltip]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.spacing :as spacing]
-            [status-im.ui.components.icons.icons :as icons]
-            [react-native.platform :as platform]
-            [react-native.core :as rn]))
+  (:require
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.controls.view :as controls]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.spacing :as spacing]
+    [status-im.ui.components.text :as text]
+    [status-im.ui.components.tooltip :as tooltip]))
 
 (defn themes
   [theme]

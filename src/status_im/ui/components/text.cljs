@@ -1,9 +1,10 @@
 (ns status-im.ui.components.text
-  (:require [react-native.reanimated :as animated]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.typography :as typography]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+    [react-native.core :as rn]
+    [react-native.reanimated :as animated]
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.typography :as typography]))
 
 (defn text-style
   [{:keys [size align weight monospace color style]}]

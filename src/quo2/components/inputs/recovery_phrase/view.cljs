@@ -1,9 +1,10 @@
 (ns quo2.components.inputs.recovery-phrase.view
-  (:require [clojure.string :as string]
-            [quo2.components.inputs.recovery-phrase.style :as style]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.inputs.recovery-phrase.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (def ^:private custom-props
   [:customization-color :theme :blur? :cursor-color :multiline :on-focus :on-blur

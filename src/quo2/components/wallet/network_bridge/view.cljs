@@ -3,11 +3,11 @@
     [clojure.string :as string]
     [quo2.components.icon :as icon]
     [quo2.components.markdown.text :as text]
+    [quo2.components.wallet.network-bridge.style :as style]
     [quo2.foundations.colors :as colors]
     [quo2.foundations.resources :as resources]
     [quo2.theme :as quo.theme]
-    [react-native.core :as rn]
-    [quo2.components.wallet.network-bridge.style :as style]))
+    [react-native.core :as rn]))
 
 
 (defn network-bridge-add

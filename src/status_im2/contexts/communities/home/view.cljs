@@ -1,19 +1,20 @@
 (ns status-im2.contexts.communities.home.view
-  (:require [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [status-im2.common.home.banner.view :as common.banner]
-            [status-im2.common.home.empty-state.view :as common.empty-state]
-            [status-im2.common.home.header-spacing.view :as common.header-spacing]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.communities.actions.community-options.view :as options]
-            [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
-            [utils.debounce :as debounce]
-            [utils.i18n :as i18n]
-            [utils.number]
-            [utils.re-frame :as rf]))
+  (:require
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [status-im2.common.home.banner.view :as common.banner]
+    [status-im2.common.home.empty-state.view :as common.empty-state]
+    [status-im2.common.home.header-spacing.view :as common.header-spacing]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.communities.actions.community-options.view :as options]
+    [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.number]
+    [utils.re-frame :as rf]))
 
 (defn item-render
   [{:keys [id] :as item}]

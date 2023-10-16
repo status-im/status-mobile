@@ -1,9 +1,10 @@
 (ns quo2.components.tags.network-tags.view
-  (:require [quo2.components.list-items.preview-list.view :as preview-list]
-            [quo2.components.tags.network-tags.style :as style]
-            [quo2.components.markdown.text :as text]
-            [react-native.core :as rn]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.components.list-items.preview-list.view :as preview-list]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.tags.network-tags.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- view-internal
   [{:keys [title networks status theme blur?] :or {status :default}}]

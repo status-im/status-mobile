@@ -1,5 +1,6 @@
 (ns quo2.components.keycard.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def keycard-height 210)
 (def keycard-chip-height 28)

@@ -1,7 +1,8 @@
 (ns status-im.ui.components.tooltip.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im2.config :as config]
-            [status-im.utils.styles :as styles]))
+  (:require
+    [status-im.ui.components.colors :as colors]
+    [status-im.utils.styles :as styles]
+    [status-im2.config :as config]))
 
 (def tooltip-container
   (merge

@@ -1,6 +1,7 @@
 (ns status-im.ui.components.list.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.styles :as styles]))
+  (:require
+    [status-im.ui.components.colors :as colors]
+    [status-im.utils.styles :as styles]))
 
 (def item
   {:flex-direction     :row

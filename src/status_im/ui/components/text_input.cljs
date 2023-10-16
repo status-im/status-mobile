@@ -1,15 +1,16 @@
 (ns status-im.ui.components.text-input
-  (:require [clojure.spec.alpha :as s]
-            [oops.core :refer [ocall]]
-            [status-im.ui.components.text :as text]
-            [status-im.ui.components.tooltip :as tooltip]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.spacing :as spacing]
-            [status-im.ui.components.typography :as typography]
-            [react-native.platform :as platform]
-            [react-native.core :as rn] ;; TODO(Ferossgp): Move icon component to lib
-            [reagent.core :as reagent]
-            [status-im.ui.components.icons.icons :as icons]))
+  (:require
+    [clojure.spec.alpha :as s]
+    [oops.core :refer [ocall]]
+    [react-native.core :as rn] ;; TODO(Ferossgp): Move icon component to lib
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.spacing :as spacing]
+    [status-im.ui.components.text :as text]
+    [status-im.ui.components.tooltip :as tooltip]
+    [status-im.ui.components.typography :as typography]))
 
 ;; NOTE(Ferossgp): Refactor with hooks when available
 ;; We track all currently mounted text input refs

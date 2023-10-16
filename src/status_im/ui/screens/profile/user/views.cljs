@@ -1,19 +1,20 @@
 (ns status-im.ui.screens.profile.user.views
   (:require
-    [status-im.ui.components.core :as quo]
-    [status-im.ui.components.colors :as colors]
-    [status-im.ui.components.spacing :as spacing]
     [quo2.components.avatars.user-avatar.style :as user-avatar.style]
     [quo2.theme :as theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ethereum.stateofus :as stateofus]
     [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.ui.components.colors :as colors]
     [status-im.ui.components.common.common :as components.common]
     [status-im.ui.components.copyable-text :as copyable-text]
+    [status-im.ui.components.core :as quo]
     [status-im.ui.components.list-selection :as list-selection]
+    [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.profile-header.view :as profile-header]
     [status-im.ui.components.react :as react]
+    [status-im.ui.components.spacing :as spacing]
     [status-im.ui.screens.profile.user.edit-picture :as edit]
     [status-im.ui.screens.profile.user.styles :as styles]
     [status-im.ui.screens.profile.visibility-status.views :as visibility-status]
@@ -22,8 +23,7 @@
     [status-im.utils.utils :as utils]
     [status-im2.common.qr-codes.view :as qr-codes]
     [status-im2.config :as config]
-    [utils.i18n :as i18n]
-    [status-im.ui.components.list.item :as list.item])
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-chat-key

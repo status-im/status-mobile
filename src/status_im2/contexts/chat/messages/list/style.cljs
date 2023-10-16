@@ -1,7 +1,8 @@
 (ns status-im2.contexts.chat.messages.list.style
-  (:require [quo2.foundations.colors :as colors]
-            [status-im2.config :as config]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]
+    [status-im2.config :as config]))
 
 (defonce ^:const cover-height 168)
 (defonce ^:const overscroll-cover-height 2000)

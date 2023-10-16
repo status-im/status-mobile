@@ -1,5 +1,6 @@
 (ns quo2.components.common.notification-dot.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def ^:const size 8)
 

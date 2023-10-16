@@ -1,8 +1,9 @@
 (ns status-im.utils.build
-  (:require [cljs.analyzer :as analyzer]
-            [clojure.java.io :as io]
-            [clojure.java.shell :as shell]
-            [clojure.string :as string]))
+  (:require
+    [cljs.analyzer :as analyzer]
+    [clojure.java.io :as io]
+    [clojure.java.shell :as shell]
+    [clojure.string :as string]))
 
 ;; Some warnings are unavoidable due to dependencies. For example, reagent 0.6.0
 ;; has a warning in its util.cljs namespace. Adjust this as is necessary and

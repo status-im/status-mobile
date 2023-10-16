@@ -3,10 +3,10 @@
     [re-frame.core :as re-frame]
     status-im2.subs.activity-center
     status-im2.subs.chats
-    status-im2.subs.messages
     status-im2.subs.communities
     status-im2.subs.contact
     status-im2.subs.general
+    status-im2.subs.messages
     status-im2.subs.onboarding
     status-im2.subs.pairing
     status-im2.subs.profile

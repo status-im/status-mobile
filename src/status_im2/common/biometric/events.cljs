@@ -1,11 +1,12 @@
 (ns status-im2.common.biometric.events
-  (:require [react-native.platform :as platform]
-            [react-native.touch-id :as touch-id]
-            [native-module.core :as native-module]
-            [status-im2.common.keychain.events :as keychain]
-            [re-frame.core :as re-frame]
-            [utils.re-frame :as rf]
-            [utils.i18n :as i18n]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [react-native.touch-id :as touch-id]
+    [status-im2.common.keychain.events :as keychain]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def android-device-blacklisted?
   (= (:brand (native-module/get-device-model-info)) "bannedbrand"))

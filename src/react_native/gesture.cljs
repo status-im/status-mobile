@@ -1,15 +1,16 @@
 (ns react-native.gesture
-  (:require ["react-native-gesture-handler" :refer
-             (Gesture
-              GestureDetector
-              RectButton
-              Swipeable
-              TouchableWithoutFeedback
-              gestureHandlerRootHOC
-              FlatList
-              ScrollView)]
-            [react-native.flat-list :as rn-flat-list]
-            [reagent.core :as reagent]))
+  (:require
+    ["react-native-gesture-handler" :refer
+     (Gesture
+      GestureDetector
+      RectButton
+      Swipeable
+      TouchableWithoutFeedback
+      gestureHandlerRootHOC
+      FlatList
+      ScrollView)]
+    [react-native.flat-list :as rn-flat-list]
+    [reagent.core :as reagent]))
 
 (def gesture-detector (reagent/adapt-react-class GestureDetector))
 

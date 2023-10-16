@@ -1,5 +1,6 @@
 (ns status-im.data-store.reactions
-  (:require [clojure.set :as set]))
+  (:require
+    [clojure.set :as set]))
 
 (defn ->rpc
   [message]

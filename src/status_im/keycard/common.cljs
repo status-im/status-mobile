@@ -1,19 +1,20 @@
 (ns status-im.keycard.common
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.events :as bottom-sheet]
-            [utils.i18n :as i18n]
-            [status-im.keycard.nfc :as nfc]
-            [status-im.popover.core :as popover]
-            [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
-            [utils.re-frame :as rf]
-            [utils.datetime :as datetime]
-            [status-im.utils.keychain.core :as keychain]
-            [react-native.platform :as platform]
-            [status-im.utils.deprecated-types :as types]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]
-            [utils.address :as address]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.keycard.nfc :as nfc]
+    [status-im.popover.core :as popover]
+    [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.utils.keychain.core :as keychain]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.address :as address]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def default-pin "000000")
 

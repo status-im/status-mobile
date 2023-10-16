@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.notifications-settings.events
-  (:require [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn notification-non-contacts-error
   {:events [:push-notifications/non-contacts-update-error]}

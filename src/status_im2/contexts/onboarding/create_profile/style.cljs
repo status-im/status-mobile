@@ -1,6 +1,7 @@
 (ns status-im2.contexts.onboarding.create-profile.style
-  (:require [react-native.platform :as platform]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]))
 
 (def continue-button
   {:width        "100%"

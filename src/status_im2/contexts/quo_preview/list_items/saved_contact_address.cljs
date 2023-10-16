@@ -1,8 +1,9 @@
 (ns status-im2.contexts.quo-preview.list-items.saved-contact-address
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.common.resources :as resources]))
+  (:require
+    [quo2.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key :accounts-number :type :number}

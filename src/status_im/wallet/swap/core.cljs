@@ -1,8 +1,9 @@
 (ns status-im.wallet.swap.core
-  (:require [re-frame.db :as re-frame.db]
-            [re-frame.core :as re-frame]
-            [utils.re-frame :as rf]
-            [status-im2.navigation.events :as navigation]))
+  (:require
+    [re-frame.core :as re-frame]
+    [re-frame.db :as re-frame.db]
+    [status-im2.navigation.events :as navigation]
+    [utils.re-frame :as rf]))
 
 ;; "source? true" means we are selecting the source asset. false implies
 ;; selection of sink asset."

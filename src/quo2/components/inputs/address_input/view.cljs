@@ -1,14 +1,15 @@
 (ns quo2.components.inputs.address-input.view
-  (:require [react-native.core :as rn]
-            [react-native.clipboard :as clipboard]
-            [quo2.theme :as quo.theme]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.icon :as icon]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.inputs.address-input.style :as style]
-            [utils.i18n :as i18n]
-            [reagent.core :as reagent]
-            [react-native.platform :as platform]))
+  (:require
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.icon :as icon]
+    [quo2.components.inputs.address-input.style :as style]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.clipboard :as clipboard]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [utils.i18n :as i18n]))
 
 (defn- icon-color
   [blur? theme]

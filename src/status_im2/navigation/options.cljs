@@ -1,7 +1,8 @@
 (ns status-im2.navigation.options
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.platform :as platform]))
 
 (defn default-options
   []

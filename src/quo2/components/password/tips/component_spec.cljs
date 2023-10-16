@@ -1,6 +1,7 @@
 (ns quo2.components.password.tips.component-spec
-  (:require [quo2.components.password.tips.view :as quo]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.password.tips.view :as quo]
+    [test-helpers.component :as h]))
 
 (h/describe "password tips component"
   (h/test "render component"

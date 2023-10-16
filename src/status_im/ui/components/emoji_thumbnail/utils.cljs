@@ -1,5 +1,6 @@
 (ns status-im.ui.components.emoji-thumbnail.utils
-  (:require [react-native.platform :as platform]))
+  (:require
+    [react-native.platform :as platform]))
 
 (defn emoji-font-size
   [container_size]

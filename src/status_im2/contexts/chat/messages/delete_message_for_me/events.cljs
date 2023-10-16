@@ -1,10 +1,10 @@
 (ns status-im2.contexts.chat.messages.delete-message-for-me.events
   (:require
-    [utils.i18n :as i18n]
     [quo2.foundations.colors :as colors]
     [status-im2.contexts.chat.messages.list.events :as message-list]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn- update-db-clear-undo-timer

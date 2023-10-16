@@ -1,13 +1,14 @@
 (ns status-im2.contexts.onboarding.generating-keys.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [react-native.safe-area :as safe-area]
-            [status-im2.contexts.onboarding.generating-keys.style :as style]
-            [utils.i18n :as i18n]
-            [status-im2.common.resources :as resources]
-            [status-im2.common.parallax.view :as parallax]
-            [status-im2.common.parallax.whitelist :as whitelist]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [status-im2.common.parallax.view :as parallax]
+    [status-im2.common.parallax.whitelist :as whitelist]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.onboarding.generating-keys.style :as style]
+    [utils.i18n :as i18n]))
 
 (defn generate-keys-title
   []

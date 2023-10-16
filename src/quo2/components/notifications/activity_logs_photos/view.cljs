@@ -1,8 +1,9 @@
 (ns quo2.components.notifications.activity-logs-photos.view
-  (:require [react-native.core :as rn]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.notifications.activity-logs-photos.style :as style]
-            [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.notifications.activity-logs-photos.style :as style]
+    [react-native.core :as rn]))
 
 (defn view
   [{:keys [photos message-text]}]

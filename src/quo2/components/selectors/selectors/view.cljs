@@ -1,9 +1,10 @@
 (ns quo2.components.selectors.selectors.view
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.selectors.selectors.style :as style]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.selectors.selectors.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn- handle-press
   [on-change checked-atom checked?]

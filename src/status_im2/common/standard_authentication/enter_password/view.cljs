@@ -1,11 +1,12 @@
 (ns status-im2.common.standard-authentication.enter-password.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]
-            [status-im2.common.standard-authentication.enter-password.style :as style]
-            [status-im2.common.standard-authentication.password-input.view :as password-input]
-            [status-im.multiaccounts.core :as multiaccounts]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im2.common.standard-authentication.enter-password.style :as style]
+    [status-im2.common.standard-authentication.password-input.view :as password-input]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [on-enter-password button-label]}]

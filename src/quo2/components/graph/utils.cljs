@@ -1,6 +1,7 @@
 (ns quo2.components.graph.utils
-  (:require [clojure.string :as string]
-            [goog.string :as gstring]))
+  (:require
+    [clojure.string :as string]
+    [goog.string :as gstring]))
 
 (defn find-highest-value
   [coll]

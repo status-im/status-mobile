@@ -1,7 +1,8 @@
 (ns status-im2.contexts.communities.actions.community-options.component-spec
-  (:require [re-frame.core :as re-frame]
-            [test-helpers.component :as h]
-            [status-im2.contexts.communities.actions.community-options.view :as options]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im2.contexts.communities.actions.community-options.view :as options]
+    [test-helpers.component :as h]))
 
 (defn setup-subs
   [subscriptions]

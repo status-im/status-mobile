@@ -1,9 +1,10 @@
 (ns status-im2.navigation.events
-  (:require [utils.re-frame :as rf]
-            [re-frame.core :as re-frame]
-            [status-im2.contexts.shell.jump-to.state :as shell.state]
-            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
-            [status-im2.contexts.shell.jump-to.events :as shell.events]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im2.contexts.shell.jump-to.events :as shell.events]
+    [status-im2.contexts.shell.jump-to.state :as shell.state]
+    [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+    [utils.re-frame :as rf]))
 
 (defn- all-screens-params
   [db view screen-params]

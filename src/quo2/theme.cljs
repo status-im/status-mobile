@@ -1,8 +1,9 @@
 (ns quo2.theme
-  (:require [react-native.core :as rn]
-            ["react" :as react]
-            [reagent.core :as reagent]
-            utils.transforms))
+  (:require
+    ["react" :as react]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    utils.transforms))
 
 (defonce ^:private theme-context (react/createContext :light))
 (defonce ^:private theme-state (reagent/atom :light))

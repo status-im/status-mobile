@@ -1,7 +1,8 @@
 (ns quo2.components.list-items.saved-contact-address.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.list-items.saved-contact-address.view :as saved-contact-address]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.list-items.saved-contact-address.view :as saved-contact-address]
+    [quo2.foundations.colors :as colors]
+    [test-helpers.component :as h]))
 
 (def account
   {:name                "New House"

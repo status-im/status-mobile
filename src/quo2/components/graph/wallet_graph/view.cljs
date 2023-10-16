@@ -1,12 +1,13 @@
 (ns quo2.components.graph.wallet-graph.view
-  (:require [quo2.theme :as quo.theme]
-            [react-native.linear-gradient :as linear-gradient]
-            [react-native.charts :as charts]
-            [react-native.core :as rn]
-            [quo2.components.graph.wallet-graph.style :as style]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.graph.utils :as utils]))
+  (:require
+    [quo2.components.graph.utils :as utils]
+    [quo2.components.graph.wallet-graph.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.charts :as charts]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]))
 
 (defn- time-frame->max-data-points
   [time-frame]

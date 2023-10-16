@@ -1,6 +1,7 @@
 (ns quo2.components.calendar.calendar-day.component-spec
-  (:require [quo2.components.calendar.calendar-day.view :as calendar-day]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.calendar.calendar-day.view :as calendar-day]
+    [test-helpers.component :as h]))
 
 (h/describe "calendar-day component"
   (h/test "default render of calendar-day component"

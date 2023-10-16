@@ -1,8 +1,9 @@
 (ns status-im2.contexts.communities.actions.generic-menu.view
-  (:require [quo2.core :as quo]
-            [status-im2.contexts.communities.actions.generic-menu.style :as style]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.communities.actions.generic-menu.style :as style]
+    [utils.re-frame :as rf]))
 
 (defn view
   [{:keys [id title]} children]

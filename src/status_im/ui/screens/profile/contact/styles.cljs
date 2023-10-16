@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.contact.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 (def block-action-label
   {:color         colors/red

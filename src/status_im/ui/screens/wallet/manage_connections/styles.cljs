@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.manage-connections.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 (def dapp-icon
   {:width         30

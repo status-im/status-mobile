@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.wallet-activity.component-spec
-  (:require [quo2.components.wallet.wallet-activity.view :as wallet-activity]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.wallet.wallet-activity.view :as wallet-activity]
+    [test-helpers.component :as h]))
 
 (h/describe "Wallet activity"
   (h/test "default render"

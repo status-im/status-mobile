@@ -1,13 +1,14 @@
 (ns quo2.components.drawers.drawer-buttons.view
-  (:require [react-native.core :as rn]
-            [quo2.components.icon :as icon]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
-            [quo2.components.drawers.drawer-buttons.style :as style]
-            [react-native.reanimated :as reanimated]
-            [react-native.platform :as platform]
-            [react-native.safe-area :as safe-area]))
+  (:require
+    [quo2.components.drawers.drawer-buttons.style :as style]
+    [quo2.components.icon :as icon]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]))
 
 (def default-height 216)
 

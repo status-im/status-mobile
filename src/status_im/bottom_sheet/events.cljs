@@ -1,5 +1,6 @@
 (ns status-im.bottom-sheet.events
-  (:require [utils.re-frame :as rf]))
+  (:require
+    [utils.re-frame :as rf]))
 
 (rf/defn show-bottom-sheet-old
   [{:keys [db]} {:keys [view options]}]

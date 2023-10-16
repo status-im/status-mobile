@@ -1,10 +1,11 @@
 (ns status-im.subs.ens
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.ens.core :as ens]
-            [utils.money :as money]
-            [utils.ethereum.chain :as chain]
-            [utils.address :as address]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.ens.core :as ens]
+    [utils.address :as address]
+    [utils.ethereum.chain :as chain]
+    [utils.money :as money]))
 
 (re-frame/reg-sub
  :ens/preferred-name

@@ -1,6 +1,7 @@
 (ns quo2.components.list-items.dapp.component-spec
-  (:require [quo2.components.list-items.dapp.view :as dapp]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.list-items.dapp.view :as dapp]
+    [test-helpers.component :as h]))
 
 (def props
   {:dapp                {:avatar nil

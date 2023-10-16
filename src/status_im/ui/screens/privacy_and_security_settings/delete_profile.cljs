@@ -1,15 +1,16 @@
 (ns status-im.ui.screens.privacy-and-security-settings.delete-profile
-  (:require [status-im.ui.components.core :as quo]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            status-im.keycard.delete-key
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.privacy-and-security-settings.events :as delete-profile]
-            [utils.security.core :as security]
-            [status-im.ui.components.list.item :as list.item]))
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    status-im.keycard.delete-key
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.privacy-and-security-settings.events :as delete-profile]
+    [utils.i18n :as i18n]
+    [utils.security.core :as security]))
 
 (defn valid-password?
   [password]

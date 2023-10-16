@@ -1,5 +1,6 @@
 (ns quo2.components.avatars.user-avatar.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def sizes
   {:big     {:dimensions                      80

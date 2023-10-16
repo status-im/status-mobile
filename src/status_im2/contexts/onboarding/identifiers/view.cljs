@@ -1,13 +1,14 @@
 (ns status-im2.contexts.onboarding.identifiers.view
-  (:require [react-native.core :as rn]
-            [clojure.string :as string]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [quo2.core :as quo]
-            [status-im2.contexts.onboarding.identifiers.profile-card.view :as profile-card]
-            [status-im2.contexts.onboarding.identifiers.style :as style]
-            [status-im2.contexts.onboarding.common.carousel.view :as carousel]
-            [status-im2.contexts.onboarding.common.carousel.animation :as carousel.animation]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.onboarding.common.carousel.animation :as carousel.animation]
+    [status-im2.contexts.onboarding.common.carousel.view :as carousel]
+    [status-im2.contexts.onboarding.identifiers.profile-card.view :as profile-card]
+    [status-im2.contexts.onboarding.identifiers.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def header-text
   [{:text     (i18n/label :t/unique-identifiers)

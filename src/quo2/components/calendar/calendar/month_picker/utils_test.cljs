@@ -1,6 +1,7 @@
 (ns quo2.components.calendar.calendar.month-picker.utils-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [quo2.components.calendar.calendar.month-picker.utils :as utils]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [quo2.components.calendar.calendar.month-picker.utils :as utils]))
 
 (deftest format-month-year-test
   (testing "returns correct format for given year and month"

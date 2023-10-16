@@ -1,12 +1,12 @@
 (ns quo2.components.buttons.wallet-ctas.view
   (:require
     [quo2.components.buttons.wallet-button.view :as wallet-button]
+    [quo2.components.buttons.wallet-ctas.style :as style]
     [quo2.components.markdown.text :as text]
     [quo2.foundations.colors :as colors]
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
-    [utils.i18n :as i18n]
-    [quo2.components.buttons.wallet-ctas.style :as style]))
+    [utils.i18n :as i18n]))
 
 
 (defn action-button

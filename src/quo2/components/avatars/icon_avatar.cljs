@@ -1,8 +1,9 @@
 (ns quo2.components.avatars.icon-avatar
-  (:require [quo2.components.icon :as icons]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (def ^:private sizes
   {:size-48 {:component 48

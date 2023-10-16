@@ -1,7 +1,8 @@
 (ns quo2.foundations.colors
-  (:require [clojure.string :as string]
-            [react-native.platform :as platform]
-            [quo2.theme :as theme]))
+  (:require
+    [clojure.string :as string]
+    [quo2.theme :as theme]
+    [react-native.platform :as platform]))
 
 (defn alpha
   [value opacity]

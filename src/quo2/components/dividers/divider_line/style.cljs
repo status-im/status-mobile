@@ -1,5 +1,6 @@
 (ns quo2.components.dividers.divider-line.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn divider-line
   [{:keys [blur? container-style theme]}]

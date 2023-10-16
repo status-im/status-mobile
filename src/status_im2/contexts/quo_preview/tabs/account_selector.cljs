@@ -1,8 +1,9 @@
 (ns status-im2.contexts.quo-preview.tabs.account-selector
-  (:require [quo2.components.tabs.account-selector :as quo2]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.components.tabs.account-selector :as quo2]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Show Label?:"

@@ -1,6 +1,7 @@
 (ns quo2.components.avatars.user-avatar.component-spec
-  (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [test-helpers.component :as h]))
 
 (defonce mock-picture {:uri (js/require "../resources/images/mock2/user_picture_male4.png")})
 

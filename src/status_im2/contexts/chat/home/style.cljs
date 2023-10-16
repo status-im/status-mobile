@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.home.style
-  (:require [react-native.platform :as platform]
-            [react-native.safe-area :as safe-area]))
+  (:require
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]))
 
 (def tabs
   {:padding-horizontal 20

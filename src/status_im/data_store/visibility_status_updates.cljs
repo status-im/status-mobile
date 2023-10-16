@@ -1,8 +1,9 @@
 (ns status-im.data-store.visibility-status-updates
-  (:require [clojure.set :as set]
-            [re-frame.core :as re-frame]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.set :as set]
+    [re-frame.core :as re-frame]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (defn <-rpc
   [visibility-status-update]

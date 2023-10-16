@@ -1,11 +1,12 @@
 (ns quo2.components.community.token-gating
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.components.tags.token-tag :as token-tag]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]
-            [clojure.string :as string]
-            [quo2.theme :as quo.theme]
-            [quo2.components.community.style :as style]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.community.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.tags.token-tag :as token-tag]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (defn token-requirement-list-row
   [tokens padding?]

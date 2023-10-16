@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.community.data
-  (:require [utils.i18n :as i18n]
-            [status-im2.common.resources :as resources]))
+  (:require
+    [status-im2.common.resources :as resources]
+    [utils.i18n :as i18n]))
 
 (def thumbnail
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII")

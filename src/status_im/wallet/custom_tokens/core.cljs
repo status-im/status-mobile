@@ -1,15 +1,16 @@
 (ns status-im.wallet.custom-tokens.core
-  (:require [clojure.string :as string]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [utils.re-frame :as rf]
-            [status-im.wallet.core :as wallet]
-            [status-im.wallet.prices :as prices]
-            [status-im2.navigation.events :as navigation]
-            [utils.ethereum.chain :as chain]
-            [utils.address :as address]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.react :as react]
+    [status-im.wallet.core :as wallet]
+    [status-im.wallet.prices :as prices]
+    [status-im2.navigation.events :as navigation]
+    [utils.address :as address]
+    [utils.ethereum.chain :as chain]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  :wallet.custom-token/contract-address-paste

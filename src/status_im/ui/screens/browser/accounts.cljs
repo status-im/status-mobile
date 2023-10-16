@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.browser.accounts
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.utils.utils :as utils]
-            [status-im.ui.components.list.item :as list.item]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.utils.utils :as utils]
+    [utils.i18n :as i18n]))
 
 (defn render-account
   [account _ _ dapps-account]

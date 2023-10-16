@@ -1,6 +1,7 @@
 (ns quo2.components.community.banner.style
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.foundations.shadows :as shadows]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [quo2.foundations.shadows :as shadows]))
 
 (defn community-card
   [theme]

@@ -1,10 +1,11 @@
 (ns status-im2.contexts.onboarding.syncing.progress.view
-  (:require [quo2.core :as quo]
-            [utils.i18n :as i18n]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.onboarding.syncing.progress.style :as style]
-            [status-im2.contexts.onboarding.common.background.view :as background]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.syncing.progress.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn pairing-progress
   [status]

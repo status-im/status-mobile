@@ -1,7 +1,8 @@
 (ns status-im2.contexts.quo-preview.drawers.bottom-actions
-  (:require [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [quo2.core :as quo]))
+  (:require
+    [quo2.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def button-two "Cancel")
 (def button-one "Request to join")

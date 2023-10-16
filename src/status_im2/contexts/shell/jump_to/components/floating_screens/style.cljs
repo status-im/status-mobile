@@ -1,7 +1,8 @@
 (ns status-im2.contexts.shell.jump-to.components.floating-screens.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 (defn screen
   [{:keys [screen-left screen-top screen-width screen-height screen-border-radius screen-z-index]}

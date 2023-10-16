@@ -1,7 +1,8 @@
 (ns status-im2.contexts.chat.messages.avatar.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [utils.re-frame :as rf]))
 
 (defn avatar
   [{:keys [public-key size hide-ring?]}]

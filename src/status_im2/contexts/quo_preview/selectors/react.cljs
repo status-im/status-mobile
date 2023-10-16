@@ -1,11 +1,12 @@
 (ns status-im2.contexts.quo-preview.selectors.react
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defn- gen-quantity
   [max-count _]

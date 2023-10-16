@@ -1,12 +1,13 @@
 (ns quo2.components.navigation.top-nav.view
-  (:require [react-native.core :as rn]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.components.counter.counter.view :as counter]
-            [quo2.components.navigation.top-nav.style :as style]
-            [react-native.hole-view :as hole-view]
-            [quo2.theme :as quo.theme]
-            [quo2.components.common.notification-dot.view :as notification-dot]))
+  (:require
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.common.notification-dot.view :as notification-dot]
+    [quo2.components.counter.counter.view :as counter]
+    [quo2.components.navigation.top-nav.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.hole-view :as hole-view]))
 
 (def notification-dot-hole
   [{:x            37

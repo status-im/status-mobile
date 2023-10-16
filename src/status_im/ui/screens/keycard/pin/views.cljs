@@ -1,15 +1,16 @@
 (ns status-im.ui.screens.keycard.pin.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.keycard.pin.styles :as styles]
-            [react-native.platform :as platform]))
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [status-im.ui.components.animation :as animation]
+    [status-im.ui.components.checkbox.view :as checkbox]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.keycard.pin.styles :as styles]
+    [utils.i18n :as i18n]))
 
 (def default-pin-retries-number 3)
 (def default-puk-retries-number 5)

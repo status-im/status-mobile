@@ -1,6 +1,7 @@
 (ns quo2.components.tags.number-tag.component-spec
-  (:require [quo2.components.tags.number-tag.view :as number-tag]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.tags.number-tag.view :as number-tag]
+    [test-helpers.component :as h]))
 
 (h/describe
   "number tag component test"

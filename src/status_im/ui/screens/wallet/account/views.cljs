@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.wallet.account.views
   (:require
-    [status-im.ui.components.core :as quo]
-    [status-im.ui.components.colors :as colors]
-    [status-im.ui.components.spacing :as spacing]
-    [quo2.core :as quo2]
     [quo2.components.markdown.text :as quo2.text]
+    [quo2.core :as quo2]
     [quo2.foundations.colors :as quo2.colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [utils.i18n :as i18n]
     [status-im.ui.components.animation :as animation]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.components.react :as react]
+    [status-im.ui.components.spacing :as spacing]
     [status-im.ui.components.tabs :as tabs]
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.wallet.account.styles :as styles]
@@ -21,8 +20,9 @@
     [status-im.ui.screens.wallet.collectibles.views :as collectibles.views]
     [status-im.ui.screens.wallet.transactions.views :as history]
     [status-im2.config :as config]
-    [utils.re-frame :as rf]
-    [utils.address :as address])
+    [utils.address :as address]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :as views]))
 
 (def state (reagent/atom {:tab :assets}))

@@ -1,8 +1,9 @@
 (ns status-im2.contexts.chat.lightbox.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.lightbox.constants :as c]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.lightbox.constants :as c]))
 
 ;;;; VIEW
 (defn image

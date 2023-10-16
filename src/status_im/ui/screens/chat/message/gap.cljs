@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.chat.message.gap
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo2.core :as quo2]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.styles.input.gap :as style]
-            [utils.datetime :as datetime]))
+  (:require
+    [quo2.core :as quo2]
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.chat.styles.input.gap :as style]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]))
 
 (views/defview gap
   [{:keys [gap-ids chat-id gap-parameters public? community?]}]

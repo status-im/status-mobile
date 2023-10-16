@@ -1,12 +1,13 @@
 (ns status-im.ui.components.connectivity.view
-  (:require [clojure.string :as string]
-            [status-im.ui.components.core :as quo]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.list.item :as list.item])
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.animation :as animation]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views :refer [defview letsubs]]))
 
 (defn easing

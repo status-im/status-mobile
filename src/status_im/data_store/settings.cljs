@@ -1,8 +1,9 @@
 (ns status-im.data-store.settings
-  (:require [status-im.data-store.visibility-status-updates :as visibility-status-updates]
-            [utils.ethereum.eip.eip55 :as eip55]
-            [status-im2.config :as config]
-            [clojure.set :as set]))
+  (:require
+    [clojure.set :as set]
+    [status-im.data-store.visibility-status-updates :as visibility-status-updates]
+    [status-im2.config :as config]
+    [utils.ethereum.eip.eip55 :as eip55]))
 
 (defn rpc->networks
   [networks]

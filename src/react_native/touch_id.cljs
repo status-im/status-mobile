@@ -1,5 +1,6 @@
 (ns react-native.touch-id
-  (:require ["react-native-touch-id" :default touchid]))
+  (:require
+    ["react-native-touch-id" :default touchid]))
 
 ;; currently, for android, react-native-touch-id
 ;; is not returning supported biometric type

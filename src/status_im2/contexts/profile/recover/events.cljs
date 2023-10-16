@@ -1,9 +1,10 @@
 (ns status-im2.contexts.profile.recover.events
-  (:require [utils.security.core :as security]
-            [status-im2.contexts.profile.config :as profile.config]
-            [utils.re-frame :as rf]
-            [re-frame.core :as re-frame]
-            [native-module.core :as native-module]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im2.contexts.profile.config :as profile.config]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (re-frame/reg-fx
  ::restore-profile-and-login

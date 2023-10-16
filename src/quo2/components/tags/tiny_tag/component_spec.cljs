@@ -1,6 +1,7 @@
 (ns quo2.components.tags.tiny-tag.component-spec
-  (:require [quo2.components.tags.tiny-tag.view :as tiny-tag]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.tags.tiny-tag.view :as tiny-tag]
+    [test-helpers.component :as h]))
 
 (h/describe "Tiny tag component test"
   (h/test "1,000 SNT render"

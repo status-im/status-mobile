@@ -1,23 +1,24 @@
 (ns status-im.ui.screens.wallet.collectibles.views
-  (:require ["react-native-svg" :refer (SvgUri)]
-            [clojure.string :as string]
-            [status-im.ui.components.core :as quo]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.accordion :as accordion]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toastable-highlight :refer [toastable-highlight-view]]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [utils.re-frame :as rf]
-            [status-im.wallet.core :as wallet]
-            [status-im.ui.components.list.item :as list.item]))
+  (:require
+    ["react-native-svg" :refer (SvgUri)]
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.accordion :as accordion]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toastable-highlight :refer [toastable-highlight-view]]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.components.views :as wallet.components]
+    [status-im.wallet.core :as wallet]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def svg-uri (reagent/adapt-react-class SvgUri))
 

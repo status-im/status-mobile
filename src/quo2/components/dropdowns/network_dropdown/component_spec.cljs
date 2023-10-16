@@ -1,7 +1,8 @@
 (ns quo2.components.dropdowns.network-dropdown.component-spec
-  (:require [quo2.components.dropdowns.network-dropdown.view :as network-dropdown]
-            [quo2.foundations.resources :as quo.resources]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.dropdowns.network-dropdown.view :as network-dropdown]
+    [quo2.foundations.resources :as quo.resources]
+    [test-helpers.component :as h]))
 
 (def ^:private networks-list
   [{:source (quo.resources/get-network :ethereum)}

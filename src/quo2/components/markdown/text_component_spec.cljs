@@ -1,7 +1,8 @@
 (ns quo2.components.markdown.text-component-spec
-  (:require ["@testing-library/react-native" :as rtl]
-            [quo2.components.markdown.text :as text]
-            [reagent.core :as reagent]))
+  (:require
+    ["@testing-library/react-native" :as rtl]
+    [quo2.components.markdown.text :as text]
+    [reagent.core :as reagent]))
 
 (defn render-text
   ([options value]

@@ -1,6 +1,7 @@
 (ns native-module.push-notifications
-  (:require ["react-native" :as react-native]
-            [taoensso.timbre :as log]))
+  (:require
+    ["react-native" :as react-native]
+    [taoensso.timbre :as log]))
 
 (defn push-notification
   []

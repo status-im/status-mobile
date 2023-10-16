@@ -1,9 +1,10 @@
 (ns status-im.ui.components.button.view
-  (:require [status-im.ui.components.text :as text]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.spacing :as spacing]
-            [react-native.core :as rn]
-            [status-im.ui.components.icons.icons :as icons]))
+  (:require
+    [react-native.core :as rn]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.spacing :as spacing]
+    [status-im.ui.components.text :as text]))
 
 (defn style-container
   [type]

@@ -1,5 +1,6 @@
 (ns status-im2.contexts.onboarding.enter-seed-phrase.style
-  (:require [react-native.safe-area :as safe-area]))
+  (:require
+    [react-native.safe-area :as safe-area]))
 
 (def full-layout {:flex 1})
 

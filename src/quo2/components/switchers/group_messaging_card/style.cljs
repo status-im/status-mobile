@@ -1,5 +1,6 @@
 (ns quo2.components.switchers.group-messaging-card.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def avatar-container
   {:left          10

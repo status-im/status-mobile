@@ -1,8 +1,9 @@
 (ns status-im.ui.components.controls.view
-  (:require [status-im.ui.components.controls.styles :as styles]
-            [status-im.ui.components.colors :as colors]
-            [react-native.core :as rn]
-            [status-im.ui.components.icons.icons :as icons]))
+  (:require
+    [react-native.core :as rn]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.controls.styles :as styles]
+    [status-im.ui.components.icons.icons :as icons]))
 
 (defn switch
   [{:keys [disabled value]}]

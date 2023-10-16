@@ -1,7 +1,7 @@
 (ns quo2.components.calendar.calendar.days-grid.utils
   (:require
-    [utils.number :as utils.number]
-    [cljs-time.core :as time]))
+    [cljs-time.core :as time]
+    [utils.number :as utils.number]))
 
 (defn- day-of-week
   [date]

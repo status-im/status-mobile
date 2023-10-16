@@ -1,10 +1,11 @@
 (ns quo2.components.messages.author.view
-  (:require [clojure.string :as string]
-            [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.messages.author.style :as style]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.messages.author.style :as style]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]))
 
 (def middle-dot "·")
 

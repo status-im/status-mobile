@@ -1,12 +1,13 @@
 (ns status-im.ui.components.header
-  (:require [oops.core :refer [oget]]
-            [react-native.reanimated :as animated]
-            [status-im.ui.components.button.view :as button]
-            [status-im.ui.components.text :as text]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.spacing :as spacing]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+    [oops.core :refer [oget]]
+    [react-native.core :as rn]
+    [react-native.reanimated :as animated]
+    [reagent.core :as reagent]
+    [status-im.ui.components.button.view :as button]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.spacing :as spacing]
+    [status-im.ui.components.text :as text]))
 
 (def header-height 56)
 

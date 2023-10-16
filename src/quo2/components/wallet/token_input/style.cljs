@@ -1,8 +1,8 @@
 (ns quo2.components.wallet.token-input.style
   (:require
     [quo2.foundations.colors :as colors]
-    [react-native.platform :as platform]
-    [quo2.foundations.typography :as typography]))
+    [quo2.foundations.typography :as typography]
+    [react-native.platform :as platform]))
 
 (defn main-container
   [width]

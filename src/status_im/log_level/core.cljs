@@ -1,9 +1,10 @@
 (ns status-im.log-level.core
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.node.core :as node]
-            [utils.re-frame :as rf]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.node.core :as node]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (rf/defn save-log-level
   {:events [:log-level.ui/change-log-level-confirmed]}

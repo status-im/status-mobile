@@ -1,15 +1,16 @@
 (ns status-im2.contexts.onboarding.syncing.results.view
-  (:require [quo2.core :as quo]
-            [utils.i18n :as i18n]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.onboarding.syncing.results.style :as style]
-            [status-im2.contexts.syncing.device.view :as device]
-            [status-im2.contexts.onboarding.common.background.view :as background]
-            [react-native.reanimated :as reanimated]
-            [status-im2.constants :as constants]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.onboarding.syncing.results.style :as style]
+    [status-im2.contexts.syncing.device.view :as device]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn page-title
   []

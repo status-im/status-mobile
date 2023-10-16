@@ -1,10 +1,11 @@
 (ns status-im2.common.confirmation-drawer.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.confirmation-drawer.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.confirmation-drawer.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn avatar
   [group-chat color display-name photo-path]
