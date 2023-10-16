@@ -2349,6 +2349,13 @@
     "share-account": "Share account",
     "remove-account": "Remove account",
     "select-another-account": "Select another account",
+<<<<<<< HEAD
     "oops-this-qr-does-not-contain-an-address": "Oops! This QR does not contain an address",
     "scan-an-account-qr-code": "Scan an account QR code"
+=======
+    "buy-tokens": "Buy Tokens",
+    "ramp-description": "Global crypto to fiat flow.",
+    "moonpay-description": "The new standard for fiat to crypto, supports Apple Pay.",
+    "latamex-description": "Easily buy crypto in Argentina, Mexico and Brazil."
+>>>>>>> 3cb08a06b (buy drawer)
 }

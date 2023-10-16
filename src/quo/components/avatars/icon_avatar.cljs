@@ -22,17 +22,21 @@
   (let [{component-size :component icon-size :icon} (get sizes size)
         circle-color                                (colors/resolve-color color theme opacity)
         icon-color                                  (colors/resolve-color color theme)]
-    [rn/view
-     {:style {:width            component-size
-              :height           component-size
-              :border-radius    component-size
-              :border-width     (when border? 1)
-              :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
-              :background-color circle-color
-              :justify-content  :center
-              :align-items      :center}}
-     [icons/icon icon
-      {:size  icon-size
-       :color icon-color}]]))
+    (if (= (type icon) Keyword)
+      [rn/view
+       {:style {:width            component-size
+                :height           component-size
+                :border-radius    component-size
+                :border-width     (when border? 1)
+                :border-color     (colors/theme-colors colors/neutral-20 colors/neutral-80 theme)
+                :background-color circle-color
+                :justify-content  :center
+                :align-items      :center}}
+       [icons/icon icon
+        {:size  icon-size
+         :color icon-color}]]
+      [rn/image
+       {:source icon
+        :style  {:width 32 :height 32}}])))
 
 (def icon-avatar (quo.theme/with-theme icon-avatar-internal))
