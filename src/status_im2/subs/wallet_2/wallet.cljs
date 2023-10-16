@@ -1,13 +1,13 @@
 (ns status-im2.subs.wallet-2.wallet
   (:require [re-frame.core :as re-frame]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [utils.number]))
 
 (defn calculate-raw-balance
   [raw-balance decimals]
-  (let [raw-number (js/parseInt raw-balance)]
-    (if (not (js/isNaN raw-number))
-      (/ raw-number (Math/pow 10 (js/parseInt decimals)))
-      0)))
+  (if-let [n (utils.number/parse-int raw-balance nil)]
+    (/ n (Math/pow 10 (utils.number/parse-int decimals)))
+    0))
 
 (defn calculate-balance
   [address tokens]
@@ -25,7 +25,7 @@
                     (+ acc total-values)))
                 0
                 token)]
-    (.toFixed result 2)))
+    result))
 
 (re-frame/reg-sub
  :wallet-2/balances
