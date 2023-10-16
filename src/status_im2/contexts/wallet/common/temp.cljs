@@ -82,7 +82,8 @@
     :id    6}])
 
 (def collectible-details
-  {:name             "#5946"
+  nil
+  #_{:name             "#5946"
    :description      "Bored Ape Yacht Club"
    :image            (status.resources/get-mock-image :collectible-monkey)
    :collection-image (status.resources/get-mock-image :bored-ape)
@@ -103,8 +104,7 @@
                        :id       5}
                       {:title    "Mouth"
                        :subtitle "Bored Pipe"
-                       :id       6}]}
-)
+                       :id       6}]})
 
 (def account-overview-state
   {:current-value       "€0.00"
