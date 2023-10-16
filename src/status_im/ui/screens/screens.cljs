@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.screens
   (:require
-    [quo.design-system.colors :as colors]
-    [utils.i18n :as i18n]
+    [status-im.ui.components.colors :as colors]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.screens.about-app.views :as about-app]
     [status-im.ui.screens.advanced-settings.views :as advanced-settings]
@@ -74,7 +73,8 @@
     [status-im.ui.screens.wallet.settings.views :as wallet-settings]
     [status-im.ui.screens.wallet.swap.views :as wallet.swap]
     [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-    [status-im2.contexts.chat.group-details.view :as group-details]))
+    [status-im2.contexts.chat.group-details.view :as group-details]
+    [utils.i18n :as i18n]))
 
 (defn right-button-options
   [id icon]
@@ -312,10 +312,6 @@
     :options   {:topBar {:title {:text (i18n/label :t/notification-settings)}}
                 :insets {:top? true}}
     :component notifications-settings/notifications-settings}
-   {:name      :notifications-servers
-    :options   {:topBar {:title {:text (i18n/label :t/notifications-servers)}}
-                :insets {:top? true}}
-    :component notifications-settings/notifications-servers}
    {:name      :sync-settings
     :options   {:topBar {:title {:text (i18n/label :t/sync-settings)}}
                 :insets {:top? true}}
@@ -474,17 +470,6 @@
                 :insets             {:bottom? true
                                      :top?    true}}
     :component notifications-settings/notifications-settings}
-
-   ;;TODO WHY MODAL?
-   ;[Profile] Notifications Advanced settings
-   {:name      :notifications-advanced-settings
-    :options   {:topBar             {:title {:text (i18n/label :t/notification-settings)}}
-                :popGesture         false
-                :hardwareBackButton {:dismissModalOnPress false
-                                     :popStackOnPress     false}
-                :insets             {:bottom? true
-                                     :top?    true}}
-    :component notifications-settings/notifications-advanced-settings}
 
    ;[Wallet] Prepare Transaction
    {:name        :prepare-send-transaction

@@ -1,8 +1,9 @@
 (ns react-native.async-storage
-  (:require ["@react-native-async-storage/async-storage" :default async-storage]
-            [cognitect.transit :as transit]
-            [taoensso.timbre :as log]
-            goog.functions))
+  (:require
+    ["@react-native-async-storage/async-storage" :default async-storage]
+    [cognitect.transit :as transit]
+    goog.functions
+    [taoensso.timbre :as log]))
 
 (def ^:private debounce-ms 250)
 

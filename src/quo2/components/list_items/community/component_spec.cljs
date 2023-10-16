@@ -1,6 +1,7 @@
 (ns quo2.components.list-items.community.component-spec
-  (:require [quo2.components.list-items.community.view :as component]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.list-items.community.view :as component]
+    [test-helpers.component :as h]))
 
 (h/describe "Community list"
   (h/test "default render"

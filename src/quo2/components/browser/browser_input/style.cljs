@@ -1,6 +1,7 @@
 (ns quo2.components.browser.browser-input.style
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]))
 
 (def clear-icon-container
   {:align-items     :center

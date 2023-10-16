@@ -1,6 +1,7 @@
 (ns quo2.components.navigation.top-nav.component-spec
-  (:require [quo2.components.navigation.top-nav.view :as top-nav]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.navigation.top-nav.view :as top-nav]
+    [test-helpers.component :as h]))
 
 (h/describe "Top Nav component"
   (h/test "Renders default"

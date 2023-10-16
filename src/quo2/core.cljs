@@ -9,6 +9,9 @@
     quo2.components.avatars.user-avatar.view
     quo2.components.avatars.wallet-user-avatar
     quo2.components.banners.banner.view
+    quo2.components.browser.browser-input.view
+    quo2.components.browser.dapp-favorites.view
+    quo2.components.browser.dapp-item.view
     quo2.components.buttons.button.view
     quo2.components.buttons.composer-button.view
     quo2.components.buttons.dynamic-button.view
@@ -16,16 +19,13 @@
     quo2.components.buttons.slide-button.view
     quo2.components.buttons.wallet-button.view
     quo2.components.buttons.wallet-ctas.view
-    quo2.components.browser.browser-input.view
-    quo2.components.browser.dapp-favorites.view
-    quo2.components.browser.dapp-item.view
-    quo2.components.calendar.calendar.view
     quo2.components.calendar.calendar-day.view
     quo2.components.calendar.calendar-year.view
-    quo2.components.code.snippet.view
+    quo2.components.calendar.calendar.view
     quo2.components.code.snippet-preview.view
-    quo2.components.colors.color.view
+    quo2.components.code.snippet.view
     quo2.components.colors.color-picker.view
+    quo2.components.colors.color.view
     quo2.components.common.notification-dot.view
     quo2.components.common.separator.view
     quo2.components.community.banner.view
@@ -43,6 +43,7 @@
     quo2.components.dividers.new-messages
     quo2.components.dividers.strength-divider.view
     quo2.components.drawers.action-drawers.view
+    quo2.components.drawers.bottom-actions.view
     quo2.components.drawers.documentation-drawers.view
     quo2.components.drawers.drawer-buttons.view
     quo2.components.drawers.drawer-top.view
@@ -51,13 +52,14 @@
     quo2.components.dropdowns.network-dropdown.view
     quo2.components.empty-state.empty-state.view
     quo2.components.gradient.gradient-cover.view
+    [quo2.components.graph.interactive-graph.view :as interactive-graph]
     quo2.components.graph.wallet-graph.view
     quo2.components.header
     quo2.components.icon
     quo2.components.info.info-message
     quo2.components.info.information-box.view
-    quo2.components.inputs.input.view
     quo2.components.inputs.address-input.view
+    quo2.components.inputs.input.view
     quo2.components.inputs.locked-input.view
     quo2.components.inputs.profile-input.view
     quo2.components.inputs.recovery-phrase.view
@@ -67,8 +69,9 @@
     quo2.components.links.link-preview.view
     quo2.components.links.url-preview-list.view
     quo2.components.links.url-preview.view
-    quo2.components.list-items.account.view
     quo2.components.list-items.account-list-card.view
+    quo2.components.list-items.account.view
+    quo2.components.list-items.address.view
     quo2.components.list-items.channel.view
     quo2.components.list-items.community.view
     quo2.components.list-items.dapp.view
@@ -84,8 +87,8 @@
     quo2.components.messages.author.view
     quo2.components.messages.gap
     quo2.components.messages.system-message
-    quo2.components.navigation.floating-shell-button.view
     quo2.components.navigation.bottom-nav-tab.view
+    quo2.components.navigation.floating-shell-button.view
     quo2.components.navigation.page-nav.view
     quo2.components.navigation.top-nav.view
     quo2.components.notifications.activity-log.view
@@ -105,17 +108,18 @@
     quo2.components.record-audio.soundtrack.view
     quo2.components.selectors.disclaimer.view
     quo2.components.selectors.filter.view
-    quo2.components.selectors.reactions-selector.view
-    quo2.components.selectors.react.view
     quo2.components.selectors.react-selector.view
+    quo2.components.selectors.react.view
+    quo2.components.selectors.reactions-selector.view
     quo2.components.selectors.selectors.view
     quo2.components.settings.accounts.view
+    quo2.components.settings.category.view
+    quo2.components.settings.category.view
     quo2.components.settings.data-item.view
     quo2.components.settings.privacy-option.view
     quo2.components.settings.reorder-item.view
-    quo2.components.settings.settings-item.view
-    quo2.components.settings.category.view
     quo2.components.settings.section-label.view
+    quo2.components.settings.settings-item.view
     quo2.components.share.qr-code.view
     quo2.components.share.share-qr-code.view
     quo2.components.switchers.group-messaging-card.view
@@ -144,8 +148,7 @@
     quo2.components.wallet.token-input.view
     quo2.components.wallet.transaction-summary.view
     quo2.components.wallet.wallet-activity.view
-    quo2.components.wallet.wallet-overview.view
-    [quo2.components.graph.interactive-graph.view :as interactive-graph]))
+    quo2.components.wallet.wallet-overview.view))
 
 (def separator quo2.components.common.separator.view/separator)
 
@@ -213,7 +216,7 @@
 ;;;; Dividers
 (def divider-label quo2.components.dividers.divider-label.view/view)
 (def divider-line quo2.components.dividers.divider-line.view/view)
-(def new-messages quo2.components.dividers.new-messages/new-messages)
+(def new-messages quo2.components.dividers.new-messages/view)
 (def divider-date quo2.components.dividers.date/date)
 (def strength-divider quo2.components.dividers.strength-divider.view/view)
 
@@ -223,6 +226,7 @@
 (def drawer-buttons quo2.components.drawers.drawer-buttons.view/view)
 (def drawer-top quo2.components.drawers.drawer-top.view/view)
 (def permission-context quo2.components.drawers.permission-context.view/view)
+(def bottom-actions quo2.components.drawers.bottom-actions.view/view)
 
 ;;;; Dropdowns
 (def dropdown quo2.components.dropdowns.dropdown.view/view)
@@ -269,6 +273,7 @@
 ;;;; List items
 (def account-item quo2.components.list-items.account.view/view)
 (def account-list-card quo2.components.list-items.account-list-card.view/view)
+(def address quo2.components.list-items.address.view/view)
 (def channel quo2.components.list-items.channel.view/view)
 (def dapp quo2.components.list-items.dapp.view/view)
 (def menu-item quo2.components.list-items.menu-item/menu-item)

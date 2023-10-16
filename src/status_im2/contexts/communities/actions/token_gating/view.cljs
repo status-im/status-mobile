@@ -1,8 +1,9 @@
 (ns status-im2.contexts.communities.actions.token-gating.view
-  (:require [quo2.core :as quo]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn token-requirements
   [id]

@@ -1,7 +1,8 @@
 (ns status-im.ui.components.badge
-  (:require [quo.design-system.colors :as colors]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]))
+  (:require
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n]))
 
 (defn badge
   [label & [small?]]

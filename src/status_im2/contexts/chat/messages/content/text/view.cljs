@@ -2,8 +2,8 @@
   (:require
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
-    [react-native.platform :as platform]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [status-im2.contexts.chat.messages.content.link-preview.view :as link-preview]
     [status-im2.contexts.chat.messages.content.text.style :as style]
     [utils.i18n :as i18n]

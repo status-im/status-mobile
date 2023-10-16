@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.notifications.activity-logs-photos
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Photos Count:"

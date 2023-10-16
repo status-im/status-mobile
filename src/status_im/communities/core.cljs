@@ -1,22 +1,23 @@
 (ns status-im.communities.core
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
-            [clojure.walk :as walk]
-            [quo.design-system.colors :as colors]
-            [quo2.foundations.colors :as quo2.colors]
-            [re-frame.core :as re-frame]
-            [status-im.utils.deprecated-types :as types]
-            [status-im.utils.universal-links.core :as universal-links]
-            [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im2.common.toasts.events :as toasts]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.activity-center.events :as activity-center]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.common.muting.helpers :refer [format-mute-till]]
-            [status-im2.contexts.chat.events :as chat.events]))
+  (:require
+    [clojure.set :as set]
+    [clojure.string :as string]
+    [clojure.walk :as walk]
+    [quo2.foundations.colors :as quo2.colors]
+    [re-frame.core :as re-frame]
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.ui.components.colors :as colors]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.utils.universal-links.core :as universal-links]
+    [status-im2.common.muting.helpers :refer [format-mute-till]]
+    [status-im2.common.toasts.events :as toasts]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.events :as chat.events]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def crop-size 1000)
 
@@ -271,18 +272,20 @@
   [{:keys [db]} community-id]
   (let [community-chat-ids (map #(str community-id %)
                                 (keys (get-in db [:communities community-id :chats])))]
-    {:clear-message-notifications [community-chat-ids
-                                   (get-in db [:profile/profile :remote-push-notifications-enabled?])]
-     :dispatch                    [:shell/close-switcher-card community-id]
-     :json-rpc/call               [{:method      "wakuext_leaveCommunity"
-                                    :params      [community-id]
-                                    :js-response true
-                                    :on-success  #(re-frame/dispatch [::left %])
-                                    :on-error    (fn [response]
-                                                   (log/error "failed to leave community"
-                                                              community-id
-                                                              response)
-                                                   (re-frame/dispatch [::failed-to-leave]))}]}))
+    {:effects/push-notifications-clear-message-notifications community-chat-ids
+     :dispatch                                               [:shell/close-switcher-card community-id]
+     :json-rpc/call                                          [{:method "wakuext_leaveCommunity"
+                                                               :params [community-id]
+                                                               :js-response true
+                                                               :on-success #(re-frame/dispatch [::left
+                                                                                                %])
+                                                               :on-error (fn [response]
+                                                                           (log/error
+                                                                            "failed to leave community"
+                                                                            community-id
+                                                                            response)
+                                                                           (re-frame/dispatch
+                                                                            [::failed-to-leave]))}]}))
 
 (rf/defn status-tag-pressed
   {:events [:communities/status-tag-pressed]}

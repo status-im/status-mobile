@@ -1,6 +1,7 @@
 (ns status-im.utils.random-test
-  (:require [cljs.test :refer-macros [deftest is]]
-            [status-im.utils.random :as random]))
+  (:require
+    [cljs.test :refer-macros [deftest is]]
+    [status-im.utils.random :as random]))
 
 (deftest test-seeded-rand-int
   ;try with one seed

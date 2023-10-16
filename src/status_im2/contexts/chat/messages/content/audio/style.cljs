@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.messages.content.audio.style
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as theme]))
 
 (defn container
   []

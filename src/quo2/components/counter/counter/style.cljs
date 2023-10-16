@@ -1,5 +1,6 @@
 (ns quo2.components.counter.counter.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn get-color
   [type customization-color theme]

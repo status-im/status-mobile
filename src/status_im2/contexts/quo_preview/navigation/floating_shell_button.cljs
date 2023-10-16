@@ -1,8 +1,9 @@
 (ns status-im2.contexts.quo-preview.navigation.floating-shell-button
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.i18n :as i18n]))
 
 (def descriptor
   [{:key :show-jump-to? :type :boolean}

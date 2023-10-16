@@ -1,14 +1,15 @@
 (ns status-im2.common.standard-authentication.password-input.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [utils.security.core :as security]
-            [status-im2.common.standard-authentication.password-input.style :as style]
-            [status-im2.common.standard-authentication.forgot-password-doc.view :as forgot-password-doc]
-            [quo2.theme :as quo.theme]
-            [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [status-im2.common.standard-authentication.forgot-password-doc.view :as forgot-password-doc]
+    [status-im2.common.standard-authentication.password-input.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn get-error-message
   [error]

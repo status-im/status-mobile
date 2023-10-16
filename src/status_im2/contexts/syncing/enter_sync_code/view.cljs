@@ -1,15 +1,16 @@
 (ns status-im2.contexts.syncing.enter-sync-code.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [reagent.core :as reagent]
-            [react-native.core :as rn]
-            [react-native.clipboard :as clipboard]
-            [utils.i18n :as i18n]
-            [status-im2.contexts.syncing.enter-sync-code.style :as style]
-            [utils.debounce :as debounce]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.syncing.utils :as sync-utils]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.clipboard :as clipboard]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.syncing.enter-sync-code.style :as style]
+    [status-im2.contexts.syncing.utils :as sync-utils]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []

@@ -5,18 +5,18 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]
     [status-im.bottom-sheet.events :as bottom-sheet]
-    [utils.ethereum.eip.eip55 :as eip55]
     [status-im.ethereum.ens :as ens]
     [status-im.ethereum.stateofus :as stateofus]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
-    [utils.re-frame :as rf]
-    [utils.datetime :as datetime]
     [status-im.utils.random :as random]
-    [status-im2.navigation.events :as navigation]
+    [status-im.wallet.utils :as wallet.utils]
     [status-im2.constants :as constants]
+    [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
+    [utils.datetime :as datetime]
     [utils.ethereum.chain :as chain]
-    [status-im.wallet.utils :as wallet.utils]))
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.re-frame :as rf]))
 
 (defn fullname
   [custom-domain? username]

@@ -1,6 +1,7 @@
 (ns quo2.components.numbered-keyboard.keyboard-key.component-spec
-  (:require [quo2.components.numbered-keyboard.keyboard-key.view :as component]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.numbered-keyboard.keyboard-key.view :as component]
+    [test-helpers.component :as h]))
 
 (h/describe "Keyboard Key"
   (h/test "render digit type"

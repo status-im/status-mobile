@@ -1,16 +1,17 @@
 (ns status-im2.contexts.shell.jump-to.components.bottom-tabs.view
-  (:require [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.shell.jump-to.utils :as utils]
-            [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.animation :as animation]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [status-im2.contexts.shell.jump-to.components.bottom-tabs.style :as style]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.shell.jump-to.animation :as animation]
+    [status-im2.contexts.shell.jump-to.components.bottom-tabs.style :as style]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im2.contexts.shell.jump-to.state :as state]
+    [status-im2.contexts.shell.jump-to.utils :as utils]
+    [utils.re-frame :as rf]))
 
 (defn blur-overlay-params
   [style]

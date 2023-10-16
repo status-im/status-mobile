@@ -1,14 +1,15 @@
 (ns quo2.components.calendar.calendar.view
-  (:require [react-native.core :as rn]
-            [quo2.theme :as theme]
-            [reagent.core :as reagent]
-            [utils.number :as utils.number]
-            [quo2.components.calendar.calendar.utils :as utils]
-            [quo2.components.calendar.calendar.style :as style]
-            [quo2.components.calendar.calendar.years-list.view :as years-list]
-            [quo2.components.calendar.calendar.days-grid.view :as days-grid]
-            [quo2.components.calendar.calendar.weekdays-header.view :as weekdays-header]
-            [quo2.components.calendar.calendar.month-picker.view :as month-picker]))
+  (:require
+    [quo2.components.calendar.calendar.days-grid.view :as days-grid]
+    [quo2.components.calendar.calendar.month-picker.view :as month-picker]
+    [quo2.components.calendar.calendar.style :as style]
+    [quo2.components.calendar.calendar.utils :as utils]
+    [quo2.components.calendar.calendar.weekdays-header.view :as weekdays-header]
+    [quo2.components.calendar.calendar.years-list.view :as years-list]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [utils.number :as utils.number]))
 
 (defn- view-internal
   []

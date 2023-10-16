@@ -1,10 +1,11 @@
 (ns quo2.components.record-audio.record-audio.buttons.delete-button
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.record-audio.record-audio.style :as style]
-            [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
-            [react-native.core :refer [use-effect]]
-            [quo2.components.record-audio.record-audio.helpers :as helpers]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.record-audio.record-audio.helpers :as helpers]
+    [quo2.components.record-audio.record-audio.style :as style]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :refer [use-effect]]
+    [react-native.reanimated :as reanimated]))
 
 (defn f-delete-button
   [recording? ready-to-delete? reviewing-audio? force-show-controls?]

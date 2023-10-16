@@ -1,6 +1,7 @@
 (ns quo2.components.record-audio.record-audio.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]))
 
 (defn animated-circle
   [scale opacity color]

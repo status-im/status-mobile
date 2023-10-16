@@ -1,7 +1,7 @@
 (ns quo2.components.list-items.account-list-card.component-spec
   (:require
-    [test-helpers.component :as h]
-    [quo2.components.list-items.account-list-card.view :as account-list-card]))
+    [quo2.components.list-items.account-list-card.view :as account-list-card]
+    [test-helpers.component :as h]))
 
 (def account-props
   {:customization-color :purple

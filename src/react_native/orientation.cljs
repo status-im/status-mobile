@@ -1,6 +1,7 @@
 (ns react-native.orientation
-  (:require ["react-native-orientation-locker" :default orientation :refer (useDeviceOrientationChange)]
-            [react-native.navigation :as navigation]))
+  (:require
+    ["react-native-orientation-locker" :default orientation :refer (useDeviceOrientationChange)]
+    [react-native.navigation :as navigation]))
 
 (def use-device-orientation-change useDeviceOrientationChange)
 

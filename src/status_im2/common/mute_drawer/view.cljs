@@ -1,10 +1,11 @@
 (ns status-im2.common.mute-drawer.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im2.constants :as constants]
-            [utils.re-frame :as rf]
-            [status-im2.common.mute-drawer.style :as style]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.common.mute-drawer.style :as style]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn not-community-chat?
   [chat-type]

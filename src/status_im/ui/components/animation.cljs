@@ -1,6 +1,7 @@
 (ns status-im.ui.components.animation
-  (:require ["react-native" :as rn]
-            [status-im.ui.components.react :as react]))
+  (:require
+    ["react-native" :as rn]
+    [status-im.ui.components.react :as react]))
 
 (defn start
   ([^js anim] (.start anim))

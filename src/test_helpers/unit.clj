@@ -1,7 +1,8 @@
 (ns test-helpers.unit
-  (:require [clojure.spec.alpha :as s]
-            [clojure.string :as string]
-            [clojure.walk :as walk]))
+  (:require
+    [clojure.spec.alpha :as s]
+    [clojure.string :as string]
+    [clojure.walk :as walk]))
 
 (defn- subscription-name->test-name
   [sub-name]

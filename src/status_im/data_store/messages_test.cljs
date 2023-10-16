@@ -1,6 +1,7 @@
 (ns status-im.data-store.messages-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.data-store.messages :as m]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im.data-store.messages :as m]))
 
 (def message-id "0xfe96d03da2159e632a6653d04028b0de8b55f78f03521b26ce10dc5f48a16aee")
 (def chat-id "chat-id")

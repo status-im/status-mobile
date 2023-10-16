@@ -1,5 +1,6 @@
 (ns quo2.components.dropdowns.dropdown.properties
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def backgrounds #{:photo :blur})
 

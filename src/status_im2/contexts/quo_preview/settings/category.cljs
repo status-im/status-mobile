@@ -6,60 +6,33 @@
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defn create-item-array
-  [n {:keys [right-icon? image? subtitle? list-type]}]
+  [n]
   (vec
    (for [i (range n)]
      {:title       (str "Item " i)
-      :subtitle    (when subtitle? "subtitle")
+      :subtitle    "subtitle"
       :action      :arrow
-      :right-icon  (when right-icon? :i/globe)
-      :image       (if (= list-type :settings) :icon (when image? (resources/get-mock-image :diamond)))
+      :right-icon  :i/globe
+      :image       (resources/get-mock-image :diamond)
       :image-props :i/browser
-      :image-size  (if image? 32 0)})))
+      :image-size  32})))
 
-(def reorder-descriptor
-  [{:label "Right icon:"
-    :key   :right-icon?
-    :type  :boolean}
-   {:label "Image:"
-    :key   :image?
-    :type  :boolean}
-   {:label "Subtitle:"
-    :key   :subtitle?
-    :type  :boolean}
-   {:label "Blur:"
-    :key   :blur?
-    :type  :boolean}
-   {:label   "List type:"
-    :key     :list-type
+(def descriptor
+  [{:key :blur? :type :boolean}
+   {:key     :list-type
     :type    :select
     :options [{:key :settings :value :settings} {:key :reorder :value :reorder}]}])
 
-(def settings-descriptor
-  [{:label "Blur:"
-    :key   :blur?
-    :type  :boolean}
-   {:label   "List type:"
-    :key     :list-type
-    :type    :select
-    :options [{:key :settings :value :settings} {:key :reorder :value :reorder}]}])
-
-(defn preview
+(defn view
   []
-  (let [state (reagent/atom {:label       "Label"
-                             :size        "5"
-                             :blur?       false
-                             :right-icon? true
-                             :image?      true
-                             :subtitle?   true
-                             :list-type   :settings})]
+  (let [state (reagent/atom {:label     "Label"
+                             :blur?     false
+                             :list-type :settings})]
     (fn []
-      (let [data (reagent/atom (create-item-array (max (js/parseInt (:size @state)) 1) @state))]
+      (let [data (create-item-array 5)]
         [preview/preview-container
          {:state                 state
-          :descriptor            (if (= (:list-type @state) :settings)
-                                   settings-descriptor
-                                   reorder-descriptor)
+          :descriptor            descriptor
           :blur?                 (:blur? @state)
           :show-blur-background? true
           :blur-dark-only?       true
@@ -67,5 +40,5 @@
          [quo/category
           {:list-type (:list-type @state)
            :label     (:label @state)
-           :data      @data
+           :data      data
            :blur?     (:blur? @state)}]]))))

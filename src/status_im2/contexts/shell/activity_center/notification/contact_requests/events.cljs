@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.activity-center.notification.contact-requests.events
-  (:require [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+  (:require
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn accept-contact-request
   {:events [:activity-center.contact-requests/accept]}

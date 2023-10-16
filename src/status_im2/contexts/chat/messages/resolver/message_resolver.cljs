@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.resolver.message-resolver
-  (:require [utils.re-frame :as rf]))
+  (:require
+    [utils.re-frame :as rf]))
 
 (defn resolve-message
   [parsed-text]

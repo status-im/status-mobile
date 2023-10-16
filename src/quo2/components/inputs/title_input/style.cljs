@@ -1,6 +1,7 @@
 (ns quo2.components.inputs.title-input.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]))
 
 (defn get-focused-placeholder-color
   [blur? theme]

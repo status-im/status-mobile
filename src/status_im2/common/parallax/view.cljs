@@ -1,9 +1,10 @@
 (ns status-im2.common.parallax.view
-  (:require [react-native.reanimated :as reanimated]
-            [react-native.transparent-video :as transparent-video]
-            [react-native.core :as rn]
-            [utils.worklets.parallax :as worklets.parallax]
-            [status-im2.common.parallax.style :as style]))
+  (:require
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [react-native.transparent-video :as transparent-video]
+    [status-im2.common.parallax.style :as style]
+    [utils.worklets.parallax :as worklets.parallax]))
 
 (defn f-sensor-animated-video
   [{:keys [offset stretch order source disable-parallax? enable-looping?]}]

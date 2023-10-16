@@ -1,8 +1,9 @@
 (ns quo2.components.avatars.account-avatar.component-spec
-  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
-            [quo2.components.avatars.account-avatar.style :as style]
-            [test-helpers.component :as h]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.avatars.account-avatar.style :as style]
+    [quo2.components.avatars.account-avatar.view :as account-avatar]
+    [quo2.foundations.colors :as colors]
+    [test-helpers.component :as h]))
 
 (h/describe "Account Avatar"
   (h/test "default render"
@@ -28,7 +29,7 @@
                    {:height          (:size opts)
                     :width           (:size opts)
                     :borderRadius    (style/get-border-radius (:size opts))
-                    :backgroundColor (colors/custom-color-by-theme (:customization-color opts) 50 60)})
+                    :backgroundColor (colors/resolve-color (:customization-color opts) :dark)})
       (h/is-truthy (h/query-by-label-text :account-emoji))
       (h/has-style (h/query-by-label-text :account-emoji)
                    {:fontSize (style/get-emoji-size (:size opts))})
@@ -47,7 +48,7 @@
         :width           (:size opts)
         :borderRadius    (style/get-border-radius (:size opts))
         :borderWidth     1
-        :backgroundColor (colors/custom-color-by-theme (:customization-color opts) 50 50 10 10)})
+        :backgroundColor (colors/resolve-color (:customization-color opts) :light 10)})
       (h/is-truthy (h/query-by-label-text :account-emoji))
       (h/has-style (h/query-by-label-text :account-emoji)
                    {:fontSize (style/get-emoji-size (:size opts))})
@@ -64,7 +65,7 @@
                    {:height          (:size opts)
                     :width           (:size opts)
                     :borderRadius    (style/get-border-radius (:size opts))
-                    :backgroundColor (colors/custom-color-by-theme (:customization-color opts) 50 60)})
+                    :backgroundColor (colors/resolve-color (:customization-color opts) :dark)})
       (h/is-truthy (h/query-by-label-text :account-emoji))
       (h/has-style (h/query-by-label-text :account-emoji)
                    {:fontSize (style/get-emoji-size (:size opts))})
@@ -83,7 +84,7 @@
         :width           (:size opts)
         :borderRadius    (style/get-border-radius (:size opts))
         :borderWidth     0.8
-        :backgroundColor (colors/custom-color-by-theme (:customization-color opts) 50 50 10 10)})
+        :backgroundColor (colors/resolve-color (:customization-color opts) :light 10)})
       (h/is-truthy (h/query-by-label-text :account-emoji))
       (h/has-style (h/query-by-label-text :account-emoji)
                    {:fontSize (style/get-emoji-size (:size opts))})

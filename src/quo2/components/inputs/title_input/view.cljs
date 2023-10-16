@@ -1,11 +1,11 @@
 (ns quo2.components.inputs.title-input.view
   (:require
+    [quo2.components.icon :as icon]
     [quo2.components.inputs.title-input.style :as style]
     [quo2.components.markdown.text :as text]
-    [reagent.core :as reagent]
-    [react-native.core :as rn]
     [quo2.theme :as quo.theme]
-    [quo2.components.icon :as icon]))
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn- pad-0
   [value]

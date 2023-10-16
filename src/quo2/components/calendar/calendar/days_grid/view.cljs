@@ -1,9 +1,10 @@
 (ns quo2.components.calendar.calendar.days-grid.view
-  (:require [react-native.core :as rn]
-            [cljs-time.core :as time]
-            [quo2.components.calendar.calendar.days-grid.utils :as utils]
-            [quo2.components.calendar.calendar-day.view :as calendar-day]
-            [quo2.components.calendar.calendar.days-grid.style :as style]))
+  (:require
+    [cljs-time.core :as time]
+    [quo2.components.calendar.calendar-day.view :as calendar-day]
+    [quo2.components.calendar.calendar.days-grid.style :as style]
+    [quo2.components.calendar.calendar.days-grid.utils :as utils]
+    [react-native.core :as rn]))
 
 (defn- day-view
   [day _ _ {:keys [year month selection-range on-press customization-color]}]

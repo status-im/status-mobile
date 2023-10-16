@@ -1,7 +1,8 @@
 (ns status-im2.setup.interceptors
-  (:require [re-frame.core :as re-frame]
-            [re-frame.std-interceptors :as std-interceptors]
-            [utils.re-frame :as rf]))
+  (:require
+    [re-frame.core :as re-frame]
+    [re-frame.std-interceptors :as std-interceptors]
+    [utils.re-frame :as rf]))
 
 (defn register-global-interceptors
   []

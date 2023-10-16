@@ -1,12 +1,21 @@
 (ns quo2.components.list-items.account.view
-  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [quo2.components.list-items.account.style :as style]
-            [reagent.core :as reagent]
-            [quo2.components.icon :as icon]))
+  (:require
+    [quo2.components.avatars.account-avatar.view :as account-avatar]
+    [quo2.components.icon :as icon]
+    [quo2.components.list-items.account.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
+
+(defn- network-view
+  [network]
+  [text/text
+   {:size   :paragraph-2
+    :weight :regular
+    :style  {:color (colors/custom-color (:name network))}}
+   (str (name (:short network)) ":")])
 
 (defn- account-view
   [{:keys [account-props title-icon? blur? theme]
@@ -30,6 +39,9 @@
                    colors/white-opa-40
                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}]])]
     [text/text {:size :paragraph-2}
+     (for [network (:networks account-props)]
+       ^{:key (str network)}
+       [network-view network])
      [text/text
       {:size   :paragraph-2
        :weight :monospace

@@ -1,19 +1,20 @@
 (ns status-im.utils.universal-links.core
-  (:require [clojure.string :as string]
-            [goog.string :as gstring]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [status-im.group-chats.core :as group-chats]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.router.core :as router]
-            [status-im.ui.components.react :as react]
-            [utils.re-frame :as rf]
-            [status-im.wallet.choose-recipient.core :as choose-recipient]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]
-            [native-module.core :as native-module]
-            [utils.ethereum.chain :as chain]))
+  (:require
+    [clojure.string :as string]
+    [goog.string :as gstring]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.group-chats.core :as group-chats]
+    [status-im.multiaccounts.model :as multiaccounts.model]
+    [status-im.router.core :as router]
+    [status-im.ui.components.react :as react]
+    [status-im.wallet.choose-recipient.core :as choose-recipient]
+    [status-im2.constants :as constants]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.ethereum.chain :as chain]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 ;; TODO(yenda) investigate why `handle-universal-link` event is
 ;; dispatched 7 times for the same link

@@ -1,10 +1,11 @@
 (ns status-im2.contexts.wallet.collectible.view
-  (:require [react-native.core :as rn]
-            [quo2.core :as quo]
-            [utils.i18n :as i18n]
-            [status-im2.common.scroll-page.view :as scroll-page]
-            [status-im2.contexts.wallet.collectible.style :as style]
-            [status-im2.contexts.wallet.common.temp :as temp]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.common.scroll-page.view :as scroll-page]
+    [status-im2.contexts.wallet.collectible.style :as style]
+    [status-im2.contexts.wallet.common.temp :as temp]
+    [utils.i18n :as i18n]))
 
 (defn header
   [{:keys [name description collection-image]}]

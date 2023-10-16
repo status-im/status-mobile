@@ -1,6 +1,7 @@
 (ns mocks.js-dependencies
   (:require-macros [status-im.utils.slurp :refer [slurp]])
-  (:require [status-im.fleet.default-fleet :refer (default-fleets)])
+  (:require
+    [status-im.fleet.default-fleet :refer (default-fleets)])
   (:require [status-im.utils.test :as utils.test]))
 
 ;; to generate a js Proxy at js/__STATUS_MOBILE_JS_IDENTITY_PROXY__ that accept any (.xxx) call and
@@ -323,7 +324,11 @@
 
 (def react-native-permissions #js {:default #js {}})
 
-(def push-notification-ios #js {:default #js {:abandonPermissions identity}})
+(def push-notification-ios
+  #js
+   {:default #js
+              {:abandonPermissions              identity
+               :removeAllDeliveredNotifications identity}})
 
 (def rn-emoji-keyboard
   #js {:EmojiKeyboard #js {}})

@@ -1,17 +1,18 @@
 (ns status-im.ui.components.chat-icon.screen
-  (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
-            [quo2.components.avatars.user-avatar.style :as user-avatar.style]
-            [quo2.core :as quo]
-            [quo2.theme :as theme]
-            [re-frame.core :as re-frame.core]
-            [status-im.ethereum.ens :as ens]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.chat-icon.styles :as styles]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.avatars.user-avatar.style :as user-avatar.style]
+    [quo2.core :as quo]
+    [quo2.theme :as theme]
+    [re-frame.core :as re-frame.core]
+    [react-native.core :as rn]
+    [status-im.ethereum.ens :as ens]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.ui.components.chat-icon.styles :as styles]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.screens.chat.photos :as photos]
+    [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]))
 
 ;;TODO REWORK THIS NAMESPACE
 

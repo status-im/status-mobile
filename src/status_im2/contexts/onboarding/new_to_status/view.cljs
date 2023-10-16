@@ -1,15 +1,15 @@
 (ns status-im2.contexts.onboarding.new-to-status.view
   (:require
     [quo2.core :as quo]
+    re-frame.db
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im.keycard.recovery :as keycard]
     [status-im2.common.resources :as resources]
+    [status-im2.config :as config]
     [status-im2.contexts.onboarding.new-to-status.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im2.config :as config]
-    re-frame.db))
+    [utils.re-frame :as rf]))
 
 (defn sign-in-options
   []

@@ -1,10 +1,11 @@
 (ns status-im.multiaccounts.recover.core
-  (:require [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [native-module.core :as native-module]
-            [status-im.utils.deprecated-types :as types]
-            [taoensso.timbre :as log]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.multiaccounts.create.core :as multiaccounts.create]
+    [status-im.utils.deprecated-types :as types]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]))
 
 (re-frame/reg-fx
  ::import-multiaccount

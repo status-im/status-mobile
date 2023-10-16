@@ -1,7 +1,8 @@
 (ns status-im2.contexts.chat.camera.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]))
 
 (def screen-container
   {:flex             1

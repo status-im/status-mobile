@@ -1,12 +1,13 @@
 (ns status-im.keycard.wallet
-  (:require [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im2.constants :as constants]
-            [utils.ethereum.eip.eip55 :as eip55]
-            [status-im.keycard.common :as common]
-            [status-im.ui.screens.wallet.add-new.views :as add-new.views]
-            [utils.re-frame :as rf]
-            [status-im.utils.hex :as utils.hex]
-            [native-module.core :as native-module]))
+  (:require
+    [native-module.core :as native-module]
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.keycard.common :as common]
+    [status-im.ui.screens.wallet.add-new.views :as add-new.views]
+    [status-im.utils.hex :as utils.hex]
+    [status-im2.constants :as constants]
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.re-frame :as rf]))
 
 (rf/defn show-pin-sheet
   {:events [:keycard/new-account-pin-sheet]}

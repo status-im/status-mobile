@@ -1,5 +1,6 @@
 (ns quo2.components.selectors.reactions-selector.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn container
   [pressed?]

@@ -1,7 +1,8 @@
 (ns status-im2.common.qr-codes.view
-  (:require [quo2.core :as quo]
-            [utils.image-server :as image-server]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [utils.image-server :as image-server]
+    [utils.re-frame :as rf]))
 
 (defn qr-code
   "Receives a URL to show a QR code with an avatar (optional) over it.

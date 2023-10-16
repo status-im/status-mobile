@@ -1,5 +1,6 @@
 (ns status-im2.contexts.shell.activity-center.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def screen-padding 20)
 

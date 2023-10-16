@@ -1,6 +1,7 @@
 (ns status-im2.contexts.communities.overview.utils
-  (:require [clojure.string :as string]
-            [utils.i18n :as i18n]))
+  (:require
+    [clojure.string :as string]
+    [utils.i18n :as i18n]))
 
 (defn join-existing-users-string
   [user-list]

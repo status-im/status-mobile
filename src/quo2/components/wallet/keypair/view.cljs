@@ -78,7 +78,7 @@
          {:size  16
           :color (if blur?
                    colors/white-opa-40
-                   (colors/theme-colors colors/neutral-50 colors/neutral-40))}]])]))
+                   (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}]])]))
 
 (defn- view-internal
   []

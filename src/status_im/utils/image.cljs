@@ -1,5 +1,6 @@
 (ns status-im.utils.image
-  (:require [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]))
 
 (defn source
   [photo-path]

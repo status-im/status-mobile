@@ -1,15 +1,16 @@
 (ns status-im.wallet-connect.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.browser.core :as browser]
-            [status-im2.constants :as constants]
-            [status-im.signing.core :as signing]
-            [status-im2.config :as config]
-            [utils.re-frame :as rf]
-            [status-im.utils.deprecated-types :as types]
-            [status-im.utils.wallet-connect :as wallet-connect]
-            [taoensso.timbre :as log]
-            [utils.address :as address]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.browser.core :as browser]
+    [status-im.signing.core :as signing]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.utils.wallet-connect :as wallet-connect]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]
+    [utils.address :as address]
+    [utils.re-frame :as rf]))
 
 (rf/defn proposal-handler
   {:events [:wallet-connect/proposal]}

@@ -1,15 +1,17 @@
 (ns status-im.ui.screens.wallet.settings.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as wallet.components])
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.search-input.view :as search-input]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.components.views :as wallet.components]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defonce search-active? (reagent/atom false))
@@ -30,14 +32,14 @@
   [{:keys [custom?] :as token}]
   (fn []
     [react/view
-     [quo/list-item
+     [list.item/list-item
       {:theme    :accent
        :title    (i18n/label :t/token-details)
        :icon     :main-icons/warning
        :on-press #(hide-sheet-and-dispatch
                    [:navigate-to :wallet-custom-token-details token])}]
      (when custom?
-       [quo/list-item
+       [list.item/list-item
         {:theme    :negative
          :title    (i18n/label :t/remove-token)
          :icon     :main-icons/delete
@@ -57,7 +59,7 @@
           color    :color
           checked? :checked?
           :as      token}]
-      [quo/list-item
+      [list.item/list-item
        {:active              checked?
         :accessory           :checkbox
         :animated-accessory? false
@@ -102,7 +104,7 @@
       [list/section-list
        {:header
         [react/view {:margin-top 16}
-         [quo/list-item
+         [list.item/list-item
           {:theme :accent
            :title (i18n/label :t/add-custom-token)
            :icon :main-icons/add

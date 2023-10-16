@@ -1,6 +1,7 @@
 (ns quo2.components.selectors.reaction-resource
-  (:require [clojure.java.io :as io]
-            [clojure.string :as string]))
+  (:require
+    [clojure.java.io :as io]
+    [clojure.string :as string]))
 
 (def ^:private reactions-dir "./resources/images/reactions/")
 

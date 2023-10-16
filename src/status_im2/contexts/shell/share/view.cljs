@@ -1,20 +1,21 @@
 (ns status-im2.contexts.shell.share.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [react-native.navigation :as navigation]
-            [reagent.core :as reagent]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im2.common.qr-codes.view :as qr-codes]
-            [status-im2.contexts.shell.share.style :as style]
-            [utils.address :as address]
-            [utils.i18n :as i18n]
-            [utils.image-server :as image-server]
-            [utils.re-frame :as rf]
-            [react-native.platform :as platform]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.navigation :as navigation]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.ui.components.list-selection :as list-selection]
+    [status-im2.common.qr-codes.view :as qr-codes]
+    [status-im2.contexts.shell.share.style :as style]
+    [utils.address :as address]
+    [utils.i18n :as i18n]
+    [utils.image-server :as image-server]
+    [utils.re-frame :as rf]))
 
 (defn header
   []

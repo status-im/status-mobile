@@ -1,6 +1,7 @@
 (ns status-im2.contexts.add-new-contact.events-test
-  (:require [cljs.test :refer-macros [deftest are]]
-            [status-im2.contexts.add-new-contact.events :as events]))
+  (:require
+    [cljs.test :refer-macros [deftest are]]
+    [status-im2.contexts.add-new-contact.events :as events]))
 
 (def user-ukey
   "0x04ca27ed9c7c4099d230c6d8853ad0cfaf084a019c543e9e433d3c04fac6de9147cf572b10e247cfe52f396b5aa10456b56dd1cf1d8a681e2b93993d44594b2e85")

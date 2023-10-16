@@ -1,16 +1,17 @@
 (ns status-im2.contexts.chat.messages.pin.events
-  (:require [quo2.foundations.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.data-store.pin-messages :as data-store.pin-messages]
-            [status-im.data-store.messages :as data-store.messages]
-            [status-im2.common.toasts.events :as toasts]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.list.events :as message-list]
-            [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.chat.menus.pinned-messages.view :as pinned-messages-menu]
-            [status-im2.navigation.events :as navigation]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [re-frame.core :as re-frame]
+    [status-im.data-store.messages :as data-store.messages]
+    [status-im.data-store.pin-messages :as data-store.pin-messages]
+    [status-im2.common.toasts.events :as toasts]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.menus.pinned-messages.view :as pinned-messages-menu]
+    [status-im2.contexts.chat.messages.list.events :as message-list]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (rf/defn handle-failed-loading-pin-messages
   {:events [:pin-message/failed-loading-pin-messages]}

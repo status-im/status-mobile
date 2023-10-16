@@ -1,8 +1,9 @@
 (ns quo2.foundations.shadows
   (:refer-clojure :exclude [get])
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.platform :as platform]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.platform :as platform]))
 
 (def ^:private shadows
   (let [dark-normal           {1 {:shadow-color   (when platform/ios?

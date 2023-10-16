@@ -1,5 +1,6 @@
 (ns status-im.ethereum.mnemonic
-  (:require [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]))
 
 (def dictionary
   #{"abandon" "ability" "able" "about" "above" "absent" "absorb" "abstract" "absurd" "abuse" "access"

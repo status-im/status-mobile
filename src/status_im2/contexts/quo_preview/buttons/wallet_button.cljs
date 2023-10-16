@@ -1,7 +1,8 @@
 (ns status-im2.contexts.quo-preview.buttons.wallet-button
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key :disabled? :type :boolean}])

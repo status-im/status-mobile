@@ -1,26 +1,28 @@
 (ns status-im.ui.screens.group.views
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.invite.views :as invite]
-            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.search-input.view :as search]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.group.styles :as styles]
-            [utils.debounce :as debounce])
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.invite.views :as invite]
+    [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.search-input.view :as search]
+    [status-im.ui.components.toolbar :as toolbar]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.group.styles :as styles]
+    [status-im2.constants :as constants]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-contact
   [row]
   (let [{:keys [primary-name secondary-name]} row]
-    [quo/list-item
+    [list.item/list-item
      {:title    primary-name
       :subtitle secondary-name
       :icon     [chat-icon/contact-icon-contacts-tab row]}]))
@@ -54,7 +56,7 @@
   (fn [allow-new-users? subs-name {:keys [public-key] :as contact} on-toggle]
     (let [contact-selected?                     @(re-frame/subscribe [subs-name public-key])
           {:keys [primary-name secondary-name]} contact]
-      [quo/list-item
+      [list.item/list-item
        {:title     primary-name
         :subtitle  secondary-name
         :icon      [chat-icon/contact-icon-contacts-tab contact]

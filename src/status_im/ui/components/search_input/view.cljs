@@ -1,8 +1,9 @@
 (ns status-im.ui.components.search-input.view
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]))
+  (:require
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [utils.i18n :as i18n]))
 
 (defn search-input-old
   [{:keys [search-active?]}]

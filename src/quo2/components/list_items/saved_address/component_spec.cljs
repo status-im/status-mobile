@@ -1,7 +1,8 @@
 (ns quo2.components.list-items.saved-address.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.list-items.saved-address.view :as saved-address]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.list-items.saved-address.view :as saved-address]
+    [quo2.foundations.colors :as colors]
+    [test-helpers.component :as h]))
 
 (h/describe "List items: saved address"
   (h/test "default render"

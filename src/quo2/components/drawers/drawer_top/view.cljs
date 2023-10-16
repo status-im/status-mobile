@@ -1,16 +1,17 @@
 (ns quo2.components.drawers.drawer-top.view
-  (:require [quo2.theme :as quo.theme]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.drawers.drawer-top.style :as style]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.tags.context-tag.view :as context-tag]
-            [react-native.core :as rn]
-            [quo2.components.icon :as icons]
-            [quo2.components.avatars.account-avatar.view :as account-avatar]
-            [quo2.components.avatars.icon-avatar :as icon-avatar]
-            [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.foundations.colors :as colors]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.components.avatars.account-avatar.view :as account-avatar]
+    [quo2.components.avatars.icon-avatar :as icon-avatar]
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.drawers.drawer-top.style :as style]
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.tags.context-tag.view :as context-tag]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (defn- left-image
   [{:keys [type customization-color account-avatar-emoji icon-avatar profile-picture]}]
@@ -36,8 +37,8 @@
   [text/text
    {:size   :paragraph-2
     :weight :regular
-    :style  (style/network-text-color network)}
-   (str (subs (name network) 0 3) ":")])
+    :style  (style/network-text-color (:name network))}
+   (str (name (:short network)) ":")])
 
 (defn- keypair-subtitle
   [{:keys [theme blur? keycard?]}]
@@ -56,7 +57,7 @@
        :size            16
        :container-style style/keycard-icon}])])
 
-(defn- acocunt-subtitle
+(defn- account-subtitle
   [{:keys [networks theme blur? description]}]
   [rn/view {:style style/row}
    (for [network networks]
@@ -106,7 +107,7 @@
       :keycard? keycard?}]
 
     (= :account type)
-    [acocunt-subtitle
+    [account-subtitle
      {:networks    networks
       :theme       theme
       :blur?       blur?

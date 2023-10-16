@@ -1,11 +1,12 @@
 (ns status-im.utils.snoopy
-  (:require ["react-native/Libraries/vendor/emitter/EventEmitter" :refer [EventEmitter]]
-            ["rn-snoopy" :default snoopy]
-            ["rn-snoopy/stream/bars" :default bars]
-            ["rn-snoopy/stream/buffer" :default buffer]
-            ["rn-snoopy/stream/filter" :default sn-filter]
-            [clojure.string :as string]
-            [status-im2.config :as config]))
+  (:require
+    ["react-native/Libraries/vendor/emitter/EventEmitter" :refer [EventEmitter]]
+    ["rn-snoopy" :default snoopy]
+    ["rn-snoopy/stream/bars" :default bars]
+    ["rn-snoopy/stream/buffer" :default buffer]
+    ["rn-snoopy/stream/filter" :default sn-filter]
+    [clojure.string :as string]
+    [status-im2.config :as config]))
 
 (defn create-filter
   [f]

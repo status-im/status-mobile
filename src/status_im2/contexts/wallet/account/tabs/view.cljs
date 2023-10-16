@@ -2,11 +2,11 @@
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]
-    [status-im2.contexts.wallet.common.temp :as temp]
-    [utils.i18n :as i18n]
     [status-im2.contexts.wallet.account.tabs.about.view :as about]
     [status-im2.contexts.wallet.account.tabs.dapps.view :as dapps]
-    [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]))
+    [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
+    [status-im2.contexts.wallet.common.temp :as temp]
+    [utils.i18n :as i18n]))
 
 (defn view
   [{:keys [selected-tab]}]

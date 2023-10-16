@@ -1,6 +1,7 @@
 (ns quo2.components.counter.step.component-spec
-  (:require [quo2.components.counter.step.view :as step]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.counter.step.view :as step]
+    [test-helpers.component :as h]))
 
 (h/describe "step component"
   (h/test "default render of step component"

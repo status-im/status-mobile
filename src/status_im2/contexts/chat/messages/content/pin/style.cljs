@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.pin.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def system-message-default-size 34)
 (def system-message-margin-right 8)

@@ -1,5 +1,6 @@
 (ns react-native.platform
-  (:require ["react-native" :as react-native]))
+  (:require
+    ["react-native" :as react-native]))
 
 (def platform (.-Platform ^js react-native))
 

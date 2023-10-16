@@ -1,7 +1,8 @@
 (ns quo2.components.list-items.account.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.list-items.account.view :as account]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.list-items.account.view :as account]
+    [quo2.foundations.colors :as colors]
+    [test-helpers.component :as h]))
 
 (h/describe "List items: account"
   (h/test "default render'"

@@ -1,5 +1,6 @@
 (ns quo2.components.wallet.keypair.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn container
   [{:keys [blur? customization-color theme selected?]}]

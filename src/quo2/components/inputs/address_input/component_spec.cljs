@@ -1,8 +1,9 @@
 (ns quo2.components.inputs.address-input.component-spec
-  (:require [quo2.components.inputs.address-input.view :as address-input]
-            [test-helpers.component :as h]
-            [react-native.clipboard :as clipboard]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.inputs.address-input.view :as address-input]
+    [quo2.foundations.colors :as colors]
+    [react-native.clipboard :as clipboard]
+    [test-helpers.component :as h]))
 
 (def ens-regex #"^(?=.{5,255}$)([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$")
 

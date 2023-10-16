@@ -1,5 +1,6 @@
 (ns quo2.components.selectors.react-selector.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn add-reaction
   [pinned? theme]

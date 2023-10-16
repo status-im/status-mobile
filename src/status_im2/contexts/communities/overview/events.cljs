@@ -1,6 +1,7 @@
 (ns status-im2.contexts.communities.overview.events
-  (:require [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn check-permissions-to-join-community-success
   {:events [:communities/check-permissions-to-join-community-success]}

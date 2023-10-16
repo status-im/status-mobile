@@ -1,14 +1,15 @@
 (ns quo2.components.tags.context-tag.view
-  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
-            [quo2.components.avatars.group-avatar.view :as group-avatar]
-            [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.components.icon :as icons]
-            [quo2.components.list-items.preview-list.view :as preview-list]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.tags.context-tag.style :as style]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.avatars.account-avatar.view :as account-avatar]
+    [quo2.components.avatars.group-avatar.view :as group-avatar]
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [quo2.components.icon :as icons]
+    [quo2.components.list-items.preview-list.view :as preview-list]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.tags.context-tag.style :as style]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- tag-skeleton
   [{:keys [theme size text] :or {size 24}} logo-component]

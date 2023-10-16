@@ -1,8 +1,9 @@
 (ns quo2.components.calendar.calendar-year.view
-  (:require [react-native.core :as rn]
-            [quo2.theme :as theme]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.calendar.calendar-year.style :as style]))
+  (:require
+    [quo2.components.calendar.calendar-year.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]))
 
 (defn- view-internal
   [{:keys [selected? disabled? on-press theme]} year]

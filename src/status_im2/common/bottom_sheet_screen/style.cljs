@@ -1,7 +1,8 @@
 (ns status-im2.common.bottom-sheet-screen.style
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as theme]
+    [react-native.reanimated :as reanimated]))
 
 (defn background
   [opacity]

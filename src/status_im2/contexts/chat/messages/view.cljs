@@ -6,10 +6,10 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.constants :as constants]
-    [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as contact-requests.bottom-drawer]
-    [status-im2.contexts.chat.messages.list.view :as list.view]
-    [status-im2.contexts.chat.messages.list.style :as style]
     [status-im2.contexts.chat.composer.view :as composer.view]
+    [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as contact-requests.bottom-drawer]
+    [status-im2.contexts.chat.messages.list.style :as style]
+    [status-im2.contexts.chat.messages.list.view :as list.view]
     [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
     [utils.re-frame :as rf]))
 

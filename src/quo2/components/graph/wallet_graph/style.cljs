@@ -1,5 +1,6 @@
 (ns quo2.components.graph.wallet-graph.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def gradient-background
   {:height   294

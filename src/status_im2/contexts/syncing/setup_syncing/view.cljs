@@ -1,18 +1,19 @@
 (ns status-im2.contexts.syncing.setup-syncing.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.clipboard :as clipboard]
-            [react-native.core :as rn]
-            [react-native.hooks :as hooks]
-            [reagent.core :as reagent]
-            [status-im2.common.qr-codes.view :as qr-codes]
-            [status-im2.common.resources :as resources]
-            [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
-            [status-im2.contexts.syncing.setup-syncing.style :as style]
-            [status-im2.contexts.syncing.utils :as sync-utils]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.clipboard :as clipboard]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [reagent.core :as reagent]
+    [status-im2.common.qr-codes.view :as qr-codes]
+    [status-im2.common.resources :as resources]
+    [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
+    [status-im2.contexts.syncing.setup-syncing.style :as style]
+    [status-im2.contexts.syncing.utils :as sync-utils]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def code-valid-for-ms 120000)
 (def one-min-ms 60000)

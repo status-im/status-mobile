@@ -1,17 +1,18 @@
 (ns status-im2.common.home.banner.view
-  (:require [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [reagent.core :as reagent]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.common.home.banner.style :as style]
-            [status-im2.common.home.title-column.view :as title-column]
-            [status-im2.common.home.top-nav.view :as top-nav]
-            [utils.re-frame :as rf]))
+  (:require
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as theme]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [status-im2.common.home.banner.style :as style]
+    [status-im2.common.home.title-column.view :as title-column]
+    [status-im2.common.home.top-nav.view :as top-nav]
+    [utils.re-frame :as rf]))
 
 (def card-banner-overflow-threshold 3)
 (def card-banner-overflow (reagent/atom :visible))

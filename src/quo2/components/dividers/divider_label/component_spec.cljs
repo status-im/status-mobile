@@ -1,6 +1,7 @@
 (ns quo2.components.dividers.divider-label.component-spec
-  (:require [quo2.components.dividers.divider-label.view :as divider-label]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.dividers.divider-label.view :as divider-label]
+    [test-helpers.component :as h]))
 
 (h/describe "Divider Label"
   (h/test "default render"

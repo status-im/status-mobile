@@ -1,7 +1,8 @@
 (ns status-im2.common.alert.events
-  (:require [utils.i18n :as i18n]
-            [re-frame.core :as re-frame]
-            [react-native.core :as rn]))
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (defn show-popup
   ([title content]

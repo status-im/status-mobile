@@ -1,6 +1,7 @@
 (ns status-im.signing.eip1559
-  (:require [re-frame.core :as re-frame]
-            [status-im2.common.json-rpc.events :as json-rpc]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im2.common.json-rpc.events :as json-rpc]))
 
 (defonce london-activated? (atom false))
 

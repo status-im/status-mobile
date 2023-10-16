@@ -1,13 +1,13 @@
 (ns status-im2.contexts.onboarding.enable-notifications.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [react-native.platform :as platform]
-            [react-native.safe-area :as safe-area]
-            [status-im.notifications.core :as notifications]
-            [status-im2.contexts.onboarding.enable-notifications.style :as style]
-            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
+    [status-im2.contexts.onboarding.enable-notifications.style :as style]
+    [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn page-title
   []
@@ -25,7 +25,7 @@
      [quo/button
       {:on-press            (fn []
                               (shell.utils/change-selected-stack-id :communities-stack true nil)
-                              (rf/dispatch [::notifications/switch true platform/ios?])
+                              (rf/dispatch [:push-notifications/switch true platform/ios?])
                               (rf/dispatch [:navigate-to-within-stack
                                             [:welcome :enable-notifications]]))
        :type                :primary

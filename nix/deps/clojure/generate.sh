@@ -53,8 +53,6 @@ function nix_entry_from_jar() {
     JAR_PATH="${MAVEN_CACHE_PATH}/${JAR_REL_PATH}"
     JAR_NAME=$(basename "${JAR_PATH}")
     JAR_DIR=$(dirname "${JAR_PATH}")
-    # POM might have a slightly different name
-    POM_PATH=$(echo ${JAR_DIR}/*.pom)
 
     REPO_NAME=$(get_repo_for_dir "${JAR_DIR}")
     REPO_URL=${REPOS[${REPO_NAME}]}
@@ -62,18 +60,11 @@ function nix_entry_from_jar() {
     JAR_SHA1=$(cat "${JAR_PATH}.sha1")
     JAR_SHA256=$(get_nix_sha "${JAR_PATH}")
 
-    POM_SHA1=$(cat "${POM_PATH}.sha1")
-    POM_SHA256=$(get_nix_sha "${POM_PATH}")
-    
     # Format into a Nix attrset entry
     echo -n "
   {
     \"path\": \"${JAR_REL_NAME}\",
     \"host\": \"${REPO_URL}\",
-    \"pom\": {
-      \"sha1\": \"${POM_SHA1}\",
-      \"sha256\": \"${POM_SHA256}\"
-    },
     \"jar\": {
       \"sha1\": \"${JAR_SHA1}\",
       \"sha256\": \"${JAR_SHA256}\"

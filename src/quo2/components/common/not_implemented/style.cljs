@@ -1,5 +1,6 @@
 (ns quo2.components.common.not-implemented.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn text
   [blur? theme]

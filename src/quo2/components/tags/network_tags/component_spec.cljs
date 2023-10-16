@@ -1,6 +1,7 @@
 (ns quo2.components.tags.network-tags.component-spec
-  (:require [quo2.components.tags.network-tags.view :as network-tags]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.tags.network-tags.view :as network-tags]
+    [test-helpers.component :as h]))
 
 (h/describe "network-tags component"
   (h/test "renders network tags with single network"

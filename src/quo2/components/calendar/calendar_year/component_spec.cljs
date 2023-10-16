@@ -1,6 +1,7 @@
 (ns quo2.components.calendar.calendar-year.component-spec
-  (:require [quo2.components.calendar.calendar-year.view :as calendar-year]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.calendar.calendar-year.view :as calendar-year]
+    [test-helpers.component :as h]))
 
 (h/describe "calendar-year component"
   (h/test "default render of calendar-year component"

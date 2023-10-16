@@ -1,7 +1,8 @@
 (ns status-im.chat.models.mentions
-  (:require [clojure.set :as set]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.set :as set]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (defn- transfer-input-segments
   [segments]

@@ -1,22 +1,24 @@
 (ns status-im.ui.screens.wallet.collectibles.views
-  (:require ["react-native-svg" :refer (SvgUri)]
-            [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.accordion :as accordion]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toastable-highlight :refer [toastable-highlight-view]]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [utils.re-frame :as rf]
-            [status-im.wallet.core :as wallet]))
+  (:require
+    ["react-native-svg" :refer (SvgUri)]
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.accordion :as accordion]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toastable-highlight :refer [toastable-highlight-view]]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.components.views :as wallet.components]
+    [status-im.wallet.core :as wallet]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def svg-uri (reagent/adapt-react-class SvgUri))
 
@@ -184,7 +186,7 @@
        [accordion/section
         {:title
          [react/view {:flex 1}
-          [quo/list-item
+          [list.item/list-item
            {:title (:name collectible)
             :text-size :large
             :accessibility-label
@@ -283,18 +285,18 @@
                :border-color        colors/gray-lighter}}]
 
      ;; TODO <shivekkhurana>: Enable txns
-     ;; [quo/list-item {:title    (i18n/label :t/wallet-send)
+     ;; [list/list-item {:title    (i18n/label :t/wallet-send)
      ;;                 :icon     :main-icons/send :accessibility-label :nft-send :theme    :accent
      ;;                 :on-press #()}]
 
      ;; TODO <shivekkhurana>: What to do with share? Share links or share image?
-     ;; [quo/list-item {:title    (i18n/label :t/share)
+     ;; [list/list-item {:title    (i18n/label :t/share)
      ;;                 :theme    :accent
      ;;                 :accessibility-label
      ;;                 :nft-share
      ;;                 :on-press #()
      ;;                 :icon     :main-icons/share}]
-     [quo/list-item
+     [list.item/list-item
       {:title    (i18n/label :t/view-on-opensea)
        :theme    :accent
        :icon     :main-icons/browser
@@ -303,7 +305,7 @@
        [toastable-highlight-view
         ;; the last string is an emoji. It might not show up in all editors but its there
         {:toast-label (str (i18n/label :t/profile-picture-updated)) " " "😎"}
-        [quo/list-item
+        [list.item/list-item
          {:title (i18n/label :t/use-as-profile-picture)
           :theme :accent
           :on-press #(re-frame/dispatch

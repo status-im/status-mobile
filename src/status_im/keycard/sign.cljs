@@ -1,14 +1,15 @@
 (ns status-im.keycard.sign
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.keycard.common :as common]
-            [utils.re-frame :as rf]
-            [utils.money :as money]
-            [status-im.utils.deprecated-types :as types]
-            [taoensso.timbre :as log]
-            [utils.ethereum.chain :as chain]
-            [status-im.wallet.utils :as wallet.utils]
-            [utils.address :as address]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.keycard.common :as common]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.wallet.utils :as wallet.utils]
+    [taoensso.timbre :as log]
+    [utils.address :as address]
+    [utils.ethereum.chain :as chain]
+    [utils.money :as money]
+    [utils.re-frame :as rf]))
 
 (rf/defn sign
   {:events [:keycard/sign]}

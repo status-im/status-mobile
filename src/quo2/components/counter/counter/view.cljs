@@ -1,11 +1,11 @@
 (ns quo2.components.counter.counter.view
   (:require
+    [quo2.components.counter.counter.style :as style]
     [quo2.components.markdown.text :as text]
     [quo2.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [utils.number]
     [quo2.theme :as quo.theme]
-    [quo2.components.counter.counter.style :as style]))
+    [react-native.core :as rn]
+    [utils.number]))
 
 (defn- view-internal
   [{:keys [type customization-color theme container-style accessibility-label max-value]

@@ -1,12 +1,13 @@
 (ns quo2.components.dividers.strength-divider.view
-  (:require [quo2.components.dividers.strength-divider.style :as style]
-            [quo2.components.icon :as icon]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
-            [react-native.svg :as svg]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.components.dividers.strength-divider.style :as style]
+    [quo2.components.icon :as icon]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]
+    [react-native.svg :as svg]
+    [utils.i18n :as i18n]))
 
 (def strength-divider-types
   {:very-weak   {:default-text (i18n/label :t/strength-divider-very-weak-label)

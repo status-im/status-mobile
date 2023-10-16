@@ -1,5 +1,6 @@
 (ns quo2.components.switchers.utils
-  (:require [utils.i18n :as i18n]))
+  (:require
+    [utils.i18n :as i18n]))
 
 (defn subtitle
   [type {:keys [photos]}]

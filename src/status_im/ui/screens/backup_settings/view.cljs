@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.backup-settings.view
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [utils.datetime :as datetime]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]))
 
 (defn perform-backup!
   []
@@ -36,7 +37,7 @@
      performing-backup? [:backup/performing-backup]]
     [:<>
      [react/scroll-view
-      [quo/list-item
+      [list.item/list-item
        {:size :small
         :title (i18n/label :t/backup-through-waku)
         :accessibility-label :backup-enabled
@@ -46,7 +47,7 @@
           [:multiaccounts.ui/switch-backup-enabled (not backup-enabled?)])
         :accessory :switch
         :active backup-enabled?}]
-      [quo/list-item
+      [list.item/list-item
        {:size      :small
         :title     (i18n/label :t/last-backup-performed)
         :accessory :text

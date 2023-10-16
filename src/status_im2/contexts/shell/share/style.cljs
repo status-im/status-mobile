@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.share.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]))
 
 (def screen-padding 20)
 

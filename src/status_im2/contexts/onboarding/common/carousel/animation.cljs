@@ -1,10 +1,10 @@
 (ns status-im2.contexts.onboarding.common.carousel.animation
   (:require
+    [oops.core :as oops]
     [react-native.core :as rn]
-    [react-native.reanimated :as reanimated]
-    [utils.worklets.onboarding-carousel :as worklets.onboarding-carousel]
     [react-native.gesture :as gesture]
-    [oops.core :as oops]))
+    [react-native.reanimated :as reanimated]
+    [utils.worklets.onboarding-carousel :as worklets.onboarding-carousel]))
 
 (def ^:const progress-bar-animation-delay 300)
 (def ^:const progress-bar-animation-duration 4000)

@@ -1,14 +1,15 @@
 (ns status-im2.contexts.contacts.drawers.nickname-drawer.view
-  (:require [clojure.string :as string]
-            [quo2.components.icon :as icons]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.contexts.contacts.drawers.nickname-drawer.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.icon :as icons]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.contexts.contacts.drawers.nickname-drawer.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn add-nickname-and-show-toast
   [primary-name entered-nickname public-key]

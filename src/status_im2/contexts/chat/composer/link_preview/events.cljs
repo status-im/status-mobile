@@ -82,7 +82,7 @@
 
 (rf/defn unfurl-parsed-urls-success
   {:events [:link-preview/unfurl-parsed-urls-success]}
-  [{:keys [db]} request-id new-previews]
+  [{:keys [db]} request-id {new-previews :linkPreviews}]
   (when (= request-id (get-in db [:chat/link-previews :request-id]))
     (let [new-previews         (map data-store.messages/<-link-preview-rpc new-previews)
           curr-previews        (get-in db [:chat/link-previews :unfurled])

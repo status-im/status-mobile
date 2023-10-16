@@ -1,7 +1,8 @@
 (ns quo2.components.avatars.collection-avatar.component-spec
-  (:require [quo2.components.avatars.collection-avatar.view :as collection-avatar]
-            [quo2.foundations.resources :as resources]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.avatars.collection-avatar.view :as collection-avatar]
+    [quo2.foundations.resources :as resources]
+    [test-helpers.component :as h]))
 
 (h/describe "collection avatar"
   (h/describe "Profile picture"

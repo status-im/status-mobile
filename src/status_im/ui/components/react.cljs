@@ -1,19 +1,20 @@
 (ns status-im.ui.components.react
-  (:require ["@react-native-community/blur" :as blur]
-            ["@react-native-community/clipboard" :default Clipboard]
-            ["@react-native-community/masked-view" :default MaskedView]
-            ["react" :as reactjs]
-            ["react-native" :as react-native :refer (Keyboard BackHandler)]
-            ["react-native-fast-image" :as FastImage]
-            ["react-native-image-crop-picker" :default image-picker]
-            ["react-native-linear-gradient" :default LinearGradient]
-            ["react-native-navigation" :refer (Navigation)]
-            [quo.design-system.colors :as colors]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.typography :as typography]
-            [react-native.platform :as platform]
-            [status-im.utils.utils :as utils])
+  (:require
+    ["@react-native-community/blur" :as blur]
+    ["@react-native-community/clipboard" :default Clipboard]
+    ["@react-native-community/masked-view" :default MaskedView]
+    ["react" :as reactjs]
+    ["react-native" :as react-native :refer (Keyboard BackHandler)]
+    ["react-native-fast-image" :as FastImage]
+    ["react-native-image-crop-picker" :default image-picker]
+    ["react-native-linear-gradient" :default LinearGradient]
+    ["react-native-navigation" :refer (Navigation)]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.text-style :as typography]
+    [status-im.utils.utils :as utils]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (def native-modules (.-NativeModules react-native))

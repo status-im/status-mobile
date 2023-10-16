@@ -1,12 +1,13 @@
 (ns status-im2.contexts.onboarding.common.carousel.view
-  (:require [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [react-native.navigation :as navigation]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.onboarding.common.carousel.style :as style]
-            [status-im2.contexts.onboarding.common.carousel.animation :as animation]
-            [react-native.gesture :as gesture]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.navigation :as navigation]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.onboarding.common.carousel.animation :as animation]
+    [status-im2.contexts.onboarding.common.carousel.style :as style]
+    [utils.re-frame :as rf]))
 
 (defn header-text-view
   [index window-width header-text]

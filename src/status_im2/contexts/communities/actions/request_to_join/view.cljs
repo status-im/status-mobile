@@ -1,12 +1,13 @@
 (ns status-im2.contexts.communities.actions.request-to-join.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [status-im2.common.password-authentication.view :as password-authentication]
-            [status-im2.contexts.communities.actions.community-rules-list.view :as community-rules]
-            [status-im2.contexts.communities.actions.request-to-join.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [status-im2.common.password-authentication.view :as password-authentication]
+    [status-im2.contexts.communities.actions.community-rules-list.view :as community-rules]
+    [status-im2.contexts.communities.actions.request-to-join.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn join-community-and-navigate-back
   [id]

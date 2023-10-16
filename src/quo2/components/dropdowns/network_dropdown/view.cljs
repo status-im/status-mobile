@@ -1,9 +1,10 @@
 (ns quo2.components.dropdowns.network-dropdown.view
-  (:require [quo2.theme :as quo.theme]
-            [quo2.components.dropdowns.network-dropdown.style :as style]
-            [react-native.core :as rn]
-            [quo2.components.list-items.preview-list.view :as preview-list]
-            [reagent.core :as reagent]))
+  (:require
+    [quo2.components.dropdowns.network-dropdown.style :as style]
+    [quo2.components.list-items.preview-list.view :as preview-list]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn- internal-view
   [_ _]

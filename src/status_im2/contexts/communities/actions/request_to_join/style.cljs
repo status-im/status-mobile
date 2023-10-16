@@ -1,5 +1,6 @@
 (ns status-im2.contexts.communities.actions.request-to-join.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def page-container
   {:margin-horizontal 20

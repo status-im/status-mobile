@@ -1,11 +1,12 @@
 (ns status-im2.contexts.onboarding.common.overlay.view
-  (:require [react-native.reanimated :as reanimated]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [react-native.platform :as platform]
-            [status-im2.contexts.onboarding.common.overlay.style :as style]
-            [status-im2.constants :as constants]))
+  (:require
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.onboarding.common.overlay.style :as style]))
 
 (def max-blur-amount 30)
 

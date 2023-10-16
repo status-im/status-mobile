@@ -1,6 +1,7 @@
 (ns react-native.navigation
   (:refer-clojure :exclude [pop])
-  (:require ["react-native-navigation" :refer (Navigation)]))
+  (:require
+    ["react-native-navigation" :refer (Navigation)]))
 
 (defn set-default-options
   [opts]

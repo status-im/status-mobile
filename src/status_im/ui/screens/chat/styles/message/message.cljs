@@ -1,9 +1,10 @@
 (ns status-im.ui.screens.chat.styles.message.message
-  (:require [quo.design-system.colors :as colors]
-            [quo2.foundations.colors :as quo2.colors]
-            [status-im2.constants :as constants]
-            [status-im.ui.components.react :as react]
-            [quo2.foundations.typography :as typography]))
+  (:require
+    [quo2.foundations.colors :as quo2.colors]
+    [quo2.foundations.typography :as typography]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.react :as react]
+    [status-im2.constants :as constants]))
 
 (defn style-message-text
   []

@@ -1,6 +1,7 @@
 (ns quo2.components.avatars.channel-avatar.component-spec
-  (:require [quo2.components.avatars.channel-avatar.view :as component]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.avatars.channel-avatar.view :as component]
+    [test-helpers.component :as h]))
 
 (h/describe "Channel Avatar"
   (h/test "default render"

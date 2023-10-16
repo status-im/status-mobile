@@ -1,13 +1,14 @@
 (ns status-im2.contexts.wallet.send.select-address.view
-  (:require [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [status-im2.contexts.wallet.send.select-address.style :as style]
-            [react-native.safe-area :as safe-area]
-            [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [utils.i18n :as i18n]
-            [status-im2.constants :as constants]
-            [reagent.core :as reagent]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.wallet.send.select-address.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def tabs-data
   [{:id :tab/recent :label (i18n/label :t/recent) :accessibility-label :recent-tab}

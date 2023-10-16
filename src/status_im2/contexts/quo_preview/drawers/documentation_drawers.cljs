@@ -1,10 +1,11 @@
 (ns status-im2.contexts.quo-preview.drawers.documentation-drawers
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.re-frame :as rf]))
 
 (def descriptor
   [{:key  :title

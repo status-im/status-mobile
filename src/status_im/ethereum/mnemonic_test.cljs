@@ -1,7 +1,8 @@
 (ns status-im.ethereum.mnemonic-test
-  (:require [cljs.test :refer-macros [deftest is]]
-            [clojure.string :as string]
-            [status-im.ethereum.mnemonic :as mnemonic]))
+  (:require
+    [cljs.test :refer-macros [deftest is]]
+    [clojure.string :as string]
+    [status-im.ethereum.mnemonic :as mnemonic]))
 
 (deftest valid-length?
   (is (not (mnemonic/valid-length? "rate rate")))

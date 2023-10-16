@@ -1,12 +1,12 @@
 (ns quo2.components.settings.category.reorder.view
   (:require
     [quo2.components.markdown.text :as text]
+    [quo2.components.settings.category.style :as style]
     [quo2.components.settings.reorder-item.types :as types]
     [quo2.components.settings.reorder-item.view :as reorder-item]
     [quo2.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [quo2.components.settings.category.style :as style]
     [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
     [react-native.draggable-flatlist :as draggable-flatlist]
     [reagent.core :as reagent]))
 

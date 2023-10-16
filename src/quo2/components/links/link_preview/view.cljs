@@ -1,8 +1,9 @@
 (ns quo2.components.links.link-preview.view
-  (:require [quo2.components.buttons.button.view :as button]
-            [quo2.components.links.link-preview.style :as style]
-            [quo2.components.markdown.text :as text]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.links.link-preview.style :as style]
+    [quo2.components.markdown.text :as text]
+    [react-native.core :as rn]))
 
 (defn- button-disabled
   [disabled-text on-enable]

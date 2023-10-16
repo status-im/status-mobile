@@ -1,10 +1,11 @@
 (ns status-im2.contexts.shell.activity-center.tabs.view
-  (:require [utils.re-frame :as rf]
-            [quo2.core :as quo]
-            [status-im2.contexts.shell.activity-center.style :as style]
-            [status-im2.contexts.shell.activity-center.notification-types :as types]
-            [clojure.set :as set]
-            [utils.i18n :as i18n]))
+  (:require
+    [clojure.set :as set]
+    [quo2.core :as quo]
+    [status-im2.contexts.shell.activity-center.notification-types :as types]
+    [status-im2.contexts.shell.activity-center.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn tabs
   []

@@ -1,13 +1,14 @@
 (ns status-im2.contexts.chat.home.contact-request.view
-  (:require [clojure.string :as string]
-            [utils.i18n :as i18n]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [status-im2.contexts.shell.activity-center.notification-types :as notification-types]
-            [status-im2.contexts.chat.home.contact-request.style :as style]
-            [utils.re-frame :as rf]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [status-im2.contexts.chat.home.contact-request.style :as style]
+    [status-im2.contexts.shell.activity-center.notification-types :as notification-types]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn get-display-name
   [{:keys [chat-id message]}]

@@ -1,6 +1,7 @@
 (ns quo2.components.tags.status-tags-component-spec
-  (:require [quo2.components.tags.status-tags :as quo2]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.tags.status-tags :as quo2]
+    [test-helpers.component :as h]))
 
 (defn render-status-tag
   [opts]

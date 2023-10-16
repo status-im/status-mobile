@@ -1,10 +1,11 @@
 (ns quo2.components.calendar.calendar.years-list.view
-  (:require [react-native.core :as rn]
-            [quo2.theme :as theme]
-            [react-native.linear-gradient :as linear-gradient]
-            [quo2.components.calendar.calendar.utils :as utils]
-            [quo2.components.calendar.calendar-year.view :as calendar-year]
-            [quo2.components.calendar.calendar.years-list.style :as style]))
+  (:require
+    [quo2.components.calendar.calendar-year.view :as calendar-year]
+    [quo2.components.calendar.calendar.utils :as utils]
+    [quo2.components.calendar.calendar.years-list.style :as style]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]))
 
 (defn- year-view
   [year _ _ {:keys [selected-year on-press]}]

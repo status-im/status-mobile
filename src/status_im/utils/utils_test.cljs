@@ -1,7 +1,8 @@
 (ns status-im.utils.utils-test
-  (:require [cljs.test :refer-macros [deftest is]]
-            [status-im.utils.core :as u]
-            [status-im.utils.utils :as uu]))
+  (:require
+    [cljs.test :refer-macros [deftest is]]
+    [status-im.utils.core :as u]
+    [status-im.utils.utils :as uu]))
 
 (deftest truncate-str-test
   (is (= (u/truncate-str "Long string" 7) "Long...")) ; threshold is less then string length

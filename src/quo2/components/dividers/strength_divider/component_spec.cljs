@@ -1,6 +1,7 @@
 (ns quo2.components.dividers.strength-divider.component-spec
-  (:require [quo2.components.dividers.strength-divider.view :as strength-divider]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.dividers.strength-divider.view :as strength-divider]
+    [test-helpers.component :as h]))
 
 (h/describe "select-profile component"
   (h/test "render component"

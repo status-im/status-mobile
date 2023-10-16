@@ -1,6 +1,7 @@
 (ns quo2.components.inputs.locked-input.component-spec
-  (:require [quo2.components.inputs.locked-input.view :as locked-input]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.inputs.locked-input.view :as locked-input]
+    [test-helpers.component :as h]))
 
 (h/describe "Locked Input"
   (h/test "renders label, value and icon"

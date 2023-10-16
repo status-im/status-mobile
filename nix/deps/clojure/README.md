@@ -12,12 +12,13 @@ By using the following command:
 ```sh
 shadow-cljs classpath --force-spawn
 ```
-We both download the necessary JARs and POMs into `~/.m2` folder, but also get the classpath printed into standard output.
+We download the necessary JARs into `~/.m2` folder, but also get the classpath printed into standard output.
+We skip POM files since they are not necessary, and add edge cases we don't want to handle.
 
 We then use the classpath in combination with contents of `~/.m2` folder to generate the following files:
 
 * `deps.list` - List of JARs relative to the `~/.m2` cache folder.
-* `deps.json` - Full list of JARs and POMs including their SHAs.
+* `deps.json` - Full list of JARs including their SHAs.
 
 The `deps.list` file is just intermediate and for debugging purposes.
 The `deps.json` is loaded by the derivation in [`default.nix`](./default.nix) and used to produce a derivation that contains all the necessary dependencies:

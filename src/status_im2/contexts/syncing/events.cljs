@@ -1,17 +1,18 @@
 (ns status-im2.contexts.syncing.events
-  (:require [native-module.core :as native-module]
-            [re-frame.core :as re-frame]
-            [clojure.string :as string]
-            [status-im.data-store.settings :as data-store.settings]
-            [status-im.node.core :as node]
-            [status-im2.config :as config]
-            [status-im2.constants :as constants]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]
-            [utils.security.core :as security]
-            [utils.transforms :as transforms]
-            [status-im2.contexts.syncing.utils :as sync-utils]
-            [react-native.platform :as platform]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.data-store.settings :as data-store.settings]
+    [status-im.node.core :as node]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.syncing.utils :as sync-utils]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]
+    [utils.transforms :as transforms]))
 
 (rf/defn local-pairing-update-role
   {:events [:syncing/update-role]}

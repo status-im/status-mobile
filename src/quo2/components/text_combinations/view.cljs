@@ -1,8 +1,8 @@
 (ns quo2.components.text-combinations.view
   (:require
-    [quo2.theme :as theme]
     [quo2.components.markdown.text :as text]
     [quo2.components.text-combinations.style :as style]
+    [quo2.theme :as theme]
     [react-native.core :as rn]))
 
 (defn icon

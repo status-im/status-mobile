@@ -1,6 +1,7 @@
 (ns quo2.components.onboarding.small-option-card.component-spec
-  (:require [quo2.components.onboarding.small-option-card.view :as small-option-card]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.onboarding.small-option-card.view :as small-option-card]
+    [test-helpers.component :as h]))
 
 (defn- testing-small-option-card
   [variant

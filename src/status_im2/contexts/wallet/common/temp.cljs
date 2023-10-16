@@ -4,11 +4,10 @@
     [quo2.core :as quo]
     [quo2.foundations.resources :as quo.resources]
     [react-native.core :as rn]
-    [status-im2.common.resources :as resources]
+    [status-im2.common.resources :as status.resources]
     [status-im2.constants :as constants]
     [status-im2.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
-    [status-im2.common.resources :as status.resources]
     [utils.re-frame :as rf]))
 
 (def networks
@@ -160,7 +159,7 @@
 (def account-origin-state
   {:type            :default-keypair
    :stored          :on-keycard
-   :profile-picture (resources/get-mock-image :user-picture-male5)
+   :profile-picture (status.resources/get-mock-image :user-picture-male5)
    :derivation-path (string/replace constants/path-default-wallet #"/" " / ")
    :user-name       "Alisher Yakupov"
    :on-press        #(js/alert "pressed")})
@@ -179,3 +178,26 @@
     :state         :default
     :action        :icon
     :on-press-icon on-press-icon}])
+
+(def account-data
+  {:title                "Trip to Vegas"
+   :type                 :account
+   :networks             [{:name :ethereum :short :eth}
+                          {:name :optimism :short :opt}
+                          {:name :arbitrum :short :arb1}]
+   :description          "0x62b...0a5"
+   :account-avatar-emoji "🍑"
+   :customization-color  :purple})
+
+(def other-accounts
+  [{:customization-color :flamingo
+    :emoji               "🍿"
+    :name                "New House"
+    :address             "0x21a...49e"
+    :networks            [{:name :ethereum :short :eth}
+                          {:name :optimism :short :opt}]}
+   {:customization-color :blue
+    :emoji               "🎮"
+    :name                "My savings"
+    :address             "0x43c...98d"
+    :networks            [{:name :ethereum :short :eth}]}])

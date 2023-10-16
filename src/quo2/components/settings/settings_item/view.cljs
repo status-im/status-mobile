@@ -1,17 +1,17 @@
 (ns quo2.components.settings.settings-item.view
   (:require
+    [quo2.components.avatars.icon-avatar :as icon-avatar]
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [quo2.components.buttons.button.view :as button]
     [quo2.components.icon :as icon]
     [quo2.components.list-items.preview-list.view :as preview-list]
-    [quo2.components.selectors.selectors.view :as selectors]
-    [quo2.components.buttons.button.view :as button]
     [quo2.components.markdown.text :as text]
+    [quo2.components.selectors.selectors.view :as selectors]
+    [quo2.components.settings.settings-item.style :as style]
+    [quo2.components.tags.context-tag.view :as context-tag]
+    [quo2.components.tags.status-tags :as status-tags]
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
-    [quo2.components.avatars.icon-avatar :as icon-avatar]
-    [quo2.components.tags.status-tags :as status-tags]
-    [quo2.components.tags.context-tag.view :as context-tag]
-    [quo2.components.settings.settings-item.style :as style]
-    [quo2.components.avatars.user-avatar.view :as user-avatar]
     [utils.i18n :as i18n]))
 
 (defn status-description

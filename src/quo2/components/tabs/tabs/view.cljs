@@ -1,14 +1,15 @@
 (ns quo2.components.tabs.tabs.view
-  (:require [oops.core :refer [oget]]
-            [quo2.components.tabs.tab.view :as tab]
-            [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
-            [react-native.masked-view :as masked-view]
-            [reagent.core :as reagent]
-            [utils.collection :as utils.collection]
-            [utils.number]
-            [react-native.gesture :as gesture]
-            [quo2.components.tabs.tabs.style :as style]))
+  (:require
+    [oops.core :refer [oget]]
+    [quo2.components.tabs.tab.view :as tab]
+    [quo2.components.tabs.tabs.style :as style]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.linear-gradient :as linear-gradient]
+    [react-native.masked-view :as masked-view]
+    [reagent.core :as reagent]
+    [utils.collection :as utils.collection]
+    [utils.number]))
 
 (def default-tab-size 32)
 (def unread-count-offset 3)

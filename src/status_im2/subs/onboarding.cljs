@@ -1,5 +1,6 @@
 (ns status-im2.subs.onboarding
-  (:require [re-frame.core :as re-frame]))
+  (:require
+    [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub
  :onboarding-2/customization-color

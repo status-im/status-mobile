@@ -1,11 +1,12 @@
 (ns quo2.components.buttons.predictive-keyboard.view
-  (:require [react-native.core :as rn]
-            [quo2.components.buttons.predictive-keyboard.style :as style]
-            [quo2.components.info.info-message :as info-message]
-            [quo2.theme :as theme]
-            [react-native.linear-gradient :as linear-gradient]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.buttons.button.view :as button]))
+  (:require
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.buttons.predictive-keyboard.style :as style]
+    [quo2.components.info.info-message :as info-message]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]))
 
 (def ^:private gradients
   {:light [(colors/alpha colors/neutral-40 0.05) (colors/alpha colors/neutral-40 0)]

@@ -1,5 +1,6 @@
 (ns quo2.components.dropdowns.network-dropdown.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn container-border-color
   [{:keys [state blur? theme pressed?]}]

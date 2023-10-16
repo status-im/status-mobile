@@ -1,5 +1,6 @@
 (ns quo2.components.profile.collectible.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def tile-style-by-size
   {:xl {:width         160

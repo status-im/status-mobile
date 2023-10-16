@@ -1,7 +1,8 @@
 (ns react-native.section-list
-  (:require ["react-native" :as react-native]
-            [react-native.flat-list :as flat-list]
-            [reagent.core :as reagent]))
+  (:require
+    ["react-native" :as react-native]
+    [react-native.flat-list :as flat-list]
+    [reagent.core :as reagent]))
 
 (def section-list-class (reagent/adapt-react-class (.-SectionList react-native)))
 

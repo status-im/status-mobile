@@ -1,13 +1,13 @@
 (ns status-im2.contexts.chat.messages.contact-requests.bottom-drawer
   (:require
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [quo2.core :as quo]
-    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [quo2.components.drawers.permission-context.view :as permission-context]
-    [status-im2.constants :as constants]
+    [quo2.core :as quo]
     [react-native.core :as rn]
-    [status-im2.config :as config]))
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   [contact-id contact-request-state group-chat]

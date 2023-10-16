@@ -4,8 +4,9 @@
    This EIP standardize how ethereum addresses should be printed as strings to validate checksum.
 
    e.g. 0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"
-  (:require [clojure.string :as string]
-            [native-module.core :as native-module]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]))
 
 (def hex-prefix "0x")
 

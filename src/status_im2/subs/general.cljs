@@ -1,12 +1,13 @@
 (ns status-im2.subs.general
-  (:require [re-frame.core :as re-frame]
-            [clojure.string :as string]
-            [status-im.ethereum.tokens :as tokens]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.utils.build :as build]
-            [status-im.utils.mobile-sync :as mobile-network-utils]
-            [status-im2.constants :as constants]
-            [utils.ethereum.chain :as chain]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.tokens :as tokens]
+    [status-im.multiaccounts.model :as multiaccounts.model]
+    [status-im.utils.build :as build]
+    [status-im.utils.mobile-sync :as mobile-network-utils]
+    [status-im2.constants :as constants]
+    [utils.ethereum.chain :as chain]))
 
 (re-frame/reg-sub
  :visibility-status-updates/visibility-status-update
@@ -285,3 +286,15 @@
        (and
         (= network-type "cellular")
         syncing-on-mobile-network?))))
+
+(re-frame/reg-sub
+ :toasts/toast
+ :<- [:toasts]
+ (fn [toasts [_ toast-id]]
+   (get-in toasts [:toasts toast-id])))
+
+(re-frame/reg-sub
+ :toasts/toast-cursor
+ :<- [:toasts]
+ (fn [toasts [_ toast-id & cursor]]
+   (get-in toasts (into [:toasts toast-id] cursor))))

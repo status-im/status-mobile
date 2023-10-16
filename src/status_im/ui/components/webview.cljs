@@ -1,8 +1,9 @@
 (ns status-im.ui.components.webview
-  (:require ["react-native-webview" :default rn-webview]
-            [reagent.core :as reagent]
-            [status-im2.config :as config]
-            [react-native.platform :as platform]))
+  (:require
+    ["react-native-webview" :default rn-webview]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [status-im2.config :as config]))
 
 (def webview-class
   (reagent/adapt-react-class rn-webview))

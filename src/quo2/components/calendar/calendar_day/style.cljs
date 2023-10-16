@@ -1,5 +1,6 @@
 (ns quo2.components.calendar.calendar-day.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def wrapper
   {:flex            1
@@ -50,7 +51,7 @@
     (assoc :opacity 0.3)
 
     (= state :selected)
-    (assoc :background-color (colors/custom-color-by-theme customization-color 50 60 nil nil theme))))
+    (assoc :background-color (colors/resolve-color customization-color theme))))
 
 (defn text
   [{:keys [state theme]}]
@@ -65,5 +66,5 @@
    :height           2
    :border-radius    8
    :background-color (if (= state :today)
-                       (colors/custom-color-by-theme customization-color 50 60 nil nil theme)
+                       (colors/resolve-color customization-color theme)
                        colors/neutral-100-opa-0)})

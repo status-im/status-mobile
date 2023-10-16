@@ -1,5 +1,6 @@
 (ns status-im2.contexts.onboarding.common.background.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def background-container
   {:background-color colors/neutral-95

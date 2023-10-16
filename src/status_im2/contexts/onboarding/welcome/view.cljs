@@ -1,12 +1,13 @@
 (ns status-im2.contexts.onboarding.welcome.view
-  (:require [quo2.core :as quo]
-            [re-frame.core :as re-frame]
-            [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.onboarding.welcome.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.onboarding.welcome.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn page-title
   []

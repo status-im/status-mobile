@@ -1,7 +1,8 @@
 (ns quo2.components.colors.color-picker.view
-  (:require [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [quo2.components.colors.color.view :as color]))
+  (:require
+    [quo2.components.colors.color.view :as color]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (def color-list
   [:blue :yellow :purple :turquoise :magenta :sky :orange :army :flamingo :camel :copper])

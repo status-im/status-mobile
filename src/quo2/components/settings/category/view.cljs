@@ -1,6 +1,7 @@
 (ns quo2.components.settings.category.view
-  (:require [quo2.components.settings.category.settings.view :as settings]
-            [quo2.components.settings.category.reorder.view :as reorder]))
+  (:require
+    [quo2.components.settings.category.reorder.view :as reorder]
+    [quo2.components.settings.category.settings.view :as settings]))
 
 (defn category
   [{:keys [list-type] :as props}]

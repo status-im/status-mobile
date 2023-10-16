@@ -1,9 +1,10 @@
 (ns status-im2.contexts.profile.create.events
-  (:require [utils.re-frame :as rf]
-            [native-module.core :as native-module]
-            [utils.security.core :as security]
-            [re-frame.core :as re-frame]
-            [status-im2.contexts.profile.config :as profile.config]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im2.contexts.profile.config :as profile.config]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (re-frame/reg-fx
  ::create-profile-and-login

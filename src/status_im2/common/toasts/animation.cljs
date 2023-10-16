@@ -1,6 +1,7 @@
 (ns status-im2.common.toasts.animation
-  (:require [react-native.gesture :as gesture]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [react-native.gesture :as gesture]
+    [react-native.reanimated :as reanimated]))
 
 (def slide-out-up-animation
   (-> ^js reanimated/slide-out-up-animation

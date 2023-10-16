@@ -1,10 +1,11 @@
 (ns status-im.keycard.card
-  (:require [re-frame.core :as re-frame]
-            [status-im.keycard.keycard :as keycard]
-            [status-im.keycard.real-keycard :as real-keycard]
-            [status-im.keycard.simulated-keycard :as simulated-keycard]
-            [status-im2.config :as config]
-            [taoensso.timbre :as log]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.keycard.keycard :as keycard]
+    [status-im.keycard.real-keycard :as real-keycard]
+    [status-im.keycard.simulated-keycard :as simulated-keycard]
+    [status-im2.config :as config]
+    [taoensso.timbre :as log]))
 
 (defonce card
   (if config/keycard-test-menu-enabled?

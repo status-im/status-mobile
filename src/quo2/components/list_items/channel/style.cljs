@@ -1,5 +1,6 @@
 (ns quo2.components.list-items.channel.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn- get-label-color
   [notification theme]
@@ -32,10 +33,7 @@
    :align-items        :center
    :overflow           :hidden
    :background-color   (if pressed?
-                         (colors/theme-colors
-                          (colors/custom-color customization-color 50 5)
-                          (colors/custom-color customization-color 60 5)
-                          theme)
+                         (colors/resolve-color customization-color theme 5)
                          :transparent)
    :flex-direction     :row})
 

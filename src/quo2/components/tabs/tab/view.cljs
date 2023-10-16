@@ -1,11 +1,12 @@
 (ns quo2.components.tabs.tab.view
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.common.notification-dot.view :as notification-dot]
-            [quo2.components.tabs.tab.style :as style]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [react-native.svg :as svg]))
+  (:require
+    [quo2.components.common.notification-dot.view :as notification-dot]
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.tabs.tab.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.svg :as svg]))
 
 (defn- right-side-with-cutout
   "SVG exported from Figma."

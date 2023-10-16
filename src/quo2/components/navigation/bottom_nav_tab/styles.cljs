@@ -1,5 +1,6 @@
 (ns quo2.components.navigation.bottom-nav-tab.styles
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn notification-dot
   [customization-color]

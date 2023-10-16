@@ -1,5 +1,6 @@
 (ns quo2.components.calendar.calendar.month-picker.utils
-  (:require [utils.datetime :as datetime]))
+  (:require
+    [utils.datetime :as datetime]))
 
 (defn format-month-year
   [year month]

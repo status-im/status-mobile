@@ -1,19 +1,20 @@
 (ns status-im2.contexts.onboarding.create-profile.view
-  (:require [clojure.string :as string]
-            [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [react-native.hooks :as hooks]
-            [react-native.platform :as platform]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.constants :as c]
-            [status-im2.contexts.onboarding.create-profile.style :as style]
-            [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.constants :as c]
+    [status-im2.contexts.onboarding.create-profile.style :as style]
+    [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 ;; NOTE - validation should match with Desktop
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468

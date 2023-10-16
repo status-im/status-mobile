@@ -1,6 +1,7 @@
 (ns status-im.router.core-test
-  (:require [cljs.test :refer [are deftest]]
-            [status-im.router.core :as router]))
+  (:require
+    [cljs.test :refer [are deftest]]
+    [status-im.router.core :as router]))
 
 (def public-key
   "0x04fbce10971e1cd7253b98c7b7e54de3729ca57ce41a2bfb0d1c4e0a26f72c4b6913c3487fa1b4bb86125770f1743fb4459da05c1cbe31d938814cfaf36e252073")

@@ -1,27 +1,29 @@
 (ns status-im.ui.screens.profile.user.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.design-system.spacing :as spacing]
-            [quo2.components.avatars.user-avatar.style :as user-avatar.style]
-            [quo2.theme :as theme]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.ethereum.stateofus :as stateofus]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.copyable-text :as copyable-text]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.profile-header.view :as profile-header]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.profile.user.edit-picture :as edit]
-            [status-im.ui.screens.profile.user.styles :as styles]
-            [status-im.ui.screens.profile.visibility-status.views :as visibility-status]
-            [status-im.utils.gfycat.core :as gfy]
-            [status-im.utils.universal-links.utils :as universal-links]
-            [status-im.utils.utils :as utils]
-            [status-im2.common.qr-codes.view :as qr-codes]
-            [status-im2.config :as config]
-            [utils.i18n :as i18n])
+  (:require
+    [quo2.components.avatars.user-avatar.style :as user-avatar.style]
+    [quo2.theme :as theme]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ethereum.stateofus :as stateofus]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.common.common :as components.common]
+    [status-im.ui.components.copyable-text :as copyable-text]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list-selection :as list-selection]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.profile-header.view :as profile-header]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.spacing :as spacing]
+    [status-im.ui.screens.profile.user.edit-picture :as edit]
+    [status-im.ui.screens.profile.user.styles :as styles]
+    [status-im.ui.screens.profile.visibility-status.views :as visibility-status]
+    [status-im.utils.gfycat.core :as gfy]
+    [status-im.utils.universal-links.utils :as universal-links]
+    [status-im.utils.utils :as utils]
+    [status-im2.common.qr-codes.view :as qr-codes]
+    [status-im2.config :as config]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-chat-key
@@ -84,7 +86,7 @@
      [visibility-status/visibility-status-button
       visibility-status/calculate-button-height-and-dispatch-popover]
      [quo/separator {:style {:margin-top (:tiny spacing/spacing)}}]
-     [quo/list-item
+     [list.item/list-item
       (cond-> {:title                (or (when registrar preferred-name)
                                          (i18n/label :t/ens-usernames))
                :subtitle             (if registrar
@@ -102,7 +104,7 @@
                :icon                 :main-icons/username}
         registrar
         (assoc :on-press #(re-frame/dispatch [:navigate-to :ens-main registrar])))]
-     [quo/list-item
+     [list.item/list-item
       {:title               (i18n/label :t/contacts)
        :icon                :main-icons/in-contacts
        :accessibility-label :contacts-button
@@ -114,7 +116,7 @@
        :on-press            #(re-frame/dispatch [:navigate-to :contacts-list])}]
      [react/view {:padding-top 16}
       [quo/list-header (i18n/label :t/settings)]]
-     [quo/list-item
+     [list.item/list-item
       {:icon                :main-icons/security
        :title               (i18n/label :t/privacy-and-security)
        :accessibility-label :privacy-and-security-settings-button
@@ -123,64 +125,64 @@
                               [components.common/counter {:size 22} 1])
        :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security])}]
      (when config/quo-preview-enabled?
-       [quo/list-item
+       [list.item/list-item
         {:icon                :main-icons/appearance
          :title               "Quo2.0 Preview"
          :accessibility-label :appearance-settings-button
          :chevron             true
          :on-press            #(re-frame/dispatch [:navigate-to :quo2-preview])}])
-     [quo/list-item
+     [list.item/list-item
       {:icon                :main-icons/appearance
        :title               (i18n/label :t/appearance)
        :accessibility-label :appearance-settings-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :appearance])}]
-     [quo/list-item
+     [list.item/list-item
       {:icon                :main-icons/notification
        :title               (i18n/label :t/notifications)
        :accessibility-label :notifications-settings-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :notifications])}]
-     [quo/list-item
+     [list.item/list-item
       {:icon                :main-icons/mobile
        :title               (i18n/label :t/sync-settings)
        :accessibility-label :sync-settings-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :sync-settings])}]
      (when keycard-pairing
-       [quo/list-item
+       [list.item/list-item
         {:icon                :main-icons/keycard
          :title               (i18n/label :t/keycard)
          :accessibility-label :keycard-button
          :chevron             true
          :on-press            #(re-frame/dispatch [:navigate-to :keycard-settings])}])
-     [quo/list-item
+     [list.item/list-item
       {:icon                :main-icons/settings-advanced
        :title               (i18n/label :t/advanced)
        :accessibility-label :advanced-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :advanced-settings])}]
-     [quo/list-item
+     [list.item/list-item
       {:icon                :main-icons/help
        :title               (i18n/label :t/need-help)
        :accessibility-label :help-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :help-center])}]
-     [quo/list-item
+     [list.item/list-item
       {:icon                :main-icons/info
        :title               (i18n/label :t/about-app)
        :accessibility-label :about-button
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :about-app])}]
      (when local-pairing-mode-enabled?
-       [quo/list-item
+       [list.item/list-item
         {:icon                :i/mobile
          :title               (i18n/label :t/syncing)
          :accessibility-label :syncing
          :chevron             true
          :on-press            #(re-frame/dispatch [:navigate-to :settings-syncing])}])
      [react/view {:padding-vertical 24}
-      [quo/list-item
+      [list.item/list-item
        {:icon :main-icons/log-out
         :title (i18n/label :t/sign-out)
         :accessibility-label :log-out-button

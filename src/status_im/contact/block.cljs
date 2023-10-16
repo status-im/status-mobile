@@ -1,13 +1,14 @@
 (ns status-im.contact.block
-  (:require [re-frame.core :as re-frame]
-            [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im.contact.db :as contact.db]
-            [status-im.data-store.chats :as chats-store]
-            [status-im2.contexts.contacts.events :as contacts-store]
-            [utils.re-frame :as rf]
-            [status-im.utils.deprecated-types :as types]
-            [status-im2.contexts.shell.activity-center.events :as activity-center]
-            [status-im2.navigation.events :as navigation]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.contact.db :as contact.db]
+    [status-im.data-store.chats :as chats-store]
+    [status-im.utils.deprecated-types :as types]
+    [status-im2.contexts.chat.messages.list.events :as message-list]
+    [status-im2.contexts.contacts.events :as contacts-store]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [status-im2.navigation.events :as navigation]
+    [utils.re-frame :as rf]))
 
 (rf/defn clean-up-chat
   [{:keys [db]}
@@ -41,17 +42,20 @@
               (map #(->> (chats-store/<-rpc %)
                          (clean-up-chat public-key))
                    (types/js->clj chats-js)))]
-    (apply rf/merge
-           cofx
-           {:db (-> db
-                    (update :chats dissoc public-key)
-                    (update :chats-home-list disj public-key)
-                    (assoc-in [:contacts/contacts public-key :added?] false))
-            :dispatch [:shell/close-switcher-card public-key]
-            :clear-message-notifications
-            [[public-key] (get-in db [:profile/profile :remote-push-notifications-enabled?])]}
-           (activity-center/notifications-fetch-unread-count)
-           fxs)))
+    (apply
+     rf/merge
+     cofx
+     {:db                                                     (->
+                                                                db
+                                                                (update :chats dissoc public-key)
+                                                                (update :chats-home-list disj public-key)
+                                                                (assoc-in [:contacts/contacts public-key
+                                                                           :added?]
+                                                                          false))
+      :dispatch                                               [:shell/close-switcher-card public-key]
+      :effects/push-notifications-clear-message-notifications [public-key]}
+     (activity-center/notifications-fetch-unread-count)
+     fxs)))
 
 (rf/defn block-contact
   {:events [:contact.ui/block-contact-confirmed]}

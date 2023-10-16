@@ -1,8 +1,9 @@
 (ns quo2.components.record-audio.soundtrack.component-spec
-  (:require [quo2.components.record-audio.soundtrack.view :as soundtrack]
-            [test-helpers.component :as h]
-            [reagent.core :as reagent]
-            [react-native.audio-toolkit :as audio]))
+  (:require
+    [quo2.components.record-audio.soundtrack.view :as soundtrack]
+    [react-native.audio-toolkit :as audio]
+    [reagent.core :as reagent]
+    [test-helpers.component :as h]))
 
 (h/describe "soundtrack component"
   (h/before-each

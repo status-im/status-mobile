@@ -1,8 +1,9 @@
 (ns ^{:doc "Protocol API and protocol utils"} status-im.transport.message.protocol
-  (:require [clojure.set :as set]
-            [re-frame.core :as re-frame]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.set :as set]
+    [re-frame.core :as re-frame]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (defn- link-preview->rpc
   [preview]

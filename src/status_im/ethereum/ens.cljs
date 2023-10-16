@@ -1,7 +1,8 @@
 (ns status-im.ethereum.ens
-  (:require [clojure.string :as string]
-            [native-module.core :as native-module]
-            [status-im2.common.json-rpc.events :as json-rpc]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [status-im2.common.json-rpc.events :as json-rpc]))
 
 ;; this is the addresses of ens registries for the different networks
 (def ens-registries

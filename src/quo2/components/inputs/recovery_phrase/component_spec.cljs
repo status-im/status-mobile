@@ -1,8 +1,9 @@
 (ns quo2.components.inputs.recovery-phrase.component-spec
-  (:require [clojure.string :as string]
-            [oops.core :as oops]
-            [quo2.components.inputs.recovery-phrase.view :as recovery-phrase]
-            [test-helpers.component :as h]))
+  (:require
+    [clojure.string :as string]
+    [oops.core :as oops]
+    [quo2.components.inputs.recovery-phrase.view :as recovery-phrase]
+    [test-helpers.component :as h]))
 
 (h/describe "Recovery phrase input"
   (h/test "Default render"

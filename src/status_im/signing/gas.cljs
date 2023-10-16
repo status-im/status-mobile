@@ -1,15 +1,16 @@
 (ns status-im.signing.gas
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.events :as bottom-sheet]
-            [utils.i18n :as i18n]
-            [status-im.popover.core :as popover]
-            [status-im.signing.eip1559 :as eip1559]
-            [utils.re-frame :as rf]
-            [utils.money :as money]
-            [status-im2.common.json-rpc.events :as json-rpc]
-            [taoensso.timbre :as log]
-            [utils.ethereum.chain :as chain]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.popover.core :as popover]
+    [status-im.signing.eip1559 :as eip1559]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [taoensso.timbre :as log]
+    [utils.ethereum.chain :as chain]
+    [utils.i18n :as i18n]
+    [utils.money :as money]
+    [utils.re-frame :as rf]))
 
 (def min-gas-price-wei ^js (money/bignumber 1))
 

@@ -1,12 +1,13 @@
 (ns quo2.components.browser.browser-input.view
-  (:require [quo2.components.icon :as icon]
-            [quo2.components.browser.browser-input.style :as style]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo2.theme]
-            [clojure.string :as string]
-            [react-native.platform :as platform]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.browser.browser-input.style :as style]
+    [quo2.components.icon :as icon]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo2.theme]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]))
 
 (defn remove-http-https-www
   [value]

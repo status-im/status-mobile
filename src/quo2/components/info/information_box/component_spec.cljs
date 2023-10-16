@@ -1,6 +1,7 @@
 (ns quo2.components.info.information-box.component-spec
-  (:require [quo2.components.info.information-box.view :as view]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.info.information-box.view :as view]
+    [test-helpers.component :as h]))
 
 (h/describe "Info - Information Box"
   (h/test "default render"

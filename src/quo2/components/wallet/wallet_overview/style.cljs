@@ -1,5 +1,6 @@
 (ns quo2.components.wallet.wallet-overview.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def container-info
   {:padding-horizontal 20
