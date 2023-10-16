@@ -10,6 +10,7 @@
             [status-im.utils.test :as utils.test]
             status-im2.navigation.core
             status-im2.subs.root ; so integration tests can run independently
+            status-im.subs.root ; so integration tests can run independently
             [taoensso.timbre :as log]
             [status-im2.constants :as constants]
             [native-module.core :as native-module]))
