@@ -157,7 +157,7 @@
 (def group-avatar quo2.components.avatars.group-avatar.view/view)
 (def icon-avatar quo2.components.avatars.icon-avatar/view)
 (def user-avatar quo2.components.avatars.user-avatar.view/view)
-(def wallet-user-avatar quo2.components.avatars.wallet-user-avatar/wallet-user-avatar)
+(def wallet-user-avatar quo2.components.avatars.wallet-user-avatar/view)
 
 ;;;; Banner
 (def banner quo2.components.banners.banner.view/view)

@@ -7,25 +7,25 @@
     [react-native.core :as rn]))
 
 (def circle-sizes
-  {:small   20
-   :medium  32
-   :large   48
+  {:size-20 20
+   :size-32 32
+   :size-48 48
    :size-64 64
-   :x-large 80})
+   :size-80 80})
 
 (def font-sizes
-  {:small   :label
-   :medium  :paragraph-2
-   :large   :paragraph-1
+  {:size-20 :label
+   :size-32 :paragraph-2
+   :size-48 :paragraph-1
    :size-64 :heading-1
-   :x-large :heading-1})
+   :size-80 :heading-1})
 
 (def font-weights
-  {:small   :medium
-   :medium  :semi-bold
-   :large   :semi-bold
+  {:size-20 :medium
+   :size-32 :semi-bold
+   :size-48 :semi-bold
    :size-64 :medium
-   :x-large :medium})
+   :size-80 :medium})
 
 (defn- view-internal
   "params, first name, last name, customization-color, size
@@ -33,10 +33,10 @@
   [{:keys [f-name l-name customization-color size theme monospace? uppercase?]
     :or   {f-name     "John"
            l-name     "Doe"
-           size       :x-large
+           size       :size-80
            uppercase? true}}]
   (let [circle-size    (size circle-sizes)
-        small?         (= size :small)
+        small?         (= size :size-20)
         f-name-initial (-> f-name
                            (#(if uppercase? (string/upper-case %) %))
                            (subs 0 1))
@@ -65,4 +65,4 @@
         (str f-name-initial)
         (str f-name-initial l-name-initial))]]))
 
-(def wallet-user-avatar (quo.theme/with-theme view-internal))
+(def view (quo.theme/with-theme view-internal))

@@ -16,8 +16,8 @@
         first-name (if (> (count names) 0) (first names) "")
         last-name  (if (> (count names) 1) (last names) "")]
     [rn/view {:style style/left-container}
-     [wallet-user-avatar/wallet-user-avatar
-      {:size   :medium
+     [wallet-user-avatar/view
+      {:size   :size-32
        :f-name first-name
        :l-name last-name
        :color  customization-color}]

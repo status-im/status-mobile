@@ -13,19 +13,18 @@
     :type  :text}
    {:key     :size
     :type    :select
-    :options [{:key :small}
-              {:key :medium}
-              {:key :large}
+    :options [{:key :size-20}
+              {:key :size-32}
+              {:key :size-48}
               {:key :size-64}
-              {:key   :x-large
-               :value "X Large"}]}
+              {:key :size-80}]}
    (preview/customization-color-option {:key :customization-color})])
 
 (defn view
   []
   (let [state (reagent/atom {:first-name          "empty"
                              :last-name           "name"
-                             :size                :x-large
+                             :size                :size-80
                              :customization-color :indigo})]
     (fn []
       [preview/preview-container {:state state :descriptor descriptor}
