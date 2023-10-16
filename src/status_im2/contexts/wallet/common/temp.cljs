@@ -84,27 +84,27 @@
 (def collectible-details
   nil
   #_{:name             "#5946"
-   :description      "Bored Ape Yacht Club"
-   :image            (status.resources/get-mock-image :collectible-monkey)
-   :collection-image (status.resources/get-mock-image :bored-ape)
-   :traits           [{:title    "Background"
-                       :subtitle "Blue"
-                       :id       1}
-                      {:title    "Clothes"
-                       :subtitle "Bayc T Black"
-                       :id       2}
-                      {:title    "Eyes"
-                       :subtitle "Sleepy"
-                       :id       3}
-                      {:title    "Fur"
-                       :subtitle "Black"
-                       :id       4}
-                      {:title    "Hat"
-                       :subtitle "Beanie"
-                       :id       5}
-                      {:title    "Mouth"
-                       :subtitle "Bored Pipe"
-                       :id       6}]})
+     :description      "Bored Ape Yacht Club"
+     :image            (status.resources/get-mock-image :collectible-monkey)
+     :collection-image (status.resources/get-mock-image :bored-ape)
+     :traits           [{:title    "Background"
+                         :subtitle "Blue"
+                         :id       1}
+                        {:title    "Clothes"
+                         :subtitle "Bayc T Black"
+                         :id       2}
+                        {:title    "Eyes"
+                         :subtitle "Sleepy"
+                         :id       3}
+                        {:title    "Fur"
+                         :subtitle "Black"
+                         :id       4}
+                        {:title    "Hat"
+                         :subtitle "Beanie"
+                         :id       5}
+                        {:title    "Mouth"
+                         :subtitle "Bored Pipe"
+                         :id       6}]})
 
 (def account-overview-state
   {:current-value       "€0.00"
