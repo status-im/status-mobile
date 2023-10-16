@@ -10,14 +10,14 @@
 
 (defn view
   []
-  (let [activity-list temp/collectible-list]
+  (let [collectible-list temp/collectible-list]
     (if (empty? activity-list)
       [empty-tab/view
        {:title        (i18n/label :t/no-collectibles)
         :description  (i18n/label :t/no-collectibles-description)
         :placeholder? true}]
       [rn/flat-list
-       {:data                    activity-list
+       {:data                    collectible-list
         :style                   {:flex 1}
         :content-container-style {:align-items :center}
         :num-columns             2
