@@ -4,7 +4,11 @@
     [quo2.core :as quo]
     [quo2.foundations.resources :as quo.resources]
     [react-native.core :as rn]
+<<<<<<< HEAD
     [status-im2.common.resources :as status.resources]
+=======
+    [status-im2.common.resources :as resources]
+>>>>>>> 901ee6def (lint)
     [status-im2.constants :as constants]
     [status-im2.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
