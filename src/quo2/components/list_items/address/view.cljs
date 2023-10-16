@@ -12,8 +12,8 @@
 (defn- left-container
   [{:keys [theme address networks blur?]}]
   [rn/view {:style style/left-container}
-   [wallet-user-avatar/wallet-user-avatar
-    {:size       :medium
+   [wallet-user-avatar/view
+    {:size       :size-48
      :f-name     "0"
      :l-name     "x"
      :monospace? true

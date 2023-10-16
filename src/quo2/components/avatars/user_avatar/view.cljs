@@ -19,7 +19,7 @@
      :weight :semi-bold}
     (utils.string/get-initials full-name amount-initials)]])
 
-(defn view-internal
+(defn- view-internal
   "Render user avatar with `profile-picture`
   `profile-picture` should be one of {:uri profile-picture-uri} or {:fn profile-picture-fn}
 
