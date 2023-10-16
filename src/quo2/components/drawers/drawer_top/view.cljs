@@ -18,7 +18,7 @@
   (case type
     :account         [account-avatar/view
                       {:customization-color customization-color
-                       :size                32
+                       :size                :size-32
                        :emoji               account-avatar-emoji
                        :type                :default}]
     :keypair         [icon-avatar/icon-avatar

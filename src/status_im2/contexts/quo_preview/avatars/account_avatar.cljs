@@ -9,17 +9,18 @@
   [{:key     :type
     :type    :select
     :options [{:key :default}
-              {:key :watch-only}]}
+              {:key :watch-only}
+              {:key :missing-keypair}]}
    {:key     :size
     :type    :select
-    :options [{:key 16}
-              {:key 20}
-              {:key 24}
-              {:key 28}
-              {:key 32}
-              {:key 48}
+    :options [{:key :size-16}
+              {:key :size-20}
+              {:key :size-24}
+              {:key :size-28}
+              {:key :size-32}
+              {:key :size-48}
               {:key :size-64}
-              {:key 80}]}
+              {:key :size-80}]}
    {:key  "Emoji"
     :type :text}
    (preview/customization-color-option)])
@@ -27,7 +28,7 @@
 (defn view
   []
   (let [state (reagent/atom {:customization-color :purple
-                             :size                80
+                             :size                :size-80
                              :emoji               "🍑"
                              :type                :default})]
     (fn []
@@ -36,8 +37,7 @@
         :descriptor                descriptor
         :component-container-style {:align-items     :center
                                     :justify-content :center}}
-       [quo/account-avatar @state
-       ]
+       [quo/account-avatar @state]
        [quo/button
         {:type            :grey
          :container-style {:margin-top 30}

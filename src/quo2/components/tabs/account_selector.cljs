@@ -60,7 +60,7 @@
         label-text])
      [rn/view {:style (account-container-row background-color)}
       [rn/view {:style account-avatar-container}
-       [account-avatar/view {:emoji account-emoji :size 32}]]
+       [account-avatar/view {:emoji account-emoji :size :size-32}]]
       [quo2/text
        {:weight :medium
         :size   :paragraph-1

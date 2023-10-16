@@ -32,7 +32,7 @@
                                                         :optimism 50
                                                         :arbitrum 25}})
         status-account-props {:customization-color :purple
-                              :size                32
+                              :size                :size-32
                               :emoji               "🍑"
                               :type                :default
                               :name                "Collectibles vault"

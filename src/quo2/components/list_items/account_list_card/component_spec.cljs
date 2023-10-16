@@ -5,7 +5,7 @@
 
 (def account-props
   {:customization-color :purple
-   :size                32
+   :size                :size-32
    :emoji               "🍑"
    :type                :default
    :name                "Tip to Vegas"

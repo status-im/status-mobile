@@ -16,7 +16,7 @@
 (defn avatar
   [avatar-props theme]
   [rn/view {:style (style/avatar-border theme)}
-   [account-avatar/view (assoc avatar-props :size 48)]])
+   [account-avatar/view (assoc avatar-props :size :size-48)]])
 
 (defn menu-button
   [{:keys [on-press theme]}]

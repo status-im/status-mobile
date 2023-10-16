@@ -7,7 +7,7 @@
 
 (def accounts
   [{:account-props {:customization-color :turquoise
-                    :size                32
+                    :size                :size-32
                     :emoji               "\uD83C\uDFB2"
                     :type                :default
                     :name                "Trip to Vegas"
@@ -16,7 +16,7 @@
     :state         :default
     :action        :none}
    {:account-props {:customization-color :purple
-                    :size                32
+                    :size                :size-32
                     :emoji               "\uD83C\uDF7F"
                     :type                :default
                     :name                "My savings"
@@ -25,7 +25,7 @@
     :state         :default
     :action        :none}
    {:account-props {:customization-color :army
-                    :size                32
+                    :size                :size-32
                     :emoji               "\uD83D\uDCC8"
                     :type                :default
                     :name                "Coin vault"
@@ -34,7 +34,7 @@
     :state         :default
     :action        :none}
    {:account-props {:customization-color :orange
-                    :size                32
+                    :size                :size-32
                     :emoji               "\uD83C\uDFF0"
                     :type                :default
                     :name                "Crypto fortress"
@@ -43,7 +43,7 @@
     :state         :default
     :action        :none}
    {:account-props {:customization-color :yellow
-                    :size                32
+                    :size                :size-32
                     :emoji               "\uD83C\uDFDD️"
                     :type                :default
                     :name                "Block treasure"

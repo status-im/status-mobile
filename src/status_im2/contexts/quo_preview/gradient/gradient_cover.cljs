@@ -21,20 +21,20 @@
      :account-avatar-emoji "🍿"
      :customization-color  (or customization-color :blue)}]
    [quo/action-drawer
-    [[{:icon     :i/edit
-       :label    "Edit account"
-       :on-press #(js/alert "Edit account")}
-      {:icon     :i/copy
-       :label    "Copy address"
-       :on-press #(js/alert "Copy address")}
-      {:icon     :i/share
-       :label    "Share account"
-       :on-press #(js/alert "Share account")}
-      {:icon         :i/delete
-       :label        "Remove account"
-       :danger?      true
-       :on-press     #(js/alert "Remove account")
-       :add-divider? true}]]]])
+    [{:icon     :i/edit
+      :label    "Edit account"
+      :on-press #(js/alert "Edit account")}
+     {:icon     :i/copy
+      :label    "Copy address"
+      :on-press #(js/alert "Copy address")}
+     {:icon     :i/share
+      :label    "Share account"
+      :on-press #(js/alert "Share account")}
+     {:icon         :i/delete
+      :label        "Remove account"
+      :danger?      true
+      :on-press     #(js/alert "Remove account")
+      :add-divider? true}]]])
 
 (def descriptor
   [(preview/customization-color-option)

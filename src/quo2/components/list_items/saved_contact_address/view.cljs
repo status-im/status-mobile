@@ -18,7 +18,7 @@
     :style               style/account-container}
    [account-avatar/view
     {:emoji               emoji
-     :size                16
+     :size                :size-16
      :customization-color customization-color}]
    [text/text
     {:size   :paragraph-2

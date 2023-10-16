@@ -11,10 +11,11 @@
 
 (defn- preview-item
   [{:keys [item type size-key]}]
-  (let [size             (get-in properties/sizes [size-key :size])
-        user-avatar-size (get-in properties/sizes [size-key :user-avatar-size])
-        border-radius    (get-in properties/sizes
-                                 [size-key :border-radius (properties/border-type type)])]
+  (let [size                (get-in properties/sizes [size-key :size])
+        account-avatar-size (get-in properties/sizes [size-key :account-avatar-size])
+        user-avatar-size    (get-in properties/sizes [size-key :user-avatar-size])
+        border-radius       (get-in properties/sizes
+                                    [size-key :border-radius (properties/border-type type)])]
     (case type
       :user                        [user-avatar/user-avatar
                                     (assoc item
@@ -23,7 +24,7 @@
                                            :size              user-avatar-size)]
 
       :accounts                    [account-avatar/view
-                                    (assoc item :size size)]
+                                    (assoc item :size account-avatar-size)]
 
       (:communities :collectibles) [fast-image/fast-image
                                     {:source (or (:source item) item)

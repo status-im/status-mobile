@@ -5,7 +5,7 @@
 
 (def status-account-props
   {:customization-color :purple
-   :size                32
+   :size                :size-32
    :emoji               "🍑"
    :type                :default
    :name                "Collectibles vault"
@@ -35,7 +35,7 @@
                                 :customization-color :blue
                                 :name                "Mark Libot"
                                 :address             "0x0ah...78b"
-                                :status-account      (merge status-account-props {:size 16})}}])
+                                :status-account      (merge status-account-props {:size :size-16})}}])
     (h/is-truthy (h/get-by-text "Mark Libot"))
     (h/is-truthy (h/get-by-text "Collectibles vault")))
 

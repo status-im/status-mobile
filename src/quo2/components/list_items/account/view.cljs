@@ -21,7 +21,7 @@
   [{:keys [account-props title-icon? blur? theme]
     :or   {title-icon? false}}]
   [rn/view {:style style/left-container}
-   [account-avatar/view (assoc account-props :size 32)]
+   [account-avatar/view (assoc account-props :size :size-32)]
    [rn/view {:style style/account-container}
     [rn/view
      {:style style/account-title-container}

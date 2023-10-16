@@ -8,11 +8,11 @@
 (defn- view-internal
   "Opts:
    
-    :type  - keyword -> :default/:watch-only
+    :type  - keyword -> :default/:watch-only/:missing-keypair
 
     :emoji - string -> 🍑 [default]
    
-    :size  - number -> 80 [default] /48/32/28/24/20/16
+    :size  - keyword -> :size-80 [default] :size-80/:size-64/:size-48/:size-32/...
    
     :customization-color - keyword or hexstring -> :blue/:army/... or #ABCEDF
    

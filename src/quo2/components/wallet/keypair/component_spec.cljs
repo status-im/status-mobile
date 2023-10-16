@@ -5,7 +5,7 @@
 
 (def accounts
   [{:account-props {:customization-color :turquoise
-                    :size                32
+                    :size                :size-32
                     :emoji               "\uD83C\uDFB2"
                     :type                :default
                     :name                "Trip to Vegas"

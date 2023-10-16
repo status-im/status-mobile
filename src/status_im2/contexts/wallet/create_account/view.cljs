@@ -37,7 +37,7 @@
         {:style style/account-avatar-container}
         [quo/account-avatar
          {:customization-color @account-color
-          :size                80
+          :size                :size-80
           :emoji               @emoji
           :type                :default}]
         [quo/button
