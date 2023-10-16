@@ -1,4 +1,4 @@
-(ns status-im2.subs.chat.chats-test
+(ns status-im2.subs.chats-test
   (:require [cljs.test :refer [is testing]]
             [re-frame.db :as rf-db]
             [status-im2.constants :as constants]

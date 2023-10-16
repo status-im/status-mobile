@@ -1,4 +1,4 @@
-(ns status-im2.subs.wallet.wallet
+(ns status-im.subs.wallet.wallet
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ethereum.tokens :as tokens]

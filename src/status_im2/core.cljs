@@ -23,6 +23,7 @@
     status-im2.events
     status-im2.navigation.core
     status-im2.subs.root
+    status-im.subs.root
     [status-im2.contexts.push-notifications.events :as notifications]))
 
 ;;;; re-frame RN setup

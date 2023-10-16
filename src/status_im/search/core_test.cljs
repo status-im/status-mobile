@@ -1,6 +1,6 @@
 (ns status-im.search.core-test
   (:require [cljs.test :refer-macros [deftest testing is]]
-            [status-im2.subs.search :as search.subs]))
+            [status-im.subs.wallet.search :as search.subs]))
 
 (defn extract-chat-attributes
   [chat]

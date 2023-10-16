@@ -1,4 +1,4 @@
-(ns status-im2.subs.chat.messages
+(ns status-im2.subs.messages
   (:require [re-frame.core :as re-frame]
             [status-im.chat.models.reactions :as models.reactions]
             [status-im2.constants :as constants]

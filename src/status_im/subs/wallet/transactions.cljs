@@ -1,4 +1,4 @@
-(ns status-im2.subs.wallet.transactions
+(ns status-im.subs.wallet.transactions
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.transactions.core :as transactions]
             [utils.i18n :as i18n]

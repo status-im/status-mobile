@@ -1,4 +1,4 @@
-(ns status-im2.subs.networks
+(ns status-im.subs.networks
   (:require [re-frame.core :as re-frame]
             [status-im2.config :as config]
             [utils.ethereum.chain :as chain]))

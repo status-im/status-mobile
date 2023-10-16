@@ -1,4 +1,4 @@
-(ns status-im2.subs.mailservers
+(ns status-im.subs.mailservers
   (:require [re-frame.core :as re-frame]
             [status-im.fleet.core :as fleet]
             [status-im.mailserver.core :as mailserver]))
