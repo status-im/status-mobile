@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.common.activity.view
+(ns status-im2.contexts.wallet.common.activity-tab.view
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]

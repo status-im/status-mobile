@@ -6,6 +6,7 @@
     [status-im2.contexts.wallet.account.tabs.dapps.view :as dapps]
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
     [status-im2.contexts.wallet.common.temp :as temp]
     [utils.i18n :as i18n]))
@@ -15,6 +16,10 @@
     [status-im2.contexts.wallet.common.collectibles.view :as collectibles]
     [status-im2.contexts.wallet.common.activity.view :as activity]
 >>>>>>> fc2057fa5 (wallet: acitivty tab)
+=======
+    [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
+    [status-im2.contexts.wallet.common.activity-tab.view :as activity]
+>>>>>>> 767c3903d (review)
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]))
 >>>>>>> d118af92d (updates)
 
