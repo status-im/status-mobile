@@ -148,8 +148,7 @@
                                 top-children-opacity
                                 0
                                 animations-duration
-                                :easing4
-                                animations-delay)
+                                :easing4 animations-delay)
                                (reanimated/animate-shared-value-with-delay
                                 top-title-opacity
                                 0

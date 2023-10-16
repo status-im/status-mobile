@@ -10,7 +10,6 @@
     [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
     [react-native.shake :as react-native-shake]
     [reagent.impl.batching :as batching]
     status-im.events
