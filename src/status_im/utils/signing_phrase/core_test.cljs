@@ -1,7 +1,8 @@
 (ns status-im.utils.signing-phrase.core-test
-  (:require [cljs.test :refer-macros [deftest is]]
-            [clojure.string :as string]
-            [status-im.utils.signing-phrase.core :refer [generate]]))
+  (:require
+    [cljs.test :refer-macros [deftest is]]
+    [clojure.string :as string]
+    [status-im.utils.signing-phrase.core :refer [generate]]))
 
 (deftest test-generate
   (doseq [_ (range 30)]

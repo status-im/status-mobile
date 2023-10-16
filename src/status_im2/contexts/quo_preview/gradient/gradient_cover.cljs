@@ -1,12 +1,13 @@
 (ns status-im2.contexts.quo-preview.gradient.gradient-cover
-  (:require [quo2.core :as quo]
-            [quo2.theme :as quo.theme]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.theme :as quo.theme]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.re-frame :as rf]))
 
 (defn render-action-sheet
   [customization-color]

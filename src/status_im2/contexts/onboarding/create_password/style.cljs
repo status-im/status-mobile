@@ -1,5 +1,6 @@
 (ns status-im2.contexts.onboarding.create-password.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def flex-fill {:flex 1})
 

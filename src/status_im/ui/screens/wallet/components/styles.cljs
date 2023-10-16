@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.components.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 (defn separator
   []

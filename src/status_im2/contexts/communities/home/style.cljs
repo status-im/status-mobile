@@ -1,8 +1,9 @@
 (ns status-im2.contexts.communities.home.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [react-native.safe-area :as safe-area]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]))
 
 (def tabs
   {:padding-horizontal 20

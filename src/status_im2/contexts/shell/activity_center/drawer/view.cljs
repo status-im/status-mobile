@@ -1,8 +1,9 @@
 (ns status-im2.contexts.shell.activity-center.drawer.view
-  (:require [utils.re-frame :as rf]
-            [quo2.core :as quo]
-            [utils.i18n :as i18n]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn options
   []

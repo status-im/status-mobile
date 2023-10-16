@@ -1,9 +1,10 @@
 (ns quo2.components.record-audio.record-audio.buttons.record-button
-  (:require [quo2.components.record-audio.record-audio.style :as style]
-            [react-native.core :as rn :refer [use-effect]]
-            [react-native.reanimated :as reanimated]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.record-audio.record-audio.helpers :as helpers]))
+  (:require
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.record-audio.record-audio.helpers :as helpers]
+    [quo2.components.record-audio.record-audio.style :as style]
+    [react-native.core :as rn :refer [use-effect]]
+    [react-native.reanimated :as reanimated]))
 
 (defn f-record-button
   [recording? reviewing-audio?]

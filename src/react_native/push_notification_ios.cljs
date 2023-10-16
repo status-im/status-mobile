@@ -1,5 +1,6 @@
 (ns react-native.push-notification-ios
-  (:require ["@react-native-community/push-notification-ios" :default pn-ios]))
+  (:require
+    ["@react-native-community/push-notification-ios" :default pn-ios]))
 
 (defn present-local-notification
   [title message user-info]

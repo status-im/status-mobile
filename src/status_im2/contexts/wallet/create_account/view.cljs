@@ -1,13 +1,13 @@
 (ns status-im2.contexts.wallet.create-account.view
   (:require
+    [quo2.core :as quo]
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
-    [quo2.core :as quo]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.wallet.common.temp :as temp]
-    [utils.i18n :as i18n]
     [status-im2.contexts.wallet.create-account.style :as style]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (def diamond-emoji "\uD83D\uDC8E")

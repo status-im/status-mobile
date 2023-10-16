@@ -1,6 +1,7 @@
 (ns quo2.components.inputs.input.component-spec
-  (:require [quo2.components.inputs.input.view :as input]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.inputs.input.view :as input]
+    [test-helpers.component :as h]))
 
 (h/describe "Input"
   (h/test "default render"

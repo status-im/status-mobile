@@ -1,14 +1,15 @@
 (ns status-im2.contexts.wallet.account.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.resources :as quo.resources]
-            [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.contexts.wallet.account.style :as style]
-            [status-im2.contexts.wallet.account.tabs.view :as tabs]
-            [status-im2.contexts.wallet.common.temp :as temp]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.resources :as quo.resources]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.contexts.wallet.account.style :as style]
+    [status-im2.contexts.wallet.account.tabs.view :as tabs]
+    [status-im2.contexts.wallet.common.temp :as temp]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn account-options
   []

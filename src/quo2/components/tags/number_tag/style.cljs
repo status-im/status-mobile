@@ -1,5 +1,6 @@
 (ns quo2.components.tags.number-tag.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def sizes
   {:size-32 {:size          32

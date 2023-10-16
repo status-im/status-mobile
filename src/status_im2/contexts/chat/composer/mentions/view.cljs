@@ -1,14 +1,14 @@
 (ns status-im2.contexts.chat.composer.mentions.view
   (:require
+    [react-native.core :as rn]
     [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.contexts.chat.composer.utils :as utils]
-    [utils.re-frame :as rf]
-    [react-native.core :as rn]
-    [react-native.reanimated :as reanimated]
     [status-im2.common.contact-list-item.view :as contact-list-item]
-    [status-im2.contexts.chat.composer.mentions.style :as style]))
+    [status-im2.contexts.chat.composer.mentions.style :as style]
+    [status-im2.contexts.chat.composer.utils :as utils]
+    [utils.re-frame :as rf]))
 
 (defn update-cursor
   [user {:keys [cursor-position input-ref]}]

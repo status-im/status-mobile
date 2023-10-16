@@ -1,13 +1,14 @@
 (ns status-im.pairing.core
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im2.config :as config]
-            [utils.re-frame :as rf]
-            [react-native.platform :as utils.platform]
-            [status-im2.common.json-rpc.events :as json-rpc]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.platform :as utils.platform]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [status-im2.config :as config]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn enable-installation-rpc
   [installation-id on-success on-error]

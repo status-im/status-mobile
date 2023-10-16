@@ -2,11 +2,11 @@
   (:require
     [quo2.components.avatars.account-avatar.view :as account-avatar]
     [quo2.components.icon :as icon]
+    [quo2.components.list-items.account-list-card.style :as style]
     [quo2.components.markdown.text :as text]
     [quo2.foundations.colors :as colors]
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
-    [quo2.components.list-items.account-list-card.style :as style]
     [reagent.core :as reagent]))
 
 (defn- internal-view

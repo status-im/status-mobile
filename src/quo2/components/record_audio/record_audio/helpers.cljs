@@ -1,5 +1,6 @@
 (ns quo2.components.record-audio.record-audio.helpers
-  (:require [react-native.reanimated :as reanimated]))
+  (:require
+    [react-native.reanimated :as reanimated]))
 
 (defn animate-linear
   [shared-value value duration]

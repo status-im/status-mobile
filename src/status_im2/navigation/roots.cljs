@@ -1,9 +1,10 @@
 (ns status-im2.navigation.roots
-  (:require [status-im2.navigation.view :as views]
-            [quo2.foundations.colors :as colors]
-            [status-im2.navigation.options :as options]
-            [status-im2.constants :as constants]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [status-im2.constants :as constants]
+    [status-im2.navigation.options :as options]
+    [status-im2.navigation.view :as views]))
 
 (defn get-screen-options
   [screen]

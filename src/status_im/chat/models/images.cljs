@@ -1,14 +1,15 @@
 (ns status-im.chat.models.images
-  (:require ["react-native-blob-util" :default ReactNativeBlobUtil]
-            [re-frame.core :as re-frame]
-            [react-native.share :as share]
-            [react-native.cameraroll :as cameraroll]
-            [status-im.ui.components.react :as react]
-            [react-native.fs :as fs]
-            [status-im2.constants :as constants]
-            [utils.re-frame :as rf]
-            [react-native.platform :as platform]
-            [taoensso.timbre :as log]))
+  (:require
+    ["react-native-blob-util" :default ReactNativeBlobUtil]
+    [re-frame.core :as re-frame]
+    [react-native.cameraroll :as cameraroll]
+    [react-native.fs :as fs]
+    [react-native.platform :as platform]
+    [react-native.share :as share]
+    [status-im.ui.components.react :as react]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (def temp-image-url (str (fs/cache-dir) "/StatusIm_Image.jpeg"))
 

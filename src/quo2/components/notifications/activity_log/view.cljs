@@ -1,15 +1,16 @@
 (ns quo2.components.notifications.activity-log.view
-  (:require [clojure.string :as string]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.icon :as icon]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.notifications.activity-log.style :as style]
-            [quo2.components.tags.status-tags :as status-tags]
-            [quo2.components.inputs.input.view :as input]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.icon :as icon]
+    [quo2.components.inputs.input.view :as input]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.notifications.activity-log.style :as style]
+    [quo2.components.tags.status-tags :as status-tags]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [utils.i18n :as i18n]))
 
 (defn- activity-reply-text-input
   [{:keys [on-update-reply max-reply-length valid-reply?]} reply-input]

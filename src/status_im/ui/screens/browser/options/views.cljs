@@ -1,18 +1,19 @@
 (ns status-im.ui.screens.browser.options.views
-  (:require [status-im.ui.components.core :as quo]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.browser.core :as browser]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.qr-scanner.core :as qr-scanner]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.wallet.components.views :as components]
-            [utils.url :as url]
-            [status-im.utils.utils :as utils]
-            [status-im.ui.components.list.item :as list.item]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.browser.core :as browser]
+    [status-im.qr-scanner.core :as qr-scanner]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.wallet.components.views :as components]
+    [status-im.utils.utils :as utils]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n]
+    [utils.url :as url]))
 
 (defn hide-sheet-and-dispatch
   [event]

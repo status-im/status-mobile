@@ -2,32 +2,32 @@
   (:require-macros [status-im.utils.views :as views])
   (:require
     [clojure.string :as string]
-    [status-im.ui.components.core :as quo]
-    [status-im.ui.components.colors :as colors]
     [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
     [reagent.core :as reagent]
     [status-im.ethereum.tokens :as tokens]
-    [utils.i18n :as i18n]
     [status-im.keycard.common :as keycard.common]
     [status-im.multiaccounts.core :as multiaccounts]
     [status-im.react-native.resources :as resources]
     [status-im.signing.eip1559 :as eip1559]
     [status-im.ui.components.bottom-panel.views :as bottom-panel]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
     [status-im.ui.components.copyable-text :as copyable-text]
+    [status-im.ui.components.core :as quo]
     [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.keycard.keycard-interaction :as keycard-sheet]
     [status-im.ui.screens.keycard.pin.views :as pin.views]
     [status-im.ui.screens.signing.sheets :as sheets]
     [status-im.ui.screens.signing.styles :as styles]
     [status-im.ui.screens.wallet.components.views :as wallet.components]
-    [react-native.platform :as platform]
     [status-im.utils.deprecated-types :as types]
     [status-im.utils.utils :as utils]
     [status-im.wallet.utils :as wallet.utils]
-    [utils.security.core :as security]
-    [status-im.ui.components.list.item :as list.item]))
+    [utils.i18n :as i18n]
+    [utils.security.core :as security]))
 
 (defn separator
   []

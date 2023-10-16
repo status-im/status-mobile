@@ -1,14 +1,15 @@
 (ns status-im2.navigation.core
-  (:require [re-frame.core :as re-frame]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [react-native.navigation :as navigation]
-            [status-im2.navigation.roots :as roots]
-            [status-im2.navigation.state :as state]
-            [status-im2.navigation.view :as views]
-            [taoensso.timbre :as log]
-            [status-im2.common.theme.core :as theme]
-            [status-im2.navigation.options :as options]))
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.navigation :as navigation]
+    [status-im2.common.theme.core :as theme]
+    [status-im2.navigation.options :as options]
+    [status-im2.navigation.roots :as roots]
+    [status-im2.navigation.state :as state]
+    [status-im2.navigation.view :as views]
+    [taoensso.timbre :as log]))
 
 (navigation/set-lazy-component-registrator
  (fn [screen-key]

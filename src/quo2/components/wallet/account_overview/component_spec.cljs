@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.account-overview.component-spec
-  (:require [quo2.components.wallet.account-overview.view :as account-overview]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.wallet.account-overview.view :as account-overview]
+    [test-helpers.component :as h]))
 
 (h/describe "Account overview test"
   (h/test "renders correct account name"

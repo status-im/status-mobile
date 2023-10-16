@@ -1,7 +1,8 @@
 (ns status-im2.contexts.quo-preview.info.information-box
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :type

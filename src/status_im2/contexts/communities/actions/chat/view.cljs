@@ -1,10 +1,11 @@
 (ns status-im2.contexts.communities.actions.chat.view
-  (:require [quo2.core :as quo]
-            [status-im2.common.not-implemented :as not-implemented]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.common.muting.helpers :refer [format-mute-till]]
-            [status-im2.common.mute-drawer.view :as mute-drawer]))
+  (:require
+    [quo2.core :as quo]
+    [status-im2.common.mute-drawer.view :as mute-drawer]
+    [status-im2.common.muting.helpers :refer [format-mute-till]]
+    [status-im2.common.not-implemented :as not-implemented]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn hide-sheet-and-dispatch
   [event]

@@ -1,9 +1,10 @@
 (ns quo2.components.drawers.bottom-actions.view
-  (:require [quo2.components.buttons.button.view :as button]
-            [quo2.components.drawers.bottom-actions.style :as style]
-            [quo2.theme :as quo.theme]
-            [quo2.components.markdown.text :as text]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.drawers.bottom-actions.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (def default-props
   {:button-one-type :primary

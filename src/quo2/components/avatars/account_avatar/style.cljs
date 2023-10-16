@@ -1,5 +1,6 @@
 (ns quo2.components.avatars.account-avatar.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def default-size 80)
 (def default-border-radius 16)

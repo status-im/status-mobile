@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.notifications.notification
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im2.contexts.quo-preview.code.snippet :as snippet-preview]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.quo-preview.code.snippet :as snippet-preview]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.re-frame :as rf]))
 
 (defn notification-button
   ([id opts] (notification-button id id opts))

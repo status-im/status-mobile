@@ -1,13 +1,13 @@
 (ns status-im2.contexts.chat.composer.edit.view
   (:require
-    [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.composer.constants :as constants]
-    [status-im2.contexts.chat.composer.utils :as utils]
-    [utils.i18n :as i18n]
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.edit.style :as style]
+    [status-im2.contexts.chat.composer.utils :as utils]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn edit-message

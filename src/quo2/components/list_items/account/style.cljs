@@ -1,5 +1,6 @@
 (ns quo2.components.list-items.account.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn- background-color
   [{:keys [state blur? customization-color]}]

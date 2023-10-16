@@ -1,8 +1,9 @@
 (ns quo2.components.avatars.account-avatar.component-spec
-  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
-            [quo2.components.avatars.account-avatar.style :as style]
-            [test-helpers.component :as h]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.avatars.account-avatar.style :as style]
+    [quo2.components.avatars.account-avatar.view :as account-avatar]
+    [quo2.foundations.colors :as colors]
+    [test-helpers.component :as h]))
 
 (h/describe "Account Avatar"
   (h/test "default render"

@@ -1,20 +1,21 @@
 (ns status-im2.contexts.communities.overview.view
-  (:require [oops.core :as oops]
-            [quo2.core :as quo]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.home.actions.view :as actions]
-            [status-im2.common.password-authentication.view :as password-authentication]
-            [status-im2.common.scroll-page.style :as scroll-page.style]
-            [status-im2.common.scroll-page.view :as scroll-page]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.communities.actions.chat.view :as chat-actions]
-            [status-im2.contexts.communities.actions.community-options.view :as options]
-            [status-im2.contexts.communities.overview.style :as style]
-            [status-im2.contexts.communities.overview.utils :as utils]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.home.actions.view :as actions]
+    [status-im2.common.password-authentication.view :as password-authentication]
+    [status-im2.common.scroll-page.style :as scroll-page.style]
+    [status-im2.common.scroll-page.view :as scroll-page]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.communities.actions.chat.view :as chat-actions]
+    [status-im2.contexts.communities.actions.community-options.view :as options]
+    [status-im2.contexts.communities.overview.style :as style]
+    [status-im2.contexts.communities.overview.utils :as utils]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn preview-user-list
   [user-list]

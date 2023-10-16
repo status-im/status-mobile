@@ -1,6 +1,7 @@
 (ns status-im2.contexts.onboarding.syncing.results.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]))
 
 (defn page-container
   [top]

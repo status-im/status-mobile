@@ -1,6 +1,7 @@
 (ns status-im2.common.parallax.style
-  (:require [react-native.safe-area :as safe-area]
-            [react-native.core :as rn]))
+  (:require
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]))
 
 (defn outer-container
   [container-style]

@@ -1,6 +1,7 @@
 (ns status-im2.setup.i18n-resources
-  (:require [clojure.string :as string]
-            [utils.i18n :as i18n]))
+  (:require
+    [clojure.string :as string]
+    [utils.i18n :as i18n]))
 
 ;; FIXME: that should be replaced with `(react-native-languages/get-lang-keyword)`
 ;; in order for languages/translations to work

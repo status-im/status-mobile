@@ -1,9 +1,10 @@
 (ns status-im2.subs.chats-test
-  (:require [cljs.test :refer [is testing]]
-            [re-frame.db :as rf-db]
-            [status-im2.constants :as constants]
-            [test-helpers.unit :as h]
-            [utils.re-frame :as rf]))
+  (:require
+    [cljs.test :refer [is testing]]
+    [re-frame.db :as rf-db]
+    [status-im2.constants :as constants]
+    [test-helpers.unit :as h]
+    [utils.re-frame :as rf]))
 
 (def public-key "0xpk")
 (def multiaccount {:public-key public-key})

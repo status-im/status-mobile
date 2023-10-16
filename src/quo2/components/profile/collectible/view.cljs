@@ -1,7 +1,8 @@
 (ns quo2.components.profile.collectible.view
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.components.profile.collectible.style :as style]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.components.profile.collectible.style :as style]
+    [react-native.core :as rn]))
 
 (defn remaining-tiles
   [amount]

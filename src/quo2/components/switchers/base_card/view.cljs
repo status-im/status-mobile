@@ -1,7 +1,8 @@
 (ns quo2.components.switchers.base-card.view
-  (:require [react-native.core :as rn]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.switchers.base-card.style :as style]))
+  (:require
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.switchers.base-card.style :as style]
+    [react-native.core :as rn]))
 
 (defn base-card
   []

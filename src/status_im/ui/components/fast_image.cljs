@@ -1,7 +1,8 @@
 (ns status-im.ui.components.fast-image
-  (:require [reagent.core :as reagent]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]))
+  (:require
+    [reagent.core :as reagent]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]))
 
 (defn placeholder
   [style child]

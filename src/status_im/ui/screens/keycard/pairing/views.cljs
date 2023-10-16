@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.keycard.pairing.views
-  (:require [status-im.ui.components.core :as quo]
-            [react-native.core :as rn]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.toolbar :as toolbar]
-            [utils.security.core :as security]))
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.toolbar :as toolbar]
+    [utils.i18n :as i18n]
+    [utils.security.core :as security]))
 
 (defn validate-pairing-code
   [pairing-code]

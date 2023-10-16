@@ -1,11 +1,11 @@
 (ns status-im.multiaccounts.login.core
   (:require
-    [re-frame.core :as re-frame]
     [native-module.core :as native-module]
-    [status-im.ui.components.react :as react]
-    [utils.re-frame :as rf]
+    [re-frame.core :as re-frame]
     [react-native.platform :as platform]
+    [status-im.ui.components.react :as react]
     [status-im.utils.deprecated-types :as types]
+    [utils.re-frame :as rf]
     [utils.security.core :as security]))
 
 (re-frame/reg-fx

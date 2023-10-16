@@ -1,10 +1,11 @@
 (ns status-im2.contexts.communities.actions.leave.view
-  (:require [utils.i18n :as i18n]
-            [quo2.core :as quo]
-            [status-im2.contexts.communities.actions.generic-menu.view :as generic-menu]
-            [status-im2.contexts.communities.actions.leave.style :as style]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.communities.actions.generic-menu.view :as generic-menu]
+    [status-im2.contexts.communities.actions.leave.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn hide-sheet-and-dispatch
   [event]

@@ -1,11 +1,12 @@
 (ns quo2.components.list-items.user-list
-  (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.messages.author.view :as author]
-            [quo2.components.selectors.selectors.view :as selectors]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.messages.author.view :as author]
+    [quo2.components.selectors.selectors.view :as selectors]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]))
 
 (def container-style
   {:margin-horizontal  8

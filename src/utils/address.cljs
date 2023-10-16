@@ -1,7 +1,8 @@
 (ns utils.address
-  (:require [utils.ethereum.eip.eip55 :as eip55]
-            [clojure.string :as string]
-            [native-module.core :as native-module]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [utils.ethereum.eip.eip55 :as eip55]))
 
 (def hex-prefix "0x")
 

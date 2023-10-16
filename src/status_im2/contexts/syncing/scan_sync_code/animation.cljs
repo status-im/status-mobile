@@ -1,6 +1,7 @@
 (ns status-im2.contexts.syncing.scan-sync-code.animation
-  (:require [react-native.reanimated :as reanimated]
-            [status-im2.constants :as constants]))
+  (:require
+    [react-native.reanimated :as reanimated]
+    [status-im2.constants :as constants]))
 
 (defn animate-subtitle
   [subtitle-opacity]

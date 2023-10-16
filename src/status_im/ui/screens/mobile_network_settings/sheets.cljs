@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.mobile-network-settings.sheets
   (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.mobile-network-settings.sheets-styles :as styles]
-            [status-im.ui.components.list.item :as list.item]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.checkbox.view :as checkbox]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.mobile-network-settings.sheets-styles :as styles]
+    [utils.i18n :as i18n]))
 
 (defn title
   [label]

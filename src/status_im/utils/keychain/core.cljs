@@ -1,9 +1,10 @@
 (ns status-im.utils.keychain.core
-  (:require [react-native.keychain :as keychain]
-            [re-frame.core :as re-frame]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]
-            [oops.core :as oops]))
+  (:require
+    [oops.core :as oops]
+    [re-frame.core :as re-frame]
+    [react-native.keychain :as keychain]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (def auth-method-biometric "biometric")
 (def auth-method-biometric-prepare "biometric-prepare")

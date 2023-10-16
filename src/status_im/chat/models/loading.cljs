@@ -1,11 +1,12 @@
 (ns status-im.chat.models.loading
-  (:require [re-frame.core :as re-frame]
-            [status-im.data-store.chats :as data-store.chats]
-            [status-im.data-store.messages :as data-store.messages]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.list.events :as message-list]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.data-store.chats :as data-store.chats]
+    [status-im.data-store.messages :as data-store.messages]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.list.events :as message-list]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (defn cursor->clock-value
   [^js cursor]

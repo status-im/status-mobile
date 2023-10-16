@@ -1,6 +1,7 @@
 (ns status-im.subs.stickers
-  (:require [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im2.constants :as constants]))
 
 (re-frame/reg-sub
  :stickers/installed-packs

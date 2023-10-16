@@ -1,10 +1,11 @@
 (ns quo2.components.numbered-keyboard.keyboard-key.view
-  (:require [react-native.core :as rn]
-            [quo2.theme :as quo.theme]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.icon :as icons]
-            [quo2.components.numbered-keyboard.keyboard-key.style :as style]
-            [reagent.core :as reagent]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.numbered-keyboard.keyboard-key.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn- view-internal
   []

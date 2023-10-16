@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.new-chat.styles
-  (:require [react-native.safe-area :as safe-area]))
+  (:require
+    [react-native.safe-area :as safe-area]))
 
 (def contact-selection-heading
   {:flex-direction  :row

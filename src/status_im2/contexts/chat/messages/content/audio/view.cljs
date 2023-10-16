@@ -1,17 +1,18 @@
 (ns status-im2.contexts.chat.messages.content.audio.view
-  (:require ["react-native-blob-util" :default ReactNativeBlobUtil]
-            [goog.string :as gstring]
-            [reagent.core :as reagent]
-            [react-native.audio-toolkit :as audio]
-            [status-im2.contexts.chat.messages.content.audio.style :as style]
-            [react-native.platform :as platform]
-            [taoensso.timbre :as log]
-            [quo2.foundations.colors :as colors]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [utils.re-frame :as rf]
-            [utils.i18n :as i18n]
-            [status-im2.constants :as constants]))
+  (:require
+    ["react-native-blob-util" :default ReactNativeBlobUtil]
+    [goog.string :as gstring]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.audio-toolkit :as audio]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.content.audio.style :as style]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def ^:const media-server-uri-prefix "https://localhost:")
 (def ^:const audio-path "/messages/audio")

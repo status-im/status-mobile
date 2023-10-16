@@ -1,6 +1,7 @@
 (ns quo2.components.drawers.drawer-top.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.core :as quo]))
+  (:require
+    [quo2.core :as quo]
+    [test-helpers.component :as h]))
 
 (h/describe "drawer top tests"
   (h/test "component renders in default type"

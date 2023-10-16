@@ -1,6 +1,7 @@
 (ns status-im2.navigation.transitions
-  (:require [react-native.core :as rn]
-            [status-im2.constants :as constants]))
+  (:require
+    [react-native.core :as rn]
+    [status-im2.constants :as constants]))
 
 (def sign-in-modal-animations
   {:showModal    {:translationY {:from     (:height (rn/get-window))

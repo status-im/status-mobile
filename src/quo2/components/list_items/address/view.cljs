@@ -1,12 +1,13 @@
 (ns quo2.components.list-items.address.view
-  (:require [quo2.components.avatars.wallet-user-avatar :as wallet-user-avatar]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [quo2.components.list-items.address.style :as style]
-            [reagent.core :as reagent]
-            [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.avatars.wallet-user-avatar :as wallet-user-avatar]
+    [quo2.components.list-items.address.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn- left-container
   [{:keys [theme address networks blur?]}]

@@ -1,7 +1,8 @@
 (ns quo2.components.password.tips.view
-  (:require [react-native.core :as rn]
-            [quo2.components.password.tips.style :as style]
-            [quo2.components.markdown.text :as text]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.components.password.tips.style :as style]
+    [react-native.core :as rn]))
 
 (defn view
   "Options

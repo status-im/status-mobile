@@ -1,30 +1,30 @@
 (ns status-im.wallet.accounts.core
   (:require
     [clojure.string :as string]
-    [status-im.ui.components.colors :as colors]
+    [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im2.constants :as constants]
     [status-im.ens.core :as ens.core]
-    [utils.ethereum.eip.eip55 :as eip55]
     [status-im.ethereum.eip681 :as eip681]
     [status-im.ethereum.mnemonic :as mnemonic]
     [status-im.ethereum.stateofus :as stateofus]
-    [utils.i18n :as i18n]
     [status-im.multiaccounts.core :as multiaccounts]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
-    [native-module.core :as native-module]
+    [status-im.ui.components.colors :as colors]
     [status-im.ui.components.list-selection :as list-selection]
-    [utils.re-frame :as rf]
+    [status-im.utils.deprecated-types :as types]
     [status-im.utils.hex :as hex]
     [status-im.utils.mobile-sync :as utils.mobile-sync]
-    [status-im.utils.deprecated-types :as types]
     [status-im.wallet.core :as wallet]
     [status-im.wallet.prices :as prices]
+    [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
-    [utils.security.core :as security]
+    [utils.address :as address]
     [utils.ethereum.chain :as chain]
-    [utils.address :as address]))
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (rf/defn start-adding-new-account
   {:events [:wallet.accounts/start-adding-new-account]}

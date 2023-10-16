@@ -1,7 +1,8 @@
 (ns quo2.components.common.not-implemented.view
-  (:require [react-native.core :as rn]
-            [quo2.theme :as quo.theme]
-            [quo2.components.common.not-implemented.style :as style]))
+  (:require
+    [quo2.components.common.not-implemented.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- view-internal
   [{:keys [blur? theme]}]

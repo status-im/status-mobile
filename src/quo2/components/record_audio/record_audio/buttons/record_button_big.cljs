@@ -1,15 +1,16 @@
 (ns quo2.components.record-audio.record-audio.buttons.record-button-big
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.record-audio.record-audio.style :as style]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn :refer [use-effect]]
-            [react-native.reanimated :as reanimated]
-            [react-native.audio-toolkit :as audio]
-            [taoensso.timbre :as log]
-            [cljs-bean.core :as bean]
-            [reagent.core :as reagent]
-            [quo2.components.record-audio.record-audio.helpers :as helpers]
-            [utils.worklets.record-audio :as worklets.record-audio]))
+  (:require
+    [cljs-bean.core :as bean]
+    [quo2.components.icon :as icons]
+    [quo2.components.record-audio.record-audio.helpers :as helpers]
+    [quo2.components.record-audio.record-audio.style :as style]
+    [quo2.foundations.colors :as colors]
+    [react-native.audio-toolkit :as audio]
+    [react-native.core :as rn :refer [use-effect]]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [taoensso.timbre :as log]
+    [utils.worklets.record-audio :as worklets.record-audio]))
 
 (def ^:private scale-to-each 1.8)
 (def ^:private scale-to-total 2.6)

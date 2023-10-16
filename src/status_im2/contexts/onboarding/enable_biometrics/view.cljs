@@ -1,14 +1,15 @@
 (ns status-im2.contexts.onboarding.enable-biometrics.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
-            [status-im2.common.biometric.events :as biometric]
-            [status-im2.common.parallax.view :as parallax]
-            [status-im2.common.parallax.whitelist :as whitelist]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.onboarding.enable-biometrics.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im2.common.biometric.events :as biometric]
+    [status-im2.common.parallax.view :as parallax]
+    [status-im2.common.parallax.whitelist :as whitelist]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.onboarding.enable-biometrics.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn page-title
   []

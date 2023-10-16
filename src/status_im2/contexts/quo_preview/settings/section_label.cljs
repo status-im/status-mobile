@@ -1,8 +1,8 @@
 (ns status-im2.contexts.quo-preview.settings.section-label
   (:require
+    [quo2.core :as quo]
     [reagent.core :as reagent]
-    [status-im2.contexts.quo-preview.preview :as preview]
-    [quo2.core :as quo]))
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def ^:private descriptor
   [{:key  :section

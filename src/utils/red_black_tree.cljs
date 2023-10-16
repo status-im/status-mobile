@@ -1,6 +1,7 @@
 (ns utils.red-black-tree
   (:refer-clojure :exclude [remove update find])
-  (:require ["functional-red-black-tree" :as red-black-tree]))
+  (:require
+    ["functional-red-black-tree" :as red-black-tree]))
 
 (def tree ^js red-black-tree)
 

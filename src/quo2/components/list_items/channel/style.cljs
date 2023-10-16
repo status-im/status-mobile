@@ -1,5 +1,6 @@
 (ns quo2.components.list-items.channel.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn- get-label-color
   [notification theme]

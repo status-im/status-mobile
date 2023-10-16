@@ -1,6 +1,7 @@
 (ns utils.security.security-html-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [utils.security.security-html :as s]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [utils.security.security-html :as s]))
 
 (deftest with-doctype
   (is (s/is-html? "<!doctype html>"))

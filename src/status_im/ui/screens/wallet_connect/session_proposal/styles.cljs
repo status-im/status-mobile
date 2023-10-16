@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet-connect.session-proposal.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 (defn toolbar-container
   [background-color]

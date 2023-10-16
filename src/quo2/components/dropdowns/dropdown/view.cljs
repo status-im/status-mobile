@@ -1,12 +1,13 @@
 (ns quo2.components.dropdowns.dropdown.view
-  (:require [quo2.components.dropdowns.dropdown.properties :as properties]
-            [quo2.components.dropdowns.dropdown.style :as style]
-            [quo2.components.icon :as icon]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.customization-colors :as customization-colors]
-            [quo2.theme :as theme]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.dropdowns.dropdown.properties :as properties]
+    [quo2.components.dropdowns.dropdown.style :as style]
+    [quo2.components.icon :as icon]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.customization-colors :as customization-colors]
+    [quo2.theme :as theme]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]))
 
 (defn- view-internal
   [{:keys [type size state background customization-color theme on-press icon-name icon? emoji?

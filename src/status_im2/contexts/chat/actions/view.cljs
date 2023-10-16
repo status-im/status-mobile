@@ -1,7 +1,8 @@
 (ns status-im2.contexts.chat.actions.view
-  (:require [quo2.core :as quo]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn new-chat
   []

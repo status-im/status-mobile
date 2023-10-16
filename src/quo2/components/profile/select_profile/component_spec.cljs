@@ -1,6 +1,7 @@
 (ns quo2.components.profile.select-profile.component-spec
-  (:require [quo2.components.profile.select-profile.view :as select-profile]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.profile.select-profile.view :as select-profile]
+    [test-helpers.component :as h]))
 
 (h/describe "select-profile component"
   (h/test "render component"

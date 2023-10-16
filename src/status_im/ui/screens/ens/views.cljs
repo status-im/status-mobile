@@ -1,20 +1,20 @@
 (ns status-im.ui.screens.ens.views
   (:require
     [clojure.string :as string]
-    [status-im.ui.components.core :as quo]
-    [status-im.ui.components.colors :as colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ens.core :as ens]
     [status-im.ethereum.ens :as ethereum.ens]
     [status-im.ethereum.stateofus :as stateofus]
     [status-im.ethereum.tokens :as tokens]
-    [utils.i18n :as i18n]
     [status-im.react-native.resources :as resources]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
     [status-im.ui.components.checkbox.view :as checkbox]
+    [status-im.ui.components.colors :as colors]
     [status-im.ui.components.common.common :as components.common]
+    [status-im.ui.components.core :as quo]
     [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.react :as react]
     [status-im.ui.components.toolbar :as toolbar]
     [status-im.ui.components.topbar :as topbar]
@@ -22,9 +22,9 @@
     [status-im.ui.screens.profile.components.views :as profile.components]
     [status-im.ui.screens.wallet.send.sheets :as sheets]
     [status-im.utils.utils :as utils]
-    [utils.debounce :as debounce]
     [utils.address :as address]
-    [status-im.ui.components.list.item :as list.item])
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- link

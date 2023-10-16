@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.composer.images.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def image-container
   {:padding-top    12

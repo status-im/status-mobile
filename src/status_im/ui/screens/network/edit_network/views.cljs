@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.network.edit-network.views
-  (:require [status-im.ui.components.core :as quo]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.network.core :as network]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.network.edit-network.styles :as styles]
-            [status-im.ui.components.list.item :as list.item])
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.network.core :as network]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.network.edit-network.styles :as styles]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-network-type

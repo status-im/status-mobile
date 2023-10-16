@@ -1,8 +1,9 @@
 (ns status-im.ui.components.list.footer
-  (:require [status-im.ui.components.text :as text]
-            [status-im.ui.components.spacing :as spacing]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.ui.components.spacing :as spacing]
+    [status-im.ui.components.text :as text]))
 
 (defn footer
   []

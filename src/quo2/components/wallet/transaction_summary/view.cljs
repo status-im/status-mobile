@@ -1,11 +1,12 @@
 (ns quo2.components.wallet.transaction-summary.view
-  (:require [quo2.theme :as quo.theme]
-            [quo2.components.wallet.transaction-summary.style :as style]
-            [react-native.core :as rn]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.icon :as icon]
-            [quo2.components.tags.context-tag.view :as context-tag]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.components.icon :as icon]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.tags.context-tag.view :as context-tag]
+    [quo2.components.wallet.transaction-summary.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (def transaction-translation
   {:send   (i18n/label :t/send)

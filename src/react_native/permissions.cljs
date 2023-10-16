@@ -1,6 +1,7 @@
 (ns react-native.permissions
-  (:require ["react-native-permissions" :refer (check openSettings requestMultiple PERMISSIONS RESULTS)]
-            [react-native.platform :as platform]))
+  (:require
+    ["react-native-permissions" :refer (check openSettings requestMultiple PERMISSIONS RESULTS)]
+    [react-native.platform :as platform]))
 
 (def permissions-map
   {:read-external-storage  (cond

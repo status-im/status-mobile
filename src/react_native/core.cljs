@@ -1,12 +1,13 @@
 (ns react-native.core
-  (:require ["react" :as react]
-            ["react-native" :as react-native]
-            [cljs-bean.core :as bean]
-            [oops.core :as oops]
-            [react-native.flat-list :as flat-list]
-            [react-native.platform :as platform]
-            [react-native.section-list :as section-list]
-            [reagent.core :as reagent]))
+  (:require
+    ["react" :as react]
+    ["react-native" :as react-native]
+    [cljs-bean.core :as bean]
+    [oops.core :as oops]
+    [react-native.flat-list :as flat-list]
+    [react-native.platform :as platform]
+    [react-native.section-list :as section-list]
+    [reagent.core :as reagent]))
 
 (def app-state ^js (.-AppState ^js react-native))
 

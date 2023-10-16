@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.offline-messaging-settings.styles
-  (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.styles :as styles]))
+  (:require
+    [status-im.ui.components.colors :as colors]
+    [status-im.utils.styles :as styles]))
 
 (def wrapper
   {:flex 1})

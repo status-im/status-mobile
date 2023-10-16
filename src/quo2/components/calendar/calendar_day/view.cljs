@@ -1,8 +1,9 @@
 (ns quo2.components.calendar.calendar-day.view
-  (:require [react-native.core :as rn]
-            [quo2.theme :as theme]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.calendar.calendar-day.style :as style]))
+  (:require
+    [quo2.components.calendar.calendar-day.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]))
 
 (defn- view-internal
   [{:keys [state in-range on-press customization-color theme]

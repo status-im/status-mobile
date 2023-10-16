@@ -1,11 +1,12 @@
 (ns status-im2.subs.messages
-  (:require [re-frame.core :as re-frame]
-            [status-im.chat.models.reactions :as models.reactions]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.list.events :as models.message-list]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.chat.models.reactions :as models.reactions]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.list.events :as models.message-list]
+    [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]))
 
 (defn intersperse-datemark
   "Reduce step which expects the input list of messages to be sorted by clock value.

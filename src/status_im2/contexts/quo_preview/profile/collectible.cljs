@@ -2,8 +2,8 @@
   (:require
     [quo2.core :as quo]
     [reagent.core :as reagent]
-    [status-im2.contexts.quo-preview.preview :as preview]
-    [status-im2.common.resources :as resources]))
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defonce test-image (resources/get-mock-image :collectible))
 (def test-images (repeat 10 test-image))

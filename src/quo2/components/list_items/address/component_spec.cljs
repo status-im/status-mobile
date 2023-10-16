@@ -1,7 +1,8 @@
 (ns quo2.components.list-items.address.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.list-items.address.view :as address]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.list-items.address.view :as address]
+    [quo2.foundations.colors :as colors]
+    [test-helpers.component :as h]))
 
 (h/describe "List items: address"
   (h/test "default render"

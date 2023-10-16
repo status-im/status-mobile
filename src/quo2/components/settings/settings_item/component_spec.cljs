@@ -1,6 +1,7 @@
 (ns quo2.components.settings.settings-item.component-spec
-  (:require [quo2.components.settings.settings-item.view :as settings-item]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.settings.settings-item.view :as settings-item]
+    [test-helpers.component :as h]))
 
 (def props
   {:title               "Account"

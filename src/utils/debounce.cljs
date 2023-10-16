@@ -1,6 +1,7 @@
 (ns utils.debounce
-  (:require [goog.functions]
-            [re-frame.core :as re-frame]))
+  (:require
+    [goog.functions]
+    [re-frame.core :as re-frame]))
 
 (def timeout (atom {}))
 

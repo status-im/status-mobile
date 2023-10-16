@@ -1,12 +1,13 @@
 (ns quo2.components.list-items.channel.view
-  (:require [quo2.components.list-items.channel.style :as style]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]
-            [quo2.components.avatars.channel-avatar.view :as channel-avatar]
-            [quo2.components.markdown.text :as quo.text]
-            [quo2.components.icon :as quo2.icons]
-            [quo2.components.counter.counter.view :as counter]
-            [reagent.core :as reagent]))
+  (:require
+    [quo2.components.avatars.channel-avatar.view :as channel-avatar]
+    [quo2.components.counter.counter.view :as counter]
+    [quo2.components.icon :as quo2.icons]
+    [quo2.components.list-items.channel.style :as style]
+    [quo2.components.markdown.text :as quo.text]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn- view-internal
   "Options:

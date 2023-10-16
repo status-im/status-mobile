@@ -1,11 +1,12 @@
 (ns status-im2.contexts.shell.activity-center.tabs.empty-tab.view
-  (:require [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [quo2.core :as quo]
-            [status-im2.contexts.shell.activity-center.style :as style]
-            [utils.i18n :as i18n]
-            [status-im2.contexts.shell.activity-center.notification-types :as types]
-            [status-im2.common.resources :as resources]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.shell.activity-center.notification-types :as types]
+    [status-im2.contexts.shell.activity-center.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def empty-tab-description
   {types/no-type              (i18n/label :t/empty-notifications-all-tab)

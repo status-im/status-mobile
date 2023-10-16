@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.bootnodes-settings.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.bootnodes-settings.styles :as styles]
-            [status-im.ui.screens.profile.components.views :as profile.components]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.bootnodes-settings.styles :as styles]
+    [status-im.ui.screens.profile.components.views :as profile.components]
+    [utils.i18n :as i18n]))
 
 (defn navigate-to-add-bootnode
   [id]

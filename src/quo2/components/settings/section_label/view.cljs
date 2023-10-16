@@ -1,8 +1,8 @@
 (ns quo2.components.settings.section-label.view
   (:require
-    [quo2.theme :as quo.theme]
     [quo2.components.markdown.text :as text]
-    [quo2.foundations.colors :as colors]))
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]))
 
 (defn- get-text-color
   [theme blur?]

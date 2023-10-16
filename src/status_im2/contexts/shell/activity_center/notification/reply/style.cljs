@@ -1,5 +1,6 @@
 (ns status-im2.contexts.shell.activity-center.notification.reply.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def tag
   {:background-color colors/white-opa-10})

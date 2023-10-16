@@ -1,7 +1,8 @@
 (ns status-im2.contexts.communities.actions.home-plus.view
-  (:require [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [status-im2.config :as config]))
+  (:require
+    [quo2.core :as quo]
+    [status-im2.config :as config]
+    [utils.re-frame :as rf]))
 
 (defn view
   []

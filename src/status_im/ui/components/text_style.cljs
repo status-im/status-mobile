@@ -1,5 +1,6 @@
 (ns status-im.ui.components.text-style
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 (def default-font-family "Inter")
 (defn default-style

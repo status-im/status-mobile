@@ -1,8 +1,9 @@
 (ns quo2.components.gradient.gradient-cover.view
-  (:require [quo2.components.gradient.gradient-cover.style :as style]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.linear-gradient :as linear-gradient]))
+  (:require
+    [quo2.components.gradient.gradient-cover.style :as style]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.linear-gradient :as linear-gradient]))
 
 (defn- view-internal
   [{:keys [customization-color opacity container-style] :or {customization-color :blue}}]

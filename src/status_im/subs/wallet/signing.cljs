@@ -1,12 +1,13 @@
 (ns status-im.subs.wallet.signing
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.tokens :as tokens]
-            [utils.i18n :as i18n]
-            [status-im.signing.gas :as signing.gas]
-            [utils.money :as money]
-            [status-im.wallet.db :as wallet.db]
-            [utils.ethereum.chain :as chain]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.tokens :as tokens]
+    [status-im.signing.gas :as signing.gas]
+    [status-im.wallet.db :as wallet.db]
+    [utils.ethereum.chain :as chain]
+    [utils.i18n :as i18n]
+    [utils.money :as money]))
 
 (re-frame/reg-sub
  ::send-transaction

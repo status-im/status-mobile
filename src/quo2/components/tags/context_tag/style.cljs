@@ -1,5 +1,6 @@
 (ns quo2.components.tags.context-tag.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn context-tag-icon-color
   [theme blur?]

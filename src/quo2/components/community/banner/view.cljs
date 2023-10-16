@@ -1,9 +1,10 @@
 (ns quo2.components.community.banner.view
-  (:require [quo2.components.community.banner.style :as style]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.community.banner.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]))
 
 (defn- card-title-and-description
   [title description theme]

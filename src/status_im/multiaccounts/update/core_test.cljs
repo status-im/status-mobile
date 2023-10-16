@@ -1,6 +1,7 @@
 (ns status-im.multiaccounts.update.core-test
-  (:require [clojure.test :refer-macros [deftest is testing]]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]))
+  (:require
+    [clojure.test :refer-macros [deftest is testing]]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]))
 
 (deftest test-multiaccount-update
   ;;TODO this test case actually shows that we are doing a needless rpc call when

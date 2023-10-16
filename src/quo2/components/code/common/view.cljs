@@ -1,13 +1,14 @@
 (ns quo2.components.code.common.view
-  (:require [cljs-bean.core :as bean]
-            [clojure.string :as string]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.code.common.style :as style]
-            [quo2.components.markdown.text :as text]
-            [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
-            [react-native.syntax-highlighter :as highlighter]
-            [reagent.core :as reagent]))
+  (:require
+    [cljs-bean.core :as bean]
+    [clojure.string :as string]
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.code.common.style :as style]
+    [quo2.components.markdown.text :as text]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]
+    [react-native.syntax-highlighter :as highlighter]
+    [reagent.core :as reagent]))
 
 (defn- render-nodes
   [nodes theme preview?]

@@ -1,7 +1,8 @@
 (ns quo2.components.settings.reorder-item.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.core :as quo]
-            [quo2.components.settings.reorder-item.types :as types]))
+  (:require
+    [quo2.components.settings.reorder-item.types :as types]
+    [quo2.core :as quo]
+    [test-helpers.component :as h]))
 
 (h/describe
   "sortable list items tests"

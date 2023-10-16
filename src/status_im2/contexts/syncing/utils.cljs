@@ -1,6 +1,7 @@
 (ns status-im2.contexts.syncing.utils
-  (:require [clojure.string :as string]
-            [status-im2.constants :as constants]))
+  (:require
+    [clojure.string :as string]
+    [status-im2.constants :as constants]))
 
 (defn valid-connection-string?
   [connection-string]

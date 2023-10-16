@@ -1,9 +1,10 @@
 (ns quo2.components.buttons.composer-button.view
-  (:require [quo2.components.icon :as quo2.icons]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [quo2.components.buttons.composer-button.style :as style]))
+  (:require
+    [quo2.components.buttons.composer-button.style :as style]
+    [quo2.components.icon :as quo2.icons]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn- view-internal
   [_ _]

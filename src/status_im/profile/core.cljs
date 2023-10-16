@@ -1,11 +1,12 @@
 (ns status-im.profile.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.react :as react]
-            [utils.re-frame :as rf]
-            [status-im.utils.universal-links.utils :as universal-links]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.ui.components.list-selection :as list-selection]
+    [status-im.ui.components.react :as react]
+    [status-im.utils.universal-links.utils :as universal-links]
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  :copy-to-clipboard

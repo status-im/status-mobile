@@ -1,7 +1,8 @@
 (ns status-im2.common.scroll-page.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]))
 
 (defn image-slider
   [size]

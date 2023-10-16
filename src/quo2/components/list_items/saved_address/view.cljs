@@ -1,13 +1,14 @@
 (ns quo2.components.list-items.saved-address.view
-  (:require [quo2.components.avatars.wallet-user-avatar :as wallet-user-avatar]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [quo2.components.list-items.saved-address.style :as style]
-            [reagent.core :as reagent]
-            [quo2.components.icon :as icon]
-            [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.avatars.wallet-user-avatar :as wallet-user-avatar]
+    [quo2.components.icon :as icon]
+    [quo2.components.list-items.saved-address.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn- left-container
   [{:keys [blur? theme name address customization-color]}]

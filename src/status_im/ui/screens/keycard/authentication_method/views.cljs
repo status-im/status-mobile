@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.keycard.authentication-method.views
-  (:require [status-im.ui.components.separator :as separator]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.keycard.authentication-method.styles :as styles]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.separator :as separator]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.keycard.authentication-method.styles :as styles]
+    [utils.i18n :as i18n]))
 
 (defn authentication-method-row
   [{:keys [title on-press icon]}]

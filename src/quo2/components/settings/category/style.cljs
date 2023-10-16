@@ -1,5 +1,6 @@
 (ns quo2.components.settings.category.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def container
   {:left               0

@@ -1,11 +1,11 @@
 (ns quo2.components.settings.category.settings.view
   (:require
     [quo2.components.markdown.text :as text]
+    [quo2.components.settings.category.style :as style]
     [quo2.components.settings.settings-item.view :as settings-item]
     [quo2.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [quo2.components.settings.category.style :as style]
-    [quo2.theme :as quo.theme]))
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- category-internal
   [{:keys [label data blur? theme]}]

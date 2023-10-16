@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.dapps-permissions.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 (def icon-container
   {:width            40

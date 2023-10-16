@@ -1,8 +1,11 @@
 (ns status-im.ui.screens.chat.message.legacy-view
   (:require
-    [status-im.ui.components.colors :as quo.colors]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.foundations.typography :as typography]
     [react-native.core :as rn]
     [status-im.react-native.resources :as resources]
+    [status-im.ui.components.colors :as quo.colors]
     [status-im.ui.components.fast-image :as fast-image]
     [status-im.ui.screens.chat.message.gap :as message.gap]
     [status-im.ui.screens.chat.styles.message.message :as style]
@@ -11,10 +14,7 @@
     [status-im2.contexts.chat.messages.delete-message-for-me.events]
     [status-im2.contexts.chat.messages.delete-message.events]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.foundations.typography :as typography])
+    [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn system-text?

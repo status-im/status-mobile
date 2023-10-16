@@ -1,11 +1,12 @@
 (ns quo2.components.wallet.wallet-overview.view
-  (:require [quo2.components.dropdowns.network-dropdown.view :as network-dropdown]
-            [quo2.components.icon :as icon]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.wallet.wallet-overview.style :as style]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.components.dropdowns.network-dropdown.view :as network-dropdown]
+    [quo2.components.icon :as icon]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.wallet.wallet-overview.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (def ^:private time-frames
   {:one-week     (i18n/label :t/one-week-int)

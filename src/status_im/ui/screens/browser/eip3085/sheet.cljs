@@ -1,14 +1,15 @@
 (ns status-im.ui.screens.browser.eip3085.sheet
-  (:require [status-im.ui.components.core :as quo]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.ui.components.copyable-text :as copyable-text]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.browser.styles :as styles]
-            [status-im.ui.components.list.item :as list.item])
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.copyable-text :as copyable-text]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.browser.styles :as styles]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview permissions-panel

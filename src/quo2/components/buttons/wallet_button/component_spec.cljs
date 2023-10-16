@@ -1,6 +1,7 @@
 (ns quo2.components.buttons.wallet-button.component-spec
-  (:require [quo2.components.buttons.wallet-button.view :as wallet-button]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.buttons.wallet-button.view :as wallet-button]
+    [test-helpers.component :as h]))
 
 (h/describe "button tests"
   (h/test "default render of wallet button component"

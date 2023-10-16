@@ -1,9 +1,10 @@
 (ns quo2.components.calendar.calendar.utils-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [quo2.components.calendar.calendar.utils :as utils]
-            [utils.datetime :as datetime]
-            [clojure.string :as string]
-            [utils.number :as utils.number]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [clojure.string :as string]
+    [quo2.components.calendar.calendar.utils :as utils]
+    [utils.datetime :as datetime]
+    [utils.number :as utils.number]))
 
 (deftest generate-years-test
   (testing "returns correct years range"

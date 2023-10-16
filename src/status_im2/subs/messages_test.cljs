@@ -1,10 +1,11 @@
 (ns status-im2.subs.messages-test
-  (:require [cljs.test :refer [deftest is testing]]
-            [re-frame.db :as rf-db]
-            [status-im2.constants :as constants]
-            [status-im2.subs.messages :as messages]
-            [test-helpers.unit :as h]
-            [utils.re-frame :as rf]))
+  (:require
+    [cljs.test :refer [deftest is testing]]
+    [re-frame.db :as rf-db]
+    [status-im2.constants :as constants]
+    [status-im2.subs.messages :as messages]
+    [test-helpers.unit :as h]
+    [utils.re-frame :as rf]))
 
 (def messages-state
   [{:message-id "0x111" :album-id "abc" :albumize? true :from :xyz :timestamp-str "14:00"}

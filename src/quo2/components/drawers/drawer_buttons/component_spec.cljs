@@ -1,8 +1,9 @@
 (ns quo2.components.drawers.drawer-buttons.component-spec
-  (:require [quo2.components.drawers.drawer-buttons.view :as drawer-buttons]
-            [react-native.core :as rn]
-            [test-helpers.component :as h]
-            [react-native.safe-area :as safe-area]))
+  (:require
+    [quo2.components.drawers.drawer-buttons.view :as drawer-buttons]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [test-helpers.component :as h]))
 
 (h/describe "drawer-buttons"
   (h/before-each

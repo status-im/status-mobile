@@ -3,8 +3,8 @@
     [quo2.core :as quo]
     [react-native.blur :as blur]
     [react-native.core :as rn]
-    [status-im2.config :as config]
     [react-native.reanimated :as reanimated]
+    [status-im2.config :as config]
     [status-im2.contexts.chat.composer.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

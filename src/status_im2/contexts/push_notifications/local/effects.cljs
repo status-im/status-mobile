@@ -1,8 +1,9 @@
 (ns status-im2.contexts.push-notifications.local.effects
-  (:require [react-native.push-notification-ios :as pn-ios]
-            [cljs-bean.core :as bean]
-            [native-module.push-notifications :as native-module.pn]
-            [utils.re-frame :as rf]))
+  (:require
+    [cljs-bean.core :as bean]
+    [native-module.push-notifications :as native-module.pn]
+    [react-native.push-notification-ios :as pn-ios]
+    [utils.re-frame :as rf]))
 
 (rf/reg-fx :effects/push-notifications-local-present-ios
            (fn [{:keys [title message user-info body-type]}]

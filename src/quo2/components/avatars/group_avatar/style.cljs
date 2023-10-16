@@ -1,5 +1,6 @@
 (ns quo2.components.avatars.group-avatar.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn container
   [{:keys [container-size customization-color theme]}]

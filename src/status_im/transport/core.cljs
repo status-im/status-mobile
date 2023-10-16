@@ -1,11 +1,12 @@
 (ns ^{:doc "API to init and stop whisper messaging"} status-im.transport.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.pairing.core :as pairing]
-            [status-im.stickers.core :as stickers]
-            status-im.transport.shh
-            [utils.re-frame :as rf]
-            [status-im.utils.universal-links.core :as universal-links]
-            [taoensso.timbre :as log]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.pairing.core :as pairing]
+    [status-im.stickers.core :as stickers]
+    status-im.transport.shh
+    [status-im.utils.universal-links.core :as universal-links]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn set-node-info
   {:events [:transport.callback/node-info-fetched]}

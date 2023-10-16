@@ -1,5 +1,6 @@
 (ns quo2.components.onboarding.small-option-card.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def main-variant-height 335)
 (def icon-variant-height 56)

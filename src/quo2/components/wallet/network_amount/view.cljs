@@ -2,10 +2,10 @@
   (:require
     [clojure.string :as string]
     [quo2.components.markdown.text :as text]
-    [quo2.theme :as quo.theme]
-    [react-native.core :as rn]
     [quo2.components.wallet.network-amount.style :as style]
-    [quo2.foundations.resources :as resources]))
+    [quo2.foundations.resources :as resources]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- view-internal
   [{:keys [amount token theme]}]

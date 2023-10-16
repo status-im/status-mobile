@@ -1,11 +1,12 @@
 (ns quo2.components.settings.privacy-option.view
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.selectors.selectors.view :as selectors]
-            [quo2.components.settings.privacy-option.style :as style]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.selectors.selectors.view :as selectors]
+    [quo2.components.settings.privacy-option.style :as style]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- bullet
   [theme]

@@ -1,10 +1,11 @@
 (ns quo2.components.inputs.search-input.view
-  (:require [oops.core :as oops]
-            [quo2.components.icon :as icon]
-            [quo2.components.inputs.search-input.style :as style]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [oops.core :as oops]
+    [quo2.components.icon :as icon]
+    [quo2.components.inputs.search-input.style :as style]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (def ^:private tag-separator [rn/view {:style style/tag-separator}])
 

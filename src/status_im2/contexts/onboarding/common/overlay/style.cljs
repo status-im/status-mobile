@@ -1,6 +1,7 @@
 (ns status-im2.contexts.onboarding.common.overlay.style
-  (:require [react-native.reanimated :as reanimated]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]))
 
 (defn blur-container
   [opacity]

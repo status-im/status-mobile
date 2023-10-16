@@ -1,16 +1,17 @@
 (ns status-im2.contexts.communities.discover.view
-  (:require [utils.i18n :as i18n]
-            [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.theme :as quo.theme]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.communities.actions.community-options.view :as options]
-            [status-im.ui.components.react :as react]
-            [status-im2.common.scroll-page.view :as scroll-page]
-            [status-im2.contexts.communities.discover.style :as style]
-            [utils.re-frame :as rf]))
+  (:require
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.ui.components.react :as react]
+    [status-im2.common.scroll-page.view :as scroll-page]
+    [status-im2.contexts.communities.actions.community-options.view :as options]
+    [status-im2.contexts.communities.discover.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn community-list-item
   [community-item _ _ {:keys [width view-type]}]

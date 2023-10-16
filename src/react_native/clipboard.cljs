@@ -1,5 +1,6 @@
 (ns react-native.clipboard
-  (:require ["@react-native-community/clipboard" :default Clipboard]))
+  (:require
+    ["@react-native-community/clipboard" :default Clipboard]))
 
 (defn set-string
   [text]

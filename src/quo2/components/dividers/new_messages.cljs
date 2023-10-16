@@ -1,9 +1,10 @@
 (ns quo2.components.dividers.new-messages
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.linear-gradient :as linear-gradient]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]))
 
 (defn- view-internal
   "new-messages params - label, customization-color, theme"

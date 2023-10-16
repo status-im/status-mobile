@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.navigation.top-nav
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :notification

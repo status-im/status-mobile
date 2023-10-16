@@ -1,6 +1,7 @@
 (ns quo2.components.graph.interactive-graph.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.graph.interactive-graph.view :as interactive-graph]))
+  (:require
+    [quo2.components.graph.interactive-graph.view :as interactive-graph]
+    [test-helpers.component :as h]))
 
 (defn data
   [num-elements]

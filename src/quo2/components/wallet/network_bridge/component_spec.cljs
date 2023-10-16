@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.network-bridge.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.wallet.network-bridge.view :as network-bridge]))
+  (:require
+    [quo2.components.wallet.network-bridge.view :as network-bridge]
+    [test-helpers.component :as h]))
 
 (h/describe "Wallet: Network Bridge"
   (h/test "Amount renders"

@@ -1,8 +1,9 @@
 (ns status-im.chat.models.gaps
-  (:require [utils.re-frame :as rf]
-            [taoensso.timbre :as log]
-            [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im.mailserver.core :as mailserver]))
+  (:require
+    [status-im.mailserver.core :as mailserver]
+    [status-im2.contexts.chat.messages.list.events :as message-list]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn gaps-filled
   {:events [:gaps/filled]}

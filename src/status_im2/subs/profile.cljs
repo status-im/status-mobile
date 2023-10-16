@@ -1,15 +1,16 @@
 (ns status-im2.subs.profile
-  (:require [cljs.spec.alpha :as spec]
-            [clojure.string :as string]
-            [quo2.theme :as theme]
-            [re-frame.core :as re-frame]
-            [status-im.fleet.core :as fleet]
-            [status-im.multiaccounts.db :as multiaccounts.db]
-            [status-im2.constants :as constants]
-            [utils.image-server :as image-server]
-            [utils.security.core :as security]
-            [status-im.wallet.utils :as wallet.utils]
-            [utils.address :as address]))
+  (:require
+    [cljs.spec.alpha :as spec]
+    [clojure.string :as string]
+    [quo2.theme :as theme]
+    [re-frame.core :as re-frame]
+    [status-im.fleet.core :as fleet]
+    [status-im.multiaccounts.db :as multiaccounts.db]
+    [status-im.wallet.utils :as wallet.utils]
+    [status-im2.constants :as constants]
+    [utils.address :as address]
+    [utils.image-server :as image-server]
+    [utils.security.core :as security]))
 
 (re-frame/reg-sub
  :profile/customization-color

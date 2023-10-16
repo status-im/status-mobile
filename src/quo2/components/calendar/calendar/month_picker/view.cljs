@@ -1,11 +1,12 @@
 (ns quo2.components.calendar.calendar.month-picker.view
-  (:require [react-native.core :as rn]
-            [utils.number :as utils.number]
-            [quo2.theme :as theme]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.calendar.calendar.month-picker.style :as style]
-            [quo2.components.calendar.calendar.month-picker.utils :as utils]))
+  (:require
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.calendar.calendar.month-picker.style :as style]
+    [quo2.components.calendar.calendar.month-picker.utils :as utils]
+    [quo2.components.markdown.text :as text]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [utils.number :as utils.number]))
 
 (defn- view-internal
   [{:keys [year month on-change theme]}]

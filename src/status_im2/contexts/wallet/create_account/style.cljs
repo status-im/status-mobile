@@ -1,5 +1,6 @@
 (ns status-im2.contexts.wallet.create-account.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn gradient-cover-container
   [top]

@@ -7,8 +7,8 @@
     [reagent.core :as reagent]
     [status-im.qr-scanner.core :as qr-scanner]
     [status-im2.contexts.add-new-contact.style :as style]
-    [utils.debounce :as debounce]
     [utils.address :as address]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.account-origin.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.core :as quo]))
+  (:require
+    [quo2.core :as quo]
+    [test-helpers.component :as h]))
 
 (h/describe "account origin tests"
   (h/test "component renders"

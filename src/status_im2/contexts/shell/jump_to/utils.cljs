@@ -1,14 +1,15 @@
 (ns status-im2.contexts.shell.jump-to.utils
-  (:require [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [status-im2.config :as config]
-            [react-native.platform :as platform]
-            [react-native.safe-area :as safe-area]
-            [react-native.reanimated :as reanimated]
-            [react-native.async-storage :as async-storage]
-            [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.theme :as quo.theme]
+    [react-native.async-storage :as async-storage]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [status-im2.config :as config]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im2.contexts.shell.jump-to.state :as state]
+    [utils.re-frame :as rf]))
 
 ;;;;  Helper Functions
 

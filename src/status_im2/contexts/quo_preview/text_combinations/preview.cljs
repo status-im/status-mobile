@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.text-combinations.preview
-  (:require [quo2.components.text-combinations.view :as quo2]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.components.text-combinations.view :as quo2]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Title"

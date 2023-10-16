@@ -1,8 +1,9 @@
 (ns status-im.ui.screens.glossary.view
-  (:require [status-im.ui.components.colors :as colors]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]))
+  (:require
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n]))
 
 (def messages
   [{:title   :t/account-title

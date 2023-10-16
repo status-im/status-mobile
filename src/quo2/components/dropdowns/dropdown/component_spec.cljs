@@ -1,6 +1,7 @@
 (ns quo2.components.dropdowns.dropdown.component-spec
-  (:require [quo2.components.dropdowns.dropdown.view :as dropdown]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.dropdowns.dropdown.view :as dropdown]
+    [test-helpers.component :as h]))
 
 (h/describe "Dropdown"
   (h/test "default render"

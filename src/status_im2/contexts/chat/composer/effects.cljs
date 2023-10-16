@@ -2,10 +2,10 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
+    [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [react-native.async-storage :as async-storage]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
     [status-im2.contexts.chat.composer.utils :as utils]

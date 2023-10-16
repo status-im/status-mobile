@@ -1,13 +1,14 @@
 (ns status-im2.subs.chats
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.communities.core :as communities]
-            [status-im.contact.core :as contact]
-            [status-im.group-chats.core :as group-chat]
-            [status-im.group-chats.db :as group-chats.db]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.composer.constants :as composer.constants]
-            [status-im2.contexts.chat.events :as chat.events]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.communities.core :as communities]
+    [status-im.contact.core :as contact]
+    [status-im.group-chats.core :as group-chat]
+    [status-im.group-chats.db :as group-chats.db]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.constants :as composer.constants]
+    [status-im2.contexts.chat.events :as chat.events]))
 
 (def memo-chats-stack-items (atom nil))
 

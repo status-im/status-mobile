@@ -1,5 +1,6 @@
 (ns quo2.components.wallet.account-overview.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def account-overview-wrapper
   {:padding-top        24

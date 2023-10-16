@@ -1,10 +1,10 @@
 (ns status-im2.contexts.quo-preview.settings.reorder-item
   (:require
+    [quo2.components.settings.reorder-item.types :as types]
     [quo2.core :as quo]
-    [status-im2.common.resources :as resources]
     [quo2.foundations.resources :as quo2.resources]
-    [status-im2.contexts.quo-preview.preview :as preview]
-    [quo2.components.settings.reorder-item.types :as types]))
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def mock-data
   [{:id   1

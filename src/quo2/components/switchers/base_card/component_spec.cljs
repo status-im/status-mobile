@@ -1,7 +1,8 @@
 (ns quo2.components.switchers.base-card.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.switchers.base-card.view :as base-card]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.switchers.base-card.view :as base-card]
+    [quo2.foundations.colors :as colors]
+    [test-helpers.component :as h]))
 
 (h/describe "Switcher: Base card"
   (h/test "Default render"

@@ -1,11 +1,12 @@
 (ns status-im.ui.components.tooltip
-  (:require [oops.core :refer [oget]]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.spacing :as spacing]
-            [react-native.platform :as platform]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im.ui.components.icons.icons :as icons]))
+  (:require
+    [oops.core :refer [oget]]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.spacing :as spacing]))
 
 (def ^:private initial-height 22)
 

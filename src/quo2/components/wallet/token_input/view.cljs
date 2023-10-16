@@ -2,16 +2,16 @@
   (:require
     [clojure.string :as string]
     [quo2.components.buttons.button.view :as button]
+    [quo2.components.dividers.divider-line.view :as divider-line]
     [quo2.components.markdown.text :as text]
+    [quo2.components.tags.network-tags.view :as network-tag]
+    [quo2.components.wallet.token-input.style :as style]
     [quo2.foundations.colors :as colors]
+    [quo2.foundations.common :as common]
     [quo2.foundations.resources :as resources]
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [quo2.foundations.common :as common]
-    [quo2.components.wallet.token-input.style :as style]
-    [quo2.components.tags.network-tags.view :as network-tag]
-    [quo2.components.dividers.divider-line.view :as divider-line]))
+    [reagent.core :as reagent]))
 
 (defn calc-value
   [crypto? currency token value conversion]

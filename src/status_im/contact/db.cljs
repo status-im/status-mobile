@@ -1,9 +1,10 @@
 (ns status-im.contact.db
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
-            [status-im2.constants :as constants]
-            [status-im.utils.gfycat.core :as gfycat]
-            [utils.address :as address]))
+  (:require
+    [clojure.set :as set]
+    [clojure.string :as string]
+    [status-im.utils.gfycat.core :as gfycat]
+    [status-im2.constants :as constants]
+    [utils.address :as address]))
 
 (defn public-key->new-contact
   [public-key]

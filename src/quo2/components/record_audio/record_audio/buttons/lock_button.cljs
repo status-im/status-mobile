@@ -1,11 +1,12 @@
 (ns quo2.components.record-audio.record-audio.buttons.lock-button
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.record-audio.record-audio.style :as style]
-            [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
-            [react-native.core :refer [use-effect]]
-            [quo2.components.record-audio.record-audio.helpers :as helpers]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.record-audio.record-audio.helpers :as helpers]
+    [quo2.components.record-audio.record-audio.style :as style]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :refer [use-effect]]
+    [react-native.reanimated :as reanimated]))
 
 (defn f-lock-button
   [recording? ready-to-lock? locked?]

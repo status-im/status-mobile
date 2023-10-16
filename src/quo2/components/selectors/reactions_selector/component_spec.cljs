@@ -1,6 +1,7 @@
 (ns quo2.components.selectors.reactions-selector.component-spec
-  (:require [quo2.components.selectors.reactions-selector.view :as view]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.selectors.reactions-selector.view :as view]
+    [test-helpers.component :as h]))
 
 (h/describe "Selectors > Reactions"
   (h/test "renders component"

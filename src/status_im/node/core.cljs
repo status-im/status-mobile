@@ -1,11 +1,12 @@
 (ns status-im.node.core
-  (:require [re-frame.core :as re-frame]
-            [native-module.core :as native-module]
-            [status-im2.config :as config]
-            [utils.re-frame :as rf]
-            [status-im.utils.deprecated-types :as types]
-            [clojure.string :as string]
-            [react-native.platform :as platform]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.utils.deprecated-types :as types]
+    [status-im2.config :as config]
+    [utils.re-frame :as rf]))
 
 (defn- add-custom-bootnodes
   [config network all-bootnodes]

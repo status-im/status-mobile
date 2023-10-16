@@ -1,5 +1,6 @@
 (ns quo2.components.inputs.locked-input.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn info-box-container
   [theme]

@@ -1,11 +1,12 @@
 (ns status-im.ui.components.animated-header
-  (:require [oops.core :refer [oget]]
-            [status-im.ui.components.header :as header]
-            [status-im.ui.components.colors :as colors]
-            [react-native.platform :as platform]
-            [reagent.core :as reagent]
-            [react-native.safe-area :as safe-area]
-            [react-native.core :as rn]))
+  (:require
+    [oops.core :refer [oget]]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.header :as header]))
 
 (defn header-wrapper-style
   [{:keys [offset]}]

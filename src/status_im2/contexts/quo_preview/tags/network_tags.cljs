@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.tags.network-tags
-  (:require [quo2.core :as quo]
-            [quo2.foundations.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.resources :as resources]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def community-networks
   [[{:source (resources/get-network :ethereum)}]

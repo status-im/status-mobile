@@ -1,5 +1,6 @@
 (ns quo2.components.profile.profile-card.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn card-container
   [{:keys [customization-color padding-bottom border-bottom-radius]}]

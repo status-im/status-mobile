@@ -1,10 +1,11 @@
 (ns status-im2.setup.i18n-test
-  (:require [cljs.spec.alpha :as spec]
-            [cljs.test :refer-macros [deftest is]]
-            [clojure.set :as set]
-            [clojure.string :as string]
-            [utils.i18n :as i18n]
-            [status-im2.setup.i18n-resources :as i18n-resources]))
+  (:require
+    [cljs.spec.alpha :as spec]
+    [cljs.test :refer-macros [deftest is]]
+    [clojure.set :as set]
+    [clojure.string :as string]
+    [status-im2.setup.i18n-resources :as i18n-resources]
+    [utils.i18n :as i18n]))
 
 ;; english as source of truth
 (def labels

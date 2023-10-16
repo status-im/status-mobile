@@ -1,10 +1,11 @@
 (ns status-im.ui.components.bottom-panel.views
-  (:require ["react-native" :refer (BackHandler)]
-            [status-im.ui.components.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im.ui.components.animation :as anim]
-            [status-im.ui.components.react :as react]
-            [react-native.platform :as platform])
+  (:require
+    ["react-native" :refer (BackHandler)]
+    [react-native.platform :as platform]
+    [reagent.core :as reagent]
+    [status-im.ui.components.animation :as anim]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.react :as react])
   (:require-macros [status-im.utils.views :as views]))
 
 (def back-listener (atom nil))

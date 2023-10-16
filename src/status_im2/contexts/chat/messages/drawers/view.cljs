@@ -1,16 +1,17 @@
 (ns status-im2.contexts.chat.messages.drawers.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im.ui.components.react :as react]
-            [status-im2.contexts.chat.composer.reply.view :as reply]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [reagent.core :as reagent]
-            [status-im2.common.contact-list-item.view :as contact-list-item]
-            [status-im2.contexts.chat.messages.drawers.style :as style]
-            [react-native.gesture :as gesture]
-            [quo2.components.selectors.reaction-resource :as reactions.resource]))
+  (:require
+    [quo2.components.selectors.reaction-resource :as reactions.resource]
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [reagent.core :as reagent]
+    [status-im.ui.components.react :as react]
+    [status-im2.common.contact-list-item.view :as contact-list-item]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.reply.view :as reply]
+    [status-im2.contexts.chat.messages.drawers.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn contact-list-item-fn
   [{:keys [from compressed-key]}]

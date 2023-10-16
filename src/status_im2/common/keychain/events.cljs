@@ -1,12 +1,13 @@
 (ns status-im2.common.keychain.events
-  (:require [taoensso.timbre :as log]
-            [react-native.platform :as platform]
-            [react-native.keychain :as keychain]
-            [re-frame.core :as re-frame]
-            [utils.re-frame :as rf]
-            [oops.core :as oops]
-            [native-module.core :as native-module]
-            [utils.security.core :as security]))
+  (:require
+    [native-module.core :as native-module]
+    [oops.core :as oops]
+    [re-frame.core :as re-frame]
+    [react-native.keychain :as keychain]
+    [react-native.platform :as platform]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn- check-conditions
   [callback & checks]

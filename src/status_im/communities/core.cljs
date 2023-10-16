@@ -1,22 +1,23 @@
 (ns status-im.communities.core
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
-            [clojure.walk :as walk]
-            [status-im.ui.components.colors :as colors]
-            [quo2.foundations.colors :as quo2.colors]
-            [re-frame.core :as re-frame]
-            [status-im.utils.deprecated-types :as types]
-            [status-im.utils.universal-links.core :as universal-links]
-            [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im2.common.toasts.events :as toasts]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.activity-center.events :as activity-center]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [status-im2.common.muting.helpers :refer [format-mute-till]]
-            [status-im2.contexts.chat.events :as chat.events]))
+  (:require
+    [clojure.set :as set]
+    [clojure.string :as string]
+    [clojure.walk :as walk]
+    [quo2.foundations.colors :as quo2.colors]
+    [re-frame.core :as re-frame]
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.ui.components.colors :as colors]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.utils.universal-links.core :as universal-links]
+    [status-im2.common.muting.helpers :refer [format-mute-till]]
+    [status-im2.common.toasts.events :as toasts]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.events :as chat.events]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def crop-size 1000)
 

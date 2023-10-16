@@ -10,8 +10,8 @@
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [utils.i18n :as i18n]
     [status-im2.contexts.chat.camera.style :as style]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn retake

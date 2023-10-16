@@ -1,12 +1,13 @@
 (ns status-im2.contexts.shell.activity-center.notification.contact-verification.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.activity-center.notification.common.style :as common-style]
-            [status-im2.contexts.shell.activity-center.notification.common.view :as common]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.activity-center.notification.common.style :as common-style]
+    [status-im2.contexts.shell.activity-center.notification.common.view :as common]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- swipe-button-decline
   [{:keys [style]} _]

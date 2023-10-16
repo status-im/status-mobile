@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.chat.styles.message.sheets
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 (def sheet-text
   {:color       colors/gray

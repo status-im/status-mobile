@@ -1,12 +1,13 @@
 (ns status-im2.contexts.shell.activity-center.notification.mentions.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [react-native.gesture :as gesture]
-            [status-im2.contexts.shell.activity-center.notification.common.view :as common]
-            [status-im2.contexts.shell.activity-center.notification.mentions.style :as style]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [react-native.gesture :as gesture]
+    [status-im2.contexts.shell.activity-center.notification.common.view :as common]
+    [status-im2.contexts.shell.activity-center.notification.mentions.style :as style]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- message-body
   [message]

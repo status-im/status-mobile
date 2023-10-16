@@ -1,6 +1,7 @@
 (ns quo2.components.share.share-qr-code.component-spec
-  (:require [quo2.components.share.share-qr-code.view :as share-qr-code]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.share.share-qr-code.view :as share-qr-code]
+    [test-helpers.component :as h]))
 
 (h/describe "Share QR Code component"
   (h/test "renders share qr code component"

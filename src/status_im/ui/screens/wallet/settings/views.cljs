@@ -1,16 +1,17 @@
 (ns status-im.ui.screens.wallet.settings.views
-  (:require [status-im.ui.components.core :as quo]
-            [status-im.ui.components.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as wallet.components]
-            [status-im.ui.components.list.item :as list.item])
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.search-input.view :as search-input]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.components.views :as wallet.components]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defonce search-active? (reagent/atom false))

@@ -1,17 +1,18 @@
 (ns status-im.bottom-sheet.view
-  (:require [oops.core :refer [oget]]
-            [react-native.core :as react]
-            [status-im.bottom-sheet.styles :as styles]
-            [re-frame.core :as re-frame]
-            [react-native.background-timer :as timer]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [react-native.hooks :as hooks]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [utils.worklets.bottom-sheet :as worklets.bottom-sheet]))
+  (:require
+    [oops.core :refer [oget]]
+    [re-frame.core :as re-frame]
+    [react-native.background-timer :as timer]
+    [react-native.core :as react]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im.bottom-sheet.styles :as styles]
+    [utils.worklets.bottom-sheet :as worklets.bottom-sheet]))
 
 (def animation-delay 450)
 

@@ -1,9 +1,10 @@
 (ns quo2.components.tags.permission-tag
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.tags.base-tag :as base-tag]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.tags.base-tag :as base-tag]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]))
 
 (defn outer-resource-container
   [size background-color]

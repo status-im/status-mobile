@@ -1,25 +1,26 @@
 (ns status-im.keycard.recovery
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im2.constants :as constants]
-            [utils.ethereum.eip.eip55 :as eip55]
-            [utils.i18n :as i18n]
-            [status-im.keycard.common :as common]
-            status-im.keycard.fx
-            [status-im.multiaccounts.create.core :as multiaccounts.create]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [native-module.core :as native-module]
-            [status-im.popover.core :as popover]
-            [utils.re-frame :as rf]
-            [utils.datetime :as datetime]
-            [status-im.utils.keychain.core :as keychain]
-            [react-native.platform :as platform]
-            [status-im.utils.deprecated-types :as types]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]
-            [utils.security.core :as security]
-            [utils.address :as address]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.keycard.common :as common]
+    status-im.keycard.fx
+    [status-im.multiaccounts.create.core :as multiaccounts.create]
+    [status-im.multiaccounts.model :as multiaccounts.model]
+    [status-im.popover.core :as popover]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.utils.keychain.core :as keychain]
+    [status-im2.constants :as constants]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.address :as address]
+    [utils.datetime :as datetime]
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (rf/defn pair*
   [_ password]

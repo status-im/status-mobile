@@ -1,19 +1,20 @@
 (ns status-im.multiaccounts.core
-  (:require [clojure.string :as string]
-            [react-native.platform :as platform]
-            [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [native-module.core :as native-module]
-            [utils.re-frame :as rf]
-            [quo2.foundations.colors :as colors]
-            [status-im2.constants :as constants]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im2.setup.hot-reload :as hot-reload]
-            [status-im2.common.theme.core :as theme]
-            [taoensso.timbre :as log]
-            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
-            [status-im.contact.db :as contact.db]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [quo2.foundations.colors :as colors]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.contact.db :as contact.db]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.utils.gfycat.core :as gfycat]
+    [status-im2.common.theme.core :as theme]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+    [status-im2.setup.hot-reload :as hot-reload]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 ;; validate that the given mnemonic was generated from Status Dictionary
 (re-frame/reg-fx

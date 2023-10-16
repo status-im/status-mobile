@@ -1,8 +1,9 @@
 (ns quo2.components.avatars.account-avatar.view
-  (:require [clojure.string :as string]
-            [quo2.components.avatars.account-avatar.style :as style]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.avatars.account-avatar.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- view-internal
   "Opts:

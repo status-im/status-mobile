@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.home.chat-list-item.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn container
   []

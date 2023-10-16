@@ -46,6 +46,7 @@
                 :single-operand-comparison     {:level :error}
                 :syntax                        {:level :error}
                 :unbound-destructuring-default {:level :error}
+                :uninitialized-var             {:level :error}
                 :unknown-require-option        {:level :error}
                 :unreachable-code              {:level :error}
                 :unresolved-namespace          {:level :error}
@@ -55,7 +56,7 @@
                                                           number
                                                           status-im.test-helpers/restore-app-db]}
                 :unresolved-var                {:level :error}
-                :uninitialized-var             {:level :error}
+                :unsorted-required-namespaces  {:level :error}
                 :unused-alias                  {:level :warning}
                 :unused-binding                {:level :error}
                 :unused-import                 {:level :error}

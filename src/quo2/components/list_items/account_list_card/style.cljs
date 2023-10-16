@@ -1,5 +1,6 @@
 (ns quo2.components.list-items.account-list-card.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn container
   [{:keys [state blur? theme]}]

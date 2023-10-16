@@ -1,11 +1,12 @@
 (ns status-im.keycard.change-pin
-  (:require [utils.i18n :as i18n]
-            [status-im.keycard.common :as common]
-            [status-im.keycard.onboarding :as onboarding]
-            [utils.re-frame :as rf]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+  (:require
+    [status-im.keycard.common :as common]
+    [status-im.keycard.onboarding :as onboarding]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (rf/defn change-credentials-pressed
   {:events [:keycard-settings.ui/change-credentials-pressed]}

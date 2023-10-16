@@ -1,6 +1,7 @@
 (ns status-im2.contexts.emoji-picker.data
-  (:require [status-im2.contexts.emoji-picker.constants :as constants]
-            [utils.transforms :as transforms]))
+  (:require
+    [status-im2.contexts.emoji-picker.constants :as constants]
+    [utils.transforms :as transforms]))
 
 ;; Emoji data is pulled from the `emojibase` (https://emojibase.dev).
 ;;

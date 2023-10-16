@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.buttons.wallet-ctas
-  (:require [quo2.core :as quo]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defn view
   []

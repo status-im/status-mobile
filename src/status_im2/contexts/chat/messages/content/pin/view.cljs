@@ -1,11 +1,12 @@
 (ns status-im2.contexts.chat.messages.content.pin.view
-  (:require [react-native.core :as rn]
-            [status-im2.contexts.chat.composer.reply.view :as reply]
-            [status-im2.contexts.chat.messages.content.pin.style :as style]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [utils.re-frame :as rf]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [status-im2.contexts.chat.composer.reply.view :as reply]
+    [status-im2.contexts.chat.messages.content.pin.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn pinned-by-view
   [pinned-by]

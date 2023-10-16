@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.signing.styles
-  (:require [status-im.ui.components.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 (def header
   {:flex-direction  :row

@@ -1,6 +1,7 @@
 (ns react-native.flat-list
-  (:require ["react-native" :as react-native]
-            [reagent.core :as reagent]))
+  (:require
+    ["react-native" :as react-native]
+    [reagent.core :as reagent]))
 
 (def react-native-flat-list (reagent/adapt-react-class (.-FlatList ^js react-native)))
 

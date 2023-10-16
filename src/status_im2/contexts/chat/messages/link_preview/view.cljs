@@ -1,14 +1,14 @@
 (ns status-im2.contexts.chat.messages.link-preview.view
   (:require
     [clojure.string :as string]
-    [utils.i18n :as i18n]
-    [reagent.core :as reagent]
+    [quo2.core :as quo]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
+    [reagent.core :as reagent]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.link-preview.events]
     [status-im2.contexts.chat.messages.link-preview.style :as style]
-    [quo2.core :as quo]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
 

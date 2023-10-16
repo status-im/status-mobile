@@ -1,11 +1,12 @@
 (ns status-im2.common.scroll-page.view
-  (:require [oops.core :as oops]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.scroll-page.style :as style]
-            [utils.re-frame :as rf]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [status-im2.common.scroll-page.style :as style]
+    [utils.re-frame :as rf]))
 
 (def negative-scroll-position-0 0)
 (def scroll-position-0 0)

@@ -1,14 +1,15 @@
 (ns quo2.components.community.community-view
-  (:require [quo2.components.community.style :as style]
-            [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.tags.permission-tag :as permission]
-            [quo2.components.tags.tag :as tag]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            utils.money))
+  (:require
+    [quo2.components.community.style :as style]
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.tags.permission-tag :as permission]
+    [quo2.components.tags.tag :as tag]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    utils.money))
 
 (defn community-stats
   [{:keys [icon members-count icon-color accessibility-label]}]

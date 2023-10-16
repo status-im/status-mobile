@@ -1,7 +1,8 @@
 (ns quo2.components.settings.reorder-item.items.item-placeholder
-  (:require [react-native.core :as rn]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.settings.reorder-item.style :as style]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.components.settings.reorder-item.style :as style]
+    [react-native.core :as rn]))
 
 (defn view
   [item]

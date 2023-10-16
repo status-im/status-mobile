@@ -1,7 +1,8 @@
 (ns quo2.components.selectors.react.view
-  (:require [quo2.components.selectors.react-selector.view :as react-selector]
-            [quo2.components.selectors.react.style :as style]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.selectors.react-selector.view :as react-selector]
+    [quo2.components.selectors.react.style :as style]
+    [react-native.core :as rn]))
 
 (defn view
   [{:keys [reactions on-press on-long-press add-reaction? on-press-add use-case container-style]}]

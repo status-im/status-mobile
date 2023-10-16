@@ -1,12 +1,13 @@
 (ns quo2.components.messages.system-message
-  (:require [clojure.string :as string]
-            [quo2.components.avatars.icon-avatar :as icon-avatar]
-            [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.avatars.icon-avatar :as icon-avatar]
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (defn text-color
   [theme]
