@@ -2,14 +2,14 @@
   (:require [quo2.foundations.colors :as colors]))
 
 (defn container
-  [network state]
+  [network state theme]
   {:width              136
    :height             44
    :border-width       1
    :border-radius      12
    :padding-vertical   5
    :padding-horizontal 8
-   :border-color       (get colors/networks network)
+   :border-color       (colors/resolve-color network theme)
    :opacity            (when (= state :disabled) 0.3)})
 
 (defn add-container

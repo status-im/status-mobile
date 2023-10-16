@@ -4,11 +4,13 @@
             [quo2.foundations.colors :as colors]
             [react-native.reanimated :as reanimated]
             [react-native.core :refer [use-effect]]
-            [quo2.components.record-audio.record-audio.helpers :as helpers]))
+            [quo2.components.record-audio.record-audio.helpers :as helpers]
+            [quo2.theme :as quo.theme]))
 
 (defn f-lock-button
   [recording? ready-to-lock? locked?]
-  (let [translate-x-y             (reanimated/use-shared-value 20)
+  (let [theme                     (quo.theme/use-theme-value)
+        translate-x-y             (reanimated/use-shared-value 20)
         opacity                   (reanimated/use-shared-value 0)
         connector-opacity         (reanimated/use-shared-value 0)
         width                     (reanimated/use-shared-value 24)
@@ -75,5 +77,5 @@
       {:style          (style/lock-button translate-x-y opacity)
        :pointer-events :none}
       [icons/icon (if @ready-to-lock? :i/locked :i/unlocked)
-       {:color (colors/theme-colors colors/black colors/white)
+       {:color (colors/theme-colors colors/black colors/white theme)
         :size  20}]]]))

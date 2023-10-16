@@ -10,25 +10,26 @@
             [reagent.core :as reagent]))
 
 (defn- render-nodes
-  [nodes preview?]
+  [nodes theme preview?]
   (map (fn [{:keys [children value last-line?] :as node}]
-         (if children
-           (into [text/text
-                  (cond-> {:weight :code
-                           :size   :paragraph-2
-                           :style  (style/text-style (get-in node [:properties :className]) preview?)}
-                    last-line? (assoc :number-of-lines 1))]
-                 (render-nodes children preview?))
-           ;; Remove newlines as we already render each line separately.
-           (string/trim-newline value)))
+         (let [classname (get-in node [:properties :className])]
+           (if children
+             (into [text/text
+                    (cond-> {:weight :code
+                             :size   :paragraph-2
+                             :style  (style/text-style classname preview? theme)}
+                      last-line? (assoc :number-of-lines 1))]
+                   (render-nodes children theme preview?))
+             ;; Remove newlines as we already render each line separately.
+             (string/trim-newline value))))
        nodes))
 
 (defn- line
-  [{:keys [line-number line-number-width preview?]} children]
+  [{:keys [line-number line-number-width preview? theme]} children]
   [rn/view {:style style/line}
    [rn/view {:style (style/line-number line-number-width preview?)}
     [text/text
-     {:style  (style/text-style ["line-number"] preview?)
+     {:style  (style/text-style ["line-number"] preview? theme)
       :weight :code
       :size   :paragraph-2}
      line-number]]
@@ -36,26 +37,27 @@
      preview? (conj [rn/view {:style style/line-content}]))])
 
 (defn- code-block
-  [{:keys [rows line-number-width preview?]}]
+  [{:keys [rows line-number-width preview? theme]}]
   [rn/view
    (->> preview?
-        (render-nodes rows)
+        (render-nodes rows theme)
         (map-indexed (fn [idx row-content]
                        [line
                         {:line-number       (inc idx)
                          :line-number-width line-number-width
-                         :preview?          preview?}
+                         :preview?          preview?
+                         :theme             theme}
                         row-content]))
         (into [:<>]))])
 
 (defn- mask-view
-  [{:keys [apply-mask?]} child]
+  [{:keys [apply-mask? theme]} child]
   (if apply-mask?
     [:<>
      [rn/view {:style style/gradient-container}
       [linear-gradient/linear-gradient
        {:style  style/gradient
-        :colors [:transparent (style/gradient-color)]}
+        :colors [:transparent (style/gradient-color theme)]}
        [rn/view {:style style/gradient}]]]
      child]
     child))
@@ -88,13 +90,17 @@
        [code-block
         {:rows              rows-to-show-coll
          :line-number-width line-number-width
-         :preview?          preview?}]
+         :preview?          preview?
+         :theme             theme}]
        [:<>
-        [rn/view {:style (style/divider line-number-width)}]
-        [mask-view {:apply-mask? truncated?}
+        [rn/view {:style (style/divider line-number-width theme)}]
+        [mask-view
+         {:apply-mask? truncated?
+          :theme       theme}
          [code-block
           {:rows              rows-to-show-coll
-           :line-number-width line-number-width}]]
+           :line-number-width line-number-width
+           :theme             theme}]]
         [rn/view {:style style/copy-button}
          [button/button
           {:icon-only? true

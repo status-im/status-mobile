@@ -62,7 +62,7 @@
      :border-radius    dimensions
      :justify-content  :center
      :align-items      :center
-     :background-color (colors/custom-color-by-theme customization-color 50 60 nil nil theme)}))
+     :background-color (colors/resolve-color customization-color theme)}))
 
 (def indicator-color
   {:online  colors/success-50
@@ -80,7 +80,7 @@
 
 (defn customization-color
   [color-id theme]
-  (colors/custom-color-by-theme color-id 50 60 nil nil theme))
+  (colors/resolve-color color-id theme))
 
 (def initials-avatar-text
   {:color colors/white-opa-70})

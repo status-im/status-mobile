@@ -63,14 +63,14 @@
                       (keyword? size) (container-size size))]
     (cond-> {:width            width
              :height           width
-             :background-color (colors/custom-color-by-theme customization-color 50 60 nil nil theme)
+             :background-color (colors/resolve-color customization-color theme)
              :border-radius    (get-border-radius size)
-             :border-color     (if (= theme :light) colors/neutral-80-opa-5 colors/white-opa-5)
+             :border-color     (colors/theme-colors colors/neutral-80-opa-5 colors/white-opa-5 theme)
              :padding          (get-padding size)
              :align-items      :center
              :justify-content  :center}
 
       watch-only?
       (assoc :border-width     (get-border-width size)
-             :background-color (colors/custom-color-by-theme customization-color 50 50 10 10 theme)))))
+             :background-color (colors/resolve-color customization-color theme 10)))))
 

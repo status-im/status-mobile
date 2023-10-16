@@ -6,20 +6,7 @@
 (def descriptor
   [{:key  :label
     :type :text}
-   {:key     :color
-    :type    :select
-    :options [{:key :primary}
-              {:key :purple}
-              {:key :indigo}
-              {:key :turquoise}
-              {:key :blue}
-              {:key :green}
-              {:key :yellow}
-              {:key :orange}
-              {:key :red}
-              {:key :pink}
-              {:key :brown}
-              {:key :beige}]}])
+   (preview/customization-color-option)])
 
 (defn view
   []
