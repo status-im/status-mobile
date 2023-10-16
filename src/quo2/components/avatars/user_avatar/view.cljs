@@ -3,7 +3,7 @@
     [quo2.components.avatars.user-avatar.style :as style]
     [quo2.components.common.no-flicker-image :as no-flicker-image]
     [quo2.components.markdown.text :as text]
-    [quo2.theme]
+    [quo2.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     utils.string))
@@ -107,4 +107,4 @@
 
                :else {:uri profile-picture})}])]))
 
-(def view (quo2.theme/with-theme view-internal))
+(def view (quo.theme/with-theme view-internal))
