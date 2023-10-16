@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [status-im2.common.resources :as status.resources]
     [status-im2.constants :as constants]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (def networks

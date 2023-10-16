@@ -1,15 +1,15 @@
 (ns status-im2.contexts.wallet.create-account.view
   (:require
-   [quo.core :as quo]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
-   [status-im2.contexts.wallet.common.utils :as utils]
-   [status-im2.contexts.wallet.create-account.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
+    [status-im2.contexts.wallet.common.utils :as utils]
+    [status-im2.contexts.wallet.create-account.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def diamond-emoji "\uD83D\uDC8E")
 
@@ -105,7 +105,7 @@
          :track-text          (i18n/label :t/slide-to-create-account)
          :customization-color @account-color
          :on-enter-password   (fn [entered-password]
-                                (rf/dispatch [:wallet-2/derive-address-and-add-account
+                                (rf/dispatch [:wallet/derive-address-and-add-account
                                               entered-password
                                               {:emoji        @emoji
                                                :color        @account-color
