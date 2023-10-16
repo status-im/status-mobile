@@ -1,4 +1,4 @@
-(ns status-im2.subs.bootnodes
+(ns status-im.subs.bootnodes
   (:require [re-frame.core :as re-frame]))
 
 (re-frame/reg-sub

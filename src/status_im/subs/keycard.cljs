@@ -1,4 +1,4 @@
-(ns status-im2.subs.keycard
+(ns status-im.subs.keycard
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.keycard.common :as common]

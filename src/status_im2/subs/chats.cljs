@@ -1,4 +1,4 @@
-(ns status-im2.subs.chat.chats
+(ns status-im2.subs.chats
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.communities.core :as communities]
@@ -8,6 +8,21 @@
             [status-im2.constants :as constants]
             [status-im2.contexts.chat.composer.constants :as composer.constants]
             [status-im2.contexts.chat.events :as chat.events]))
+
+(def memo-chats-stack-items (atom nil))
+
+(re-frame/reg-sub
+ :chats-stack-items
+ :<- [:chats/home-list-chats]
+ :<- [:view-id]
+ :<- [:home-items-show-number]
+ (fn [[chats view-id home-items-show-number]]
+   (if (or (empty? @memo-chats-stack-items) (= view-id :chats-stack))
+     (let [res (take home-items-show-number chats)]
+       (reset! memo-chats-stack-items res)
+       res)
+     ;;we want to keep data unchanged so react doesn't change component when we leave screen
+     @memo-chats-stack-items)))
 
 (re-frame/reg-sub
  :chats/chat

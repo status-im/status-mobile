@@ -1,4 +1,4 @@
-(ns status-im2.subs.ens
+(ns status-im.subs.ens
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.ens.core :as ens]

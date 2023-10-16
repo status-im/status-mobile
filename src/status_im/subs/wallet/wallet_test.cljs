@@ -1,10 +1,11 @@
-(ns status-im2.subs.wallet.wallet-test
+(ns status-im.subs.wallet.wallet-test
   (:require [cljs.test :refer [deftest is testing]]
             [re-frame.db :as rf-db]
             [test-helpers.unit :as h]
             [utils.money :as money]
-            [status-im2.subs.wallet.wallet :as wallet]
-            [utils.re-frame :as rf]))
+            [status-im.subs.wallet.wallet :as wallet]
+            [utils.re-frame :as rf]
+            [status-im.subs.wallet.transactions :as wallet.transactions]))
 
 (def money-zero (money/bignumber 0))
 (def money-eth (money/bignumber 8000000000000000000))
@@ -127,3 +128,24 @@
       :wallet                  wallet
       :wallet/all-tokens       tokens)
     (is (= "10,275.38" (rf/sub [sub-name main-account-id])))))
+
+(def transactions
+  [{:timestamp "1505912551000"}
+   {:timestamp "1505764322000"}
+   {:timestamp "1505750000000"}])
+
+(def grouped-transactions
+  '({:title "20 Sep"
+     :key :20170920
+     :data
+     ({:timestamp "1505912551000"})}
+    {:title "18 Sep"
+     :key :20170918
+     :data
+     ({:timestamp "1505764322000"}
+      {:timestamp "1505750000000"})}))
+
+(deftest group-transactions-by-date
+  (testing "Check if transactions are sorted by date"
+    (is (= (wallet.transactions/group-transactions-by-date transactions)
+           grouped-transactions))))

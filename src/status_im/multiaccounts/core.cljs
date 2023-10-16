@@ -77,14 +77,6 @@
                                             true
                                             {}))
 
-(rf/defn confirm-home-tooltip
-  {:events [:multiaccounts.ui/hide-home-tooltip]}
-  [cofx]
-  (multiaccounts.update/multiaccount-update cofx
-                                            :hide-home-tooltip?
-                                            true
-                                            {}))
-
 (rf/defn switch-webview-debug
   {:events [:multiaccounts.ui/switch-webview-debug]}
   [{:keys [db] :as cofx} value]

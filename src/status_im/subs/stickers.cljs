@@ -1,4 +1,4 @@
-(ns status-im2.subs.stickers
+(ns status-im.subs.stickers
   (:require [re-frame.core :as re-frame]
             [status-im2.constants :as constants]))
 
