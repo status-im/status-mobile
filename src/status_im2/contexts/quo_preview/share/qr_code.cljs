@@ -57,7 +57,7 @@
     :type :text}
    (preview/customization-color-option)])
 
-(defn preview
+(defn view
   []
   (let [media-server-port (rf/sub [:mediaserver/port])
         state             (reagent/atom

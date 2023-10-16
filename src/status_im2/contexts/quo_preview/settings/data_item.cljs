@@ -5,56 +5,35 @@
             [status-im2.common.resources :as resources]))
 
 (def descriptor
-  [{:label "Blur:"
-    :key   :blur?
-    :type  :boolean}
-   {:label "Card:"
-    :key   :card?
-    :type  :boolean}
-   {:label "Icon Right:"
-    :key   :icon-right?
-    :type  :boolean}
-   {:label   "Label:"
-    :type    :select
+  [{:key :blur? :type :boolean}
+   {:key :card? :type :boolean}
+   {:key :icon-right? :type :boolean}
+   {:type    :select
     :key     :label
-    :options [{:key   :none
-               :value "None"}
-              {:key   :graph
-               :value "Graph"}
-              {:key   :preview
-               :value "Preview"}]}
-   {:label   "Description:"
-    :type    :select
+    :options [{:key :none}
+              {:key :graph}
+              {:key :preview}]}
+   {:type    :select
     :key     :description
-    :options [{:key   :default
-               :value "Default"}
-              {:key   :icon
-               :value "Icon"}
-              {:key   :network
-               :value "Network"}
-              {:key   :account
-               :value "Account"}]}
-   {:label   "Status:"
-    :type    :select
+    :options [{:key :default}
+              {:key :icon}
+              {:key :network}
+              {:key :account}]}
+   {:type    :select
     :key     :status
-    :options [{:key   :default
-               :value "Default"}
-              {:key   :loading
-               :value "Loading"}]}
-   {:label   "Size:"
-    :type    :select
+    :options [{:key :default}
+              {:key :loading}]}
+   {:type    :select
     :key     :size
-    :options [{:key   :default
-               :value "Default"}
-              {:key   :small
-               :value "Small"}]}])
+    :options [{:key :default}
+              {:key :small}]}])
 
 (def communities-list
   [{:source (resources/get-mock-image :coinbase)}
    {:source (resources/get-mock-image :decentraland)}
    {:source (resources/get-mock-image :rarible)}])
 
-(defn preview-data-item
+(defn view
   []
   (let [state (reagent/atom {:on-press            #(js/alert (str "pressed"))
                              :blur?               false

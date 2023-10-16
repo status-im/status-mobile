@@ -385,23 +385,23 @@
                        {:name      :react
                         :component react/preview-react}]
    :settings          [{:name      :privacy-option
-                        :component privacy-option/preview-options}
+                        :component privacy-option/view}
                        {:name      :accounts
-                        :component accounts/preview-accounts}
+                        :component accounts/view}
                        {:name      :settings-item
-                        :component settings-item/preview}
+                        :component settings-item/view}
                        {:name      :reorder-item
-                        :component reorder-item/preview-reorder-item}
+                        :component reorder-item/view}
                        {:name      :category
-                        :component category/preview}
+                        :component category/view}
                        {:name      :data-item
-                        :component data-item/preview-data-item}
+                        :component data-item/view}
                        {:name      :section-label
-                        :component section-label/preview}]
+                        :component section-label/view}]
    :share             [{:name      :qr-code
-                        :component qr-code/preview}
+                        :component qr-code/view}
                        {:name      :share-qr-code
-                        :component share-qr-code/preview-share-qr-code}]
+                        :component share-qr-code/view}]
    :switchers         [{:name      :group-messaging-card
                         :component group-messaging-card/view}
                        {:name      :switcher-cards

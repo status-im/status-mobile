@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.settings.settings-item
   (:require
     [quo2.core :as quo]
-    [react-native.core :as rn]
     [status-im2.common.resources :as resources]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -100,7 +99,7 @@
                                    :context "Context"}
                          nil)}))
 
-(defn preview
+(defn view
   []
   (let [state (reagent/atom {:title               "Account"
                              :accessibility-label :settings-item
@@ -115,5 +114,4 @@
         :blur?                 (:blur? @state)
         :show-blur-background? true
         :blur-dark-only?       true}
-       [rn/view {:style {:flex 1}}
-        [quo/settings-item (get-props @state)]]])))
+       [quo/settings-item (get-props @state)]])))

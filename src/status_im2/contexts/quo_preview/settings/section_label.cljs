@@ -12,7 +12,7 @@
    {:key  :blur?
     :type :boolean}])
 
-(defn preview
+(defn view
   []
   (let [state       (reagent/atom {:section     "Section label"
                                    :description ""
