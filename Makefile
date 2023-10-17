@@ -108,7 +108,7 @@ nix-update-clojure: export TARGET := clojure
 nix-update-clojure: ##@nix Update maven Nix expressions based on current clojure setup
 	nix/deps/clojure/generate.sh
 
-nix-update-gems: export TARGET := default
+nix-update-gems: export TARGET := fastlane
 nix-update-gems: ##@nix Update Ruby gems in fastlane/Gemfile.lock and fastlane/gemset.nix
 	fastlane/update.sh
 
