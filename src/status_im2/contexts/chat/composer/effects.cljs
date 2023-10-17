@@ -112,7 +112,8 @@
      (let [edit-text        (get-in edit [:content :text])
            text-value-count (count @text-value)]
        (when (and edit @input-ref)
-         ;; A small setTimeout is necessary to ensure the statement is enqueued and will get executed ASAP.
+         ;; A small setTimeout is necessary to ensure the statement is enqueued and will get executed
+         ;; ASAP.
          ;; https://github.com/software-mansion/react-native-screens/issues/472
          (js/setTimeout #(.focus ^js @input-ref) 10)
          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
