@@ -39,7 +39,7 @@
   [{:keys [full-name customization-color size theme monospace?]
     :or   {size biggest-possible}}]
   (let [circle-size (:size (size properties))
-        small? (= size smallest-possible)]
+        small?      (= size smallest-possible)]
     [rn/view
      {:style (style/container circle-size customization-color)}
      [text/text
