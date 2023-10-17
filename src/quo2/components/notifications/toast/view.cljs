@@ -1,13 +1,14 @@
 (ns quo2.components.notifications.toast.view
-  (:require [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.components.icon :as icon]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.notifications.count-down-circle :as count-down-circle]
-            [quo2.components.notifications.toast.style :as style]
-            [quo2.theme :as quo.theme]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [quo2.components.icon :as icon]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.notifications.count-down-circle :as count-down-circle]
+    [quo2.components.notifications.toast.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (defn toast-action-container
   [{:keys [on-press style theme]} & children]

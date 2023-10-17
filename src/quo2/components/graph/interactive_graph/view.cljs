@@ -1,11 +1,12 @@
 (ns quo2.components.graph.interactive-graph.view
-  (:require [quo2.components.graph.utils :as utils]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.charts :as charts]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [quo2.components.graph.interactive-graph.style :as style]))
+  (:require
+    [quo2.components.graph.interactive-graph.style :as style]
+    [quo2.components.graph.utils :as utils]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.charts :as charts]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (def chart-height 375)
 (def max-data-points 500)

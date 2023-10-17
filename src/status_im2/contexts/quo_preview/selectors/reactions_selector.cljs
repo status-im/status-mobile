@@ -1,10 +1,11 @@
 (ns status-im2.contexts.quo-preview.selectors.reactions-selector
-  (:require [quo2.core :as quo]
-            [clojure.string :as string]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [reagent.core :as r]
-            [react-native.core :as rn]
-            [status-im2.constants :as constants]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as r]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :emoji

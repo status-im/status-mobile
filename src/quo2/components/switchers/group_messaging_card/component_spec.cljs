@@ -1,7 +1,8 @@
 (ns quo2.components.switchers.group-messaging-card.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.switchers.group-messaging-card.view :as group-messaging-card]
-            [quo2.components.switchers.utils :as utils]))
+  (:require
+    [quo2.components.switchers.group-messaging-card.view :as group-messaging-card]
+    [quo2.components.switchers.utils :as utils]
+    [test-helpers.component :as h]))
 
 (def photos-list
   [{:source (js/require "../resources/images/mock2/photo1.png")}

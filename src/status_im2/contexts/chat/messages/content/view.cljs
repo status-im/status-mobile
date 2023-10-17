@@ -1,32 +1,32 @@
 (ns status-im2.contexts.chat.messages.content.view
   (:require
-    [react-native.core :as rn]
+    [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
     [react-native.platform :as platform]
-    [status-im2.contexts.chat.messages.content.style :as style]
-    [status-im2.contexts.chat.messages.content.pin.view :as pin]
+    [reagent.core :as reagent]
+    [status-im.ui.screens.chat.message.legacy-view :as old-message]
+    [status-im2.common.not-implemented :as not-implemented]
     [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.reply.view :as reply]
+    [status-im2.contexts.chat.messages.avatar.view :as avatar]
+    [status-im2.contexts.chat.messages.content.album.view :as album]
+    [status-im2.contexts.chat.messages.content.audio.view :as audio]
     [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
-    [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
-    [status-im2.contexts.chat.messages.content.text.view :as content.text]
-    [status-im2.contexts.chat.messages.drawers.view :as drawers]
+    [status-im2.contexts.chat.messages.content.image.view :as image]
+    [status-im2.contexts.chat.messages.content.pin.view :as pin]
     [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
     [status-im2.contexts.chat.messages.content.status.view :as status]
+    [status-im2.contexts.chat.messages.content.style :as style]
     [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
-    [status-im2.contexts.chat.messages.content.album.view :as album]
-    [status-im2.contexts.chat.messages.avatar.view :as avatar]
-    [status-im2.contexts.chat.messages.content.image.view :as image]
-    [status-im2.contexts.chat.messages.content.audio.view :as audio]
-    [quo2.core :as quo]
-    [utils.re-frame :as rf]
-    [status-im.ui.screens.chat.message.legacy-view :as old-message]
-    [status-im2.contexts.chat.composer.reply.view :as reply]
-    [status-im2.common.not-implemented :as not-implemented]
-    [utils.datetime :as datetime]
-    [reagent.core :as reagent]
+    [status-im2.contexts.chat.messages.content.text.view :as content.text]
+    [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
+    [status-im2.contexts.chat.messages.drawers.view :as drawers]
     [utils.address :as address]
-    [react-native.gesture :as gesture]
-    [quo2.theme :as quo.theme]))
+    [utils.datetime :as datetime]
+    [utils.re-frame :as rf]))
 
 (def delivery-state-showing-time-ms 3000)
 
@@ -216,19 +216,22 @@
 (def user-message-content (quo.theme/with-theme user-message-content-internal))
 
 (defn on-long-press
-  [message-data context keyboard-shown?]
+  [{:keys [deleted? deleted-for-me?] :as message-data} context keyboard-shown?]
   (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch [:show-bottom-sheet
-                {:content       (drawers/reactions-and-actions message-data context)
+                {:content (drawers/reactions-and-actions message-data context)
                  :border-radius 16
-                 :selected-item (fn []
-                                  [rn/view {:pointer-events :none}
-                                   [user-message-content
-                                    {:message-data                 message-data
-                                     :context                      context
-                                     :keyboard-shown?              keyboard-shown?
-                                     :show-reactions?              true
-                                     :in-reaction-and-action-menu? true}]])}]))
+                 :selected-item
+                 (if (or deleted? deleted-for-me?)
+                   (fn [] [content.deleted/deleted-message message-data])
+                   (fn []
+                     [rn/view {:pointer-events :none}
+                      [user-message-content
+                       {:message-data    message-data
+                        :context         context
+                        :keyboard-shown? keyboard-shown?
+                        :show-reactions? true
+                        :show-user-info? true}]]))}]))
 
 (defn system-message?
   [content-type]
@@ -246,10 +249,20 @@
   [rn/view
    {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
     :accessibility-label :chat-item}
-   (if (or (system-message? content-type) deleted? deleted-for-me?)
-     (if (or deleted? deleted-for-me?)
-       [content.deleted/deleted-message message-data]
-       [system-message-content message-data])
+   (cond
+     (system-message? content-type)
+     [system-message-content message-data]
+
+     (or deleted? deleted-for-me?)
+     [content.deleted/deleted-message
+      (assoc message-data
+             :on-long-press
+             #(on-long-press message-data
+                             context
+                             keyboard-shown?))
+      context]
+
+     :else
      [user-message-content
       {:message-data    message-data
        :context         context

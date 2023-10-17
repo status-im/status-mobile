@@ -1,15 +1,15 @@
 (ns status-im2.contexts.chat.menus.pinned-messages.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
-            [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
-            [status-im2.contexts.chat.messages.content.view :as message]
-            [status-im2.contexts.chat.menus.pinned-messages.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [react-native.gesture :as gesture]
-            [react-native.fast-image :as fast-image]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [react-native.gesture :as gesture]
+    [react-native.safe-area :as safe-area]
+    [status-im2.contexts.chat.menus.pinned-messages.style :as style]
+    [status-im2.contexts.chat.messages.content.view :as message]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def list-key-fn #(or (:message-id %) (:value %)))
 
@@ -21,10 +21,8 @@
               (first community-images)))))
 
 (defn message-render-fn
-  [{:keys [deleted? deleted-for-me?] :as message} _ _ context]
-  (if (or deleted? deleted-for-me?)
-    [content.deleted/deleted-message message context]
-    [message/message message context (atom false)]))
+  [message _ _ context]
+  [message/message message context (atom false)])
 
 (defn pinned-messages
   [chat-id]

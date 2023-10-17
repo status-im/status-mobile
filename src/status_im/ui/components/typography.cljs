@@ -1,71 +1,39 @@
-(ns status-im.ui.components.typography
-  (:require [quo.design-system.colors :as colors]))
+(ns status-im.ui.components.typography)
 
-(def default-font-family "Inter")
-(defn default-style
-  []
-  {:color       colors/black
-   :font-weight "400"
-   :font-size   15})
+(def tiny
+  {:font-size   10
+   :line-height 14})
 
-(def typography-styles
-  {:header        {:font-weight "700"
-                   :font-size   22}
+(def x-small
+  {:font-size   12
+   :line-height 16})
 
-   :title-bold    {:font-weight "700"
-                   :font-size   17}
+(def small
+  {:font-size   13
+   :line-height 18})
 
-   :title         {:font-size 17}
+(def base
+  {:font-size   15
+   :line-height 22})
 
-   :main-semibold {:font-weight "600"}
+(def large
+  {:font-size   17
+   :line-height 24})
 
-   :main-medium   {:font-weight "500"}
+(def x-large
+  {:font-size   22
+   :line-height 30})
 
-   :caption       {:font-size 12}
+(def xx-large
+  {:font-size   28
+   :line-height 38})
 
-   :timestamp     {:font-size      10
-                   :text-transform :uppercase}})
+(def font-regular {:font-family "Inter-Regular"}) ; 400
 
-(defn get-style
-  [{:keys [typography] :as style}]
-  {:pre [(or (nil? typography) (contains? typography-styles typography))]}
-  (let [{:keys [font-weight font-style]
-         :as   style}
-        (merge (default-style)
-               (get typography-styles
-                    typography)
-               (dissoc style :typography :nested?))]
-    (-> style
-        (assoc :font-family
-               (str default-font-family
-                    "-"
-                    (case font-weight
-                      "400" (when-not (= font-style :italic)
-                              "Regular")
-                      "500" "Medium"
-                      "600" "SemiBold"
-                      "700" "Bold")
-                    (when (= font-style :italic)
-                      "Italic")))
-        (dissoc :font-weight :font-style))))
+(def font-medium {:font-family "Inter-Medium"}) ; 500 ff
 
-(defn get-nested-style
-  [{:keys [typography] :as style}]
-  {:pre [(or (nil? typography) (contains? typography-styles typography))]}
-  (let [{:keys [font-weight font-style] :as style}
-        (merge (get typography-styles
-                    typography)
-               (dissoc style :typography))]
-    (cond-> (dissoc style :font-weight :font-style)
-      (or font-weight font-style)
-      (assoc :font-family
-             (str default-font-family
-                  "-"
-                  (case font-weight
-                    "500" "Medium"
-                    "600" "SemiBold"
-                    "700" "Bold"
-                    (when-not (= font-style :italic)
-                      "Regular"))
-                  (when (= font-style :italic)
-                    "Italic"))))))
+(def font-semi-bold {:font-family "Inter-SemiBold"}) ; 600
+
+(def font-bold {:font-family "Inter-Bold"}) ; 700
+
+(def monospace {:font-family "InterStatus-Regular"})

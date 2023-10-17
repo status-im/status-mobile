@@ -1,16 +1,17 @@
 (ns status-im2.subs.contact
-  (:require [clojure.string :as string]
-            [quo2.theme :as theme]
-            [re-frame.core :as re-frame]
-            [status-im.contact.db :as contact.db]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im2.constants :as constants]
-            [utils.collection]
-            [utils.i18n :as i18n]
-            [utils.image-server :as image-server]
-            [utils.address :as address]))
+  (:require
+    [clojure.string :as string]
+    [quo2.theme :as theme]
+    [re-frame.core :as re-frame]
+    [status-im.contact.db :as contact.db]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+    [status-im.utils.gfycat.core :as gfycat]
+    [status-im2.constants :as constants]
+    [utils.address :as address]
+    [utils.collection]
+    [utils.i18n :as i18n]
+    [utils.image-server :as image-server]))
 
 (re-frame/reg-sub
  ::query-current-chat-contacts

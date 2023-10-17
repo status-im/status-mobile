@@ -1,10 +1,11 @@
 (ns quo2.components.inputs.locked-input.view
-  (:require [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.icon :as icons]
-            [quo2.components.inputs.locked-input.style :as style]
-            [quo2.theme :as quo.theme]
-            [quo2.components.markdown.text :as text]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.inputs.locked-input.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- info-box
   [{:keys [icon value-text theme]}]

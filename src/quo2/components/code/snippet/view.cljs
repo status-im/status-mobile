@@ -1,6 +1,7 @@
 (ns quo2.components.code.snippet.view
-  (:require [quo2.theme :as theme]
-            [quo2.components.code.common.view :as code-common]))
+  (:require
+    [quo2.components.code.common.view :as code-common]
+    [quo2.theme :as theme]))
 
 (defn- view-internal
   [_]

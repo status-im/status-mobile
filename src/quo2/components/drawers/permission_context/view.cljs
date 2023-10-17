@@ -1,7 +1,8 @@
 (ns quo2.components.drawers.permission-context.view
-  (:require [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.drawers.permission-context.style :as style]))
+  (:require
+    [quo2.components.drawers.permission-context.style :as style]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]))
 
 (defn view
   [children on-press]

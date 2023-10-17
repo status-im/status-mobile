@@ -1,11 +1,12 @@
 (ns status-im2.contexts.quo-preview.graph.interactive-graph
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [quo2.components.graph.utils :as utils]
-            [goog.string :as gstring]))
+  (:require
+    [goog.string :as gstring]
+    [quo2.components.graph.utils :as utils]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def weekly-data
   [{:value 123

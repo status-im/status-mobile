@@ -1,9 +1,10 @@
 (ns quo2.components.selectors.filter.view
-  (:require [quo2.components.icon :as icon]
-            [quo2.components.selectors.filter.style :as style]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+    [quo2.components.icon :as icon]
+    [quo2.components.selectors.filter.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn view-internal
   [initial-props]

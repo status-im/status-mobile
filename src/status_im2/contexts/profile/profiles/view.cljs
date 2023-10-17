@@ -1,20 +1,21 @@
 (ns status-im2.contexts.profile.profiles.view
-  (:require [native-module.core :as native-module]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
-            [status-im2.config :as config]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.onboarding.common.background.view :as background]
-            [status-im2.contexts.profile.profiles.style :as style]
-            [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [utils.transforms :as transforms]
-            [status-im2.common.standard-authentication.password-input.view :as password-input]))
+  (:require
+    [native-module.core :as native-module]
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
+    [status-im2.common.standard-authentication.password-input.view :as password-input]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.profile.profiles.style :as style]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (defonce push-animation-fn-atom (atom nil))
 (defonce pop-animation-fn-atom (atom nil))

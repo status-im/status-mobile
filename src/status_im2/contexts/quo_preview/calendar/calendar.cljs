@@ -1,8 +1,9 @@
 (ns status-im2.contexts.quo-preview.calendar.calendar
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [utils.datetime :as datetime]))
+  (:require
+    [quo2.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.datetime :as datetime]))
 
 (def descriptor
   [{:key  :start-date

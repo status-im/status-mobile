@@ -1,5 +1,6 @@
 (ns quo2.components.wallet.wallet-activity.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn wallet-activity-container
   [{:keys [pressed?

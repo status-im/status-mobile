@@ -1,6 +1,7 @@
 (ns quo2.components.inputs.profile-input.component-spec
-  (:require [quo2.components.inputs.profile-input.view :as profile-input]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.inputs.profile-input.view :as profile-input]
+    [test-helpers.component :as h]))
 
 (h/describe "Profile Input"
   (h/test "on press event fires"

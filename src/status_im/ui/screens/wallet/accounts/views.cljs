@@ -1,23 +1,24 @@
 (ns status-im.ui.screens.wallet.accounts.views
-  (:require [quo.animated :as reanimated]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo2.core :as quo2]
-            [quo2.components.markdown.text :as quo2.text]
-            [quo2.foundations.colors :as quo2.colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.keycard.login :as keycard.login]
-            [status-im.qr-scanner.core :as qr-scanner]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.wallet.account.views :as account.views]
-            [status-im.ui.screens.wallet.accounts.common :as common]
-            [status-im.ui.screens.wallet.accounts.sheets :as sheets]
-            [status-im.ui.screens.wallet.accounts.styles :as styles]
-            [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
-            [react-native.safe-area :as safe-area])
+  (:require
+    [quo2.components.markdown.text :as quo2.text]
+    [quo2.core :as quo2]
+    [quo2.foundations.colors :as quo2.colors]
+    [re-frame.core :as re-frame]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im.keycard.login :as keycard.login]
+    [status-im.qr-scanner.core :as qr-scanner]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.wallet.account.views :as account.views]
+    [status-im.ui.screens.wallet.accounts.common :as common]
+    [status-im.ui.screens.wallet.accounts.sheets :as sheets]
+    [status-im.ui.screens.wallet.accounts.styles :as styles]
+    [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview account-card
@@ -204,72 +205,15 @@
   []
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]]
-    ;empty-balances? [:empty-balances?]
-    ;frozen-card? [:keycard/frozen-card?]
-    ;{:keys [mnemonic]} [:multiaccount]]
     [react/view {:padding-vertical 12}
      [quo2.text/text (i18n/label :t/wallet-total-value)]
      [quo2.text/text {:size :heading-1 :weight :semi-bold}
       (str portfolio-value " " (:code currency))]
-     [react/scroll-view {:horizontal true}]]
-    #_[reanimated/view {:style (styles/container {:minimized minimized})}
-       (when (or
-              (and frozen-card? minimized)
-              (and mnemonic minimized (not empty-balances?)))
-         [reanimated/view {:style (styles/accounts-mnemonic {:animation animation})}
-          [react/touchable-highlight
-           {:on-press #(re-frame/dispatch
-                        (if frozen-card?
-                          [::keycard.login/reset-pin]
-                          [:navigate-to :backup-seed]))}
-           [react/view
-            {:flex-direction :row
-             :align-items    :center}
-            [react/view
-             {:width            14
-              :height           14
-              :background-color colors/gray
-              :border-radius    7
-              :align-items      :center
-              :justify-content  :center
-              :margin-right     9}
-             [react/text
-              {:style {:color       colors/white
-                       :font-size   13
-                       :font-weight "700"}}
-              "!"]]
-            [react/text
-             {:style               {:color colors/gray}
-              :accessibility-label :back-up-your-seed-phrase-warning}
-             (if frozen-card?
-               (i18n/label :t/your-card-is-frozen)
-               (i18n/label :t/back-up-your-seed-phrase))]]]])
-
-       [reanimated/view
-        {:style          (styles/value-container {:minimized minimized
-                                                  :animation animation})
-         :pointer-events :none}
-        [reanimated/view {:style {:justify-content :center}}
-         [quo/text
-          {:animated? true
-           :weight    :semi-bold
-           :style     (styles/value-text {:minimized minimized})}
-          portfolio-value
-          [quo/text
-           {:animated? true
-            :size      :inherit
-            :weight    :inherit
-            :color     :secondary}
-           (str " " (:code currency))]]]]
-       (when-not minimized
-         [reanimated/view
-          [quo/text {:color :secondary}
-           (i18n/label :t/wallet-total-value)]])]))
+     [react/scroll-view {:horizontal true}]]))
 
 (views/defview accounts
   [selected-account-atom]
   (views/letsubs [visible-accounts [:multiaccount/visible-accounts]]
-    ;keycard? [:keycard-multiaccount?]]
     (do
       (reset! selected-account-atom (:address (first visible-accounts)))
       (let [accounts-data (for [account visible-accounts]

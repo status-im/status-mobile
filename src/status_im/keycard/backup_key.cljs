@@ -1,14 +1,15 @@
 (ns status-im.keycard.backup-key
-  (:require [re-frame.core :as re-frame]
-            [status-im.ethereum.mnemonic :as mnemonic]
-            [utils.i18n :as i18n]
-            [status-im.keycard.common :as common]
-            [status-im.multiaccounts.recover.core :as multiaccounts.recover]
-            [status-im.signing.core :as signing.core]
-            [utils.re-frame :as rf]
-            [status-im.utils.utils :as utils]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.mnemonic :as mnemonic]
+    [status-im.keycard.common :as common]
+    [status-im.multiaccounts.recover.core :as multiaccounts.recover]
+    [status-im.signing.core :as signing.core]
+    [status-im.utils.utils :as utils]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (rf/defn backup-card-pressed
   {:events [:keycard-settings.ui/backup-card-pressed]}

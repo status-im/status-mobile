@@ -1,7 +1,8 @@
 (ns quo2.components.wallet.progress-bar.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.wallet.progress-bar.view :as progress-bar]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.components.wallet.progress-bar.view :as progress-bar]
+    [quo2.foundations.colors :as colors]
+    [test-helpers.component :as h]))
 
 (h/describe "Progress bar"
   (h/test "pending state in light mode"

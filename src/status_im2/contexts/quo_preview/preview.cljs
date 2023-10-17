@@ -1,17 +1,18 @@
 (ns status-im2.contexts.quo-preview.preview
-  (:require [camel-snake-kebab.core :as camel-snake-kebab]
-            [clojure.string :as string]
-            [status-im2.contexts.quo-preview.common :as common]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.safe-area :as safe-area]
-            [quo2.theme :as quo.theme]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.style :as style]
-            utils.number)
+  (:require
+    [camel-snake-kebab.core :as camel-snake-kebab]
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.common :as common]
+    [status-im2.contexts.quo-preview.style :as style]
+    utils.number)
   (:require-macros status-im2.contexts.quo-preview.preview))
 
 (defn- label-view
@@ -282,7 +283,7 @@
           opts)))
 
 (defn blur-view
-  [{:keys [show-blur-background? image height blur-view-props style]} & children]
+  [{:keys [show-blur-background? image height blur-view-props style theme]} & children]
   [rn/view
    {:style {:flex             1
             :padding-vertical 16}}
@@ -301,7 +302,7 @@
                                :left     0
                                :right    0}
                :blur-amount   10
-               :overlay-color (colors/theme-colors colors/white-opa-70 colors/neutral-80-opa-80)}
+               :overlay-color (colors/theme-colors colors/white-opa-70 colors/neutral-80-opa-80 theme)}
               blur-view-props)]])
    (into [rn/view
           {:style (merge {:position           :absolute
@@ -316,39 +317,41 @@
            blur-container-style blur-view-props blur-height show-blur-background?]
     :or   {blur-height 200}}
    & children]
-  (rn/use-effect (fn []
-                   (when blur-dark-only?
-                     (if blur?
-                       (quo.theme/set-theme :dark)
-                       (quo.theme/set-theme :light))))
-                 [blur? blur-dark-only?])
-  [rn/view
-   {:style {:top  (safe-area/get-top)
-            :flex 1}}
-   [common/navigation-bar]
-   [rn/scroll-view
-    {:style                           (style/panel-basic)
-     :shows-vertical-scroll-indicator false}
-    [rn/pressable {:on-press rn/dismiss-keyboard!}
-     (when descriptor
-       [rn/view {:style style/customizer-container}
-        [customizer state descriptor]])
-     (if blur?
-       [rn/view {:style (merge style/component-container component-container-style)}
-        (into [blur-view
-               {:show-blur-background? show-blur-background?
-                :height                blur-height
-                :style                 (merge {:width     "100%"
-                                               :flex-grow 1}
-                                              (when-not show-blur-background?
-                                                {:padding-horizontal 0
-                                                 :top                0})
-                                              blur-container-style)
-                :blur-view-props       (merge {:blur-type (quo.theme/get-theme)}
-                                              blur-view-props)}]
-              children)]
-       (into [rn/view {:style (merge style/component-container component-container-style)}]
-             children))]]])
+  (let [theme (quo2.theme/use-theme-value)]
+    (rn/use-effect (fn []
+                     (when blur-dark-only?
+                       (if blur?
+                         (quo.theme/set-theme :dark)
+                         (quo.theme/set-theme :light))))
+                   [blur? blur-dark-only?])
+    [rn/view
+     {:style {:top  (safe-area/get-top)
+              :flex 1}}
+     [common/navigation-bar]
+     [rn/scroll-view
+      {:style                           (style/panel-basic)
+       :shows-vertical-scroll-indicator false}
+      [rn/pressable {:on-press rn/dismiss-keyboard!}
+       (when descriptor
+         [rn/view {:style style/customizer-container}
+          [customizer state descriptor]])
+       (if blur?
+         [rn/view {:style (merge style/component-container component-container-style)}
+          (into [blur-view
+                 {:theme                 theme
+                  :show-blur-background? show-blur-background?
+                  :height                blur-height
+                  :style                 (merge {:width     "100%"
+                                                 :flex-grow 1}
+                                                (when-not show-blur-background?
+                                                  {:padding-horizontal 0
+                                                   :top                0})
+                                                blur-container-style)
+                  :blur-view-props       (merge {:blur-type theme}
+                                                blur-view-props)}]
+                children)]
+         (into [rn/view {:style (merge style/component-container component-container-style)}]
+               children))]]]))
 
 (defn preview-container
   [& args]

@@ -1,10 +1,11 @@
 (ns quo2.components.calendar.calendar.weekdays-header.view
-  (:require [react-native.core :as rn]
-            [quo2.theme :as theme]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.calendar.calendar.weekdays-header.style :as style]))
+  (:require
+    [quo2.components.calendar.calendar.weekdays-header.style :as style]
+    [quo2.components.markdown.text :as text]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]))
 
 (defn- view-internal
   [theme]

@@ -1,9 +1,10 @@
 (ns quo2.components.community.channel-actions
-  (:require [react-native.core :as rn]
-            [quo2.components.icon :as icons]
-            [quo2.components.counter.counter.view :as counter]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.community.style :as style]))
+  (:require
+    [quo2.components.community.style :as style]
+    [quo2.components.counter.counter.view :as counter]
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [react-native.core :as rn]))
 
 (defn channel-action
   [{:keys [big? color label counter-value icon on-press accessibility-label]}]

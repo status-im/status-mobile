@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.token-input.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.wallet.token-input.view :as token-input]))
+  (:require
+    [quo2.components.wallet.token-input.view :as token-input]
+    [test-helpers.component :as h]))
 
 (h/describe "Wallet: Token Input"
   (h/test "Token label renders"

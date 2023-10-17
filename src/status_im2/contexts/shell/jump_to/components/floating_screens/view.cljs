@@ -1,15 +1,16 @@
 (ns status-im2.contexts.shell.jump-to.components.floating-screens.view
-  (:require [utils.re-frame :as rf]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.messages.view :as chat]
-            [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.utils :as utils]
-            [status-im2.contexts.shell.jump-to.animation :as animation]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [status-im2.contexts.communities.overview.view :as communities.overview]
-            [status-im2.contexts.shell.jump-to.components.floating-screens.style :as style]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.messages.view :as chat]
+    [status-im2.contexts.communities.overview.view :as communities.overview]
+    [status-im2.contexts.shell.jump-to.animation :as animation]
+    [status-im2.contexts.shell.jump-to.components.floating-screens.style :as style]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im2.contexts.shell.jump-to.state :as state]
+    [status-im2.contexts.shell.jump-to.utils :as utils]
+    [utils.re-frame :as rf]))
 
 (def screens-map
   {shell.constants/community-screen communities.overview/overview

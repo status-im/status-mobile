@@ -1,7 +1,8 @@
 (ns react-native.hooks
-  (:require ["@react-native-community/hooks" :as hooks]
-            [react-native.core :as rn]
-            [oops.core :as oops]))
+  (:require
+    ["@react-native-community/hooks" :as hooks]
+    [oops.core :as oops]
+    [react-native.core :as rn]))
 
 (defn use-keyboard
   []

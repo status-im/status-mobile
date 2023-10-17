@@ -1,15 +1,16 @@
 (ns quo2.components.navigation.page-nav.view
-  (:require [quo2.components.avatars.group-avatar.view :as group-avatar]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.buttons.button.properties :as button-properties]
-            [quo2.components.dropdowns.dropdown.view :as dropdown]
-            [quo2.components.dropdowns.dropdown.properties :as dropdown-properties]
-            [quo2.components.dropdowns.network-dropdown.view :as network-dropdown]
-            [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.navigation.page-nav.style :as style]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.avatars.group-avatar.view :as group-avatar]
+    [quo2.components.buttons.button.properties :as button-properties]
+    [quo2.components.buttons.button.view :as button]
+    [quo2.components.dropdowns.dropdown.properties :as dropdown-properties]
+    [quo2.components.dropdowns.dropdown.view :as dropdown]
+    [quo2.components.dropdowns.network-dropdown.view :as network-dropdown]
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.navigation.page-nav.style :as style]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]))
 
 (def ^:private button-type
   {:white       :grey

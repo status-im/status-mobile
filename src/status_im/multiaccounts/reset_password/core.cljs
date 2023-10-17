@@ -1,11 +1,12 @@
 (ns status-im.multiaccounts.reset-password.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [native-module.core :as native-module]
-            [status-im.popover.core :as popover]
-            [utils.re-frame :as rf]
-            [status-im.utils.deprecated-types :as types]
-            [utils.security.core :as security]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.popover.core :as popover]
+    [status-im.utils.deprecated-types :as types]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (rf/defn on-input-change
   {:events [::handle-input-change]}

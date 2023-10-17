@@ -2,13 +2,13 @@
   (:require
     [quo2.core :as quo]
     [quo2.theme :as quo.theme]
-    [reagent.core :as reagent]
-    [utils.re-frame :as rf]
+    [react-native.core :as rn]
     [react-native.touch-id :as biometric]
-    [utils.i18n :as i18n]
-    [taoensso.timbre :as log]
+    [reagent.core :as reagent]
     [status-im2.common.standard-authentication.enter-password.view :as enter-password]
-    [react-native.core :as rn]))
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn reset-password
   []

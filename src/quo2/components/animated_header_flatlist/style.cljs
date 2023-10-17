@@ -1,6 +1,7 @@
 (ns quo2.components.animated-header-flatlist.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]))
 
 (defn container-view
   [view-height]

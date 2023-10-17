@@ -1,11 +1,11 @@
 (ns status-im2.contexts.contacts.events
   (:require
     [oops.core :as oops]
-    [utils.transforms :as transforms]
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (defn <-rpc-js
   [^js js-contact]

@@ -1,5 +1,6 @@
 (ns quo2.components.calendar.calendar.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn container
   [theme]

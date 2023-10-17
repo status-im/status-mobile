@@ -10,9 +10,9 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.chat.lightbox.animations :as anim]
+    [status-im2.contexts.chat.lightbox.constants :as constants]
     [status-im2.contexts.chat.lightbox.top-view :as top-view]
     [utils.re-frame :as rf]
-    [status-im2.contexts.chat.lightbox.constants :as constants]
     [utils.worklets.lightbox :as worklet]))
 
 (defn clear-timers

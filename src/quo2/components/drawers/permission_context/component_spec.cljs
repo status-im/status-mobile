@@ -1,7 +1,8 @@
 (ns quo2.components.drawers.permission-context.component-spec
-  (:require [quo2.components.drawers.permission-context.view :as permission-context]
-            [react-native.core :as rn]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.drawers.permission-context.view :as permission-context]
+    [react-native.core :as rn]
+    [test-helpers.component :as h]))
 
 (h/describe "permission context"
   (h/test "it tests the default render"

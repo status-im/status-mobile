@@ -1,9 +1,10 @@
 (ns status-im.browser.permissions
-  (:require [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.qr-scanner.core :as qr-scanner]
-            [utils.re-frame :as rf]
-            [status-im2.navigation.events :as navigation]))
+  (:require
+    [status-im.qr-scanner.core :as qr-scanner]
+    [status-im2.constants :as constants]
+    [status-im2.navigation.events :as navigation]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (declare process-next-permission)
 (declare send-response-to-bridge)

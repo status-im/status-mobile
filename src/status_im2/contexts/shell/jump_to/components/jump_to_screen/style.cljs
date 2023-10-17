@@ -1,6 +1,7 @@
 (ns status-im2.contexts.shell.jump-to.components.jump-to-screen.style
-  (:require [quo2.foundations.colors :as colors]
-            [status-im2.contexts.shell.jump-to.utils :as utils]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [status-im2.contexts.shell.jump-to.utils :as utils]))
 
 ;;;; Placeholder
 (defn placeholder-container

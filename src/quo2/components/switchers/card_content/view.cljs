@@ -1,14 +1,15 @@
 (ns quo2.components.switchers.card-content.view
-  (:require [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
-            [quo2.components.switchers.card-content.style :as style]
-            [quo2.components.common.notification-dot.view :as notification-dot]
-            [quo2.components.counter.counter.view :as counter]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.list-items.preview-list.view :as preview-list]
-            [quo2.components.tags.context-tag.view :as tag]
-            [quo2.components.code.snippet-preview.view :as snippet-preview]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.components.code.snippet-preview.view :as snippet-preview]
+    [quo2.components.common.notification-dot.view :as notification-dot]
+    [quo2.components.counter.counter.view :as counter]
+    [quo2.components.list-items.preview-list.view :as preview-list]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.switchers.card-content.style :as style]
+    [quo2.components.tags.context-tag.view :as tag]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [utils.i18n :as i18n]))
 
 (defn content-view
   [{:keys                           [type content customization-color]

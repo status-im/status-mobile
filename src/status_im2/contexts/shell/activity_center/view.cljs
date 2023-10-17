@@ -1,25 +1,26 @@
 (ns status-im2.contexts.shell.activity-center.view
-  (:require [oops.core :as oops]
-            [react-native.core :as rn]
-            [status-im2.contexts.shell.activity-center.notification-types :as types]
-            [status-im2.contexts.shell.activity-center.notification.admin.view :as admin]
-            [status-im2.contexts.shell.activity-center.notification.contact-requests.view :as
-             contact-requests]
-            [status-im2.contexts.shell.activity-center.notification.contact-verification.view :as
-             contact-verification]
-            [status-im2.contexts.shell.activity-center.notification.membership.view :as membership]
-            [status-im2.contexts.shell.activity-center.notification.mentions.view :as mentions]
-            [status-im2.contexts.shell.activity-center.notification.reply.view :as reply]
-            [status-im2.contexts.shell.activity-center.notification.community-request.view :as
-             community-request]
-            [status-im2.contexts.shell.activity-center.notification.community-kicked.view :as
-             community-kicked]
-            [status-im2.contexts.shell.activity-center.style :as style]
-            [utils.re-frame :as rf]
-            [react-native.blur :as blur]
-            [react-native.navigation :as navigation]
-            [status-im2.contexts.shell.activity-center.header.view :as header]
-            [status-im2.contexts.shell.activity-center.tabs.empty-tab.view :as empty-tab]))
+  (:require
+    [oops.core :as oops]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.navigation :as navigation]
+    [status-im2.contexts.shell.activity-center.header.view :as header]
+    [status-im2.contexts.shell.activity-center.notification-types :as types]
+    [status-im2.contexts.shell.activity-center.notification.admin.view :as admin]
+    [status-im2.contexts.shell.activity-center.notification.community-kicked.view :as
+     community-kicked]
+    [status-im2.contexts.shell.activity-center.notification.community-request.view :as
+     community-request]
+    [status-im2.contexts.shell.activity-center.notification.contact-requests.view :as
+     contact-requests]
+    [status-im2.contexts.shell.activity-center.notification.contact-verification.view :as
+     contact-verification]
+    [status-im2.contexts.shell.activity-center.notification.membership.view :as membership]
+    [status-im2.contexts.shell.activity-center.notification.mentions.view :as mentions]
+    [status-im2.contexts.shell.activity-center.notification.reply.view :as reply]
+    [status-im2.contexts.shell.activity-center.style :as style]
+    [status-im2.contexts.shell.activity-center.tabs.empty-tab.view :as empty-tab]
+    [utils.re-frame :as rf]))
 
 (defn notification-component
   []

@@ -1,7 +1,8 @@
 (ns status-im2.contexts.communities.actions.community-rules-list.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im2.contexts.communities.actions.community-rules-list.style :as style]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.communities.actions.community-rules-list.style :as style]))
 
 (def standard-rules
   [{:index 1

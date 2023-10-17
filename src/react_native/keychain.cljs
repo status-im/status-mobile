@@ -1,7 +1,8 @@
 (ns react-native.keychain
-  (:require ["react-native-keychain" :as react-native-keychain]
-            [clojure.string :as string]
-            [taoensso.timbre :as log]))
+  (:require
+    ["react-native-keychain" :as react-native-keychain]
+    [clojure.string :as string]
+    [taoensso.timbre :as log]))
 
 ;; ********************************************************************************
 ;; Storing / Retrieving a user password to/from Keychain

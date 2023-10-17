@@ -1,6 +1,7 @@
 (ns utils.transforms
   (:refer-clojure :exclude [js->clj])
-  (:require [cljs-bean.core :as clj-bean]))
+  (:require
+    [cljs-bean.core :as clj-bean]))
 
 (defn js->clj [data] (cljs.core/js->clj data :keywordize-keys true))
 

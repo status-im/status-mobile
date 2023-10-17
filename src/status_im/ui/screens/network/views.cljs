@@ -1,14 +1,15 @@
 (ns status-im.ui.screens.network.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.network.core :as network]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.network.styles :as styles])
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.network.core :as network]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.network.styles :as styles]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- network-icon
@@ -34,7 +35,7 @@
 (defn render-network
   [{:keys [id name] :as network} _ _ current-network]
   (let [connected? (= id current-network)]
-    [quo/list-item
+    [list.item/list-item
      {:on-press      #(re-frame/dispatch [::network/network-entry-pressed network])
       :icon          :main-icons/network
       :icon-bg-color (if connected? colors/blue colors/gray-lighter)

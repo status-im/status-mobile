@@ -1,10 +1,11 @@
 (ns quo2.components.icon
-  (:require [clojure.string :as string]
-            [quo2.components.icons.icons :as icons]
-            [quo2.components.icons.svg :as icons.svg]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]))
+  (:require
+    [clojure.string :as string]
+    [quo2.components.icons.icons :as icons]
+    [quo2.components.icons.svg :as icons.svg]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- valid-color?
   [color]

@@ -1,17 +1,18 @@
 (ns status-im2.contexts.shell.jump-to.components.switcher-cards.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]
-            [status-im2.config :as config]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
-            [status-im2.contexts.shell.jump-to.animation :as animation]
-            [status-im2.contexts.shell.jump-to.components.switcher-cards.style :as style]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
+    [status-im2.contexts.shell.jump-to.animation :as animation]
+    [status-im2.contexts.shell.jump-to.components.switcher-cards.style :as style]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn- channel-card
   [{:keys [emoji channel-name customization-color]}]

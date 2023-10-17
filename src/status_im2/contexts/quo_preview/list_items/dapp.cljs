@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.list-items.dapp
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [quo2.foundations.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.resources :as resources]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :state

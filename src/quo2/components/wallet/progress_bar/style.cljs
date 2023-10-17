@@ -1,5 +1,6 @@
 (ns quo2.components.wallet.progress-bar.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn- border-and-background-color
   [customization-color]

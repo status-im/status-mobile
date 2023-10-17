@@ -1,7 +1,8 @@
 (ns quo2.components.profile.showcase-nav.component-spec
-  (:require [quo2.components.profile.showcase-nav.view :as view]
-            [reagent.core :as reagent]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.profile.showcase-nav.view :as view]
+    [reagent.core :as reagent]
+    [test-helpers.component :as h]))
 
 (def nav-data
   [{:icon :i/recent

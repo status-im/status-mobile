@@ -1,8 +1,9 @@
 (ns status-im2.contexts.quo-preview.inputs.address-input
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.constants :as constants]))
+  (:require
+    [quo2.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Scanned value:"

@@ -1,11 +1,12 @@
 (ns quo2.components.share.qr-code.view
-  (:require [quo2.components.avatars.account-avatar.view :as account-avatar]
-            [quo2.components.avatars.channel-avatar.view :as channel-avatar]
-            [quo2.components.avatars.user-avatar.view :as user-avatar]
-            [quo2.components.avatars.wallet-user-avatar :as wallet-avatar]
-            [quo2.components.share.qr-code.style :as style]
-            [react-native.core :as rn]
-            [react-native.fast-image :as fast-image]))
+  (:require
+    [quo2.components.avatars.account-avatar.view :as account-avatar]
+    [quo2.components.avatars.channel-avatar.view :as channel-avatar]
+    [quo2.components.avatars.user-avatar.view :as user-avatar]
+    [quo2.components.avatars.wallet-user-avatar :as wallet-avatar]
+    [quo2.components.share.qr-code.style :as style]
+    [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]))
 
 (defn- avatar-image
   [{avatar-type :avatar

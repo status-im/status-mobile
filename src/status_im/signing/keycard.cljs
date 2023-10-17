@@ -1,10 +1,11 @@
 (ns status-im.signing.keycard
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [native-module.core :as native-module]
-            [utils.re-frame :as rf]
-            [status-im.utils.deprecated-types :as types]
-            [taoensso.timbre :as log]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.utils.deprecated-types :as types]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  ::hash-transaction

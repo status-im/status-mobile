@@ -1,7 +1,8 @@
 (ns quo2.components.loaders.skeleton-list.component-spec
-  (:require [quo2.components.loaders.skeleton-list.view :as skeleton-list]
-            [quo2.foundations.colors :as colors]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.loaders.skeleton-list.view :as skeleton-list]
+    [quo2.foundations.colors :as colors]
+    [test-helpers.component :as h]))
 
 (defn test-skeleton
   [content animated?]

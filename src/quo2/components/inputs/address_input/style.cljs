@@ -1,7 +1,8 @@
 (ns quo2.components.inputs.address-input.style
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.components.markdown.text :as text]
-            [react-native.platform :as platform]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors]
+    [react-native.platform :as platform]))
 
 (def container
   {:padding-horizontal 20

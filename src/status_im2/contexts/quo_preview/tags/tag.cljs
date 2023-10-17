@@ -1,11 +1,12 @@
 (ns status-im2.contexts.quo-preview.tags.tag
-  (:require [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.tags.tag :as tag]
-            [status-im.ui.components.react :as react]
-            [status-im2.common.resources :as resources]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.components.tags.tag :as tag]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.ui.components.react :as react]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Size:"

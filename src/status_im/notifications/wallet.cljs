@@ -1,12 +1,13 @@
 (ns status-im.notifications.wallet
-  (:require [utils.re-frame :as rf]
-            [taoensso.timbre :as log]
-            [clojure.string :as string]
-            [status-im.ethereum.tokens :as tokens]
-            [utils.money :as money]
-            [status-im.ethereum.decode :as decode]
-            [status-im.utils.utils :as utils]
-            [utils.i18n :as i18n]))
+  (:require
+    [clojure.string :as string]
+    [status-im.ethereum.decode :as decode]
+    [status-im.ethereum.tokens :as tokens]
+    [status-im.utils.utils :as utils]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.money :as money]
+    [utils.re-frame :as rf]))
 
 (def default-erc20-token
   {:symbol   :ERC20

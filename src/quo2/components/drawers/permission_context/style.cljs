@@ -1,6 +1,7 @@
 (ns quo2.components.drawers.permission-context.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.safe-area :as safe-area]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.safe-area :as safe-area]))
 
 (def radius 20)
 

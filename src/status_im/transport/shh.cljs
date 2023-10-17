@@ -1,7 +1,8 @@
 (ns ^{:doc "Whisper API and events for managing keys and posting messages"} status-im.transport.shh
-  (:require [re-frame.core :as re-frame]
-            [status-im2.common.json-rpc.events :as json-rpc]
-            [taoensso.timbre :as log]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [taoensso.timbre :as log]))
 
 (defn generate-sym-key-from-password
   [{:keys [password on-success on-error]}]

@@ -1,10 +1,11 @@
 (ns status-im2.contexts.quo-preview.tags.status-tags
-  (:require [quo2.components.tags.status-tags :as quo2]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.components.tags.status-tags :as quo2]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.i18n :as i18n]))
 
 (def status-tags-options
   {:label   "Status"

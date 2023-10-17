@@ -1,18 +1,20 @@
 (ns status-im.integration-test
-  (:require [cljs.test :refer [deftest is]]
-            [clojure.string :as string]
-            [day8.re-frame.test :as rf-test]
-            [re-frame.core :as rf]
-            status-im.events
-            status-im2.events
-            [status-im.multiaccounts.logout.core :as logout]
-            [status-im.transport.core :as transport]
-            [status-im.utils.test :as utils.test]
-            status-im2.navigation.core
-            status-im2.subs.root ; so integration tests can run independently
-            [taoensso.timbre :as log]
-            [status-im2.constants :as constants]
-            [native-module.core :as native-module]))
+  (:require
+    [cljs.test :refer [deftest is]]
+    [clojure.string :as string]
+    [day8.re-frame.test :as rf-test]
+    [native-module.core :as native-module]
+    [re-frame.core :as rf]
+    status-im.events
+    [status-im.multiaccounts.logout.core :as logout]
+    status-im.subs.root ; so integration tests can run independently
+    [status-im.transport.core :as transport]
+    [status-im.utils.test :as utils.test]
+    [status-im2.constants :as constants]
+    status-im2.events
+    status-im2.navigation.core
+    status-im2.subs.root ; so integration tests can run independently
+    [taoensso.timbre :as log]))
 
 (def password "testabc")
 

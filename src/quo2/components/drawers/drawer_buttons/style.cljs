@@ -1,6 +1,7 @@
 (ns quo2.components.drawers.drawer-buttons.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]))
 
 (defn outer-container
   [height border-radius container-style]

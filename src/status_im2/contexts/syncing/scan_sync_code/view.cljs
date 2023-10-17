@@ -1,27 +1,28 @@
 (ns status-im2.contexts.syncing.scan-sync-code.view
-  (:require [clojure.string :as string]
-            [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
-            [react-native.camera-kit :as camera-kit]
-            [react-native.core :as rn]
-            [react-native.hole-view :as hole-view]
-            [react-native.permissions :as permissions]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.common.device-permissions :as device-permissions]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.syncing.scan-sync-code.animation :as animation]
-            [status-im2.contexts.syncing.scan-sync-code.style :as style]
-            [status-im2.contexts.syncing.utils :as sync-utils]
-            [utils.debounce :as debounce]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [utils.transforms :as transforms]
-            [status-im2.contexts.syncing.enter-sync-code.view :as enter-sync-code]))
+  (:require
+    [clojure.string :as string]
+    [oops.core :as oops]
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.blur :as blur]
+    [react-native.camera-kit :as camera-kit]
+    [react-native.core :as rn]
+    [react-native.hole-view :as hole-view]
+    [react-native.permissions :as permissions]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.common.device-permissions :as device-permissions]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.syncing.enter-sync-code.view :as enter-sync-code]
+    [status-im2.contexts.syncing.scan-sync-code.animation :as animation]
+    [status-im2.contexts.syncing.scan-sync-code.style :as style]
+    [status-im2.contexts.syncing.utils :as sync-utils]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 ;; Android allow local network access by default. So, we need this check on iOS only.
 (defonce preflight-check-passed? (reagent/atom (if platform/ios? false true)))
@@ -311,7 +312,8 @@
                                       :show-camera?     show-camera?
                                       :content-opacity  content-opacity
                                       :subtitle-opacity subtitle-opacity
-                                      :title-opacity    title-opacity})]
+                                      :title-opacity    title-opacity})
+            view-id                 (rf/sub [:view-id])]
 
         (rn/use-effect
          #(set-listener-torch-off-on-app-inactive torch?))
@@ -319,9 +321,10 @@
         (when animated?
           (rn/use-effect
            (fn []
-             (rn/hw-back-add-listener reset-animations-fn)
-             #(rn/hw-back-remove-listener reset-animations-fn))
-           [])
+             (when (= view-id :sign-in-intro)
+               (rn/hw-back-add-listener reset-animations-fn)
+               #(rn/hw-back-remove-listener reset-animations-fn)))
+           [view-id])
           (animation/animate-subtitle subtitle-opacity)
           (animation/animate-title title-opacity)
           (animation/animate-bottom bottom-view-translate-y))

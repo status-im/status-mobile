@@ -1,14 +1,15 @@
 (ns status-im2.contexts.push-notifications.events
-  (:require [react-native.push-notification-ios :as pn-ios]
-            [native-module.push-notifications :as native-module.pn]
-            [status-im2.config :as config]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]
-            [react-native.platform :as platform]
-            [react-native.async-storage :as async-storage]
-            [utils.transforms :as transforms]
-            [cljs-bean.core :as bean]
-            status-im2.contexts.push-notifications.effects))
+  (:require
+    [cljs-bean.core :as bean]
+    [native-module.push-notifications :as native-module.pn]
+    [react-native.async-storage :as async-storage]
+    [react-native.platform :as platform]
+    [react-native.push-notification-ios :as pn-ios]
+    [status-im2.config :as config]
+    status-im2.contexts.push-notifications.effects
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (def server-type-default 1)
 (def server-type-custom 2)

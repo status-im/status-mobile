@@ -1,13 +1,14 @@
 (ns status-im2.common.toasts.view
-  (:require [quo2.core :as quo]
-            [react-native.background-timer :as background-timer]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [react-native.reanimated :as reanimated]
-            [reagent.core :as reagent]
-            [status-im2.common.toasts.animation :as animation]
-            [status-im2.common.toasts.style :as style]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.background-timer :as background-timer]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [status-im2.common.toasts.animation :as animation]
+    [status-im2.common.toasts.style :as style]
+    [utils.re-frame :as rf]))
 
 (defn toast
   [toast-id]

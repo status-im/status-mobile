@@ -1,10 +1,11 @@
 (ns status-im.ui.screens.browser.stack
-  (:require [utils.re-frame :as rf]
-            [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
-            [status-im.ui.screens.browser.views :as browser]
-            [status-im.ui.screens.browser.tabs.views :as tabs]
-            [react-native.safe-area :as safe-area]
-            [react-native.core :as rn]))
+  (:require
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
+    [status-im.ui.screens.browser.tabs.views :as tabs]
+    [status-im.ui.screens.browser.views :as browser]
+    [utils.re-frame :as rf]))
 
 (defn browser-stack
   []

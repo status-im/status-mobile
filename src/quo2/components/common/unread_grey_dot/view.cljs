@@ -1,6 +1,7 @@
 (ns quo2.components.common.unread-grey-dot.view
-  (:require [react-native.core :as rn]
-            [quo2.components.common.unread-grey-dot.style :as style]))
+  (:require
+    [quo2.components.common.unread-grey-dot.style :as style]
+    [react-native.core :as rn]))
 
 (defn unread-grey-dot
   [accessibility-label]

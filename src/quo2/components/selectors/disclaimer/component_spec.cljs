@@ -1,6 +1,7 @@
 (ns quo2.components.selectors.disclaimer.component-spec
-  (:require [quo2.components.selectors.disclaimer.view :as disclaimer]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.selectors.disclaimer.view :as disclaimer]
+    [test-helpers.component :as h]))
 
 (h/describe "Disclaimer tests"
   (h/test "Default render of toggle component"

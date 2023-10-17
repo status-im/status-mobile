@@ -1,5 +1,6 @@
 (ns quo2.components.tabs.tabs.style
-  (:require [utils.number]))
+  (:require
+    [utils.number]))
 
 (def linear-gradient
   {:width  "100%"

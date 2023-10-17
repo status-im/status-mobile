@@ -1,11 +1,12 @@
 (ns quo2.components.keycard.view
-  (:require [react-native.core :as rn]
-            [quo2.components.keycard.style :as style]
-            [quo2.components.tags.tag :as tag]
-            [quo2.foundations.colors :as colors]
-            [quo2.foundations.resources :as resources]
-            [utils.i18n :as i18n]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.components.keycard.style :as style]
+    [quo2.components.tags.tag :as tag]
+    [quo2.foundations.colors :as colors]
+    [quo2.foundations.resources :as resources]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (defn- view-internal
   "This component based on the following properties:

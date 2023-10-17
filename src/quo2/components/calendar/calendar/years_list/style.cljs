@@ -1,5 +1,6 @@
 (ns quo2.components.calendar.calendar.years-list.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn gradient-start-color
   [theme]

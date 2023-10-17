@@ -1,5 +1,6 @@
 (ns quo2.components.wallet.summary-info.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn container
   [networks? theme]

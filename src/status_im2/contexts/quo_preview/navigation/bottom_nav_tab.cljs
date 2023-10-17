@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.navigation.bottom-nav-tab
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :icon

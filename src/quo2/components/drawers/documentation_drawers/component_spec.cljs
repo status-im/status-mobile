@@ -1,6 +1,7 @@
 (ns quo2.components.drawers.documentation-drawers.component-spec
-  (:require [quo2.components.drawers.documentation-drawers.view :as documentation-drawers]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.drawers.documentation-drawers.view :as documentation-drawers]
+    [test-helpers.component :as h]))
 
 (h/describe "Documentation drawers component"
   (h/test "render component without button"

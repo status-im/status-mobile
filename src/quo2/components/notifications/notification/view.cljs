@@ -1,8 +1,9 @@
 (ns quo2.components.notifications.notification.view
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.components.notifications.notification.style :as style]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.markdown.text :as text]
+    [quo2.components.notifications.notification.style :as style]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]))
 
 (defn header-container
   [& children]

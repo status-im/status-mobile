@@ -1,8 +1,9 @@
 (ns status-im.keycard.export-key
-  (:require [status-im.keycard.common :as common]
-            [status-im.keycard.wallet :as wallet]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]))
+  (:require
+    [status-im.keycard.common :as common]
+    [status-im.keycard.wallet :as wallet]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn on-export-key-error
   {:events [:keycard.callback/on-export-key-error]}

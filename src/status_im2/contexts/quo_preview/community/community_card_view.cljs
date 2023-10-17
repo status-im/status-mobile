@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.community.community-card-view
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [utils.i18n :as i18n]))
+  (:require
+    [quo2.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.i18n :as i18n]))
 
 (def community-data
   {:id "id"

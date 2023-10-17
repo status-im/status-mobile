@@ -1,6 +1,7 @@
 (ns status-im2.contexts.communities.discover.events
-  (:require [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+  (:require
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (def commmunity-keys-renamed
   {:requestedAccessAt           :requested-access-at

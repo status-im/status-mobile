@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.messages.navigation.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]))
 
 (defonce ^:const navigation-bar-height 100)
 (defonce ^:const header-offset 56)

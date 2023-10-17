@@ -1,16 +1,18 @@
 (ns status-im.ui.screens.wallet.buy-crypto.views
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.webview :as components.webview]
-            [status-im.ui.screens.browser.views :as browser.views]
-            [status-im.ui.screens.chat.photos :as photos]
-            [status-im.ui.screens.wallet.buy-crypto.sheets :as sheets])
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.components.webview :as components.webview]
+    [status-im.ui.screens.browser.views :as browser.views]
+    [status-im.ui.screens.chat.photos :as photos]
+    [status-im.ui.screens.wallet.buy-crypto.sheets :as sheets]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (def learn-more-url "")
@@ -26,7 +28,7 @@
   [react/touchable-highlight
    {:on-press #(re-frame/dispatch [:open-modal :buy-crypto-website on-ramp])
     :style    {:flex 1}}
-   [quo/list-item
+   [list.item/list-item
     {:title               [react/view {:style {:flex 1}}
                            [quo/text
                             {:size   :large

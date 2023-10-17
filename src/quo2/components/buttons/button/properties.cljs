@@ -1,5 +1,6 @@
 (ns quo2.components.buttons.button.properties
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def backgrounds #{:photo :blur})
 
@@ -45,7 +46,9 @@
    :label-color      (colors/theme-colors colors/neutral-100 colors/white theme)
    :background-color (if pressed?
                        (colors/theme-colors colors/neutral-20 colors/neutral-60 theme)
-                       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))})
+                       (colors/theme-colors colors/neutral-10
+                                            colors/neutral-90
+                                            theme))})
 
 (defn dark-grey
   [theme pressed?]

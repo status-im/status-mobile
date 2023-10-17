@@ -1,6 +1,7 @@
 (ns status-im2.common.home.header-spacing.style
-  (:require [status-im2.common.home.constants :as constants]
-            [react-native.safe-area :as safe-area]))
+  (:require
+    [react-native.safe-area :as safe-area]
+    [status-im2.common.home.constants :as constants]))
 
 (defn header-spacing
   []

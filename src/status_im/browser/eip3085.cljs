@@ -1,14 +1,15 @@
 ;reference https://eips.ethereum.org/EIPS/eip-3085 EIP-3085: Wallet Add Ethereum Chain RPC Method
 ;(`wallet_addEthereumChain`)
 (ns status-im.browser.eip3085
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [status-im.network.core :as network]
-            [status-im.ui.screens.browser.eip3085.sheet :as sheet]
-            [utils.re-frame :as rf]
-            [status-im.utils.random :as random]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.network.core :as network]
+    [status-im.ui.screens.browser.eip3085.sheet :as sheet]
+    [status-im.utils.random :as random]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn send-success-call-to-bridge
   {:events [:eip3085/send-success-call-to-bridge]}

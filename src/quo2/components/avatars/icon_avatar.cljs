@@ -1,8 +1,9 @@
 (ns quo2.components.avatars.icon-avatar
-  (:require [quo2.components.icon :as icons]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (def ^:private sizes
   {:size-48 {:component 48
@@ -19,8 +20,8 @@
     :or   {opacity 20
            size    :size-32}}]
   (let [{component-size :component icon-size :icon} (get sizes size)
-        circle-color                                (colors/custom-color color 50 opacity)
-        icon-color                                  (colors/custom-color-by-theme color 50 60)]
+        circle-color                                (colors/resolve-color color theme opacity)
+        icon-color                                  (colors/resolve-color color theme)]
     [rn/view
      {:style {:width            component-size
               :height           component-size

@@ -1,6 +1,7 @@
 (ns quo2.components.links.link-preview.component-spec
-  (:require [quo2.components.links.link-preview.view :as view]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.links.link-preview.view :as view]
+    [test-helpers.component :as h]))
 
 (def props
   {:title       "Some title"

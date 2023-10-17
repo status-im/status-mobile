@@ -1,8 +1,9 @@
 (ns status-im2.contexts.push-notifications.effects
-  (:require [react-native.push-notification-ios :as pn-ios]
-            [utils.re-frame :as rf]
-            [native-module.push-notifications :as native-module.pn]
-            [react-native.platform :as platform]))
+  (:require
+    [native-module.push-notifications :as native-module.pn]
+    [react-native.platform :as platform]
+    [react-native.push-notification-ios :as pn-ios]
+    [utils.re-frame :as rf]))
 
 (def ios-listeners-added? (atom nil))
 

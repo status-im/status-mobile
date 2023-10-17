@@ -1,5 +1,6 @@
 (ns quo2.components.list-items.dapp.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn get-background-color
   [{:keys [pressed? state blur? customization-color theme]}]

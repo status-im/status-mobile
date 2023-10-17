@@ -1,7 +1,8 @@
 (ns quo2.components.calendar.calendar.component-spec
-  (:require [quo2.components.calendar.calendar.view :as calendar]
-            [test-helpers.component :as h]
-            [cljs-time.core :as time]))
+  (:require
+    [cljs-time.core :as time]
+    [quo2.components.calendar.calendar.view :as calendar]
+    [test-helpers.component :as h]))
 
 (def start-date (time/date-time (time/year (time/now)) (time/month (time/now)) 5))
 (def end-date (time/date-time (time/plus start-date (time/days 2))))

@@ -1,15 +1,16 @@
 (ns status-im2.contexts.onboarding.events
-  (:require [native-module.core :as native-module]
-            [re-frame.core :as re-frame]
-            [utils.transforms :as transforms]
-            [status-im2.constants :as constants]
-            [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [utils.security.core :as security]
-            [status-im2.contexts.profile.create.events :as profile.create]
-            [status-im2.contexts.profile.recover.events :as profile.recover]
-            [status-im2.common.biometric.events :as biometric]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im2.common.biometric.events :as biometric]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.profile.create.events :as profile.create]
+    [status-im2.contexts.profile.recover.events :as profile.recover]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]
+    [utils.transforms :as transforms]))
 
 (re-frame/reg-fx
  :multiaccount/validate-mnemonic

@@ -1,6 +1,7 @@
 (ns quo2.components.buttons.wallet-ctas.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.buttons.wallet-ctas.view :as wallet-ctas]))
+  (:require
+    [quo2.components.buttons.wallet-ctas.view :as wallet-ctas]
+    [test-helpers.component :as h]))
 
 (h/describe "Wallet CTAs test"
   (h/test "Buttons render"

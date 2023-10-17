@@ -1,10 +1,11 @@
 (ns status-im2.contexts.shell.jump-to.animation
-  (:require [utils.re-frame :as rf]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.shell.jump-to.utils :as utils]
-            [status-im2.contexts.shell.jump-to.state :as state]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+  (:require
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im2.contexts.shell.jump-to.state :as state]
+    [status-im2.contexts.shell.jump-to.utils :as utils]
+    [utils.re-frame :as rf]))
 
 ;;;; Home stack
 (defn open-home-stack

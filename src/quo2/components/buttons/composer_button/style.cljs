@@ -1,5 +1,6 @@
 (ns quo2.components.buttons.composer-button.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn get-border-color
   [{:keys [pressed? blur? theme]}]

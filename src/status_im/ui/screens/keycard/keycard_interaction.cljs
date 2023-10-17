@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.keycard.keycard-interaction
-  (:require [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.keycard.components.description :as description]
-            [status-im.ui.screens.keycard.components.keycard-animation :refer [animated-circles]]
-            [status-im.ui.screens.keycard.components.style :as styles]
-            [status-im.ui.screens.keycard.components.turn-nfc :as turn-nfc]))
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.keycard.components.description :as description]
+    [status-im.ui.screens.keycard.components.keycard-animation :refer [animated-circles]]
+    [status-im.ui.screens.keycard.components.style :as styles]
+    [status-im.ui.screens.keycard.components.turn-nfc :as turn-nfc]
+    [utils.i18n :as i18n]))
 
 (def state->translations
   {:init       {:title       :t/keycard-init-title

@@ -1,7 +1,8 @@
 (ns quo2.components.calendar.calendar.utils
-  (:require [utils.datetime :as datetime]
-            [utils.number :as utils.number]
-            [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]
+    [utils.datetime :as datetime]
+    [utils.number :as utils.number]))
 
 (defn generate-years
   [current-year]

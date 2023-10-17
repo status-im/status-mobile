@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.messages.pin.events-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im2.contexts.chat.messages.pin.events :as events]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im2.contexts.chat.messages.pin.events :as events]))
 
 (deftest receive-signal-test
   (let [chat-id      "chat-id"

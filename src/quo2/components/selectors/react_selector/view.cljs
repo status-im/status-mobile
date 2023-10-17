@@ -1,11 +1,12 @@
 (ns quo2.components.selectors.react-selector.view
-  (:require [quo2.components.markdown.text :as text]
-            [quo2.components.selectors.reaction-resource :as reaction.resource]
-            [quo2.components.selectors.react-selector.style :as style]
-            [quo2.theme :as quo.theme]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.icon :as icons]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.selectors.react-selector.style :as style]
+    [quo2.components.selectors.reaction-resource :as reaction.resource]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- view-internal
   [{:keys [emoji clicks state use-case on-press accessibility-label on-long-press container-style

@@ -1,6 +1,7 @@
 (ns quo2.components.selectors.filter.component-spec
-  (:require [quo2.components.selectors.filter.view :as quo]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.selectors.filter.view :as quo]
+    [test-helpers.component :as h]))
 
 (h/describe "selector filter component"
   (h/test "renders component"

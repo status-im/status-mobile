@@ -1,5 +1,6 @@
 (ns status-im.utils.hex
-  (:require [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]))
 
 (defn normalize-hex
   [hex]

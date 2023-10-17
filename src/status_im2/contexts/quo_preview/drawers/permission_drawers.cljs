@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.drawers.permission-drawers
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [quo2.foundations.resources :as quo.resources]
-            [react-native.core :as rn]
-            [status-im2.common.resources :as resources]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [quo2.foundations.resources :as quo.resources]
+    [react-native.core :as rn]
+    [status-im2.common.resources :as resources]))
 
 (def token-icon (resources/get-mock-image :status-logo))
 

@@ -7,19 +7,19 @@
 (defn link-linear
   [{:keys [source theme]}]
   [svg/svg {:xmlns "http://www.w3.org/2000/svg" :width "73" :height "10" :fill :none}
-   [svg/path {:stroke (get colors/networks source) :d "M68 5H5"}]
+   [svg/path {:stroke (colors/resolve-color source theme) :d "M68 5H5"}]
    [svg/circle
     {:cx     "68"
      :cy     "5"
      :r      "4"
      :fill   (colors/theme-colors colors/white colors/neutral-90 theme)
-     :stroke (get colors/networks source)}]
+     :stroke (colors/resolve-color source theme)}]
    [svg/circle
     {:cx     "5"
      :cy     "5"
      :r      "4"
      :fill   (colors/theme-colors colors/white colors/neutral-90 theme)
-     :stroke (get colors/networks source)}]])
+     :stroke (colors/resolve-color source theme)}]])
 
 (defn link-1x
   [{:keys [source destination theme]}]
@@ -31,18 +31,18 @@
      :cy     "5"
      :r      "4"
      :fill   (colors/theme-colors colors/white colors/neutral-90 theme)
-     :stroke (get colors/networks destination)}]
+     :stroke (colors/resolve-color destination theme)}]
    [svg/circle
     {:cx     "5"
      :cy     "61"
      :r      "4"
      :fill   (colors/theme-colors colors/white colors/neutral-90 theme)
-     :stroke (get colors/networks source)}]
+     :stroke (colors/resolve-color source theme)}]
    [svg/defs
     [svg/linear-gradient
      {:id "gradient" :x1 "72.271" :x2 "82.385" :y1 "5" :y2 "34.155" :gradientUnits "userSpaceOnUse"}
-     [svg/stop {:stopColor (get colors/networks destination)}]
-     [svg/stop {:offset "1" :stopColor (get colors/networks source)}]]]])
+     [svg/stop {:stopColor (colors/resolve-color destination theme)}]
+     [svg/stop {:offset "1" :stopColor (colors/resolve-color source theme)}]]]])
 
 (defn link-2x
   [{:keys [source destination theme]}]
@@ -57,13 +57,13 @@
      :cy     "5"
      :r      "4"
      :fill   (colors/theme-colors colors/white colors/neutral-90 theme)
-     :stroke (get colors/networks destination)}]
+     :stroke (colors/resolve-color destination theme)}]
    [svg/circle
     {:cx     "5"
      :cy     "117"
      :r      "4"
      :fill   (colors/theme-colors colors/white colors/neutral-90 theme)
-     :stroke (get colors/networks source)}]
+     :stroke (colors/resolve-color source theme)}]
    [svg/defs
     [svg/linear-gradient
      {:id            "gradient"
@@ -72,8 +72,8 @@
       :x2            "102.867"
       :y2            "49.0993"
       :gradientUnits "userSpaceOnUse"}
-     [svg/stop {:stop-color (get colors/networks destination)}]
-     [svg/stop {:offset "1" :stop-color (get colors/networks source)}]]]])
+     [svg/stop {:stop-color (colors/resolve-color destination theme)}]
+     [svg/stop {:offset "1" :stop-color (colors/resolve-color source theme)}]]]])
 
 (defn- view-internal
   [{:keys [shape] :as props}]

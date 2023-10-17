@@ -1,13 +1,14 @@
 (ns quo2.components.wallet.wallet-activity.view
-  (:require [quo2.theme :as quo.theme]
-            [quo2.components.wallet.wallet-activity.style :as style]
-            [react-native.core :as rn]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.icon :as icon]
-            [quo2.components.tags.context-tag.view :as context-tag]
-            [react-native.hole-view :as hole-view]
-            [utils.i18n :as i18n]
-            [reagent.core :as reagent]))
+  (:require
+    [quo2.components.icon :as icon]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.tags.context-tag.view :as context-tag]
+    [quo2.components.wallet.wallet-activity.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.hole-view :as hole-view]
+    [reagent.core :as reagent]
+    [utils.i18n :as i18n]))
 
 (def transaction-translation
   {:receive [i18n/label :t/receive]

@@ -1,20 +1,20 @@
 (ns status-im2.contexts.chat.photo-selector.view
   (:require
-    [react-native.gesture :as gesture]
-    [react-native.reanimated :as reanimated]
-    [react-native.safe-area :as safe-area]
-    [react-native.platform :as platform]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
     [react-native.core :as rn]
+    [react-native.gesture :as gesture]
     [react-native.linear-gradient :as linear-gradient]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.constants :as constants]
-    [status-im2.contexts.chat.photo-selector.style :as style]
     [status-im2.contexts.chat.photo-selector.album-selector.view :as album-selector]
-    utils.collection))
+    [status-im2.contexts.chat.photo-selector.style :as style]
+    utils.collection
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def min-scroll-to-blur 5)
 

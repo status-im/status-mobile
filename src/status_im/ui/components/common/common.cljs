@@ -1,9 +1,10 @@
 (ns status-im.ui.components.common.common
-  (:require [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.common.styles :as styles]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react])
+  (:require
+    [reagent.core :as reagent]
+    [status-im.ui.components.common.styles :as styles]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn logo

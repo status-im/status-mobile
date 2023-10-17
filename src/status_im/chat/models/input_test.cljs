@@ -1,6 +1,7 @@
 (ns status-im.chat.models.input-test
-  (:require [cljs.test :refer-macros [deftest is]]
-            [status-im.chat.models.input :as input]))
+  (:require
+    [cljs.test :refer-macros [deftest is]]
+    [status-im.chat.models.input :as input]))
 
 (deftest text->emoji
   (is (nil? (input/text->emoji nil)))

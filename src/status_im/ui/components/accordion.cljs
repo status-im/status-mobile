@@ -1,9 +1,10 @@
 (ns status-im.ui.components.accordion
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]))
+  (:require
+    [reagent.core :as reagent]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]))
 
 (defn drop-down-icon
   [{:keys [opened? dropdown-margin-left]}]
@@ -36,7 +37,7 @@
          (merge {:padding-vertical padding-vertical}
                 (when @opened? open-container-style))
          (if (string? title)
-           [quo/list-item
+           [list.item/list-item
             {:title     title
              :icon      icon
              :on-press  on-press

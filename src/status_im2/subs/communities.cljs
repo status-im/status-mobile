@@ -1,10 +1,11 @@
 (ns status-im2.subs.communities
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n]))
 
 (re-frame/reg-sub
  :communities/fetching-community

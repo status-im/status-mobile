@@ -8,12 +8,12 @@
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im2.common.alert.events :as alert]
-    [status-im2.contexts.chat.composer.constants :as comp-constants]
     [status-im2.common.device-permissions :as device-permissions]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
+    [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.actions.style :as style]
-    [status-im2.constants :as constants]))
+    [status-im2.contexts.chat.composer.constants :as comp-constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn send-message
   [{:keys [sending-images? sending-links?]}

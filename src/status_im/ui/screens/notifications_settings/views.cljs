@@ -1,10 +1,12 @@
 (ns status-im.ui.screens.notifications-settings.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as quo-colors]
-            [quo.platform :as platform]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [utils.re-frame :as rf]))
+  (:require
+    [react-native.platform :as platform]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn local-notifications
   []
@@ -12,10 +14,10 @@
         {:keys [notifications-enabled?]} (rf/sub [:profile/profile])]
     [:<>
      [quo/separator
-      {:color (:ui-02 @quo-colors/theme)
+      {:color (:ui-02 @colors/theme)
        :style {:margin-vertical 8}}]
      [quo/list-header (i18n/label :t/local-notifications)]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/notifications-transactions)
        :accessibility-label :notifications-button
@@ -31,7 +33,7 @@
                 push-notifications-from-contacts-only?]}
         (rf/sub [:profile/profile])]
     [:<>
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/show-notifications)
        :accessibility-label :notifications-button
@@ -39,10 +41,10 @@
        :on-press            #(rf/dispatch [:push-notifications/switch (not notifications-enabled?)])
        :accessory           :switch}]
      [quo/separator
-      {:color (:ui-02 @quo-colors/theme)
+      {:color (:ui-02 @colors/theme)
        :style {:margin-vertical 8}}]
      [quo/list-header (i18n/label :t/notifications-preferences)]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/notifications-non-contacts)
        :accessibility-label :notifications-button
@@ -52,7 +54,7 @@
                               [:push-notifications/switch-non-contacts
                                (not push-notifications-from-contacts-only?)])
        :accessory           :switch}]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/allow-mention-notifications)
        :accessibility-label :notifications-button
@@ -68,7 +70,7 @@
   []
   (let [{:keys [notifications-enabled?]} (rf/sub [:profile/profile])]
     [:<>
-     [quo/list-item
+     [list.item/list-item
       {:title               (i18n/label :t/local-notifications)
        :accessibility-label :local-notifications-settings-button
        :subtitle            (i18n/label :t/local-notifications-subtitle)

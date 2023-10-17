@@ -1,9 +1,10 @@
 (ns status-im2.contexts.chat.composer.keyboard
-  (:require [oops.core :as oops]
-            [react-native.async-storage :as async-storage]
-            [react-native.core :as rn]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [oops.core :as oops]
+    [react-native.async-storage :as async-storage]
+    [react-native.core :as rn]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]))
 
 (defn get-kb-height
   [curr-height default-height]

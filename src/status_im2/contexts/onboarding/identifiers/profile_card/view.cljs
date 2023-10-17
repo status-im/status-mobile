@@ -1,12 +1,13 @@
 (ns status-im2.contexts.onboarding.identifiers.profile-card.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.masked-view :as masked-view]
-            [react-native.reanimated :as reanimated]
-            [reagent.core :as reagent]
-            [status-im2.contexts.onboarding.identifiers.profile-card.style :as style]
-            [utils.worklets.identifiers-highlighting :as worklets.identifiers-highlighting]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [react-native.masked-view :as masked-view]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [status-im2.contexts.onboarding.identifiers.profile-card.style :as style]
+    [utils.worklets.identifiers-highlighting :as worklets.identifiers-highlighting]))
 
 (defn- f-profile-card-component
   [{:keys [profile-picture name emoji-hash

@@ -1,5 +1,6 @@
 (ns quo2.components.list-items.address.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn- background-color
   [state customization-color blur?]

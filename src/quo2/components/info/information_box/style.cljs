@@ -1,5 +1,6 @@
 (ns quo2.components.info.information-box.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def ^:private themes
   {:light {:default      {:bg     colors/white

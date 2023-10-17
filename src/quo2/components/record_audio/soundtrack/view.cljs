@@ -1,11 +1,12 @@
 (ns quo2.components.record-audio.soundtrack.view
-  (:require [quo2.components.record-audio.soundtrack.style :as style]
-            [quo2.foundations.colors :as colors]
-            [react-native.audio-toolkit :as audio]
-            [taoensso.timbre :as log]
-            [react-native.platform :as platform]
-            [react-native.slider :as slider]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.components.record-audio.soundtrack.style :as style]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.audio-toolkit :as audio]
+    [react-native.platform :as platform]
+    [react-native.slider :as slider]
+    [taoensso.timbre :as log]))
 
 (def ^:private thumb-light (js/require "../resources/images/icons2/12x12/thumb-light.png"))
 (def ^:private thumb-dark (js/require "../resources/images/icons2/12x12/thumb-dark.png"))

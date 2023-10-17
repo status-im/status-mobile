@@ -1,8 +1,9 @@
 (ns quo2.components.selectors.reactions-selector.view
-  (:require [quo2.components.selectors.reaction-resource :as reactions.resource]
-            [quo2.components.selectors.reactions-selector.style :as style]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]))
+  (:require
+    [quo2.components.selectors.reaction-resource :as reactions.resource]
+    [quo2.components.selectors.reactions-selector.style :as style]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn view
   [{:keys [start-pressed?]}]

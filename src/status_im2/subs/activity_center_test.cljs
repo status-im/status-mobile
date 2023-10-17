@@ -1,10 +1,11 @@
 (ns status-im2.subs.activity-center-test
-  (:require [cljs.test :refer [is testing]]
-            [re-frame.db :as rf-db]
-            [status-im2.contexts.shell.activity-center.notification-types :as types]
-            status-im2.subs.activity-center
-            [test-helpers.unit :as h]
-            [utils.re-frame :as rf]))
+  (:require
+    [cljs.test :refer [is testing]]
+    [re-frame.db :as rf-db]
+    [status-im2.contexts.shell.activity-center.notification-types :as types]
+    status-im2.subs.activity-center
+    [test-helpers.unit :as h]
+    [utils.re-frame :as rf]))
 
 (h/deftest-sub :activity-center/filter-status-unread-enabled?
   [sub-name]

@@ -1,9 +1,10 @@
 (ns quo2.components.settings.reorder-item.items.item-tabs
-  (:require [quo2.components.tabs.segmented-tab :as quo2]
-            [quo.react-native :as rn]
-            [quo.components.text :as text]
-            [quo2.components.settings.reorder-item.style :as style]
-            [quo2.components.icon :as quo2-icons]))
+  (:require
+    [quo2.components.icon :as quo2-icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.settings.reorder-item.style :as style]
+    [quo2.components.tabs.segmented-tab :as quo2]
+    [react-native.core :as rn]))
 
 (defn render-tab-item
   [item]
@@ -17,8 +18,8 @@
      {:style style/tab-item-container}
      tab-image
      [text/text
-      {:style style/tab-item-label
-       :width :medium}
+      {:size   :paragraph-1
+       :weight :medium}
       (:label item)]]))
 
 (defn transform-data

@@ -1,7 +1,8 @@
 (ns status-im2.contexts.quo-preview.community.channel-actions
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (defn view
   []

@@ -1,10 +1,11 @@
 (ns status-im.stickers.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.utils :as utils]
-            [status-im.wallet.utils :as wallet.utils]
-            [status-im2.constants :as constants]
-            [utils.ethereum.chain :as chain]
-            [utils.re-frame :as rf]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.utils.utils :as utils]
+    [status-im.wallet.utils :as wallet.utils]
+    [status-im2.constants :as constants]
+    [utils.ethereum.chain :as chain]
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  :stickers/set-pending-timeout-fx

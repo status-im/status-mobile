@@ -1,6 +1,7 @@
 (ns quo2.components.drawers.documentation-drawers.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.safe-area :as safe-area]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.safe-area :as safe-area]))
 
 (def outer-container
   ;; Margin negative to fill the bottom-sheet container where this component is used

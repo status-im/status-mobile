@@ -1,11 +1,12 @@
 (ns status-im2.contexts.syncing.syncing-devices-list.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [status-im2.contexts.syncing.device.view :as device]
-            [status-im2.contexts.syncing.syncing-devices-list.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [status-im2.contexts.syncing.device.view :as device]
+    [status-im2.contexts.syncing.syncing-devices-list.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn view
   []

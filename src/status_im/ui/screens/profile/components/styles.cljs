@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.components.styles
-  (:require [quo.design-system.colors :as colors]))
+  (:require
+    [status-im.ui.components.colors :as colors]))
 
 ;; profile header elements
 

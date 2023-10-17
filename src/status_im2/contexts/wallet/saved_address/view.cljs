@@ -1,7 +1,8 @@
 (ns status-im2.contexts.wallet.saved-address.view
-  (:require [react-native.core :as rn]
-            [quo2.core :as quo]
-            [re-frame.core :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [re-frame.core :as rf]
+    [react-native.core :as rn]))
 
 (defn view
   []

@@ -1,11 +1,12 @@
 (ns status-im.bottom-sheet.sheets
-  (:require [utils.re-frame :as rf]
-            [quo2.theme :as theme]
-            [status-im.ui.screens.about-app.views :as about-app]
-            [status-im.ui.screens.keycard.views :as keycard]
-            [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
-            [status-im.bottom-sheet.view :as bottom-sheet]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [status-im.bottom-sheet.view :as bottom-sheet]
+    [status-im.ui.screens.about-app.views :as about-app]
+    [status-im.ui.screens.keycard.views :as keycard]
+    [status-im.ui.screens.mobile-network-settings.view :as mobile-network-settings]
+    [utils.re-frame :as rf]))
 
 (defn bottom-sheet
   []

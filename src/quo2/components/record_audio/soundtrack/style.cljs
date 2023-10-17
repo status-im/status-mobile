@@ -1,5 +1,6 @@
 (ns quo2.components.record-audio.soundtrack.style
-  (:require [react-native.platform :as platform]))
+  (:require
+    [react-native.platform :as platform]))
 
 (defn player-slider-container
   []

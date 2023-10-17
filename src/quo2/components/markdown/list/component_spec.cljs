@@ -1,6 +1,7 @@
 (ns quo2.components.markdown.list.component-spec
-  (:require [quo2.components.markdown.list.view :as list]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.markdown.list.view :as list]
+    [test-helpers.component :as h]))
 
 (h/describe "tests for markdown/list component"
   (h/test "renders component with title"

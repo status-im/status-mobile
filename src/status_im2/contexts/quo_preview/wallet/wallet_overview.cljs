@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.wallet.wallet-overview
-  (:require [quo2.core :as quo]
-            [quo2.foundations.resources :as quo.resources]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.resources :as quo.resources]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "State"

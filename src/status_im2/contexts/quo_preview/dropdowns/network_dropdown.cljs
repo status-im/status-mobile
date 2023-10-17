@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.dropdowns.network-dropdown
-  (:require [quo2.foundations.resources :as quo.resources]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [quo2.core :as quo]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.resources :as quo.resources]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :state

@@ -1,5 +1,6 @@
 (ns status-im.search.core
-  (:require [utils.re-frame :as rf]))
+  (:require
+    [utils.re-frame :as rf]))
 
 (rf/defn currency-filter-changed
   {:events [:search/currency-filter-changed]}

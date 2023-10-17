@@ -1,6 +1,7 @@
 (ns status-im2.common.password-authentication.events
-  (:require [utils.re-frame :as rf]
-            [status-im2.navigation.events :as navigation]))
+  (:require
+    [status-im2.navigation.events :as navigation]
+    [utils.re-frame :as rf]))
 
 (rf/defn close
   {:events [:password-authentication/show]}

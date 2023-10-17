@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.wallet-overview.component-spec
-  (:require [quo2.components.wallet.wallet-overview.view :as wallet-overview]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.wallet.wallet-overview.view :as wallet-overview]
+    [test-helpers.component :as h]))
 
 (h/describe
   "Wallet overview test"

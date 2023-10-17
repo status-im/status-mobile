@@ -1,7 +1,8 @@
 (ns status-im.commands.core
-  (:require [re-frame.core :as re-frame]
-            [utils.re-frame :as rf]
-            [status-im.wallet.utils :as wallet.utils]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.wallet.utils :as wallet.utils]
+    [utils.re-frame :as rf]))
 
 (rf/defn handle-prepare-accept-request-address-for-transaction
   {:events [::prepare-accept-request-address-for-transaction]}

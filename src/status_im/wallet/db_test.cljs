@@ -1,8 +1,9 @@
 (ns status-im.wallet.db-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [utils.i18n :as i18n]
-            [utils.money :as money]
-            [status-im.wallet.db :as wallet.db]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im.wallet.db :as wallet.db]
+    [utils.i18n :as i18n]
+    [utils.money :as money]))
 
 (deftest test-too-precise-amount?
   (testing "try both decimal and scientific or hex format"

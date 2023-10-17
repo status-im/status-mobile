@@ -1,11 +1,12 @@
 (ns quo2.components.wallet.account-overview.view
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [utils.i18n :as i18n]
-            [quo2.components.wallet.account-overview.style :as style]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.wallet.account-overview.style :as style]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]
+    [utils.i18n :as i18n]))
 
 (defn- loading-state
   [color]

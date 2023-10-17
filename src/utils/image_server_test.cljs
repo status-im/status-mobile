@@ -1,7 +1,8 @@
 (ns utils.image-server-test
-  (:require [cljs.test :as t]
-            status-im2.common.pixel-ratio
-            [utils.image-server :as sut]))
+  (:require
+    [cljs.test :as t]
+    status-im2.common.pixel-ratio
+    [utils.image-server :as sut]))
 
 (t/deftest get-account-image-uri
   (with-redefs

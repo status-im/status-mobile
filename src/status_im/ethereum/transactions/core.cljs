@@ -1,15 +1,16 @@
 (ns status-im.ethereum.transactions.core
-  (:require [cljs.spec.alpha :as spec]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.decode :as decode]
-            [utils.ethereum.eip.eip55 :as eip55]
-            [status-im.ethereum.encode :as encode]
-            [utils.re-frame :as rf]
-            [status-im.utils.mobile-sync :as utils.mobile-sync]
-            [status-im.wallet.core :as wallet]
-            [status-im2.common.json-rpc.events :as json-rpc]
-            [taoensso.timbre :as log]
-            [utils.ethereum.chain :as chain]))
+  (:require
+    [cljs.spec.alpha :as spec]
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.decode :as decode]
+    [status-im.ethereum.encode :as encode]
+    [status-im.utils.mobile-sync :as utils.mobile-sync]
+    [status-im.wallet.core :as wallet]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [taoensso.timbre :as log]
+    [utils.ethereum.chain :as chain]
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.re-frame :as rf]))
 
 (def confirmations-count-threshold 12)
 

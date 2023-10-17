@@ -1,6 +1,7 @@
 (ns quo2.components.graph.wallet-graph.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.graph.wallet-graph.view :as wallet-graph]))
+  (:require
+    [quo2.components.graph.wallet-graph.view :as wallet-graph]
+    [test-helpers.component :as h]))
 
 (defn data
   [num-elements]

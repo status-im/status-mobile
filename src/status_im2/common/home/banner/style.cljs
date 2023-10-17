@@ -1,7 +1,8 @@
 (ns status-im2.common.home.banner.style
-  (:require [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [react-native.safe-area :as safe-area]))
+  (:require
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]))
 
 (def ^:private card-height (+ 56 16))
 (def ^:private max-scroll (+ card-height 8))

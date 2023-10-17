@@ -1,6 +1,7 @@
 (ns quo2.components.buttons.predictive-keyboard.component-spec
-  (:require [quo2.components.buttons.predictive-keyboard.view :as predictive-keyboard]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.buttons.predictive-keyboard.view :as predictive-keyboard]
+    [test-helpers.component :as h]))
 
 (h/describe "predictive-keyboard"
   (h/test "basic render"

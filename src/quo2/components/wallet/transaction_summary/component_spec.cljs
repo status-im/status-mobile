@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.transaction-summary.component-spec
-  (:require [quo2.components.wallet.transaction-summary.view :as transaction-summary]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.wallet.transaction-summary.view :as transaction-summary]
+    [test-helpers.component :as h]))
 
 (h/describe "Transaction summary"
   (h/test "default render"

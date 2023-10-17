@@ -1,5 +1,6 @@
 (ns quo2.components.share.share-qr-code.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def qr-code-container
   {:padding-top        12

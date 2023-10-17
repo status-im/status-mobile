@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.list-items.user-list
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [utils.address :as address]))
+  (:require
+    [quo2.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.address :as address]))
 
 (def descriptor
   [{:key   :primary-name

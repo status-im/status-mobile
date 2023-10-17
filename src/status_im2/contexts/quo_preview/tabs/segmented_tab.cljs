@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.tabs.segmented-tab
-  (:require [quo2.components.tabs.segmented-tab :as quo2]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.components.tabs.segmented-tab :as quo2]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Size:"

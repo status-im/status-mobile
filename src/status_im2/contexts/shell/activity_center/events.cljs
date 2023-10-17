@@ -1,15 +1,16 @@
 (ns status-im2.contexts.shell.activity-center.events
-  (:require [quo2.foundations.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.data-store.activities :as activities]
-            [status-im.data-store.chats :as data-store.chats]
-            [status-im2.common.toasts.events :as toasts]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.activity-center.notification-types :as types]
-            [taoensso.timbre :as log]
-            [utils.collection :as collection]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [re-frame.core :as re-frame]
+    [status-im.data-store.activities :as activities]
+    [status-im.data-store.chats :as data-store.chats]
+    [status-im2.common.toasts.events :as toasts]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.activity-center.notification-types :as types]
+    [taoensso.timbre :as log]
+    [utils.collection :as collection]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def defaults
   {:filter-status          :unread

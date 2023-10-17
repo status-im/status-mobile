@@ -1,5 +1,6 @@
 (ns status-im2.contexts.onboarding.syncing.progress.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn page-container
   [in-onboarding?]

@@ -1,6 +1,7 @@
 (ns status-im2.contexts.chat.messages.content.link-preview.view-test
-  (:require [status-im2.contexts.chat.messages.content.link-preview.view :as view]
-            [cljs.test :refer [is deftest are]]))
+  (:require
+    [cljs.test :refer [are deftest is]]
+    [status-im2.contexts.chat.messages.content.link-preview.view :as view]))
 
 (deftest nearly-square?-test
   (are [pred width height] (is (pred (view/nearly-square? {:width width :height height})))

@@ -1,10 +1,11 @@
 (ns status-im2.contexts.chat.messages.pin.banner.view
-  (:require [quo2.core :as quo]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.messages.pin.banner.style :as style]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo2.core :as quo]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.messages.pin.banner.style :as style]
+    [utils.re-frame :as rf]))
 
 (defn f-blur-view
   [top-offset opacity-animation enabled?]

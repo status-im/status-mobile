@@ -1,12 +1,13 @@
 (ns status-im.multiaccounts.logout.core
-  (:require [native-module.core :as native-module]
-            [re-frame.core :as re-frame]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.wallet.core :as wallet]
-            [status-im2.common.keychain.events :as keychain]
-            [status-im2.db :as db]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.wallet.core :as wallet]
+    [status-im2.common.keychain.events :as keychain]
+    [status-im2.db :as db]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  ::logout

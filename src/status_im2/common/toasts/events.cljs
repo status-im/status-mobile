@@ -1,5 +1,6 @@
 (ns status-im2.common.toasts.events
-  (:require [utils.re-frame :as rf]))
+  (:require
+    [utils.re-frame :as rf]))
 
 (rf/defn upsert
   {:events [:toasts/upsert]}

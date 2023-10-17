@@ -1,10 +1,11 @@
 (ns quo2.components.tags.tag
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.components.tags.base-tag :as base-tag]
-            [quo2.foundations.colors :as colors]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.components.tags.base-tag :as base-tag]
+    [quo2.foundations.colors :as colors]
+    [quo2.theme :as theme]
+    [react-native.core :as rn]))
 
 (def themes
   {:light {:default  {:border-color         colors/neutral-20

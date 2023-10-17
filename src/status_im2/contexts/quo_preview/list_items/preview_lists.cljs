@@ -1,9 +1,10 @@
 (ns status-im2.contexts.quo-preview.list-items.preview-lists
-  (:require [quo2.core :as quo]
-            [quo2.foundations.resources :as quo.resources]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.resources :as quo.resources]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :type

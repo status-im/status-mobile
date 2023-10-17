@@ -1,5 +1,6 @@
 (ns quo2.components.navigation.floating-shell-button.style
-  (:require [react-native.reanimated :as reanimated]))
+  (:require
+    [react-native.reanimated :as reanimated]))
 
 (defn floating-shell-button
   [style opacity-anim]

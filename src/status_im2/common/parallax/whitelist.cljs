@@ -1,6 +1,7 @@
 (ns status-im2.common.parallax.whitelist
-  (:require [native-module.core :as native-module]
-            [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]))
 
 (def ^:const device-id (:device-id (native-module/get-device-model-info)))
 

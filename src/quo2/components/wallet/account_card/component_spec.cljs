@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.account-card.component-spec
-  (:require [quo2.components.wallet.account-card.view :as account-card]
-            [test-helpers.component :as h]))
+  (:require
+    [quo2.components.wallet.account-card.view :as account-card]
+    [test-helpers.component :as h]))
 
 (def username "Alisher account")
 (def empty-username "Account 1")

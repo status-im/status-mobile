@@ -1,5 +1,6 @@
 (ns status-im2.contexts.emoji-picker.events
-  (:require [utils.re-frame :as rf]))
+  (:require
+    [utils.re-frame :as rf]))
 
 (rf/defn open-emoji-picker
   {:events [:emoji-picker/open]}

@@ -1,8 +1,9 @@
 (ns quo2.components.list-items.menu-item
-  (:require [quo2.components.icon :as icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.foundations.colors :as colors :refer [theme-colors]]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.icon :as icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.colors :as colors :refer [theme-colors]]
+    [react-native.core :as rn]))
 
 (defn themes
   [type]

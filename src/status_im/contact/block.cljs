@@ -1,13 +1,14 @@
 (ns status-im.contact.block
-  (:require [re-frame.core :as re-frame]
-            [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im.contact.db :as contact.db]
-            [status-im.data-store.chats :as chats-store]
-            [status-im2.contexts.contacts.events :as contacts-store]
-            [utils.re-frame :as rf]
-            [status-im.utils.deprecated-types :as types]
-            [status-im2.contexts.shell.activity-center.events :as activity-center]
-            [status-im2.navigation.events :as navigation]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.contact.db :as contact.db]
+    [status-im.data-store.chats :as chats-store]
+    [status-im.utils.deprecated-types :as types]
+    [status-im2.contexts.chat.messages.list.events :as message-list]
+    [status-im2.contexts.contacts.events :as contacts-store]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [status-im2.navigation.events :as navigation]
+    [utils.re-frame :as rf]))
 
 (rf/defn clean-up-chat
   [{:keys [db]}

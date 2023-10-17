@@ -1,13 +1,14 @@
 (ns quo2.components.buttons.button.view
-  (:require [quo2.components.icon :as quo2.icons]
-            [quo2.components.markdown.text :as text]
-            [quo2.theme :as theme]
-            [react-native.core :as rn]
-            [react-native.blur :as blur]
-            [reagent.core :as reagent]
-            [quo2.components.buttons.button.style :as style]
-            [quo2.components.buttons.button.properties :as button-properties]
-            [quo2.foundations.customization-colors :as customization-colors]))
+  (:require
+    [quo2.components.buttons.button.properties :as button-properties]
+    [quo2.components.buttons.button.style :as style]
+    [quo2.components.icon :as quo2.icons]
+    [quo2.components.markdown.text :as text]
+    [quo2.foundations.customization-colors :as customization-colors]
+    [quo2.theme :as theme]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]))
 
 (defn- button-internal
   "with label

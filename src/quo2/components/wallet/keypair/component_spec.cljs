@@ -1,6 +1,7 @@
 (ns quo2.components.wallet.keypair.component-spec
-  (:require [test-helpers.component :as h]
-            [quo2.components.wallet.keypair.view :as keypair]))
+  (:require
+    [quo2.components.wallet.keypair.view :as keypair]
+    [test-helpers.component :as h]))
 
 (def accounts
   [{:account-props {:customization-color :turquoise

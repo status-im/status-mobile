@@ -1,5 +1,6 @@
 (ns quo2.components.password.tips.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def container
   {:align-self :flex-start})

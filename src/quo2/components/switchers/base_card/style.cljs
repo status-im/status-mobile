@@ -1,5 +1,6 @@
 (ns quo2.components.switchers.base-card.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (defn base-container
   [customization-color]

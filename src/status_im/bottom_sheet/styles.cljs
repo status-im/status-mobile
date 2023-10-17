@@ -1,5 +1,6 @@
 (ns status-im.bottom-sheet.styles
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]))
 
 (def border-radius 20)
 

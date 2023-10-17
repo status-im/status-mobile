@@ -1,10 +1,11 @@
 (ns quo2.components.buttons.slide-button.component-spec
-  (:require [quo2.components.buttons.slide-button.view :as slide-button]
-            [quo2.components.buttons.slide-button.constants :as constants]
-            ["@testing-library/react-native" :as rtl]
-            ["react-native-gesture-handler/jest-utils" :as gestures-jest]
-            [reagent.core :as r]
-            [test-helpers.component :as h]))
+  (:require
+    ["@testing-library/react-native" :as rtl]
+    ["react-native-gesture-handler/jest-utils" :as gestures-jest]
+    [quo2.components.buttons.slide-button.constants :as constants]
+    [quo2.components.buttons.slide-button.view :as slide-button]
+    [reagent.core :as r]
+    [test-helpers.component :as h]))
 
 ;; NOTE stolen from
 ;; (https://github.com/reagent-project/reagent/blob/a14faba55e373000f8f93edfcfce0d1222f7e71a/test/reagenttest/utils.cljs#LL104C7-L104C10),

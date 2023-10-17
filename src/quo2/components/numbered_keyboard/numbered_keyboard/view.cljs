@@ -1,8 +1,9 @@
 (ns quo2.components.numbered-keyboard.numbered-keyboard.view
-  (:require [quo2.theme :as quo.theme]
-            [quo2.components.numbered-keyboard.keyboard-key.view :as keyboard-key]
-            [react-native.core :as rn]
-            [quo2.components.numbered-keyboard.numbered-keyboard.style :as style]))
+  (:require
+    [quo2.components.numbered-keyboard.keyboard-key.view :as keyboard-key]
+    [quo2.components.numbered-keyboard.numbered-keyboard.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn keyboard-item
   [{:keys [item type disabled? on-press blur? theme]}]

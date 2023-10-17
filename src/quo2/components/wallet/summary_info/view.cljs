@@ -1,13 +1,13 @@
 (ns quo2.components.wallet.summary-info.view
   (:require
+    [quo2.components.avatars.account-avatar.view :as account-avatar]
     [quo2.components.avatars.user-avatar.view :as user-avatar]
     [quo2.components.markdown.text :as text]
+    [quo2.components.wallet.summary-info.style :as style]
     [quo2.foundations.colors :as colors]
     [quo2.foundations.resources :as resources]
     [quo2.theme :as quo.theme]
-    [quo2.components.avatars.account-avatar.view :as account-avatar]
-    [react-native.core :as rn]
-    [quo2.components.wallet.summary-info.style :as style]))
+    [react-native.core :as rn]))
 
 (defn- network-amount
   [{:keys [network amount divider? theme]}]

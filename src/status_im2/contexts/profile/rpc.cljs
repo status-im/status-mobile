@@ -1,6 +1,7 @@
 (ns status-im2.contexts.profile.rpc
-  (:require [clojure.string :as string]
-            [status-im.ethereum.ens :as ens]))
+  (:require
+    [clojure.string :as string]
+    [status-im.ethereum.ens :as ens]))
 
 (defn rpc->profiles-overview
   [{:keys [customizationColor keycard-pairing] :as profile}]

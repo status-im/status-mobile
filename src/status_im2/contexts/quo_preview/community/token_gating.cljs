@@ -1,8 +1,9 @@
 (ns status-im2.contexts.quo-preview.community.token-gating
-  (:require [quo2.core :as quo]
-            [quo2.foundations.resources :as resources]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo2.core :as quo]
+    [quo2.foundations.resources :as resources]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label "Tokens sufficient?"

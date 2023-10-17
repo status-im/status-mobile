@@ -4,8 +4,8 @@
     [react-native.fast-image :as fast-image]
     [react-native.safe-area :as safe-area]
     [status-im2.constants :as constants]
-    [utils.re-frame :as rf]
     [status-im2.contexts.chat.messages.content.text.view :as text]
+    [utils.re-frame :as rf]
     [utils.url :as url]))
 
 (defn calculate-dimensions

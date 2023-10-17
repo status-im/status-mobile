@@ -4,8 +4,9 @@
   the icon has only one color, prefer a PNG.
 
   Keep all SVG components private and expose them by name in the `icons` var."
-  (:require [react-native.svg :as svg]
-            [quo2.foundations.colors :as colors]))
+  (:require
+    [quo2.foundations.colors :as colors]
+    [react-native.svg :as svg]))
 
 (defn- container
   [{:keys [size accessibility-label style]

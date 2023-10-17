@@ -2,12 +2,9 @@
   (:require
     [clojure.string :as string]
     [status-im.browser.core :as browser]
-    [status-im2.contexts.chat.events :as chat.events]
     [status-im.chat.models.message :as models.message]
     [status-im.chat.models.reactions :as models.reactions]
     [status-im.communities.core :as models.communities]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.contacts.events :as models.contact]
     [status-im.data-store.activities :as data-store.activities]
     [status-im.data-store.chats :as data-store.chats]
     [status-im.data-store.invitations :as data-store.invitations]
@@ -15,12 +12,15 @@
     [status-im.group-chats.core :as models.group]
     [status-im.multiaccounts.update.core :as update.core]
     [status-im.pairing.core :as models.pairing]
-    [utils.re-frame :as rf]
     [status-im.utils.deprecated-types :as types]
     [status-im.visibility-status-updates.core :as models.visibility-status-updates]
-    [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [status-im.wallet.core :as wallet]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.events :as chat.events]
     [status-im2.contexts.chat.messages.pin.events :as messages.pin]
-    [status-im.wallet.core :as wallet]))
+    [status-im2.contexts.contacts.events :as models.contact]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [utils.re-frame :as rf]))
 
 (rf/defn process-next
   {:events [:transport/process-next]}

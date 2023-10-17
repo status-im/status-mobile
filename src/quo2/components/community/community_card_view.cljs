@@ -1,9 +1,10 @@
 (ns quo2.components.community.community-card-view
-  (:require [quo2.components.community.community-view :as community-view]
-            [quo2.components.community.icon :as icon]
-            [quo2.components.community.style :as style]
-            [quo2.theme :as quo.theme]
-            [react-native.core :as rn]))
+  (:require
+    [quo2.components.community.community-view :as community-view]
+    [quo2.components.community.icon :as icon]
+    [quo2.components.community.style :as style]
+    [quo2.theme :as quo.theme]
+    [react-native.core :as rn]))
 
 (defn- loading-card-view
   [{:keys [width theme]}]

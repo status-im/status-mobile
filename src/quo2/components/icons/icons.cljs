@@ -1,6 +1,7 @@
 (ns quo2.components.icons.icons
   (:require-macros [quo2.components.icons.icons :as icons])
-  (:require [taoensso.timbre :as log]))
+  (:require
+    [taoensso.timbre :as log]))
 
 (def ^:private icons (icons/resolve-icons))
 
