@@ -11,7 +11,7 @@
 (defn view
   []
   (let [collectible-list temp/collectible-list]
-    (if (empty? activity-list)
+    (if (empty? collectible-list)
       [empty-tab/view
        {:title        (i18n/label :t/no-collectibles)
         :description  (i18n/label :t/no-collectibles-description)

@@ -8,14 +8,10 @@
     [status-im2.contexts.wallet.common.temp :as temp]
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
-<<<<<<< HEAD
-    [utils.re-frame :as rf]))
-=======
     [utils.re-frame :as rf]
     [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im2.contexts.wallet.common.activity-tab.view :as activity]
     [status-im2.contexts.wallet.common.temp :as temp]))
->>>>>>> fc2057fa5 (wallet: acitivty tab)
 
 (defn new-account
   []
