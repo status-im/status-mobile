@@ -1,26 +1,19 @@
-(ns quo2.components.messages.system-message
+(ns quo2.components.messages.system-message.view
   (:require
     [clojure.string :as string]
     [quo2.components.avatars.icon-avatar :as icon-avatar]
     [quo2.components.avatars.user-avatar.view :as user-avatar]
     [quo2.components.markdown.text :as text]
-    [quo2.foundations.colors :as colors]
+    [quo2.components.messages.system-message.style :as style]
     [quo2.theme :as quo.theme]
     [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
     [utils.i18n :as i18n]))
-
-(defn text-color
-  [theme]
-  (colors/theme-colors colors/neutral-100 colors/white theme))
-
-(defn time-color
-  [theme]
-  (colors/theme-colors colors/neutral-40 colors/neutral-50 theme))
 
 (defn sm-icon
   [{:keys [icon color opacity]}]
   [rn/view
-   {:margin-right 8}
+   {:style style/sm-icon-wrapper}
    [icon-avatar/icon-avatar
     {:size    :size-32
      :icon    icon
@@ -29,16 +22,15 @@
 
 (defn sm-timestamp
   [timestamp theme]
-  [rn/view {:margin-left 8}
+  [rn/view style/sm-timestamp-wrapper
    [text/text
     {:size  :label
-     :style {:color          (time-color theme)
-             :text-transform :none}}
+     :style (style/sm-timestamp-text theme)}
     timestamp]])
 
 (defn sm-user-avatar
   [display-name photo-path]
-  [rn/view {:margin-right 4}
+  [rn/view style/sm-user-avatar-wrapper
    [user-avatar/user-avatar
     {:size              :xxxs
      :full-name         display-name
@@ -48,33 +40,22 @@
 
 (defn split-text
   [label theme add-pred?]
-  (let [color        (text-color theme)
-        label-vector (map-indexed vector (string/split label " "))]
-    [rn/view {:style {:flex-direction :row :flex-shrink 0 :align-items :center}}
+  (let [label-vector (map-indexed vector (string/split label " "))]
+    [rn/view {:style style/split-text-wrapper}
      (when add-pred?
        [text/text {} " "])
      (for [[indx item] label-vector]
        ^{:key indx}
        [text/text
         {:size  :paragraph-2
-         :style {:color        color
-                 :margin-right (if (= indx (dec (count label-vector)))
-                                 0
-                                 3)}}
+         :style (style/each-split-text theme indx label-vector)}
         item])]))
 
 (defn system-message-base
   [{:keys [icon]} child]
-  [rn/view
-   {:flex-direction :row
-    :flex           1
-    :align-items    :center}
+  [rn/view {:style style/system-message-base-wrapper}
    [sm-icon icon]
-   [rn/view
-    {:align-self     :center
-     :flex-direction :row
-     :flex           1}
-    child]])
+   [rn/view {:style style/system-message-base-content-wrapper} child]])
 
 (defn system-message-deleted-internal
   [{:keys [label child theme timestamp]}]
@@ -82,12 +63,12 @@
    {:icon {:icon    :i/delete
            :color   :danger
            :opacity 5}}
-   [rn/view {:style {:flex-direction :row :align-items :center}}
+   [rn/view {:style style/system-message-deleted-wrapper}
     (if child
       child
       [text/text
        {:size  :paragraph-2
-        :style {:color (text-color theme)}}
+        :style (style/system-message-deleted-text theme)}
        (or label (i18n/label :t/message-deleted))])
     [sm-timestamp timestamp theme]]])
 
@@ -100,16 +81,13 @@
            :color   (or customization-color :primary)
            :opacity 5}}
    [rn/view
-    {:flex-direction :row
-     :align-items    :center
-     :flex-shrink    1
-     :flex-wrap      :nowrap}
-    [rn/view {:flex-direction :row :align-items :center :flex-shrink 1}
+    {:style style/system-message-contact-wrapper}
+    [rn/view {:style style/system-message-contact-account-wrapper}
      [sm-user-avatar display-name photo-path]
      [text/text
       {:weight          :semi-bold
        :number-of-lines 1
-       :style           {:flex-shrink 1}
+       :style           style/system-message-contact-account-name
        :size            :paragraph-2}
       display-name]]
     [split-text label theme true]
@@ -137,17 +115,14 @@
            :color   (or customization-color :primary)
            :opacity 5}}
    [rn/view
-    {:flex-direction :row
-     :align-items    :center
-     :flex-shrink    1
-     :flex-wrap      :nowrap}
+    {:style style/system-message-contact-request-wrapper}
     (when-not incoming? [split-text "Contact request sent to" theme false])
-    [rn/view {:flex-direction :row :align-items :center :flex-shrink 1}
+    [rn/view {:style style/system-message-contact-request-account-wrapper}
      [sm-user-avatar display-name photo-path]
      [text/text
       {:weight          :semi-bold
        :number-of-lines 1
-       :style           {:flex-shrink 1}
+       :style           style/system-message-contact-request-account-name
        :size            :paragraph-2}
       display-name]]
     (when incoming? [split-text "sent you a contact request" theme true])
@@ -161,15 +136,13 @@
    {:icon {:icon    :i/pin
            :color   (or customization-color :primary)
            :opacity 5}}
-   [rn/view {:style {:flex 1}}
+   [rn/view {:style style/system-message-pinned-wrapper}
     [rn/view
-     {:flex-direction :row
-      :align-items    :center
-      :flex-wrap      :nowrap}
+     {:style style/system-message-pinned-content-wrapper}
      [text/text
       {:weight          :semi-bold
        :number-of-lines 1
-       :style           {:flex-shrink 1}
+       :style           style/system-message-pinned-content-pinned-by
        :size            :paragraph-2}
       pinned-by]
      [split-text (i18n/label :t/pinned-a-message) theme true]
@@ -178,13 +151,44 @@
 
 (def system-message-pinned (quo.theme/with-theme system-message-pinned-internal))
 
+(defn f-system-message
+  [{:keys [type animate-bg-color? bg-color-animation-duration on-long-press]
+    :or   {bg-color-animation-duration 1000}
+    :as   data}]
+  (let [animated-bg-color (reanimated/use-shared-value
+                           (if animate-bg-color?
+                             style/system-message-deleted-animation-start-bg-color
+                             style/system-message-deleted-animation-end-bg-color))
+        wrapper           (if (or on-long-press animate-bg-color?)
+                            reanimated/touchable-opacity
+                            rn/view)
+        animated-style    (reanimated/apply-animations-to-style
+                           {:background-color animated-bg-color}
+                           (assoc style/system-message-wrapper
+                                  :background-color
+                                  animated-bg-color))]
+
+    (when animate-bg-color?
+      (reanimated/animate-shared-value-with-delay
+       animated-bg-color
+       style/system-message-deleted-animation-end-bg-color
+       0
+       :linear
+       bg-color-animation-duration))
+
+    [wrapper
+     {:style         (if (or on-long-press animate-bg-color?)
+                       animated-style
+                       style/system-message-wrapper)
+      :on-long-press on-long-press}
+     (case type
+       :pinned          [system-message-pinned data]
+       :deleted         [system-message-deleted data]
+       :contact-request [system-message-contact-request data]
+       :added           [system-message-added data]
+       :removed         [system-message-removed data]
+       nil)]))
+
 (defn system-message
-  [{:keys [type] :as data}]
-  [rn/view {:padding-horizontal 12 :padding-vertical 8 :flex 1}
-   (case type
-     :pinned          [system-message-pinned data]
-     :deleted         [system-message-deleted data]
-     :contact-request [system-message-contact-request data]
-     :added           [system-message-added data]
-     :removed         [system-message-removed data]
-     nil)])
+  [message]
+  [:f> f-system-message message])

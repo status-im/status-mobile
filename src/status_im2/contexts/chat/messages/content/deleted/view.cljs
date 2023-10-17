@@ -2,6 +2,7 @@
   (:require
     [quo2.core :as quo]
     [react-native.core :as rn]
+    [utils.datetime :as datetime]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -33,28 +34,49 @@
     (i18n/label :t/deleted-this-message)]])
 
 (defn deleted-by-message
-  [{:keys [deleted-by deleted-undoable-till timestamp-str deleted-for-me-undoable-till from]}
-   on-long-press-fn]
+  [{:keys [deleted-by timestamp-str from on-long-press animation-duration]}]
   (let [;; deleted message with nil deleted-by is deleted by (:from message)
-        display-name (first (rf/sub [:contacts/contact-two-names-by-identity (or deleted-by from)]))
+        display-name (first (rf/sub [:contacts/contact-two-names-by-identity
+                                     (or deleted-by from)]))
         photo-path   (rf/sub [:chats/photo-path (or deleted-by from)])]
     [quo/system-message
-     {:type             :deleted
-      :timestamp        timestamp-str
-      :child            [user-xxx-deleted-this-message
-                         {:display-name display-name :profile-picture photo-path}]
-      :on-long-press    on-long-press-fn
-      :non-pressable?   (if on-long-press-fn false true)
-      :animate-landing? (or deleted-undoable-till deleted-for-me-undoable-till)}]))
+     {:type                        :deleted
+      :animate-bg-color?           animation-duration
+      :bg-color-animation-duration animation-duration
+      :on-long-press               on-long-press
+      :timestamp                   timestamp-str
+      :child                       [user-xxx-deleted-this-message
+                                    {:display-name display-name :profile-picture photo-path}]}]))
 
 (defn deleted-message
-  [{:keys [deleted? deleted-by timestamp-str from] :as message}]
-  (let [pub-key        (rf/sub [:multiaccount/public-key])
-        deleted-by-me? (= (or deleted-by from) pub-key)]
+  [{:keys [deleted? deleted-for-me? deleted-by pinned timestamp-str from
+           on-long-press deleted-undoable-till deleted-for-me-undoable-till]
+    :as   message}
+   {:keys [message-pin-enabled in-pinned-view?]}]
+  (let [pub-key            (rf/sub [:multiaccount/public-key])
+        deleted-by-me?     (= (or deleted-by from) pub-key)
+        animation-duration (when-let [deleted-till (or deleted-undoable-till
+                                                       deleted-for-me-undoable-till)]
+                             (- deleted-till (datetime/timestamp)))
+        ;; enable long press only when
+        ;; undo delete timer timedout
+        ;; message pinned and user has permission to unpin
+        on-long-press      (when (and (not animation-duration)
+                                      (or (and (or in-pinned-view? pinned) message-pin-enabled)
+                                          (and (not deleted?) deleted-for-me?)))
+                             on-long-press)]
     (if (and deleted? (not deleted-by-me?))
-      [deleted-by-message message]
+      [deleted-by-message
+       (assoc message
+              :on-long-press      on-long-press
+              :animation-duration animation-duration)]
       [quo/system-message
-       {:type      :deleted
-        :label     (i18n/label
-                    (if deleted? :t/message-deleted-for-everyone :t/message-deleted-for-you))
-        :timestamp timestamp-str}])))
+       {:type                        :deleted
+        :animate-bg-color?           animation-duration
+        :bg-color-animation-duration animation-duration
+        :on-long-press               on-long-press
+        :label                       (i18n/label
+                                      (if deleted?
+                                        :t/message-deleted-for-everyone
+                                        :t/message-deleted-for-you))
+        :timestamp                   timestamp-str}])))
