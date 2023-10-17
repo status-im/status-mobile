@@ -1,6 +1,6 @@
 (ns status-im2.contexts.onboarding.welcome.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]

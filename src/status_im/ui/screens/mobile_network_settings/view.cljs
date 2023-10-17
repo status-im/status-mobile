@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
-    status-im.mobile-sync-settings.core
+    [status-im.mobile-sync-settings.core]
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.mobile-network-settings.sheets :as sheets]
     [status-im.ui.screens.mobile-network-settings.style :as styles]

@@ -1,4 +1,5 @@
-(ns status-im.utils.styles (:refer-clojure :exclude [defn def]))
+(ns status-im.utils.styles
+  (:refer-clojure :exclude [def defn]))
 
 (defn- body
   [style]

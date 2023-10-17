@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.stickers.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [re-frame.core :as re-frame]
     [status-im.ui.components.colors :as colors]
@@ -8,8 +9,7 @@
     [status-im.ui.screens.stickers.styles :as styles]
     [utils.i18n :as i18n]
     [utils.money :as money]
-    [utils.re-frame :as rf])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+    [utils.re-frame :as rf]))
 
 (defn cache
   [url]

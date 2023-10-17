@@ -2,7 +2,7 @@
   (:require
     [react-native.fs :as utils.fs]
     [react-native.platform :as platform]
-    status-im2.common.pixel-ratio
+    [status-im2.common.pixel-ratio]
     [status-im2.constants :as constants]
     [utils.datetime :as datetime]))
 

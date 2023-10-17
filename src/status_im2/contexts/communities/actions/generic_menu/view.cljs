@@ -1,6 +1,6 @@
 (ns status-im2.contexts.communities.actions.generic-menu.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.contexts.communities.actions.generic-menu.style :as style]
     [utils.re-frame :as rf]))

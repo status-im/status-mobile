@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.link-preview.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [utils.re-frame :as rf]))
 
 (defn nearly-square?

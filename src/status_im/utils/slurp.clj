@@ -1,4 +1,5 @@
-(ns status-im.utils.slurp (:refer-clojure :exclude [slurp]))
+(ns status-im.utils.slurp
+  (:refer-clojure :exclude [slurp]))
 
 (defmacro slurp
   [file]

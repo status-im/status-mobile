@@ -1,8 +1,8 @@
 (ns status-im.utils.priority-map
+  (:require-macros [cljs.core :as coreclj])
   (:require
     [cljs.core :as core]
-    [cljs.reader :refer [register-tag-parser!]])
-  (:require-macros [cljs.core :as coreclj]))
+    [cljs.reader :refer [register-tag-parser!]]))
 
 ;; from
 ;; https://github.com/tailrecursion/cljs-priority-map/blob/master/src/cljs/tailrecursion/priority_map.cljs

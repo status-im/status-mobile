@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.wallet.transactions.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [re-frame.core :as re-frame]
     [status-im.ui.components.colors :as colors]
@@ -12,8 +13,7 @@
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.wallet.transactions.styles :as styles]
     [status-im.utils.utils :as utils]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+    [utils.i18n :as i18n]))
 
 (defn- transaction-icon
   [icon-key background-color color]

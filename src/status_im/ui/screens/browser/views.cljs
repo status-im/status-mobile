@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.browser.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [react-native.permissions :as components.permissions]
@@ -23,8 +24,7 @@
     [status-im.utils.js-resources :as js-res]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
-    [utils.url :as url])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.url :as url]))
 
 (defn toolbar-content
   [url url-original secure? url-editing? unsafe?]

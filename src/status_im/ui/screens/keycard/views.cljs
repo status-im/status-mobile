@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.keycard.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
@@ -21,8 +22,7 @@
     [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+    [utils.re-frame :as rf]))
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
 (defn blank

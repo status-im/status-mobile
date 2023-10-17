@@ -1,8 +1,9 @@
 (ns status-im.ui.screens.wallet.accounts.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
-    [quo2.components.markdown.text :as quo2.text]
-    [quo2.core :as quo2]
-    [quo2.foundations.colors :as quo2.colors]
+    [quo.components.markdown.text :as quo.text]
+    [quo.core :as quo]
+    [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
@@ -10,7 +11,7 @@
     [status-im.keycard.login :as keycard.login]
     [status-im.qr-scanner.core :as qr-scanner]
     [status-im.ui.components.colors :as colors]
-    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.core :as components.core]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.wallet.account.views :as account.views]
@@ -18,8 +19,7 @@
     [status-im.ui.screens.wallet.accounts.sheets :as sheets]
     [status-im.ui.screens.wallet.accounts.styles :as styles]
     [status-im.ui.screens.wallet.buy-crypto.views :as buy-crypto]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (views/defview account-card
   [{:keys [name color address type wallet] :as account} keycard? card-width]
@@ -206,8 +206,8 @@
   (views/letsubs [currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]]
     [react/view {:padding-vertical 12}
-     [quo2.text/text (i18n/label :t/wallet-total-value)]
-     [quo2.text/text {:size :heading-1 :weight :semi-bold}
+     [quo.text/text (i18n/label :t/wallet-total-value)]
+     [quo.text/text {:size :heading-1 :weight :semi-bold}
       (str portfolio-value " " (:code currency))]
      [react/scroll-view {:horizontal true}]]))
 
@@ -226,11 +226,11 @@
           :margin-top                        12
           :margin-bottom                     20}
          [react/view {:flex-direction :row}
-          [quo2/tabs
+          [quo/tabs
            {:default-active (:address (first visible-accounts))
             :on-change      #(reset! selected-account-atom %)
             :data           accounts-data}]
-          [quo2/button
+          [quo/button
            {:type     :grey
             :size     32
             :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
@@ -246,11 +246,11 @@
       [react/view
        {:style {:flex             1
                 :padding-top      (safe-area/get-top)
-                :background-color (quo2.colors/theme-colors quo2.colors/neutral-5
-                                                            quo2.colors/neutral-95)}}
+                :background-color (quo.colors/theme-colors quo.colors/neutral-5
+                                                           quo.colors/neutral-95)}}
        [react/view {:padding-horizontal 20}
         [react/view {:flex-direction :row :height 56 :align-items :center :justify-content :flex-end}
-         [quo2/button
+         [quo/button
           {:icon                true
            :size                32
            :type                :grey
@@ -260,7 +260,7 @@
                                    {:handler :wallet.send/qr-scanner-result}])}
           :i/placeholder]
          [react/view {:width 12}]
-         [quo2/button
+         [quo/button
           {:icon                true
            :size                32
            :type                :grey
@@ -278,7 +278,7 @@
         mainnet? @(re-frame/subscribe [:mainnet?])]
     [react/view
      {:style {:flex 1}}
-     [quo/animated-header
+     [components.core/animated-header
       {:extended-header    total-value-old
        :refresh-control    common/refresh-control
        :refreshing-sub     (re-frame/subscribe [:wallet/refreshing-history?])

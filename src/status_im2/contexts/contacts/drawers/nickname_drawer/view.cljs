@@ -1,9 +1,9 @@
 (ns status-im2.contexts.contacts.drawers.nickname-drawer.view
   (:require
     [clojure.string :as string]
-    [quo2.components.icon :as icons]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.components.icon :as icons]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]

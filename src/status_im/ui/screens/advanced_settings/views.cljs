@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.advanced-settings.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [status-im.ui.components.core :as quo]
     [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.list.views :as list]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (defn- normal-mode-settings-data
   [{:keys [network-name

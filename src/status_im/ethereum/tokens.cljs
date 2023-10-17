@@ -1,8 +1,8 @@
 (ns status-im.ethereum.tokens
+  (:require-macros [status-im.ethereum.macros :as ethereum.macros :refer [resolve-icons]])
   (:require
     [clojure.string :as string]
-    [utils.ethereum.chain :as chain])
-  (:require-macros [status-im.ethereum.macros :as ethereum.macros :refer [resolve-icons]]))
+    [utils.ethereum.chain :as chain]))
 
 (def default-native-currency
   (memoize

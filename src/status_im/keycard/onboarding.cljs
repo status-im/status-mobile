@@ -1,9 +1,9 @@
 (ns status-im.keycard.onboarding
   (:require
-    [clojure.string :as string]
+    [clojure.string]
     [re-frame.core :as re-frame]
     [status-im.keycard.common :as common]
-    status-im.keycard.fx
+    [status-im.keycard.fx]
     [status-im.keycard.mnemonic :as mnemonic]
     [status-im.ui.components.react :as react]
     [status-im.utils.utils :as utils]

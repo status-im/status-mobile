@@ -1,7 +1,7 @@
 (ns status-im.keycard.mnemonic
   (:require
     [status-im.keycard.common :as common]
-    status-im.keycard.fx
+    [status-im.keycard.fx]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))

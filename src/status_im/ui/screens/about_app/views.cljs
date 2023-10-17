@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.about-app.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [status-im.ui.components.colors :as colors]
@@ -9,8 +10,7 @@
     [status-im.ui.components.webview :refer [webview]]
     [status-im2.constants :refer
      [principles-link privacy-policy-link terms-of-service-link]]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (views/defview about-app
   []

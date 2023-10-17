@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    utils.image-server
+    [utils.image-server]
     [utils.re-frame :as rf]))
 
 (re-frame/reg-fx

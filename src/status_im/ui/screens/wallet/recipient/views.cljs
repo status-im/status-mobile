@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.wallet.recipient.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
@@ -19,8 +20,7 @@
     [utils.address :as address]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
-    [utils.string :as utils.string])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.string :as utils.string]))
 
 (defn- recipient-topbar
   []

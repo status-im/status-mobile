@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.jump-to.view
   (:require
-    [quo2.core :as quo]
-    re-frame.db
+    [quo.core :as quo]
+    [re-frame.db]
     [react-native.core :as rn]
     [status-im2.config :as config]
     [status-im2.contexts.shell.jump-to.animation :as animation]

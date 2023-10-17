@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.messages.drawers.view
   (:require
-    [quo2.components.selectors.reaction-resource :as reactions.resource]
-    [quo2.core :as quo]
+    [quo.components.selectors.reaction-resource :as reactions.resource]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [reagent.core :as reagent]

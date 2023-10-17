@@ -2,7 +2,7 @@
   (:require
     [cljs.test :refer [is testing]]
     [re-frame.db :as rf-db]
-    status-im2.subs.contact
+    [status-im2.subs.contact]
     [test-helpers.unit :as h]
     [utils.re-frame :as rf]))
 

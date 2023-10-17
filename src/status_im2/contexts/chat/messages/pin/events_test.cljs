@@ -30,8 +30,8 @@
                                                               :pinnedBy "0x1"
                                                               :message  message-3}}])
             actual                 (events/receive-signal {:db db}
-                                                          pinned-messages-signal)
-           ]
+                                                          pinned-messages-signal)]
+
         (is (not (get-in actual [:db :pin-messages chat-id message-id-2])))
         (is (get-in actual [:db :pin-messages chat-id message-id-1 :message-id]))
         (is (get-in actual [:db :pin-messages chat-id message-id-3 :message-id]))))))

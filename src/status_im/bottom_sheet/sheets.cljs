@@ -1,6 +1,6 @@
 (ns status-im.bottom-sheet.sheets
   (:require
-    [quo2.theme :as theme]
+    [quo.theme :as theme]
     [react-native.core :as rn]
     [status-im.bottom-sheet.view :as bottom-sheet]
     [status-im.ui.screens.about-app.views :as about-app]

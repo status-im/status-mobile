@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.profile.group-chat.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [re-frame.core :as re-frame]
     [status-im.multiaccounts.core :as multiaccounts]
@@ -17,8 +18,7 @@
     [status-im.ui.screens.profile.components.styles :as profile.components.styles]
     [status-im2.constants :as constants]
     [utils.debounce :as debounce]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+    [utils.i18n :as i18n]))
 
 (defn member-sheet
   [chat-id member us-admin?]

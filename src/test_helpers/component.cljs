@@ -1,10 +1,10 @@
 (ns test-helpers.component
   "Helpers for writing component tests using React Native Testing Library."
-  (:require-macros test-helpers.component)
+  (:require-macros [test-helpers.component])
   (:require
     ["@testing-library/react-native" :as rtl]
     [camel-snake-kebab.core :as camel-snake-kebab]
-    [quo2.theme :as quo.theme]
+    [quo.theme :as quo.theme]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 

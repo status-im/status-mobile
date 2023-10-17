@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.browser.eip3085.sheet
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -9,8 +10,7 @@
     [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.browser.styles :as styles]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (views/defview permissions-panel
   [dapp-name message-id params]

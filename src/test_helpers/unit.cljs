@@ -5,7 +5,7 @@
   Avoid coupling this namespace with particularities of the Status' domain, thus
   prefer to use it for more general purpose concepts, such as the re-frame event
   layer."
-  (:require-macros test-helpers.unit)
+  (:require-macros [test-helpers.unit])
   (:require
     [re-frame.core :as rf]
     [re-frame.db :as rf-db]

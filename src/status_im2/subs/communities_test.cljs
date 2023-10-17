@@ -3,7 +3,7 @@
     [cljs.test :refer [is testing use-fixtures]]
     [re-frame.db :as rf-db]
     [status-im2.constants :as constants]
-    status-im2.subs.communities
+    [status-im2.subs.communities]
     [test-helpers.unit :as h]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

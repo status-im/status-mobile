@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.wakuv2-settings.edit-node.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
@@ -7,8 +8,7 @@
     [status-im.ui.components.toolbar :as toolbar]
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.wakuv2-settings.edit-node.styles :as styles]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (defn delete-button
   [id]

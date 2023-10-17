@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.browser.permissions.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
@@ -10,8 +11,7 @@
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.browser.styles :as styles]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value]

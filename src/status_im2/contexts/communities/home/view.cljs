@@ -1,8 +1,8 @@
 (ns status-im2.contexts.communities.home.view
   (:require
     [oops.core :as oops]
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im2.common.home.banner.view :as common.banner]

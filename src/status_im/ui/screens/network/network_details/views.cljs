@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.network.network-details.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [status-im.network.core :as network]
@@ -7,8 +8,7 @@
     [status-im.ui.screens.network.styles :as st]
     [status-im.ui.screens.network.views :as network-settings]
     [utils.debounce :refer [dispatch-and-chill]]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (views/defview network-details
   []

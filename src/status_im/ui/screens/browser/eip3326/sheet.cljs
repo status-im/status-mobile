@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.browser.eip3326.sheet
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [status-im.network.core :as network]
@@ -9,8 +10,7 @@
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.browser.styles :as styles]
     [utils.debounce :as debounce]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (views/defview permissions-panel
   [dapp-name message-id {:keys [network-from network-to target-network-id] :as params}]

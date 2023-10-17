@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.chat.group
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
@@ -7,8 +8,7 @@
     [status-im.ui.components.react :as react]
     [status-im2.constants :as constants]
     [utils.debounce :as debounce]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+    [utils.i18n :as i18n]))
 
 (defn decline-chat
   [chat-id]

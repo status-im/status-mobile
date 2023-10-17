@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.reset-password.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [re-frame.core :as re-frame]
     [status-im.multiaccounts.reset-password.core :as reset-password]
@@ -8,8 +9,7 @@
     [status-im.ui.components.react :as react]
     [status-im.ui.components.toolbar :as toolbar]
     [utils.i18n :as i18n]
-    [utils.security.core :as security])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+    [utils.security.core :as security]))
 
 (defn input-field
   [{:keys [id errors on-submit disabled? focus?]

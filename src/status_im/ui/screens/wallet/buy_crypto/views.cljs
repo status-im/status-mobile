@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.wallet.buy-crypto.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
@@ -12,8 +13,7 @@
     [status-im.ui.screens.browser.views :as browser.views]
     [status-im.ui.screens.chat.photos :as photos]
     [status-im.ui.screens.wallet.buy-crypto.sheets :as sheets]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (def learn-more-url "")
 

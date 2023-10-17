@@ -6,7 +6,7 @@
     [react-native.platform :as platform]
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.keycard.common :as common]
-    status-im.keycard.fx
+    [status-im.keycard.fx]
     [status-im.multiaccounts.create.core :as multiaccounts.create]
     [status-im.multiaccounts.model :as multiaccounts.model]
     [status-im.popover.core :as popover]

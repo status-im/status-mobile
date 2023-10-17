@@ -1,6 +1,6 @@
 (ns status-im2.contexts.onboarding.syncing.progress.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.contexts.onboarding.common.background.view :as background]
     [status-im2.contexts.onboarding.syncing.progress.style :as style]

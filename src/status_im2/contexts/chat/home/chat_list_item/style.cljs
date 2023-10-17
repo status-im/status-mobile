@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.home.chat-list-item.style
   (:require
-    [quo2.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]))
 
 (defn container
   []
@@ -23,8 +23,8 @@
    :justify-content :center
    :align-items     :center})
 
-;; TODO: duplicate of `quo2.components.common.unread-grey-dot.style`
-;; Replace it when this component is defined as part of `quo2.components`
+;; TODO: duplicate of `quo.components.common.unread-grey-dot.style`
+;; Replace it when this component is defined as part of `quo.components`
 (defn grey-dot
   []
   {:width            8

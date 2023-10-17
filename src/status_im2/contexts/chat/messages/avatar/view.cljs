@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.avatar.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [utils.re-frame :as rf]))
 

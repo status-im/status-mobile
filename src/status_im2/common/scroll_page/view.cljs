@@ -1,7 +1,7 @@
 (ns status-im2.common.scroll-page.view
   (:require
     [oops.core :as oops]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]

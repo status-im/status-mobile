@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.keycard.recovery.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [re-frame.core :as re-frame]
     [status-im.keycard.recovery :as keycard.recovery]
@@ -17,8 +18,7 @@
     [status-im.utils.gfycat.core :as gfy]
     [status-im.utils.identicon :as identicon]
     [status-im2.constants :as constants]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+    [utils.i18n :as i18n]))
 
 (defn intro
   []

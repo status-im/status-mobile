@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.wallet.request.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
@@ -8,8 +9,7 @@
     [status-im.ui.components.react :as react]
     [status-im2.common.qr-codes.view :as qr-codes]
     [utils.ethereum.eip.eip55 :as eip55]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (views/defview share-address
   []

@@ -1,4 +1,5 @@
 (ns status-im.ui.components.react
+  (:require-macros [status-im.utils.views :as views])
   (:require
     ["@react-native-community/blur" :as blur]
     ["@react-native-community/clipboard" :default Clipboard]
@@ -14,8 +15,7 @@
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.text-style :as typography]
     [status-im.utils.utils :as utils]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (def native-modules (.-NativeModules react-native))
 

@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.composer.view
   (:require
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as quo.theme]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]

@@ -1,7 +1,7 @@
 (ns status-im2.navigation.view
   (:require
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as theme]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]

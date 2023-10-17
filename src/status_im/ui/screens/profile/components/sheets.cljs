@@ -1,12 +1,12 @@
 (ns status-im.ui.screens.profile.components.sheets
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ui.components.core :as quo]
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.profile.components.styles :as styles]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (views/defview block-contact
   []

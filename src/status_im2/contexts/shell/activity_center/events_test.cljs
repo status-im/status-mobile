@@ -288,8 +288,8 @@
               [new-notif-2 ; will be removed because it's read
                new-notif-3 ; will be inserted
                new-notif-4 ; will be ignored because it's read
-               (assoc notif-5 :deleted true) ; will be removed
-              ])))))
+               (assoc notif-5 :deleted true)]))))) ; will be removed
+
 
   (testing "Contact request tab + All filter"
     (let [notif-1     {:id "0x1" :read true :type types/contact-request}
@@ -311,8 +311,8 @@
               [new-notif-2 ; will be updated
                new-notif-3 ; will be inserted
                new-notif-4 ; will be ignored because it's not a contact request
-               (assoc notif-5 :deleted true) ; will be removed
-              ])))))
+               (assoc notif-5 :deleted true)]))))) ; will be removed
+
 
   (testing "Contact request tab + Unread filter"
     (let [notif-1     {:id "0x1" :read false :type types/contact-request}
@@ -338,8 +338,8 @@
                new-notif-3 ; will be inserted
                new-notif-4 ; will be ignored because it's read
                new-notif-5 ; will be ignored because it's not a contact request
-               (assoc notif-6 :deleted true) ; will be removed
-              ])))))
+               (assoc notif-6 :deleted true)]))))) ; will be removed
+
 
   ;; Sorting by timestamp and ID is compatible with what the backend does when
   ;; returning paginated results.
@@ -374,8 +374,8 @@
                         {:notifications
                          [notif-3 ; will be ignored because it's not a contact request
                           notif-2 ; will be removed
-                          notif-1 ; will be ignored because it's not from the same author
-                         ]}}}]
+                          notif-1]}}}] ; will be ignored because it's not from the same author
+
       (is (= {:db {:activity-center {:notifications [notif-3 notif-1]}}}
              (events/notifications-remove-pending-contact-request cofx author))))))
 

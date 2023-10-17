@@ -1,7 +1,7 @@
 (ns status-im2.common.password-authentication.view
   (:require
     [native-module.core :as native-module]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.multiaccounts.core :as multiaccounts]

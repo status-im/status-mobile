@@ -1,6 +1,6 @@
 (ns status-im2.contexts.onboarding.intro.style
   (:require
-    [quo2.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]))
 
 (def page-container
   {:flex            1

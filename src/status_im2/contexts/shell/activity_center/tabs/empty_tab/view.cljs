@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.activity-center.tabs.empty-tab.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.shell.activity-center.notification-types :as types]

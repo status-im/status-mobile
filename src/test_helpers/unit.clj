@@ -2,7 +2,7 @@
   (:require
     [clojure.spec.alpha :as s]
     [clojure.string :as string]
-    [clojure.walk :as walk]))
+    [clojure.walk]))
 
 (defn- subscription-name->test-name
   [sub-name]

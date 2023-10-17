@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.orientation :as orientation]

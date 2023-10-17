@@ -5,7 +5,7 @@
     [clojure.string :as string]
     [shadow.test :as st]
     [shadow.test.env :as env]
-    status-im2.setup.i18n-resources
+    [status-im2.setup.i18n-resources]
     [status-im2.setup.interceptors :as interceptors]
     [utils.re-frame :as rf]))
 

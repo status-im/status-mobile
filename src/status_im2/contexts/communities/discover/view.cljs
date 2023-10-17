@@ -1,9 +1,9 @@
 (ns status-im2.contexts.communities.discover.view
   (:require
     [oops.core :as oops]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.ui.components.react :as react]

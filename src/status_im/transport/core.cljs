@@ -3,7 +3,7 @@
     [re-frame.core :as re-frame]
     [status-im.pairing.core :as pairing]
     [status-im.stickers.core :as stickers]
-    status-im.transport.shh
+    [status-im.transport.shh]
     [status-im.utils.universal-links.core :as universal-links]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]))

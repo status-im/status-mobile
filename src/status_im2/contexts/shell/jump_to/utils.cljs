@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.jump-to.utils
   (:require
-    [quo2.theme :as quo.theme]
+    [quo.theme :as quo.theme]
     [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [react-native.platform :as platform]

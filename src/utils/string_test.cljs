@@ -1,7 +1,7 @@
 (ns utils.string-test
   (:require
     [cljs.test :refer [are deftest]]
-    utils.string))
+    [utils.string]))
 
 (deftest get-initials-test
   (are [expected input amount-initials]

@@ -1,6 +1,6 @@
 (ns status-im2.common.qr-codes.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [utils.image-server :as image-server]
     [utils.re-frame :as rf]))
 

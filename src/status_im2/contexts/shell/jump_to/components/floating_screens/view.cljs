@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.jump-to.components.floating-screens.view
   (:require
-    [quo2.theme :as quo.theme]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.messages.view :as chat]

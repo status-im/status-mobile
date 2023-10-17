@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.keycard.onboarding.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [re-frame.core :as re-frame]
     [status-im.keycard.onboarding :as keycard.onboarding]
@@ -15,8 +16,7 @@
     [status-im.ui.screens.keycard.styles :as styles]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+    [utils.re-frame :as rf]))
 
 (defview intro
   []

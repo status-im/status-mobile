@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.activity-center.tabs.view
   (:require
     [clojure.set :as set]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [status-im2.contexts.shell.activity-center.notification-types :as types]
     [status-im2.contexts.shell.activity-center.style :as style]
     [utils.i18n :as i18n]

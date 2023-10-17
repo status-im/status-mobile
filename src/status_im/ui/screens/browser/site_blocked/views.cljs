@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.browser.site-blocked.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [status-im.ui.components.colors :as colors]
@@ -6,8 +7,7 @@
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.browser.site-blocked.styles :as styles]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (views/defview view
   [{:keys [can-go-back?]}]

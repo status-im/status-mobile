@@ -1,17 +1,17 @@
 (ns status-im.subs.root
   (:require
     [re-frame.core :as re-frame]
-    status-im.subs.bootnodes
-    status-im.subs.browser
-    status-im.subs.ens
-    status-im.subs.keycard
-    status-im.subs.mailservers
-    status-im.subs.networks
-    status-im.subs.stickers
-    status-im.subs.wallet.search
-    status-im.subs.wallet.signing
-    status-im.subs.wallet.transactions
-    status-im.subs.wallet.wallet))
+    [status-im.subs.bootnodes]
+    [status-im.subs.browser]
+    [status-im.subs.ens]
+    [status-im.subs.keycard]
+    [status-im.subs.mailservers]
+    [status-im.subs.networks]
+    [status-im.subs.stickers]
+    [status-im.subs.wallet.search]
+    [status-im.subs.wallet.signing]
+    [status-im.subs.wallet.transactions]
+    [status-im.subs.wallet.wallet]))
 
 (defn reg-root-key-sub
   [sub-name db-key]

@@ -2,7 +2,7 @@
   (:require
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.keycard.common :as common]
-    status-im.keycard.fx
+    [status-im.keycard.fx]
     [status-im.keycard.onboarding :as onboarding]
     [status-im.keycard.recovery :as recovery]
     [status-im.signing.core :as signing.core]

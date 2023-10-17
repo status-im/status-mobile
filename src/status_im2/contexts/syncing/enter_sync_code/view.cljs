@@ -1,8 +1,8 @@
 (ns status-im2.contexts.syncing.enter-sync-code.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [reagent.core :as reagent]

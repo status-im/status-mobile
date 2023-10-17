@@ -1,4 +1,5 @@
 (ns status-im.ui.components.connectivity.view
+  (:require-macros [status-im.utils.views :as views :refer [defview letsubs]])
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
@@ -7,8 +8,7 @@
     [status-im.ui.components.core :as quo]
     [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.react :as react]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views :refer [defview letsubs]]))
+    [utils.i18n :as i18n]))
 
 (defn easing
   [direction n]

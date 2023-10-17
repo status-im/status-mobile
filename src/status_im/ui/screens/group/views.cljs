@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.group.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
@@ -16,8 +17,7 @@
     [status-im.ui.screens.group.styles :as styles]
     [status-im2.constants :as constants]
     [utils.debounce :as debounce]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (defn- render-contact
   [row]

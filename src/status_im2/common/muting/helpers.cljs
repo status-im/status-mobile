@@ -1,10 +1,10 @@
 (ns status-im2.common.muting.helpers
   (:require
     [cljs-time.core :as t]
+    [cljs-time.format :as t.format]
     [utils.datetime :refer
      [go-default-time int->weekday months time-zone-offset today? tomorrow?]]
-    [utils.i18n :as i18n])
-  (:require [cljs-time.format :as t.format]))
+    [utils.i18n :as i18n]))
 
 (defn- add-leading-zero
   [input-string]

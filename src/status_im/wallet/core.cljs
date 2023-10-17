@@ -20,7 +20,7 @@
     [status-im.utils.utils :as utils.utils]
     [status-im.wallet.db :as wallet.db]
     [status-im.wallet.prices :as prices]
-    status-im.wallet.recipient.core
+    [status-im.wallet.recipient.core]
     [status-im.wallet.utils :as wallet.utils]
     [status-im2.common.json-rpc.events :as json-rpc]
     [status-im2.config :as config]

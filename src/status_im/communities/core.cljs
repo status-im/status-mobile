@@ -3,7 +3,7 @@
     [clojure.set :as set]
     [clojure.string :as string]
     [clojure.walk :as walk]
-    [quo2.foundations.colors :as quo2.colors]
+    [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.ui.components.colors :as colors]
@@ -921,9 +921,9 @@
     {:db       (assoc-in db [:communities community-id :muted-till] muted-till)
      :dispatch [:toasts/upsert
                 {:icon       :correct
-                 :icon-color (quo2.colors/theme-colors
-                              quo2.colors/success-60
-                              quo2.colors/success-50)
+                 :icon-color (quo.colors/theme-colors
+                              quo.colors/success-60
+                              quo.colors/success-50)
                  :text       (if muted?
                                (when (some? muted-till)
                                  (time-string :t/muted-until (format-mute-till muted-till)))

@@ -1,4 +1,5 @@
-(ns utils.re-frame (:refer-clojure :exclude [defn]))
+(ns utils.re-frame
+  (:refer-clojure :exclude [defn]))
 
 (defn- register-events
   [events interceptors name argsyms]

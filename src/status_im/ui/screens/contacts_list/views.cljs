@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.contacts-list.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [re-frame.core :as re-frame]
     [status-im.multiaccounts.core :as multiaccounts]
@@ -8,8 +9,7 @@
     [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.list.views :as list.views]
     [status-im.ui.components.react :as react]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+    [utils.i18n :as i18n]))
 
 (defn contacts-list-item
   [{:keys [public-key] :as contact}]

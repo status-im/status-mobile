@@ -6,7 +6,7 @@
     [react-native.platform :as platform]
     [react-native.push-notification-ios :as pn-ios]
     [status-im2.config :as config]
-    status-im2.contexts.push-notifications.effects
+    [status-im2.contexts.push-notifications.effects]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
     [utils.transforms :as transforms]))

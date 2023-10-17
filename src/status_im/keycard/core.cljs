@@ -1,18 +1,18 @@
 (ns status-im.keycard.core
   (:require
     [re-frame.db]
-    status-im.keycard.backup-key
+    [status-im.keycard.backup-key]
     [status-im.keycard.card :as card]
     [status-im.keycard.change-pin :as change-pin]
     [status-im.keycard.common :as common]
-    status-im.keycard.delete-key
-    status-im.keycard.export-key
+    [status-im.keycard.delete-key]
+    [status-im.keycard.export-key]
     [status-im.keycard.login :as login]
     [status-im.keycard.mnemonic :as mnemonic]
     [status-im.keycard.onboarding :as onboarding]
     [status-im.keycard.recovery :as recovery]
     [status-im.keycard.sign :as sign]
-    status-im.keycard.unpair
+    [status-im.keycard.unpair]
     [status-im.keycard.wallet :as wallet]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
     [status-im2.navigation.events :as navigation]

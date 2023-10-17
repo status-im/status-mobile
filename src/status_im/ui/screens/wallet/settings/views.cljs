@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.wallet.settings.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
@@ -11,8 +12,7 @@
     [status-im.ui.components.search-input.view :as search-input]
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.wallet.components.views :as wallet.components]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+    [utils.i18n :as i18n]))
 
 (defonce search-active? (reagent/atom false))
 

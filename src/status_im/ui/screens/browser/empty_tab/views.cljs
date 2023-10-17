@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.browser.empty-tab.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
@@ -15,8 +16,7 @@
     [status-im.ui.screens.browser.views :as browser]
     [status-im.ui.screens.wallet.components.views :as components]
     [utils.i18n :as i18n]
-    [utils.url :as url])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.url :as url]))
 
 (defn hide-sheet-and-dispatch
   [event]

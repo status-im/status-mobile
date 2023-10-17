@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.wallet.send.views
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require
-    [quo2.core :as quo2]
+    [quo.core :as quo]
     [re-frame.core :as re-frame]
     [status-im.commands.core :as commands]
     [status-im.multiaccounts.core :as multiaccounts]
     [status-im.ui.components.bottom-panel.views :as bottom-panel]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
     [status-im.ui.components.colors :as colors]
-    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.core :as components.core]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
     [status-im.ui.components.list.item :as list.item]
@@ -139,7 +139,7 @@
      :padding-horizontal 24
      :align-items        :center
      :margin-vertical    16}]
-   [quo/list-header
+   [components.core/list-header
     (i18n/label :t/from-capitalized)]
    [react/view {:flex-direction :row :flex 1 :align-items :center}
     [react/view {:flex 1}
@@ -205,7 +205,7 @@
              :font-size    12}])]
         [fiat-value amount-text token prices wallet-currency]
         [components/separator]
-        [quo/list-header
+        [components.core/list-header
          (i18n/label :t/to-capitalized)]
         [react/view {:flex-direction :row :flex 1 :align-items :center}
          [react/view {:flex 1}
@@ -237,7 +237,7 @@
     (let [to-norm (address/normalized-hex (if (string? to) to (:address to)))]
       [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
        [:<>
-        [quo2/page-nav
+        [quo/page-nav
          {:type                :title
           :text-align          :left
           :title               (i18n/label :t/send-transaction)
@@ -280,11 +280,11 @@
           (when-not (or request? from-chat?)
             [set-max token])
           [components/separator]
-          [quo/list-header (i18n/label :t/from-capitalized)]
+          [components.core/list-header (i18n/label :t/from-capitalized)]
           [react/view {:flex-direction :row :flex 1 :align-items :center}
            [react/view {:flex 1}
             [render-account from token :wallet.send/set-field]]]
-          [quo/list-header
+          [components.core/list-header
            (i18n/label :t/to-capitalized)]
           [react/view {:flex-direction :row :flex 1 :align-items :center}
            [react/view {:flex 1}

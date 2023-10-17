@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.privacy-and-security-settings.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
@@ -10,8 +11,7 @@
     [status-im.ui.components.react :as react]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (defn separator
   []

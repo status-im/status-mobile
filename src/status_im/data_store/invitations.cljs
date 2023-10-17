@@ -1,6 +1,6 @@
 (ns status-im.data-store.invitations
   (:require
-    clojure.set))
+    [clojure.set]))
 
 (defn <-rpc
   [message]

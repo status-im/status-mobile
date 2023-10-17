@@ -1,12 +1,12 @@
 (ns status-im.ui.components.tooltip.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
     [status-im.ui.components.animation :as animation]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.components.react :as react]
     [status-im.ui.components.tooltip.animations :as animations]
-    [status-im.ui.components.tooltip.styles :as styles])
-  (:require-macros [status-im.utils.views :as views]))
+    [status-im.ui.components.tooltip.styles :as styles]))
 
 (views/defview tooltip
   [label &

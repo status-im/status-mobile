@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.profile.user.views
+  (:require-macros [status-im.utils.views :as views])
   (:require
-    [quo2.components.avatars.user-avatar.style :as user-avatar.style]
-    [quo2.theme :as theme]
+    [quo.components.avatars.user-avatar.style :as user-avatar.style]
+    [quo.theme :as theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ethereum.stateofus :as stateofus]
@@ -23,8 +24,7 @@
     [status-im.utils.utils :as utils]
     [status-im2.common.qr-codes.view :as qr-codes]
     [status-im2.config :as config]
-    [utils.i18n :as i18n])
-  (:require-macros [status-im.utils.views :as views]))
+    [utils.i18n :as i18n]))
 
 (views/defview share-chat-key
   []
@@ -127,10 +127,10 @@
      (when config/quo-preview-enabled?
        [list.item/list-item
         {:icon                :main-icons/appearance
-         :title               "Quo2.0 Preview"
+         :title               "Quo Preview"
          :accessibility-label :appearance-settings-button
          :chevron             true
-         :on-press            #(re-frame/dispatch [:navigate-to :quo2-preview])}])
+         :on-press            #(re-frame/dispatch [:navigate-to :quo-preview])}])
      [list.item/list-item
       {:icon                :main-icons/appearance
        :title               (i18n/label :t/appearance)

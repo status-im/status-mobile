@@ -1,4 +1,5 @@
-(ns test-helpers.component (:refer-clojure :exclude [test]))
+(ns test-helpers.component
+  (:refer-clojure :exclude [test]))
 
 (defmacro describe
   [description & body]
