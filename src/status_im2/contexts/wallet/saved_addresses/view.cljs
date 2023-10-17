@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.saved-addresses.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [re-frame.core :as rf]
     [react-native.core :as rn]))
 

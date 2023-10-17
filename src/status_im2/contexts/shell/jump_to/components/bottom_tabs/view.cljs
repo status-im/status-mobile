@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.jump-to.components.bottom-tabs.view
   (:require
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]

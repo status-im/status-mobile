@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [status-im.bottom-sheet.events :as bottom-sheet]

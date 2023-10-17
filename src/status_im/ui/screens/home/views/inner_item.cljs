@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.home.views.inner-item
   (:require
     [clojure.string :as string]
-    [quo2.components.markdown.text :as quo2.text]
-    [quo2.foundations.colors :as quo2.colors]
+    [quo.components.markdown.text :as quo.text]
+    [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [status-im.ui.components.badge :as badge]
     [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
@@ -187,7 +187,7 @@
 
 (defn chat-item-title
   [chat-id muted group-chat chat-name edit?]
-  [quo2.text/text
+  [quo.text/text
    {:weight              :semi-bold
     :color               (when muted :secondary)
     :accessibility-label :chat-name-text
@@ -242,7 +242,7 @@
           :right            8
           :bottom           2
           :border-radius    16
-          :background-color quo2.colors/primary-50-opa-5}])
+          :background-color quo.colors/primary-50-opa-5}])
       [chat-icon.screen/emoji-chat-icon-view chat-id group-chat chat-name emoji
        {:container              (assoc chat-icon.styles/container-chat-list
                                        :top      12
@@ -260,13 +260,13 @@
          [unviewed-indicator home-item]])
       [react/view {:position :absolute :left 72 :top 32 :right 80}
        (if public?
-         [quo2.text/text
+         [quo.text/text
           {:color           :secondary
            :number-of-lines 1
            :ellipsize-mode  :middle
            :weight          :medium
-           :style           {:color (quo2.colors/theme-colors quo2.colors/neutral-50
-                                                              quo2.colors/neutral-40)}}
+           :style           {:color (quo.colors/theme-colors quo.colors/neutral-50
+                                                             quo.colors/neutral-40)}}
           (i18n/label :t/public)]
          (if group-chat
            [react/view
@@ -281,15 +281,15 @@
               :container-style {:width        16
                                 :height       16
                                 :margin-right 4}}]
-            [quo2.text/text
+            [quo.text/text
              {:weight :medium
-              :style  {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}}
+              :style  {:color (quo.colors/theme-colors quo.colors/neutral-50 quo.colors/neutral-40)}}
              (i18n/label :t/members-count {:count (count group-members-public-keys)})]]
-           [quo2.text/text
+           [quo.text/text
             {:monospace       true
              :weight          :medium
-             :style           {:color (quo2.colors/theme-colors quo2.colors/neutral-50
-                                                                quo2.colors/neutral-40)}
+             :style           {:color (quo.colors/theme-colors quo.colors/neutral-50
+                                                               quo.colors/neutral-40)}
              :number-of-lines 1
              :ellipsize-mode  :middle}
             (utils.utils/get-shortened-address chat-id)]))]]]))

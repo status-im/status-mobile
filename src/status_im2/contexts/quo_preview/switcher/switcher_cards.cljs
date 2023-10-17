@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.switcher.switcher-cards
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]

@@ -1,6 +1,6 @@
 (ns status-im2.contexts.communities.actions.token-gating.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))

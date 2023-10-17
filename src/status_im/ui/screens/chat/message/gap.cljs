@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.chat.message.gap
   (:require-macros [status-im.utils.views :as views])
   (:require
-    [quo2.core :as quo2]
+    [quo.core :as quo]
     [re-frame.core :as re-frame]
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.chat.styles.input.gap :as style]
@@ -25,7 +25,7 @@
          :style    {:height (if in-progress? window-height 48)}}
         [react/view {:style style/label-container}
          (if in-progress?
-           [quo2/skeleton-list
+           [quo/skeleton-list
             {:parent-height window-height
              :animated      true
              :content       :messages}]

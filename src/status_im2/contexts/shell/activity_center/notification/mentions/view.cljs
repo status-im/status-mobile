@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.activity-center.notification.mentions.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.gesture :as gesture]
     [status-im2.contexts.shell.activity-center.notification.common.view :as common]
     [status-im2.contexts.shell.activity-center.notification.mentions.style :as style]

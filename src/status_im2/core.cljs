@@ -13,21 +13,21 @@
     [react-native.reanimated :as reanimated]
     [react-native.shake :as react-native-shake]
     [reagent.impl.batching :as batching]
+    status-im.events
+    status-im.subs.root
     [status-im.utils.universal-links.core :as utils.universal-links]
     [status-im2.common.log :as log]
     [status-im2.config :as config]
     [status-im2.contexts.push-notifications.events :as notifications]
     [status-im2.contexts.shell.jump-to.state :as shell.state]
     [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+    status-im2.events
+    status-im2.navigation.core
     [status-im2.setup.dev :as dev]
     [status-im2.setup.global-error :as global-error]
     [status-im2.setup.interceptors :as interceptors]
-    [utils.i18n :as i18n]
-    status-im.events
-    status-im.subs.root
-    status-im2.events
-    status-im2.navigation.core
-    status-im2.subs.root))
+    status-im2.subs.root
+    [utils.i18n :as i18n]))
 
 ;;;; re-frame RN setup
 (set! interop/next-tick js/setTimeout)

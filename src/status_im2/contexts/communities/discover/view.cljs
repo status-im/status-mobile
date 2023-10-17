@@ -1,9 +1,9 @@
 (ns status-im2.contexts.communities.discover.view
   (:require
     [oops.core :as oops]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.ui.components.react :as react]
@@ -21,11 +21,11 @@
       [quo/community-card-view-item
        {:community (assoc item :cover cover)
         :width     width
-        :on-press  #(rf/dispatch [:communities/navigate-to-community (:id item)])}]
+        :on-press  #(rf/dispatch [:navigate-to :community-overview (:id item)])}]
       [quo/community-list-item
        {:on-press      (fn []
                          (rf/dispatch [:dismiss-keyboard])
-                         (rf/dispatch [:communities/navigate-to-community (:id item)]))
+                         (rf/dispatch [:navigate-to :community-overview (:id item)]))
         :on-long-press #(rf/dispatch
                          [:show-bottom-sheet
                           {:content (fn []
@@ -143,12 +143,12 @@
            (if (= view-type :card-view)
              [quo/community-card-view-item
               {:community (assoc community :cover cover)
-               :on-press  #(rf/dispatch [:communities/navigate-to-community (:id community)])}]
+               :on-press  #(rf/dispatch [:navigate-to :community-overview (:id community)])}]
 
              [quo/community-list-item
               {:on-press      (fn []
                                 (rf/dispatch [:dismiss-keyboard])
-                                (rf/dispatch [:communities/navigate-to-community (:id community)]))
+                                (rf/dispatch [:navigate-to :community-overview (:id community)]))
                :on-long-press #(js/alert "TODO: to be implemented")}
               community])]))
       (if communities communities communities-ids))
@@ -225,12 +225,19 @@
 
 (defn f-view-internal
   [{:keys [theme]}]
-  (let [featured-communities (rf/sub [:communities/featured-contract-communities])]
+  (let [featured-communities (rf/sub [:communities/featured-contract-communities])
+        customization-color  (rf/sub [:profile/customization-color])]
     [rn/view
      {:style (style/discover-screen-container (colors/theme-colors
                                                colors/white
-                                               colors/neutral-95))}
-     [discover-screen-content featured-communities theme]]))
+                                               colors/neutral-95
+                                               theme))}
+     [discover-screen-content featured-communities theme]
+     [quo/floating-shell-button
+      {:jump-to {:on-press            #(rf/dispatch [:shell/navigate-to-jump-to])
+                 :customization-color customization-color
+                 :label               (i18n/label :t/jump-to)}}
+      style/floating-shell-button]]))
 
 
 (defn- internal-discover-view

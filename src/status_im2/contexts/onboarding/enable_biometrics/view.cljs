@@ -1,6 +1,6 @@
 (ns status-im2.contexts.onboarding.enable-biometrics.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [status-im2.common.biometric.events :as biometric]

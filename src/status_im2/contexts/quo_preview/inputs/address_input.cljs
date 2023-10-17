@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.inputs.address-input
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [reagent.core :as reagent]
     [status-im2.constants :as constants]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -14,9 +14,9 @@
 
 (defn view
   []
-  (let [state (reagent/atom {:scanned-value ""
-                             :blur?         false
-                             :valid-ens?    false})
+  (let [state (reagent/atom {:scanned-value         ""
+                             :blur?                 false
+                             :valid-ens-or-address? false})
         timer (atom nil)]
     (fn []
       [preview/preview-container
@@ -29,8 +29,9 @@
                {:on-scan       #(js/alert "Not implemented yet")
                 :ens-regex     constants/regx-ens
                 :on-detect-ens (fn [_]
-                                 (swap! state assoc :valid-ens? false)
+                                 (swap! state assoc :valid-ens-or-address? false)
                                  (when @timer
                                    (js/clearTimeout @timer))
-                                 (reset! timer (js/setTimeout #(swap! state assoc :valid-ens? true)
-                                                              2000)))})]])))
+                                 (reset! timer (js/setTimeout
+                                                #(swap! state assoc :valid-ens-or-address? true)
+                                                2000)))})]])))

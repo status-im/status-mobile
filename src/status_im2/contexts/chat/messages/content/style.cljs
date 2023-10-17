@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.style
   (:require
-    [quo2.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]))
 
 (defn message-container
   ([]

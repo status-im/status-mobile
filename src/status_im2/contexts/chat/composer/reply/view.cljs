@@ -1,8 +1,8 @@
 (ns status-im2.contexts.chat.composer.reply.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.reanimated :as reanimated]

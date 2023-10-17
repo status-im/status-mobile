@@ -1,9 +1,9 @@
 (ns status-im2.common.home.banner.view
   (:require
     [oops.core :as oops]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as theme]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.platform :as platform]

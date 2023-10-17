@@ -1,8 +1,8 @@
 (ns status-im2.contexts.quo-preview.settings.reorder-item
   (:require
-    [quo2.components.settings.reorder-item.types :as types]
-    [quo2.core :as quo]
-    [quo2.foundations.resources :as quo2.resources]
+    [quo.components.settings.reorder-item.types :as types]
+    [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -22,7 +22,7 @@
            :title      "Status"}}
    {:id   3
     :type types/item
-    :data {:image      (quo2.resources/get-token :eth)
+    :data {:image      (quo.resources/get-token :eth)
            :image-size 21
            :right-icon :i/world
            :title      "Ethereum"}}

@@ -1,8 +1,8 @@
 (ns status-im2.common.home.actions.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
     [status-im2.common.mute-drawer.view :as mute-drawer]
     [status-im2.common.muting.helpers :refer [format-mute-till]]

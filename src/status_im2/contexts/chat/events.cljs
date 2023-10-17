@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.events
   (:require
     [clojure.set :as set]
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [react-native.async-storage :as async-storage]
     [reagent.core :as reagent]

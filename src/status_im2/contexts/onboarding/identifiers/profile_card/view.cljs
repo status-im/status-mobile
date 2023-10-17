@@ -1,7 +1,7 @@
 (ns status-im2.contexts.onboarding.identifiers.profile-card.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.masked-view :as masked-view]
     [react-native.reanimated :as reanimated]

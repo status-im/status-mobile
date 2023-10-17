@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.messages.link-preview.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
     [reagent.core :as reagent]
