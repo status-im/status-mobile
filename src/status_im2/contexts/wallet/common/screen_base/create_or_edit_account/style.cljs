@@ -20,7 +20,7 @@
 (def reaction-button-container
   {:position :absolute
    :bottom   0
-   :left     80})
+   :left     76})
 
 (def title-input-container
   {:padding-horizontal 20
@@ -35,7 +35,7 @@
    :padding-bottom     4})
 
 (def color-picker-container
-  {:padding-vertical 12})
+  {:padding-vertical 8})
 
 (def color-picker
   {:padding-horizontal 12})

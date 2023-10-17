@@ -30,7 +30,7 @@
        :accessibility-label :remove-account
        :label               (i18n/label :t/remove-account)
        :danger?             true}]]]
-   [quo/divider-line]
+   [quo/divider-line {:container-style {:margin-top 8}}]
    [quo/section-label
     {:section         (i18n/label :t/select-another-account)
      :container-style style/drawer-section-label}]

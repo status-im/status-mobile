@@ -14,9 +14,11 @@
                          theme)))
 
 (defn label-style
-  [color]
-  {:color         color
-   :margin-bottom 2})
+  [color description?]
+  (cond-> {:color color}
+
+    description?
+    (assoc :margin-bottom 2)))
 
 (defn- view-internal
   "Props:
@@ -33,7 +35,7 @@
       {:number-of-lines 1
        :size            (if description? :paragraph-1 :paragraph-2)
        :weight          :medium
-       :style           (label-style color)}
+       :style           (label-style color description?)}
       section]
      (when description?
        [text/text
