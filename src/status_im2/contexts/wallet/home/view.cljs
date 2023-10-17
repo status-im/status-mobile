@@ -44,7 +44,7 @@
        first
        :balance))
 
-(defn refactor-data
+(defn account-cards
   [accounts loading? balances]
   (let [refactored-accounts (mapv (fn [account]
                                     (assoc account
@@ -76,7 +76,7 @@
       [quo/wallet-graph {:time-frame :empty}]]
      [rn/flat-list
       {:style      style/accounts-list
-       :data       (refactor-data accounts loading? balances)
+       :data       (account-cards accounts loading? balances)
        :horizontal true
        :separator  [rn/view {:style {:width 12}}]
        :render-fn  quo/account-card}]
