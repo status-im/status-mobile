@@ -1,7 +1,7 @@
 (ns status-im2.contexts.add-new-contact.style
   (:require
-    [quo2.foundations.colors :as colors]
-    [quo2.foundations.typography :as typography]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.typography :as typography]
     [react-native.platform :as platform]
     [react-native.safe-area :as safe-area]))
 

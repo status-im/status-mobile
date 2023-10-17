@@ -1,5 +1,5 @@
 (ns status-im2.contexts.quo-preview.browser.new-tab
-  (:require [quo2.core :as quo]
+  (:require [quo.core :as quo]
             [react-native.core :as rn]
             [reagent.core :as reagent]
             [status-im2.contexts.quo-preview.preview :as preview]))

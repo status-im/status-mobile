@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.wallet.transaction-summary
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.resources :as quo.resources]
+    [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))

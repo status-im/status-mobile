@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.jump-to.components.home-stack.view
   (:require
-    [quo2.theme :as quo.theme]
+    [quo.theme :as quo.theme]
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.browser.home.view :as browser]
     [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]

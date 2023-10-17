@@ -1,8 +1,8 @@
 (ns status-im2.contexts.wallet.common.temp
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.foundations.resources :as quo.resources]
+    [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [status-im2.common.resources :as status.resources]
     [status-im2.constants :as constants]
@@ -201,3 +201,62 @@
     :name                "My savings"
     :address             "0x43c...98d"
     :networks            [{:name :ethereum :short :eth}]}])
+
+(def asset-snt
+  {:size       24
+   :type       :token
+   :token-name "SNT"
+   :amount     1500
+   :token-logo (quo.resources/get-token :snt)})
+
+(def piggy-bank
+  {:size         24
+   :type         :account
+   :account-name "Piggy bank"
+   :emoji        "🐷"})
+
+(def aretha-gosling
+  {:size            24
+   :type            :default
+   :full-name       "Aretha Gosling"
+   :profile-picture (status.resources/mock-images :user-picture-female2)})
+
+(def mainnet
+  {:size         24
+   :type         :network
+   :network-logo (quo.resources/get-network :ethereum)
+   :network-name "Mainnet"})
+
+(def activity-list
+  [{:date              "Today"
+    :transaction       :send
+    :timestamp         "Today 22:20"
+    :status            :pending
+    :counter           1
+    :first-tag         asset-snt
+    :second-tag-prefix :t/from
+    :second-tag        piggy-bank
+    :third-tag-prefix  :t/to
+    :third-tag         aretha-gosling
+    :fourth-tag-prefix :t/via
+    :fourth-tag        mainnet
+    :blur?             false}
+   {:date              "Yesterday"
+    :transaction       :receive
+    :timestamp         "Yesterday 22:20"
+    :status            :pending
+    :counter           1
+    :first-tag         asset-snt
+    :second-tag-prefix :t/from
+    :second-tag        piggy-bank
+    :third-tag-prefix  :t/to
+    :third-tag         aretha-gosling
+    :fourth-tag-prefix :t/via
+    :fourth-tag        mainnet
+    :blur?             false}])
+
+(def collectible-list
+  [(status.resources/get-mock-image :collectible1)
+   (status.resources/get-mock-image :collectible2)
+   (status.resources/get-mock-image :collectible3)
+   (status.resources/get-mock-image :collectible4)])

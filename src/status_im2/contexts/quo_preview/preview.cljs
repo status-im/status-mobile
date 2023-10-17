@@ -2,9 +2,9 @@
   (:require
     [camel-snake-kebab.core :as camel-snake-kebab]
     [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -317,7 +317,7 @@
            blur-container-style blur-view-props blur-height show-blur-background?]
     :or   {blur-height 200}}
    & children]
-  (let [theme (quo2.theme/use-theme-value)]
+  (let [theme (quo.theme/use-theme-value)]
     (rn/use-effect (fn []
                      (when blur-dark-only?
                        (if blur?

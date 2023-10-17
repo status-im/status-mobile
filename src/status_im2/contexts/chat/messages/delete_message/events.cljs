@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.delete-message.events
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [status-im2.contexts.chat.messages.list.events :as message-list]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]

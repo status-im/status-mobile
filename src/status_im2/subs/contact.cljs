@@ -1,7 +1,7 @@
 (ns status-im2.subs.contact
   (:require
     [clojure.string :as string]
-    [quo2.theme :as theme]
+    [quo.theme :as theme]
     [re-frame.core :as re-frame]
     [status-im.contact.db :as contact.db]
     [status-im.multiaccounts.core :as multiaccounts]

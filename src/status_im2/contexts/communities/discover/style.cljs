@@ -1,6 +1,7 @@
 (ns status-im2.contexts.communities.discover.style
   (:require
-    [react-native.platform :as platform]))
+    [react-native.platform :as platform]
+    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]))
 
 (def screen-title-container
   {:height            56
@@ -32,6 +33,7 @@
 
 (def other-communities-container
   {:flex              1
+   :padding-bottom    (+ jump-to.constants/floating-shell-button-height 34)
    :margin-horizontal 20})
 
 (defn discover-communities-segments
@@ -72,3 +74,7 @@
    :justify-content    :center
    :flex               1
    :background-color   :transparent})
+
+(def floating-shell-button
+  {:position :absolute
+   :bottom   34})

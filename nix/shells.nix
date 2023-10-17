@@ -18,7 +18,11 @@ let
 
     # for calling clojure targets in CI or Makefile
     clojure = mkShell {
-      buildInputs = with pkgs; [ clojure flock maven openjdk ];
+      buildInputs = with pkgs; [
+        clojure flock maven openjdk
+        # lint specific utilities
+        clj-kondo zprint clojure-lsp
+      ];
       # CLASSPATH from clojure deps with 'src' appended to find local sources.
       shellHook = with pkgs; ''
         export CLASS_PATH="$(find ${deps.clojure} -iname '*.jar' | tr '\n' ':')src"

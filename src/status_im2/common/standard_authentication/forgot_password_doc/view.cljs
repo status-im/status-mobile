@@ -1,6 +1,6 @@
 (ns status-im2.common.standard-authentication.forgot-password-doc.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.common.standard-authentication.forgot-password-doc.style :as style]
     [utils.i18n :as i18n]))

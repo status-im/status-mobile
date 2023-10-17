@@ -2,8 +2,8 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.hooks :as hooks]
@@ -18,7 +18,7 @@
 
 ;; NOTE - validation should match with Desktop
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
-;; 
+;;
 (def emoji-regex
   (new
    js/RegExp
@@ -172,11 +172,7 @@
                                        {:content (fn []
                                                    [method-menu/view on-change-profile-pic])
                                         :shell?  true}]))
-              :image-picker-props  {:profile-picture     (or
-                                                          @profile-pic
-                                                          (rf/sub
-                                                           [:profile/onboarding-placeholder-avatar
-                                                            @profile-pic]))
+              :image-picker-props  {:profile-picture     @profile-pic
                                     :full-name           (if (seq @full-name)
                                                            @full-name
                                                            (i18n/label :t/your-name))

@@ -1,6 +1,6 @@
 (ns status-im.ui.components.topbar
   (:require
-    [quo2.foundations.colors :as quo2.colors]
+    [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [react-native.safe-area :as safe-area]
     [status-im.ui.components.core :as quo]))
@@ -45,5 +45,5 @@
             (when (seq right-accessories)
               {:right-accessories right-accessories})
             (when new-ui?
-              {:background (quo2.colors/theme-colors quo2.colors/neutral-5
-                                                     quo2.colors/neutral-95)}))]))
+              {:background (quo.colors/theme-colors quo.colors/neutral-5
+                                                    quo.colors/neutral-95)}))]))

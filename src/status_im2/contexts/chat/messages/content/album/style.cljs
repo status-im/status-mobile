@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.content.album.style
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [status-im2.constants :as constants]))
 
 (def max-album-height 292)

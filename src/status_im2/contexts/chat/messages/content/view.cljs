@@ -1,8 +1,8 @@
 (ns status-im2.contexts.chat.messages.content.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.platform :as platform]
@@ -216,19 +216,22 @@
 (def user-message-content (quo.theme/with-theme user-message-content-internal))
 
 (defn on-long-press
-  [message-data context keyboard-shown?]
+  [{:keys [deleted? deleted-for-me?] :as message-data} context keyboard-shown?]
   (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch [:show-bottom-sheet
-                {:content       (drawers/reactions-and-actions message-data context)
+                {:content (drawers/reactions-and-actions message-data context)
                  :border-radius 16
-                 :selected-item (fn []
-                                  [rn/view {:pointer-events :none}
-                                   [user-message-content
-                                    {:message-data                 message-data
-                                     :context                      context
-                                     :keyboard-shown?              keyboard-shown?
-                                     :show-reactions?              true
-                                     :in-reaction-and-action-menu? true}]])}]))
+                 :selected-item
+                 (if (or deleted? deleted-for-me?)
+                   (fn [] [content.deleted/deleted-message message-data])
+                   (fn []
+                     [rn/view {:pointer-events :none}
+                      [user-message-content
+                       {:message-data    message-data
+                        :context         context
+                        :keyboard-shown? keyboard-shown?
+                        :show-reactions? true
+                        :show-user-info? true}]]))}]))
 
 (defn system-message?
   [content-type]
@@ -246,10 +249,20 @@
   [rn/view
    {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
     :accessibility-label :chat-item}
-   (if (or (system-message? content-type) deleted? deleted-for-me?)
-     (if (or deleted? deleted-for-me?)
-       [content.deleted/deleted-message message-data]
-       [system-message-content message-data])
+   (cond
+     (system-message? content-type)
+     [system-message-content message-data]
+
+     (or deleted? deleted-for-me?)
+     [content.deleted/deleted-message
+      (assoc message-data
+             :on-long-press
+             #(on-long-press message-data
+                             context
+                             keyboard-shown?))
+      context]
+
+     :else
      [user-message-content
       {:message-data    message-data
        :context         context

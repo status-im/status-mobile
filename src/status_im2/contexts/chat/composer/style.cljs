@@ -1,8 +1,8 @@
 (ns status-im2.contexts.chat.composer.style
   (:require
-    [quo2.foundations.colors :as colors]
-    [quo2.foundations.typography :as typography]
-    [quo2.theme :as quo.theme]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.typography :as typography]
+    [quo.theme :as quo.theme]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.composer.constants :as constants]))

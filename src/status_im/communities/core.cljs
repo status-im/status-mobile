@@ -3,7 +3,7 @@
     [clojure.set :as set]
     [clojure.string :as string]
     [clojure.walk :as walk]
-    [quo2.foundations.colors :as quo2.colors]
+    [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.ui.components.colors :as colors]
@@ -783,18 +783,6 @@
                     :on-success  #(re-frame/dispatch [:sanitize-messages-and-process-response %])
                     :on-error    #(log/error "failed to reorder community category" %)}]})
 
-;; Note - dispatch is used to make sure we are opening community once `pop-to-root` is processed.
-;; Don't directly merge effects using `navigation/navigate-to`, because it will work in debug and
-;; release, but for e2e `pop-to-root` closes even currently opened community
-;; https://github.com/status-im/status-mobile/pull/16438#issuecomment-1623954774
-(rf/defn navigate-to-community
-  {:events [:communities/navigate-to-community]}
-  [cofx community-id]
-  (rf/merge
-   cofx
-   {:dispatch [:navigate-to :community-overview community-id]}
-   (navigation/pop-to-root :shell-stack)))
-
 (rf/defn member-role-updated
   {:events [:community.member/role-updated]}
   [cofx response-js]
@@ -921,9 +909,9 @@
     {:db       (assoc-in db [:communities community-id :muted-till] muted-till)
      :dispatch [:toasts/upsert
                 {:icon       :correct
-                 :icon-color (quo2.colors/theme-colors
-                              quo2.colors/success-60
-                              quo2.colors/success-50)
+                 :icon-color (quo.colors/theme-colors
+                              quo.colors/success-60
+                              quo.colors/success-50)
                  :text       (if muted?
                                (when (some? muted-till)
                                  (time-string :t/muted-until (format-mute-till muted-till)))

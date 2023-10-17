@@ -1,8 +1,8 @@
 (ns status-im2.contexts.chat.new-chat.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]

@@ -1,6 +1,6 @@
 (ns status-im2.contexts.communities.actions.request-to-join.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [status-im2.common.password-authentication.view :as password-authentication]

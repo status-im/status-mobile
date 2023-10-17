@@ -1,8 +1,8 @@
 (ns status-im2.contexts.communities.home.view
   (:require
     [oops.core :as oops]
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [status-im2.common.home.banner.view :as common.banner]
@@ -11,6 +11,7 @@
     [status-im2.common.resources :as resources]
     [status-im2.contexts.communities.actions.community-options.view :as options]
     [status-im2.contexts.communities.actions.home-plus.view :as actions.home-plus]
+    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.number]
@@ -103,6 +104,8 @@
              :style                             {:margin-top -1}
              :data                              selected-items
              :scroll-event-throttle             8
+             :content-container-style           {:padding-bottom
+                                                 jump-to.constants/floating-shell-button-height}
              :on-scroll                         #(common.banner/set-scroll-shared-value
                                                   {:scroll-input (oops/oget
                                                                   %

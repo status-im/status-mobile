@@ -1,10 +1,12 @@
 (ns status-im2.contexts.wallet.home.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.common.home.top-nav.view :as common.top-nav]
+    [status-im2.contexts.wallet.common.activity-tab.view :as activity]
+    [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im2.contexts.wallet.common.temp :as temp]
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
@@ -76,25 +78,5 @@
                          :data                    temp/tokens
                          :key                     :assets-list
                          :content-container-style {:padding-horizontal 8}}]
-         :collectibles (if temp/collectible-details
-                         [rn/flat-list
-                          {:render-fn               (fn [item]
-                                                      [quo/collectible
-                                                       {:images   [(:image item)]
-                                                        :on-press #(rf/dispatch [:navigate-to
-                                                                                 :wallet-collectible])}])
-                           :data                    temp/collectibles
-                           :key                     :collectibles-list
-                           :key-fn                  :id
-                           :num-columns             2
-                           :content-container-style {:padding-horizontal 8}}]
-                         [quo/empty-state
-                          {:title           (i18n/label :t/no-collectibles)
-                           :description     (i18n/label :t/no-collectibles-description)
-                           :placeholder?    true
-                           :container-style style/empty-container-style}])
-         [quo/empty-state
-          {:title           (i18n/label :t/no-activity)
-           :description     (i18n/label :t/empty-tab-description)
-           :placeholder?    true
-           :container-style style/empty-container-style}])])))
+         :collectibles [collectibles/view]
+         [activity/view])])))

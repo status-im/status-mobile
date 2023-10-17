@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.browser.dapp-favorites
-  (:require [quo2.core :as quo]
-            [quo2.foundations.resources :as quo.resources]
+  (:require [quo.core :as quo]
+            [quo.foundations.resources :as quo.resources]
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def dapp-favorites
