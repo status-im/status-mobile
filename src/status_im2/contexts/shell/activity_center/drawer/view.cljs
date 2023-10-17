@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.activity-center.drawer.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

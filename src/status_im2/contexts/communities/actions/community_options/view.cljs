@@ -1,6 +1,6 @@
 (ns status-im2.contexts.communities.actions.community-options.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [status-im2.common.mute-drawer.view :as mute-options]
     [status-im2.common.muting.helpers :refer [format-mute-till]]
     [status-im2.constants :as constants]

@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.tabs.segmented-tab
   (:require
-    [quo2.components.tabs.segmented-tab :as quo2]
-    [quo2.theme :as theme]
+    [quo.components.tabs.segmented-tab :as quo]
+    [quo.theme :as theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -33,7 +33,7 @@
           :style                 {:width "100%"}
           :blur-view-props       {:blur-type (theme/get-theme)}}
          [:<>
-          [quo2/segmented-control
+          [quo/segmented-control
            (merge @state
                   {:default-active 1
                    :data           [{:id 1 :label "Tab 1"}
@@ -42,7 +42,7 @@
                                     {:id 4 :label "Tab 4"}]
                    :on-change      #(println "Active tab" %)})]
           [rn/view {:style {:padding-top 24}}
-           [quo2/segmented-control
+           [quo/segmented-control
             (merge @state
                    {:default-active 1
                     :data           [{:id 1 :label "Tab 1"}

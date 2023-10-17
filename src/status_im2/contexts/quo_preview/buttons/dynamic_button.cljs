@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.buttons.dynamic-button
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]
     [utils.i18n :as i18n]))

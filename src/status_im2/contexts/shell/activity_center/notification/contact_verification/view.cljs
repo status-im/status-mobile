@@ -1,7 +1,7 @@
 (ns status-im2.contexts.shell.activity-center.notification.contact-verification.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.activity-center.notification.common.style :as common-style]
     [status-im2.contexts.shell.activity-center.notification.common.view :as common]

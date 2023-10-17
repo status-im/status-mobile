@@ -1,9 +1,9 @@
 (ns status-im2.contexts.quo-preview.navigation.page-nav
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.foundations.resources :as quo.resources]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]

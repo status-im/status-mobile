@@ -1,8 +1,8 @@
 (ns status-im2.contexts.wallet.address-watch.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]

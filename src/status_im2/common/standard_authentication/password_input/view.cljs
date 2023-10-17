@@ -1,9 +1,9 @@
 (ns status-im2.common.standard-authentication.password-input.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im2.common.standard-authentication.forgot-password-doc.view :as forgot-password-doc]
     [status-im2.common.standard-authentication.password-input.style :as style]

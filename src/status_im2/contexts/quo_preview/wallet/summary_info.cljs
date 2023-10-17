@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.wallet.summary-info
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]

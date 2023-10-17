@@ -1,9 +1,9 @@
 (ns status-im2.contexts.quo-preview.graph.interactive-graph
   (:require
     [goog.string :as gstring]
-    [quo2.components.graph.utils :as utils]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.components.graph.utils :as utils]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))

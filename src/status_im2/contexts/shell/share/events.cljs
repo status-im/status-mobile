@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.share.events
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [status-im2.common.toasts.events :as toasts]
     [utils.re-frame :as rf]))
 

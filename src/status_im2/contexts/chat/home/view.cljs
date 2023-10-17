@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.home.view
   (:require
     [oops.core :as oops]
-    [quo2.theme :as quo.theme]
+    [quo.theme :as quo.theme]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]

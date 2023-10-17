@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.camera.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.camera-kit :as camera-kit]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]

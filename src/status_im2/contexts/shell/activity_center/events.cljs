@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.activity-center.events
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [status-im.data-store.activities :as activities]
     [status-im.data-store.chats :as data-store.chats]

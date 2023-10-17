@@ -2,8 +2,8 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.hooks :as hooks]

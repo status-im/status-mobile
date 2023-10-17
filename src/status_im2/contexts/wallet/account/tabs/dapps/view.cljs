@@ -1,7 +1,7 @@
 (ns status-im2.contexts.wallet.account.tabs.dapps.view
   (:require
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [status-im2.contexts.wallet.account.tabs.dapps.style :as style]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]

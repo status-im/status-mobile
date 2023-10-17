@@ -1,8 +1,8 @@
 (ns status-im2.contexts.shell.jump-to.components.jump-to-screen.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as theme]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]

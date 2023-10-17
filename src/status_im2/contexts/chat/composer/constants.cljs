@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.composer.constants
   (:require
-    [quo2.foundations.typography :as typography]
+    [quo.foundations.typography :as typography]
     [react-native.platform :as platform]))
 
 (def ^:const bar-container-height 20)

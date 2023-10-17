@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.selectors.reactions-selector
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as r]
     [status-im2.constants :as constants]

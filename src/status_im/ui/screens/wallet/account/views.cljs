@@ -1,13 +1,13 @@
 (ns status-im.ui.screens.wallet.account.views
   (:require
-    [quo2.components.markdown.text :as quo2.text]
-    [quo2.core :as quo2]
-    [quo2.foundations.colors :as quo2.colors]
+    [quo.components.markdown.text :as quo.text]
+    [quo.core :as quo]
+    [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ui.components.animation :as animation]
     [status-im.ui.components.colors :as colors]
-    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.core :as components.core]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.components.react :as react]
     [status-im.ui.components.spacing :as spacing]
@@ -53,7 +53,7 @@
           portfolio-value])
        [react/text {:style {:font-size 32 :color colors/white-transparent-persist :font-weight "600"}}
         (str " " (:code currency))]]
-      [quo/text
+      [components.core/text
        {:number-of-lines 1
         :ellipsize-mode  :middle
         :monospace       true
@@ -123,7 +123,7 @@
     (let [tab @selected-tab]
       [react/view {:flex 1}
        [react/view {:padding-horizontal 20 :padding-bottom 20}
-        [quo2/tabs
+        [quo/tabs
          {:size           24
           :on-change      #(reset! selected-tab %)
           :default-active :tokens
@@ -279,7 +279,7 @@
     ;fetching-error (rf/sub [:wallet/fetching-error])]
     [react/view
      {:flex                    1
-      :background-color        (quo2.colors/theme-colors quo2.colors/white quo2.colors/neutral-90)
+      :background-color        (quo.colors/theme-colors quo.colors/white quo.colors/neutral-90)
       :border-top-left-radius  20
       :border-top-right-radius 20
       :elevation               4
@@ -288,18 +288,18 @@
       :shadow-color            (:shadow-01 @colors/theme)
       :shadow-offset           {:width 0 :height 4}}
      [react/view {:padding 20}
-      [quo2.text/text {:size :heading-2 :weight :semi-bold} (str portfolio-value " " (:code currency))]]
+      [quo.text/text {:size :heading-2 :weight :semi-bold} (str portfolio-value " " (:code currency))]]
      [react/view
       [react/scroll-view {:horizontal true :margin-bottom 32 :showsHorizontalScrollIndicator false}
        [react/view {:width 20}]
-       [quo2/button {:size 56 :width button-width :above :i/placeholder} "Buy"]
+       [quo/button {:size 56 :width button-width :above :i/placeholder} "Buy"]
        [react/view {:width 12}]
-       [quo2/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Send"]
+       [quo/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Send"]
        [react/view {:width 12}]
-       [quo2/button {:size 56 :width button-width :type :secondary :above :i/placeholder}
+       [quo/button {:size 56 :width button-width :type :secondary :above :i/placeholder}
         "Receive"]
        [react/view {:width 12}]
-       [quo2/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Swap"]
+       [quo/button {:size 56 :width button-width :type :secondary :above :i/placeholder} "Swap"]
        [react/view {:width 20}]]]
      [assets-and-collections-new selected-account]]))
 

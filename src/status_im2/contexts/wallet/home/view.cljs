@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.home.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]

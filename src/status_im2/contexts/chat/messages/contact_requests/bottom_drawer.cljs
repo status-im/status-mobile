@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.messages.contact-requests.bottom-drawer
   (:require
-    [quo2.components.drawers.permission-context.view :as permission-context]
-    [quo2.core :as quo]
+    [quo.components.drawers.permission-context.view :as permission-context]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.config :as config]
     [status-im2.constants :as constants]

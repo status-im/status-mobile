@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.chat.message.legacy-view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.foundations.typography :as typography]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.typography :as typography]
     [react-native.core :as rn]
     [status-im.react-native.resources :as resources]
     [status-im.ui.components.colors :as quo.colors]

@@ -1,7 +1,7 @@
 (ns status-im2.contexts.add-new-contact.views
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [reagent.core :as reagent]
