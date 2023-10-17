@@ -1,6 +1,6 @@
 (ns status-im2.contexts.syncing.scan-sync-code-page.style
   (:require
-    [quo2.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]))
 
 (def background
   {:position         :absolute

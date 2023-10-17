@@ -1,6 +1,6 @@
 (ns status-im2.common.standard-authentication.enter-password.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im.multiaccounts.core :as multiaccounts]
     [status-im2.common.standard-authentication.enter-password.style :as style]

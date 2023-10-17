@@ -1,9 +1,9 @@
 (ns status-im2.contexts.quo-preview.wallet.account-card
   (:require
-    [quo2.components.icon :as icon]
-    [quo2.components.markdown.text :as text]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.components.icon :as icon]
+    [quo.components.markdown.text :as text]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]

@@ -1,6 +1,6 @@
 (ns status-im2.contexts.syncing.device.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [status-im2.contexts.syncing.device.style :as style]
     [utils.i18n :as i18n]))
 

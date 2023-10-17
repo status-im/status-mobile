@@ -1,6 +1,6 @@
 (ns status-im2.contexts.onboarding.welcome.style
   (:require
-    [quo2.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]))
 
 (def default-margin 20)
 

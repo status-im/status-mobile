@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.tabs.account-selector
   (:require
-    [quo2.components.tabs.account-selector :as quo2]
+    [quo.components.tabs.account-selector :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -62,4 +62,4 @@
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
-         [quo2/account-selector @state]]]])))
+         [quo/account-selector @state]]]])))

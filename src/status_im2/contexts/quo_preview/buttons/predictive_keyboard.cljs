@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.buttons.predictive-keyboard
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 

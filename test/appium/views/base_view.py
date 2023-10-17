@@ -262,6 +262,9 @@ class BaseView(object):
         self.chat_floating_screen = BaseElement(self.driver, accessibility_id=":chat-floating-screen")
         self.community_floating_screen = BaseElement(self.driver,
                                                      accessibility_id=":community-overview-floating-screen")
+        self.discover_communities_floating_screen = BaseElement(self.driver,
+                                                     accessibility_id=":discover-communities-floating-screen")
+
 
         self.jump_to_button = Button(self.driver, accessibility_id="jump-to")
 
@@ -389,8 +392,9 @@ class BaseView(object):
 
     def navigate_back_to_home_view(self, attempts=3):
         counter = 0
-        while not self.chat_floating_screen.is_element_disappeared(2) \
-                or not self.community_floating_screen.is_element_disappeared(2):
+        while not self.chat_floating_screen.is_element_disappeared(1) \
+                or not self.community_floating_screen.is_element_disappeared(1) \
+                or not self.discover_communities_floating_screen.is_element_disappeared(1):
             self.driver.press_keycode(4)
         element = self.chats_tab
         while not element.is_element_displayed(1) and counter <= attempts:

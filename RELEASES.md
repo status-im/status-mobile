@@ -25,7 +25,7 @@
 
 ### Redesign
 
-* Quo2, Switcher Navigation by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13167
+* quo, Switcher Navigation by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13167
 * Switcher and Bottom Tabs Animations and UI Performance Improvements by @Parveshdhull in https://github.com/status-im/status-mobile/pull/13470
 * feat: add token tag component (#13599) by @J-Son89 in https://github.com/status-im/status-mobile/pull/13644
 * [13565] icon-avatar component by @ibrkhalil in https://github.com/status-im/status-mobile/pull/13692

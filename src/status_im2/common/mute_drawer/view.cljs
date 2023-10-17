@@ -1,6 +1,6 @@
 (ns status-im2.common.mute-drawer.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.common.mute-drawer.style :as style]
     [status-im2.constants :as constants]

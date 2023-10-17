@@ -1,7 +1,7 @@
 (ns status-im2.common.standard-authentication.standard-auth.view
   (:require
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.touch-id :as biometric]
     [reagent.core :as reagent]

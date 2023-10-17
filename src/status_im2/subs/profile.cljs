@@ -2,7 +2,7 @@
   (:require
     [cljs.spec.alpha :as spec]
     [clojure.string :as string]
-    [quo2.theme :as theme]
+    [quo.theme :as theme]
     [re-frame.core :as re-frame]
     [status-im.fleet.core :as fleet]
     [status-im.multiaccounts.db :as multiaccounts.db]

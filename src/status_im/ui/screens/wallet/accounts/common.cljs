@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.accounts.common
   (:require
-    [quo2.components.markdown.text :as quo2.text]
-    [quo2.foundations.colors :as quo2.colors]
+    [quo.components.markdown.text :as quo.text]
+    [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -66,14 +66,14 @@
       [chat-icon/custom-icon-view-list (:name token) color])]
    [rn/view {:position :absolute :left 52 :top 8 :right 12}
     [rn/view {:flex-direction :row :justify-content :space-between :align-items :center}
-     [quo2.text/text {:weight :semi-bold :style {:height 22}}
+     [quo.text/text {:weight :semi-bold :style {:height 22}}
       name]
-     [quo2.text/text {:size :paragraph-2 :weight :medium}
+     [quo.text/text {:size :paragraph-2 :weight :medium}
       (str (if value value "...") " " currency)]]
-    [quo2.text/text
+    [quo.text/text
      {:size   :paragraph-2
       :weight :medium
-      :style  {:color (quo2.colors/theme-colors quo2.colors/neutral-50 quo2.colors/neutral-40)}}
+      :style  {:color (quo.colors/theme-colors quo.colors/neutral-50 quo.colors/neutral-40)}}
      (str (if amount
             (wallet.utils/format-amount amount decimals)
             "...")

@@ -4,7 +4,7 @@
   (:require
     ["@testing-library/react-native" :as rtl]
     [camel-snake-kebab.core :as camel-snake-kebab]
-    [quo2.theme :as quo.theme]
+    [quo.theme :as quo.theme]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 

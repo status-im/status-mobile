@@ -1,8 +1,8 @@
 (ns status-im2.contexts.shell.share.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.navigation :as navigation]

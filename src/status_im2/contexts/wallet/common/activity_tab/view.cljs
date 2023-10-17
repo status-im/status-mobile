@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.common.activity-tab.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
     [status-im2.contexts.wallet.common.temp :as temp]

@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.profile.contact.views
   (:require
     [clojure.string :as string]
-    [quo2.components.avatars.user-avatar.style :as user-avatar.style]
-    [quo2.theme :as theme]
+    [quo.components.avatars.user-avatar.style :as user-avatar.style]
+    [quo.theme :as theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.multiaccounts.core :as multiaccounts]

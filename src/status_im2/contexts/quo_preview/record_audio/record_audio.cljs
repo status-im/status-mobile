@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.record-audio.record-audio
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
     [reagent.core :as reagent]

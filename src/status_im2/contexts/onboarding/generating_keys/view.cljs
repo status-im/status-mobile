@@ -1,6 +1,6 @@
 (ns status-im2.contexts.onboarding.generating-keys.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]

@@ -144,7 +144,7 @@
    {:name      :wallet
     :on-focus  [:wallet/tab-opened]
     ;;TODO wallet redesign
-    ;;:options   {:statusBar {:backgroundColor quo2.colors/neutral-5}}
+    ;;:options   {:statusBar {:backgroundColor quo.colors/neutral-5}}
     :component wallet.accounts/accounts-overview-old}
    {:name      :wallet-account
     ;;TODO dynamic titleaccounts-overview

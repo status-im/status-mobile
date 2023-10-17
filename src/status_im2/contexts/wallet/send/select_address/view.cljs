@@ -1,7 +1,7 @@
 (ns status-im2.contexts.wallet.send.select-address.view
   (:require
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -42,27 +42,38 @@
 
 (defn- address-input
   []
-  (let [timer       (atom nil)
-        valid-ens?  (reagent/atom false)
-        input-value (atom "")]
-    [quo/address-input
-     {:on-scan #(js/alert "Not implemented yet")
-      :ens-regex constants/regx-ens
-      :on-detect-ens
-      (fn [_]
-        (reset! valid-ens? false)
-        (when @timer (js/clearTimeout @timer))
-        (reset! timer (js/setTimeout #(reset! valid-ens? true) 2000)))
-      :on-change-text #(reset! input-value %)
-      :valid-ens? @valid-ens?}]))
+  (let [timer                    (atom nil)
+        valid-ens-or-address?    (reagent/atom false)
+        input-value              (atom "")
+        on-detect-address-or-ens (fn [_]
+                                   (reset! valid-ens-or-address? false)
+                                   (when @timer (js/clearTimeout @timer))
+                                   (reset! timer (js/setTimeout #(reset! valid-ens-or-address? true)
+                                                                2000)))]
+    (fn []
+      (let [scanned-address (rf/sub [:wallet-2/scanned-address])]
+        [quo/address-input
+         {:on-scan               #(rf/dispatch [:open-modal :scan-address])
+          :ens-regex             constants/regx-ens
+          :address-regex         constants/regx-address
+          :scanned-value         scanned-address
+          :on-detect-ens         on-detect-address-or-ens
+          :on-detect-address     on-detect-address-or-ens
+          :on-change-text        (fn [text]
+                                   (when-not (= scanned-address text)
+                                     (rf/dispatch [:wallet-2/clean-scanned-address]))
+                                   (reset! input-value text))
+          :on-clear              #(rf/dispatch [:wallet-2/clean-scanned-address])
+          :valid-ens-or-address? @valid-ens-or-address?}]))))
 
-(defn- view-internal
+(defn- f-view-internal
   []
   (let [margin-top    (safe-area/get-top)
         selected-tab  (reagent/atom (:id (first tabs-data)))
-        on-close      #(rf/dispatch [:navigate-back])
+        on-close      #(rf/dispatch [:dismiss-modal :wallet-select-address])
         on-change-tab #(reset! selected-tab %)]
     (fn []
+      (rn/use-effect (fn [] #(rf/dispatch [:wallet-2/clean-scanned-address])))
       [rn/scroll-view
        {:content-container-style      (style/container margin-top)
         :keyboard-should-persist-taps :never
@@ -71,7 +82,11 @@
         {:icon-name           :i/close
          :on-press            on-close
          :accessibility-label :top-bar
-         :right-side          :account-switcher}]
+         :right-side          :account-switcher
+         :account-switcher    {:customization-color :purple
+                               :on-press            #(js/alert "Not implemented yet")
+                               :state               :default
+                               :emoji               "🍑"}}]
        [quo/text-combinations
         {:title                     (i18n/label :t/send-to)
          :container-style           style/title-container
@@ -88,5 +103,9 @@
          :scroll-on-press? true
          :on-change        on-change-tab}]
        [tab-view @selected-tab]])))
+
+(defn view-internal
+  []
+  [:f> f-view-internal])
 
 (def view (quo.theme/with-theme view-internal))

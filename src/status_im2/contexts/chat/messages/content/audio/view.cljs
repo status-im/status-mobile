@@ -2,8 +2,8 @@
   (:require
     ["react-native-blob-util" :default ReactNativeBlobUtil]
     [goog.string :as gstring]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.audio-toolkit :as audio]
     [react-native.core :as rn]
     [react-native.platform :as platform]
