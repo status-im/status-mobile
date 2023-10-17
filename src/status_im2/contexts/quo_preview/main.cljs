@@ -18,6 +18,7 @@
     [status-im2.contexts.quo-preview.browser.browser-input :as browser-input]
     [status-im2.contexts.quo-preview.browser.dapp-favorites :as dapp-favorites]
     [status-im2.contexts.quo-preview.browser.dapp-item :as dapp-item]
+    [status-im2.contexts.quo-preview.browser.new-tab :as new-tab]
     [status-im2.contexts.quo-preview.buttons.button :as button]
     [status-im2.contexts.quo-preview.buttons.composer-button :as
      composer-button]
@@ -215,7 +216,9 @@
                        {:name      :dapp-favorites
                         :component dapp-favorites/view}
                        {:name      :dapp-item
-                        :component dapp-item/view}]
+                        :component dapp-item/view}
+                       {:name      :new-tab
+                        :component new-tab/view}]
    :calendar          [{:name      :calendar
                         :component calendar/view}
                        {:name      :calendar-day

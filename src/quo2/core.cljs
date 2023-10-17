@@ -12,6 +12,7 @@
     quo2.components.browser.browser-input.view
     quo2.components.browser.dapp-favorites.view
     quo2.components.browser.dapp-item.view
+    quo2.components.browser.new-tab.view
     quo2.components.buttons.button.view
     quo2.components.buttons.composer-button.view
     quo2.components.buttons.dynamic-button.view
@@ -177,6 +178,7 @@
 (def browser-input quo2.components.browser.browser-input.view/view)
 (def dapp-favorites quo2.components.browser.dapp-favorites.view/view)
 (def dapp-item quo2.components.browser.dapp-item.view/view)
+(def new-tab quo2.components.browser.new-tab.view/view)
 
 ;;;; Calendar
 (def calendar quo2.components.calendar.calendar.view/view)

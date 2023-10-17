@@ -34,7 +34,7 @@
     (fn
       [{:keys [on-press on-long-press disabled? type background size icon-left icon-right icon-top
                customization-color theme accessibility-label icon-only? container-style inner-style
-               pressed? on-press-in on-press-out]
+               pressed? on-press-in on-press-out hit-slop]
         :or   {type                :primary
                size                40
                customization-color (cond (= type :primary)  :blue
@@ -61,7 +61,8 @@
                                  (reset! pressed-state? nil)
                                  (when on-press-out (on-press-out)))
           :on-press            on-press
-          :on-long-press       on-long-press}
+          :on-long-press       on-long-press
+          :hit-slop            hit-slop}
          [rn/view
           {:style (merge
                    (style/shape-style-container size border-radius)
