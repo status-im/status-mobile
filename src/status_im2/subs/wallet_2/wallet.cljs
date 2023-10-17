@@ -3,13 +3,13 @@
             [re-frame.core :as re-frame]
             [utils.number]))
 
-(defn calculate-raw-balance
+(defn- calculate-raw-balance
   [raw-balance decimals]
   (if-let [n (utils.number/parse-int raw-balance nil)]
     (/ n (Math/pow 10 (utils.number/parse-int decimals)))
     0))
 
-(defn calculate-balance
+(defn- calculate-balance
   [address tokens]
   (let [token  (get tokens (keyword (string/lower-case address)))
         result (reduce

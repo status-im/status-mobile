@@ -46,26 +46,28 @@
             2))
 
 (defn account-cards
-  [accounts loading? balances]
-  (let [refactored-accounts (mapv (fn [account]
-                                    (assoc account
-                                           :type                :empty
-                                           :customization-color :blue
-                                           :on-press            #(rf/dispatch [:navigate-to
-                                                                               :wallet-accounts])
-                                           :loading?            loading?
-                                           :balance             (str "$"
-                                                                     (get-balance balances
-                                                                                  (:address account)))))
-                                  accounts)]
-    (conj refactored-accounts add-account-placeholder)))
+  [{:keys [accounts loading? balances profile]}]
+  (let [accounts-with-balances (mapv (fn [account]
+                                       (assoc account
+                                              :type                :empty
+                                              :customization-color (:customization-color profile)
+                                              :on-press            #(rf/dispatch [:navigate-to
+                                                                                  :wallet-accounts])
+                                              :loading?            loading?
+                                              :balance             (str "$"
+                                                                        (get-balance balances
+                                                                                     (:address
+                                                                                      account)))))
+                                     accounts)]
+    (conj accounts-with-balances add-account-placeholder)))
 
 (defn- view-internal
   [accounts]
   (let [top          (safe-area/get-top)
         selected-tab (reagent/atom (:id (first tabs-data)))
         loading?     (rf/sub [:wallet-2/tokens-loading?])
-        balances     (rf/sub [:wallet-2/balances])]
+        balances     (rf/sub [:wallet-2/balances])
+        profile      (rf/sub [:profile/profile])]
     [rn/view
      {:style {:margin-top top
               :flex       1}}
@@ -77,7 +79,10 @@
       [quo/wallet-graph {:time-frame :empty}]]
      [rn/flat-list
       {:style      style/accounts-list
-       :data       (account-cards accounts loading? balances)
+       :data       (account-cards {:accounts accounts
+                                   :loading? loading?
+                                   :balances balances
+                                   :profile  profile})
        :horizontal true
        :separator  [rn/view {:style {:width 12}}]
        :render-fn  quo/account-card}]
