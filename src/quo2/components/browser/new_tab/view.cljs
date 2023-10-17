@@ -8,7 +8,7 @@
 
 (defn view-internal
   [{:keys [customization-color theme]}]
-  [rn/pressable
+  [rn/view
    {:style (style/container customization-color theme)}
    [button/button
     {:type                :primary
