@@ -9,7 +9,7 @@
 
 (defn view
   [{:keys [dapps]}]
-  [rn/view
+  [rn/view {:style style/container}
    [rn/flat-list
     {:flex                              1
      :horizontal                        true
