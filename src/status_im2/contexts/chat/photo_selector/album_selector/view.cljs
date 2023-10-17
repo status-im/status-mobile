@@ -1,5 +1,4 @@
 (ns status-im2.contexts.chat.photo-selector.album-selector.view
-<<<<<<< HEAD
   (:require
     [quo2.core :as quo]
     [quo2.foundations.colors :as colors]
@@ -9,17 +8,6 @@
     [status-im2.contexts.chat.photo-selector.album-selector.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
-=======
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [react-native.gesture :as gesture]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.photo-selector.album-selector.style :as style]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
->>>>>>> 5ec0113da (Add iOS counting functionality)
 
 (defn render-album
   [{title :title size :count uri :uri} index _ {:keys [album? selected-album top]}]
