@@ -14,6 +14,5 @@
    [quo/text {} "SAVED ADDRESSES"]
    [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-saved-address])}
     "NAVIGATE TO SAVED ADDRESS"]
-   [quo/divider-label]
    [quo/button {:on-press #(rf/dispatch [:navigate-back])}
     "NAVIGATE BACK"]])

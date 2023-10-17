@@ -30,7 +30,7 @@
 (defn- view-internal
   "params, first name, last name, customization-color, size
    and if it's dark or not!"
-  [{:keys [f-name l-name customization-color size theme monospace? uppercase?]
+  [{:keys [f-name l-name customization-color size theme monospace? uppercase? container-style]
     :or   {f-name     "John"
            l-name     "Doe"
            size       :x-large
@@ -50,13 +50,14 @@
                          (colors/resolve-color customization-color theme)
                          (colors/theme-colors colors/neutral-80-opa-70 colors/white-opa-70 theme))]
     [rn/view
-     {:style {:width            circle-size
-              :height           circle-size
-              :border-radius    circle-size
-              :text-align       :center
-              :justify-content  :center
-              :align-items      :center
-              :background-color circle-color}}
+     {:style (merge {:width            circle-size
+                     :height           circle-size
+                     :border-radius    circle-size
+                     :text-align       :center
+                     :justify-content  :center
+                     :align-items      :center
+                     :background-color circle-color}
+                    container-style)}
      [text/text
       {:size   (size font-sizes)
        :weight (if monospace? :monospace (size font-weights))

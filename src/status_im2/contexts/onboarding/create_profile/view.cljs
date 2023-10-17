@@ -199,7 +199,6 @@
             {:blur?            true
              :default-selected :blue
              :on-change        on-change}]]]]]
-
        [rn/keyboard-avoiding-view
         {:style          {:position :absolute
                           :top      0
