@@ -1,4 +1,4 @@
-(ns quo2.components.inputs.input.view
+(ns quo.components.inputs.input.view
   (:require [oops.core :as oops]
             [quo.components.icon :as icon]
             [quo.components.inputs.input.style :as style]

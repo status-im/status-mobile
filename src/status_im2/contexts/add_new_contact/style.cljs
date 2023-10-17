@@ -1,5 +1,5 @@
 (ns status-im2.contexts.add-new-contact.style
-  (:require [quo2.foundations.colors :as colors]
+  (:require [quo.foundations.colors :as colors]
             [react-native.safe-area :as safe-area]))
 
 (defn container-outer
