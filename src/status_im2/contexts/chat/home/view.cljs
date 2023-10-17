@@ -15,6 +15,7 @@
     [status-im2.contexts.chat.actions.view :as chat.actions.view]
     [status-im2.contexts.chat.home.chat-list-item.view :as chat-list-item]
     [status-im2.contexts.chat.home.contact-request.view :as contact-request]
+    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -66,6 +67,8 @@
         :data                              items
         :render-fn                         chat-list-item/chat-list-item
         :scroll-event-throttle             8
+        :content-container-style           {:padding-bottom
+                                            jump-to.constants/floating-shell-button-height}
         :on-scroll                         #(common.banner/set-scroll-shared-value
                                              {:scroll-input (oops/oget % "nativeEvent.contentOffset.y")
                                               :shared-value scroll-shared-value})}])))

@@ -97,27 +97,43 @@
        shell.constants/close-screen-without-animation))))
 
 ;;; Floating screen
+(defn- screen-state-open?
+  [state]
+  (#{shell.constants/open-screen-without-animation
+     shell.constants/open-screen-with-shell-animation
+     shell.constants/open-screen-with-slide-from-right-animation
+     shell.constants/open-screen-with-slide-from-bottom-animation}
+   state))
+
 (defn floating-screen-open?
   [screen-id]
-  (let [state (get @state/floating-screens-state screen-id)]
-    (or (= state shell.constants/open-screen-with-slide-animation)
-        (= state shell.constants/open-screen-with-shell-animation)
-        (= state shell.constants/open-screen-without-animation))))
+  (screen-state-open? (get @state/floating-screens-state screen-id)))
+
+(defn open-floating-screens
+  []
+  (reduce (fn [acc [screen-id state]]
+            (let [open? (screen-state-open? state)]
+              (if open? (assoc acc screen-id true) acc)))
+          {}
+          @state/floating-screens-state))
 
 ;;; Navigation
 (defn shell-navigation?
   [view-id]
   (when-not config/shell-navigation-disabled?
-    (#{:chat :community-overview} view-id)))
+    (some #{view-id} shell.constants/floating-screens)))
 
 (defn calculate-view-id
   []
-  (cond
-    (floating-screen-open? shell.constants/chat-screen)
-    shell.constants/chat-screen
-    (floating-screen-open? shell.constants/community-screen)
-    shell.constants/community-screen
-    :else (or @state/selected-stack-id :shell)))
+  (let [screens (open-floating-screens)]
+    (cond
+      (get screens shell.constants/chat-screen)
+      shell.constants/chat-screen
+      (get screens shell.constants/community-screen)
+      shell.constants/community-screen
+      (get screens shell.constants/discover-communities-screen)
+      shell.constants/discover-communities-screen
+      :else (or @state/selected-stack-id :shell))))
 
 (defn update-view-id
   [view-id]
