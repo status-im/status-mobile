@@ -39,10 +39,10 @@
 
 (defn get-balance
   [balances address]
-  (->> balances
-       (filter #(= (:address %) address))
-       first
-       :balance))
+  (.toFixed (->> balances
+                 (filter #(= (:address %) address))
+                 first
+                 :balance) 2))
 
 (defn account-cards
   [accounts loading? balances]
