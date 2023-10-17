@@ -4,12 +4,11 @@
     [react-native.core :as rn]
     [status-im2.contexts.wallet.account.tabs.about.view :as about]
     [status-im2.contexts.wallet.account.tabs.dapps.view :as dapps]
+    [status-im2.contexts.wallet.common.activity-tab.view :as activity]
+    [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
     [status-im2.contexts.wallet.common.temp :as temp]
-    [utils.i18n :as i18n]
-    [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
-    [status-im2.contexts.wallet.common.activity-tab.view :as activity]
-    [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]))
+    [utils.i18n :as i18n]))
 
 (defn view
   [{:keys [selected-tab]}]

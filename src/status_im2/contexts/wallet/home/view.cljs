@@ -5,13 +5,12 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.common.home.top-nav.view :as common.top-nav]
+    [status-im2.contexts.wallet.common.activity-tab.view :as activity]
+    [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im2.contexts.wallet.common.temp :as temp]
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
-    [status-im2.contexts.wallet.common.activity-tab.view :as activity]
-    [status-im2.contexts.wallet.common.temp :as temp]))
+    [utils.re-frame :as rf]))
 
 (defn new-account
   []
