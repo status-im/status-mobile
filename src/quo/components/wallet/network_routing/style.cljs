@@ -1,5 +1,5 @@
-(ns quo2.components.wallet.network-routing.style
-  (:require [quo2.foundations.colors :as colors]
+(ns quo.components.wallet.network-routing.style
+  (:require [quo.foundations.colors :as colors]
             [react-native.reanimated :as reanimated]))
 
 (defn container

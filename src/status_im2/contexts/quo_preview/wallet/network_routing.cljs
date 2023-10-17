@@ -1,10 +1,9 @@
 (ns status-im2.contexts.quo-preview.wallet.network-routing
-  (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require [quo.core :as quo]
+            [quo.foundations.colors :as colors]
+            [react-native.core :as rn]
+            [reagent.core :as reagent]
+            [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:label   "Number of networks"

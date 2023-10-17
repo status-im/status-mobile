@@ -1,9 +1,9 @@
-(ns quo2.components.wallet.network-routing.view
+(ns quo.components.wallet.network-routing.view
   (:require
     [oops.core :as oops]
-    [quo2.components.wallet.network-routing.animation :as animation]
-    [quo2.components.wallet.network-routing.style :as style]
-    [quo2.theme :as quo.theme]
+    [quo.components.wallet.network-routing.animation :as animation]
+    [quo.components.wallet.network-routing.style :as style]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]

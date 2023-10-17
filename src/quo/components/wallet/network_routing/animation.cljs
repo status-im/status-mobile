@@ -1,4 +1,4 @@
-(ns quo2.components.wallet.network-routing.animation
+(ns quo.components.wallet.network-routing.animation
   (:require [react-native.reanimated :as reanimated]))
 
 (def ^:private slider-timing 300)
