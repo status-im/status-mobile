@@ -5,7 +5,6 @@
     [react-native.navigation :as navigation]
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.zoomable-image.constants :as constants]
@@ -107,12 +106,36 @@
     (rescale constants/min-scale true)))
 
 (defn toggle-opacity
-  [index {:keys [opacity-value border-value full-screen-scale transparent? props]} portrait?]
+  [index
+   {:keys [opacity-value overlay-opacity border-value full-screen-scale transparent?
+           props]}
+   portrait? last-overlay-opacity]
   (let [{:keys [small-list-ref timers text-sheet-lock?]} props
-        opacity                                          (reanimated/get-shared-value opacity-value)
         scale-value                                      (inc (/ constants/margin
                                                                  (:width (rn/get-window))))]
-    (if (= opacity 1)
+    (if @transparent?
+      (do
+        (js/clearTimeout (:hide-0 @timers))
+        (js/clearTimeout (:hide-1 @timers))
+        (reset! transparent? (not @transparent?))
+        (swap! timers assoc
+          :show-0
+          (js/setTimeout #((anim/animate opacity-value 1)
+                            (anim/animate overlay-opacity @last-overlay-opacity)
+                            (reset! last-overlay-opacity 0))
+                         50))
+        (swap! timers assoc
+          :show-1
+          (js/setTimeout #(when @small-list-ref
+                            (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
+                         100))
+        (anim/animate border-value 16)
+        (anim/animate full-screen-scale 1)
+        (when portrait?
+          (swap! timers assoc
+            :show-2
+            (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible true}})
+                           (if platform/ios? 150 50)))))
       (do
         (js/clearTimeout (:show-0 @timers))
         (js/clearTimeout (:show-1 @timers))
@@ -122,26 +145,13 @@
           (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible false}})
                          (if platform/ios? 75 0)))
         (anim/animate opacity-value 0)
+        (reset! last-overlay-opacity (anim/get-val overlay-opacity))
+        (anim/animate overlay-opacity 0)
+        (anim/animate border-value 0)
+        (anim/animate full-screen-scale scale-value)
         (swap! timers assoc :hide-1 (js/setTimeout #(reset! transparent? (not @transparent?)) 400))
         (reset! text-sheet-lock? true)
-        (js/setTimeout #(reset! text-sheet-lock? false) 300))
-      (do
-        (js/clearTimeout (:hide-0 @timers))
-        (js/clearTimeout (:hide-1 @timers))
-        (reset! transparent? (not @transparent?))
-        (swap! timers assoc :show-0 (js/setTimeout #(anim/animate opacity-value 1) 50))
-        (swap! timers assoc
-          :show-1
-          (js/setTimeout #(when @small-list-ref
-                            (.scrollToIndex ^js @small-list-ref #js {:animated false :index index}))
-                         100))
-        (when portrait?
-          (swap! timers assoc
-            :show-2
-            (js/setTimeout #(navigation/merge-options "lightbox" {:statusBar {:visible true}})
-                           (if platform/ios? 150 50))))))
-    (anim/animate border-value (if (= opacity 1) 0 16))
-    (anim/animate full-screen-scale (if (= opacity 1) scale-value 1))))
+        (js/setTimeout #(reset! text-sheet-lock? false) 300)))))
 
 ;;; Dimensions
 (defn get-dimensions

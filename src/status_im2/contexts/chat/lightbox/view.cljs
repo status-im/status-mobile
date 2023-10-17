@@ -75,7 +75,16 @@
                 {:transform [{:translateY (:pan-y animations)}
                              {:translateX (:pan-x animations)}]}
                 {})}
-       [reanimated/view {:style (style/background animations @(:overlay-z-index state))}]
+       [reanimated/linear-gradient
+        {:colors         [colors/neutral-100-opa-0 colors/neutral-100-opa-0 colors/neutral-100-opa-100
+                          colors/neutral-100]
+         :locations      [0.3 0.4 0.6 1]
+         :pointer-events :none
+         :style          (style/background-bottom-gradient animations @(:overlay-z-index state))}]
+       [reanimated/linear-gradient
+        {:colors         [colors/neutral-100-opa-50 colors/neutral-100]
+         :pointer-events :none
+         :style          (style/background-top-gradient animations @(:overlay-z-index state))}]
        [gesture/flat-list
         {:ref                               #(reset! (:flat-list-ref props) %)
          :key-fn                            :message-id
@@ -85,6 +94,7 @@
          :data                              @data
          :render-fn                         image
          :render-data                       {:opacity-value     (:opacity animations)
+                                             :overlay-opacity   (:overlay-opacity animations)
                                              :border-value      (:border animations)
                                              :full-screen-scale (:full-screen-scale animations)
                                              :images-opacity    (:images-opacity animations)
@@ -105,9 +115,12 @@
          :shows-vertical-scroll-indicator   false
          :shows-horizontal-scroll-indicator false
          :on-viewable-items-changed         handle-items-changed}]]]
-     (when (and (not @transparent?) (not landscape?))
+     ;; NOTE: not un-mounting bottom-view based on `transparent?` (like we do with the top-view
+     ;;       above), since we need to save the state of the text-sheet position. Instead, we use
+     ;;       the `:display` style property to hide the bottom-sheet.
+     (when (not landscape?)
        [:f> bottom-view/bottom-view messages index scroll-index insets animations derived
-        item-width props state])]))
+        item-width props state transparent?])]))
 
 (defn- f-lightbox
   []
