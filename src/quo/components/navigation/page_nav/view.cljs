@@ -196,7 +196,11 @@
     :no-title
     [page-nav-base props
      [right-content
-      {:background background :content right-side :max-actions 3 :behind-overlay? behind-overlay?}]]
+      {:background       background
+       :content          right-side
+       :max-actions      3
+       :behind-overlay?  behind-overlay?
+       :account-switcher account-switcher}]]
 
     :title
     (let [centered? (= text-align :center)]

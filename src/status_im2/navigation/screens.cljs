@@ -42,6 +42,7 @@
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im2.contexts.wallet.saved-address.view :as wallet-saved-address]
     [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
+    [status-im2.contexts.wallet.scan-account.view :as scan-address]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im2.navigation.options :as options]
     [status-im2.navigation.transitions :as transitions]))
@@ -259,7 +260,13 @@
 
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext}
-     :component wallet-select-address/view}]
+     :component wallet-select-address/view}
+
+    {:name      :scan-address
+     :options   (merge
+                 options/dark-screen
+                 {:modalPresentationStyle :overCurrentContext})
+     :component scan-address/view}]
 
    (when config/quo-preview-enabled?
      quo.preview/screens)
