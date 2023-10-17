@@ -1,16 +1,16 @@
 (ns status-im2.contexts.wallet.home.view
   (:require
-   [quo2.core :as quo]
-   [react-native.core :as rn]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im2.common.home.top-nav.view :as common.top-nav]
-   [status-im2.contexts.wallet.common.activity-tab.view :as activity]
-   [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
-   [status-im2.contexts.wallet.common.temp :as temp]
-   [status-im2.contexts.wallet.home.style :as style]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [quo2.core :as quo]
+    [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.common.home.top-nav.view :as common.top-nav]
+    [status-im2.contexts.wallet.common.activity-tab.view :as activity]
+    [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
+    [status-im2.contexts.wallet.common.temp :as temp]
+    [status-im2.contexts.wallet.home.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn new-account
   []
@@ -42,7 +42,8 @@
   (.toFixed (->> balances
                  (filter #(= (:address %) address))
                  first
-                 :balance) 2))
+                 :balance)
+            2))
 
 (defn account-cards
   [accounts loading? balances]

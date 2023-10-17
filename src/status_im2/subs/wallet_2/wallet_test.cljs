@@ -1,8 +1,8 @@
 (ns status-im2.subs.wallet-2.wallet-test
   (:require [cljs.test :refer [is testing use-fixtures]]
             [re-frame.db :as rf-db]
-            [test-helpers.unit :as h]
             status-im2.subs.root
+            [test-helpers.unit :as h]
             [utils.re-frame :as rf]))
 
 (def tokens
