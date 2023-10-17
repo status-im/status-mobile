@@ -316,7 +316,7 @@ lint: ##@test Run code style checks
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
 	sh scripts/lint-trailing-newline.sh && \
-	yarn prettier
+	node_modules/.bin/prettier --write .
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
 lint-fix: export TARGET := clojure
@@ -326,7 +326,7 @@ lint-fix: ##@test Run code style checks and fix issues
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	clojure-lsp --ns-exclude-regex ".*/src/status_im2/core\.cljs$$" clean-ns && \
 	sh scripts/lint-trailing-newline.sh --fix && \
-	yarn prettier
+	node_modules/.bin/prettier --write .
 
 shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching
