@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.chat.styles.message.message
   (:require
-    [quo2.foundations.colors :as quo2.colors]
-    [quo2.foundations.typography :as typography]
+    [quo.foundations.colors :as quo.colors]
+    [quo.foundations.typography :as typography]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.react :as react]
     [status-im2.constants :as constants]))
@@ -191,7 +191,7 @@
 (defn message-default-style
   []
   {:font-family    "Inter-Regular"
-   :color          (quo2.colors/theme-colors quo2.colors/neutral-100 quo2.colors/white)
+   :color          (quo.colors/theme-colors quo.colors/neutral-100 quo.colors/white)
    :font-size      15
    :line-height    21.75
    :letter-spacing -0.135})
@@ -279,7 +279,7 @@
     (update (default-text-style)
             :style
             assoc
-            :color (quo2.colors/theme-colors quo2.colors/neutral-40 quo2.colors/neutral-50)
+            :color (quo.colors/theme-colors quo.colors/neutral-40 quo.colors/neutral-50)
             :font-size 13
             :line-height 18.2
             :letter-spacing (typography/tracking 13))))

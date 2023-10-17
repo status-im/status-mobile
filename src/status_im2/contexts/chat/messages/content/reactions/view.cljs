@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.messages.content.reactions.view
   (:require
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.messages.drawers.view :as drawers]
     [utils.re-frame :as rf]))

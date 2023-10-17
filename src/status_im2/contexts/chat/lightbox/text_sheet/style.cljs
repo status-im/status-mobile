@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.lightbox.text-sheet.style
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.lightbox.constants :as constants]))
 

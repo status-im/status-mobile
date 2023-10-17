@@ -1,6 +1,6 @@
 (ns status-im2.contexts.syncing.syncing-instructions.style
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [react-native.platform :as platform]))
 
 (def container-outer

@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.composer.images.style
   (:require
-    [quo2.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]))
 
 (def image-container
   {:padding-top    12
@@ -17,8 +17,8 @@
    :top              5
    :right            9
    :justify-content  :center
-   :align-items      :center
-  })
+   :align-items      :center})
+
 
 (def remove-photo-inner-container
   {:width            14

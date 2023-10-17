@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.composer.sub-view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]

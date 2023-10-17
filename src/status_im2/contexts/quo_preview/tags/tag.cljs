@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.tags.tag
   (:require
-    [quo2.components.tags.tag :as tag]
-    [quo2.foundations.colors :as colors]
+    [quo.components.tags.tag :as tag]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.ui.components.react :as react]

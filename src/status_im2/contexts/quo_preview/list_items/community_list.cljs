@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.list-items.community-list
   (:require
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.community.data :as data]

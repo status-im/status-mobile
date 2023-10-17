@@ -1,6 +1,6 @@
 (ns status-im2.contexts.communities.actions.home-plus.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [status-im2.config :as config]
     [utils.re-frame :as rf]))
 

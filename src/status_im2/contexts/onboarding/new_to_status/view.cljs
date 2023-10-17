@@ -1,6 +1,6 @@
 (ns status-im2.contexts.onboarding.new-to-status.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     re-frame.db
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -108,5 +108,5 @@
                                                 :shell?  true}])}
                     (when config/quo-preview-enabled?
                       {:icon-name :i/reveal-whitelist
-                       :on-press  #(rf/dispatch [:navigate-to :quo2-preview])})]}]
+                       :on-press  #(rf/dispatch [:navigate-to :quo-preview])})]}]
      [sign-in-options]]))

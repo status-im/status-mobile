@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.jump-to.shared-values
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [status-im2.contexts.shell.jump-to.constants :as shell.constants]

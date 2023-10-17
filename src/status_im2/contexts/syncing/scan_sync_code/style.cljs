@@ -1,6 +1,6 @@
 (ns status-im2.contexts.syncing.scan-sync-code.style
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [react-native.reanimated :as reanimated]))
 
 (def screen-padding 20)

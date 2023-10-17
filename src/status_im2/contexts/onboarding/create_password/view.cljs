@@ -1,7 +1,7 @@
 (ns status-im2.contexts.onboarding.create-password.view
   (:require
     [oops.core :refer [ocall]]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]

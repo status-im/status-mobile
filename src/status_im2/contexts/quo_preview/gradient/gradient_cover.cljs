@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.gradient.gradient-cover
   (:require
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.blur :as blur]
     [react-native.core :as rn]
     [reagent.core :as reagent]

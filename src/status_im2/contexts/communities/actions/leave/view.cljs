@@ -1,6 +1,6 @@
 (ns status-im2.contexts.communities.actions.leave.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.contexts.communities.actions.generic-menu.view :as generic-menu]
     [status-im2.contexts.communities.actions.leave.style :as style]

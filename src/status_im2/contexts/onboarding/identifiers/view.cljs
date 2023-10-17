@@ -1,7 +1,7 @@
 (ns status-im2.contexts.onboarding.identifiers.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.contexts.onboarding.common.carousel.animation :as carousel.animation]
     [status-im2.contexts.onboarding.common.carousel.view :as carousel]

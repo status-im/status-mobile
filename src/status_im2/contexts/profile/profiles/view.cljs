@@ -1,7 +1,7 @@
 (ns status-im2.contexts.profile.profiles.view
   (:require
     [native-module.core :as native-module]
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
@@ -183,9 +183,9 @@
           :type                :grey
           :background          :blur
           :icon-only?          true
-          :on-press            #(rf/dispatch [:navigate-to :quo2-preview])
+          :on-press            #(rf/dispatch [:navigate-to :quo-preview])
           :disabled?           processing
-          :accessibility-label :quo2-preview
+          :accessibility-label :quo-preview
           :container-style     {:margin-right 12}}
          :i/reveal-whitelist])
       [quo/button

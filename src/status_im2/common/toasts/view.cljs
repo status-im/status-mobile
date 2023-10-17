@@ -1,6 +1,6 @@
 (ns status-im2.common.toasts.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.background-timer :as background-timer]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]

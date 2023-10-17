@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.wallet.send.views
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require
-    [quo2.core :as quo2]
+    [quo.core :as quo]
     [re-frame.core :as re-frame]
     [status-im.commands.core :as commands]
     [status-im.multiaccounts.core :as multiaccounts]
     [status-im.ui.components.bottom-panel.views :as bottom-panel]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
     [status-im.ui.components.colors :as colors]
-    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.core :as components.core]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
     [status-im.ui.components.list.item :as list.item]
@@ -82,7 +82,7 @@
   (if from-chat?
     [list.item/list-item
      {:title    (multiaccounts/displayed-name contact)
-      :subtitle [quo/text
+      :subtitle [components.core/text
                  {:monospace true
                   :color     :secondary}
                  (utils/get-shortened-checksum-address (:address contact))]
@@ -90,7 +90,7 @@
     [list.item/list-item
      (merge {:title               (if-not contact
                                     (i18n/label :t/wallet-choose-recipient)
-                                    [quo/text
+                                    [components.core/text
                                      {:size      :large
                                       :monospace true}
                                      (utils/get-shortened-checksum-address
@@ -139,7 +139,7 @@
      :padding-horizontal 24
      :align-items        :center
      :margin-vertical    16}]
-   [quo/list-header
+   [components.core/list-header
     (i18n/label :t/from-capitalized)]
    [react/view {:flex-direction :row :flex 1 :align-items :center}
     [react/view {:flex 1}
@@ -147,12 +147,12 @@
    [toolbar/toolbar
     {:left
      [react/view {:padding-horizontal 8}
-      [quo/button
+      [components.core/button
        {:type     :secondary
         :on-press #(re-frame/dispatch [:set :commands/select-account nil])}
        (i18n/label :t/cancel)]]
      :right
-     [quo/button
+     [components.core/button
       {:accessibility-label :select-account-bottom-sheet
        :disabled            (nil? from)
        :on-press            #(re-frame/dispatch
@@ -205,7 +205,7 @@
              :font-size    12}])]
         [fiat-value amount-text token prices wallet-currency]
         [components/separator]
-        [quo/list-header
+        [components.core/list-header
          (i18n/label :t/to-capitalized)]
         [react/view {:flex-direction :row :flex 1 :align-items :center}
          [react/view {:flex 1}
@@ -213,7 +213,7 @@
       [toolbar/toolbar
        {:show-border? true
         :right
-        [quo/button
+        [components.core/button
          {:type                :secondary
           :after               :main-icon/next
           :accessibility-label :request-transaction-bottom-sheet
@@ -237,7 +237,7 @@
     (let [to-norm (address/normalized-hex (if (string? to) to (:address to)))]
       [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
        [:<>
-        [quo2/page-nav
+        [quo/page-nav
          {:type                :title
           :text-align          :left
           :title               (i18n/label :t/send-transaction)
@@ -280,11 +280,11 @@
           (when-not (or request? from-chat?)
             [set-max token])
           [components/separator]
-          [quo/list-header (i18n/label :t/from-capitalized)]
+          [components.core/list-header (i18n/label :t/from-capitalized)]
           [react/view {:flex-direction :row :flex 1 :align-items :center}
            [react/view {:flex 1}
             [render-account from token :wallet.send/set-field]]]
-          [quo/list-header
+          [components.core/list-header
            (i18n/label :t/to-capitalized)]
           [react/view {:flex-direction :row :flex 1 :align-items :center}
            [react/view {:flex 1}

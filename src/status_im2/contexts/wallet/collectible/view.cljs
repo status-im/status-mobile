@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.collectible.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.common.scroll-page.view :as scroll-page]
     [status-im2.contexts.wallet.collectible.style :as style]

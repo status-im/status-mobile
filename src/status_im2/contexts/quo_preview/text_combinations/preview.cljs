@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.text-combinations.preview
   (:require
-    [quo2.components.text-combinations.view :as quo2]
+    [quo.components.text-combinations.view :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
@@ -45,5 +45,5 @@
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
-         [quo2/view
+         [quo/view
           (state->text-combinations-props @state)]]]])))

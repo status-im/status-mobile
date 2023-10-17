@@ -1,7 +1,7 @@
 (ns status-im2.contexts.onboarding.identifiers.profile-card.style
   (:require
-    [quo2.foundations.colors :as colors]
-    [quo2.foundations.typography :as typography]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.typography :as typography]
     [react-native.reanimated :as reanimated]))
 
 (def card-view
