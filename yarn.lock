@@ -2188,6 +2188,14 @@
   dependencies:
     merge-options "^3.0.4"
 
+"@react-native-camera-roll/camera-roll@git+https://github.com/status-im/react-native-camera-roll.git#refs/tags/v5.1.1.0":
+  version "5.10.0"
+  resolved "git+https://github.com/status-im/react-native-camera-roll.git#f6c0031b6e2e98363111c4912816642259dbf0f1"
+
+"@react-native-camera-roll/camera-roll@git+https://github.com/status-im/react-native-camera-roll.git#refs/tags/v5.1.1.1":
+  version "5.10.0"
+  resolved "git+https://github.com/status-im/react-native-camera-roll.git#174f8c6ad88e5bad9d9bd207f42173e567ec3138"
+
 "@react-native-community/audio-toolkit@git+https://github.com/tbenr/react-native-audio-toolkit.git#refs/tags/v2.0.3-status-v6":
   version "2.0.3"
   resolved "git+https://github.com/tbenr/react-native-audio-toolkit.git#7ae9055cf6169b30f5089bda7bfcfc1c40a715e5"
@@ -2199,14 +2207,6 @@
 "@react-native-community/blur@git+https://github.com/status-im/react-native-blur#refs/tags/v4.3.3-status":
   version "4.3.3"
   resolved "git+https://github.com/status-im/react-native-blur#c140cc8e7d54e3318af0a7c149b5d64b54de3419"
-
-"@react-native-community/cameraroll@git+https://github.com/ibrkhalil/react-native-cameraroll.git#refs/tags/4.0.5.1":
-  version "4.0.4"
-  resolved "git+https://github.com/ibrkhalil/react-native-cameraroll.git#168ea9a575e3d0d78031c59597744c33d1993c46"
-
-"@react-native-community/cameraroll@git+https://github.com/ibrkhalil/react-native-cameraroll.git#refs/tags/4.0.5.2":
-  version "4.0.4"
-  resolved "git+https://github.com/ibrkhalil/react-native-cameraroll.git#8f5cb98cc5e754d8cc486ce09836c9e5d5249ae4"
 
 "@react-native-community/cli-clean@^8.0.4":
   version "8.0.4"
