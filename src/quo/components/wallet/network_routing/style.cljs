@@ -12,19 +12,21 @@
          :overflow         :hidden))
 
 (defn max-limit-bar
-  [{:keys [opacity-shared-value network-name width]}]
+  [{:keys [opacity-shared-value width]}]
   (reanimated/apply-animations-to-style
    {:opacity opacity-shared-value}
-   {:position           :absolute
-    :top                0
-    :bottom             0
-    :left               0
-    :background-color   (colors/resolve-color network-name nil 10)
-    :width              width
-    :border-right-width 1
-    :border-style       :dashed
-    :border-right-color (colors/resolve-color network-name nil)
-    :z-index            -1}))
+   {:position       :absolute
+    :top            0
+    :bottom         0
+    :left           0
+    :width          width
+    :z-index        -1
+    :flex-direction :row}))
+
+(defn max-limit-bar-background
+  [network-name]
+  {:flex             1
+   :background-color (colors/resolve-color network-name nil 10)})
 
 (defn network-bar
   [{:keys                                           [max-width on-top? bar-division? theme]
@@ -61,3 +63,17 @@
     :height  height-shared-value
     :opacity opacity-shared-value}
    slider-fixed-styles))
+
+(def dashed-line
+  {:width       1
+   :height      "100%"
+   :margin-left -1
+   :margin-top  -1.5})
+
+(defn dashed-line-line
+  [network-name]
+  {:background-color (colors/resolve-color network-name nil)
+   :height           3
+   :width            1})
+
+(def dashed-line-space {:height 4 :width 1})

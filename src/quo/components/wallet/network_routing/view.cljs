@@ -84,6 +84,13 @@
 (def ^:private get-negative-amount
   (comp - reanimated/get-shared-value :amount-shared-value))
 
+(defn- dashed-line
+  [network-name]
+  [rn/view {:style style/dashed-line}
+   (take 19
+         (interleave (repeat [rn/view {:style (style/dashed-line-line network-name)}])
+                     (repeat [rn/view {:style style/dashed-line-space}])))])
+
 (defn f-network-routing-bars
   [_]
   (let [selected-network-idx (reagent/atom nil)
@@ -161,10 +168,9 @@
            [reanimated/view
             {:style (style/max-limit-bar
                      {:opacity-shared-value bar-opacity-shared-value
-                      :network-name         network-name
-                      :width                limit-bar-width})}])]))))
-
-
+                      :width                limit-bar-width})}
+            [rn/view {:style (style/max-limit-bar-background network-name)}]
+            [dashed-line network-name]])]))))
 
 (defn view-internal
   [{:keys [networks container-style theme] :as params}]
