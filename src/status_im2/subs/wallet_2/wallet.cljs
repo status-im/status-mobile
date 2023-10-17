@@ -1,6 +1,6 @@
 (ns status-im2.subs.wallet-2.wallet
-  (:require [re-frame.core :as re-frame]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [utils.number]))
 
 (defn calculate-raw-balance

@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.events
-  (:require [taoensso.timbre :as log]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
             [utils.re-frame :as rf]))
 
 (re-frame/reg-event-fx :wallet-2/get-wallet-token
