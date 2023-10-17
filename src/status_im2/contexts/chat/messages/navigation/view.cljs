@@ -17,7 +17,7 @@
 
 (defn f-view
   [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
-           back-icon]}]
+           back-icon *animate-topbar-name]}]
   (let [{:keys [group-chat chat-id]} chat
         opacity-animation            (reanimated/interpolate scroll-y
                                                              [50
@@ -32,13 +32,23 @@
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "extend"})
         translate-animation          (reanimated/interpolate scroll-y
-                                                             [(- style/navigation-bar-height 20)
-                                                              (+ style/navigation-bar-height 100)]
+                                                             [(if @*animate-topbar-name
+                                                                175
+                                                                (- style/navigation-bar-height 20))
+                                                              (if @*animate-topbar-name
+                                                                180
+                                                                (+ style/navigation-bar-height 100))]
                                                              [50 0]
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "clamp"})
+        _ (prn @*animate-topbar-name (reanimated/get-shared-value scroll-y))
         title-opacity-animation      (reanimated/interpolate scroll-y
-                                                             [130 180]
+                                                             [(if @*animate-topbar-name
+                                                                (- 60 (reanimated/get-shared-value scroll-y))
+                                                                130)
+                                                              (if @*animate-topbar-name
+                                                                (+ (reanimated/get-shared-value scroll-y) 40)
+                                                                180)]
                                                              [0 1]
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "clamp"})]

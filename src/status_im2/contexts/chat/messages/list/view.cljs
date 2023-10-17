@@ -1,25 +1,25 @@
 (ns status-im2.contexts.chat.messages.list.view
   (:require
-    [oops.core :as oops]
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
-    [react-native.background-timer :as background-timer]
-    [react-native.core :as rn]
-    [react-native.hooks :as hooks]
-    [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]
-    [status-im.ui.screens.chat.group :as chat.group]
-    [status-im.ui.screens.chat.message.gap :as message.gap]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.chat.composer.constants :as composer.constants]
-    [status-im2.contexts.chat.messages.content.view :as message]
-    [status-im2.contexts.chat.messages.list.state :as state]
-    [status-im2.contexts.chat.messages.list.style :as style]
-    [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
-    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [oops.core :as oops]
+   [quo2.core :as quo]
+   [quo2.foundations.colors :as colors]
+   [quo2.theme :as quo.theme]
+   [react-native.background-timer :as background-timer]
+   [react-native.core :as rn]
+   [react-native.hooks :as hooks]
+   [react-native.platform :as platform]
+   [react-native.reanimated :as reanimated]
+   [status-im.ui.screens.chat.group :as chat.group]
+   [status-im.ui.screens.chat.message.gap :as message.gap]
+   [status-im2.constants :as constants]
+   [status-im2.contexts.chat.composer.constants :as composer.constants]
+   [status-im2.contexts.chat.messages.content.view :as message]
+   [status-im2.contexts.chat.messages.list.state :as state]
+   [status-im2.contexts.chat.messages.list.style :as style]
+   [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
+   [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -277,7 +277,7 @@
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn f-messages-list-content
-  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms]}]
+  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms *animate-topbar-name]}]
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
         {:keys [keyboard-height]}             (hooks/use-keyboard)
@@ -367,7 +367,12 @@
                                                                            "nativeEvent.layout.height")]
                                               (reset! messages-view-height layout-height)))
        :scroll-enabled                    (not recording?)
-       :content-inset-adjustment-behavior :never}]]))
+       :content-inset-adjustment-behavior :never
+       :on-scroll-end-drag (fn [] (if (and (< 135 (reanimated/get-shared-value scroll-y))
+                                           (> 180 (reanimated/get-shared-value scroll-y)))
+                                    (do (reset! *animate-topbar-name true)
+                                        (reanimated/animate scroll-y 179))
+                                    (reset! *animate-topbar-name false)))}]]))
 
 (defn message-list-content-view
   [props]

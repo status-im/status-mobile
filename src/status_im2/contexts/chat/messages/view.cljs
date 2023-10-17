@@ -18,6 +18,7 @@
   (let [insets                                   (safe-area/get-insets)
         scroll-y                                 (reanimated/use-shared-value 0)
         content-height                           (reanimated/use-shared-value 0)
+        *animate-topbar-name                     (reagent/atom false)
         {:keys [keyboard-height keyboard-shown]} (hooks/use-keyboard)
         {:keys [chat-id
                 contact-request-state
@@ -64,23 +65,25 @@
       :keyboard-vertical-offset (- (:bottom insets))}
 
      [list.view/message-list-content-view
-      {:chat              chat
-       :insets            insets
-       :scroll-y          scroll-y
-       :content-height    content-height
-       :cover-bg-color    :turquoise
-       :keyboard-shown?   keyboard-shown
-       :inner-state-atoms inner-state-atoms}]
-
+      {:chat                 chat
+       :insets               insets
+       :scroll-y             scroll-y
+       :content-height       content-height
+       :cover-bg-color       :turquoise
+       :keyboard-shown?      keyboard-shown
+       :inner-state-atoms    inner-state-atoms
+       :*animate-topbar-name *animate-topbar-name}]
+     
      [messages.navigation/navigation-view
-      {:scroll-y            scroll-y
-       :back-icon           back-icon
-       :chat                chat
-       :chat-screen-loaded? chat-screen-loaded?
-       :all-loaded?         all-loaded?
-       :display-name        display-name
-       :online?             online?
-       :photo-path          photo-path}]
+      {:scroll-y             scroll-y
+       :*animate-topbar-name *animate-topbar-name
+       :back-icon            back-icon
+       :chat                 chat
+       :chat-screen-loaded?  chat-screen-loaded?
+       :all-loaded?          all-loaded?
+       :display-name         display-name
+       :online?              online?
+       :photo-path           photo-path}]
 
      (if able-to-send-message?
        [:f> composer.view/composer
