@@ -234,6 +234,10 @@ class HomeView(BaseView):
         self.create_token_gated_community_button = ChatButton(self.driver,
                                                               accessibility_id="create-token-gated-community")
         self.ens_banner_close_button = Button(self.driver, accessibility_id=":ens-banner-close-button")
+        self.user_name_text = Text(
+            self.driver,
+            xpath="//*[@content-desc='new-contact-button']/preceding-sibling::*[1]/*[@content-desc='user-avatar']" + \
+                  "/following-sibling::android.widget.TextView[1]")
 
         # Notification centre
         self.notifications_button = Button(self.driver, accessibility_id="notifications-button")
