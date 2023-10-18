@@ -78,21 +78,18 @@ class BaseTestReport:
                                         grop_name=test_data['group_name']))
         return tests
 
-    def get_failed_tests(self):
+    def get_tests_by_status(self):
         tests = self.get_all_tests()
-        failed = list()
-        for test in tests:
-            if not self.is_test_successful(test):
-                failed.append(test)
-        return failed
-
-    def get_passed_tests(self):
-        tests = self.get_all_tests()
-        passed = list()
+        passed, failed, xfailed = list(), list(), list()
         for test in tests:
             if self.is_test_successful(test):
                 passed.append(test)
-        return passed
+            else:
+                if test.testruns[-1].xfail:
+                    xfailed.append(test)
+                else:
+                    failed.append(test)
+        return passed, failed, xfailed
 
     def get_sauce_token(self, job_id):
         return hmac.new(bytes(self.sauce_username + ":" + self.sauce_access_key, 'latin-1'),

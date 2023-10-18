@@ -184,6 +184,11 @@ class ChatElementByText(Text):
             xpath="//%s//android.widget.TextView[contains(@text,'%s')]" % (self.chat_item_locator, self.message_text)
         )
 
+    @property
+    def message_body_with_mention(self):
+        return Text(self.driver,
+                    xpath=self.message_body.locator + "/../following-sibling::android.widget.TextView")
+
     def click_on_link_inside_message_body(self):
         self.message_body.wait_for_visibility_of_element(30)
         self.message_body.click_inside_element_by_coordinate(rel_x=0.1, rel_y=0.9)
