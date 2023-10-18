@@ -274,7 +274,7 @@
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y      (oops/oget event "nativeEvent.contentOffset.y")]
     (if
-      (< 145 (- content-size-y current-y))
+      (< 138 (- content-size-y current-y))
       (reset! animate-topbar-name? true)
       (reset! animate-topbar-name? false))
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
