@@ -24,10 +24,10 @@
 ;;bottom sheet
 (reg-root-key-sub :bottom-sheet :bottom-sheet)
 
-; media-server
+;;media-server
 (reg-root-key-sub :mediaserver/port :mediaserver/port)
 
-;; push notifications
+;;push notifications
 (reg-root-key-sub :push-notifications/preferences :push-notifications/preferences)
 
 ;;general
@@ -78,7 +78,7 @@
 (reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)
 (reg-root-key-sub :multiaccount/reset-password-errors :multiaccount/reset-password-errors)
 (reg-root-key-sub :multiaccount/resetting-password? :multiaccount/resetting-password?)
-;; delete profile
+;;delete profile
 (reg-root-key-sub :delete-profile/error :delete-profile/error)
 (reg-root-key-sub :delete-profile/keep-keys-on-keycard? :delete-profile/keep-keys-on-keycard?)
 
@@ -127,10 +127,9 @@
 (reg-root-key-sub :messages/pin-messages :pin-messages)
 (reg-root-key-sub :messages/pin-modal :pin-modal)
 
-; Messages home view -> tabs
 (reg-root-key-sub :messages-home/selected-tab :messages-home/selected-tab)
 
-;; communities
+;;communities
 (reg-root-key-sub :communities :communities)
 (reg-root-key-sub :communities/create :communities/create)
 (reg-root-key-sub :communities/create-channel :communities/create-channel)
@@ -142,5 +141,8 @@
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
 (reg-root-key-sub :contract-communities :contract-communities)
 
-;; activity center
+;;activity center
 (reg-root-key-sub :activity-center :activity-center)
+
+;;wallet
+(reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)

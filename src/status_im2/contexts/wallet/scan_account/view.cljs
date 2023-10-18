@@ -19,6 +19,6 @@
     :subtitle        (i18n/label :t/scan-an-account-qr-code)
     :error-message   (i18n/label :t/oops-this-qr-does-not-contain-an-address)
     :validate-fn     #(contains-address? %)
-    :on-success-scan #(debounce/debounce-and-dispatch [:wallet-2/scan-address-success
+    :on-success-scan #(debounce/debounce-and-dispatch [:wallet/scan-address-success
                                                        (extract-address %)]
                                                       300)}])
