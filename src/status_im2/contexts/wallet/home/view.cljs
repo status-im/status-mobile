@@ -105,7 +105,6 @@
 
 (defn view
   []
-  (let [accounts (rf/sub [:profile/wallet-accounts])]
-    (rf/dispatch [:wallet-2/get-wallet-token accounts])
-    (fn []
-      [view-internal])))
+  (rf/dispatch [:wallet-2/get-wallet-token])
+  (fn []
+    [view-internal]))

@@ -4,8 +4,8 @@
 
 (rf/defn get-wallet-token
   {:events [:wallet-2/get-wallet-token]}
-  [_ accounts]
-  (let [params (map :address accounts)]
+  [{:keys [db]}]
+  (let [params (map :address (:profile/wallet-accounts db))]
     {:json-rpc/call [{:method     "wallet_getWalletToken"
                       :params     [params]
                       :on-success #(rf/dispatch [:wallet-2/get-wallet-token-success %])
