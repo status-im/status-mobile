@@ -20,4 +20,5 @@
           :displayName        display-name
           :password           (native-module/sha3 (security/safe-unmask-data password))
           :imagePath          (profile.config/strip-file-prefix image-path)
-          :customizationColor color)})
+          :customizationColor color
+          :newAccount         true)})
