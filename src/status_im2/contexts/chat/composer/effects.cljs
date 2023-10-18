@@ -184,7 +184,7 @@
                                         (+ (reanimated/get-shared-value last-height) value))))
        (let [curr-text @text-value]
          (reset! text-value (str @text-value " "))
-         (js/setTimeout #(reset! text-value curr-text) 10)))
+         (js/setTimeout #(reset! text-value curr-text) 100)))
      (reset! sending-links? link-previews?))
    [link-previews?]))
 
@@ -211,7 +211,7 @@
                                         (+ (reanimated/get-shared-value last-height) value))))
        (let [curr-text @text-value]
          (reset! text-value (str @text-value " "))
-         (js/setTimeout #(reset! text-value curr-text) 10)))
+         (js/setTimeout #(reset! text-value curr-text) 100)))
      (reset! sending-images? (boolean (seq images))))
    [(boolean (seq images))]))
 
