@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.jump-to.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     re-frame.db
     [react-native.core :as rn]
     [status-im2.config :as config]
@@ -9,7 +9,6 @@
     [status-im2.contexts.shell.jump-to.components.floating-screens.view :as floating-screens]
     [status-im2.contexts.shell.jump-to.components.home-stack.view :as home-stack]
     [status-im2.contexts.shell.jump-to.components.jump-to-screen.view :as jump-to-screen]
-    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
     [status-im2.contexts.shell.jump-to.shared-values :as shared-values]
     [status-im2.contexts.shell.jump-to.utils :as utils]
     [status-im2.navigation.state :as navigation.state]
@@ -18,13 +17,13 @@
 
 (defn navigate-back-handler
   []
-  (let [chat-screen-open? (and config/shell-navigation-disabled?
-                               (= (get @re-frame.db/app-db :view-id) :chat))]
+  (let [chat-screen-open?     (and config/shell-navigation-disabled?
+                                   (= (get @re-frame.db/app-db :view-id) :chat))
+        open-floating-screens (utils/open-floating-screens)]
     (if (and (not @navigation.state/curr-modal)
              (or
               chat-screen-open?
-              (utils/floating-screen-open? shell.constants/community-screen)
-              (utils/floating-screen-open? shell.constants/chat-screen)))
+              (seq open-floating-screens)))
       (do
         (when chat-screen-open? (rf/dispatch [:chat/close]))
         (rf/dispatch [:navigate-back])

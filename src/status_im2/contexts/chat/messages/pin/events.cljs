@@ -1,6 +1,6 @@
 (ns status-im2.contexts.chat.messages.pin.events
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [status-im.data-store.messages :as data-store.messages]
     [status-im.data-store.pin-messages :as data-store.pin-messages]

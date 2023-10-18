@@ -1,6 +1,6 @@
 (ns status-im.signals.core
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [status-im.chat.models.message :as models.message]
     [status-im.ethereum.subscriptions :as ethereum.subscriptions]
     [status-im.mailserver.core :as mailserver]

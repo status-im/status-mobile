@@ -810,9 +810,9 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.device_1.just_fyi("Admin gets push notification with the mention and tap it")
         message_received = False
         if self.home_1.get_pn(self.username_1):
+            message_received = True
             self.device_1.click_upon_push_notification_by_text(self.username_1)
             if not self.channel_1.chat_element_by_text(self.username_1).is_element_displayed():
-                message_received = True
                 if self.channel_1.chat_message_input.is_element_displayed():
                     self.errors.append("Message with the mention is not shown in the chat for the admin")
                 else:
@@ -821,7 +821,10 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         else:
             self.errors.append("Push notification with the mention was not received by admin")
 
-        self.channel_1.click_system_back_button()
+        if not self.channel_1.chat_message_input.is_element_displayed():
+            self.channel_1.navigate_back_to_home_view()
+            self.home_1.communities_tab.click()
+            self.home_1.get_to_community_channel_from_home(self.community_name)
 
         if message_received:
             self.channel_1.just_fyi("Set reaction for the message with a mention")
@@ -833,20 +836,25 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
                 self.errors.append("Message reaction is not shown for the sender")
 
         self.device_2.just_fyi("Sender edits the message with a mention")
-        self.channel_2.chat_element_by_text(self.username_1).wait_for_sent_state()
-        self.channel_2.chat_element_by_text(self.username_1).long_press_element_by_coordinate(rel_y=0)
+        chat_element = self.channel_2.chat_element_by_text(self.username_1)
+        chat_element.wait_for_sent_state()
+        chat_element.long_press_element_by_coordinate()
+        edit_done = False
+        edited_message = "0 abc (Edited)"
         try:
             self.channel_2.element_by_translation_id("edit-message").click()
-            for i in range(29, 32):
+            for i in 31, 30, 29:
                 self.channel_2.driver.press_keycode(i)
             self.channel_2.send_message_button.click()
-            edited_message = self.username_1 + " abc"
-            if not self.channel_2.chat_element_by_text(edited_message).is_element_displayed():
+            edit_done = True
+            if chat_element.message_body_with_mention.text != edited_message:
                 self.errors.append("Edited message is not shown correctly for the sender")
-            if not self.channel_1.chat_element_by_text(edited_message).is_element_displayed():
-                self.errors.append("Edited message is not shown correctly for the (receiver) admin")
         except NoSuchElementException:
             self.errors.append("Can not edit a message with a mention")
+        if edit_done:
+            element = self.channel_1.chat_element_by_text(self.username_1).message_body_with_mention
+            if not element.is_element_displayed(10) or element.text != edited_message:
+                self.errors.append("Edited message is not shown correctly for the (receiver) admin")
 
         self.home_2.navigate_back_to_home_view()
         if not self.channel_1.chat_message_input.is_element_displayed():

@@ -1,9 +1,9 @@
 (ns status-im2.contexts.chat.home.chat-list-item.view
   (:require
     [clojure.string :as string]
-    [quo2.components.icon :as icons]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.components.icon :as icons]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [status-im2.common.home.actions.view :as actions]
     [status-im2.constants :as constants]
@@ -202,7 +202,7 @@
          :accessibility-label :new-message-counter}
         unviewed-mentions-count]
 
-       ;; TODO: use the grey-dot component when chat-list-item is moved to quo2.components
+       ;; TODO: use the grey-dot component when chat-list-item is moved to quo.components
        (and group-chat unread-messages?)
        [rn/view
         {:style               (style/grey-dot)

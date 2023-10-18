@@ -12,6 +12,15 @@ production = ENV["PRODUCTION"] == "1"
 # TODO: remove this flag once you upgrade react-native above version 0.70
 ENV['USE_CODEGEN_DISCOVERY'] = "1"
 
+# If inside a Nix shell, allow pod install
+inside_nix_shell = ENV['IN_NIX_SHELL']
+allow_pod_install = !inside_nix_shell.nil?
+
+unless allow_pod_install
+    puts "ERROR: 'pod install' must be run inside a Nix shell. Please ensure you're inside a nix shell and try again."
+    exit 1
+end
+
 abstract_target 'Status' do
   # Pods for StatusQuo
   config = use_native_modules!

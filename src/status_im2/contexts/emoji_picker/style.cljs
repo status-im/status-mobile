@@ -1,7 +1,7 @@
 (ns status-im2.contexts.emoji-picker.style
   (:require
-    [quo2.components.profile.showcase-nav.style :as showcase-nav.style]
-    [quo2.foundations.colors :as colors]
+    [quo.components.profile.showcase-nav.style :as showcase-nav.style]
+    [quo.foundations.colors :as colors]
     [react-native.safe-area :as safe-area]
     [status-im2.contexts.emoji-picker.constants :as constants]))
 

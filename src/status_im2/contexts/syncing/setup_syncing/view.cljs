@@ -1,7 +1,7 @@
 (ns status-im2.contexts.syncing.setup-syncing.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.hooks :as hooks]

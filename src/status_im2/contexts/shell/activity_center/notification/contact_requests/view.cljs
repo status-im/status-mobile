@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.activity-center.notification.contact-requests.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.gesture :as gesture]
     [status-im2.constants :as constants]
     [status-im2.contexts.shell.activity-center.notification.common.style :as common-style]

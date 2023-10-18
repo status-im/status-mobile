@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.account.tabs.dapps.style
   (:require
-    [quo2.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]))
 
 (def dapps-container
   {:padding-horizontal 20

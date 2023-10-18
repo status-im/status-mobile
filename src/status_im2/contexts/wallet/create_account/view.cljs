@@ -1,7 +1,7 @@
 (ns status-im2.contexts.wallet.create-account.view
   (:require
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]

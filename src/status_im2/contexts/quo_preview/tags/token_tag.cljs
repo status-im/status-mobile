@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.tags.token-tag
   (:require
-    [quo2.components.tags.token-tag :as quo2]
-    [quo2.foundations.resources :as resources]
+    [quo.components.tags.token-tag :as quo]
+    [quo.foundations.resources :as resources]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -55,6 +55,6 @@
         [rn/view
          {:padding-vertical 60
           :align-items      :center}
-         [quo2/token-tag
+         [quo/token-tag
           (merge @state
                  {:token-img-src (if (= (get-in @state [:token]) "ETH") eth-token snt-token)})]]]])))

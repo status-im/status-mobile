@@ -460,7 +460,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             after_mute_counter = int(self.homes[1].chats_tab.counter.text)
         except NoSuchElementException:
             after_mute_counter = 0
-        if after_mute_counter <= initial_counter:
+        if after_mute_counter != initial_counter:
             self.errors.append("New messages counter near chats tab button is %s after unmute, but should be %s" % (
                 after_mute_counter, initial_counter + 1))
         if not chat.chat_preview.text.startswith("%s: %s" % (self.usernames[2], unmuted_message)):

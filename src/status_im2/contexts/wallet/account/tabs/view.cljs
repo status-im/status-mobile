@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.account.tabs.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.contexts.wallet.account.tabs.about.view :as about]
     [status-im2.contexts.wallet.account.tabs.dapps.view :as dapps]

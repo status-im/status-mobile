@@ -1,7 +1,7 @@
 (ns status-im2.common.bottom-sheet-screen.view
   (:require
     [oops.core :as oops]
-    [quo2.theme :as theme]
+    [quo.theme :as theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]

@@ -65,6 +65,7 @@ in {
   # Package version adjustments
   gradle = super.gradle_7;
   nodejs = super.nodejs-18_x;
+  ruby = super.ruby_3_1;
   yarn = super.yarn.override { nodejs = super.nodejs-18_x; };
   openjdk = super.openjdk11_headless;
   xcodeWrapper = super.xcodeenv.composeXcodeWrapper {

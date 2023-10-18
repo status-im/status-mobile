@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.profile.user.views
   (:require
-    [quo2.components.avatars.user-avatar.style :as user-avatar.style]
-    [quo2.theme :as theme]
+    [quo.components.avatars.user-avatar.style :as user-avatar.style]
+    [quo.theme :as theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ethereum.stateofus :as stateofus]
@@ -127,10 +127,10 @@
      (when config/quo-preview-enabled?
        [list.item/list-item
         {:icon                :main-icons/appearance
-         :title               "Quo2.0 Preview"
+         :title               "Quo Preview"
          :accessibility-label :appearance-settings-button
          :chevron             true
-         :on-press            #(re-frame/dispatch [:navigate-to :quo2-preview])}])
+         :on-press            #(re-frame/dispatch [:navigate-to :quo-preview])}])
      [list.item/list-item
       {:icon                :main-icons/appearance
        :title               (i18n/label :t/appearance)

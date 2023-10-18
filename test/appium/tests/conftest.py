@@ -303,6 +303,7 @@ def pytest_runtest_makereport(item, call):
                 test_suite_data.current_test.create_new_testrun()
                 if is_group:
                     test_suite_data.current_test.group_name = item.instance.__class__.__name__
+                test_suite_data.current_test.testruns[-1].xfail = report.wasxfail
                 error_intro, error = 'Test is not run, e2e blocker ', report.wasxfail
                 final_error = "%s [[%s]]" % (error_intro, error)
             else:

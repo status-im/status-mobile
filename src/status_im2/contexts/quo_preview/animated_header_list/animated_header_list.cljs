@@ -1,8 +1,8 @@
 (ns status-im2.contexts.quo-preview.animated-header-list.animated-header-list
   (:require
-    [quo2.components.animated-header-flatlist.view :as animated-header-list]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.components.animated-header-flatlist.view :as animated-header-list]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [re-frame.core :as rf]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]

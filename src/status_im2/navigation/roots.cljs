@@ -1,7 +1,7 @@
 (ns status-im2.navigation.roots
   (:require
-    [quo2.foundations.colors :as colors]
-    [quo2.theme :as quo.theme]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [status-im2.constants :as constants]
     [status-im2.navigation.options :as options]
     [status-im2.navigation.view :as views]))

@@ -1,6 +1,6 @@
 (ns status-im2.contexts.shell.activity-center.header.view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.contexts.shell.activity-center.drawer.view :as drawer]
     [status-im2.contexts.shell.activity-center.style :as style]

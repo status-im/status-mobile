@@ -1,6 +1,6 @@
 (ns status-im2.contexts.quo-preview.list-items.token-value
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
