@@ -27,8 +27,9 @@
       :on-press            #(rf/dispatch [:navigate-to :wallet-address-watch])
       :add-divider?        true}]]])
 
-(def add-account-placeholder
-  {:customization-color :blue
+(defn- add-account-placeholder
+  [color]
+  {:customization-color color
    :on-press            #(rf/dispatch [:show-bottom-sheet {:content new-account}])
    :type                :add-account})
 
@@ -59,7 +60,7 @@
                                                                                      (:address
                                                                                       account)))))
                                      accounts)]
-    (conj accounts-with-balances add-account-placeholder)))
+    (conj accounts-with-balances (add-account-placeholder (:customization-color profile)))))
 
 (defn- view-internal
   [accounts]
