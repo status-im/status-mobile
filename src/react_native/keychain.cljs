@@ -44,7 +44,8 @@
 (defn secure-hardware-available?
   [callback]
   (-> (.getSecurityLevel ^js react-native-keychain)
-      (.then (fn [level] (callback (= level keychain-secure-hardware))))))
+      (.then (fn [level]
+               (callback (= level "SECURE_HARDWARE"))))))
 
 ;; iOS only
 (defn device-encrypted?
