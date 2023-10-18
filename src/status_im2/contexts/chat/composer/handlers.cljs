@@ -43,14 +43,12 @@
    {:keys [images link-previews? reply]}]
   (when-not @recording?
     (let [lines         (utils/calc-lines (- @content-height constants/extra-content-offset))
-          min-height    (utils/get-min-height lines images link-previews?)
+          min-height    (utils/get-min-height lines)
           reopen-height (utils/calc-reopen-height text-value
                                                   min-height
                                                   max-height
                                                   content-height
-                                                  saved-height
-                                                  images
-                                                  link-previews?)]
+                                                  saved-height)]
       (reset! focused? false)
       (rf/dispatch [:chat.ui/set-input-focused false])
       (reanimated/set-shared-value last-height reopen-height)
@@ -72,21 +70,19 @@
   [event
    {:keys [maximized? lock-layout? text-value]}
    {:keys [height saved-height opacity background-y]}
-   {:keys [images link-previews?]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
   (when keyboard-shown
-    (let [event-size            (oops/oget event "nativeEvent.contentSize.height")
-          content-size          (+ event-size constants/extra-content-offset)
-          lines                 (utils/calc-lines event-size)
-          content-size          (if (or (= lines 1) (empty? @text-value))
-                                  constants/input-height
-                                  (if (= lines 2) constants/multiline-minimized-height content-size))
-          new-height            (utils.number/value-in-range content-size
-                                                             constants/input-height
-                                                             max-height)
-          bottom-content-height (utils/calc-bottom-content-height images link-previews?)
-          new-height            (min (+ new-height bottom-content-height) max-height)]
+    (let [event-size   (oops/oget event "nativeEvent.contentSize.height")
+          content-size (+ event-size constants/extra-content-offset)
+          lines        (utils/calc-lines event-size)
+          content-size (if (or (= lines 1) (empty? @text-value))
+                         constants/input-height
+                         (if (= lines 2) constants/multiline-minimized-height content-size))
+          new-height   (utils.number/value-in-range content-size
+                                                    constants/input-height
+                                                    max-height)
+          new-height   (min new-height max-height)]
       (reset! content-height content-size)
       (when (utils/update-height? content-size height max-height maximized?)
         (reanimated/animate height new-height)

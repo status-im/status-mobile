@@ -55,7 +55,8 @@
   [height max-height]
   (reanimated/apply-animations-to-style
    {:height height}
-   {:max-height max-height}))
+   {:max-height max-height
+    :z-index    1}))
 
 (defn input-view
   [{:keys [recording?]}]
@@ -68,19 +69,17 @@
 (defn input-text
   [{:keys [saved-emoji-kb-extra-height]}
    {:keys [focused? maximized?]}
-   {:keys [link-previews? images]}
    {:keys [max-height theme]}]
-  (merge typography/paragraph-1
-         {:color               (colors/theme-colors :black :white theme)
-          :text-align-vertical :top
-          :position            (if @saved-emoji-kb-extra-height :relative :absolute)
-          :top                 0
-          :left                0
-          :right               (when (or focused? platform/ios?) 0)
-          :max-height          (- max-height
-                                  (if link-previews? constants/links-container-height 0)
-                                  (if (seq images) constants/images-container-height 0))
-          :padding-bottom      (when @maximized? 0)}))
+  (assoc typography/paragraph-1
+         :color               (colors/theme-colors :black :white theme)
+         :text-align-vertical :top
+         :position            (if @saved-emoji-kb-extra-height :relative :absolute)
+         :top                 0
+         :left                0
+         :right               (when (or focused? platform/ios?) 0)
+         :max-height          max-height
+         :padding-bottom      (when @maximized? 0)))
+
 (defn background
   [opacity background-y window-height]
   (reanimated/apply-animations-to-style
