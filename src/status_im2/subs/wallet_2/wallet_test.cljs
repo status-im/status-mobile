@@ -1,5 +1,5 @@
 (ns status-im2.subs.wallet-2.wallet-test
-  (:require [cljs.test :refer [is testing use-fixtures]]
+  (:require [cljs.test :refer [is testing]]
             [re-frame.db :as rf-db]
             status-im2.subs.root
             [test-helpers.unit :as h]
@@ -52,9 +52,6 @@
     :name    "Secondary account"
     :hidden  false
     :removed false}])
-
-(use-fixtures :each
-              {:before #(reset! rf-db/app-db {})})
 
 (h/deftest-sub :wallet-2/balances
   [sub-name]
