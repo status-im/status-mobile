@@ -70,6 +70,7 @@
    :border-radius      (if small? 10 12)
    :opacity            (if disabled? 0.3 1)})
 
+
 (defn left-icon-container
   [small?]
   {:margin-left (if small? 0 4)
@@ -84,15 +85,21 @@
 
 (defn input
   [colors-by-status small? multiple-lines? weight]
-  (let [base-props (assoc (text/text-style {:size :paragraph-1 :weight (or weight :regular)})
-                          :flex             1
-                          :padding-right    0
-                          :padding-left     (if small? 4 8)
-                          :padding-vertical (if small? 4 8)
-                          :color            (:text colors-by-status))]
+  (let [padding    (if small? 4 8)
+        base-props (assoc (text/text-style {:size :paragraph-1 :weight (or weight :regular)})
+                          :flex           1
+                          :padding-right  0
+                          :padding-left   padding
+                          :padding-top    padding
+                          :padding-bottom padding
+                          :color          (:text colors-by-status))]
     (if multiple-lines?
-      (assoc base-props :text-align-vertical :top)
-      (assoc base-props :height (if small? 30 38) :line-height nil))))
+      (assoc base-props
+             :text-align-vertical :top
+             :line-height         22)
+      (assoc base-props
+             :height      (if small? 30 38)
+             :line-height nil))))
 
 (defn right-icon-touchable-area
   [small?]
@@ -107,8 +114,9 @@
 
 (defn clear-icon
   [variant-colors]
-  {:size  20
-   :color (:clear-icon variant-colors)})
+  {:size    20
+   :color   (:clear-icon variant-colors)
+   :color-2 colors/white})
 
 (def texts-container
   {:flex-direction :row
