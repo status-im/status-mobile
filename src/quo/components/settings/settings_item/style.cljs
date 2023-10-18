@@ -12,6 +12,8 @@
 (defn left-sub-container
   [{:keys [tag description]}]
   {:flex-direction :row
+   :flex           1
+   :margin-right   12
    :align-items    (if (or tag description) :flex-start :center)})
 
 (defn sub-container
@@ -20,9 +22,10 @@
    :align-items    (or align-action :center)})
 
 (def left-container
-  {:margin-left     12
-   :height          "100%"
-   :justify-content :flex-start})
+  {:margin-horizontal 12
+   :flex              1
+   :height            "100%"
+   :justify-content   :flex-start})
 
 (defn image-container
   [image tag description]
