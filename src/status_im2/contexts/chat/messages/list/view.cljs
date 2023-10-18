@@ -274,8 +274,9 @@
   (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y      (oops/oget event "nativeEvent.contentOffset.y")]
-    (when (and @*animate-topbar-name
-               (> 145 (- content-size-y current-y)))
+    (if
+      (< 145 (- content-size-y current-y))
+      (reset! *animate-topbar-name true)
       (reset! *animate-topbar-name false))
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
@@ -343,8 +344,7 @@
                                                   0)}
        :keyboard-dismiss-mode             :interactive
        :keyboard-should-persist-taps      :always
-       :on-scroll-begin-drag              #(do (rn/dismiss-keyboard!)
-                                               (reset! *animate-topbar-name false))
+       :on-scroll-begin-drag              rn/dismiss-keyboard!
        :on-momentum-scroll-begin          state/start-scrolling
        :on-momentum-scroll-end            state/stop-scrolling
        :scroll-event-throttle             16
@@ -372,12 +372,7 @@
                                                                            "nativeEvent.layout.height")]
                                               (reset! messages-view-height layout-height)))
        :scroll-enabled                    (not recording?)
-       :content-inset-adjustment-behavior :never
-       :on-scroll-end-drag                (fn []
-                                            (if (and (< 138 (reanimated/get-shared-value scroll-y))
-                                                     (> 190 (reanimated/get-shared-value scroll-y)))
-                                              (reset! *animate-topbar-name true)
-                                              (reset! *animate-topbar-name false)))}]]))
+       :content-inset-adjustment-behavior :never}]]))
 
 (defn message-list-content-view
   [props]
