@@ -55,16 +55,16 @@
   [sub-name]
   (swap! rf-db/app-db assoc
     :profile/wallet-accounts accounts
-    :wallet                  wallet)
+    :wallet-legacy           wallet)
   (is (= [{:ETH money-eth
            :SNT money-snt}
           {:ETH money-eth
            :SNT money-snt}]
          (rf/sub [sub-name]))))
 
-(h/deftest-sub :wallet/token->decimals
+(h/deftest-sub :wallet-legacy/token->decimals
   [sub-name]
-  (swap! rf-db/app-db assoc :wallet/all-tokens tokens)
+  (swap! rf-db/app-db assoc :wallet-legacy/all-tokens tokens)
   (is (= {:SNT 18 :ETH 18}
          (rf/sub [sub-name]))))
 
@@ -92,18 +92,18 @@
                                    {:balance {:ETH money-zero
                                               :SNT money-zero}}}}]
       (swap! rf-db/app-db assoc
-        :profile/wallet-accounts accounts
-        :prices                  prices
-        :wallet                  empty-wallet
-        :wallet/all-tokens       tokens)
+        :profile/wallet-accounts  accounts
+        :prices                   prices
+        :wallet-legacy            empty-wallet
+        :wallet-legacy/all-tokens tokens)
       (is (= "0" (rf/sub [sub-name])))))
 
   (testing "returns formatted value in the default USD currency"
     (swap! rf-db/app-db assoc
-      :profile/wallet-accounts accounts
-      :prices                  prices
-      :wallet                  wallet
-      :wallet/all-tokens       tokens)
+      :profile/wallet-accounts  accounts
+      :prices                   prices
+      :wallet-legacy            wallet
+      :wallet-legacy/all-tokens tokens)
     (is (= "20,550.76" (rf/sub [sub-name])))))
 
 (h/deftest-sub :account-portfolio-value
@@ -116,18 +116,18 @@
                                    {:balance {:ETH money-zero
                                               :SNT money-zero}}}}]
       (swap! rf-db/app-db assoc
-        :profile/wallet-accounts accounts
-        :prices                  prices
-        :wallet                  empty-wallet
-        :wallet/all-tokens       tokens)
+        :profile/wallet-accounts  accounts
+        :prices                   prices
+        :wallet-legacy            empty-wallet
+        :wallet-legacy/all-tokens tokens)
       (is (= "0" (rf/sub [sub-name main-account-id])))))
 
   (testing "returns formatted value in the default USD currency"
     (swap! rf-db/app-db assoc
-      :profile/wallet-accounts accounts
-      :prices                  prices
-      :wallet                  wallet
-      :wallet/all-tokens       tokens)
+      :profile/wallet-accounts  accounts
+      :prices                   prices
+      :wallet-legacy            wallet
+      :wallet-legacy/all-tokens tokens)
     (is (= "10,275.38" (rf/sub [sub-name main-account-id])))))
 
 (def transactions

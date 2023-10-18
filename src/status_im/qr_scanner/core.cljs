@@ -79,7 +79,7 @@
 (rf/defn handle-eip681
   [cofx data]
   (rf/merge cofx
-            {:dispatch [:wallet/parse-eip681-uri-and-resolve-ens data]}
+            {:dispatch [:wallet-legacy/parse-eip681-uri-and-resolve-ens data]}
             (navigation/change-tab :wallet-stack)
             (navigation/pop-to-root :shell-stack)))
 

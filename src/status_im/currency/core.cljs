@@ -9,7 +9,7 @@
   (get-in db [:profile/profile :currency] :usd))
 
 (rf/defn set-currency
-  {:events [:wallet.settings.ui/currency-selected]}
+  {:events [:wallet-legacy.settings.ui/currency-selected]}
   [{:keys [db] :as cofx} currency]
   (rf/merge cofx
             (multiaccounts.update/multiaccount-update
