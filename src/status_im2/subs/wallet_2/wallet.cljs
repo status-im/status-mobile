@@ -36,5 +36,5 @@
  :<- [:wallet-2/tokens]
  (fn [[accounts tokens]]
    (for [{:keys [address]} accounts]
-       {:address address
-        :balance (calculate-balance address tokens)})))
+     {:address address
+      :balance (calculate-balance address tokens)})))
