@@ -83,7 +83,8 @@
        :all-loaded?          all-loaded?
        :display-name         display-name
        :online?              online?
-       :photo-path           photo-path}]
+       :photo-path           photo-path
+       :keyboard-shown?      keyboard-shown}]
 
      (if able-to-send-message?
        [:f> composer.view/composer

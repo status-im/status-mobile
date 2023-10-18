@@ -17,7 +17,7 @@
 
 (defn f-view
   [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
-           back-icon animate-topbar-name?]}]
+           back-icon animate-topbar-name? keyboard-shown?]}]
   (let [{:keys [group-chat chat-id]} chat
         opacity-animation            (reanimated/interpolate scroll-y
                                                              [50
@@ -34,8 +34,11 @@
         translate-animation          (reanimated/use-shared-value 50)
         title-opacity-animation      (reanimated/use-shared-value 0)]
     (rn/use-effect (fn []
-                     (if @animate-topbar-name?
+                     (if (or (and keyboard-shown?
+                                  (neg? (reanimated/get-shared-value scroll-y)))
+                             @animate-topbar-name?)
                        (do (reanimated/animate title-opacity-animation 1)
+                           (reanimated/animate opacity-animation 1)
                            (reanimated/animate translate-animation 0))
                        (do (reanimated/animate title-opacity-animation 0)
                            (reanimated/animate translate-animation 50))))

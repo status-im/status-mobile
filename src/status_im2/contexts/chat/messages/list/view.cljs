@@ -273,11 +273,12 @@
   (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y      (oops/oget event "nativeEvent.contentOffset.y")]
-    (if
-      (< 138 (- content-size-y current-y))
-      (reset! animate-topbar-name? true)
-      (reset! animate-topbar-name? false))
-    (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
+    (when (pos? (- content-size-y current-y))
+      (if
+        (< 135 (- content-size-y current-y))
+        (reset! animate-topbar-name? true)
+        (reset! animate-topbar-name? false))
+      (reanimated/set-shared-value scroll-y (- content-size-y current-y)))))
 
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
@@ -289,6 +290,7 @@
         messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
         recording?                            (rf/sub [:chats/recording?])
         all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
+        less-than-two-messages?               (<= 2 (count messages))
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
@@ -319,9 +321,15 @@
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
-                                            (when (and (< 138 (reanimated/get-shared-value scroll-y))
-                                                       (not @animate-topbar-name?))
-                                              (reset! animate-topbar-name? true))
+                                            (if (or
+                                                 (and keyboard-shown?
+                                                      less-than-two-messages?
+                                                      (> 100 (reanimated/get-shared-value scroll-y))
+                                                      (< 560
+                                                         (reanimated/get-shared-value content-height)))
+                                                 (< 135 (reanimated/get-shared-value scroll-y)))
+                                              (reset! animate-topbar-name? true)
+                                              (reset! animate-topbar-name? false))
                                             ;; NOTE(alwx): here we set the initial value of `scroll-y`
                                             ;; which is needed because by default the chat is
                                             ;; scrolled to the bottom and no initial `on-scroll`
@@ -372,10 +380,6 @@
        :on-layout                         (fn [e]
                                             (let [layout-height (oops/oget e
                                                                            "nativeEvent.layout.height")]
-                                              (js/setTimeout
-                                               #(when (< 138 (reanimated/get-shared-value scroll-y))
-                                                  (reset! animate-topbar-name? true))
-                                               500)
                                               (reset! messages-view-height layout-height)))
        :scroll-enabled                    (not recording?)
        :content-inset-adjustment-behavior :never}]]))
