@@ -22,7 +22,7 @@
   (let [{component-size :component icon-size :icon} (get sizes size)
         circle-color                                (colors/resolve-color color theme opacity)
         icon-color                                  (colors/resolve-color color theme)]
-    (if (= (type icon) Keyword)
+    (if keyword? icon
       [rn/view
        {:style {:width            component-size
                 :height           component-size

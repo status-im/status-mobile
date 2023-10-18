@@ -202,7 +202,6 @@
     :address             "0x43c...98d"
     :networks            [{:name :ethereum :short :eth}]}])
 
-<<<<<<< HEAD
 (def asset-snt
   {:size       24
    :type       :token
@@ -261,7 +260,7 @@
    (status.resources/get-mock-image :collectible2)
    (status.resources/get-mock-image :collectible3)
    (status.resources/get-mock-image :collectible4)])
-=======
+
 (def buy-tokens-list
   [{:title             "Ramp"
     :description       :text
@@ -299,4 +298,3 @@
     :image             :icon-avatar
     :image-props       {:icon (status.resources/get-service-image :latamex)}
     :on-press          #(rn/open-url "https://latamex.com")}])
->>>>>>> 3cb08a06b (buy drawer)
