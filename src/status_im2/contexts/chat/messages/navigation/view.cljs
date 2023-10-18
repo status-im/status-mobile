@@ -30,10 +30,10 @@
                                                               (+ style/navigation-bar-height 200)]
                                                              [0 1]
                                                              {:extrapolateLeft  "clamp"
-                                                              :extrapolateRight "extend"})
+                                                              :extrapolateRight "clamp"})
         translate-animation          (reanimated/interpolate scroll-y
                                                              [(if @*animate-topbar-name
-                                                                175
+                                                                (- style/navigation-bar-height 20)
                                                                 (- style/navigation-bar-height 20))
                                                               (if @*animate-topbar-name
                                                                 180
@@ -41,17 +41,21 @@
                                                              [50 0]
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "clamp"})
-        _ (prn @*animate-topbar-name (reanimated/get-shared-value scroll-y))
-        title-opacity-animation      (reanimated/interpolate scroll-y
-                                                             [(if @*animate-topbar-name
-                                                                (- 60 (reanimated/get-shared-value scroll-y))
-                                                                130)
-                                                              (if @*animate-topbar-name
-                                                                (+ (reanimated/get-shared-value scroll-y) 40)
-                                                                180)]
-                                                             [0 1]
-                                                             {:extrapolateLeft  "clamp"
-                                                              :extrapolateRight "clamp"})]
+        title-opacity-animation      (reanimated/interpolate
+                                      scroll-y
+                                      [(if @*animate-topbar-name
+                                         (- 60 (reanimated/get-shared-value scroll-y))
+                                         130)
+                                       (if @*animate-topbar-name
+                                         (+ (reanimated/get-shared-value scroll-y) 40)
+                                         160)]
+                                      [0 1]
+                                      {:extrapolateLeft  "clamp"
+                                       :extrapolateRight "clamp"})]
+    (rn/use-effect (fn []
+                     (when @*animate-topbar-name
+                       (reanimated/animate scroll-y 300 300)))
+                   [@*animate-topbar-name])
     [rn/view {:style (style/navigation-view chat-screen-loaded?)}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]

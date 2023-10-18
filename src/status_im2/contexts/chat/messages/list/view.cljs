@@ -270,14 +270,18 @@
        [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
-  [event scroll-y]
+  [event scroll-y *animate-topbar-name]
   (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y      (oops/oget event "nativeEvent.contentOffset.y")]
+    (when (and @*animate-topbar-name
+               (> 145 (- content-size-y current-y)))
+      (reset! *animate-topbar-name false))
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn f-messages-list-content
-  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms *animate-topbar-name]}]
+  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
+           *animate-topbar-name]}]
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
         {:keys [keyboard-height]}             (hooks/use-keyboard)
@@ -339,12 +343,13 @@
                                                   0)}
        :keyboard-dismiss-mode             :interactive
        :keyboard-should-persist-taps      :always
-       :on-scroll-begin-drag              rn/dismiss-keyboard!
+       :on-scroll-begin-drag              #(do (rn/dismiss-keyboard!)
+                                               (reset! *animate-topbar-name false))
        :on-momentum-scroll-begin          state/start-scrolling
        :on-momentum-scroll-end            state/stop-scrolling
        :scroll-event-throttle             16
        :on-scroll                         (fn [event]
-                                            (scroll-handler event scroll-y)
+                                            (scroll-handler event scroll-y *animate-topbar-name)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
@@ -368,11 +373,11 @@
                                               (reset! messages-view-height layout-height)))
        :scroll-enabled                    (not recording?)
        :content-inset-adjustment-behavior :never
-       :on-scroll-end-drag (fn [] (if (and (< 135 (reanimated/get-shared-value scroll-y))
-                                           (> 180 (reanimated/get-shared-value scroll-y)))
-                                    (do (reset! *animate-topbar-name true)
-                                        (reanimated/animate scroll-y 179))
-                                    (reset! *animate-topbar-name false)))}]]))
+       :on-scroll-end-drag                (fn []
+                                            (if (and (< 138 (reanimated/get-shared-value scroll-y))
+                                                     (> 190 (reanimated/get-shared-value scroll-y)))
+                                              (reset! *animate-topbar-name true)
+                                              (reset! *animate-topbar-name false)))}]]))
 
 (defn message-list-content-view
   [props]

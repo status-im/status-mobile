@@ -73,7 +73,7 @@
        :keyboard-shown?      keyboard-shown
        :inner-state-atoms    inner-state-atoms
        :*animate-topbar-name *animate-topbar-name}]
-     
+
      [messages.navigation/navigation-view
       {:scroll-y             scroll-y
        :*animate-topbar-name *animate-topbar-name
