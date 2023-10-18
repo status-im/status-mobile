@@ -91,7 +91,7 @@
   [{:keys [action action-props blur? theme]}]
   [rn/view {:style {:margin-left 12}}
    (case action
-     :arrow    [icon/icon :i/chevron-right (style/color blur? theme)]
+     :arrow    [icon/icon (or (:icon action-props) :i/chevron-right) (style/color blur? theme)]
      :button   [button/button
                 (merge action-props
                        {:type :outline

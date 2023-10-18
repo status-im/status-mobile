@@ -40,6 +40,16 @@
      :render-fn (fn [account] [quo/account-item {:account-props account}])
      :style     {:margin-horizontal 8}}]])
 
+(defn buy-drawer
+  []
+  [:<>
+   [quo/drawer-top {:title (i18n/label :t/buy-tokens)}]
+   [rn/flat-list
+    {:data      temp/buy-tokens-list
+     :style     {:padding-horizontal 8
+                 :padding-bottom     8}
+     :render-fn quo/settings-item}]])
+
 (def ^:private networks-list
   [{:source (quo.resources/get-network :ethereum)}
    {:source (quo.resources/get-network :optimism)}
@@ -76,7 +86,9 @@
        [quo/account-overview temp/account-overview-state]
        [quo/wallet-graph {:time-frame :empty}]
        [quo/wallet-ctas
-        {:send-action #(rf/dispatch [:open-modal :wallet-select-address])}]
+        {:send-action #(rf/dispatch [:open-modal :wallet-select-address])
+         :buy-action  #(rf/dispatch [:show-bottom-sheet
+                                     {:content buy-drawer}])}]
        [quo/tabs
         {:style          style/tabs
          :size           32
