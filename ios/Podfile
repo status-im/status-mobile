@@ -1,0 +1,82 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+platform :ios, '12.4'
+
+production = ENV["PRODUCTION"] == "1"
+
+# We need to enable codegen discovery to fix the issue of these files not being generated properly:
+# ios/build/generated/ios/FBReactNativeSpec/FBReactNativeSpec-generated.mm
+# ios/build/generated/ios/FBReactNativeSpec/FBReactNativeSpec.h
+# more details here : https://github.com/status-im/status-mobile/issues/15911
+# TODO: remove this flag once you upgrade react-native above version 0.70
+ENV['USE_CODEGEN_DISCOVERY'] = "1"
+
+# If inside a Nix shell, allow pod install
+inside_nix_shell = ENV['IN_NIX_SHELL']
+allow_pod_install = !inside_nix_shell.nil?
+
+unless allow_pod_install
+    puts "ERROR: 'pod install' must be run inside a Nix shell. Please ensure you're inside a nix shell and try again."
+    exit 1
+end
+
+abstract_target 'Status' do
+  # Pods for StatusQuo
+  config = use_native_modules!
+
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # to enable hermes on iOS, change `false` to `true` and then install pods
+    :production => production,
+    :hermes_enabled => flags[:hermes_enabled],
+    :fabric_enabled => flags[:fabric_enabled],
+    :use_codegen_discovery => true,
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
+  pod 'SSZipArchive', '2.4.3'
+
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone.podspec"
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
+
+  pod "react-native-status-keycard", path: "../node_modules/react-native-status-keycard"
+  pod "react-native-status", path: "../modules/react-native-status"
+  pod "Keycard", git: "https://github.com/status-im/Keycard.swift.git"
+  pod 'secp256k1', git: "https://github.com/status-im/secp256k1.swift.git", submodules: true
+
+  target 'StatusIm' do
+
+    target 'StatusImTests' do
+      inherit! :complete
+      # Pods for testing
+    end
+  end
+
+  target 'StatusImPR' do
+  end
+
+  post_install do |installer|
+    # some of libs wouldn't be build for x86_64 otherwise and that is
+    # necessary for ios simulators
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
+        # fix for no template named 'unary_function' in namespace 'std'; did you mean '__unary_function'?
+        # ref : https://github.com/facebook/react-native/issues/37748
+        # TODO : remove after upgrading to react-native 0.72.x
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)', '_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION']
+      end
+    end
+  end
+
+  use_native_modules!
+end
