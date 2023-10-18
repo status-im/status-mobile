@@ -116,6 +116,7 @@
                 :blur?               false
                 :description         :account
                 :icon-right?         true
+                :right-icon          :i/chevron-right
                 :card?               true
                 :label               :none
                 :status              :default
@@ -133,6 +134,7 @@
                 :blur?               false
                 :description         :icon
                 :icon-right?         true
+                :right-icon          :i/chevron-right
                 :card?               true
                 :label               :preview
                 :status              :default
@@ -150,6 +152,7 @@
                 :blur?               false
                 :description         :network
                 :icon-right?         true
+                :right-icon          :i/chevron-right
                 :card?               true
                 :label               :preview
                 :status              :default
@@ -167,6 +170,7 @@
                 :blur?               false
                 :description         :account
                 :icon-right?         true
+                :right-icon          :i/chevron-right
                 :card?               true
                 :label               :preview
                 :status              :default
