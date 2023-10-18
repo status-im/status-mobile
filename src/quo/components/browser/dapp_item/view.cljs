@@ -7,7 +7,8 @@
 (defn view
   [{:keys [logo name]}]
   [rn/view
-   {:style style/root-container}
+   {:test-ID "dapp-item"
+    :style   style/root-container}
    [fast-image/fast-image
     {:source (or (:source logo) logo)
      :style  style/logo}]

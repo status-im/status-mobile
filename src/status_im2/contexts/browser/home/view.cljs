@@ -32,7 +32,7 @@
          :customization-color customization-color}]
        [quo/dapp-favorites {:dapps dapp-favorites}]
        [rn/scroll-view
-        {:style style/tabs-container
+        {:style                   style/tabs-container
          :content-container-style style/tabs-content-container}
         [quo/new-tab
          {:customization-color customization-color}]]])))

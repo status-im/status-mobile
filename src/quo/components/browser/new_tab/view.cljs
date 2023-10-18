@@ -9,7 +9,8 @@
 (defn view-internal
   [{:keys [customization-color theme]}]
   [rn/view
-   {:style (style/container customization-color theme)}
+   {:test-ID "new-tab"
+    :style   (style/container customization-color theme)}
    [button/button
     {:type                :primary
      :hit-slop            32
