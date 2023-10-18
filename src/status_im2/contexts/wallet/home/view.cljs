@@ -63,8 +63,9 @@
     (conj accounts-with-balances (add-account-placeholder (:customization-color profile)))))
 
 (defn- view-internal
-  [accounts]
-  (let [top          (safe-area/get-top)
+  []
+  (let [accounts     (rf/sub [:profile/wallet-accounts])
+        top          (safe-area/get-top)
         selected-tab (reagent/atom (:id (first tabs-data)))
         loading?     (rf/sub [:wallet-2/tokens-loading?])
         balances     (rf/sub [:wallet-2/balances])
@@ -107,4 +108,4 @@
   (let [accounts (rf/sub [:profile/wallet-accounts])]
     (rf/dispatch [:wallet-2/get-wallet-token accounts])
     (fn []
-      [view-internal accounts])))
+      [view-internal])))
