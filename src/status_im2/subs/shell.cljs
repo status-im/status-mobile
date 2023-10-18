@@ -1,7 +1,6 @@
 (ns status-im2.subs.shell
   (:require
     [re-frame.core :as re-frame]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im2.common.resources :as resources]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
@@ -186,15 +185,12 @@
     (re-frame/subscribe [:contacts/contacts])
     (re-frame/subscribe [:profile/profile])
     (re-frame/subscribe [:profile/customization-color])])
- (fn [[chat communities contacts current-multiaccount profile-customization-color] [_ id]]
-   (let [from         (get-in chat [:last-message :from])
-         contact      (when from (multiaccounts/contact-by-identity contacts from))
-         primary-name (when from
-                        (first (multiaccounts/contact-two-names-by-identity
-                                contact
-                                current-multiaccount
-                                from)))]
-     (private-group-chat-card chat id communities primary-name profile-customization-color))))
+ (fn [[chat communities contacts current-profile profile-customization-color] [_ id]]
+   (let [from    (get-in chat [:last-message :from])
+         contact (if from
+                   (get contacts from {:public-key from})
+                   current-profile)]
+     (private-group-chat-card chat id communities (:primary-name contact) profile-customization-color))))
 
 (re-frame/reg-sub
  :shell/community-card

@@ -4,8 +4,7 @@
     [clojure.string :as string]
     [react-native.platform :as platform]
     [taoensso.timbre :as log]
-    [utils.transforms :as types]
-    [utils.validators :as validators]))
+    [utils.transforms :as types]))
 
 (defn status
   []
@@ -431,19 +430,6 @@
     ;; in unknown scenarios we also consider the device rooted to avoid degrading security
     :else (callback true)))
 
-(defn generate-gfycat
-  "Generate a 3 words random name based on the user public-key, synchronously"
-  [public-key]
-  (log/debug "[native-module] generate-gfycat")
-  (when (validators/valid-public-key? public-key)
-    (.generateAlias ^js (status) public-key)))
-
-(defn identicon
-  "Generate a icon based on a string, synchronously"
-  [seed]
-  (log/debug "[native-module] identicon")
-  (.identicon ^js (status) seed))
-
 (defn encode-transfer
   [to-norm amount-hex]
   (log/debug "[native-module] encode-transfer")
@@ -500,12 +486,6 @@
   [address]
   (log/debug "[native-module] to-checksum-address")
   (.toChecksumAddress ^js (status) address))
-
-(defn gfycat-identicon-async
-  "Generate an icon based on a string and 3 words random name asynchronously"
-  [seed callback]
-  (log/debug "[native-module] gfycat-identicon-async")
-  (.generateAliasAndIdenticonAsync ^js (status) seed callback))
 
 (defn validate-mnemonic
   "Validate that a mnemonic conforms to BIP39 dictionary/checksum standards"

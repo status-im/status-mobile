@@ -354,38 +354,6 @@ void _StopCPUProfiling(const FunctionCallbackInfo<Value>& args) {
 
 }
 
-void _Identicon(const FunctionCallbackInfo<Value>& args) {
-	Isolate* isolate = args.GetIsolate();
-        Local<Context> context = isolate->GetCurrentContext();
-
-	if (args.Length() != 1) {
-		// Throw an Error that is passed back to JavaScript
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for Identicon")));
-		return;
-	}
-
-	// Check the argument types
-
-	if (!args[0]->IsString()) {
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'pk'")));
-		return;
-	}
-
-
-	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
-	char *arg0 = *arg0Obj;
-
-	// Call exported Go function, which returns a C string
-	char *c = Identicon(arg0);
-
-	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
-	args.GetReturnValue().Set(ret);
-	delete c;
-
-}
-
 void _EncodeTransfer(const FunctionCallbackInfo<Value>& args) {
 	Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
@@ -857,38 +825,6 @@ void _CreateAccountAndLogin(const FunctionCallbackInfo<Value>& args) {
 
 	// Call exported Go function, which returns a C string
 	char *c = CreateAccountAndLogin(arg0);
-
-	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
-	args.GetReturnValue().Set(ret);
-	delete c;
-
-}
-
-void _GenerateAlias(const FunctionCallbackInfo<Value>& args) {
-	Isolate* isolate = args.GetIsolate();
-        Local<Context> context = isolate->GetCurrentContext();
-
-	if (args.Length() != 1) {
-		// Throw an Error that is passed back to JavaScript
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong number of arguments for GenerateAlias")));
-		return;
-	}
-
-	// Check the argument types
-
-	if (!args[0]->IsString()) {
-		isolate->ThrowException(Exception::TypeError(
-			String::NewFromUtf8Literal(isolate, "Wrong argument type for 'pk'")));
-		return;
-	}
-
-
-	String::Utf8Value arg0Obj(isolate, args[0]->ToString(context).ToLocalChecked());
-	char *arg0 = *arg0Obj;
-
-	// Call exported Go function, which returns a C string
-	char *c = GenerateAlias(arg0);
 
 	Local<String> ret = String::NewFromUtf8(isolate, c).ToLocalChecked();
 	args.GetReturnValue().Set(ret);
@@ -1953,7 +1889,6 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "multiAccountStoreAccount", _MultiAccountStoreAccount);
 	NODE_SET_METHOD(exports, "initKeystore", _InitKeystore);
 	NODE_SET_METHOD(exports, "stopCPUProfiling", _StopCPUProfiling);
-	NODE_SET_METHOD(exports, "identicon", _Identicon);
 	NODE_SET_METHOD(exports, "encodeTransfer", _EncodeTransfer);
 	NODE_SET_METHOD(exports, "encodeFunctionCall", _EncodeFunctionCall);
 	NODE_SET_METHOD(exports, "decodeParameters", _DecodeParameters);
@@ -1968,7 +1903,6 @@ void init(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "resetChainData", _ResetChainData);
 	NODE_SET_METHOD(exports, "saveAccountAndLogin", _SaveAccountAndLogin);
 	NODE_SET_METHOD(exports, "createAccountAndLogin", _CreateAccountAndLogin);
-	NODE_SET_METHOD(exports, "generateAlias", _GenerateAlias);
 	NODE_SET_METHOD(exports, "validateMnemonic", _ValidateMnemonic);
 	NODE_SET_METHOD(exports, "multiformatSerializePublicKey", _MultiformatSerializePublicKey);
 	NODE_SET_METHOD(exports, "saveAccountAndLoginWithKeycard", _SaveAccountAndLoginWithKeycard);

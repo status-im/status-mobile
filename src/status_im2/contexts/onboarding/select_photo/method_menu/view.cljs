@@ -2,7 +2,6 @@
   (:require
     ["react-native-image-crop-picker" :default image-picker]
     [quo.core :as quo]
-    [status-im.multiaccounts.core]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

@@ -11,9 +11,3 @@
                         :group/selected-contacts #{}
                         :new-chat-name           "")}
             (navigation/navigate-to :contact-toggle-list nil)))
-
-(defn displayed-photo
-  [{:keys [images]}]
-  (or (:large images)
-      (:thumbnail images)
-      (first images)))

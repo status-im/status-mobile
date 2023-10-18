@@ -2,7 +2,6 @@
   (:require
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.wallet.core :as wallet]
     [status-im2.common.keychain.events :as keychain]
     [status-im2.db :as db]
@@ -30,15 +29,15 @@
   [{:keys [db] :as cofx} {:keys [auth-method logout?]}]
   (let [key-uid (get-in db [:profile/profile :key-uid])]
     (rf/merge cofx
-              {:set-root                             :progress
-               :chat.ui/clear-inputs                 nil
-               :shell/reset-state                    nil
-               :hide-popover                         nil
-               ::logout                              nil
-               ::multiaccounts/webview-debug-changed false
-               :keychain/clear-user-password         key-uid
-               :profile/get-profiles-overview        #(rf/dispatch
-                                                       [:profile/get-profiles-overview-success %])}
+              {:set-root                               :progress
+               :chat.ui/clear-inputs                   nil
+               :shell/reset-state                      nil
+               :hide-popover                           nil
+               ::logout                                nil
+               :profile.settings/webview-debug-changed false
+               :keychain/clear-user-password           key-uid
+               :profile/get-profiles-overview          #(rf/dispatch
+                                                         [:profile/get-profiles-overview-success %])}
               (keychain/save-auth-method key-uid auth-method)
               (wallet/clear-timeouts)
               (initialize-app-db))))

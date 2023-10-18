@@ -1195,21 +1195,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public String generateAlias(final String seed) {
-        return Statusgo.generateAlias(seed);
-    }
-
-    @ReactMethod
-    public void generateAliasAsync(final String seed, final Callback callback) throws JSONException {
-        executeRunnableStatusGoMethod(() -> Statusgo.generateAlias(seed), callback);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public String identicon(final String seed) {
-        return Statusgo.identicon(seed);
-    }
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
     public String encodeTransfer(final String to, final String value) {
         return Statusgo.encodeTransfer(to, value);
     }
@@ -1267,31 +1252,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void identiconAsync(final String seed, final Callback callback) throws JSONException {
         executeRunnableStatusGoMethod(() -> Statusgo.identicon(seed), callback);
-    }
-
-    @ReactMethod
-    public void generateAliasAndIdenticonAsync(final String seed, final Callback callback) {
-
-         Log.d(TAG, "generateAliasAndIdenticonAsync");
-                if (!checkAvailability()) {
-                    callback.invoke(false);
-                    return;
-                }
-
-                Runnable r = new Runnable() {
-                    @Override
-                    public void run() {
-                        String resIdenticon = Statusgo.identicon(seed);
-                        String resAlias = Statusgo.generateAlias(seed);
-
-                        Log.d(TAG, resIdenticon);
-                        Log.d(TAG, resAlias);
-                        callback.invoke(resAlias, resIdenticon);
-                    }
-                };
-
-                StatusThreadPoolExecutor.getInstance().execute(r);
-
     }
 
     @Override

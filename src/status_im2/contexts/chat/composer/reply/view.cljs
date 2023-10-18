@@ -66,11 +66,11 @@
 
 (defn reply-from
   [{:keys [from contact-name current-public-key pin?]}]
-  (let [display-name (first (rf/sub [:contacts/contact-two-names-by-identity from]))
-        photo-path   (rf/sub [:chats/photo-path from])]
+  (let [[primary-name _] (rf/sub [:contacts/contact-two-names-by-identity from])
+        photo-path       (rf/sub [:chats/photo-path from])]
     [rn/view {:style style/reply-from}
      [quo/user-avatar
-      {:full-name         display-name
+      {:full-name         primary-name
        :profile-picture   photo-path
        :status-indicator? false
        :size              :xxxs
@@ -86,7 +86,7 @@
   [{:keys [from content-type contentType parsed-text content deleted? deleted-for-me?
            album-images-count]}
    in-chat-input? pin? recording-audio?]
-  (let [contact-name       (rf/sub [:contacts/contact-name-by-identity from])
+  (let [[primary-name _]   (rf/sub [:contacts/contact-two-names-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
         content-type       (or content-type contentType)
         text               (get-quoted-text-with-mentions (or parsed-text (:parsed-text content)))]
@@ -106,7 +106,7 @@
          [reply-from
           {:pin?               pin?
            :from               from
-           :contact-name       contact-name
+           :contact-name       primary-name
            :current-public-key current-public-key}]
          (when (not-empty text)
            [quo/text

@@ -16,6 +16,7 @@
     status-im2.contexts.onboarding.common.overlay.events
     status-im2.contexts.onboarding.events
     status-im2.contexts.profile.events
+    status-im2.contexts.profile.settings.events
     status-im2.contexts.shell.share.events
     status-im2.contexts.syncing.events
     status-im2.contexts.wallet.events

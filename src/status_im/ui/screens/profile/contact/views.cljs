@@ -5,7 +5,6 @@
     [quo.theme :as theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.core :as quo]
     [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
@@ -16,11 +15,12 @@
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.profile.components.sheets :as sheets]
     [status-im2.constants :as constants]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn actions
-  [{:keys [public-key added? blocked? ens-name mutual?] :as contact} muted?]
+  [{:keys [public-key added? blocked? ens-name mutual?] :as profile} muted?]
   (concat [{:label               (i18n/label :t/chat)
             :icon                :main-icons/message
             :disabled            (not mutual?)
@@ -33,7 +33,7 @@
               :icon                :main-icons/remove-contact
               :selected            true
               :accessibility-label :in-contacts-button
-              :action              #(re-frame/dispatch [:contact.ui/remove-contact-pressed contact])}]
+              :action              #(re-frame/dispatch [:contact.ui/remove-contact-pressed profile])}]
             [{:label               (i18n/label :t/add-to-contacts)
               :icon                :main-icons/add-contact
               :disabled            blocked?
@@ -114,15 +114,15 @@
 
 (defn nickname-view
   []
-  (let [{:keys [public-key primary-name nickname]} (rf/sub [:contacts/current-contact])
-        entered-nickname                           (reagent/atom nickname)]
+  (let [{:keys [public-key nickname] :as profile} (rf/sub [:contacts/current-contact])
+        entered-nickname                          (reagent/atom nickname)]
     (fn []
       [kb-presentation/keyboard-avoiding-view
        {:style         {:flex 1}
         :ignore-offset true}
        [topbar/topbar
         {:title    (i18n/label :t/nickname)
-         :subtitle primary-name
+         :subtitle (profile.utils/displayed-name profile)
          :modal?   true}]
        [react/view {:flex 1 :padding 16}
         [react/text {:style {:color colors/gray :margin-bottom 16}}
@@ -173,29 +173,25 @@
       :number-of-lines 2}
      label]]])
 
-(defn profile
+(defn profile-view
   []
   (let [{:keys [public-key
+                secondary-name
                 name
                 ens-verified
+                customization-color
                 compressed-key]
-         :as   contact}
-        @(re-frame/subscribe
-          [:contacts/current-contact])
-
-        muted? @(re-frame/subscribe [:chats/muted
-                                     public-key])
-        {:keys [primary-name secondary-name customization-color]} contact
+         :as   profile}     @(re-frame/subscribe [:contacts/current-contact])
+        muted?              @(re-frame/subscribe [:chats/muted public-key])
         customization-color (or customization-color :primary)
-        on-share #(re-frame/dispatch
-                   [:show-popover
-                    (merge
-                     {:view    :share-chat-key
-                      :address (or compressed-key
-                                   public-key)}
-                     (when (and ens-verified name)
-                       {:ens-name name}))])]
-    (when contact
+        on-share            #(re-frame/dispatch [:show-popover
+                                                 (merge
+                                                  {:view    :share-chat-key
+                                                   :address (or compressed-key
+                                                                public-key)}
+                                                  (when (and ens-verified name)
+                                                    {:ens-name name}))])]
+    (when profile
       [:<>
        [quo/header
         {:right-accessories [{:icon                :main-icons/share
@@ -206,27 +202,26 @@
                               :on-press            #(re-frame/dispatch [:navigate-back])}]}]
        [:<>
         [(profile-header/extended-header
-          {:on-press on-share
+          {:on-press         on-share
            :bottom-separator false
-           :title primary-name
-           :color
-           (user-avatar.style/customization-color customization-color
-                                                  (theme/get-theme))
-           :photo (multiaccounts/displayed-photo contact)
-           :monospace (not ens-verified)
-           :subtitle secondary-name
-           :compressed-key compressed-key
-           :public-key public-key})]
+           :title            (profile.utils/displayed-name profile)
+           :color            (user-avatar.style/customization-color customization-color
+                                                                    (theme/get-theme))
+           :photo            (profile.utils/photo profile)
+           :monospace        (not ens-verified)
+           :subtitle         secondary-name
+           :compressed-key   compressed-key
+           :public-key       public-key})]
         [react/view
          {:height 1 :background-color colors/gray-lighter :margin-top 8}]
-        [nickname-settings contact]
+        [nickname-settings profile]
         [react/view {:height 1 :background-color colors/gray-lighter}]
         [react/view
          {:padding-top    17
           :flex-direction :row
           :align-items    :stretch
           :flex           1}
-         (for [{:keys [label] :as action} (actions contact muted?)
+         (for [{:keys [label] :as action} (actions profile muted?)
                :when                      label]
            ^{:key label}
            [button-item action])]]])))
