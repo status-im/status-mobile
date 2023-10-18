@@ -64,7 +64,6 @@
                      (= :message (:type first-not-visible)))
             first-not-visible))))))
 
-
 (defn list-on-end-reached
   [scroll-y]
   ;; FIXME: that's a bit of a hack but we need to update `scroll-y` once the new messages
@@ -270,19 +269,19 @@
        [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
-  [event scroll-y *animate-topbar-name]
+  [event scroll-y animate-topbar-name?]
   (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y      (oops/oget event "nativeEvent.contentOffset.y")]
     (if
       (< 145 (- content-size-y current-y))
-      (reset! *animate-topbar-name true)
-      (reset! *animate-topbar-name false))
+      (reset! animate-topbar-name? true)
+      (reset! animate-topbar-name? false))
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
-           *animate-topbar-name]}]
+           animate-topbar-name?]}]
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
         {:keys [keyboard-height]}             (hooks/use-keyboard)
@@ -320,6 +319,9 @@
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
+                                            (when (and (< 145 (reanimated/get-shared-value scroll-y))
+                                                       (not @animate-topbar-name?))
+                                              (reset! animate-topbar-name? true))
                                             ;; NOTE(alwx): here we set the initial value of `scroll-y`
                                             ;; which is needed because by default the chat is
                                             ;; scrolled to the bottom and no initial `on-scroll`
@@ -349,7 +351,7 @@
        :on-momentum-scroll-end            state/stop-scrolling
        :scroll-event-throttle             16
        :on-scroll                         (fn [event]
-                                            (scroll-handler event scroll-y *animate-topbar-name)
+                                            (scroll-handler event scroll-y animate-topbar-name?)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
@@ -370,6 +372,10 @@
        :on-layout                         (fn [e]
                                             (let [layout-height (oops/oget e
                                                                            "nativeEvent.layout.height")]
+                                              (js/setTimeout
+                                               #(when (< 145 (reanimated/get-shared-value scroll-y))
+                                                  (reset! animate-topbar-name? true))
+                                               500)
                                               (reset! messages-view-height layout-height)))
        :scroll-enabled                    (not recording?)
        :content-inset-adjustment-behavior :never}]]))

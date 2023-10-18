@@ -14,11 +14,11 @@
     [utils.re-frame :as rf]))
 
 (defn f-chat
-  [{:keys [extra-keyboard-height show-floating-scroll-down-button?] :as inner-state-atoms}]
+  [{:keys [extra-keyboard-height show-floating-scroll-down-button? animate-topbar-name?]
+    :as   inner-state-atoms}]
   (let [insets                                   (safe-area/get-insets)
         scroll-y                                 (reanimated/use-shared-value 0)
         content-height                           (reanimated/use-shared-value 0)
-        *animate-topbar-name                     (reagent/atom false)
         {:keys [keyboard-height keyboard-shown]} (hooks/use-keyboard)
         {:keys [chat-id
                 contact-request-state
@@ -72,11 +72,11 @@
        :cover-bg-color       :turquoise
        :keyboard-shown?      keyboard-shown
        :inner-state-atoms    inner-state-atoms
-       :*animate-topbar-name *animate-topbar-name}]
+       :animate-topbar-name? animate-topbar-name?}]
 
      [messages.navigation/navigation-view
       {:scroll-y             scroll-y
-       :*animate-topbar-name *animate-topbar-name
+       :animate-topbar-name? animate-topbar-name?
        :back-icon            back-icon
        :chat                 chat
        :chat-screen-loaded?  chat-screen-loaded?
@@ -98,5 +98,6 @@
         {:extra-keyboard-height             (reagent/atom 0)
          :show-floating-scroll-down-button? (reagent/atom false)
          :messages-view-height              (reagent/atom 0)
-         :messages-view-header-height       (reagent/atom 0)}]
+         :messages-view-header-height       (reagent/atom 0)
+         :animate-topbar-name?              (reagent/atom false)}]
     [:f> f-chat inner-state-atoms]))
