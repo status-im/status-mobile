@@ -14,20 +14,20 @@
 (defn container
   [sub-label disabled?]
   {:border-radius     12
-   :height            (if sub-label 58 50)
+   :height            (if sub-label 56 48)
    :opacity           (when disabled? 0.3)
    :margin-horizontal 8})
 
 (defn row-container
   [sub-label]
-  {:height            (if sub-label 58 50)
+  {:height            (if sub-label 56 48)
    :margin-horizontal 12
    :flex-direction    :row})
 
 (defn left-icon
   [sub-label?]
   {:height        20
-   :margin-top    (if sub-label? 10 :auto)
+   :margin-top    (if sub-label? 8 :auto)
    :margin-bottom (when-not sub-label? :auto)
    :margin-right  12
    :width         20})
