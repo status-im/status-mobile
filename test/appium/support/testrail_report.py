@@ -123,7 +123,7 @@ class TestrailReport(BaseTestReport):
 
         test_cases['pr']['critical'] = 50955
         test_cases['pr']['one_to_one_chat'] = 50956
-       # test_cases['pr']['deep_links'] = 50967
+        # test_cases['pr']['deep_links'] = 50967
         test_cases['pr']['group_chat'] = 50964
         test_cases['pr']['community_single'] = 50983
         test_cases['pr']['community_multiple'] = 50982
@@ -242,26 +242,26 @@ class TestrailReport(BaseTestReport):
 
     def change_test_run_description(self):
         tests = self.get_all_tests()
-        passed_tests = self.get_passed_tests()
-        failed_tests = self.get_failed_tests()
+        passed, failed, xfailed = self.get_tests_by_status()
         not_executed_tests = self.get_not_executed_tests(self.run_id)
         final_description = "Nothing to report this time..."
         if len(tests) > 0:
-            description_title = "# %.0f%% of end-end tests have passed\n" % (len(passed_tests) / len(tests) * 100)
+            description_title = "# %.0f%% of end-end tests have passed\n" % (len(passed) / len(tests) * 100)
             description_title += "\n"
             description_title += "Total executed tests: %d\n" % len(tests)
-            description_title += "Failed tests: %d\n" % len(failed_tests)
-            description_title += "Passed tests: %d\n" % len(passed_tests)
+            description_title += "Failed tests: %d\n" % len(failed)
+            description_title += "Expected to fail tests: %d\n" % len(xfailed)
+            description_title += "Passed tests: %d\n" % len(passed)
             if not_executed_tests:
                 description_title += "Not executed tests: %d\n" % len(not_executed_tests)
             description_title += "\n"
             ids_failed_test = []
             single_devices_block, group_blocks, case_info = str(), dict(), str()
-            if failed_tests:
-                for test in failed_tests:
+            if failed:
+                for test in failed:
                     if test.group_name:
                         group_blocks[test.group_name] = "\n-------\n## Class: %s:\n" % test.group_name
-                for test in failed_tests:
+                for test in failed:
                     last_testrun = test.testruns[-1]
                     test_rail_link = self.get_test_result_link(self.run_id, test.testrail_case_id)
                     ids_failed_test.append(test.testrail_case_id)
