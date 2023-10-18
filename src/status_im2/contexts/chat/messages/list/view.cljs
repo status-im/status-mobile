@@ -319,7 +319,7 @@
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
-                                            (when (and (< 145 (reanimated/get-shared-value scroll-y))
+                                            (when (and (< 138 (reanimated/get-shared-value scroll-y))
                                                        (not @animate-topbar-name?))
                                               (reset! animate-topbar-name? true))
                                             ;; NOTE(alwx): here we set the initial value of `scroll-y`
@@ -373,7 +373,7 @@
                                             (let [layout-height (oops/oget e
                                                                            "nativeEvent.layout.height")]
                                               (js/setTimeout
-                                               #(when (< 145 (reanimated/get-shared-value scroll-y))
+                                               #(when (< 138 (reanimated/get-shared-value scroll-y))
                                                   (reset! animate-topbar-name? true))
                                                500)
                                               (reset! messages-view-height layout-height)))
