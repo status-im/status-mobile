@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.edit-account.view
-  (:require [quo2.core :as quo]
-            [quo2.theme :as quo.theme]
+  (:require [quo.core :as quo]
+            [quo.theme :as quo.theme]
             [reagent.core :as reagent]
             [status-im2.contexts.wallet.common.screen-base.create-or-edit-account.view :as
              create-or-edit-account]

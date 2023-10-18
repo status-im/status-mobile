@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.common.screen-base.create-or-edit-account.view
-  (:require [quo2.core :as quo]
-            [quo2.theme :as quo.theme]
+  (:require [quo.core :as quo]
+            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im2.contexts.wallet.common.screen-base.create-or-edit-account.style :as style]
