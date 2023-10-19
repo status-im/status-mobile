@@ -81,20 +81,20 @@
   },
 
   {
-    "path": "cider/cider-nrepl/0.25.3/cider-nrepl-0.25.3",
+    "path": "cider/cider-nrepl/0.29.0/cider-nrepl-0.29.0",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "5ae0efd9377a5e60c084bdaf4a2ce094f759ce23",
-      "sha256": "0drxf9nm23i1pcgrkwbcr09msq37csilzww38709add0hz8spjhq"
+      "sha1": "45f6034b26a14138e74145b7a4059628c0fedcd1",
+      "sha256": "1dy1l6y8cb8xiqq97a4lf8giyiicq4wfl4s2lxn5fb6614cjxqx2"
     }
   },
 
   {
-    "path": "cider/piggieback/0.4.1/piggieback-0.4.1",
+    "path": "cider/piggieback/0.5.2/piggieback-0.5.2",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "0a02a3e2ecd7a126ab60d8a44793342f20ced79b",
-      "sha256": "142vl5np33akcrnn6pksi0rjfsmmi528villxsj6cwcndvybiw4m"
+      "sha1": "ecfd5c286a85db3f059e75c37fca5722d9e26f79",
+      "sha256": "1ps9yf3cxmlm447hqkidjb5xry90n0wl3jk0jn28fagq31lzylkl"
     }
   },
 
@@ -360,29 +360,29 @@
   },
 
   {
-    "path": "com/taoensso/encore/3.21.0/encore-3.21.0",
+    "path": "com/taoensso/encore/3.68.0/encore-3.68.0",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "2fd92b7a4ff59715cbbee0ebfd166e2feadfa9ce",
-      "sha256": "0krgb7s28l12nzcgcj4601ajlpkx4wk7zij7b1ly479dxgsr03qx"
+      "sha1": "b098b58e27a7cf9ab5e46aedbb5ababc12805170",
+      "sha256": "1i5bmm83y9wpgvl5h6ysjsw58qrqz4b4v5vqnsprq6f1pmakjfz2"
     }
   },
 
   {
-    "path": "com/taoensso/timbre/4.10.0/timbre-4.10.0",
+    "path": "com/taoensso/timbre/6.3.1/timbre-6.3.1",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "daf6b8826cb16aed7fb3e0dd7a5c5266d2a53854",
-      "sha256": "1rza24rhkzjmik5rwfzqzywp9yvcwilj16him9n7h7p751y6klry"
+      "sha1": "e1b04be262f38bbd9af8f1193b6b3f2c6a37129d",
+      "sha256": "0p6rws5gpab5qldp739lyqvwdbak28vaxbjw2bg2slflkkahszc7"
     }
   },
 
   {
-    "path": "com/taoensso/truss/1.6.0/truss-1.6.0",
+    "path": "com/taoensso/truss/1.11.0/truss-1.11.0",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "02c08dae83153a50eb946c4d742f574a24bb2a76",
-      "sha256": "0z5mw41ikk2m09vv6rn9hiqjyqlcfkr99cy7kk074w78lryy9w2f"
+      "sha1": "4784f43191d5839448b58128bb455d62616086fd",
+      "sha256": "16xqav4cv3cnfik2d8v3wn7zb2a97ybnrbp6v6nj8m1nmdhr16k7"
     }
   },
 
@@ -477,11 +477,11 @@
   },
 
   {
-    "path": "io/aviso/pretty/0.1.33/pretty-0.1.33",
+    "path": "io/aviso/pretty/1.4.4/pretty-1.4.4",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "2ebf75b7ff2a2260827453e7ea98e012a9eca3e2",
-      "sha256": "06w7hpgccr7qy47cwzpq5h2fw27am1imc9cbpg3bc5bbydz9q4df"
+      "sha1": "ab0c981501a6a24066478b724a926a036217d5fd",
+      "sha256": "14mz49f0dn06cs9s4gka32m7n5y49h2vvkgkgdrh4dm3dyslzy5c"
     }
   },
 
@@ -945,11 +945,11 @@
   },
 
   {
-    "path": "refactor-nrepl/refactor-nrepl/2.5.0/refactor-nrepl-2.5.0",
+    "path": "refactor-nrepl/refactor-nrepl/3.6.0/refactor-nrepl-3.6.0",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "6bc3441afc94f7ca024e41a864ca75e05df7e207",
-      "sha256": "0w8hax99y98l53mixxzx2ja0vcnhjv8dnsaz1zj3vqk775ns5w6i"
+      "sha1": "2b3bb82da53b5db9c2b2aa298417816b81d0ed97",
+      "sha256": "1ysqabmlnghki6x0636zngxza2d83c85276wp9ma9wk183mkv52a"
     }
   },
 
@@ -1004,15 +1004,6 @@
     "jar": {
       "sha1": "8ca97618f914401c4112e2fd28d24d47c4fc2815",
       "sha256": "1zj5dpcyvivvf7zsggvrd75ykr98pblv3bpfr01jbkwjwx1s2d4a"
-    }
-  },
-
-  {
-    "path": "status-im/timbre/4.10.0-2-status/timbre-4.10.0-2-status",
-    "host": "https://repo.clojars.org",
-    "jar": {
-      "sha1": "e630bd13a422d7dbedeeb26f17aca0a473a9e5d3",
-      "sha256": "1ipakbl438xkj1qhp6lrmjk25vihk15v86k69qba4ny7i0jhyj21"
     }
   },
 
