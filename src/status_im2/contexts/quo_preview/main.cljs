@@ -339,12 +339,12 @@
                         :component text/view}
                        {:name      :markdown-list
                         :component markdown-list/view}]
-   :messages          [{:name      :gap
+   :messages          [{:name      :author
+                        :component messages-author/view}
+                       {:name      :gap
                         :component messages-gap/view}
                        {:name      :system-messages
-                        :component system-message/view}
-                       {:name      :author
-                        :component messages-author/view}]
+                        :component system-message/view}]
    :navigation        [{:name      :bottom-nav-tab
                         :component bottom-nav-tab/view}
                        {:name      :top-nav
