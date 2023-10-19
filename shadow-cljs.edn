@@ -23,7 +23,7 @@
                 [bidi "2.1.6"]
                 ;; Test dependencies
                 [day8.re-frame/test "0.1.5"]
-                [com.taoensso/tufte "2.1.0"]]
+                [com.taoensso/tufte "2.6.3"]]
 
  ;; port and middleware for repl in development
  :nrepl {:port       7888

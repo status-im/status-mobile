@@ -41,7 +41,7 @@ compojure/compojure/1.5.2/compojure-1.5.2.jar
 com/taoensso/encore/3.68.0/encore-3.68.0.jar
 com/taoensso/timbre/6.3.1/timbre-6.3.1.jar
 com/taoensso/truss/1.11.0/truss-1.11.0.jar
-com/taoensso/tufte/2.1.0/tufte-2.1.0.jar
+com/taoensso/tufte/2.6.3/tufte-2.6.3.jar
 crypto-equality/crypto-equality/1.0.1/crypto-equality-1.0.1.jar
 crypto-random/crypto-random/1.2.1/crypto-random-1.2.1.jar
 day8/re-frame/test/0.1.5/test-0.1.5.jar

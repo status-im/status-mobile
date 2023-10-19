@@ -387,11 +387,11 @@
   },
 
   {
-    "path": "com/taoensso/tufte/2.1.0/tufte-2.1.0",
+    "path": "com/taoensso/tufte/2.6.3/tufte-2.6.3",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "3bece3f233cf626ae373c349117531ccafb9dfde",
-      "sha256": "0lx12szc2n2y21iqvrsjhdw90jiq9a9nkkdki5i80933rgwn9agv"
+      "sha1": "8862c6113ca743ebdcfa17bf4779a21fc08a7c7e",
+      "sha256": "0i0wsv2g2hswgdik6zlgcs212clj1d7fvckxfcsmyfr0vvpc1dmd"
     }
   },
 
