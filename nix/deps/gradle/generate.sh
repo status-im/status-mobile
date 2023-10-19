@@ -38,6 +38,17 @@ function gen_deps_list() {
     echo -e "${CLR}Found ${GRN}$(wc -l < "${DEPS_LIST}")${RST} direct dependencies..."
 }
 
+# FIXME: Temporary fix for missing packages.
+# https://github.com/status-im/status-mobile/issues/15447
+function add_deps_hack() {
+    echo -n \
+'org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.6.10
+org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2
+com.android.tools.lint:lint-gradle:30.2.2
+com.android.tools.build:gradle:7.0.4' \
+        >> "${DEPS_LIST}"
+}
+
 # Find download URLs for each dependency.
 function gen_deps_urls() {
     go-maven-resolver < "${DEPS_LIST}" | sort -uV -o "${DEPS_URLS}"
@@ -82,10 +93,7 @@ fi
 # Run each stage in order
 gen_proj_list
 gen_deps_list
-# FIXME: Temporary fix for missing package.
-echo 'org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.6.10' >> "${DEPS_LIST}"
-echo 'com.android.tools.lint:lint-gradle:30.2.2' >> "${DEPS_LIST}"
-echo 'com.android.tools.build:gradle:7.0.4' >> "${DEPS_LIST}"
+add_deps_hack
 gen_deps_urls
 gen_deps_json
 
