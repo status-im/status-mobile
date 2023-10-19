@@ -294,6 +294,7 @@
 (def text quo.components.markdown.text/text)
 
 ;;;; Messages
+(def author quo.components.messages.author.view/view)
 (def gap quo.components.messages.gap/gap)
 (def system-message quo.components.messages.system-message.view/system-message)
 
@@ -319,7 +320,6 @@
 (def soundtrack quo.components.record-audio.soundtrack.view/f-soundtrack)
 
 ;;;; Selectors
-(def author quo.components.messages.author.view/author)
 (def disclaimer quo.components.selectors.disclaimer.view/view)
 (def filter quo.components.selectors.filter.view/view)
 (def reactions-selector quo.components.selectors.reactions-selector.view/view)

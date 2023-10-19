@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check if inside Nix shell
 if [[ -z "${IN_NIX_SHELL}" ]]; then
