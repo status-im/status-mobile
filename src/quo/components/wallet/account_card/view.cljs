@@ -1,14 +1,15 @@
 (ns quo.components.wallet.account-card.view
-  (:require [react-native.core :as rn]
-            [quo2.foundations.colors :as colors]
-            [quo2.components.icon :as icon]
-            [quo2.components.wallet.account-card.style :as style]
-            [quo2.components.buttons.button.view :as button]
-            [quo2.components.markdown.text :as text]
-            [quo2.theme :as quo.theme]
-            [reagent.core :as reagent]
-            [quo2.foundations.customization-colors :as customization-colors]
-            [react-native.linear-gradient :as linear-gradient]))
+  (:require
+   [quo.components.buttons.button.view :as button]
+   [quo.components.icon :as icon]
+   [quo.components.markdown.text :as text]
+   [quo.components.wallet.account-card.style :as style]
+   [quo.foundations.colors :as colors]
+   [quo.foundations.customization-colors :as customization-colors]
+   [quo.theme :as quo.theme]
+   [react-native.core :as rn]
+   [react-native.linear-gradient :as linear-gradient]
+   [reagent.core :as reagent]))
 
 (defn- loading-view
   [{:keys [customization-color type theme metrics?]}]
