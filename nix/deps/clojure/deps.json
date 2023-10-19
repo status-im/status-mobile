@@ -108,11 +108,11 @@
   },
 
   {
-    "path": "cljs-bean/cljs-bean/1.3.0/cljs-bean-1.3.0",
+    "path": "cljs-bean/cljs-bean/1.9.0/cljs-bean-1.9.0",
     "host": "https://repo.clojars.org",
     "jar": {
-      "sha1": "eef0aae8057df9c538bf009fd82766d5e86848c7",
-      "sha256": "0c6wlpyc1k5aavw5dixllycdnmr64rrhpc4q57wfyfymixz87d7w"
+      "sha1": "ac78135240a56cdfb104256b73f398bac5bea4d2",
+      "sha256": "129bvlbq3x92p4y1pyikzg774wxf28kxz1qvqqd7mj7bqilwc2gq"
     }
   },
 

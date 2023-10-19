@@ -10,7 +10,7 @@ cheshire/cheshire/5.11.0/cheshire-5.11.0.jar
 cider/cider-nrepl/0.29.0/cider-nrepl-0.29.0.jar
 cider/piggieback/0.5.2/piggieback-0.5.2.jar
 clj-kondo/clj-kondo/2023.09.07/clj-kondo-2023.09.07.jar
-cljs-bean/cljs-bean/1.3.0/cljs-bean-1.3.0.jar
+cljs-bean/cljs-bean/1.9.0/cljs-bean-1.9.0.jar
 clout/clout/2.1.2/clout-2.1.2.jar
 com/andrewmcveigh/cljs-time/0.5.2/cljs-time-0.5.2.jar
 com/bhauman/cljs-test-display/0.1.1/cljs-test-display-0.1.1.jar
