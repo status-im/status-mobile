@@ -48,7 +48,7 @@
     :as notification}]
   (let [token       (if erc20
                       (get-in db
-                              [:wallet/all-tokens (string/lower-case contract)]
+                              [:wallet-legacy/all-tokens (string/lower-case contract)]
                               default-erc20-token)
                       (tokens/native-currency network))
         amount      (money/wei->ether (decode/uint value))

@@ -23,7 +23,7 @@
 
 (views/defview account-card
   [{:keys [name color address type wallet] :as account} keycard? card-width]
-  (views/letsubs [currency        [:wallet/currency]
+  (views/letsubs [currency        [:wallet-legacy/currency]
                   portfolio-value [:account-portfolio-value address]
                   prices-loading? [:prices-loading?]]
     [react/touchable-highlight
@@ -73,8 +73,8 @@
 
 (views/defview assets
   []
-  (views/letsubs [{:keys [tokens]} [:wallet/all-visible-assets-with-values]
-                  currency         [:wallet/currency]]
+  (views/letsubs [{:keys [tokens]} [:wallet-legacy/all-visible-assets-with-values]
+                  currency         [:wallet-legacy/currency]]
     [:<>
      (for [item tokens]
        ^{:key (:name item)}
@@ -87,7 +87,8 @@
      [components.core/button
       {:accessibility-label :send-transaction-button
        :type                :scale
-       :on-press            #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])}
+       :on-press            #(re-frame/dispatch [:wallet-legacy/prepare-transaction-from-wallet
+                                                 account])}
       [react/view (styles/send-button)
        [icons/icon :main-icons/send {:color colors/white-persist}]]]]))
 
@@ -142,7 +143,7 @@
 ;;TOTAL VALUE OLD
 (views/defview total-value-old
   [{:keys [animation minimized]}]
-  (views/letsubs [currency           [:wallet/currency]
+  (views/letsubs [currency           [:wallet-legacy/currency]
                   portfolio-value    [:portfolio-value]
                   empty-balances?    [:empty-balances?]
                   frozen-card?       [:keycard/frozen-card?]
@@ -203,7 +204,7 @@
 
 (views/defview total-value
   []
-  (views/letsubs [currency        [:wallet/currency]
+  (views/letsubs [currency        [:wallet-legacy/currency]
                   portfolio-value [:portfolio-value]]
     [react/view {:padding-vertical 12}
      [quo.text/text (i18n/label :t/wallet-total-value)]
@@ -257,7 +258,7 @@
            :accessibility-label :accounts-qr-code
            :on-press            #(re-frame/dispatch
                                   [::qr-scanner/scan-code
-                                   {:handler :wallet.send/qr-scanner-result}])}
+                                   {:handler :wallet-legacy.send/qr-scanner-result}])}
           :i/placeholder]
          [react/view {:width 12}]
          [quo/button
@@ -281,12 +282,12 @@
      [components.core/animated-header
       {:extended-header    total-value-old
        :refresh-control    common/refresh-control
-       :refreshing-sub     (re-frame/subscribe [:wallet/refreshing-history?])
+       :refreshing-sub     (re-frame/subscribe [:wallet-legacy/refreshing-history?])
        :refreshing-counter common/updates-counter
        :use-insets         true
        :right-accessories  [{:on-press            #(re-frame/dispatch
                                                     [::qr-scanner/scan-code
-                                                     {:handler :wallet.send/qr-scanner-result}])
+                                                     {:handler :wallet-legacy.send/qr-scanner-result}])
                              :icon                :main-icons/qr
                              :accessibility-label :accounts-qr-code}
                             {:on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet-old

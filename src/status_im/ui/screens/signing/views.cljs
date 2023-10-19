@@ -481,10 +481,10 @@
                   [:signing/amount-errors (:address from)]
                   keycard-multiaccount? [:keycard-multiaccount?]
                   prices [:prices]
-                  wallet-currency [:wallet/currency]
+                  wallet-currency [:wallet-legacy/currency]
                   mainnet? [:mainnet?]
                   prices-loading? [:prices-loading?]
-                  management-enabled? [:wallet/transactions-management-enabled?]]
+                  management-enabled? [:wallet-legacy/transactions-management-enabled?]]
     (let [display-symbol     (wallet.utils/display-symbol token)
           fee-display-symbol (wallet.utils/display-symbol (tokens/native-currency chain))]
       [react/view (styles/sheet)

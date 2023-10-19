@@ -115,7 +115,7 @@
   [cofx data]
   (rf/merge cofx
             (choose-recipient/parse-eip681-uri-and-resolve-ens data true)
-            (navigation/navigate-to :wallet nil)))
+            (navigation/navigate-to :wallet-legacy nil)))
 
 (defn existing-account?
   [{:keys [db]} address]

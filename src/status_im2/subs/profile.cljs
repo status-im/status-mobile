@@ -190,8 +190,8 @@
 (re-frame/reg-sub
  :accounts-for-recipient
  :<- [:multiaccount/visible-accounts]
- :<- [:wallet/prepare-transaction]
- :<- [:search/recipient-filter]
+ :<- [:wallet-legacy/prepare-transaction]
+ :<- [:wallet-legacy/search-recipient-filter]
  (fn [[accounts {:keys [from]} search-filter]]
    (let [accounts (remove #(= (:address %) (:address from)) accounts)]
      (if (string/blank? search-filter)

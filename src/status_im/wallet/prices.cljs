@@ -12,11 +12,11 @@
 
 (defn assoc-error-message
   [db error-type err]
-  (assoc-in db [:wallet :errors error-type] (or err :unknown-error)))
+  (assoc-in db [:wallet-legacy :errors error-type] (or err :unknown-error)))
 
 (defn clear-error-message
   [db error-type]
-  (update-in db [:wallet :errors] dissoc error-type))
+  (update-in db [:wallet-legacy :errors] dissoc error-type))
 
 (defn tokens-symbols
   [visible-token-symbols all-tokens]
@@ -24,7 +24,7 @@
                   (set (map :symbol (tokens/nfts-for all-tokens)))))
 
 (re-frame/reg-fx
- :wallet/get-prices
+ :wallet-legacy/get-prices
  (fn [{:keys [from to mainnet? success-event error-event]}]
    (prices/get-prices from
                       to
@@ -48,9 +48,9 @@
            (assoc :prices-loading? false))})
 
 (rf/defn update-prices
-  {:events [:wallet.ui/pull-to-refresh]}
-  [{{:keys [network-status :wallet/all-tokens]
-     {:keys [currency :wallet/visible-tokens]
+  {:events [:wallet-legacy.ui/pull-to-refresh]}
+  [{{:keys [network-status :wallet-legacy/all-tokens]
+     {:keys [currency :wallet-legacy/visible-tokens]
       :or   {currency :usd}}
      :profile/profile
      :as db}
@@ -61,7 +61,7 @@
         tokens   (tokens-symbols assets all-tokens)
         currency (get currency/currencies currency)]
     (when (not= network-status :offline)
-      {:wallet/get-prices
+      {:wallet-legacy/get-prices
        {:from          (if mainnet?
                          (conj tokens "ETH")
                          [(-> (tokens/native-currency (chain/get-current-network db))

@@ -89,7 +89,7 @@
   []
   (letsubs [read-once?             (atom false)
             {:keys [height width]} [:dimensions/window]
-            camera-flashlight      [:wallet.send/camera-flashlight]
+            camera-flashlight      [:wallet-legacy.send/camera-flashlight]
             opts                   [:get-screen-params]
             camera-ref             (atom nil)]
     [react/view
