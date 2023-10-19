@@ -153,11 +153,11 @@
   },
 
   {
-    "path": "com/cognitect/transit-cljs/0.8.248/transit-cljs-0.8.248",
+    "path": "com/cognitect/transit-cljs/0.8.280/transit-cljs-0.8.280",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "7c364a28138880b613981516528a4e3132059394",
-      "sha256": "1j71f5l3mpy34w2p59i5nzbwwrndmknfl4nafialiag2s8ps6pmd"
+      "sha1": "98d11d81caee82f97b9417025750b785fb6ecb16",
+      "sha256": "06hwd00wh0qh5dynf69jnk20az97xmnz5flpk7118qj11v1x8yhm"
     }
   },
 
@@ -171,11 +171,11 @@
   },
 
   {
-    "path": "com/cognitect/transit-js/0.8.846/transit-js-0.8.846",
+    "path": "com/cognitect/transit-js/0.8.874/transit-js-0.8.874",
     "host": "https://repo1.maven.org/maven2",
     "jar": {
-      "sha1": "bc6e908a4a3ec8818b3de924cd3dce433dd3411f",
-      "sha256": "01937017b9m3dw6s10drj2s76597ayjxdyvd102gnxmb031gynha"
+      "sha1": "f8b4f570ca4d41649190efecac27a5932cc11429",
+      "sha256": "0289pwxxmdhb6gw8djrrdc6qa8jxcv4j105mkskmsmlmsv94nvmd"
     }
   },
 

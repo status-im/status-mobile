@@ -15,9 +15,9 @@ clout/clout/2.1.2/clout-2.1.2.jar
 com/andrewmcveigh/cljs-time/0.5.2/cljs-time-0.5.2.jar
 com/bhauman/cljs-test-display/0.1.1/cljs-test-display-0.1.1.jar
 com/cognitect/transit-clj/1.0.329/transit-clj-1.0.329.jar
-com/cognitect/transit-cljs/0.8.248/transit-cljs-0.8.248.jar
+com/cognitect/transit-cljs/0.8.280/transit-cljs-0.8.280.jar
 com/cognitect/transit-java/1.0.362/transit-java-1.0.362.jar
-com/cognitect/transit-js/0.8.846/transit-js-0.8.846.jar
+com/cognitect/transit-js/0.8.874/transit-js-0.8.874.jar
 com/fasterxml/jackson/core/jackson-core/2.13.3/jackson-core-2.13.3.jar
 com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.13.3/jackson-dataformat-cbor-2.13.3.jar
 com/fasterxml/jackson/dataformat/jackson-dataformat-smile/2.13.3/jackson-dataformat-smile-2.13.3.jar

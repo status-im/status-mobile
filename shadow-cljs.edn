@@ -7,7 +7,7 @@
                 [com.andrewmcveigh/cljs-time "0.5.2"]
                 [com.taoensso/timbre "6.3.1"]
                 [cljs-bean "1.9.0"]
-                [com.cognitect/transit-cljs "0.8.248"]
+                [com.cognitect/transit-cljs "0.8.280"]
                 [camel-snake-kebab "0.4.3"]
 
                 ;; Dev dependencies
