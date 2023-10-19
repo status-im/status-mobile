@@ -48,7 +48,6 @@ day8/re-frame/test/0.1.5/test-0.1.5.jar
 expound/expound/0.9.0/expound-0.9.0.jar
 fipp/fipp/0.6.26/fipp-0.6.26.jar
 hiccup/hiccup/1.0.5/hiccup-1.0.5.jar
-hickory/hickory/0.7.1/hickory-0.7.1.jar
 http-kit/http-kit/2.2.0/http-kit-2.2.0.jar
 instaparse/instaparse/1.4.0/instaparse-1.4.0.jar
 io/aviso/pretty/1.4.4/pretty-1.4.4.jar
@@ -92,7 +91,6 @@ org/jboss/logging/jboss-logging/3.4.1.Final/jboss-logging-3.4.1.Final.jar
 org/jboss/threads/jboss-threads/3.1.0.Final/jboss-threads-3.1.0.Final.jar
 org/jboss/xnio/xnio-api/3.8.0.Final/xnio-api-3.8.0.Final.jar
 org/jboss/xnio/xnio-nio/3.8.0.Final/xnio-nio-3.8.0.Final.jar
-org/jsoup/jsoup/1.9.2/jsoup-1.9.2.jar
 org/jspecify/jspecify/0.2.0/jspecify-0.2.0.jar
 org/msgpack/msgpack/0.6.12/msgpack-0.6.12.jar
 org/ow2/asm/asm/9.4/asm-9.4.jar
@@ -100,7 +98,6 @@ org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
 org/wildfly/client/wildfly-client-config/1.0.1.Final/wildfly-client-config-1.0.1.Final.jar
 org/wildfly/common/wildfly-common/1.5.2.Final/wildfly-common-1.5.2.Final.jar
 prismatic/schema/1.1.7/schema-1.1.7.jar
-quoin/quoin/0.1.2/quoin-0.1.2.jar
 reagent/reagent/1.2.0/reagent-1.2.0.jar
 re-com/re-com/2.8.0/re-com-2.8.0.jar
 refactor-nrepl/refactor-nrepl/3.6.0/refactor-nrepl-3.6.0.jar
@@ -116,4 +113,3 @@ thheller/shadow-cljsjs/0.0.22/shadow-cljsjs-0.0.22.jar
 thheller/shadow-undertow/0.3.1/shadow-undertow-0.3.1.jar
 thheller/shadow-util/0.7.0/shadow-util-0.7.0.jar
 tigris/tigris/0.1.2/tigris-0.1.2.jar
-viebel/codox-klipse-theme/0.0.1/codox-klipse-theme-0.0.1.jar
