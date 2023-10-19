@@ -55,7 +55,7 @@
       (h/was-called on-press)))
 
   (h/test "Renders component without metrics"
-    (let [data (get-test-data {:type     :default
+    (let [data (get-test-data {:type        :default
                                :no-metrics? true})]
       (h/render [account-card/view data])
       (h/is-falsy (h/query-by-label-text :metrics))))
@@ -67,8 +67,8 @@
       (h/is-truthy (h/get-by-label-text :loading))))
 
   (h/test "Renders loading state without metrics"
-    (let [data (get-test-data {:type     :default
+    (let [data (get-test-data {:type        :default
                                :no-metrics? true
-                               :loading? true})]
+                               :loading?    true})]
       (h/render [account-card/view data])
       (h/is-falsy (h/query-by-label-text :metrics)))))

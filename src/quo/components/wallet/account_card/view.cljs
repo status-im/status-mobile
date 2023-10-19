@@ -1,16 +1,16 @@
 (ns quo.components.wallet.account-card.view
   (:require
-   [quo.components.buttons.button.view :as button]
-   [quo.components.icon :as icon]
-   [quo.components.markdown.text :as text]
-   [quo.components.wallet.account-card.properties :as properties]
-   [quo.components.wallet.account-card.style :as style]
-   [quo.foundations.colors :as colors]
-   [quo.foundations.customization-colors :as customization-colors]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [react-native.linear-gradient :as linear-gradient]
-   [reagent.core :as reagent]))
+    [quo.components.buttons.button.view :as button]
+    [quo.components.icon :as icon]
+    [quo.components.markdown.text :as text]
+    [quo.components.wallet.account-card.properties :as properties]
+    [quo.components.wallet.account-card.style :as style]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.customization-colors :as customization-colors]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]
+    [reagent.core :as reagent]))
 
 (defn- loading-view
   [{:keys [customization-color type theme metrics?]}]
@@ -172,9 +172,9 @@
 
 (defn- view-internal
   [{:keys [type] :as props}]
-   (case type
+  (case type
     (:watch-only :default :empty :missing-keypair) [user-account props]
-    :add-account [add-account-view props]
+    :add-account                                   [add-account-view props]
     nil))
 
 (def view (quo.theme/with-theme view-internal))

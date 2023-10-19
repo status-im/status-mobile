@@ -1,5 +1,5 @@
-(ns quo.components.wallet.account-card.properties 
-  (:require    [quo.foundations.colors :as colors]))
+(ns quo.components.wallet.account-card.properties
+  (:require [quo.foundations.colors :as colors]))
 
 (defn gradient-start-color
   [theme customization-color]

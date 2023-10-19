@@ -119,4 +119,4 @@
    :left          0
    :right         0
    :border-radius 16
-   :z-index -1})
+   :z-index       -1})
