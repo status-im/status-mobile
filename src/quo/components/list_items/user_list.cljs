@@ -20,8 +20,7 @@
 (defn action-icon
   [{:keys [type on-press on-check disabled? checked?]}]
   [rn/touchable-opacity
-   {:on-press (when on-press on-press)
-    :style    {:position :absolute :right 20}}
+   {:on-press (when on-press on-press)}
    (case type
      :options
      [icons/icon :i/options
@@ -50,8 +49,8 @@
      :profile-picture photo-path
      :online?         online?
      :size            :small}]
-   [rn/view {:style {:margin-left 8}}
-    [author/author
+   [rn/view {:style {:margin-horizontal 8 :flex 1}}
+    [author/view
      {:primary-name   primary-name
       :secondary-name secondary-name
       :contact?       contact?
