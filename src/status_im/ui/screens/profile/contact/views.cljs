@@ -105,7 +105,7 @@
                             (save-nickname public-key @entered-nickname))
     :auto-capitalize     :none
     :auto-focus          false
-    :max-length          32
+    :max-length          constants/profile-name-max-length
     :accessibility-label :nickname-input
     :default-value       nickname
     :placeholder         (i18n/label :t/nickname)
@@ -132,7 +132,7 @@
          {:style {:align-self :flex-end
                   :margin-top 16
                   :color      colors/gray}}
-         (str (count @entered-nickname) " / 32")]]
+         (str (count @entered-nickname) " / " constants/profile-name-max-length)]]
        [toolbar/toolbar
         {:show-border? true
          :center

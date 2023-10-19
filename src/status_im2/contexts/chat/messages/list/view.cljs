@@ -83,8 +83,8 @@
   [{:keys [ens-verified added?]} theme]
   (when (or ens-verified added?)
     [rn/view
-     {:style {:padding-left 10
-              :margin-top   2}}
+     {:style {:margin-left 4
+              :margin-top  8}}
      (if ens-verified
        [quo/icon :i/verified
         {:no-color true
@@ -225,12 +225,15 @@
              :display-name    display-name
              :online?         online?
              :profile-picture photo-path}])]
-        [quo/text
-         {:weight          :semi-bold
-          :size            :heading-1
-          :style           {:margin-top (if group-chat 54 12)}
-          :number-of-lines 1}
-         display-name
+        [rn/view
+         {:style {:flex-direction :row
+                  :margin-top     (if group-chat 54 12)}}
+         [quo/text
+          {:weight          :semi-bold
+           :size            :heading-1
+           :style           {:flex-shrink 1}
+           :number-of-lines 1}
+          display-name]
          [contact-icon contact theme]]
         (when bio
           [quo/text {:style style/bio}
