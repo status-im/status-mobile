@@ -7,7 +7,7 @@
 (def empty-username "Account 1")
 
 (defn get-test-data
-  [{:keys [type watch-only? empty-type? loading? metrics?] :or {metrics? true}}]
+  [{:keys [type watch-only? empty-type? loading? no-metrics?]}]
   {:name                (if empty-type? empty-username username)
    :balance             "€1,000.00"
    :percentage-value    "50%"
@@ -15,7 +15,7 @@
    :customization-color :blue
    :watch-only?         watch-only?
    :loading?            loading?
-   :metrics?            metrics?
+   :metrics?            (not no-metrics?)
    :type                type})
 
 (h/describe "Account_card tests"
@@ -56,7 +56,7 @@
 
   (h/test "Renders component without metrics"
     (let [data (get-test-data {:type     :default
-                               :metrics? false})]
+                               :no-metrics? true})]
       (h/render [account-card/view data])
       (h/is-falsy (h/query-by-label-text :metrics))))
 
@@ -68,7 +68,7 @@
 
   (h/test "Renders loading state without metrics"
     (let [data (get-test-data {:type     :default
-                               :metrics? false
+                               :no-metrics? true
                                :loading? true})]
       (h/render [account-card/view data])
       (h/is-falsy (h/query-by-label-text :metrics)))))

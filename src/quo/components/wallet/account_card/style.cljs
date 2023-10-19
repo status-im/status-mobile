@@ -15,12 +15,12 @@
   {:width              162
    :background-color   (when (not= :watch-only type)
                          (colors/theme-colors
-                          (colors/custom-color customization-color
-                                               50
-                                               (when (= :missing-keypair type) (if pressed? 20 10)))
-                          (colors/custom-color customization-color
-                                               60
-                                               (when (= :missing-keypair type) (if pressed? 30 20)))
+                          (colors/resolve-color customization-color
+                                                theme
+                                                (when (= :missing-keypair type) (if pressed? 20 10)))
+                          (colors/resolve-color customization-color
+                                                theme
+                                                (when (= :missing-keypair type) (if pressed? 30 20)))
                           theme))
    :border-radius      16
    :border-width       1
@@ -112,25 +112,11 @@
 (def metrics-icon-container
   {:margin-left 4})
 
-(defn gradient-start-color
-  [theme customization-color]
-  (colors/theme-colors
-   (colors/custom-color customization-color 50 0)
-   colors/white-opa-2
-   theme))
-
-(defn gradient-end-color
-  [customization-color]
-  (colors/custom-color customization-color 50 6))
-
 (def gradient-view
   {:position      :absolute
    :bottom        0
    :top           0
    :left          0
    :right         0
-   :border-radius 16})
-
-(defn alert-icon-color
-  [theme]
-  (colors/theme-colors colors/neutral-50 colors/white theme))
+   :border-radius 16
+   :z-index -1})

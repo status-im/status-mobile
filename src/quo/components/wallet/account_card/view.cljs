@@ -3,6 +3,7 @@
    [quo.components.buttons.button.view :as button]
    [quo.components.icon :as icon]
    [quo.components.markdown.text :as text]
+   [quo.components.wallet.account-card.properties :as properties]
    [quo.components.wallet.account-card.style :as style]
    [quo.foundations.colors :as colors]
    [quo.foundations.customization-colors :as customization-colors]
@@ -82,11 +83,11 @@
                                   theme)
       :size  16}]]])
 
-(defn- gradiant-overview
+(defn- gradient-overview
   [theme customization-color]
   [linear-gradient/linear-gradient
-   {:colors [(style/gradient-start-color theme customization-color)
-             (style/gradient-end-color customization-color)]
+   {:colors [(properties/gradient-start-color theme customization-color)
+             (properties/gradient-end-color theme customization-color)]
     :style  style/gradient-view
     :start  {:x 0 :y 0}
     :end    {:x 1 :y 0}}])
@@ -131,7 +132,7 @@
               name]
              (when watch-only? [icon/icon :i/reveal {:color colors/neutral-50 :size 12}])
              (when missing-keypair?
-               [icon/icon :i/alert {:color (style/alert-icon-color theme) :size 12}])]]
+               [icon/icon :i/alert {:color (properties/alert-icon-color theme) :size 12}])]]
            [text/text
             {:size   :heading-2
              :weight :semi-bold
@@ -143,8 +144,7 @@
               (when (not= :empty type)
                 [metrics-info type theme amount])])
            (when watch-only?
-             [gradiant-overview theme customization-color])
-          ])))))
+             [gradient-overview theme customization-color])])))))
 
 (defn- add-account-view
   []
@@ -172,12 +172,9 @@
 
 (defn- view-internal
   [{:keys [type] :as props}]
-  (case type
-    :watch-only      [user-account props]
-    :add-account     [add-account-view props]
-    :default         [user-account props]
-    :empty           [user-account props]
-    :missing-keypair [user-account props]
+   (case type
+    (:watch-only :default :empty :missing-keypair) [user-account props]
+    :add-account [add-account-view props]
     nil))
 
 (def view (quo.theme/with-theme view-internal))
