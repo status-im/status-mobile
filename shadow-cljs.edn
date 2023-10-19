@@ -21,11 +21,6 @@
                 ;; Use the same version specified in the Nix dependency.
                 [clj-kondo/clj-kondo "2023.09.07"]
 
-                ;; We don't use the encore library, but re-frisk requires re-frisk/sente (fork of
-                ;; com.taoensso/sente), which in turn requires encore. We need to bump encore to
-                ;; 3.21.0+ to remove a warning displayed while shadow-cljs starts (commit
-                ;; https://github.com/ptaoussanis/encore/commit/f7a21567b9611a63999609ca183c7fb175034bd6).
-                [com.taoensso/encore "3.21.0"]
                 ;; Routing
                 [bidi "2.1.6"]
                 ;; Test dependencies
