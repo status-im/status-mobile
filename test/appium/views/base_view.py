@@ -79,10 +79,18 @@ class CommunitiesTab(TabButton):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="communities-stack-tab")
 
+    def click(self):
+        from views.home_view import HomeView
+        self.click_until_presence_of_element(HomeView(self.driver).plus_community_button)
+
 
 class ChatsTab(TabButton):
     def __init__(self, driver):
         super().__init__(driver, accessibility_id="chats-stack-tab")
+
+    def click(self):
+        from views.home_view import HomeView
+        self.click_until_presence_of_element(HomeView(self.driver).plus_button)
 
     def navigate(self):
         from views.home_view import HomeView
