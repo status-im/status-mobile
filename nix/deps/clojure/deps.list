@@ -58,7 +58,6 @@ javax/annotation/jsr250-api/1.0/jsr250-api-1.0.jar
 javax/servlet/servlet-api/2.5/servlet-api-2.5.jar
 javax/xml/bind/jaxb-api/2.3.0/jaxb-api-2.3.0.jar
 medley/medley/0.8.2/medley-0.8.2.jar
-mvxcvi/alphabase/1.0.0/alphabase-1.0.0.jar
 net/cgrand/macrovich/0.2.1/macrovich-0.2.1.jar
 net/java/dev/jna/jna/5.12.1/jna-5.12.1.jar
 nrepl/bencode/1.1.0/bencode-1.1.0.jar

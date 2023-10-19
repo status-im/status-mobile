@@ -540,15 +540,6 @@
   },
 
   {
-    "path": "mvxcvi/alphabase/1.0.0/alphabase-1.0.0",
-    "host": "https://repo.clojars.org",
-    "jar": {
-      "sha1": "008785c0ff977d8132af4aaa931d88ffc44fca03",
-      "sha256": "1g395and521h2q370vh7w0psx63a1zb5f2rcrafqgzw5s3nwlm4q"
-    }
-  },
-
-  {
     "path": "net/cgrand/macrovich/0.2.1/macrovich-0.2.1",
     "host": "https://repo.clojars.org",
     "jar": {
