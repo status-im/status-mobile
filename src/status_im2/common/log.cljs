@@ -29,7 +29,7 @@
                         :mobile-system? false
                         :log-level      level
                         :callback       handle-error}]
-    (log/merge-config! {:ns-filter {:allow #{"*"}}})
+    (log/merge-config! {:ns-filter {:allow #{"*"} :deny #{"taoensso.sente"}}})
     (if (string/blank? level)
       (native-module/init-status-go-logging (merge logging-params {:log-level "WARN"}))
       (do
