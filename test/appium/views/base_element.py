@@ -87,7 +87,14 @@ class BaseElement(object):
         return self.driver.find_elements(self.by, self.locator)
 
     def click(self):
-        self.find_element().click()
+        ## Click stopped working with upgrading RN to 0.72.5 (PR #17241)
+        # self.find_element().click()
+
+        from appium.webdriver.common.touch_action import TouchAction
+        actions = TouchAction(self.driver)
+        actions.tap(self.find_element())
+        actions.perform()
+
         self.driver.info('Tap on found: %s' % self.name)
         return self.navigate()
 
