@@ -53,7 +53,7 @@
                                               :type                :empty
                                               :customization-color (:customization-color profile)
                                               :on-press            #(rf/dispatch [:navigate-to
-                                                                                  :wallet-accounts])
+                                                                                  :wallet-accounts (:address account)])
                                               :loading?            loading?
                                               :balance             (str "$"
                                                                         (get-balance balances
