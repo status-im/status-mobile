@@ -1,11 +1,12 @@
 (ns status-im2.contexts.shell.activity-center.header.view
-  (:require [react-native.core :as rn]
-            [status-im2.contexts.shell.activity-center.style :as style]
-            [quo2.core :as quo]
-            [utils.re-frame :as rf]
-            [utils.i18n :as i18n]
-            [status-im2.contexts.shell.activity-center.tabs.view :as tabs]
-            [status-im2.contexts.shell.activity-center.drawer.view :as drawer]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [status-im2.contexts.shell.activity-center.drawer.view :as drawer]
+    [status-im2.contexts.shell.activity-center.style :as style]
+    [status-im2.contexts.shell.activity-center.tabs.view :as tabs]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn filter-selector-read-toggle
   []
@@ -40,7 +41,8 @@
       :accessibility-label :activity-center-open-more
       :on-press            #(rf/dispatch [:show-bottom-sheet
                                           {:content drawer/options
-                                           :theme   :dark}])}
+                                           :theme   :dark
+                                           :shell?  true}])}
      :i/options]]
    [quo/text
     {:size   :heading-1

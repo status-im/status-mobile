@@ -1,8 +1,9 @@
 (ns status-im2.contexts.quo-preview.avatars.account-avatar
-  (:require [quo2.core :as quo]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.re-frame :as rf]))
 
 (def descriptor
   [{:key     :type
@@ -35,8 +36,8 @@
         :descriptor                descriptor
         :component-container-style {:align-items     :center
                                     :justify-content :center}}
-       [quo/account-avatar @state
-       ]
+       [quo/account-avatar @state]
+
        [quo/button
         {:type            :grey
          :container-style {:margin-top 30}

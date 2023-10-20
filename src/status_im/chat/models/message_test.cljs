@@ -1,8 +1,9 @@
 (ns status-im.chat.models.message-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.chat.models.loading :as loading]
-            [status-im.chat.models.message :as message]
-            [status-im2.contexts.chat.messages.list.state :as list.state]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im.chat.models.loading :as loading]
+    [status-im.chat.models.message :as message]
+    [status-im2.contexts.chat.messages.list.state :as list.state]))
 
 (deftest add-received-message-test
   (with-redefs [message/add-message #(identity %1)]

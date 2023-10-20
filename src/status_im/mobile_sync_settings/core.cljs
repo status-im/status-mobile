@@ -1,14 +1,15 @@
 (ns status-im.mobile-sync-settings.core
-  (:require [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im2.contexts.add-new-contact.events :as add-new-contact]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.multiaccounts.model :as multiaccounts.model]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [utils.re-frame :as rf]
-            [status-im.utils.mobile-sync :as utils]
-            [status-im.wallet.core :as wallet]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.mailserver.core :as mailserver]
+    [status-im.multiaccounts.model :as multiaccounts.model]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.utils.mobile-sync :as utils]
+    [status-im.wallet.core :as wallet]
+    [status-im2.contexts.add-new-contact.events :as add-new-contact]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (rf/defn sheet-defaults
   [{:keys [db]}]

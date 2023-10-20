@@ -1,8 +1,11 @@
 (ns status-im.ui.screens.chat.message.legacy-view
   (:require
-    [quo.design-system.colors :as quo.colors]
-    [quo.react-native :as rn]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.foundations.typography :as typography]
+    [react-native.core :as rn]
     [status-im.react-native.resources :as resources]
+    [status-im.ui.components.colors :as quo.colors]
     [status-im.ui.components.fast-image :as fast-image]
     [status-im.ui.screens.chat.message.gap :as message.gap]
     [status-im.ui.screens.chat.styles.message.message :as style]
@@ -11,10 +14,7 @@
     [status-im2.contexts.chat.messages.delete-message-for-me.events]
     [status-im2.contexts.chat.messages.delete-message.events]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
-    [quo2.foundations.typography :as typography])
+    [utils.re-frame :as rf])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn system-text?
@@ -199,10 +199,11 @@
 (defn contact-request-status-label
   [state]
   [rn/view {:style (style/contact-request-status-label state)}
-   (case state
+   (condp = state
      constants/contact-request-message-state-pending  [contact-request-status-pending]
      constants/contact-request-message-state-accepted [contact-request-status-accepted]
-     constants/contact-request-message-state-declined [contact-request-status-declined])])
+     constants/contact-request-message-state-declined [contact-request-status-declined]
+     nil)])
 
 ;;;; SYSTEM
 
@@ -250,10 +251,10 @@
          [rn/text {:style {:color quo.colors/black}} description]]]
        [rn/view (style/community-view-button)
         [rn/touchable-opacity
-         {:on-press #(do (rf/dispatch
-                          [:communities/navigate-to-community
-                           (:id community)])
-                         (rf/dispatch [:chat/close]))}
+         {:on-press #(do
+                       (rf/dispatch [:pop-to-root :shell-stack])
+                       (rf/dispatch [:navigate-to :community-overview (:id community)])
+                       (rf/dispatch [:chat/close]))}
          [rn/text
           {:style {:text-align :center
                    :color      quo.colors/blue}} (i18n/label :t/view)]]]])))

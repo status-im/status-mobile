@@ -1,8 +1,9 @@
 (ns react-native.safe-area
-  (:require ["react-native-static-safe-area-insets" :default StaticSafeAreaInsets]
-            [oops.core :as oops]
-            [react-native.platform :as platform]
-            [react-native.navigation :as navigation]))
+  (:require
+    ["react-native-static-safe-area-insets" :default StaticSafeAreaInsets]
+    [oops.core :as oops]
+    [react-native.navigation :as navigation]
+    [react-native.platform :as platform]))
 
 (defn- get-static-top
   []

@@ -1,17 +1,18 @@
 (ns status-im2.contexts.add-new-contact.events
-  (:require [clojure.string :as string]
-            [utils.re-frame :as rf]
-            [utils.transforms :as transforms]
-            [re-frame.core :as re-frame]
-            [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.stateofus :as stateofus]
-            [native-module.core :as native-module]
-            [status-im2.navigation.events :as navigation]
-            [utils.validators :as validators]
-            [status-im2.contexts.contacts.events :as data-store.contacts]
-            [status-im2.constants :as constants]
-            [utils.string :as utils.string]
-            [utils.ethereum.chain :as chain]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.ens :as ens]
+    [status-im.ethereum.stateofus :as stateofus]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.contacts.events :as data-store.contacts]
+    [status-im2.navigation.events :as navigation]
+    [utils.ethereum.chain :as chain]
+    [utils.re-frame :as rf]
+    [utils.string :as utils.string]
+    [utils.transforms :as transforms]
+    [utils.validators :as validators]))
 
 (defn init-contact
   "Create a new contact (persisted to app-db as [:contacts/new-identity]).

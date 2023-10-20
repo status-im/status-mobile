@@ -1,16 +1,17 @@
 (ns status-im.chat.models.message
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.chat.models.loading :as chat.loading]
-            [status-im.data-store.messages :as data-store.messages]
-            [status-im.transport.message.protocol :as protocol]
-            [react-native.platform :as platform]
-            [status-im.utils.deprecated-types :as types]
-            [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
-            [status-im2.contexts.chat.messages.list.events :as message-list]
-            [status-im2.contexts.chat.messages.list.state :as view.state]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.chat.models.loading :as chat.loading]
+    [status-im.data-store.messages :as data-store.messages]
+    [status-im.transport.message.protocol :as protocol]
+    [status-im.utils.deprecated-types :as types]
+    [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
+    [status-im2.contexts.chat.messages.list.events :as message-list]
+    [status-im2.contexts.chat.messages.list.state :as view.state]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 (defn- message-loaded?
   [db chat-id message-id]

@@ -1,11 +1,13 @@
 (ns status-im.ui.components.connectivity.view
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.react :as react])
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.animation :as animation]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views :refer [defview letsubs]]))
 
 (defn easing
@@ -93,14 +95,14 @@
      [quo/header {:title (i18n/label :t/connection-status) :border-bottom false}]
      [quo/list-header (i18n/label :t/peer-to-peer)]
      (if (= peers :offline)
-       [quo/list-item
+       [list.item/list-item
         {:title               (i18n/label :t/not-connected-to-peers)
          :accessibility-label "not-connected-to-peers"
          :subtitle            (i18n/label :t/unable-to-send-messages)
          :subtitle-max-lines  2
          :theme               :negative
          :icon                :main-icons/network}]
-       [quo/list-item
+       [list.item/list-item
         {:title               (str (i18n/label :t/connected-to)
                                    " " peers-count
                                    " " (string/lower-case (i18n/label :t/peers)))
@@ -112,40 +114,40 @@
      [quo/list-header (i18n/label :t/history-nodes)]
      (cond
        (#{:error :offline} node)
-       [quo/list-item
+       [list.item/list-item
         {:title               (i18n/label :t/not-connected-nodes)
          :accessibility-label "not-connected-nodes"
          :subtitle            (i18n/label :t/unable-to-fetch)
          :theme               :negative
          :icon                :main-icons/mailserver}]
        (= node :disabled)
-       [quo/list-item
+       [list.item/list-item
         {:title               (i18n/label :t/nodes-disabled)
          :accessibility-label "nodes-disabled"
          :subtitle            (i18n/label :t/unable-to-fetch)
          :disabled            true
          :icon                :main-icons/mailserver}]
        (and mobile (not sync))
-       [quo/list-item
+       [list.item/list-item
         {:title               (i18n/label :t/waiting-wi-fi)
          :accessibility-label "waiting-wi-fi"
          :subtitle            (i18n/label :t/unable-to-fetch)
          :disabled            true
          :icon                :main-icons/mailserver}]
        (= node :connecting)
-       [quo/list-item
+       [list.item/list-item
         {:title               (i18n/label :t/connecting)
          :accessibility-label "connecting"
          :subtitle            (i18n/label :t/unable-to-fetch)
          :icon                :main-icons/mailserver}]
        (= node :online)
-       [quo/list-item
+       [list.item/list-item
         {:title               (str (i18n/label :t/connected-to) " " current-mailserver-name)
          :accessibility-label "connected-to-mailserver"
          :subtitle            (i18n/label :t/you-can-fetch)
          :theme               :positive
          :icon                :main-icons/mailserver}])
-     [quo/list-item
+     [list.item/list-item
       {:title               (i18n/label :t/settings)
        :accessibility-label "settings"
        :theme               :accent
@@ -160,7 +162,7 @@
           :align-items      :center
           :justify-content  :center}
          [react/text {:style {:color colors/gray}} (i18n/label :t/youre-on-mobile-network)]]
-        [quo/list-item
+        [list.item/list-item
          {:title               (i18n/label :t/mobile-network-use-mobile)
           :accessibility-label "mobile-network-use-mobile"
           :accessory           :switch
@@ -179,14 +181,3 @@
     (if mobile
       (if sync :main-icons/mobile-sync :main-icons/mobile-sync-off)
       (when (#{:error :disabled} node) :main-icons/node-offline))))
-
-(defview connectivity-button
-  []
-  (letsubs [state [:connectivity/state]]
-    (when-let [icon (get-icon state)]
-      [quo/button
-       {:type                :icon
-        :accessibility-label (str "conn-button-" (name icon))
-        :on-press            #(re-frame/dispatch [:bottom-sheet/show-sheet-old
-                                                  {:content connectivity-sheet}])
-        :theme               (if (= (:peers state) :offline) :negative :secondary)} icon])))

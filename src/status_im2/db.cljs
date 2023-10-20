@@ -1,8 +1,9 @@
 (ns status-im2.db
-  (:require [react-native.core :as rn]
-            [status-im.fleet.core :as fleet]
-            [status-im.wallet.db :as wallet.db]
-            [status-im2.contexts.shell.activity-center.events :as activity-center]))
+  (:require
+    [react-native.core :as rn]
+    [status-im.fleet.core :as fleet]
+    [status-im.wallet.db :as wallet.db]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]))
 
 ;; initial state of app-db
 (def app-db
@@ -18,8 +19,8 @@
    :sync-state                         :done
    :link-previews-whitelist            []
    :app-state                          "active"
-   :wallet                             wallet.db/default-wallet
-   :wallet/all-tokens                  {}
+   :wallet-legacy                      wallet.db/default-wallet
+   :wallet-legacy/all-tokens           {}
    :peers-count                        0
    :node-info                          {}
    :peers-summary                      []

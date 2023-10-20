@@ -1,4 +1,5 @@
-{:lint-as      {status-im.utils.views/defview  clojure.core/defn
+{:config-paths ["status-im"]
+ :lint-as      {status-im.utils.views/defview  clojure.core/defn
                 status-im.utils.views/letsubs  clojure.core/let
                 reagent.core/with-let          clojure.core/let
                 status-im.utils.fx/defn        clj-kondo.lint-as/def-catch-all
@@ -9,23 +10,29 @@
                 status-im.utils.styles/defn    clojure.core/defn
                 test-helpers.unit/deftest-sub  clojure.core/defn
                 taoensso.tufte/defnp           clojure.core/defn}
- :linters      {:clj-kondo-config              {:level :error}
+ :linters      {:case-duplicate-test           {:level :error}
+                :case-quoted-test              {:level :error}
+                :case-symbol-test              {:level :error}
+                :clj-kondo-config              {:level :error}
                 :cond-else                     {:level :error}
                 :consistent-alias              {:level   :error
                                                 :aliases {clojure.string  string
                                                           clojure.set     set
                                                           clojure.walk    walk
                                                           taoensso.timbre log}}
+                :deprecated-namespace          {:level :warning}
                 :docstring-blank               {:level :error}
+                :equals-true                   {:level :error}
                 :inline-def                    {:level :error}
                 :invalid-arity                 {:skip-args [status-im.utils.fx/defn utils.re-frame/defn]}
                 :loop-without-recur            {:level :error}
+                :minus-one                     {:level :error}
                 :misplaced-docstring           {:level :error}
                 :missing-body-in-when          {:level :error}
                 :missing-clause-in-try         {:level :error}
                 :missing-else-branch           {:level :error}
                 :not-empty?                    {:level :error}
-                :quoted-case-test-constant     {:level :error}
+                :plus-one                      {:level :error}
                 :redundant-do                  {:level :error}
                 :redundant-let                 {:level :error}
                 :refer-all                     {:level :error}
@@ -39,6 +46,7 @@
                 :single-operand-comparison     {:level :error}
                 :syntax                        {:level :error}
                 :unbound-destructuring-default {:level :error}
+                :uninitialized-var             {:level :error}
                 :unknown-require-option        {:level :error}
                 :unreachable-code              {:level :error}
                 :unresolved-namespace          {:level :error}
@@ -48,6 +56,8 @@
                                                           number
                                                           status-im.test-helpers/restore-app-db]}
                 :unresolved-var                {:level :error}
+                :unsorted-required-namespaces  {:level :error}
+                :unused-alias                  {:level :warning}
                 :unused-binding                {:level :error}
                 :unused-import                 {:level :error}
                 :unused-namespace              {:level :error}

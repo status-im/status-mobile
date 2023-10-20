@@ -1,18 +1,19 @@
 (ns status-im.signals.core
-  (:require [status-im.chat.models.message :as models.message]
-            [status-im.ethereum.subscriptions :as ethereum.subscriptions]
-            [status-im.mailserver.core :as mailserver]
-            [status-im.notifications.local :as local-notifications]
-            [status-im.transport.message.core :as transport.message]
-            [status-im.visibility-status-updates.core :as visibility-status-updates]
-            [utils.re-frame :as rf]
-            [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
-            [taoensso.timbre :as log]
-            [status-im2.constants :as constants]
-            [quo2.foundations.colors :as colors]
-            [status-im2.contexts.profile.login.events :as profile.login]
-            [utils.transforms :as transforms]
-            [status-im2.contexts.communities.discover.events]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [status-im.chat.models.message :as models.message]
+    [status-im.ethereum.subscriptions :as ethereum.subscriptions]
+    [status-im.mailserver.core :as mailserver]
+    [status-im.transport.message.core :as transport.message]
+    [status-im.visibility-status-updates.core :as visibility-status-updates]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.messages.link-preview.events :as link-preview]
+    [status-im2.contexts.communities.discover.events]
+    [status-im2.contexts.profile.login.events :as profile.login]
+    [status-im2.contexts.push-notifications.local.events :as local-notifications]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (rf/defn summary
   [{:keys [db] :as cofx} peers-summary]

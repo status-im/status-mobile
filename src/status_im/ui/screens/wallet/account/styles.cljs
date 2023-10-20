@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.wallet.account.styles
-  (:require [clojure.string :as string]
-            [quo.design-system.colors :as colors]
-            [status-im.ui.components.animation :as animation]))
+  (:require
+    [clojure.string :as string]
+    [status-im.ui.components.animation :as animation]
+    [status-im.ui.components.colors :as colors]))
 
 (defn card
   [window-width color]

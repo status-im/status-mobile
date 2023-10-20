@@ -1,10 +1,11 @@
 (ns status-im.ui.screens.fleet-settings.views
-  (:require [re-frame.core :as re-frame]
-            [status-im.node.core :as node]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.fleet-settings.styles :as styles])
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.node.core :as node]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.fleet-settings.styles :as styles])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- fleet-icon

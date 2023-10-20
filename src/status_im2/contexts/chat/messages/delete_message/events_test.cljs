@@ -1,7 +1,8 @@
 (ns status-im2.contexts.chat.messages.delete-message.events-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
-            [utils.datetime :as datetime]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
+    [utils.datetime :as datetime]))
 
 (def mid "message-id")
 (def cid "chat-id")

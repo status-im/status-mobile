@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.peers-stats
-  (:require [react-native.core :as react-native.core]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as re-frame]))
+  (:require
+    [react-native.core :as react-native.core]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as re-frame]))
 
 (defn peers-stats
   []

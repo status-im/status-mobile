@@ -69,8 +69,8 @@
   (.screenLeft ^js floating-screen-worklets screen-state screen-width switcher-card-left-position))
 
 (defn floating-screen-top
-  [screen-state switcher-card-top-position]
-  (.screenTop ^js floating-screen-worklets screen-state switcher-card-top-position))
+  [screen-state screen-height switcher-card-top-position]
+  (.screenTop ^js floating-screen-worklets screen-state screen-height switcher-card-top-position))
 
 (defn floating-screen-width
   [screen-state screen-width switcher-card-size]

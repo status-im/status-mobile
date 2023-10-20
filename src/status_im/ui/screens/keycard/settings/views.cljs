@@ -1,13 +1,15 @@
 (ns status-im.ui.screens.keycard.settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.keycard.views :as keycard.views]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.keycard.views :as keycard.views]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n]))
 
 (defn- activity-indicator
   [loading?]
@@ -90,7 +92,7 @@
       (if (zero? puk-retry-counter)
         [card-blocked]
         [:<>
-         [quo/list-item
+         [list.item/list-item
           {:icon     :main-icons/help
            :size     :small
            :title    (i18n/label :t/help-capitalized)
@@ -98,26 +100,26 @@
                                 constants/faq-keycard)}]
          (when pairing
            [:<>
-            [quo/list-item
+            [list.item/list-item
              {:icon     :main-icons/add
               :size     :small
               :title    (i18n/label :t/change-pin)
               :on-press #(re-frame/dispatch [:keycard-settings.ui/change-credentials-pressed :pin])}]
-            [quo/list-item
+            [list.item/list-item
              {:icon                :main-icons/security
               :size                :small
               :title               (i18n/label :t/change-puk)
               :accessibility-label "change-puk"
               :on-press            #(re-frame/dispatch [:keycard-settings.ui/change-credentials-pressed
                                                         :puk])}]
-            [quo/list-item
+            [list.item/list-item
              {:icon                :main-icons/password
               :size                :small
               :title               (i18n/label :t/change-pairing)
               :accessibility-label "change-pairing"
               :on-press            #(re-frame/dispatch [:keycard-settings.ui/change-credentials-pressed
                                                         :pairing])}]
-            [quo/list-item
+            [list.item/list-item
              {:icon                :main-icons/keycard
               :size                :small
               :title               (i18n/label :t/keycard-backup)
@@ -126,7 +128,7 @@
                                                         :backup-card])}]
             ;; TODO(rasom): uncomment this when unpairing will be enabled
             ;; https://github.com/status-im/status-mobile/issues/9227
-            #_[quo/list-item
+            #_[list/list-item
                {:icon     :main-icons/close
                 :size     :small
                 :title    (i18n/label :t/unpair-card)

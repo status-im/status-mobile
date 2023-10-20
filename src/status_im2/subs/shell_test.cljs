@@ -1,9 +1,10 @@
 (ns status-im2.subs.shell-test
-  (:require [utils.re-frame :as rf]
-            [re-frame.db :as rf-db]
-            [test-helpers.unit :as h]
-            [cljs.test :refer [is testing]]
-            [status-im2.constants :as constants]))
+  (:require
+    [cljs.test :refer [is testing]]
+    [re-frame.db :as rf-db]
+    [status-im2.constants :as constants]
+    [test-helpers.unit :as h]
+    [utils.re-frame :as rf]))
 
 ;; Note - for 1-1 chats, all unread messages are counted as mentions and shown with counter
 (def one-to-one-group-community-chats1

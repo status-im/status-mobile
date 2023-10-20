@@ -1,28 +1,29 @@
 (ns react-native.reanimated
-  (:require ["react-native" :as rn]
-            ["react-native-linear-gradient" :default LinearGradient]
-            ["react-native-fast-image" :as FastImage]
-            ["@react-native-community/blur" :as blur]
-            ["react-native-reanimated" :default reanimated :refer
-             (useSharedValue useAnimatedStyle
-                             withTiming
-                             withDelay
-                             withSpring
-                             withRepeat
-                             withSequence
-                             withDecay
-                             Easing
-                             Keyframe
-                             cancelAnimation
-                             SlideInUp
-                             SlideOutUp
-                             LinearTransition
-                             enableLayoutAnimations
-                             runOnJS)]
-            [reagent.core :as reagent]
-            ["react-native-redash" :refer (withPause)]
-            [react-native.flat-list :as rn-flat-list]
-            [utils.worklets.core :as worklets.core]))
+  (:require
+    ["@react-native-community/blur" :as blur]
+    ["react-native" :as rn]
+    ["react-native-fast-image" :as FastImage]
+    ["react-native-linear-gradient" :default LinearGradient]
+    ["react-native-reanimated" :default reanimated :refer
+     (useSharedValue useAnimatedStyle
+                     withTiming
+                     withDelay
+                     withSpring
+                     withRepeat
+                     withSequence
+                     withDecay
+                     Easing
+                     Keyframe
+                     cancelAnimation
+                     SlideInUp
+                     SlideOutUp
+                     LinearTransition
+                     enableLayoutAnimations
+                     runOnJS)]
+    ["react-native-redash" :refer (withPause)]
+    [react-native.flat-list :as rn-flat-list]
+    [reagent.core :as reagent]
+    [utils.worklets.core :as worklets.core]))
 
 (def enable-layout-animations enableLayoutAnimations)
 

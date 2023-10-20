@@ -1,22 +1,23 @@
 (ns status-im.ui.screens.profile.contact.views
-  (:require [clojure.string :as string]
-            [quo.components.list.item :as list-item]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo2.components.avatars.user-avatar.style :as user-avatar.style]
-            [quo2.theme :as theme]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.profile-header.view :as profile-header]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.profile.components.sheets :as sheets]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [quo.components.avatars.user-avatar.style :as user-avatar.style]
+    [quo.theme :as theme]
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.profile-header.view :as profile-header]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toolbar :as toolbar]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.profile.components.sheets :as sheets]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn actions
   [{:keys [public-key added? blocked? ens-name mutual?] :as contact} muted?]
@@ -66,7 +67,7 @@
 
 (defn pin-settings
   [public-key pin-count]
-  [quo/list-item
+  [list.item/list-item
    {:title               (i18n/label :t/pinned-messages)
     :size                :small
     :accessibility-label :pinned-messages-item
@@ -78,7 +79,7 @@
 
 (defn nickname-settings
   [{:keys [nickname]}]
-  [quo/list-item
+  [list.item/list-item
    {:title               (i18n/label :t/nickname)
     :size                :small
     :accessibility-label :profile-nickname-item
@@ -104,7 +105,7 @@
                             (save-nickname public-key @entered-nickname))
     :auto-capitalize     :none
     :auto-focus          false
-    :max-length          32
+    :max-length          constants/profile-name-max-length
     :accessibility-label :nickname-input
     :default-value       nickname
     :placeholder         (i18n/label :t/nickname)
@@ -131,7 +132,7 @@
          {:style {:align-self :flex-end
                   :margin-top 16
                   :color      colors/gray}}
-         (str (count @entered-nickname) " / 32")]]
+         (str (count @entered-nickname) " / " constants/profile-name-max-length)]]
        [toolbar/toolbar
         {:show-border? true
          :center
@@ -148,7 +149,7 @@
     :style               {:flex 1}
     :accessibility-label (str label "-item-button")}
    [react/view {:flex 1 :align-items :center}
-    [list-item/icon-column
+    [list.item/icon-column
      {:icon          icon
       :size          :small
       :icon-bg-color (if disabled

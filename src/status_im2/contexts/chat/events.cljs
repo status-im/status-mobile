@@ -1,26 +1,27 @@
 (ns status-im2.contexts.chat.events
-  (:require [clojure.set :as set]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [taoensso.timbre :as log]
-            [status-im2.config :as config]
-            [status-im2.contexts.chat.messages.list.state :as chat.state]
-            [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
-            [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
-            [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
-            [status-im2.navigation.events :as navigation]
-            [status-im2.constants :as constants]
-            [status-im.chat.models.loading :as loading]
-            [status-im.data-store.chats :as chats-store]
-            [status-im2.contexts.contacts.events :as contacts-store]
-            [utils.transforms :as transforms]
-            [reagent.core :as reagent]
-            [quo2.foundations.colors :as colors]
-            [re-frame.core :as re-frame]
-            [react-native.async-storage :as async-storage]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]
-            [status-im2.common.muting.helpers :refer [format-mute-till]]
-            [utils.datetime :as datetime]))
+  (:require
+    [clojure.set :as set]
+    [quo.foundations.colors :as colors]
+    [re-frame.core :as re-frame]
+    [react-native.async-storage :as async-storage]
+    [reagent.core :as reagent]
+    [status-im.chat.models.loading :as loading]
+    [status-im.data-store.chats :as chats-store]
+    [status-im2.common.muting.helpers :refer [format-mute-till]]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
+    [status-im2.contexts.chat.messages.delete-message-for-me.events :as delete-for-me]
+    [status-im2.contexts.chat.messages.delete-message.events :as delete-message]
+    [status-im2.contexts.chat.messages.list.state :as chat.state]
+    [status-im2.contexts.contacts.events :as contacts-store]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (defn- get-chat
   [cofx chat-id]
@@ -80,15 +81,15 @@
              (:invitation-admin chat)))))
 
 (rf/defn leave-removed-chat
+  {:events [:chat/leave-removed-chat]}
   [{{:keys [view-id current-chat-id chats]} :db
     :as                                     cofx}]
   (when (and (= view-id :chat)
              (not (contains? chats current-chat-id)))
     (navigation/navigate-back cofx)))
 
-(rf/defn ensure-chats
-  "Add chats to db and update"
-  [{:keys [db] :as cofx} chats]
+(defn ensure-chats
+  [{:keys [db] :as cofx} [chats]]
   (let [{:keys [all-chats chats-home-list removed-chats]}
         (reduce
          (fn [acc {:keys [chat-id profile-public-key timeline? community-id active muted] :as chat}]
@@ -103,18 +104,16 @@
           :chats-home-list #{}
           :removed-chats   #{}}
          (map (map-chats cofx) chats))]
-    (rf/merge
-     cofx
-     (merge {:db (-> db
-                     (update :chats merge all-chats)
-                     (update :chats-home-list set/union chats-home-list)
-                     (update :chats #(apply dissoc % removed-chats))
-                     (update :chats-home-list set/difference removed-chats))}
-            (when (not-empty removed-chats)
-              {:clear-message-notifications
-               [removed-chats
-                (get-in db [:profile/profile :remote-push-notifications-enabled?])]}))
-     leave-removed-chat)))
+    {:db (-> db
+             (update :chats merge all-chats)
+             (update :chats-home-list set/union chats-home-list)
+             (update :chats #(apply dissoc % removed-chats))
+             (update :chats-home-list set/difference removed-chats))
+     :fx [(when (not-empty removed-chats)
+            [:effects/push-notifications-clear-message-notifications removed-chats])
+          [:dispatch [:chat/leave-removed-chat]]]}))
+
+(re-frame/reg-event-fx :chat/ensure-chats ensure-chats)
 
 (rf/defn clear-history
   "Clears history of the particular chat"
@@ -286,9 +285,9 @@
   {:events [:chat.ui/remove-chat]}
   [{:keys [db now] :as cofx} chat-id]
   (rf/merge cofx
-            {:clear-message-notifications
-             [[chat-id] (get-in db [:profile/profile :remote-push-notifications-enabled?])]
-             :dispatch [:shell/close-switcher-card chat-id]}
+            {:effects/push-notifications-clear-message-notifications [chat-id]
+             :dispatch                                               [:shell/close-switcher-card
+                                                                      chat-id]}
             (deactivate-chat chat-id)
             (offload-messages chat-id)))
 

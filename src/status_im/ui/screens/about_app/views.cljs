@@ -1,14 +1,15 @@
 (ns status-im.ui.screens.about-app.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :refer
-             [principles-link privacy-policy-link terms-of-service-link]]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.copyable-text :as copyable-text]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.webview :refer [webview]])
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.copyable-text :as copyable-text]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.webview :refer [webview]]
+    [status-im2.constants :refer
+     [principles-link privacy-policy-link terms-of-service-link]]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview about-app
@@ -17,14 +18,14 @@
                   commit-hash  [:get-commit-hash]
                   node-version [:get-app-node-version]]
     [react/scroll-view
-     [quo/list-item
+     [list.item/list-item
       {:size :small
        :title (i18n/label :t/privacy-policy)
        :accessibility-label :privacy-policy
        :on-press
        #(re-frame/dispatch [:navigate-to :privacy-policy])
        :chevron true}]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/terms-of-service)
        :accessibility-label :terms-of-service
@@ -32,7 +33,7 @@
        :chevron             true}]
      [copyable-text/copyable-text-view
       {:copied-text app-version}
-      [quo/list-item
+      [list.item/list-item
        {:size                :small
         :accessibility-label :app-version
         :title               (i18n/label :t/version)
@@ -40,7 +41,7 @@
         :accessory-text      app-version}]]
      [copyable-text/copyable-text-view
       {:copied-text commit-hash}
-      [quo/list-item
+      [list.item/list-item
        {:size                :small
         :accessibility-label :commit-hash
         :title               (i18n/label :t/app-commit)
@@ -48,7 +49,7 @@
         :accessory-text      commit-hash}]]
      [copyable-text/copyable-text-view
       {:copied-text node-version}
-      [quo/list-item
+      [list.item/list-item
        {:size                :small
         :accessibility-label :node-version
         :title               (i18n/label :t/node-version)

@@ -1,5 +1,6 @@
 (ns react-native.languages
-  (:require ["react-native-languages" :default react-native-languages]))
+  (:require
+    ["react-native-languages" :default react-native-languages]))
 
 (defn add-change-listener
   [handler]

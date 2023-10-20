@@ -1,16 +1,17 @@
 (ns status-im2.contexts.chat.home.chat-list-item.view
-  (:require [clojure.string :as string]
-            [quo2.components.icon :as icons]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [status-im2.common.home.actions.view :as actions]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.home.chat-list-item.style :as style]
-            [utils.datetime :as datetime]
-            [utils.debounce :as debounce]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [clojure.string :as string]
+    [quo.components.icon :as icons]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [status-im2.common.home.actions.view :as actions]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.home.chat-list-item.style :as style]
+    [utils.datetime :as datetime]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def max-subheader-length 50)
 
@@ -60,8 +61,8 @@
                    :other-person
                    :dont-show))
         preview-text
-        (case content-type
-          constants/content-type-text
+        (cond
+          (= content-type constants/content-type-text)
           (if reply?
             (case author
               :you          (str (i18n/label :t/you-replied) ": " content-text)
@@ -74,33 +75,34 @@
               :dont-show    content-text
               content-text))
 
-          constants/content-type-emoji
+          (= content-type constants/content-type-emoji)
           (case author
             :you          (str (i18n/label :t/You) ": " content-text)
             :other-person (str primary-name ": " content-text)
             :dont-show    content-text
             content-text)
 
-          constants/content-type-system-text
+          (= content-type constants/content-type-system-text)
           (case author
             :you          (i18n/label :t/you-pinned-a-message)
             :other-person (i18n/label :t/user-pinned-a-message {:user primary-name})
             :dont-show    (i18n/label :t/Pinned-a-message)
             (i18n/label :t/Pinned-a-message))
 
-          (constants/content-type-contact-request
-           constants/content-type-system-message-mutual-event-removed
-           constants/content-type-system-message-mutual-event-accepted)
+          (#{constants/content-type-contact-request
+             constants/content-type-system-message-mutual-event-removed
+             constants/content-type-system-message-mutual-event-accepted}
+           content-type)
           (i18n/label :t/contact-request)
 
-          constants/content-type-sticker
+          (= content-type constants/content-type-sticker)
           (case author
             :you          (i18n/label :t/you-sent-a-sticker)
             :other-person (i18n/label :t/user-sent-a-sticker {:user primary-name})
             :dont-show    (i18n/label :t/sent-a-sticker)
             (i18n/label :t/sent-a-sticker))
 
-          constants/content-type-image
+          (= content-type constants/content-type-image)
           (let [sent-photos (if album-images-count
                               (case author
                                 :you          (i18n/label :t/you-sent-n-photos
@@ -119,30 +121,30 @@
               (str sent-photos ": " content-text)
               sent-photos))
 
-          constants/content-type-audio
+          (= content-type constants/content-type-audio)
           (case author
             :you          (i18n/label :t/you-sent-audio-message)
             :other-person (i18n/label :t/user-sent-audio-message {:user primary-name})
             :dont-show    (i18n/label :t/sent-audio-message)
             (i18n/label :t/sent-audio-message))
 
-          constants/content-type-gif
+          (= content-type constants/content-type-gif)
           (case author
             :you          (i18n/label :t/you-sent-a-gif)
             :other-person (i18n/label :t/user-sent-audio-message {:user primary-name})
             :dont-show    (i18n/label :t/sent-a-gif)
             (i18n/label :t/sent-a-gif))
 
-          constants/content-type-community
+          (= content-type constants/content-type-community)
           (case author
             :you          (i18n/label :t/you-shared-a-community)
             :other-person (i18n/label :t/user-shared-a-community {:user primary-name})
             :dont-show    (i18n/label :t/shared-a-community)
             (i18n/label :t/shared-a-community))
 
+          :else
           "")]
     (subs preview-text 0 (min (count preview-text) max-subheader-length))))
-
 
 (defn last-message-preview
   "Render the preview of a last message to a maximum of max-subheader-length characters"
@@ -200,7 +202,7 @@
          :accessibility-label :new-message-counter}
         unviewed-mentions-count]
 
-       ;; TODO: use the grey-dot component when chat-list-item is moved to quo2.components
+       ;; TODO: use the grey-dot component when chat-list-item is moved to quo.components
        (and group-chat unread-messages?)
        [rn/view
         {:style               (style/grey-dot)

@@ -1,11 +1,12 @@
 (ns status-im.network.core
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.node.core :as node]
-            [utils.re-frame :as rf]
-            [status-im2.navigation.events :as navigation]
-            [utils.ethereum.chain :as chain]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im.node.core :as node]
+    [status-im2.navigation.events :as navigation]
+    [utils.ethereum.chain :as chain]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def url-regex
   #"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,6})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)")

@@ -1,18 +1,19 @@
 (ns status-im2.contexts.syncing.setup-syncing.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.clipboard :as clipboard]
-            [react-native.core :as rn]
-            [status-im2.common.qr-code-viewer.view :as qr-code-viewer]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
-            [react-native.hooks :as hooks]
-            [status-im2.contexts.syncing.setup-syncing.style :as style]
-            [status-im2.contexts.syncing.utils :as sync-utils]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.clipboard :as clipboard]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [reagent.core :as reagent]
+    [status-im2.common.qr-codes.view :as qr-codes]
+    [status-im2.common.resources :as resources]
+    [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
+    [status-im2.contexts.syncing.setup-syncing.style :as style]
+    [status-im2.contexts.syncing.utils :as sync-utils]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def code-valid-for-ms 120000)
 (def one-min-ms 60000)
@@ -76,12 +77,14 @@
            (i18n/label :t/setup-syncing)]]
          [rn/view {:style style/qr-container}
           (if (sync-utils/valid-connection-string? @code)
-            [rn/view {:style {:margin-horizontal 12}}
-             [qr-code-viewer/qr-code-view 311 @code]]
-            [quo/qr-code
-             {:source (resources/get-image :qr-code)
-              :height 220
-              :width  "100%"}])
+            [qr-codes/qr-code {:url @code}]
+            [rn/view {:style {:flex-direction :row}}
+             [rn/image
+              {:source (resources/get-image :qr-code)
+               :style  {:width            "100%"
+                        :background-color colors/white-opa-70
+                        :border-radius    12
+                        :aspect-ratio     1}}]])
           (when (sync-utils/valid-connection-string? @code)
             [rn/view
              {:style style/valid-cs-container}
@@ -118,7 +121,7 @@
             [rn/view {:style style/standard-auth}
              [standard-auth/view
               {:blur?                 true
-               :size                  :size/s-40
+               :size                  :size-40
                :track-text            (i18n/label :t/slide-to-reveal-code)
                :customization-color   customization-color
                :on-enter-password     on-enter-password

@@ -1,16 +1,17 @@
 (ns status-im.ui.screens.rpc-usage-info
-  (:require [clojure.string :as string]
-            [quo.core :as quo.core]
-            [quo.design-system.typography :as typography]
-            [quo.react-native :as quo.react-native]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [utils.re-frame :as rf]
-            [status-im.utils.utils :as utils]
-            [status-im2.common.json-rpc.events :as json-rpc]
-            [taoensso.timbre :as log]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im.ui.components.core :as status-im.ui.components.core]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.typography :as typography]
+    [status-im.utils.utils :as utils]
+    [status-im2.common.json-rpc.events :as json-rpc]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-sub :rpc-usage/raw-data (fn [db] (get db :rpc-usage/data)))
 (re-frame/reg-sub :rpc-usage/filter (fn [db] (get db :rpc-usage/filter)))
@@ -85,29 +86,29 @@
 
 (defn stats-table
   [{:keys [total filtered-total stats]}]
-  [quo.react-native/scroll-view
-   {:style {:padding-horizontal 8}}
-   [quo.react-native/view
-    {:style {:flex-direction  :row
-             :justify-content :space-between
-             :margin-bottom   2}}
-    [quo.core/text {:style typography/font-semi-bold}
-     (i18n/label :t/rpc-usage-total)]
-    [quo.core/text {:style typography/font-semi-bold}
-     (i18n/label :t/rpc-usage-filtered-total {:filtered-total filtered-total :total total})]]
-   (when (seq stats)
-     (for [[k v] stats]
-       ^{:key (str k v)}
-       [:<>
-        [quo.react-native/view
-         {:style {:flex-direction  :row
-                  :align-items     :center
-                  :margin-vertical 10}}
-         [quo.core/text {:style {:flex 1}}
-          k]
-         [quo.core/text {:style {:margin-left 16}}
-          v]]
-        [quo.core/separator]]))])
+  rn/scroll-view
+  {:style {:padding-horizontal 8}}
+  rn/view
+  {:style {:flex-direction  :row
+           :justify-content :space-between
+           :margin-bottom   2}}
+  [status-im.ui.components.core/text {:style typography/font-semi-bold}
+   (i18n/label :t/rpc-usage-total)]
+  [status-im.ui.components.core/text {:style typography/font-semi-bold}
+   (i18n/label :t/rpc-usage-filtered-total {:filtered-total filtered-total :total total})]
+  (when (seq stats)
+    (for [[k v] stats]
+      ^{:key (str k v)}
+      [:<>
+       rn/view
+       {:style {:flex-direction  :row
+                :align-items     :center
+                :margin-vertical 10}}
+       [status-im.ui.components.core/text {:style {:flex 1}}
+        k]
+       [status-im.ui.components.core/text {:style {:margin-left 16}}
+        v]
+       [status-im.ui.components.core/separator]])))
 
 (defn prepare-stats
   [{:keys [stats]}]
@@ -124,20 +125,20 @@
     [react/view
      {:flex              1
       :margin-horizontal 8}
-     [quo.react-native/view
-      {:style {:flex-direction  :row
-               :margin-vertical 8
-               :justify-content :space-between}}
-      [quo.core/button
-       {:on-press            #(re-frame/dispatch [::reset])
-        :accessibility-label :rpc-usage-reset}
-       (i18n/label :t/rpc-usage-reset)]
-      [quo.core/button
-       {:on-press
-        #(react/copy-to-clipboard (prepare-stats stats))
-        :accessibility-label :rpc-usage-copy}
-       (i18n/label :t/rpc-usage-copy)]]
-     [quo.core/text-input
+     rn/view
+     {:style {:flex-direction  :row
+              :margin-vertical 8
+              :justify-content :space-between}}
+     [status-im.ui.components.core/button
+      {:on-press            #(re-frame/dispatch [::reset])
+       :accessibility-label :rpc-usage-reset}
+      (i18n/label :t/rpc-usage-reset)]
+     [status-im.ui.components.core/button
+      {:on-press
+       #(react/copy-to-clipboard (prepare-stats stats))
+       :accessibility-label :rpc-usage-copy}
+      (i18n/label :t/rpc-usage-copy)]
+     [status-im.ui.components.core/text-input
       {:on-change-text  #(re-frame/dispatch [::set-filter %])
        :label           (i18n/label :t/rpc-usage-filter-methods)
        :placeholder     (i18n/label :t/rpc-usage-filter)

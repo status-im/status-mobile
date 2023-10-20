@@ -1,5 +1,6 @@
 (ns status-im2.contexts.onboarding.new-to-status.style
-  (:require [quo2.foundations.colors :as colors]))
+  (:require
+    [quo.foundations.colors :as colors]))
 
 (def content-container
   {:position :absolute
@@ -21,7 +22,7 @@
    :color         colors/white-opa-70})
 
 (def subtitle-container
-  {:margin-top 16})
+  {:margin-top 24})
 
 (def doc-main-content
   {:color         colors/white

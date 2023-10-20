@@ -16,7 +16,7 @@ declare -a REPOS=(
 
 # These files are not necessary for the build process.
 FILENAMES_BLACKLIST='-(javadoc|runtime|gwt|headers|sources|src|tests|adapters|modular|site|bin)\.'
-FILETYPES_BLACKLIST='(pom|json|zip|module|xml|md5|sha1|sha256|sha512)$'
+FILETYPES_BLACKLIST='(pom|json|zip|xml|md5|sha1|sha256|sha512)$'
 SIGNATURE_BLACKLIST='(pom|jar|json|zip|module|xml|md5|asc).asc$'
 
 function nix_prefetch() {

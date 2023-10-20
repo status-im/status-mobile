@@ -1,19 +1,20 @@
 (ns status-im.multiaccounts.core
-  (:require [clojure.string :as string]
-            [quo.platform :as platform]
-            [re-frame.core :as re-frame]
-            [status-im.bottom-sheet.events :as bottom-sheet]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [native-module.core :as native-module]
-            [utils.re-frame :as rf]
-            [quo2.foundations.colors :as colors]
-            [status-im2.constants :as constants]
-            [status-im.utils.gfycat.core :as gfycat]
-            [status-im2.setup.hot-reload :as hot-reload]
-            [status-im2.common.theme.core :as theme]
-            [taoensso.timbre :as log]
-            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
-            [status-im.contact.db :as contact.db]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [quo.foundations.colors :as colors]
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.bottom-sheet.events :as bottom-sheet]
+    [status-im.contact.db :as contact.db]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.utils.gfycat.core :as gfycat]
+    [status-im2.common.theme.core :as theme]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+    [status-im2.setup.hot-reload :as hot-reload]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]))
 
 ;; validate that the given mnemonic was generated from Status Dictionary
 (re-frame/reg-fx
@@ -41,13 +42,16 @@
 
 (defn contact-two-names-by-identity
   [contact profile contact-identity]
-  (let [me? (= (:public-key profile) contact-identity)]
+  (let [{:keys [public-key preferred-name display-name]} profile
+        {:keys [primary-name secondary-name]}            contact
+        me?                                              (= public-key contact-identity)]
     (if me?
-      [(or (:preferred-name profile)
-           (:display-name profile)
-           (:primary-name contact)
-           (gfycat/generate-gfy contact-identity))]
-      [(:primary-name contact) (:secondary-name contact)])))
+      [(cond
+         (not (string/blank? preferred-name)) preferred-name
+         (not (string/blank? display-name))   display-name
+         (not (string/blank? primary-name))   primary-name
+         :else                                (gfycat/generate-gfy contact-identity))]
+      [primary-name secondary-name])))
 
 (defn displayed-photo
   [{:keys [images]}]
@@ -71,14 +75,6 @@
   [cofx]
   (multiaccounts.update/multiaccount-update cofx
                                             :wallet-set-up-passed?
-                                            true
-                                            {}))
-
-(rf/defn confirm-home-tooltip
-  {:events [:multiaccounts.ui/hide-home-tooltip]}
-  [cofx]
-  (multiaccounts.update/multiaccount-update cofx
-                                            :hide-home-tooltip?
                                             true
                                             {}))
 

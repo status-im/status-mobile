@@ -52,18 +52,21 @@
 (def ^:const communities-discover 9)
 
 ;; Floating Screens
-(def ^:const community-screen :community-overview)
 (def ^:const chat-screen :chat)
+(def ^:const community-screen :community-overview)
+(def ^:const discover-communities-screen :discover-communities)
 
-(def ^:const floating-screens [chat-screen community-screen])
+(def ^:const floating-screens [chat-screen community-screen discover-communities-screen])
 
 ;; Floating Screen states
 (def ^:const close-screen-without-animation 0)
 (def ^:const open-screen-without-animation 1)
-(def ^:const close-screen-with-slide-animation 2)
-(def ^:const open-screen-with-slide-animation 3)
-(def ^:const close-screen-with-shell-animation 4)
-(def ^:const open-screen-with-shell-animation 5)
+(def ^:const close-screen-with-shell-animation 2)
+(def ^:const open-screen-with-shell-animation 3)
+(def ^:const close-screen-with-slide-to-right-animation 4)
+(def ^:const open-screen-with-slide-from-right-animation 5)
+(def ^:const close-screen-with-slide-to-bottom-animation 6)
+(def ^:const open-screen-with-slide-from-bottom-animation 7)
 
 ;; Floating Screen gesture
 (def ^:const gesture-width 30)

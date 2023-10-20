@@ -1,7 +1,8 @@
 (ns status-im2.contexts.chat.events-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im2.contexts.chat.events :as chat]
-            [utils.datetime :as datetime]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im2.contexts.chat.events :as chat]
+    [utils.datetime :as datetime]))
 
 (deftest clear-history-test
   (let [chat-id "1"

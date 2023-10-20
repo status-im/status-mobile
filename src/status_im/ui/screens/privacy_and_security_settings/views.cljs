@@ -1,14 +1,16 @@
 (ns status-im.ui.screens.privacy-and-security-settings.views
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.reset-password.core :as reset-password]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.ui.components.common.common :as components.common]
-            [status-im.ui.components.react :as react]
-            [status-im2.config :as config]
-            [react-native.platform :as platform])
+  (:require
+    [re-frame.core :as re-frame]
+    [react-native.platform :as platform]
+    [status-im.multiaccounts.reset-password.core :as reset-password]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.ui.components.common.common :as components.common]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn separator
@@ -37,7 +39,7 @@
                   profile-pictures-show-to [:multiaccount/profile-pictures-show-to]]
     [react/scroll-view {:padding-vertical 8}
      [quo/list-header (i18n/label :t/security)]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/back-up-seed-phrase)
        :accessibility-label :back-up-recovery-phrase-button
@@ -47,13 +49,13 @@
        :on-press            #(re-frame/dispatch [:navigate-to :backup-seed])}]
      [separator]
      [quo/list-header (i18n/label :t/privacy)]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/set-dapp-access-permissions)
        :on-press            #(re-frame/dispatch [:navigate-to :dapps-permissions])
        :accessibility-label :dapps-permissions-button
        :chevron             true}]
-     [quo/list-item
+     [list.item/list-item
       {:size                    :small
        :title                   (if platform/android?
                                   (i18n/label :t/hide-content-when-switching-apps)
@@ -65,7 +67,7 @@
                                   [:multiaccounts.ui/preview-privacy-mode-switched
                                    ((complement boolean) preview-privacy?)])}]
      (when config/collectibles-enabled?
-       [quo/list-item
+       [list.item/list-item
         {:size                    :small
          :title                   (i18n/label :t/display-collectibles)
          :container-margin-bottom 8
@@ -74,13 +76,13 @@
          :on-press                #(re-frame/dispatch
                                     [::multiaccounts.update/toggle-opensea-nfts-visiblity
                                      (not opensea-enabled?)])}])
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/chat-link-previews)
        :chevron             true
        :on-press            #(re-frame/dispatch [:navigate-to :link-previews-settings])
        :accessibility-label :chat-link-previews}]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/accept-new-chats-from)
        :chevron             true
@@ -91,7 +93,7 @@
        :on-press            #(re-frame/dispatch [:navigate-to :messages-from-contacts-only])
        :accessibility-label :accept-new-chats-from}]
      (when (not keycard?)
-       [quo/list-item
+       [list.item/list-item
         {:size                :small
          :title               (i18n/label :t/reset-password)
          :chevron             true
@@ -101,7 +103,7 @@
                                  (re-frame/dispatch [:navigate-to :reset-password]))
          :accessibility-label :reset-password}])
      (when platform/android?
-       [quo/list-item
+       [list.item/list-item
         {:size               :small
          :title              (i18n/label :t/webview-camera-permission-requests)
          :active             webview-allow-permission-requests?
@@ -113,7 +115,7 @@
                                 ((complement boolean) webview-allow-permission-requests?)])}])
      [separator]
      [quo/list-header (i18n/label :t/privacy-photos)]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/show-profile-pictures)
        :accessibility-label :show-profile-pictures
@@ -121,7 +123,7 @@
        :accessory-text      (get titles profile-pictures-visibility)
        :on-press            #(re-frame/dispatch [:navigate-to :privacy-and-security-profile-pic])
        :chevron             true}]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :title               (i18n/label :t/show-profile-pictures-to)
        :disabled            (not has-picture)
@@ -132,7 +134,7 @@
        :chevron             true}]
 
      [separator]
-     [quo/list-item
+     [list.item/list-item
       {:size                :small
        :theme               :negative
        :title               (i18n/label :t/delete-my-profile)
@@ -142,7 +144,7 @@
 
 (defn ppst-radio-item
   [id value]
-  [quo/list-item
+  [list.item/list-item
    {:active    (= value id)
     :accessory :radio
     :title     (get titles id)
@@ -162,7 +164,7 @@
 
 (defn ppvf-radio-item
   [id value]
-  [quo/list-item
+  [list.item/list-item
    {:active    (= value id)
     :accessory :radio
     :title     (get titles id)

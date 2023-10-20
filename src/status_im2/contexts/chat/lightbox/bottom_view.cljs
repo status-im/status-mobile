@@ -1,14 +1,14 @@
 (ns status-im2.contexts.chat.lightbox.bottom-view
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
-    [status-im2.contexts.chat.lightbox.style :as style]
-    [utils.re-frame :as rf]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.constants :as c]
-    [status-im2.contexts.chat.lightbox.text-sheet.view :as text-sheet]))
+    [status-im2.contexts.chat.lightbox.style :as style]
+    [status-im2.contexts.chat.lightbox.text-sheet.view :as text-sheet]
+    [utils.re-frame :as rf]))
 
 (defn get-small-item-layout
   [_ index]

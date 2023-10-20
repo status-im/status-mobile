@@ -1,22 +1,25 @@
 (ns status-im.events
   (:require
     clojure.set
+    [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [react-native.core :as rn]
+    [react-native.permissions :as permissions]
+    [react-native.platform :as platform]
     status-im.backup.core
     status-im.bootnodes.core
     status-im.browser.core
     status-im.browser.permissions
+    status-im.chat.models.gaps
     status-im.chat.models.images
     status-im.chat.models.input
     status-im.chat.models.loading
-    [status-im2.constants :as constants]
     status-im.contact.block
     status-im.contact.chat
     status-im.contact.core
     status-im.currency.core
     status-im.ethereum.subscriptions
     status-im.fleet.core
-    [utils.i18n :as i18n]
     [status-im.keycard.core :as keycard]
     status-im.log-level.core
     status-im.mailserver.constants
@@ -25,7 +28,6 @@
     status-im.multiaccounts.logout.core
     [status-im.multiaccounts.model :as multiaccounts.model]
     status-im.multiaccounts.update.core
-    [native-module.core :as native-module]
     status-im.network.net-info
     status-im.pairing.core
     status-im.profile.core
@@ -33,11 +35,11 @@
     status-im.signals.core
     status-im.stickers.core
     status-im.transport.core
-    [react-native.permissions :as permissions]
+    status-im.ui.components.invite.events
     [status-im.ui.components.react :as react]
+    status-im.ui.screens.notifications-settings.events
     status-im.ui.screens.privacy-and-security-settings.events
     [status-im.utils.dimensions :as dimensions]
-    [utils.re-frame :as rf]
     status-im.utils.logging.core
     [status-im.utils.universal-links.core :as universal-links]
     [status-im.utils.utils :as utils]
@@ -49,19 +51,17 @@
     status-im.wallet.choose-recipient.core
     [status-im.wallet.core :as wallet]
     status-im.wallet.custom-tokens.core
+    [status-im2.common.biometric.events :as biometric]
+    [status-im2.common.theme.core :as theme]
+    [status-im2.constants :as constants]
+    status-im2.contexts.chat.home.events
+    status-im2.contexts.communities.home.events
+    status-im2.contexts.onboarding.events
     status-im2.contexts.shell.activity-center.events
     status-im2.contexts.shell.activity-center.notification.contact-requests.events
     status-im2.contexts.shell.jump-to.events
-    status-im2.contexts.onboarding.events
-    status-im.chat.models.gaps
-    [status-im2.navigation.events :as navigation]
-    [status-im2.common.theme.core :as theme]
-    [react-native.core :as rn]
-    [react-native.platform :as platform]
-    status-im2.contexts.chat.home.events
-    status-im2.contexts.communities.home.events
-    status-im.ui.components.invite.events
-    [status-im2.common.biometric.events :as biometric]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  :dismiss-keyboard
@@ -206,7 +206,7 @@
                :add-new-account-pin           (keycard/enter-pin-screen-did-load %)
                :keycard-authentication-method (keycard/authentication-method-screen-did-load %)
                :multiaccounts                 (keycard/multiaccounts-screen-did-load %)
-               :wallet                        (wallet/wallet-will-focus %)
+               :wallet-legacy                 (wallet/wallet-will-focus %)
                nil)))
 
 ;;TODO :replace by named events
@@ -250,10 +250,7 @@
                     :on-success (fn [on-ramps]
                                   (re-frame/dispatch [::crypto-loaded on-ramps]))}]})
 
-(rf/defn open-buy-crypto-screen
-  {:events [:buy-crypto.ui/open-screen]}
-  [cofx]
-  (rf/merge
-   cofx
-   (navigation/open-modal :buy-crypto nil)
-   (wallet/keep-watching-history)))
+(re-frame/reg-event-fx :buy-crypto.ui/open-screen
+ (fn []
+   {:fx [[:dispatch [:wallet-legacy/keep-watching]]
+         [:dispatch [:open-modal :buy-crypto nil]]]}))

@@ -6,10 +6,10 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.constants :as constants]
-    [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as contact-requests.bottom-drawer]
-    [status-im2.contexts.chat.messages.list.view :as list.view]
-    [status-im2.contexts.chat.messages.list.style :as style]
     [status-im2.contexts.chat.composer.view :as composer.view]
+    [status-im2.contexts.chat.messages.contact-requests.bottom-drawer :as contact-requests.bottom-drawer]
+    [status-im2.contexts.chat.messages.list.style :as style]
+    [status-im2.contexts.chat.messages.list.view :as list.view]
     [status-im2.contexts.chat.messages.navigation.view :as messages.navigation]
     [utils.re-frame :as rf]))
 
@@ -39,7 +39,10 @@
                                                    (str (when emoji (str emoji " ")) "# " chat-name)
                                                    :else (str emoji chat-name))
         online?                                  (rf/sub [:visibility-status-updates/online? chat-id])
-        photo-path                               (rf/sub [:chats/photo-path chat-id])]
+        photo-path                               (rf/sub [:chats/photo-path chat-id])
+        back-icon                                (if (= chat-type constants/one-to-one-chat-type)
+                                                   :i/close
+                                                   :i/arrow-left)]
     (rn/use-effect
      (fn []
        ;; If keyboard is shown then adjust `scroll-y`
@@ -71,6 +74,7 @@
 
      [messages.navigation/navigation-view
       {:scroll-y            scroll-y
+       :back-icon           back-icon
        :chat                chat
        :chat-screen-loaded? chat-screen-loaded?
        :all-loaded?         all-loaded?

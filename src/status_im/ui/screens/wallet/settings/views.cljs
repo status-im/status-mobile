@@ -1,15 +1,17 @@
 (ns status-im.ui.screens.wallet.settings.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.search-input.view :as search-input]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.components.views :as wallet.components])
+  (:require
+    [re-frame.core :as re-frame]
+    [reagent.core :as reagent]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.search-input.view :as search-input]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.components.views :as wallet.components]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defonce search-active? (reagent/atom false))
@@ -19,7 +21,7 @@
   [topbar/topbar
    {:title (i18n/label :t/wallet-assets)
     :navigation
-    {:on-press #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed])}}])
+    {:on-press #(re-frame/dispatch [:wallet-legacy.settings.ui/navigate-back-pressed])}}])
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -30,19 +32,19 @@
   [{:keys [custom?] :as token}]
   (fn []
     [react/view
-     [quo/list-item
+     [list.item/list-item
       {:theme    :accent
        :title    (i18n/label :t/token-details)
        :icon     :main-icons/warning
        :on-press #(hide-sheet-and-dispatch
                    [:navigate-to :wallet-custom-token-details token])}]
      (when custom?
-       [quo/list-item
+       [list.item/list-item
         {:theme    :negative
          :title    (i18n/label :t/remove-token)
          :icon     :main-icons/delete
          :on-press #(hide-sheet-and-dispatch
-                     [:wallet.custom-token.ui/remove-pressed token])}])]))
+                     [:wallet-legacy.custom-token.ui/remove-pressed token])}])]))
 
 (defn render-token
   [_]
@@ -57,7 +59,7 @@
           color    :color
           checked? :checked?
           :as      token}]
-      [quo/list-item
+      [list.item/list-item
        {:active              checked?
         :accessory           :checkbox
         :animated-accessory? false
@@ -67,7 +69,8 @@
                                [chat-icon/custom-icon-view-list title color])
         :title               title
         :subtitle            (name sym)
-        :on-press            #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword sym)
+        :on-press            #(re-frame/dispatch [:wallet-legacy.settings/toggle-visible-token
+                                                  (keyword sym)
                                                   (not checked?)])
         :on-long-press       #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                                   {:content (custom-token-actions-view token)}])}])}))
@@ -80,9 +83,9 @@
   []
   (letsubs [{search-filter                           :search-filter
              {custom-tokens true default-tokens nil} :tokens}
-            [:wallet/filtered-grouped-chain-tokens]]
+            [:wallet-legacy/filtered-grouped-chain-tokens]]
     {:component-will-unmount #(do
-                                (re-frame/dispatch [:search/token-filter-changed nil])
+                                (re-frame/dispatch [:wallet-legacy/search-token-filter-changed nil])
                                 (reset! search-active? false))}
     [react/view {:flex 1 :background-color colors/white}
      [toolbar]
@@ -93,16 +96,16 @@
        [search-input/search-input-old
         {:search-active? search-active?
          :search-filter  search-filter
-         :on-cancel      #(re-frame/dispatch [:search/token-filter-changed nil])
+         :on-cancel      #(re-frame/dispatch [:wallet-legacy/search-token-filter-changed nil])
          :on-focus       (fn [search-filter]
                            (when-not search-filter
-                             (re-frame/dispatch [:search/token-filter-changed ""])))
+                             (re-frame/dispatch [:wallet-legacy/search-token-filter-changed ""])))
          :on-change      (fn [text]
-                           (re-frame/dispatch [:search/token-filter-changed text]))}]]
+                           (re-frame/dispatch [:wallet-legacy/search-token-filter-changed text]))}]]
       [list/section-list
        {:header
         [react/view {:margin-top 16}
-         [quo/list-item
+         [list.item/list-item
           {:theme :accent
            :title (i18n/label :t/add-custom-token)
            :icon :main-icons/add

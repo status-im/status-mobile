@@ -1,19 +1,19 @@
 (ns status-im.chat.models.input
-  (:require ["emojilib" :as emojis]
-            [clojure.string :as string]
-            [goog.object :as object]
-            [re-frame.core :as re-frame]
-            [status-im.chat.models.mentions :as mentions]
-            [status-im.chat.models.message :as chat.message]
-            [status-im.chat.models.message-content :as message-content]
-            [status-im.utils.utils :as utils]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
-            [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [utils.string :as utils.string]
-            [status-im.data-store.messages :as data-store-messages]))
+  (:require
+    ["emojilib" :as emojis]
+    [clojure.string :as string]
+    [goog.object :as object]
+    [re-frame.core :as re-frame]
+    [status-im.chat.models.mentions :as mentions]
+    [status-im.chat.models.message :as chat.message]
+    [status-im.chat.models.message-content :as message-content]
+    [status-im.data-store.messages :as data-store-messages]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.link-preview.events :as link-preview]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.string :as utils.string]))
 
 (defn text->emoji
   "Replaces emojis in a specified `text`"
@@ -26,12 +26,6 @@
                                  original))))
 
 ;; effects
-(re-frame/reg-fx
- :show-cooldown-warning
- (fn [_]
-   (utils/show-popup nil
-                     (i18n/label :cooldown/warning-message)
-                     #())))
 
 (rf/defn set-chat-input-text
   "Set input text for current-chat. Takes db and input text and cofx

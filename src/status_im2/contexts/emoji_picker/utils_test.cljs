@@ -1,6 +1,7 @@
 (ns status-im2.contexts.emoji-picker.utils-test
-  (:require [cljs.test :refer [deftest is testing]]
-            [status-im2.contexts.emoji-picker.utils :as utils]))
+  (:require
+    [cljs.test :refer [deftest is testing]]
+    [status-im2.contexts.emoji-picker.utils :as utils]))
 
 (deftest emoji-search-test
   (testing "search for emojis with name"

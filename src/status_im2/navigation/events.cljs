@@ -1,8 +1,10 @@
 (ns status-im2.navigation.events
-  (:require [utils.re-frame :as rf]
-            [status-im2.contexts.shell.jump-to.state :as shell.state]
-            [status-im2.contexts.shell.jump-to.utils :as shell.utils]
-            [status-im2.contexts.shell.jump-to.events :as shell.events]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im2.contexts.shell.jump-to.events :as shell.events]
+    [status-im2.contexts.shell.jump-to.state :as shell.state]
+    [status-im2.contexts.shell.jump-to.utils :as shell.utils]
+    [utils.re-frame :as rf]))
 
 (defn- all-screens-params
   [db view screen-params]
@@ -27,13 +29,13 @@
   [_ comp-id]
   {:navigate-to-within-stack comp-id})
 
-(rf/defn open-modal
-  {:events [:open-modal]}
-  [{:keys [db]} comp screen-params]
-  {:db            (-> (assoc db :view-id comp)
-                      (all-screens-params comp screen-params))
-   :dispatch      [:hide-bottom-sheet]
-   :open-modal-fx comp})
+(re-frame/reg-event-fx :open-modal
+ (fn [{:keys [db]} [component screen-params]]
+   {:db (-> db
+            (assoc :view-id component)
+            (all-screens-params component screen-params))
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:open-modal-fx component]]}))
 
 (rf/defn dismiss-modal
   {:events [:dismiss-modal]}

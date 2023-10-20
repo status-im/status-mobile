@@ -1,10 +1,11 @@
 (ns status-im.visibility-status-updates.core
-  (:require [status-im2.constants :as constants]
-            [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [status-im.ui.screens.profile.visibility-status.utils :as utils]
-            [utils.re-frame :as rf]
-            [utils.datetime :as datetime]))
+  (:require
+    [status-im.data-store.visibility-status-updates :as visibility-status-updates-store]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im.ui.screens.profile.visibility-status.utils :as utils]
+    [status-im2.constants :as constants]
+    [utils.datetime :as datetime]
+    [utils.re-frame :as rf]))
 
 (defn valid-status-type?
   [status-type]

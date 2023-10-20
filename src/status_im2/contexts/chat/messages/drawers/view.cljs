@@ -1,16 +1,17 @@
 (ns status-im2.contexts.chat.messages.drawers.view
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [status-im.ui.components.react :as react]
-            [status-im2.contexts.chat.composer.reply.view :as reply]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [reagent.core :as reagent]
-            [status-im2.common.contact-list-item.view :as contact-list-item]
-            [status-im2.contexts.chat.messages.drawers.style :as style]
-            [react-native.gesture :as gesture]
-            [quo2.components.reactions.resource :as reactions.resource]))
+  (:require
+    [quo.components.selectors.reaction-resource :as reactions.resource]
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.gesture :as gesture]
+    [reagent.core :as reagent]
+    [status-im.ui.components.react :as react]
+    [status-im2.common.contact-list-item.view :as contact-list-item]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.reply.view :as reply]
+    [status-im2.contexts.chat.messages.drawers.style :as style]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn contact-list-item-fn
   [{:keys [from compressed-key]}]
@@ -185,8 +186,9 @@
      (for [[id reaction-name] constants/reactions
            :let               [emoji-reaction-id (get own-reactions id)]]
        ^{:key id}
-       [quo/reactions reaction-name
-        {:start-pressed? (boolean emoji-reaction-id)
+       [quo/reactions-selector
+        {:emoji reaction-name
+         :start-pressed? (boolean emoji-reaction-id)
          :accessibility-label (str "reaction-" (name reaction-name))
          :on-press
          (fn []
@@ -229,11 +231,13 @@
               :icon                (:icon action)
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
-                                     (when on-press (on-press)))}]))
-        (when-not (empty? danger-actions)
-          [quo/separator])
+                                     (when on-press (on-press)))}]))]
 
-        ;; DANGER ACTIONS
+       (when-not (empty? danger-actions)
+         [quo/separator {:style {:margin-vertical 8}}])
+
+       ;; DANGER ACTIONS
+       [rn/view {:style {:padding-horizontal 8}}
         (for [action danger-actions]
           (let [on-press (:on-press action)]
             ^{:key (:id action)}
@@ -244,11 +248,13 @@
               :icon                (:icon action)
               :on-press            (fn []
                                      (rf/dispatch [:hide-bottom-sheet])
-                                     (when on-press (on-press)))}]))
-        (when-not (empty? admin-actions)
-          [quo/separator])
+                                     (when on-press (on-press)))}]))]
 
-        ;; ADMIN ACTIONS
+       (when-not (empty? admin-actions)
+         [quo/separator {:style {:margin-vertical 8}}])
+
+       ;; ADMIN ACTIONS
+       [rn/view {:style {:padding-horizontal 8}}
         (for [action admin-actions]
           (let [on-press (:on-press action)]
             ^{:key (:id action)}

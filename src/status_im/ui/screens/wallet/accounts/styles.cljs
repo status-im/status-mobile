@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.accounts.styles
-  (:require [clojure.string :as string]
-            [quo.animated :as animated]
-            [quo.design-system.colors :as colors]))
+  (:require
+    [clojure.string :as string]
+    [status-im.ui.components.colors :as colors]))
 
 (def dot-size 6)
 
@@ -46,7 +46,7 @@
 
 (defn accounts-mnemonic
   [{:keys [animation]}]
-  {:opacity         (animated/mix animation 1 0)
+  {:opacity         (if animation 1 0)
    :flex            1
    :justify-content :center
    :position        :absolute

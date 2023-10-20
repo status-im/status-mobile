@@ -1,6 +1,7 @@
 (ns status-im.utils.signing-phrase.core
-  (:require [clojure.string :as string]
-            [status-im.utils.signing-phrase.dictionaries.en :as en]))
+  (:require
+    [clojure.string :as string]
+    [status-im.utils.signing-phrase.dictionaries.en :as en]))
 
 ; In order to reduce phishing threat for Status.im users we want to have them
 ; recognize 3 predefined words when they sign transactions or make other sensitive operations.

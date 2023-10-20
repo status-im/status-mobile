@@ -1,6 +1,7 @@
 (ns status-im.utils.transducers-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.utils.transducers :as transducers]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im.utils.transducers :as transducers]))
 
 (def preview-call-1
   {:jail-id  1

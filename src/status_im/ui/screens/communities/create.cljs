@@ -1,16 +1,18 @@
 (ns status-im.ui.screens.communities.create
-  (:require [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [quo.react-native :as rn]
-            [status-im.communities.core :as communities]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [utils.re-frame :as rf]
-            [status-im.utils.image :as utils.image]
-            [utils.debounce :as debounce]))
+  (:require
+    [clojure.string :as string]
+    [react-native.core :as rn]
+    [status-im.communities.core :as communities]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toolbar :as toolbar]
+    [status-im.utils.image :as utils.image]
+    [utils.debounce :as debounce]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def max-name-length 30)
 (def max-description-length 140)
@@ -56,7 +58,7 @@
   [has-picture editing?]
   (fn []
     [:<>
-     [quo/list-item
+     [list.item/list-item
       {:accessibility-label :take-photo
        :theme               :accent
        :icon                :main-icons/camera
@@ -64,7 +66,7 @@
        :on-press            #(do
                                (rf/dispatch [:bottom-sheet/hide-old])
                                (take-pic))}]
-     [quo/list-item
+     [list.item/list-item
       {:accessibility-label :pick-photo
        :icon                :main-icons/gallery
        :theme               :accent
@@ -73,7 +75,7 @@
                                (rf/dispatch [:bottom-sheet/hide-old])
                                (pick-pic))}]
      (when (and has-picture (not editing?))
-       [quo/list-item
+       [list.item/list-item
         {:accessibility-label :remove-photo
          :icon                :main-icons/delete
          :theme               :accent
@@ -187,7 +189,7 @@
      (when-not editing?
        [:<>
         [quo/separator {:style {:margin-vertical 10}}]
-        [quo/list-item
+        [list.item/list-item
          {:title     (i18n/label :t/membership-button)
           :accessory :text
           :on-press  #(rf/dispatch [:navigate-to :community-membership])

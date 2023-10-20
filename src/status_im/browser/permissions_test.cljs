@@ -1,9 +1,10 @@
 (ns status-im.browser.permissions-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.browser.core :as browser]
-            [status-im.browser.core-test :as core.tests]
-            [status-im.browser.permissions :as permissions]
-            [status-im.utils.deprecated-types :as types]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im.browser.core :as browser]
+    [status-im.browser.core-test :as core.tests]
+    [status-im.browser.permissions :as permissions]
+    [status-im.utils.deprecated-types :as types]))
 
 (deftest permissions-test
   (let [dapp-name  "test.com"

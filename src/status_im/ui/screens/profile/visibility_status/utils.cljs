@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.profile.visibility-status.utils
-  (:require [quo.design-system.colors :as colors]
-            [quo2.foundations.colors :as quo2.colors]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [status-im.ui.screens.profile.visibility-status.styles :as styles]
-            [utils.datetime :as datetime]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.foundations.colors :as quo.colors]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.screens.profile.visibility-status.styles :as styles]
+    [status-im2.constants :as constants]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 ;; Specs:
 ;; :visibility-status-automatic
@@ -23,7 +24,7 @@
    {:color colors/red
     :title (i18n/label :t/error)}
    constants/visibility-status-automatic
-   {:color    quo2.colors/success-50
+   {:color    quo.colors/success-50
     :title    (i18n/label :t/status-automatic)
     :subtitle (i18n/label :t/status-automatic-subtitle)}
    constants/visibility-status-dnd
@@ -31,7 +32,7 @@
     :title    (i18n/label :t/status-dnd)
     :subtitle (i18n/label :t/status-dnd-subtitle)}
    constants/visibility-status-always-online
-   {:color quo2.colors/success-50
+   {:color quo.colors/success-50
     :title (i18n/label :t/status-always-online)}
    constants/visibility-status-inactive
    {:color    colors/color-inactive
@@ -78,7 +79,7 @@
 
 (defn icon-dot-accessibility-label
   [dot-color]
-  (if (= dot-color quo2.colors/success-50)
+  (if (= dot-color quo.colors/success-50)
     :online-profile-photo-dot
     :offline-profile-photo-dot))
 

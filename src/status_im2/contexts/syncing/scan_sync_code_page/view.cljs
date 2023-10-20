@@ -1,8 +1,9 @@
 (ns status-im2.contexts.syncing.scan-sync-code-page.view
-  (:require [react-native.core :as rn]
-            [status-im2.contexts.syncing.scan-sync-code-page.style :as style]
-            [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]
-            [utils.i18n :as i18n]))
+  (:require
+    [react-native.core :as rn]
+    [status-im2.contexts.syncing.scan-sync-code-page.style :as style]
+    [status-im2.contexts.syncing.scan-sync-code.view :as scan-sync-code]
+    [utils.i18n :as i18n]))
 
 (defn view
   []

@@ -1,8 +1,9 @@
 (ns status-im.contact.chat
-  (:require [re-frame.core :as re-frame]
-            [status-im2.contexts.contacts.events :as contact]
-            [status-im2.navigation.events :as navigation]
-            [utils.re-frame :as rf]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im2.contexts.contacts.events :as contact]
+    [status-im2.navigation.events :as navigation]
+    [utils.re-frame :as rf]))
 
 (rf/defn contact-code-submitted
   {:events       [:contact.ui/contact-code-submitted]

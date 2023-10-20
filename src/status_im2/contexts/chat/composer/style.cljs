@@ -1,10 +1,11 @@
 (ns status-im2.contexts.chat.composer.style
-  (:require [quo2.foundations.colors :as colors]
-            [quo2.foundations.typography :as typography]
-            [react-native.platform :as platform]
-            [react-native.reanimated :as reanimated]
-            [status-im2.contexts.chat.composer.constants :as constants]
-            [quo2.theme :as quo.theme]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [quo.foundations.typography :as typography]
+    [quo.theme :as quo.theme]
+    [react-native.platform :as platform]
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.composer.constants :as constants]))
 
 (defn shadow
   [focused? theme]
@@ -54,12 +55,12 @@
   [height max-height]
   (reanimated/apply-animations-to-style
    {:height height}
-   {:max-height max-height
-    :overflow   :hidden}))
+   {:max-height max-height}))
 
 (defn input-view
   [{:keys [recording?]}]
-  {:z-index    1
+  {:overflow   :hidden
+   :z-index    1
    :flex       1
    :display    (if @recording? :none :flex)
    :min-height constants/input-height})

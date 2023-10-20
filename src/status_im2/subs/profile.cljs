@@ -1,15 +1,16 @@
 (ns status-im2.subs.profile
-  (:require [cljs.spec.alpha :as spec]
-            [clojure.string :as string]
-            [quo2.theme :as theme]
-            [re-frame.core :as re-frame]
-            [status-im.fleet.core :as fleet]
-            [status-im.multiaccounts.db :as multiaccounts.db]
-            [status-im2.constants :as constants]
-            [utils.image-server :as image-server]
-            [utils.security.core :as security]
-            [status-im.wallet.utils :as wallet.utils]
-            [utils.address :as address]))
+  (:require
+    [cljs.spec.alpha :as spec]
+    [clojure.string :as string]
+    [quo.theme :as theme]
+    [re-frame.core :as re-frame]
+    [status-im.fleet.core :as fleet]
+    [status-im.multiaccounts.db :as multiaccounts.db]
+    [status-im.wallet.utils :as wallet.utils]
+    [status-im2.constants :as constants]
+    [utils.address :as address]
+    [utils.image-server :as image-server]
+    [utils.security.core :as security]))
 
 (re-frame/reg-sub
  :profile/customization-color
@@ -189,8 +190,8 @@
 (re-frame/reg-sub
  :accounts-for-recipient
  :<- [:multiaccount/visible-accounts]
- :<- [:wallet/prepare-transaction]
- :<- [:search/recipient-filter]
+ :<- [:wallet-legacy/prepare-transaction]
+ :<- [:wallet-legacy/search-recipient-filter]
  (fn [[accounts {:keys [from]} search-filter]]
    (let [accounts (remove #(= (:address %) (:address from)) accounts)]
      (if (string/blank? search-filter)

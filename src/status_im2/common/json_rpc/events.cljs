@@ -1,11 +1,12 @@
 (ns status-im2.common.json-rpc.events
-  (:require [clojure.string :as string]
-            [native-module.core :as native-module]
-            [re-frame.core :as re-frame]
-            [react-native.background-timer :as background-timer]
-            [taoensso.timbre :as log]
-            [utils.re-frame :as rf]
-            [utils.transforms :as transforms]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [react-native.background-timer :as background-timer]
+    [taoensso.timbre :as log]
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (defn- on-error-retry
   [call-method

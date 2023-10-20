@@ -1,9 +1,10 @@
 (ns status-im.ui.components.invite.events
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [utils.re-frame :as rf]
-            [status-im.utils.universal-links.utils :as universal-links]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.react :as react]
+    [status-im.utils.universal-links.utils :as universal-links]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  ::share

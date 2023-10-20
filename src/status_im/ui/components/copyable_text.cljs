@@ -1,9 +1,10 @@
 (ns status-im.ui.components.copyable-text
-  (:require [quo.design-system.colors :as colors]
-            [reagent.core :as reagent]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.animation :as animation]
-            [status-im.ui.components.react :as react]))
+  (:require
+    [reagent.core :as reagent]
+    [status-im.ui.components.animation :as animation]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n]))
 
 (defn hide-cue-atom
   [anim-opacity anim-y cue-atom]
@@ -79,7 +80,7 @@
        ;; line height specified here because of figma spec
        :line-height 20
        :font-size   14}}
-     (i18n/label :sharing-copied-to-clipboard)]]])
+     (i18n/label :t/sharing-copied-to-clipboard)]]])
 
 (defn copyable-text-view
   [{:keys [label container-style]} content]

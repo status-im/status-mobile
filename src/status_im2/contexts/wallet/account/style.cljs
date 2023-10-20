@@ -4,12 +4,7 @@
   {:padding-left     20
    :padding-vertical 12})
 
-(def wip
-  {:justify-content :center
-   :align-items     :center
-   :flex            1})
-
-(def empty-container-style
-  {:justify-content :center
-   :flex            1
-   :margin-bottom   44})
+(def drawer-section-label
+  {:padding-horizontal 20
+   :padding-top        12
+   :padding-bottom     8})

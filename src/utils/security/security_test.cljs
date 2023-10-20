@@ -1,6 +1,7 @@
 (ns utils.security.security-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [utils.security.core :as security]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [utils.security.core :as security]))
 
 (def rtlo-link "‮http://google.com")
 (def rtlo-link-text "blah blah ‮  some other blah blah http://google.com blah bash")

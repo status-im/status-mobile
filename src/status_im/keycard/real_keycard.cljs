@@ -1,13 +1,14 @@
 (ns status-im.keycard.real-keycard
-  (:require ["react-native" :as rn]
-            ["react-native-status-keycard" :default status-keycard]
-            [clojure.string :as string]
-            [status-im.keycard.keycard :as keycard]
-            [native-module.core :as native-module]
-            [react-native.platform :as platform]
-            [status-im.utils.deprecated-types :as types]
-            [taoensso.timbre :as log]
-            [utils.address :as address]))
+  (:require
+    ["react-native" :as rn]
+    ["react-native-status-keycard" :default status-keycard]
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [react-native.platform :as platform]
+    [status-im.keycard.keycard :as keycard]
+    [status-im.utils.deprecated-types :as types]
+    [taoensso.timbre :as log]
+    [utils.address :as address]))
 
 (defonce event-emitter
   (if platform/ios?

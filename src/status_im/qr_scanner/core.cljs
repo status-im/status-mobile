@@ -1,13 +1,14 @@
 (ns status-im.qr-scanner.core
-  (:require [re-frame.core :as re-frame]
-            [status-im.group-chats.core :as group-chats]
-            [utils.i18n :as i18n]
-            [status-im.router.core :as router]
-            [utils.re-frame :as rf]
-            [status-im.utils.utils :as utils]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]
-            [utils.ethereum.chain :as chain]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.group-chats.core :as group-chats]
+    [status-im.router.core :as router]
+    [status-im.utils.utils :as utils]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.ethereum.chain :as chain]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (rf/defn scan-qr-code
   {:events [::scan-code]}
@@ -78,7 +79,7 @@
 (rf/defn handle-eip681
   [cofx data]
   (rf/merge cofx
-            {:dispatch [:wallet/parse-eip681-uri-and-resolve-ens data]}
+            {:dispatch [:wallet-legacy/parse-eip681-uri-and-resolve-ens data]}
             (navigation/change-tab :wallet-stack)
             (navigation/pop-to-root :shell-stack)))
 

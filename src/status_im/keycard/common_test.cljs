@@ -1,6 +1,7 @@
 (ns status-im.keycard.common-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.keycard.common :as common]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im.keycard.common :as common]))
 
 (deftest test-show-connection-sheet
   (testing "the card is not connected yet"

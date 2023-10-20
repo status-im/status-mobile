@@ -1,6 +1,7 @@
 (ns status-im2.subs.activity-center
-  (:require [re-frame.core :as re-frame]
-            [status-im2.contexts.shell.activity-center.notification-types :as types]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im2.contexts.shell.activity-center.notification-types :as types]))
 
 (re-frame/reg-sub
  :activity-center/notifications

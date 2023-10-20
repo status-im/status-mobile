@@ -1,16 +1,17 @@
 (ns status-im.group-chats.core
   (:refer-clojure :exclude [remove])
-  (:require [clojure.spec.alpha :as spec]
-            [clojure.string :as string]
-            [utils.i18n :as i18n]
-            [oops.core :as oops]
-            [re-frame.core :as re-frame]
-            [status-im2.contexts.chat.events :as chat.events]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.activity-center.events :as activity-center]
-            [status-im2.navigation.events :as navigation]
-            [utils.re-frame :as rf]
-            [status-im.data-store.invitations :as data-store.invitations]))
+  (:require
+    [clojure.spec.alpha :as spec]
+    [clojure.string :as string]
+    [oops.core :as oops]
+    [re-frame.core :as re-frame]
+    [status-im.data-store.invitations :as data-store.invitations]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.events :as chat.events]
+    [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [status-im2.navigation.events :as navigation]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (rf/defn navigate-chat-updated
   {:events [:navigate-chat-updated]}

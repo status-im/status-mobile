@@ -1,14 +1,15 @@
 (ns status-im2.contexts.chat.photo-selector.events
-  (:require [react-native.cameraroll :as cameraroll]
-            [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im2.constants :as constants]
-            [utils.i18n :as i18n]
-            [react-native.permissions :as permissions]
-            [utils.re-frame :as rf]
-            [react-native.image-resizer :as image-resizer]
-            [taoensso.timbre :as log]
-            [react-native.core :as rn]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [react-native.cameraroll :as cameraroll]
+    [react-native.core :as rn]
+    [react-native.image-resizer :as image-resizer]
+    [react-native.permissions :as permissions]
+    [status-im2.constants :as constants]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (def maximum-image-size-px 2000)
 

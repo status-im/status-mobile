@@ -1,21 +1,22 @@
 (ns status-im.router.core
-  (:require [bidi.bidi :as bidi]
-            [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im2.contexts.chat.events :as chat.events]
-            [status-im2.constants :as constants]
-            [status-im.ethereum.eip681 :as eip681]
-            [status-im.ethereum.ens :as ens]
-            [status-im.utils.deprecated-types :as types]
-            [native-module.core :as native-module]
-            [status-im.ethereum.stateofus :as stateofus]
-            [utils.validators :as validators]
-            [utils.url :as url]
-            [status-im.utils.wallet-connect :as wallet-connect]
-            [taoensso.timbre :as log]
-            [utils.security.core :as security]
-            [utils.ethereum.chain :as chain]
-            [utils.address :as address]))
+  (:require
+    [bidi.bidi :as bidi]
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.ethereum.eip681 :as eip681]
+    [status-im.ethereum.ens :as ens]
+    [status-im.ethereum.stateofus :as stateofus]
+    [status-im.utils.deprecated-types :as types]
+    [status-im.utils.wallet-connect :as wallet-connect]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.events :as chat.events]
+    [taoensso.timbre :as log]
+    [utils.address :as address]
+    [utils.ethereum.chain :as chain]
+    [utils.security.core :as security]
+    [utils.url :as url]
+    [utils.validators :as validators]))
 
 (def ethereum-scheme "ethereum:")
 

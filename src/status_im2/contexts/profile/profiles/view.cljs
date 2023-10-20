@@ -1,20 +1,21 @@
 (ns status-im2.contexts.profile.profiles.view
-  (:require [native-module.core :as native-module]
-            [quo2.core :as quo]
-            [react-native.core :as rn]
-            [react-native.reanimated :as reanimated]
-            [react-native.safe-area :as safe-area]
-            [reagent.core :as reagent]
-            [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
-            [status-im2.config :as config]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.onboarding.common.background.view :as background]
-            [status-im2.contexts.profile.profiles.style :as style]
-            [taoensso.timbre :as log]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [utils.transforms :as transforms]
-            [status-im2.common.standard-authentication.password-input.view :as password-input]))
+  (:require
+    [native-module.core :as native-module]
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.common.confirmation-drawer.view :as confirmation-drawer]
+    [status-im2.common.standard-authentication.password-input.view :as password-input]
+    [status-im2.config :as config]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.onboarding.common.background.view :as background]
+    [status-im2.contexts.profile.profiles.style :as style]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.transforms :as transforms]))
 
 (defonce push-animation-fn-atom (atom nil))
 (defonce pop-animation-fn-atom (atom nil))
@@ -64,8 +65,8 @@
 (defn delete-profile-confirmation
   [key-uid context]
   [confirmation-drawer/confirmation-drawer
-   {:title               (i18n/label :remove-profile?)
-    :description         (i18n/label :remove-profile-confirm-message)
+   {:title               (i18n/label :t/remove-profile?)
+    :description         (i18n/label :t/remove-profile-confirm-message)
     :accessibility-label :remove-profile-confirm
     :context             context
     :button-text         (i18n/label :t/remove)
@@ -88,7 +89,7 @@
   [key-uid context]
   [quo/action-drawer
    [[{:icon                :i/delete
-      :label               (i18n/label :remove-profile-message)
+      :label               (i18n/label :t/remove-profile-message)
       :on-press            #(show-confirmation key-uid context)
       :accessibility-label :remove-profile
       :danger?             true}]]])
@@ -156,7 +157,7 @@
       {:data                    (sort-by :timestamp > profiles)
        :key-fn                  :key-uid
        :content-container-style {:padding-bottom 20}
-       :render-data             {:last-index        (- (count profiles) 1)
+       :render-data             {:last-index        (dec (count profiles))
                                  :set-hide-profiles set-hide-profiles}
        :render-fn               profile-card}]]))
 
@@ -182,9 +183,9 @@
           :type                :grey
           :background          :blur
           :icon-only?          true
-          :on-press            #(rf/dispatch [:navigate-to :quo2-preview])
+          :on-press            #(rf/dispatch [:navigate-to :quo-preview])
           :disabled?           processing
-          :accessibility-label :quo2-preview
+          :accessibility-label :quo-preview
           :container-style     {:margin-right 12}}
          :i/reveal-whitelist])
       [quo/button

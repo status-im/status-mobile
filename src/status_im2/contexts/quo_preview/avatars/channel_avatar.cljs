@@ -1,8 +1,8 @@
 (ns status-im2.contexts.quo-preview.avatars.channel-avatar
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [reagent.core :as reagent]
-            [status-im2.contexts.quo-preview.preview :as preview]))
+  (:require
+    [quo.core :as quo]
+    [reagent.core :as reagent]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
   [{:key     :size
@@ -29,14 +29,13 @@
                              :full-name           "Some channel"
                              :customization-color :blue})]
     (fn []
-      (let [customization-color (colors/custom-color-by-theme (:customization-color @state) 50 60)
-            locked?             (case (:locked-state @state)
-                                  :not-set  nil
-                                  :unlocked false
-                                  :locked   true
-                                  nil)]
+      (let [locked? (case (:locked-state @state)
+                      :not-set  nil
+                      :unlocked false
+                      :locked   true
+                      nil)]
         [preview/preview-container {:state state :descriptor descriptor}
          [quo/channel-avatar
           (assoc @state
-                 :locked?             locked?
-                 :customization-color customization-color)]]))))
+                 :locked?
+                 locked?)]]))))

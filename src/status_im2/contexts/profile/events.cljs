@@ -1,10 +1,11 @@
 (ns status-im2.contexts.profile.events
-  (:require [utils.re-frame :as rf]
-            [status-im2.contexts.profile.rpc :as profile.rpc]
-            [re-frame.core :as re-frame]
-            [native-module.core :as native-module]
-            [status-im2.navigation.events :as navigation]
-            [status-im2.contexts.profile.login.events :as login]))
+  (:require
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im2.contexts.profile.login.events :as login]
+    [status-im2.contexts.profile.rpc :as profile.rpc]
+    [status-im2.navigation.events :as navigation]
+    [utils.re-frame :as rf]))
 
 (re-frame/reg-fx
  :profile/get-profiles-overview

@@ -7,8 +7,8 @@
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
-    [status-im2.contexts.chat.lightbox.zoomable-image.constants :as constants]
     [status-im2.contexts.chat.lightbox.animations :as anim]
+    [status-im2.contexts.chat.lightbox.zoomable-image.constants :as constants]
     [utils.re-frame :as rf]))
 
 ;;; Helpers
@@ -110,9 +110,8 @@
   [index {:keys [opacity-value border-value full-screen-scale transparent? props]} portrait?]
   (let [{:keys [small-list-ref timers text-sheet-lock?]} props
         opacity                                          (reanimated/get-shared-value opacity-value)
-        scale-value                                      (+ 1
-                                                            (/ constants/margin
-                                                               (:width (rn/get-window))))]
+        scale-value                                      (inc (/ constants/margin
+                                                                 (:width (rn/get-window))))]
     (if (= opacity 1)
       (do
         (js/clearTimeout (:show-0 @timers))

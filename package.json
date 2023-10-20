@@ -4,14 +4,8 @@
   "main": "modules/react-native-status/nodejs/bindings.js",
   "private": true,
   "scripts": {
-    "start": "react-native start",
-    "ios": "react-native run-ios",
-    "preinstall": "make status-go-library",
-    "app:compile:android": "shadow-cljs compile android",
-    "app:watch": "shadow-cljs watch android",
-    "app:packager": "react-native start --host 0.0.0.0 --port 8081",
-    "app:android": "react-native run-android",
-    "prettier": "node_modules/.bin/prettier --write ."
+    "_comment": "This also prevents 'yarn install' from running outside of nix.",
+    "preinstall": "scripts/check-nix-shell.sh && make status-go-library"
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.17.12",
@@ -35,7 +29,6 @@
     "functional-red-black-tree": "^1.0.1",
     "i18n-js": "^3.3.0",
     "node-libs-react-native": "^1.2.1",
-    "qrcode": "^1.4.1",
     "react": "18.0.0",
     "react-dom": "18.0.0",
     "react-native": "0.69.10",

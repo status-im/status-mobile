@@ -1,11 +1,12 @@
 (ns status-im.keycard.unpair
-  (:require [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.keycard.common :as common]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [utils.re-frame :as rf]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.keycard.common :as common]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (rf/defn unpair-card-pressed
   {:events [:keycard-settings.ui/unpair-card-pressed]}

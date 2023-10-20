@@ -1,12 +1,13 @@
 (ns react-native.core
-  (:require ["react" :as react]
-            ["react-native" :as react-native]
-            [cljs-bean.core :as bean]
-            [oops.core :as oops]
-            [react-native.flat-list :as flat-list]
-            [react-native.platform :as platform]
-            [react-native.section-list :as section-list]
-            [reagent.core :as reagent]))
+  (:require
+    ["react" :as react]
+    ["react-native" :as react-native]
+    [cljs-bean.core :as bean]
+    [oops.core :as oops]
+    [react-native.flat-list :as flat-list]
+    [react-native.platform :as platform]
+    [react-native.section-list :as section-list]
+    [reagent.core :as reagent]))
 
 (def app-state ^js (.-AppState ^js react-native))
 
@@ -44,6 +45,7 @@
 (def activity-indicator (reagent/adapt-react-class (.-ActivityIndicator ^js react-native)))
 
 (def modal (reagent/adapt-react-class (.-Modal ^js react-native)))
+(def refresh-control (reagent/adapt-react-class (.-RefreshControl ^js react-native)))
 
 (def keyboard ^js (.-Keyboard ^js react-native))
 
@@ -156,3 +158,7 @@
     (reagent/adapt-react-class
      (.requireNativeComponent ^js react-native "RNSelectableTextInput"))
     view))
+
+(def linking (.-Linking react-native))
+
+(defn open-url [link] (.openURL ^js linking link))

@@ -1,5 +1,6 @@
 (ns status-im.utils.gfycat.core
-  (:require [native-module.core :as native-module]))
+  (:require
+    [native-module.core :as native-module]))
 
 (def unknown-gfy "Unknown")
 

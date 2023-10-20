@@ -1,6 +1,7 @@
 (ns utils.address-test
-  (:require [cljs.test :refer [deftest is testing]]
-            [utils.address]))
+  (:require
+    [cljs.test :refer [deftest is testing]]
+    [utils.address]))
 
 (deftest get-shortened-compressed-key
   (testing "Ensure the function correctly abbreviates a valid public key"

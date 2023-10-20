@@ -1,6 +1,7 @@
 (ns utils.number-test
-  (:require [cljs.test :refer [deftest is testing]]
-            [utils.number]))
+  (:require
+    [cljs.test :refer [deftest is testing]]
+    [utils.number]))
 
 (deftest parse-int
   (testing "defaults to zero"

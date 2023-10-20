@@ -40,7 +40,7 @@ Check out our [coding guidelines](doc/new-guidelines.md).
 Metcalfe's law states that the value of a network is proportional to the square of the number of connected users of the system - without community Status is meaningless. We're looking to create a positive, fun environment to explore new ideas, experiment and grow the Status community. Building a community takes a lot of work but the people you'll meet and long lasting relationships you form will be well worth it, check out our [Mission and Community Principles](https://status.im/about)
 
 - **Specification / Documentation**
-John Dewey once said "Education is not preparation for life; education is life *itself* ". Developers & Designers need guidance and it all starts from documentation and specifications. Our software is only as good as its documentation, check out our [docs](doc/) and see how you can improve what we have.
+John Dewey once said "Education is not preparation for life; education is life *itself* ". Developers and Designers need guidance and it all starts from documentation and specifications. Our software is only as good as its documentation, check out our [docs](doc/) and see how you can improve what we have.
 
 - **Blog Writing**
 Content is King, keeping our blog up to date and informing the community of news helps keep everyone on the same page.

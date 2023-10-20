@@ -1,29 +1,29 @@
 (ns status-im2.contexts.chat.composer.view
   (:require
-    [quo2.foundations.colors :as colors]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.hooks :as hooks]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
-    [utils.i18n :as i18n]
-    [status-im2.contexts.chat.composer.style :as style]
-    [status-im2.contexts.chat.composer.link-preview.view :as link-preview]
-    [status-im2.contexts.chat.composer.images.view :as images]
-    [status-im2.contexts.chat.composer.reply.view :as reply]
-    [status-im2.contexts.chat.composer.edit.view :as edit]
-    [status-im2.contexts.chat.composer.mentions.view :as mentions]
-    [status-im2.contexts.chat.composer.utils :as utils]
-    [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.actions.view :as actions]
-    [status-im2.contexts.chat.composer.sub-view :as sub-view]
+    [status-im2.contexts.chat.composer.constants :as constants]
+    [status-im2.contexts.chat.composer.edit.view :as edit]
     [status-im2.contexts.chat.composer.effects :as effects]
     [status-im2.contexts.chat.composer.gesture :as drag-gesture]
-    [status-im2.contexts.chat.composer.handlers :as handler]
     [status-im2.contexts.chat.composer.gradients.view :as gradients]
+    [status-im2.contexts.chat.composer.handlers :as handler]
+    [status-im2.contexts.chat.composer.images.view :as images]
+    [status-im2.contexts.chat.composer.link-preview.view :as link-preview]
+    [status-im2.contexts.chat.composer.mentions.view :as mentions]
+    [status-im2.contexts.chat.composer.reply.view :as reply]
     [status-im2.contexts.chat.composer.selection :as selection]
-    [quo2.theme :as quo.theme]))
+    [status-im2.contexts.chat.composer.style :as style]
+    [status-im2.contexts.chat.composer.sub-view :as sub-view]
+    [status-im2.contexts.chat.composer.utils :as utils]
+    [utils.i18n :as i18n]))
 
 (defn sheet-component
   [{:keys [insets
@@ -105,34 +105,35 @@
            :menu-items @(:menu-items state)
            :style      (style/input-view state)}
           [rn/text-input
-           {:ref                      #(reset! (:input-ref props) %)
-            :default-value            @(:text-value state)
-            :on-focus                 #(handler/focus props state animations dimensions)
-            :on-blur                  #(handler/blur state animations dimensions subscriptions)
-            :on-content-size-change   #(handler/content-size-change %
-                                                                    state
-                                                                    animations
-                                                                    subscriptions
-                                                                    dimensions
-                                                                    (or keyboard-shown
-                                                                        (:edit subscriptions)))
-            :on-scroll                #(handler/scroll % props state animations dimensions)
-            :on-change-text           #(handler/change-text % props state)
-            :on-selection-change      #(handler/selection-change % props state)
-            :on-selection             #(selection/on-selection % props state)
-            :keyboard-appearance      (quo.theme/theme-value :light :dark)
-            :max-height               max-height
+           {:ref #(reset! (:input-ref props) %)
+            :default-value @(:text-value state)
+            :on-focus
+            #(handler/focus props state animations dimensions show-floating-scroll-down-button?)
+            :on-blur #(handler/blur state animations dimensions subscriptions)
+            :on-content-size-change #(handler/content-size-change %
+                                                                  state
+                                                                  animations
+                                                                  subscriptions
+                                                                  dimensions
+                                                                  (or keyboard-shown
+                                                                      (:edit subscriptions)))
+            :on-scroll #(handler/scroll % props state animations dimensions)
+            :on-change-text #(handler/change-text % props state)
+            :on-selection-change #(handler/selection-change % props state)
+            :on-selection #(selection/on-selection % props state)
+            :keyboard-appearance (quo.theme/theme-value :light :dark)
+            :max-height max-height
             :max-font-size-multiplier 1
-            :multiline                true
-            :placeholder              (i18n/label :t/type-something)
-            :placeholder-text-color   (colors/theme-colors colors/neutral-30 colors/neutral-50)
-            :style                    (style/input-text props
-                                                        state
-                                                        subscriptions
-                                                        {:max-height max-height
-                                                         :theme      theme})
-            :max-length               constants/max-text-size
-            :accessibility-label      :chat-message-input}]]
+            :multiline true
+            :placeholder (i18n/label :t/type-something)
+            :placeholder-text-color (colors/theme-colors colors/neutral-30 colors/neutral-50)
+            :style (style/input-text props
+                                     state
+                                     subscriptions
+                                     {:max-height max-height
+                                      :theme      theme})
+            :max-length constants/max-text-size
+            :accessibility-label :chat-message-input}]]
          (when chat-screen-loaded?
            [:<>
             [gradients/view props state animations show-bottom-gradient?]

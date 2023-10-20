@@ -108,7 +108,7 @@ nix-update-clojure: export TARGET := clojure
 nix-update-clojure: ##@nix Update maven Nix expressions based on current clojure setup
 	nix/deps/clojure/generate.sh
 
-nix-update-gems: export TARGET := default
+nix-update-gems: export TARGET := fastlane
 nix-update-gems: ##@nix Update Ruby gems in fastlane/Gemfile.lock and fastlane/gemset.nix
 	fastlane/update.sh
 
@@ -309,14 +309,14 @@ $$(comm -23 <(sort <(git ls-files --cached --others --exclude-standard)) <(sort 
 endef
 
 lint: export TARGET := clojure
+lint: export CLJ_LINTER_PRINT_WARNINGS ?= false
 lint: ##@test Run code style checks
 	@sh scripts/lint-re-frame-in-quo-components.sh && \
-	sh scripts/lint-old-quo-usage.sh \
-	clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src && \
+	clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src $(if $(filter $(CLJ_LINTER_PRINT_WARNINGS),true),,| grep -v ': warning: ') && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
 	sh scripts/lint-trailing-newline.sh && \
-	yarn prettier
+	node_modules/.bin/prettier --write .
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
 lint-fix: export TARGET := clojure
@@ -324,8 +324,9 @@ lint-fix: ##@test Run code style checks and fix issues
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
+	clojure-lsp --ns-exclude-regex ".*/src/status_im2/core\.cljs$$" clean-ns && \
 	sh scripts/lint-trailing-newline.sh --fix && \
-	yarn prettier
+	node_modules/.bin/prettier --write .
 
 shadow-server: export TARGET := clojure
 shadow-server:##@ Start shadow-cljs in server mode for watching

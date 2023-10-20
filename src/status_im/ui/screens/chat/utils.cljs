@@ -1,8 +1,9 @@
 (ns status-im.ui.screens.chat.utils
-  (:require [quo.design-system.colors :as colors]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.react :as react]
+    [utils.i18n :as i18n]))
 
 (defn format-author-old
   ([contact] (format-author-old contact nil))

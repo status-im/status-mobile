@@ -1,8 +1,9 @@
 (ns status-im2.contexts.chat.messages.list.view
   (:require
     [oops.core :as oops]
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.background-timer :as background-timer]
     [react-native.core :as rn]
     [react-native.hooks :as hooks]
@@ -11,15 +12,14 @@
     [status-im.ui.screens.chat.group :as chat.group]
     [status-im.ui.screens.chat.message.gap :as message.gap]
     [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.constants :as composer.constants]
     [status-im2.contexts.chat.messages.content.view :as message]
     [status-im2.contexts.chat.messages.list.state :as state]
     [status-im2.contexts.chat.messages.list.style :as style]
-    [status-im2.contexts.chat.composer.constants :as composer.constants]
     [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
     [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [quo2.theme :as quo.theme]))
+    [utils.re-frame :as rf]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -83,8 +83,8 @@
   [{:keys [ens-verified added?]} theme]
   (when (or ens-verified added?)
     [rn/view
-     {:style {:padding-left 10
-              :margin-top   2}}
+     {:style {:margin-left 4
+              :margin-top  8}}
      (if ens-verified
        [quo/icon :i/verified
         {:no-color true
@@ -225,12 +225,15 @@
              :display-name    display-name
              :online?         online?
              :profile-picture photo-path}])]
-        [quo/text
-         {:weight          :semi-bold
-          :size            :heading-1
-          :style           {:margin-top (if group-chat 54 12)}
-          :number-of-lines 1}
-         display-name
+        [rn/view
+         {:style {:flex-direction :row
+                  :margin-top     (if group-chat 54 12)}}
+         [quo/text
+          {:weight          :semi-bold
+           :size            :heading-1
+           :style           {:flex-shrink 1}
+           :number-of-lines 1}
+          display-name]
          [contact-icon contact theme]]
         (when bio
           [quo/text {:style style/bio}
@@ -292,6 +295,7 @@
      [rn/flat-list
       {:key-fn                            list-key-fn
        :ref                               list-ref
+       :bounces                           false
        :header                            [:<>
                                            [list-header insets (:able-to-send-message? context) theme]
                                            (when (= (:chat-type chat) constants/private-group-chat-type)

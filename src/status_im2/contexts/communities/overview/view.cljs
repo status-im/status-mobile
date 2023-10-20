@@ -1,21 +1,21 @@
 (ns status-im2.contexts.communities.overview.view
-  (:require [oops.core :as oops]
-            [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]
-            [react-native.blur :as blur]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.home.actions.view :as actions]
-            [status-im2.common.password-authentication.view :as password-authentication]
-            [status-im2.common.scroll-page.style :as scroll-page.style]
-            [status-im2.common.scroll-page.view :as scroll-page]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.communities.actions.chat.view :as chat-actions]
-            [status-im2.contexts.communities.actions.community-options.view :as options]
-            [status-im2.contexts.communities.overview.style :as style]
-            [status-im2.contexts.communities.overview.utils :as utils]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]))
+  (:require
+    [oops.core :as oops]
+    [quo.core :as quo]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.home.actions.view :as actions]
+    [status-im2.common.password-authentication.view :as password-authentication]
+    [status-im2.common.scroll-page.style :as scroll-page.style]
+    [status-im2.common.scroll-page.view :as scroll-page]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.communities.actions.chat.view :as chat-actions]
+    [status-im2.contexts.communities.actions.community-options.view :as options]
+    [status-im2.contexts.communities.overview.style :as style]
+    [status-im2.contexts.communities.overview.utils :as utils]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn preview-user-list
   [user-list]
@@ -101,7 +101,7 @@
 
 (defn get-access-type
   [access]
-  (case access
+  (condp = access
     constants/community-no-membership-access   :open
     constants/community-invitation-only-access :invite-only
     constants/community-on-request-access      :request-access
@@ -317,30 +317,32 @@
             collapsed?     (and initial-joined? (:joined community))
             overlay-shown? (boolean (:sheets (rf/sub [:bottom-sheet])))]
         [scroll-page/scroll-page
-         {:cover-image                    cover
-          :collapsed?                     collapsed?
-          :logo                           logo
-          :page-nav-right-section-buttons (page-nav-right-section-buttons id)
-          :name                           name
-          :on-scroll                      #(reset! scroll-height %)
-          :navigate-back?                 true
-          :background-color               (colors/theme-colors colors/white colors/neutral-95)
-          :height                         148
-          :overlay-shown?                 overlay-shown?}
-         [sticky-category-header
-          {:enabled (> @scroll-height @first-channel-height)
-           :label   (pick-first-category-by-height
-                     @scroll-height
-                     @first-channel-height
-                     @categories-heights)}]
+         {:cover-image    cover
+          :collapsed?     collapsed?
+          :logo           logo
+          :name           name
+          :on-scroll      #(reset! scroll-height %)
+          :navigate-back? true
+          :height         148
+          :overlay-shown? overlay-shown?
+          :page-nav-props {:type           :community
+                           :right-side     (page-nav-right-section-buttons id)
+                           :community-name name
+                           :community-logo logo}
+          :sticky-header  [sticky-category-header
+                           {:enabled (> @scroll-height @first-channel-height)
+                            :label   (pick-first-category-by-height
+                                      @scroll-height
+                                      @first-channel-height
+                                      @categories-heights)}]}
          [community-content
           community
           pending?
           {:on-category-layout              (partial add-category-height categories-heights)
            :collapsed?                      collapsed?
            :on-first-channel-height-changed
-           ;; Here we set the height of the component and we filter out the categories, as some might
-           ;; have been removed.
+           ;; Here we set the height of the component and we filter out the categories, as some
+           ;; might have been removed.
            (fn [height categories]
              (swap! categories-heights select-keys categories)
              (reset! first-channel-height height))}]]))))

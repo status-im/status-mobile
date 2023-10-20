@@ -1,6 +1,7 @@
 (ns react-native.syntax-highlighter
-  (:require ["react-native" :as react-native]
-            ["react-syntax-highlighter" :default Highlighter]))
+  (:require
+    ["react-native" :as react-native]
+    ["react-syntax-highlighter" :default Highlighter]))
 
 
 (defn highlighter

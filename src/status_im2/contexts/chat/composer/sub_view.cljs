@@ -1,10 +1,10 @@
 (ns status-im2.contexts.chat.composer.sub-view
   (:require
-    [quo2.core :as quo]
+    [quo.core :as quo]
     [react-native.blur :as blur]
     [react-native.core :as rn]
-    [status-im2.config :as config]
     [react-native.reanimated :as reanimated]
+    [status-im2.config :as config]
     [status-im2.contexts.chat.composer.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -47,7 +47,8 @@
          :label               (i18n/label :t/jump-to)
          :style               {:align-self :center}}}
        {}]]
-     (when @show-floating-scroll-down-button?
+     (when (and (not @focused?)
+                @show-floating-scroll-down-button?)
        [quo/floating-shell-button
         {:scroll-to-bottom {:on-press scroll-to-bottom-fn}}
         style/scroll-to-bottom-button])]))

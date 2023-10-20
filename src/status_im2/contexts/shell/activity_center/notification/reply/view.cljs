@@ -1,23 +1,25 @@
 (ns status-im2.contexts.shell.activity-center.notification.reply.view
-  (:require [clojure.string :as string]
-            [quo2.core :as quo]
-            [react-native.gesture :as gesture]
-            [status-im.ui.screens.chat.message.legacy-view :as old-message]
-            [status-im2.common.not-implemented :as not-implemented]
-            [status-im2.constants :as constants]
-            [status-im2.contexts.shell.activity-center.notification.common.view :as common]
-            [status-im2.contexts.shell.activity-center.notification.reply.style :as style]
-            [utils.datetime :as datetime]
-            [utils.i18n :as i18n]
-            [utils.re-frame :as rf]
-            [utils.url :as url]))
+  (:require
+    [clojure.string :as string]
+    [quo.core :as quo]
+    [react-native.gesture :as gesture]
+    [status-im.ui.screens.chat.message.legacy-view :as old-message]
+    [status-im2.common.not-implemented :as not-implemented]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.shell.activity-center.notification.common.view :as common]
+    [status-im2.contexts.shell.activity-center.notification.reply.style :as style]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.url :as url]))
 
 ;; NOTE: Replies support text, image and stickers only.
 (defn- get-message-content
   [{:keys [content-type] :as message} album-messages media-server-port]
-  (case content-type
-    constants/content-type-text [quo/text {:style style/tag-text}
-                                 (get-in message [:content :text])]
+  (condp = content-type
+    constants/content-type-text
+    [quo/text {:style style/tag-text}
+     (get-in message [:content :text])]
 
     constants/content-type-image
     (let [images           (or album-messages message)
@@ -31,7 +33,8 @@
        {:photos       image-local-urls
         :message-text (get-in message [:content :text])}])
 
-    constants/content-type-sticker [old-message/sticker message]
+    constants/content-type-sticker
+    [old-message/sticker message]
 
     constants/content-type-system-pinned-message
     [not-implemented/not-implemented
@@ -40,9 +43,10 @@
 
     ;; NOTE: The following type (system-text) doesn't have a design yet.
     ;; https://github.com/status-im/status-mobile/issues/14915
-    constants/content-type-system-text [not-implemented/not-implemented
-                                        [quo/text {:style style/tag-text}
-                                         (get-in message [:content :text])]]
+    constants/content-type-system-text
+    [not-implemented/not-implemented
+     [quo/text {:style style/tag-text}
+      (get-in message [:content :text])]]
 
     nil))
 

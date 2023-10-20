@@ -1,7 +1,7 @@
 (ns status-im2.contexts.chat.camera.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.camera-kit :as camera-kit]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]
@@ -10,8 +10,8 @@
     [react-native.reanimated :as reanimated]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [utils.i18n :as i18n]
     [status-im2.contexts.chat.camera.style :as style]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn retake

@@ -1,5 +1,6 @@
 (ns utils.security.core
-  (:require [utils.security.security-html :as h]))
+  (:require
+    [utils.security.security-html :as h]))
 
 (defprotocol Unmaskable
   ;; Retrieve the stored value.

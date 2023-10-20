@@ -1,15 +1,15 @@
 (ns status-im2.contexts.wallet.address-watch.view
   (:require
     [clojure.string :as string]
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im2.contexts.wallet.address-watch.style :as style]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [status-im2.contexts.wallet.address-watch.style :as style]))
+    [utils.re-frame :as rf]))
 
 (defn view-internal
   []
@@ -34,7 +34,8 @@
           :button          {:on-press (fn [] (clipboard/get-string #(reset! input-value %)))
                             :text     (i18n/label :t/paste)}
           :placeholder     (str "0x123abc... " (string/lower-case (i18n/label :t/or)) " bob.eth")
-          :container-style {:margin-right 12}
+          :container-style {:margin-right 12
+                            :flex         1}
           :weight          :monospace
           :on-change       #(reset! input-value %)
           :default-value   @input-value}]

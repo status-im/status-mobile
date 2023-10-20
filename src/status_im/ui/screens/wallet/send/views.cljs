@@ -1,26 +1,28 @@
 (ns status-im.ui.screens.wallet.send.views
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
-  (:require [quo.core :as quo]
-            [quo2.core :as quo2]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [status-im.commands.core :as commands]
-            [utils.i18n :as i18n]
-            [status-im.multiaccounts.core :as multiaccounts]
-            [status-im.ui.components.bottom-panel.views :as bottom-panel]
-            [status-im.ui.components.chat-icon.screen :as chat-icon]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.tooltip.views :as tooltip]
-            [status-im.ui.screens.wallet.components.views :as components]
-            [status-im.ui.screens.wallet.send.sheets :as sheets]
-            [status-im.ui.screens.wallet.send.styles :as styles]
-            [utils.money :as money]
-            [status-im.utils.utils :as utils]
-            [status-im.wallet.utils :as wallet.utils]
-            [utils.address :as address]))
+  (:require
+    [quo.core :as quo]
+    [re-frame.core :as re-frame]
+    [status-im.commands.core :as commands]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im.ui.components.bottom-panel.views :as bottom-panel]
+    [status-im.ui.components.chat-icon.screen :as chat-icon]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as components.core]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.keyboard-avoid-presentation :as kb-presentation]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toolbar :as toolbar]
+    [status-im.ui.components.tooltip.views :as tooltip]
+    [status-im.ui.screens.wallet.components.views :as components]
+    [status-im.ui.screens.wallet.send.sheets :as sheets]
+    [status-im.ui.screens.wallet.send.styles :as styles]
+    [status-im.utils.utils :as utils]
+    [status-im.wallet.utils :as wallet.utils]
+    [utils.address :as address]
+    [utils.i18n :as i18n]
+    [utils.money :as money]))
 
 (defn header
   [{:keys [label small-screen?]}]
@@ -61,7 +63,7 @@
 
 (defn render-account
   [account {:keys [amount decimals] :as token} event]
-  [quo/list-item
+  [list.item/list-item
    {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
     :title    (:name account)
     :subtitle (when token
@@ -78,17 +80,17 @@
 (defn render-contact
   [contact from-chat?]
   (if from-chat?
-    [quo/list-item
+    [list.item/list-item
      {:title    (multiaccounts/displayed-name contact)
-      :subtitle [quo/text
+      :subtitle [components.core/text
                  {:monospace true
                   :color     :secondary}
                  (utils/get-shortened-checksum-address (:address contact))]
       :icon     [chat-icon/contact-icon-contacts-tab contact]}]
-    [quo/list-item
+    [list.item/list-item
      (merge {:title               (if-not contact
                                     (i18n/label :t/wallet-choose-recipient)
-                                    [quo/text
+                                    [components.core/text
                                      {:size      :large
                                       :monospace true}
                                      (utils/get-shortened-checksum-address
@@ -96,7 +98,8 @@
              :accessibility-label :choose-recipient-button
              :on-press            #(do
                                      (re-frame/dispatch [:dismiss-keyboard])
-                                     (re-frame/dispatch [:wallet.send/navigate-to-recipient-code]))
+                                     (re-frame/dispatch
+                                      [:wallet-legacy.send/navigate-to-recipient-code]))
              :chevron             true}
             (when-not contact
               {:icon  :main-icons/add
@@ -107,7 +110,7 @@
   [react/touchable-highlight
    {:on-press
     #(when token
-       (re-frame/dispatch [:wallet.send/set-max-amount token]))}
+       (re-frame/dispatch [:wallet-legacy.send/set-max-amount token]))}
    [react/view {:style (styles/set-max-button)}
     [react/text {:style {:color colors/blue}} (i18n/label :t/set-max)]]])
 
@@ -137,7 +140,7 @@
      :padding-horizontal 24
      :align-items        :center
      :margin-vertical    16}]
-   [quo/list-header
+   [components.core/list-header
     (i18n/label :t/from-capitalized)]
    [react/view {:flex-direction :row :flex 1 :align-items :center}
     [react/view {:flex 1}
@@ -145,12 +148,12 @@
    [toolbar/toolbar
     {:left
      [react/view {:padding-horizontal 8}
-      [quo/button
+      [components.core/button
        {:type     :secondary
         :on-press #(re-frame/dispatch [:set :commands/select-account nil])}
        (i18n/label :t/cancel)]]
      :right
-     [quo/button
+     [components.core/button
       {:accessibility-label :select-account-bottom-sheet
        :disabled            (nil? from)
        :on-press            #(re-frame/dispatch
@@ -170,10 +173,10 @@
 (views/defview request-transaction
   [_]
   (views/letsubs [{:keys [amount-error amount-text from token sign-enabled?] :as tx}
-                  [:wallet.request/prepare-transaction-with-balance]
+                  [:wallet-legacy.request/prepare-transaction-with-balance]
                   window-width [:dimensions/window-width]
                   prices [:prices]
-                  wallet-currency [:wallet/currency]]
+                  wallet-currency [:wallet-legacy/currency]]
     [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
      [:<>
       [react/scroll-view
@@ -194,7 +197,7 @@
            :accessibility-label :amount-input
            :default-value       amount-text
            :auto-focus          true
-           :on-change-text      #(re-frame/dispatch [:wallet.request/set-amount-text %])
+           :on-change-text      #(re-frame/dispatch [:wallet-legacy.request/set-amount-text %])
            :placeholder         "0.0 "}]
          [asset-selector tx window-width]
          (when amount-error
@@ -203,22 +206,22 @@
              :font-size    12}])]
         [fiat-value amount-text token prices wallet-currency]
         [components/separator]
-        [quo/list-header
+        [components.core/list-header
          (i18n/label :t/to-capitalized)]
         [react/view {:flex-direction :row :flex 1 :align-items :center}
          [react/view {:flex 1}
-          [render-account from token :wallet.request/set-field]]]]]
+          [render-account from token :wallet-legacy.request/set-field]]]]]
       [toolbar/toolbar
        {:show-border? true
         :right
-        [quo/button
+        [components.core/button
          {:type                :secondary
           :after               :main-icon/next
           :accessibility-label :request-transaction-bottom-sheet
           :disabled            (not sign-enabled?)
           :on-press            #(do
                                   (re-frame/dispatch
-                                   [:wallet.ui/request-transaction-button-clicked tx])
+                                   [:wallet-legacy.ui/request-transaction-button-clicked tx])
                                   (re-frame/dispatch [:navigate-back]))}
          (i18n/label :t/wallet-request)]}]]]))
 
@@ -228,21 +231,21 @@
                           request?
                           from token to sign-enabled? from-chat?]
                    :as   tx}
-                  [:wallet.send/prepare-transaction-with-balance]
+                  [:wallet-legacy.send/prepare-transaction-with-balance]
                   prices [:prices]
-                  wallet-currency [:wallet/currency]
+                  wallet-currency [:wallet-legacy/currency]
                   window-width [:dimensions/window-width]]
     (let [to-norm (address/normalized-hex (if (string? to) to (:address to)))]
       [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
        [:<>
-        [quo2/page-nav
+        [quo/page-nav
          {:type                :title
           :text-align          :left
           :title               (i18n/label :t/send-transaction)
           :icon-name           :i/arrow-left
           :on-press            (fn []
                                  (re-frame/dispatch [:navigate-back])
-                                 (re-frame/dispatch [:wallet/cancel-transaction-command]))
+                                 (re-frame/dispatch [:wallet-legacy/cancel-transaction-command]))
           :accessibility-label :back-button}]
         [react/scroll-view
          {:style                        {:flex 1}
@@ -264,7 +267,7 @@
              :default-value       amount-text
              :editable            (not request?)
              :auto-focus          true
-             :on-change-text      #(re-frame/dispatch [:wallet.send/set-amount-text %])
+             :on-change-text      #(re-frame/dispatch [:wallet-legacy.send/set-amount-text %])
              :placeholder         "0.0 "}]
            [asset-selector tx window-width]
            (when amount-error
@@ -278,11 +281,11 @@
           (when-not (or request? from-chat?)
             [set-max token])
           [components/separator]
-          [quo/list-header (i18n/label :t/from-capitalized)]
+          [components.core/list-header (i18n/label :t/from-capitalized)]
           [react/view {:flex-direction :row :flex 1 :align-items :center}
            [react/view {:flex 1}
-            [render-account from token :wallet.send/set-field]]]
-          [quo/list-header
+            [render-account from token :wallet-legacy.send/set-field]]]
+          [components.core/list-header
            (i18n/label :t/to-capitalized)]
           [react/view {:flex-direction :row :flex 1 :align-items :center}
            [react/view {:flex 1}
@@ -300,11 +303,11 @@
                                     (re-frame/dispatch
                                      [(cond
                                         request?
-                                        :wallet.ui/sign-transaction-button-clicked-from-request
+                                        :wallet-legacy.ui/sign-transaction-button-clicked-from-request
                                         from-chat?
-                                        :wallet.ui/sign-transaction-button-clicked-from-chat
+                                        :wallet-legacy.ui/sign-transaction-button-clicked-from-chat
                                         :else
-                                        :wallet.ui/sign-transaction-button-clicked) tx]))}
+                                        :wallet-legacy.ui/sign-transaction-button-clicked) tx]))}
 
            (if (and (not request?) from-chat? (not to-norm))
              (i18n/label :t/wallet-send)

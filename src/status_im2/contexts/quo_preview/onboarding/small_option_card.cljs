@@ -1,7 +1,7 @@
 (ns status-im2.contexts.quo-preview.onboarding.small-option-card
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
@@ -18,15 +18,17 @@
               {:key   (resources/get-mock-image :small-opt-card-icon)
                :value "Image 2"}]}
    {:key :title :type :text}
-   {:key :subtitle :type :text}])
+   {:key :subtitle :type :text}
+   {:key :button-label :type :text}])
 
 (defn view
   []
-  (let [state (reagent/atom {:variant  :main
-                             :image    (-> descriptor second :options first :key)
-                             :title    "Generate keys "
-                             :subtitle "Your new self-sovereign identity in Status"
-                             :on-press #(js/alert "Small option card pressed!")})]
+  (let [state (reagent/atom {:variant      :main
+                             :image        (-> descriptor second :options first :key)
+                             :title        "Generate keys "
+                             :subtitle     "Your new self-sovereign identity in Status"
+                             :button-label "Let's go!"
+                             :on-press     #(js/alert "Small option card pressed!")})]
     (fn []
       [preview/preview-container
        {:state                     state

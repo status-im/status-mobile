@@ -1,24 +1,25 @@
 (ns status-im.keycard.core
-  (:require [re-frame.db]
-            [utils.i18n :as i18n]
-            status-im.keycard.backup-key
-            [status-im.keycard.card :as card]
-            [status-im.keycard.change-pin :as change-pin]
-            [status-im.keycard.common :as common]
-            status-im.keycard.delete-key
-            status-im.keycard.export-key
-            [status-im.keycard.login :as login]
-            [status-im.keycard.mnemonic :as mnemonic]
-            [status-im.keycard.onboarding :as onboarding]
-            [status-im.keycard.recovery :as recovery]
-            [status-im.keycard.sign :as sign]
-            status-im.keycard.unpair
-            [status-im.keycard.wallet :as wallet]
-            [status-im.multiaccounts.update.core :as multiaccounts.update]
-            [utils.re-frame :as rf]
-            [utils.datetime :as datetime]
-            [status-im2.navigation.events :as navigation]
-            [taoensso.timbre :as log]))
+  (:require
+    [re-frame.db]
+    status-im.keycard.backup-key
+    [status-im.keycard.card :as card]
+    [status-im.keycard.change-pin :as change-pin]
+    [status-im.keycard.common :as common]
+    status-im.keycard.delete-key
+    status-im.keycard.export-key
+    [status-im.keycard.login :as login]
+    [status-im.keycard.mnemonic :as mnemonic]
+    [status-im.keycard.onboarding :as onboarding]
+    [status-im.keycard.recovery :as recovery]
+    [status-im.keycard.sign :as sign]
+    status-im.keycard.unpair
+    [status-im.keycard.wallet :as wallet]
+    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im2.navigation.events :as navigation]
+    [taoensso.timbre :as log]
+    [utils.datetime :as datetime]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (rf/defn show-keycard-has-multiaccount-alert
   [{:keys [db] :as cofx}]
@@ -226,7 +227,7 @@
               ;; now for simplicity do not hide bottom sheet when generating key
               ;; and exporting key but should be refactored.
               (when-not (contains? #{:keycard/generate-and-load-key
-                                     :wallet.accounts/generate-new-keycard-account
+                                     :wallet-legacy.accounts/generate-new-keycard-account
                                      :keycard/remove-key-with-unpair
                                      :keycard/unpair-and-delete}
                                    on-verified)
@@ -235,7 +236,7 @@
                                      :keycard/generate-and-load-key
                                      :keycard/remove-key-with-unpair
                                      :keycard/unpair-and-delete
-                                     :wallet.accounts/generate-new-keycard-account}
+                                     :wallet-legacy.accounts/generate-new-keycard-account}
                                    on-verified)
                 (common/get-application-info nil))
               (when on-verified

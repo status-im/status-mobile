@@ -23,7 +23,6 @@
 (def ^:const content-type-link 101)
 (def ^:const content-type-album 102)
 
-
 (def ^:const contact-request-state-none 0)
 (def ^:const contact-request-state-mutual 1)
 (def ^:const contact-request-state-sent 2)
@@ -183,6 +182,8 @@
 (def regx-community-universal-link #"((^https?://join.status.im/)|(^status-im://))c/([\x00-\x7F]+)$")
 (def regx-deep-link #"((^ethereum:.*)|(^status-im://[\x00-\x7F]+$))")
 (def regx-ens #"^(?=.{5,255}$)([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$")
+(def regx-address #"^0x[a-fA-F0-9]{40}$")
+(def regx-address-contains #"(?i)0x[a-fA-F0-9]{40}")
 
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
@@ -236,17 +237,17 @@
   {2        {0 image-size
              1 image-size}
    3        {0 [(* image-size 2) (* image-size 1.25)]
-             1 [(- image-size 0.5) (- (* image-size 0.75) 1)]
-             2 [(- image-size 0.5) (- (* image-size 0.75) 1)]}
+             1 [(- image-size 0.5) (dec (* image-size 0.75))]
+             2 [(- image-size 0.5) (dec (* image-size 0.75))]}
    4        {0 image-size
              1 image-size
              2 image-size
              3 image-size}
    5        {0 image-size
              1 image-size
-             2 (- (* image-size 0.67) 1)
-             3 (- (* image-size 0.67) 1)
-             4 (- (* image-size 0.67) 1)}
+             2 (dec (* image-size 0.67))
+             3 (dec (* image-size 0.67))
+             4 (dec (* image-size 0.67))}
    :default {0 image-size
              1 image-size
              2 (- (* image-size 0.5) 0.5)

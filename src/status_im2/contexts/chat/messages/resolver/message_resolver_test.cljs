@@ -1,7 +1,8 @@
 (ns status-im2.contexts.chat.messages.resolver.message-resolver-test
-  (:require [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
-            [cljs.test :as t]
-            [utils.re-frame :as rf]))
+  (:require
+    [cljs.test :as t]
+    [status-im2.contexts.chat.messages.resolver.message-resolver :as resolver]
+    [utils.re-frame :as rf]))
 
 (def mentions
   {"0xsome_id" "foobar"})

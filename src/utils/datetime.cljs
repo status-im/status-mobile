@@ -1,11 +1,12 @@
 (ns utils.datetime
-  (:require [cljs-time.coerce :as t.coerce]
-            [cljs-time.core :as t]
-            [goog.string :as gstring]
-            [cljs-time.format :as t.format]
-            [clojure.string :as string]
-            [utils.i18n :as i18n]
-            [utils.i18n-goog :as i18n-goog]))
+  (:require
+    [cljs-time.coerce :as t.coerce]
+    [cljs-time.core :as t]
+    [cljs-time.format :as t.format]
+    [clojure.string :as string]
+    [goog.string :as gstring]
+    [utils.i18n :as i18n]
+    [utils.i18n-goog :as i18n-goog]))
 
 (defn now [] (t/now))
 

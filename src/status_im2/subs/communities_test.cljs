@@ -1,11 +1,12 @@
 (ns status-im2.subs.communities-test
-  (:require [cljs.test :refer [is testing use-fixtures]]
-            [re-frame.db :as rf-db]
-            [test-helpers.unit :as h]
-            status-im2.subs.communities
-            [status-im2.constants :as constants]
-            [utils.re-frame :as rf]
-            [utils.i18n :as i18n]))
+  (:require
+    [cljs.test :refer [is testing use-fixtures]]
+    [re-frame.db :as rf-db]
+    [status-im2.constants :as constants]
+    status-im2.subs.communities
+    [test-helpers.unit :as h]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (use-fixtures :each
               {:before #(reset! rf-db/app-db {})})

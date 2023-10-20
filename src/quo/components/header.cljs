@@ -1,26 +1,32 @@
 (ns quo.components.header
-  (:require [oops.core :refer [oget]]
-            [quo.animated :as animated]
-            [quo.components.button.view :as button]
-            [quo.components.text :as text]
-            [quo.design-system.colors :as colors]
-            [quo.design-system.spacing :as spacing]
-            [quo.react-native :as rn]
-            [reagent.core :as reagent]))
+  (:require
+    [oops.core :refer [oget]]
+    [quo.components.buttons.button.view :as button]
+    [quo.components.markdown.text :as text]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]))
 
 (def header-height 56)
 
 (defn header-wrapper-style
-  [{:keys [height border-bottom background]}]
+  [{:keys [height border-bottom background theme]}]
   (merge
-   (:x-tiny spacing/padding-horizontal)
-   {:background-color (:ui-background @colors/theme)
+   {:background-color (colors/theme-colors
+                       colors/neutral-5
+                       colors/neutral-95
+                       theme)
     :height           height}
    (when background
      {:background-color background})
    (when border-bottom
      {:border-bottom-width 1
-      :border-bottom-color (:ui-01 @colors/theme)})))
+      :border-bottom-color (colors/theme-colors
+                            colors/neutral-5
+                            colors/neutral-95
+                            theme)})))
 
 (def absolute-fill
   {:position :absolute
@@ -64,15 +70,14 @@
       :right           (max (:width left) (:width right))})))
 
 (def header-actions-style
-  (merge
-   {:flex            1
-    :flex-direction  :row
-    :align-items     :center
-    :justify-content :center}
-   (:x-tiny spacing/padding-horizontal)))
+  {:flex               1
+   :flex-direction     :row
+   :align-items        :center
+   :justify-content    :center
+   :padding-horizontal 4})
 
 (def header-action-placeholder
-  {:width (:base spacing/spacing)})
+  {:width 16})
 
 (def element
   {:align-items     :center
@@ -82,14 +87,10 @@
 (defn header-action
   [{:keys [icon label on-press disabled accessibility-label]}]
   [button/button
-   (merge {:on-press on-press
-           :disabled disabled}
-          (cond
-            icon  {:type  :icon
-                   :theme :icon}
-            label {:type :secondary})
-          (when accessibility-label
-            {:accessibility-label accessibility-label}))
+   {:on-press            on-press
+    :disabled?           disabled
+    :icon-only?          (boolean icon)
+    :accessibility-label accessibility-label}
    (cond
      icon  icon
      label label)])
@@ -132,7 +133,7 @@
              :size            :large}
             title])])
 
-(defn header
+(defn- header-internal
   [{:keys [left-width right-width]}]
   (let [layout        (reagent/atom {:left  {:width  (or left-width 8)
                                              :height header-height}
@@ -156,15 +157,16 @@
       [{:keys [left-accessories left-component border-bottom
                right-accessories right-component insets get-layout
                title subtitle title-component style title-align
-               background]
+               background theme]
         :or   {title-align   :center
-               border-bottom true}}]
+               border-bottom false}}]
       (let [status-bar-height (get insets :top 0)
             height            (+ header-height status-bar-height)]
-        [animated/view
+        [reanimated/view
          {:style (header-wrapper-style {:height        height
                                         :background    background
-                                        :border-bottom border-bottom})}
+                                        :border-bottom border-bottom
+                                        :theme         theme})}
          [rn/view
           {:pointer-events :box-none
            :height         status-bar-height}]
@@ -195,7 +197,6 @@
                :subtitle    subtitle
                :title-align title-align
                :component   title-component}]]
-
             [rn/view
              {:style          right-style
               :on-layout      (handle-layout :right get-layout)
@@ -203,3 +204,5 @@
              [header-actions
               {:accessories right-accessories
                :component   right-component}]]]]]]))))
+
+(def header (quo.theme/with-theme header-internal))

@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.privacy-and-security-settings.events
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [native-module.core :as native-module]
-            [utils.re-frame :as rf]
-            [status-im.utils.deprecated-types :as types]
-            [taoensso.timbre :as log]
-            [utils.security.core :as security]))
+  (:require
+    [clojure.string :as string]
+    [native-module.core :as native-module]
+    [re-frame.core :as re-frame]
+    [status-im.utils.deprecated-types :as types]
+    [taoensso.timbre :as log]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [utils.security.core :as security]))
 
 (defn safe-blank?
   [s]

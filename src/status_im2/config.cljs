@@ -1,8 +1,9 @@
 (ns status-im2.config
-  (:require [clojure.string :as string]
-            [react-native.config :as react-native-config]
-            [status-im.ethereum.ens :as ens]
-            [utils.ethereum.chain :as chain]))
+  (:require
+    [clojure.string :as string]
+    [react-native.config :as react-native-config]
+    [status-im.ethereum.ens :as ens]
+    [utils.ethereum.chain :as chain]))
 
 (def get-config react-native-config/get-config)
 
@@ -73,7 +74,7 @@
 
 (def default-multiaccount
   {:preview-privacy?                   blank-preview?
-   :wallet/visible-tokens              {:mainnet #{:SNT}}
+   :wallet-legacy/visible-tokens       {:mainnet #{:SNT}}
    :currency                           :usd
    :appearance                         0
    :profile-pictures-show-to           2
@@ -86,7 +87,7 @@
 
 (defn default-visible-tokens
   [chain]
-  (get-in default-multiaccount [:wallet/visible-tokens chain]))
+  (get-in default-multiaccount [:wallet-legacy/visible-tokens chain]))
 
 (def mainnet-networks
   [{:id                  "mainnet_rpc"
@@ -157,12 +158,14 @@
 (def delete-message-for-me-undo-time-limit-ms 4000)
 
 (def waku-nodes-config
-  {:status.prod ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@prod.nodes.status.im"]
-   :status.test ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@test.nodes.status.im"]
+  {:status.prod
+   ["enrtree://AL65EKLJAUXKKPG43HVTML5EFFWEZ7L4LOKTLZCLJASG4DSESQZEC@prod.status.nodes.status.im"]
+   :status.test
+   ["enrtree://AIO6LUM3IVWCU2KCPBBI6FEH2W42IGK3ASCZHZGG5TIXUR56OGQUO@test.status.nodes.status.im"]
    :wakuv2.prod
-   ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@prod.waku.nodes.status.im"]
+   ["enrtree://ANEDLO25QVUGJOUTQFRYKWX6P4Z4GKVESBMHML7DZ6YK4LGS5FC5O@prod.wakuv2.nodes.status.im"]
    :wakuv2.test
-   ["enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@test.waku.nodes.status.im"]})
+   ["enrtree://AO47IDOLBKH72HIZZOXQP6NMRESAN7CHYWIBNXDXWRJRZWLODKII6@test.wakuv2.nodes.status.im"]})
 
 (def default-kdf-iterations 3200)
 

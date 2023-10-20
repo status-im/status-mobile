@@ -467,21 +467,28 @@ Prefer the pure version of `:json-rpc/call` (no callbacks).
 
 ### Registering event handlers
 
-Events must always be declared with the `utils.fx/defn` macro. Also, don't use
+Register events with `re-frame.core/reg-event-fx` and follow [re-frame's best
+practice](https://github.com/day8/re-frame/blob/39adca93673f334dc751ee2d99d340b51a9cc6db/docs/FAQs/BestPractice.md#use-the-fx-effect)
+so use only `:db` and `:fx` effects. `rf/merge` is deprecated and should not be
+used in the new code in `src/status_im2/`. Don't use
 `re-frame.core/reg-event-db`.
 
 ```clojure
 ;; bad
-(re-frame/reg-event-fx
- :wakuv2.ui/save-all-confirmed
- (fn [{:keys [db] :as cofx}]
-   ...))
+(rf/defn invite-people-pressed
+  {:events [:communities/invite-people-pressed]}
+  [cofx id]
+  (rf/merge cofx
+            (reset-community-id-input id)
+            (bottom-sheet/hide-bottom-sheet)
+            (navigation/open-modal :invite-people-community {:invite? true})))
 
 ;; good
-(fx/defn save-all
-  {:events [:wakuv2.ui/save-all-confirmed]}
-  [{:keys [db] :as cofx}]
-  ...)
+(re-frame/reg-event-fx :communities/invite-people-pressed
+ (fn [{:keys [db]} [id]]
+   {:db (assoc db :communities/community-id-input id)
+    :fx [[:dispatch [:hide-bottom-sheet]]
+         [:dispatch [:open-modal :invite-people-community {:invite? true}]]]}))
 ```
 
 ### Registering top-level re-frame subscriptions
@@ -805,7 +812,7 @@ alternative.
 Please check the [Clojure Style](https://guide.clojure.style/#deprecated) documentation
 
 To reduce visual clutter from deprecated methods in your text editor, consult this [example](https://rider-support.jetbrains.com/hc/en-us/community/posts/4419728641810-How-to-disable-the-the-strike-thru-for-deprecated-methods-in-Javascript-#:~:text=Try%20disabling%20%22Preferences%20%7C%20Editor%20%7C,It%20works%20for%20me). The approach can be adapted for settings in VSCode, Emacs, VIM, and others.
-  
+
 ### Test structure
 
 [Unit tests](#glossary) should be created alongside their respective source

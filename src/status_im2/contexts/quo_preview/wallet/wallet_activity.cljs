@@ -1,10 +1,11 @@
 (ns status-im2.contexts.quo-preview.wallet.wallet-activity
-  (:require [quo2.core :as quo]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [quo2.foundations.resources :as quo.resources]))
+  (:require
+    [quo.core :as quo]
+    [quo.foundations.resources :as quo.resources]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def asset-snt
   {:size       24
@@ -43,6 +44,12 @@
   {:size            24
    :type            :default
    :full-name       "Aretha Gosling"
+   :profile-picture (resources/mock-images :user-picture-female2)})
+
+(def jessica-stewart
+  {:size            24
+   :type            :default
+   :full-name       "Jessica Stewart"
    :profile-picture (resources/mock-images :user-picture-female2)})
 
 (def james-bond
@@ -101,6 +108,8 @@
     :value "Account: Piggy bank"}
    {:key   aretha-gosling
     :value "Person: Aretha Gosling"}
+   {:key   jessica-stewart
+    :value "Person: Jessica Stewart"}
    {:key   james-bond
     :value "Person: James Bond"}
    {:key   mainnet

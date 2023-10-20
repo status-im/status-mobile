@@ -1,15 +1,16 @@
 (ns status-im.ui.screens.qr-scanner.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [react-native.camera-kit :as camera-kit]
-            [clojure.string :as string]
-            [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.qr-scanner.styles :as styles]
-            [status-im2.config :as config]))
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [react-native.camera-kit :as camera-kit]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.qr-scanner.styles :as styles]
+    [status-im2.config :as config]
+    [utils.i18n :as i18n]))
 
 (defn get-qr-code-data
   [^js event]
@@ -34,7 +35,7 @@
                        :number-of-lines 1
                        :align           :center
                        :size            :large}
-                      (or title (i18n/label :t/scan-qr))]}])
+                      (or title (i18n/label :t/scan-qr-code))]}])
 
 (defn qr-test-view
   [opts]
@@ -88,7 +89,7 @@
   []
   (letsubs [read-once?             (atom false)
             {:keys [height width]} [:dimensions/window]
-            camera-flashlight      [:wallet.send/camera-flashlight]
+            camera-flashlight      [:wallet-legacy.send/camera-flashlight]
             opts                   [:get-screen-params]
             camera-ref             (atom nil)]
     [react/view

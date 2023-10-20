@@ -4,12 +4,13 @@
    This EIP standardize how ethereum payment request can be represented as URI (say to embed them in a QR code).
 
    e.g. ethereum:0x1234@1/transfer?to=0x5678&value=1e18&gas=5000"
-  (:require [clojure.string :as string]
-            [status-im.ethereum.ens :as ens]
-            [status-im.ethereum.tokens :as tokens]
-            [utils.money :as money]
-            [utils.ethereum.chain :as chain]
-            [utils.address :as address]))
+  (:require
+    [clojure.string :as string]
+    [status-im.ethereum.ens :as ens]
+    [status-im.ethereum.tokens :as tokens]
+    [utils.address :as address]
+    [utils.ethereum.chain :as chain]
+    [utils.money :as money]))
 
 (def scheme "ethereum")
 (def scheme-separator ":")

@@ -1,13 +1,15 @@
 (ns status-im.ui.screens.link-previews-settings.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.link-previews-settings.styles :as styles]
-            [status-im2.contexts.chat.messages.link-preview.events]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.react-native.resources :as resources]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.link-previews-settings.styles :as styles]
+    [status-im2.contexts.chat.messages.link-preview.events]
+    [utils.i18n :as i18n]))
 
 (defn prepare-urls-items-data
   [link-previews-enabled-sites]
@@ -51,7 +53,7 @@
         {:data      (vec (map (prepare-urls-items-data link-previews-enabled-sites)
                               link-previews-whitelist))
          :key-fn    (fn [_ i] (str i))
-         :render-fn quo/list-item
+         :render-fn list.item/list-item
          :footer    [quo/text
                      {:color :secondary
                       :style {:margin 16}} (i18n/label :t/previewing-may-share-metadata)]}]])))

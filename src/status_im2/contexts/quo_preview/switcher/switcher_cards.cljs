@@ -1,12 +1,13 @@
 (ns status-im2.contexts.quo-preview.switcher.switcher-cards
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.constants :as constants]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [status-im2.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]
-            [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [status-im2.contexts.shell.jump-to.components.switcher-cards.view :as switcher-cards]
+    [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 (def descriptor
   [{:label   "Type"
@@ -99,7 +100,7 @@
 
 (defn get-mock-content
   [data]
-  (case (:content-type data)
+  (condp = (:content-type data)
     constants/content-type-text
     (:last-message data)
 
@@ -135,16 +136,19 @@
               :community-channel      {:emoji "🍑" :channel-name "# random"}
               :community-info         {:type :kicked}
               :data                   (get-mock-content data)}}
-   (case type
-     shell.constants/one-to-one-chat-card
+   (cond
+     (= type shell.constants/one-to-one-chat-card)
      {:avatar-params {:full-name (:title data)}}
 
-     shell.constants/private-group-chat-card
+     (= type shell.constants/private-group-chat-card)
      {}
 
-     (shell.constants/community-card
-      shell.constants/community-channel-card)
+     (#{shell.constants/community-card
+        shell.constants/community-channel-card}
+      type)
      {:avatar-params community-avatar}
+
+     :else
      {})))
 
 (defn preview-switcher-cards

@@ -1,10 +1,11 @@
 (ns status-im.ethereum.subscriptions
-  (:require [utils.ethereum.eip.eip55 :as eip55]
-            [status-im.ethereum.transactions.core :as transactions]
-            [utils.re-frame :as rf]
-            [status-im.wallet.core :as wallet.core]
-            [status-im.wallet.db :as wallet]
-            [taoensso.timbre :as log]))
+  (:require
+    [status-im.ethereum.transactions.core :as transactions]
+    [status-im.wallet.core :as wallet.core]
+    [status-im.wallet.db :as wallet]
+    [taoensso.timbre :as log]
+    [utils.ethereum.eip.eip55 :as eip55]
+    [utils.re-frame :as rf]))
 
 (rf/defn new-transfers
   [cofx block-number accounts]
@@ -18,11 +19,11 @@
   (log/debug "[wallet-subs] recent-history-fetching-started"
              "accounts"
              accounts)
-  (let [event (get db :wallet/on-recent-history-fetching)]
+  (let [event (get db :wallet-legacy/on-recent-history-fetching)]
     (cond-> {:db (-> db
                      (transactions/update-fetching-status accounts :recent? true)
-                     (assoc :wallet/recent-history-fetching-started? true)
-                     (dissoc :wallet/on-recent-history-fetching))}
+                     (assoc :wallet-legacy/recent-history-fetching-started? true)
+                     (dissoc :wallet-legacy/on-recent-history-fetching))}
       event
       (assoc :dispatch event))))
 
@@ -33,16 +34,16 @@
              "block"    blockNumber)
   {:db (-> db
            (assoc :ethereum/current-block blockNumber)
-           (update-in [:wallet :accounts]
+           (update-in [:wallet-legacy :accounts]
                       wallet/remove-transactions-since-block
                       blockNumber)
            (transactions/update-fetching-status accounts :recent? false)
-           (dissoc :wallet/waiting-for-recent-history?
-                   :wallet/refreshing-history?
-                   :wallet/fetching-error
-                   :wallet/recent-history-fetching-started?))
+           (dissoc :wallet-legacy/waiting-for-recent-history?
+                   :wallet-legacy/refreshing-history?
+                   :wallet-legacy/fetching-error
+                   :wallet-legacy/recent-history-fetching-started?))
    :transactions/get-transfers
-   {:chain-tokens (:wallet/all-tokens db)
+   {:chain-tokens (:wallet-legacy/all-tokens db)
     :addresses    (reduce
                    (fn [v address]
                      (let [normalized-address
@@ -59,12 +60,12 @@
   [{:keys [db] :as cofx} {:keys [message]}]
   (rf/merge
    cofx
-   {:db (assoc db :wallet/fetching-error message)}
+   {:db (assoc db :wallet-legacy/fetching-error message)}
    (wallet.core/after-checking-history)))
 
 (rf/defn non-archival-node-detected
   [{:keys [db]} _]
-  {:db (assoc db :wallet/non-archival-node true)})
+  {:db (assoc db :wallet-legacy/non-archival-node true)})
 
 (rf/defn new-wallet-event
   [cofx {:keys [type blockNumber accounts] :as event}]

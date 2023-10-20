@@ -81,10 +81,16 @@
     :dark  (js/require "../resources/images/ui2/no-notifications-dark.png")}})
 
 (def mock-images
-  {:diamond               (js/require "../resources/images/mock2/diamond.png")
-   :bored-ape             (js/require "../resources/images/mock2/bored-ape.png")
+  {:bored-ape             (js/require "../resources/images/mock2/bored-ape.png")
    :coinbase              (js/require "../resources/images/mock2/coinbase.png")
    :collectible           (js/require "../resources/images/mock2/collectible.png")
+   :collectible-monkey    (js/require "../resources/images/mock2/collectible-monkey.png")
+   :collectible1          (js/require "../resources/images/mock2/collectible1.png")
+   :collectible2          (js/require "../resources/images/mock2/collectible2.png")
+   :collectible3          (js/require "../resources/images/mock2/collectible3.png")
+   :collectible4          (js/require "../resources/images/mock2/collectible4.png")
+   :collectible5          (js/require "../resources/images/mock2/collectible5.png")
+   :collectible6          (js/require "../resources/images/mock2/collectible6.png")
    :contact               (js/require "../resources/images/mock2/contact.png")
    :community-banner      (js/require "../resources/images/mock2/community-banner.png")
    :community-logo        (js/require "../resources/images/mock2/community-logo.png")
@@ -92,6 +98,7 @@
    :dark-blur-bg          (js/require "../resources/images/mock2/dark_blur_bg.png")
    :dark-blur-background  (js/require "../resources/images/mock2/dark-blur-background.png")
    :decentraland          (js/require "../resources/images/mock2/decentraland.png")
+   :diamond               (js/require "../resources/images/mock2/diamond.png")
    :gif                   (js/require "../resources/images/mock2/gif.png")
    :monkey                (js/require "../resources/images/mock2/monkey.png")
    :light-blur-background (js/require "../resources/images/mock2/light-blur-background.png")
@@ -119,6 +126,15 @@
    :generate-keys [(js/require "../resources/videos2/generating_keys_01.mp4")
                    (js/require "../resources/videos2/generating_keys_02.mp4")
                    (js/require "../resources/videos2/generating_keys_03.mp4")]})
+
+(def services
+  {:latamex (js/require "../resources/images/services/Latamex.png")
+   :moonpay (js/require "../resources/images/services/Moonpay.png")
+   :ramp    (js/require "../resources/images/services/Ramp.png")})
+
+(defn get-service-image
+  [k]
+  (get services k))
 
 (defn get-mock-image
   [k]

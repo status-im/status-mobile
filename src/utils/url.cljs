@@ -1,5 +1,6 @@
 (ns utils.url
-  (:require [clojure.string :as string]))
+  (:require
+    [clojure.string :as string]))
 
 (defn normalize-url
   [url]

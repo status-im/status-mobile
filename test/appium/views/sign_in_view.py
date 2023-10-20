@@ -187,7 +187,7 @@ class SignInView(BaseView):
         self.cancel_custom_seed_phrase_button = Button(self.driver, accessibility_id="cancel-custom-seed-phrase")
 
         # New onboarding
-        self.generate_keys_button = Button(self.driver, translation_id="create-multiaccount")
+        self.generate_keys_button = Button(self.driver, translation_id="lets-go")
         self.profile_your_name_edit_box = EditBox(self.driver, accessibility_id="profile-title-input")
         self.profile_continue_button = Button(self.driver, accessibility_id="submit-create-profile-button")
         self.profile_password_edit_box = EditBox(self.driver, translation_id="password-creation-placeholder-1")

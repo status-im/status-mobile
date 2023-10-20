@@ -1,16 +1,18 @@
 (ns status-im.ui.screens.wallet.transactions.views
-  (:require [quo.core :as quo]
-            [quo.design-system.colors :as colors]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.icons.icons :as icons]
-            [status-im.ui.components.list-selection :as list-selection]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.toolbar :as toolbar]
-            [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.screens.wallet.transactions.styles :as styles]
-            [status-im.utils.utils :as utils])
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.colors :as colors]
+    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.icons.icons :as icons]
+    [status-im.ui.components.list-selection :as list-selection]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.list.views :as list]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.toolbar :as toolbar]
+    [status-im.ui.components.topbar :as topbar]
+    [status-im.ui.screens.wallet.transactions.styles :as styles]
+    [status-im.utils.utils :as utils]
+    [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn- transaction-icon
@@ -34,7 +36,7 @@
     :pending  (transaction-icon :main-icons/arrow-right
                                 colors/black-transparent
                                 colors/gray)
-    (throw (str "Unknown transaction type: " k))))
+    (throw (js/Error. (str "Unknown transaction type: " k)))))
 
 (defn render-transaction
   [{:keys [label contact address contact-accessibility-label
@@ -43,7 +45,7 @@
     :as   transaction}
    _ _ {:keys [keycard-account?]}]
   [:<>
-   [quo/list-item
+   [list.item/list-item
     (merge
      {:on-press            on-touch-fn
       :accessibility-label :transaction-item
@@ -78,7 +80,7 @@
 
 (defn chain-explorer-link
   [address]
-  (let [link @(re-frame/subscribe [:wallet/chain-explorer-link address])]
+  (let [link @(re-frame/subscribe [:wallet-legacy/chain-explorer-link address])]
     [react/touchable-highlight
      {:on-press #(when link
                    (.openURL ^js react/linking link))}
@@ -104,10 +106,10 @@
             :padding-horizontal 14
             :flex-direction     :row
             :align-items        :center
-            :background-color   (quo/get-color :warning-02)
+            :background-color   (colors/get-color :warning-02)
             :height             52}}
    [react/text
-    {:style {:color (quo/get-color :warning-01)}}
+    {:style {:color (colors/get-color :warning-01)}}
     (i18n/label :t/custom-node)]])
 
 (defn non-archival-node
@@ -117,21 +119,22 @@
             :padding-horizontal 14
             :flex-direction     :row
             :align-items        :center
-            :background-color   (quo/get-color :negative-02)
+            :background-color   (colors/get-color :negative-02)
             :height             52}}
    [react/text
-    {:style {:color (quo/get-color :negative-01)}}
+    {:style {:color (colors/get-color :negative-01)}}
     (i18n/label :t/non-archival-node)]])
 
 (defn history-list
   [{:keys [transaction-history-sections total]} address]
-  (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
-        fetching-more-history?   @(re-frame/subscribe [:wallet/fetching-tx-history? address])
+  (let [fetching-recent-history? @(re-frame/subscribe [:wallet-legacy/fetching-recent-tx-history?
+                                                       address])
+        fetching-more-history?   @(re-frame/subscribe [:wallet-legacy/fetching-tx-history? address])
         keycard-account?         @(re-frame/subscribe [:multiaccounts/keycard-account?])
         custom-rpc-node?         @(re-frame/subscribe [:custom-rpc-node])
-        non-archival-rpc-node?   @(re-frame/subscribe [:wallet/non-archival-node])
-        binance-chain?           @(re-frame/subscribe [:wallet/binance-chain?])
-        all-fetched?             @(re-frame/subscribe [:wallet/tx-history-fetched? address])
+        non-archival-rpc-node?   @(re-frame/subscribe [:wallet-legacy/non-archival-node])
+        binance-chain?           @(re-frame/subscribe [:wallet-legacy/binance-chain?])
+        all-fetched?             @(re-frame/subscribe [:wallet-legacy/tx-history-fetched? address])
         syncing-allowed?         @(re-frame/subscribe [:mobile-network/syncing-allowed?])]
     [react/view {:flex 1}
      [chain-explorer-link address]
@@ -182,7 +185,7 @@
 
 (defn details-header
   [date type amount-text currency-text]
-  [quo/list-item
+  [list.item/list-item
    (merge
     {:title    [react/nested-text {:style styles/details-header-value}
                 [{:accessibility-label :amount-text} amount-text]
@@ -278,7 +281,7 @@
   (letsubs [{:keys [url type confirmations confirmations-progress
                     date amount-text currency-text]
              :as   transaction}
-            [:wallet.transactions.details/screen tx-hash address]]
+            [:wallet-legacy.transactions.details/screen tx-hash address]]
     [react/view {:flex 1}
      ;;TODO options should be replaced by bottom sheet ,and topbar should be used here
      [topbar/topbar

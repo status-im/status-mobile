@@ -1,6 +1,7 @@
 (ns status-im.ethereum.stateofus-test
-  (:require [cljs.test :refer-macros [deftest is]]
-            [status-im.ethereum.stateofus :as stateofus]))
+  (:require
+    [cljs.test :refer-macros [deftest is]]
+    [status-im.ethereum.stateofus :as stateofus]))
 
 (deftest valid-username?
   (is (false? (stateofus/valid-username? nil)))

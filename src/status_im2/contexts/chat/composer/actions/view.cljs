@@ -1,19 +1,19 @@
 (ns status-im2.contexts.chat.composer.actions.view
   (:require
-    [quo2.core :as quo]
-    [quo2.foundations.colors :as colors]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.permissions :as permissions]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
     [reagent.core :as reagent]
     [status-im2.common.alert.events :as alert]
-    [status-im2.contexts.chat.composer.constants :as comp-constants]
     [status-im2.common.device-permissions :as device-permissions]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
+    [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.actions.style :as style]
-    [status-im2.constants :as constants]))
+    [status-im2.contexts.chat.composer.constants :as comp-constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn send-message
   [{:keys [sending-images? sending-links?]}

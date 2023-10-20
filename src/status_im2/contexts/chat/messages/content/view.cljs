@@ -1,45 +1,49 @@
 (ns status-im2.contexts.chat.messages.content.view
   (:require
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [quo2.foundations.colors :as colors]
+    [react-native.gesture :as gesture]
     [react-native.platform :as platform]
-    [status-im2.contexts.chat.messages.content.style :as style]
-    [status-im2.contexts.chat.messages.content.pin.view :as pin]
+    [reagent.core :as reagent]
+    [status-im.ui.screens.chat.message.legacy-view :as old-message]
+    [status-im2.common.not-implemented :as not-implemented]
     [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.reply.view :as reply]
+    [status-im2.contexts.chat.messages.avatar.view :as avatar]
+    [status-im2.contexts.chat.messages.content.album.view :as album]
+    [status-im2.contexts.chat.messages.content.audio.view :as audio]
     [status-im2.contexts.chat.messages.content.deleted.view :as content.deleted]
-    [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
-    [status-im2.contexts.chat.messages.content.text.view :as content.text]
-    [status-im2.contexts.chat.messages.drawers.view :as drawers]
+    [status-im2.contexts.chat.messages.content.image.view :as image]
+    [status-im2.contexts.chat.messages.content.pin.view :as pin]
     [status-im2.contexts.chat.messages.content.reactions.view :as reactions]
     [status-im2.contexts.chat.messages.content.status.view :as status]
+    [status-im2.contexts.chat.messages.content.style :as style]
     [status-im2.contexts.chat.messages.content.system.text.view :as system.text]
-    [status-im2.contexts.chat.messages.content.album.view :as album]
-    [status-im2.contexts.chat.messages.avatar.view :as avatar]
-    [status-im2.contexts.chat.messages.content.image.view :as image]
-    [status-im2.contexts.chat.messages.content.audio.view :as audio]
-    [quo2.core :as quo]
-    [utils.re-frame :as rf]
-    [status-im.ui.screens.chat.message.legacy-view :as old-message]
-    [status-im2.contexts.chat.composer.reply.view :as reply]
-    [status-im2.common.not-implemented :as not-implemented]
-    [utils.datetime :as datetime]
-    [reagent.core :as reagent]
+    [status-im2.contexts.chat.messages.content.text.view :as content.text]
+    [status-im2.contexts.chat.messages.content.unknown.view :as content.unknown]
+    [status-im2.contexts.chat.messages.drawers.view :as drawers]
     [utils.address :as address]
-    [react-native.gesture :as gesture]
-    [quo2.theme :as quo.theme]))
+    [utils.datetime :as datetime]
+    [utils.re-frame :as rf]))
 
 (def delivery-state-showing-time-ms 3000)
 
 (defn avatar-container
-  [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions? show-user-info?]
+  [{:keys [content last-in-group? pinned-by quoted-message from]} show-reactions?
+   in-reaction-and-action-menu? in-pinned-view?]
   (if (or (and (seq (:response-to content))
                quoted-message)
           last-in-group?
           pinned-by
           (not show-reactions?)
-          show-user-info?)
-    [avatar/avatar from :small]
-    [rn/view {:padding-top 2 :width 32}]))
+          in-reaction-and-action-menu?)
+    [avatar/avatar
+     {:public-key from
+      :size       :small
+      :hide-ring? (or in-pinned-view? in-reaction-and-action-menu?)}]
+    [rn/view {:padding-top 4 :width 32}]))
 
 (defn author
   [{:keys [response-to
@@ -50,12 +54,12 @@
            from
            timestamp]}
    show-reactions?
-   show-user-info?]
+   in-reaction-and-action-menu?]
   (when (or (and (seq response-to) quoted-message)
             last-in-group?
             pinned-by
             (not show-reactions?)
-            show-user-info?)
+            in-reaction-and-action-menu?)
     (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
           {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
       [quo/author
@@ -111,7 +115,8 @@
 (defn- user-message-content-internal
   []
   (let [show-delivery-state? (reagent/atom false)]
-    (fn [{:keys [message-data context keyboard-shown? show-reactions? show-user-info? theme]}]
+    (fn [{:keys [message-data context keyboard-shown? show-reactions? in-reaction-and-action-menu?
+                 theme]}]
       (let [{:keys [content-type quoted-message content
                     outgoing outgoing-status pinned-by]} message-data
             first-image                                  (first (:album message-data))
@@ -129,7 +134,13 @@
                                                                                 context
                                                                                 keyboard-shown?))
             response-to                                  (:response-to content)
-            height                                       (rf/sub [:dimensions/window-height])]
+            height                                       (rf/sub [:dimensions/window-height])
+            {window-width :width}                        (rn/get-window)
+            message-container-data                       {:window-width           window-width
+                                                          :padding-right          20
+                                                          :padding-left           20
+                                                          :avatar-container-width 32
+                                                          :message-margin-left    8}]
         [rn/touchable-highlight
          {:accessibility-label (if (and outgoing (= outgoing-status :sending))
                                  :message-sending
@@ -157,7 +168,8 @@
           [rn/view
            {:style {:padding-horizontal 4
                     :flex-direction     :row}}
-           [avatar-container message-data show-reactions? show-user-info?]
+           [avatar-container message-data show-reactions? in-reaction-and-action-menu?
+            (:in-pinned-view? context)]
            (into
             (if show-reactions?
               [rn/view]
@@ -166,9 +178,8 @@
                       :flex        1
                       :max-height  (when-not show-reactions?
                                      (* 0.4 height))}}
-             [author message-data show-reactions? show-user-info?]
-             (case content-type
-
+             [author message-data show-reactions? in-reaction-and-action-menu?]
+             (condp = content-type
                constants/content-type-text
                [content.text/text-content message-data context]
 
@@ -182,10 +193,10 @@
                [audio/audio-message message-data context]
 
                constants/content-type-image
-               [image/image-message 0 message-data context]
+               [image/image-message 0 message-data context 0 message-container-data]
 
                constants/content-type-album
-               [album/album-message message-data context on-long-press]
+               [album/album-message message-data context on-long-press message-container-data]
 
                [not-implemented/not-implemented
                 [content.unknown/unknown-content message-data]])
@@ -205,18 +216,22 @@
 (def user-message-content (quo.theme/with-theme user-message-content-internal))
 
 (defn on-long-press
-  [message-data context keyboard-shown?]
+  [{:keys [deleted? deleted-for-me?] :as message-data} context keyboard-shown?]
   (rf/dispatch [:dismiss-keyboard])
   (rf/dispatch [:show-bottom-sheet
-                {:content       (drawers/reactions-and-actions message-data context)
-                 :selected-item (fn []
-                                  [rn/view {:pointer-events :none}
-                                   [user-message-content
-                                    {:message-data    message-data
-                                     :context         context
-                                     :keyboard-shown? keyboard-shown?
-                                     :show-reactions? true
-                                     :show-user-info? true}]])}]))
+                {:content (drawers/reactions-and-actions message-data context)
+                 :border-radius 16
+                 :selected-item
+                 (if (or deleted? deleted-for-me?)
+                   (fn [] [content.deleted/deleted-message message-data])
+                   (fn []
+                     [rn/view {:pointer-events :none}
+                      [user-message-content
+                       {:message-data    message-data
+                        :context         context
+                        :keyboard-shown? keyboard-shown?
+                        :show-reactions? true
+                        :show-user-info? true}]]))}]))
 
 (defn system-message?
   [content-type]
@@ -234,10 +249,20 @@
   [rn/view
    {:style               (style/message-container in-pinned-view? pinned-by mentioned last-in-group?)
     :accessibility-label :chat-item}
-   (if (or (system-message? content-type) deleted? deleted-for-me?)
-     (if (or deleted? deleted-for-me?)
-       [content.deleted/deleted-message message-data]
-       [system-message-content message-data])
+   (cond
+     (system-message? content-type)
+     [system-message-content message-data]
+
+     (or deleted? deleted-for-me?)
+     [content.deleted/deleted-message
+      (assoc message-data
+             :on-long-press
+             #(on-long-press message-data
+                             context
+                             keyboard-shown?))
+      context]
+
+     :else
      [user-message-content
       {:message-data    message-data
        :context         context

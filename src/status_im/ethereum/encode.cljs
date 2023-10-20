@@ -1,5 +1,6 @@
 (ns status-im.ethereum.encode
-  (:require [native-module.core :as native-module]))
+  (:require
+    [native-module.core :as native-module]))
 
 (defn uint
   [x]

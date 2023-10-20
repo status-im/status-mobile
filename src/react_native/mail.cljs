@@ -1,5 +1,6 @@
 (ns react-native.mail
-  (:require ["react-native-mail" :default react-native-mail]))
+  (:require
+    ["react-native-mail" :default react-native-mail]))
 
 (defn mail
   [opts callback]

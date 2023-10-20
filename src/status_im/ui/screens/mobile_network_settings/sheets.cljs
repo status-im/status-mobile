@@ -1,11 +1,12 @@
 (ns status-im.ui.screens.mobile-network-settings.sheets
   (:require-macros [status-im.utils.views :as views])
-  (:require [quo.core :as quo]
-            [re-frame.core :as re-frame]
-            [utils.i18n :as i18n]
-            [status-im.ui.components.checkbox.view :as checkbox]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.screens.mobile-network-settings.sheets-styles :as styles]))
+  (:require
+    [re-frame.core :as re-frame]
+    [status-im.ui.components.checkbox.view :as checkbox]
+    [status-im.ui.components.list.item :as list.item]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.screens.mobile-network-settings.sheets-styles :as styles]
+    [utils.i18n :as i18n]))
 
 (defn title
   [label]
@@ -33,7 +34,7 @@
    [react/text
     {:style    styles/go-to-settings
      :on-press #(re-frame/dispatch [:mobile-network/navigate-to-settings])}
-    (i18n/label :mobile-network-go-to-settings)]])
+    (i18n/label :t/mobile-network-go-to-settings)]])
 
 (views/defview checkbox
   []
@@ -48,7 +49,7 @@
        :on-value-change #(re-frame/dispatch [:mobile-network/remember-choice? %])}]
      [react/view
       {:style styles/checkbox-text-container}
-      [react/text (i18n/label :mobile-network-sheet-remember-choice)]]]))
+      [react/text (i18n/label :t/mobile-network-sheet-remember-choice)]]]))
 
 (defn settings
   []
@@ -57,9 +58,9 @@
    [react/nested-text
     {:style    styles/settings-text
      :on-press #(re-frame/dispatch [:mobile-network/navigate-to-settings])}
-    (i18n/label :mobile-network-sheet-configure)
+    (i18n/label :t/mobile-network-sheet-configure)
     [{:style styles/settings-link}
-     (str " " (i18n/label :mobile-network-sheet-settings))]]])
+     (str " " (i18n/label :t/mobile-network-sheet-settings))]]])
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -72,7 +73,7 @@
    [react/view {:align-items :center}
     [title :mobile-syncing-sheet-title]
     [details :mobile-syncing-sheet-details]]
-   [quo/list-item
+   [list.item/list-item
     {:theme               :accent
      :accessibility-label "mobile-network-continue-syncing"
      :title               (i18n/label :t/mobile-network-continue-syncing)
@@ -80,7 +81,7 @@
      :subtitle-max-lines  2
      :icon                :main-icons/network
      :on-press            #(hide-sheet-and-dispatch [:mobile-network/continue-syncing])}]
-   [quo/list-item
+   [list.item/list-item
     {:theme               :negative
      :accessibility-label "mobile-network-stop-syncing"
      :title               (i18n/label :t/mobile-network-stop-syncing)
@@ -100,7 +101,7 @@
    [react/view {:align-items :center}
     [title :t/mobile-network-sheet-offline]
     [details :t/mobile-network-sheet-offline-details]]
-   [quo/list-item
+   [list.item/list-item
     {:theme              :accent
      :title              (i18n/label :t/mobile-network-start-syncing)
      :subtitle           (i18n/label :t/mobile-network-continue-syncing-details)

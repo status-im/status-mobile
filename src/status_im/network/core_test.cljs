@@ -1,6 +1,7 @@
 (ns status-im.network.core-test
-  (:require [cljs.test :refer-macros [deftest is testing]]
-            [status-im.network.core :as network.core]))
+  (:require
+    [cljs.test :refer-macros [deftest is testing]]
+    [status-im.network.core :as network.core]))
 
 (deftest valid-rpc-url-test
   (testing "nil?"

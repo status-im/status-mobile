@@ -1,7 +1,8 @@
 (ns status-im2.contexts.emoji-picker.utils
-  (:require [clojure.string :as string]
-            [status-im2.contexts.emoji-picker.constants :as constants]
-            [status-im2.contexts.emoji-picker.data :refer [emoji-data]]))
+  (:require
+    [clojure.string :as string]
+    [status-im2.contexts.emoji-picker.constants :as constants]
+    [status-im2.contexts.emoji-picker.data :refer [emoji-data]]))
 
 (defn search-emoji
   [search-query]

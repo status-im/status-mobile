@@ -1,6 +1,7 @@
 (ns status-im2.contexts.syncing.scan-sync-code.style
-  (:require [quo2.foundations.colors :as colors]
-            [react-native.reanimated :as reanimated]))
+  (:require
+    [quo.foundations.colors :as colors]
+    [react-native.reanimated :as reanimated]))
 
 (def screen-padding 20)
 (def flash-button-size 32)
@@ -132,11 +133,6 @@
 (def enable-camera-access-sub-text
   {:color         colors/white-opa-70
    :margin-bottom 16})
-
-(def enter-sync-code-container
-  {:margin-top      20
-   :justify-content :center
-   :align-items     :center})
 
 (defn bottom-container
   [translate-y padding-bottom]

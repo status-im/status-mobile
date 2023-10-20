@@ -1,7 +1,8 @@
 (ns status-im.ui.components.action-sheet
-  (:require ["react-native" :refer (ActionSheetIOS)]
-            [utils.i18n :as i18n]
-            [status-im.utils.core :as utils]))
+  (:require
+    ["react-native" :refer (ActionSheetIOS)]
+    [status-im.utils.core :as utils]
+    [utils.i18n :as i18n]))
 
 (defn- callback
   [options on-cancel]

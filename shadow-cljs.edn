@@ -11,11 +11,16 @@
                 [com.cognitect/transit-cljs "0.8.248"]
                 [mvxcvi/alphabase "1.0.0"]
                 [camel-snake-kebab "0.4.3"]
+
                 ;; Dev dependencies
                 [refactor-nrepl "2.5.0"]
                 [cider/cider-nrepl "0.25.3"]
                 [cider/piggieback "0.4.1"]
                 [re-frisk-remote "1.6.0"]
+
+                ;; Use the same version specified in the Nix dependency.
+                [clj-kondo/clj-kondo "2023.09.07"]
+
                 ;; We don't use the encore library, but re-frisk requires re-frisk/sente (fork of
                 ;; com.taoensso/sente), which in turn requires encore. We need to bump encore to
                 ;; 3.21.0+ to remove a warning displayed while shadow-cljs starts (commit
@@ -107,7 +112,7 @@
    :optimizations :simple
    :target :node-test
    ;; Uncomment line below to `make test-watch` a specific file
-   ;; :ns-regexp "status-im2.subs.chat.messages-test$"
+   ;; :ns-regexp "status-im2.subs.messages-test$"
    :main
    status-im.test-runner/main
    ;; set :ui-driven to true to let shadow-cljs inject node-repl
@@ -129,6 +134,7 @@
     ;; needed because we use deref in tests
     :static-fns    false
     :optimizations :simple
+    :warnings      {:fn-deprecated false}
     :infer-externs true}}
 
   ;; mock.js-dependencies is mocking the react-native libraries
@@ -142,7 +148,7 @@
    :compiler-options {:optimizations :simple
                       :source-map    false}}
   :component-test {:target           :npm-module
-                   :entries          [quo2.core-spec status-im2.core-spec]
+                   :entries          [quo.core-spec status-im2.core-spec]
                    :ns-regexp        "component-spec$"
                    :output-dir       "component-spec"
                    :compiler-options {:warnings-as-errors false
