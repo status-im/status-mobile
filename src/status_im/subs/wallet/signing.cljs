@@ -11,35 +11,35 @@
 
 (re-frame/reg-sub
  ::send-transaction
- :<- [:wallet]
+ :<- [:wallet-legacy]
  (fn [wallet]
    (:send-transaction wallet)))
 
 (re-frame/reg-sub
- :wallet.send/symbol
+ :wallet-legacy.send/symbol
  :<- [::send-transaction]
  (fn [send-transaction]
    (:symbol send-transaction)))
 
 (re-frame/reg-sub
- :wallet.send/camera-flashlight
+ :wallet-legacy.send/camera-flashlight
  :<- [::send-transaction]
  (fn [send-transaction]
    (:camera-flashlight send-transaction)))
 
 (re-frame/reg-sub
- :wallet/settings
- :<- [:wallet]
+ :wallet-legacy/settings
+ :<- [:wallet-legacy]
  (fn [{:keys [settings]}]
    (reduce-kv #(conj %1 %3) [] settings)))
 
 (re-frame/reg-sub
- :wallet.request/transaction
- :<- [:wallet]
+ :wallet-legacy.request/transaction
+ :<- [:wallet-legacy]
  :request-transaction)
 
 (re-frame/reg-sub
- :wallet/binance-chain?
+ :wallet-legacy/binance-chain?
  :<- [:current-network]
  (fn [network]
    (chain/binance-chain-id? (get-in network [:config :NetworkId]))))
@@ -53,7 +53,7 @@
 (re-frame/reg-sub
  :signing/currencies
  :<- [:prices]
- :<- [:wallet/currency]
+ :<- [:wallet-legacy/currency]
  :<- [:ethereum/native-currency]
  (fn [[prices {:keys [code]} {sym :symbol}]]
    [(name sym)
@@ -62,10 +62,10 @@
 
 (re-frame/reg-sub
  :signing/priority-fee-suggestions-range
- :<- [:wallet/current-priority-fee]
- :<- [:wallet/slow-base-fee]
- :<- [:wallet/normal-base-fee]
- :<- [:wallet/fast-base-fee]
+ :<- [:wallet-legacy/current-priority-fee]
+ :<- [:wallet-legacy/slow-base-fee]
+ :<- [:wallet-legacy/normal-base-fee]
+ :<- [:wallet-legacy/fast-base-fee]
  (fn [[latest-tip slow normal fast]]
    (reduce
     (fn [acc [k fees]]
@@ -181,11 +181,11 @@
        (get-sufficient-gas-error gas-error-message balance nil nil gas gas-price)))))
 
 (re-frame/reg-sub
- :wallet.send/prepare-transaction-with-balance
- :<- [:wallet/prepare-transaction]
- :<- [:wallet]
+ :wallet-legacy.send/prepare-transaction-with-balance
+ :<- [:wallet-legacy/prepare-transaction]
+ :<- [:wallet-legacy]
  :<- [:offline?]
- :<- [:wallet/all-tokens]
+ :<- [:wallet-legacy/all-tokens]
  :<- [:current-network]
  (fn [[{:keys [from to amount-text] :as transaction}
        wallet offline? all-tokens current-network]]
@@ -209,11 +209,11 @@
                                 (not offline?))))))
 
 (re-frame/reg-sub
- :wallet.request/prepare-transaction-with-balance
- :<- [:wallet/prepare-transaction]
- :<- [:wallet]
+ :wallet-legacy.request/prepare-transaction-with-balance
+ :<- [:wallet-legacy/prepare-transaction]
+ :<- [:wallet-legacy]
  :<- [:offline?]
- :<- [:wallet/all-tokens]
+ :<- [:wallet-legacy/all-tokens]
  :<- [:current-network]
  (fn [[{:keys [from to amount-text] :as transaction}
        wallet offline? all-tokens current-network]]

@@ -41,7 +41,7 @@
     [code display-name]))
 
 (re-frame/reg-sub
- :search/filtered-currencies
+ :wallet-legacy/search-filtered-currencies
  :<- [:search/currency-filter]
  (fn [search-currency-filter]
    {:search-filter search-currency-filter
@@ -55,9 +55,15 @@
   [(:symbol token) (:name token)])
 
 (re-frame/reg-sub
- :wallet/filtered-grouped-chain-tokens
- :<- [:wallet/grouped-chain-tokens]
- :<- [:search/token-filter]
+ :wallet-legacy/search-token-filter
+ :<- [:ui/search]
+ (fn [search]
+   (get search :token-filter)))
+
+(re-frame/reg-sub
+ :wallet-legacy/filtered-grouped-chain-tokens
+ :<- [:wallet-legacy/grouped-chain-tokens]
+ :<- [:wallet-legacy/search-token-filter]
  (fn [[{custom-tokens true default-tokens nil} search-token-filter]]
    {:search-filter search-token-filter
     :tokens        {true (apply-filter search-token-filter custom-tokens extract-token-attributes false)

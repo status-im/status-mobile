@@ -15,7 +15,7 @@
       tag-was-lost?
       (rf/merge cofx
                 {:db (assoc-in db [:keycard :pin :status] nil)}
-                (common/set-on-card-connected :wallet.accounts/generate-new-keycard-account))
+                (common/set-on-card-connected :wallet-legacy.accounts/generate-new-keycard-account))
 
       (not (nil? pin-retries))
       (rf/merge cofx

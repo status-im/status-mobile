@@ -88,7 +88,7 @@
          :emoji               emoji}]))])
 
 (defn- right-side
-  [{:keys [label icon-right? icon icon-color communities-list]}]
+  [{:keys [label icon-right? right-icon icon-color communities-list]}]
   [rn/view {:style style/right-container}
    (case label
      :preview [preview-list/view
@@ -101,13 +101,13 @@
      nil)
    (when icon-right?
      [rn/view {:style (style/right-icon label)}
-      [icons/icon icon
+      [icons/icon right-icon
        {:accessibility-label :icon-right
         :color               icon-color
         :size                20}]])])
 
 (def view-internal
-  (fn [{:keys [blur? card? icon-right? icon label status size theme on-press communities-list
+  (fn [{:keys [blur? card? icon-right? right-icon label status size theme on-press communities-list
                container-style]
         :as   props}]
     (let [icon-color (if (or blur? (= :dark theme))
@@ -119,13 +119,13 @@
          {:accessibility-label :data-item
           :disabled            (not icon-right?)
           :on-press            on-press
-          :style               (merge (style/container size card? blur? theme) container-style)}
+          :style               (merge container-style (style/container size card? blur? theme))}
          [left-side props]
          (when (and (= :default status) (not= :small size))
            [right-side
             {:label            label
              :icon-right?      icon-right?
-             :icon             icon
+             :right-icon       right-icon
              :icon-color       icon-color
              :communities-list communities-list}])]))))
 

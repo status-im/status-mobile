@@ -158,3 +158,7 @@
     (reagent/adapt-react-class
      (.requireNativeComponent ^js react-native "RNSelectableTextInput"))
     view))
+
+(def linking (.-Linking react-native))
+
+(defn open-url [link] (.openURL ^js linking link))

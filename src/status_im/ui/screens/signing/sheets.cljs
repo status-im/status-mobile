@@ -88,7 +88,7 @@
                      [gas-edit
                       max-fee-per-gas-edit
                       max-priority-fee-per-gas-edit])
-        base-fee @(re-frame/subscribe [:wallet/current-base-fee])
+        base-fee @(re-frame/subscribe [:wallet-legacy/current-base-fee])
         [fee-currency fiat-currency price]
         @(re-frame/subscribe [:signing/currencies])
         fee-eth
@@ -306,9 +306,9 @@
 
 (defn fees-warning
   []
-  (let [base-fee @(re-frame/subscribe [:wallet/current-base-fee])
+  (let [base-fee @(re-frame/subscribe [:wallet-legacy/current-base-fee])
         base-fee-gwei (money/wei-> :gwei (money/bignumber base-fee))
-        priority-fee @(re-frame/subscribe [:wallet/current-priority-fee])
+        priority-fee @(re-frame/subscribe [:wallet-legacy/current-priority-fee])
         priority-fee-gwei (money/wei-> :gwei (money/bignumber priority-fee))
         {priority-fee-edit :maxPriorityFeePerGas
          fee-edit          :maxFeePerGas}

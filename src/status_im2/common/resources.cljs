@@ -127,6 +127,15 @@
                    (js/require "../resources/videos2/generating_keys_02.mp4")
                    (js/require "../resources/videos2/generating_keys_03.mp4")]})
 
+(def services
+  {:latamex (js/require "../resources/images/services/Latamex.png")
+   :moonpay (js/require "../resources/images/services/Moonpay.png")
+   :ramp    (js/require "../resources/images/services/Ramp.png")})
+
+(defn get-service-image
+  [k]
+  (get services k))
+
 (defn get-mock-image
   [k]
   (get mock-images k))

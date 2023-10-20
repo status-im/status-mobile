@@ -810,9 +810,9 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.device_1.just_fyi("Admin gets push notification with the mention and tap it")
         message_received = False
         if self.home_1.get_pn(self.username_1):
+            message_received = True
             self.device_1.click_upon_push_notification_by_text(self.username_1)
             if not self.channel_1.chat_element_by_text(self.username_1).is_element_displayed():
-                message_received = True
                 if self.channel_1.chat_message_input.is_element_displayed():
                     self.errors.append("Message with the mention is not shown in the chat for the admin")
                 else:
@@ -821,7 +821,10 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         else:
             self.errors.append("Push notification with the mention was not received by admin")
 
-        self.channel_1.click_system_back_button()
+        if not self.channel_1.chat_message_input.is_element_displayed():
+            self.channel_1.navigate_back_to_home_view()
+            self.home_1.communities_tab.click()
+            self.home_1.get_to_community_channel_from_home(self.community_name)
 
         if message_received:
             self.channel_1.just_fyi("Set reaction for the message with a mention")
@@ -833,20 +836,25 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
                 self.errors.append("Message reaction is not shown for the sender")
 
         self.device_2.just_fyi("Sender edits the message with a mention")
-        self.channel_2.chat_element_by_text(self.username_1).wait_for_sent_state()
-        self.channel_2.chat_element_by_text(self.username_1).long_press_element_by_coordinate(rel_y=0)
+        chat_element = self.channel_2.chat_element_by_text(self.username_1)
+        chat_element.wait_for_sent_state()
+        chat_element.long_press_element_by_coordinate()
+        edit_done = False
+        edited_message = "0 abc (Edited)"
         try:
             self.channel_2.element_by_translation_id("edit-message").click()
-            for i in range(29, 32):
+            for i in 31, 30, 29:
                 self.channel_2.driver.press_keycode(i)
             self.channel_2.send_message_button.click()
-            edited_message = self.username_1 + " abc"
-            if not self.channel_2.chat_element_by_text(edited_message).is_element_displayed():
+            edit_done = True
+            if chat_element.message_body_with_mention.text != edited_message:
                 self.errors.append("Edited message is not shown correctly for the sender")
-            if not self.channel_1.chat_element_by_text(edited_message).is_element_displayed():
-                self.errors.append("Edited message is not shown correctly for the (receiver) admin")
         except NoSuchElementException:
             self.errors.append("Can not edit a message with a mention")
+        if edit_done:
+            element = self.channel_1.chat_element_by_text(self.username_1).message_body_with_mention
+            if not element.is_element_displayed(10) or element.text != edited_message:
+                self.errors.append("Edited message is not shown correctly for the (receiver) admin")
 
         self.home_2.navigate_back_to_home_view()
         if not self.channel_1.chat_message_input.is_element_displayed():
@@ -1014,5 +1022,69 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.chat_2.chat_element_by_text(message_with_hashtag).click_on_link_inside_message_body()
         if self.chat_2.chat_element_by_text(control_message_1_1_chat).is_element_disappeared():
             self.errors.append("Sender was navigated out of 1-1 chat")
+
+        self.errors.verify_no_errors()
+
+    @marks.testrail_id(703629)
+    def test_community_join_when_node_owner_offline(self):
+        for home in self.homes:
+            home.navigate_back_to_home_view()
+        self.home_2.jump_to_messages_home()
+        self.home_1.jump_to_communities_home()
+
+        self.home_1.just_fyi("Device 1 creates open community")
+        self.home_1.create_community(community_type="open")
+        community_name = "open community"
+        self.community_1.share_community(community_name, self.username_2)
+
+        self.home_1.just_fyi("Device 1 goes offline")
+        app_package = self.device_1.driver.current_package
+        self.device_1.driver.terminate_app(app_package)
+
+        self.home_2.just_fyi("Device 2 requests to join the community")
+        self.home_2.get_chat(self.username_1).click()
+        self.chat_2.chat_element_by_text(community_name).view_community_button.click()
+        self.community_2.join_community(open_community=False)
+        exp_text = "You requested to join “%s”" % community_name
+        if self.community_2.toast_content_element.is_element_displayed(10):
+            cur_text = self.community_2.toast_content_element.text
+            if cur_text != exp_text:
+                self.errors.append(
+                    "Text \"%s\" in shown toast element doesn't match expected \"%s\"" % (cur_text, exp_text))
+        else:
+            self.errors.append("Toast element with the text \"%s\" doesn't appear" % exp_text)
+        if not self.community_2.community_status_pending.is_element_displayed():
+            self.errors.append("Pending status is not displayed")
+        self.community_2.toast_content_element.wait_for_invisibility_of_element(30)
+        self.community_2.close_community_view_button.click()
+        self.home_2.pending_communities_tab.click()
+        if self.home_2.get_chat(community_name, community=True).is_element_displayed():
+            self.home_2.get_chat(community_name, community=True).click()
+        else:
+            self.errors.append("%s is not listed inside Pending communities tab" % community_name)
+
+        self.home_1.just_fyi("Device 1 goes back online")
+        self.home_1.driver.activate_app(app_package)
+        self.device_1.sign_in()
+
+        self.home_2.just_fyi("Device 2 checks that he's joined the community")
+        exp_text = "You joined “%s”" % community_name
+        if self.community_2.toast_content_element.is_element_displayed(60):
+            cur_text = self.community_2.toast_content_element.text
+            if cur_text != exp_text:
+                self.errors.append(
+                    "Text \"%s\" in shown toast element doesn't match expected \"%s\"" % (cur_text, exp_text))
+        # else:
+        #     self.errors.append("Toast element with the text \"%s\" doesn't appear" % exp_text)
+        # ToDo: add verification when toast is fixed
+        if not self.community_2.community_status_joined.is_element_displayed():
+            self.errors.append("Joined status is not displayed")
+        self.community_2.close_community_view_button.click()
+        self.home_2.joined_communities_tab.click()
+        chat_element = self.home_2.get_chat(community_name, community=True)
+        if chat_element.is_element_displayed(30):
+            chat_element.click()
+        else:
+            self.errors.append("%s is not listed inside Joined communities tab" % community_name)
 
         self.errors.verify_no_errors()

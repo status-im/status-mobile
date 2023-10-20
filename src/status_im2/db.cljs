@@ -19,8 +19,8 @@
    :sync-state                         :done
    :link-previews-whitelist            []
    :app-state                          "active"
-   :wallet                             wallet.db/default-wallet
-   :wallet/all-tokens                  {}
+   :wallet-legacy                      wallet.db/default-wallet
+   :wallet-legacy/all-tokens           {}
    :peers-count                        0
    :node-info                          {}
    :peers-summary                      []

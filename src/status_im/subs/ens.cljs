@@ -36,7 +36,7 @@
  :<- [:multiaccount/default-account]
  :<- [:multiaccount/public-key]
  :<- [:chain-id]
- :<- [:wallet]
+ :<- [:wallet-legacy]
  (fn [[{:keys [custom-domain? username address]}
        chain default-account public-key chain-id wallet]]
    (let [address (or address (address/normalized-hex (:address default-account)))

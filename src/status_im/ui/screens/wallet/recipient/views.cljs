@@ -27,8 +27,8 @@
   [topbar/topbar
    {:navigation {:on-press
                  #(do
-                    (re-frame/dispatch [:wallet/recipient-modal-closed])
-                    (re-frame/dispatch [:search/recipient-filter-changed nil])
+                    (re-frame/dispatch [:wallet-legacy/recipient-modal-closed])
+                    (re-frame/dispatch [:wallet-legacy/search-recipient-filter-changed nil])
                     (re-frame/dispatch [:navigate-back]))}
     :modal? true
     :border-bottom false
@@ -36,24 +36,24 @@
     :right-accessories
     [{:icon                :qr
       :accessibility-label :scan-contact-code-button
-      :on-press            #(re-frame/dispatch [:wallet.send/qr-scanner
+      :on-press            #(re-frame/dispatch [:wallet-legacy.send/qr-scanner
                                                 {:ignore-url true
-                                                 :handler    :wallet.send/qr-scanner-result}])}]}])
+                                                 :handler :wallet-legacy.send/qr-scanner-result}])}]}])
 
 (defonce search-active? (reagent/atom false))
 
 (defn search-input-wrapper
   []
-  (let [search-filter @(re-frame/subscribe [:search/recipient-filter])]
+  (let [search-filter @(re-frame/subscribe [:wallet-legacy/search-recipient-filter])]
     [react/view
      {:padding-horizontal 16
       :padding-vertical   10}
      [search-input/search-input-old
       {:search-active? search-active?
        :search-filter  search-filter
-       :on-cancel      #(re-frame/dispatch [:search/recipient-filter-changed nil])
+       :on-cancel      #(re-frame/dispatch [:wallet-legacy/search-recipient-filter-changed nil])
        :on-change      (fn [text]
-                         (re-frame/dispatch [:search/recipient-filter-changed text])
+                         (re-frame/dispatch [:wallet-legacy/search-recipient-filter-changed text])
                          (re-frame/dispatch [:set-in [:contacts/new-identity :state] :searching])
                          (debounce/debounce-and-dispatch [:contacts/set-new-identity text] 300))}]]))
 
@@ -83,7 +83,7 @@
   [list.item/list-item
    {:icon     [chat-icon/custom-icon-view-list (:name account) (:color account)]
     :title    (:name account)
-    :on-press #(re-frame/dispatch [:wallet.send/set-recipient (:address account)])
+    :on-press #(re-frame/dispatch [:wallet-legacy.send/set-recipient (:address account)])
     :subtitle [quo/text
                {:monospace true
                 :color     :secondary}
@@ -99,7 +99,7 @@
     :on-press #(do
                  (some-> ^js @scroll-view-ref
                          (.scrollTo #js {:x 0 :animated true}))
-                 (re-frame/dispatch [:wallet.recipient/address-changed name]))
+                 (re-frame/dispatch [:wallet-legacy.recipient/address-changed name]))
     :icon     [chat-icon/contact-icon-contacts-tab contact]}])
 
 (defn empty-items
@@ -130,7 +130,7 @@
     [list.item/list-item
      {:title     [quo/text {:monospace true}
                   (utils/get-shortened-checksum-address address)]
-      :on-press  #(re-frame/dispatch [:wallet.recipient/address-changed address])
+      :on-press  #(re-frame/dispatch [:wallet-legacy.recipient/address-changed address])
       :size      :small
       :accessory [react/text
                   {:style {:flex-shrink 1
@@ -139,8 +139,8 @@
 
 (defn recent-section
   []
-  (let [{:keys [from]} @(re-frame/subscribe [:wallet/prepare-transaction])
-        txs            @(re-frame/subscribe [:wallet/recipient-recent-txs (:address from)])
+  (let [{:keys [from]} @(re-frame/subscribe [:wallet-legacy/prepare-transaction])
+        txs            @(re-frame/subscribe [:wallet-legacy/recipient-recent-txs (:address from)])
         cnt            (count txs)]
     [section
      (i18n/label :t/recent)
@@ -168,12 +168,12 @@
                    {:monospace true
                     :color     :secondary}
                    short-address])
-      :on-press #(re-frame/dispatch [:wallet.send/set-recipient address])
+      :on-press #(re-frame/dispatch [:wallet-legacy.send/set-recipient address])
       :size     (when noname? :small)}]))
 
 (views/defview fav-section
   []
-  (views/letsubs [favourites [:wallet/favourites-filtered]]
+  (views/letsubs [favourites [:wallet-legacy/favourites-filtered]]
     (let [cnt (count favourites)]
       [section
        (i18n/label :t/favourites)
@@ -206,7 +206,7 @@
 (views/defview search-results
   []
   (views/letsubs [contacts   [:contacts/active-with-ens-names]
-                  favourites [:wallet/favourites-filtered]
+                  favourites [:wallet-legacy/favourites-filtered]
                   accounts   [:accounts-for-recipient]]
     [react/view
      (for [account accounts]
@@ -233,7 +233,7 @@
 
 (views/defview new-favourite
   []
-  (views/letsubs [{:keys [resolved-address]} [:wallet/recipient]
+  (views/letsubs [{:keys [resolved-address]} [:wallet-legacy/recipient]
                   fav-name                   (atom "")]
     [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
      [react/view {:flex 1}
@@ -265,13 +265,14 @@
         [quo/button
          {:accessibility-label :add-fav
           :type                :secondary
-          :on-press            #(re-frame/dispatch [:wallet/add-favourite resolved-address @fav-name])}
+          :on-press            #(re-frame/dispatch [:wallet-legacy/add-favourite resolved-address
+                                                    @fav-name])}
          (i18n/label :t/add)]}]]]))
 
 (views/defview recipient
   []
-  (views/letsubs [{:keys [address resolved-address searching]} [:wallet/recipient]
-                  search-filter                                [:search/recipient-filter]]
+  (views/letsubs [{:keys [address resolved-address searching]} [:wallet-legacy/recipient]
+                  search-filter                                [:wallet-legacy/search-recipient-filter]]
     (let [disabled? (or searching (not resolved-address))]
       [kb-presentation/keyboard-avoiding-view
        {:style         {:flex 1}
@@ -295,7 +296,7 @@
             [quo/text (i18n/label :t/address-or-ens-name)]
             [quo/button
              {:type     :secondary
-              :on-press #(re-frame/dispatch [:wallet.recipient/address-paste-pressed])}
+              :on-press #(re-frame/dispatch [:wallet-legacy.recipient/address-paste-pressed])}
              (i18n/label :t/paste)]]
            [quo/text-input
             {:multiline           true
@@ -304,11 +305,12 @@
              :placeholder         (i18n/label :t/recipient-code-placeholder)
              :text-align-vertical :top
              :on-change-text      #(do
-                                     (re-frame/dispatch [:set-in [:wallet/recipient :searching]
+                                     (re-frame/dispatch [:set-in [:wallet-legacy/recipient :searching]
                                                          :searching])
-                                     (debounce/debounce-and-dispatch [:wallet.recipient/address-changed
-                                                                      (utils.string/safe-trim %)]
-                                                                     600))
+                                     (debounce/debounce-and-dispatch
+                                      [:wallet-legacy.recipient/address-changed
+                                       (utils.string/safe-trim %)]
+                                      600))
              :accessibility-label :recipient-address-input}]]
           [react/view {:align-items :center :height 30 :padding-bottom 8}
            (if searching
@@ -342,5 +344,6 @@
             :type                :secondary
             :after               :main-icons/next
             :disabled            disabled?
-            :on-press            #(re-frame/dispatch [:wallet.send/set-recipient resolved-address])}
+            :on-press            #(re-frame/dispatch [:wallet-legacy.send/set-recipient
+                                                      resolved-address])}
            (i18n/label :t/done)]}]]])))

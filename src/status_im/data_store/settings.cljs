@@ -42,7 +42,7 @@
       (update :address eip55/address->checksum)
       (update :networks/networks rpc->networks)
       (update :networks/current-network #(if (seq %) % config/default-network))
-      (update :wallet/visible-tokens rpc->visible-tokens)
+      (update :wallet-legacy/visible-tokens rpc->visible-tokens)
       (update :pinned-mailservers rpc->pinned-mailservers)
       (update :link-previews-enabled-sites set)
       (update :custom-bootnodes rpc->custom-bootnodes)

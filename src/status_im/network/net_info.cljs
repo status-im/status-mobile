@@ -13,7 +13,7 @@
   (rf/merge cofx
             {:db (assoc db :network-status (if is-connected? :online :offline))}
             (when (and is-connected?
-                       (or (not= (count (get-in db [:wallet :accounts]))
+                       (or (not= (count (get-in db [:wallet-legacy :accounts]))
                                  (count (get db :profile/wallet-accounts)))
                            (wallet/has-empty-balances? db)))
               (wallet/update-balances nil nil))))

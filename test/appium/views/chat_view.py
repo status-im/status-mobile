@@ -184,6 +184,11 @@ class ChatElementByText(Text):
             xpath="//%s//android.widget.TextView[contains(@text,'%s')]" % (self.chat_item_locator, self.message_text)
         )
 
+    @property
+    def message_body_with_mention(self):
+        return Text(self.driver,
+                    xpath=self.message_body.locator + "/../following-sibling::android.widget.TextView")
+
     def click_on_link_inside_message_body(self):
         self.message_body.wait_for_visibility_of_element(30)
         self.message_body.click_inside_element_by_coordinate(rel_x=0.1, rel_y=0.9)
@@ -410,8 +415,12 @@ class CommunityView(HomeView):
 
         #### NEW UI
         # Communities initial page
+        self.close_community_view_button = Button(
+            self.driver,
+            xpath="//*[@content-desc='community-options-for-community']/../*[1]//android.widget.ImageView")
         self.community_description_text = Text(self.driver, accessibility_id="community-description-text")
         self.community_status_joined = Text(self.driver, accessibility_id="status-tag-positive")
+        self.community_status_pending = Text(self.driver, accessibility_id="status-tag-pending")
 
     def join_community(self, password=common_password, open_community=True):
         self.driver.info("Joining community")
@@ -749,10 +758,6 @@ class ChatView(BaseView):
         self.view_profile_new_contact_button = Button(self.driver, accessibility_id="new-contact-button")
 
         # Chat header
-        self.user_name_text = Text(self.driver, accessibility_id="chat-name-text")
-        self.user_name_text_new_UI = Text(
-            self.driver,
-            xpath="//*[@content-desc='user-avatar']/../following-sibling::android.widget.TextView")
         self.add_to_contacts = Button(self.driver, accessibility_id="add-to-contacts-button")
         ## Options
         self.chat_options = ChatOptionsButton(self.driver)

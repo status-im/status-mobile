@@ -20,6 +20,7 @@
            placeholder
            max-length
            default-value
+           return-key-type
            size
            theme
            container-style]
@@ -46,6 +47,7 @@
           :default-value default-value
           :accessibility-label :profile-title-input
           :keyboard-appearance (quo.theme/theme-value :light :dark theme)
+          :return-key-type return-key-type
           :on-focus #(swap! focused? (constantly true))
           :on-blur #(swap! focused? (constantly false))
           :auto-focus auto-focus
