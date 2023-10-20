@@ -90,10 +90,11 @@
                                                                   :gradient-cover?     true
                                                                   :customization-color :purple}])
                              :emoji               "🍑"}}]
-       [quo/account-overview {:current-value       (utils/prettify-balance balance)
-                              :account-name        (:name account)
-                              :account             :default ;; for now
-                              :customization-color :blue}] ;; for now
+       [quo/account-overview
+        {:current-value       (utils/prettify-balance balance)
+         :account-name        (:name account)
+         :account             :default ;; for now
+         :customization-color :blue}] ;; for now
        [quo/wallet-graph {:time-frame :empty}]
        [quo/wallet-ctas
         {:send-action #(rf/dispatch [:open-modal :wallet-select-address])
