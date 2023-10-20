@@ -169,10 +169,12 @@
                                 (rf/dispatch [:navigate-to :camera-screen]))))
 
 (defn camera-button
-  []
+  [edit]
   (let [images-count (count (vals (rf/sub [:chats/sending-image])))]
     [quo/composer-button
-     {:on-press        #(go-to-camera images-count)
+     {:on-press        (if edit
+                         #(js/alert "This feature is temporarily unavailable in edit mode.")
+                         #(go-to-camera images-count))
       :icon            :i/camera
       :container-style {:margin-right 12}}]))
 
@@ -195,9 +197,11 @@
                                       :t/external-storage-denied)))}))
 
 (defn image-button
-  [props animations insets]
+  [props animations insets edit]
   [quo/composer-button
-   {:on-press            #(open-photo-selector props animations insets)
+   {:on-press            (if edit
+                           #(js/alert "This feature is temporarily unavailable in edit mode.")
+                           #(open-photo-selector props animations insets))
     :accessibility-label :open-images-button
     :container-style     {:margin-right 12}
     :icon                :i/image}])
@@ -223,8 +227,8 @@
      [rn/view
       {:style {:flex-direction :row
                :display        (if @(:recording? state) :none :flex)}}
-      [camera-button]
-      [image-button props animations insets]
+      [camera-button edit]
+      [image-button props animations insets edit]
       [reaction-button]
       [format-button]]
      [:f> send-button props state animations window-height images edit send-btn-opacity

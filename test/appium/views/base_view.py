@@ -244,6 +244,8 @@ class BaseView(object):
         self.send_message_button = SendMessageButton(self.driver)
         self.send_contact_request_button = Button(self.driver, translation_id="send-request")
         self.password_input = EditBox(self.driver, accessibility_id="password-input")
+        from views.sign_in_view import LogInButton
+        self.login_button = LogInButton(self.driver)
 
         # Old UI Tabs
         self.home_button = HomeButton(self.driver)
@@ -263,8 +265,7 @@ class BaseView(object):
         self.community_floating_screen = BaseElement(self.driver,
                                                      accessibility_id=":community-overview-floating-screen")
         self.discover_communities_floating_screen = BaseElement(self.driver,
-                                                     accessibility_id=":discover-communities-floating-screen")
-
+                                                                accessibility_id=":discover-communities-floating-screen")
 
         self.jump_to_button = Button(self.driver, accessibility_id="jump-to")
 
