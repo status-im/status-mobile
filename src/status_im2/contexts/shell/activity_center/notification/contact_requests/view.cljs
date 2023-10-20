@@ -59,9 +59,9 @@
 
 (defn- outgoing-contact-request-view
   [{:keys [notification set-swipeable-height customization-color]}]
-  (let [{:keys [chat-id message last-message]}      notification
-        {:keys [contact-request-state] :as message} (or message last-message)]
-    (if (= contact-request-state constants/contact-request-message-state-accepted)
+  (let [{:keys [chat-id message last-message accepted]} notification
+        {:keys [contact-request-state] :as message}     (or message last-message)]
+    (if accepted
       [quo/activity-log
        {:title               (i18n/label :t/contact-request-was-accepted)
         :customization-color customization-color
