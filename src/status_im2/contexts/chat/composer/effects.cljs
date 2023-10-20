@@ -115,7 +115,7 @@
          ;; A small setTimeout is necessary to ensure the statement is enqueued and will get executed
          ;; ASAP.
          ;; https://github.com/software-mansion/react-native-screens/issues/472
-         (js/setTimeout #(.focus ^js @input-ref) 10)
+         (js/setTimeout #(.focus ^js @input-ref) 250)
          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
          (reset! text-value edit-text)
          (reset! saved-cursor-position (if (zero? text-value-count)
@@ -132,7 +132,7 @@
      (when reply
        (reanimated/animate container-opacity 1))
      (when (and reply @input-ref)
-       (js/setTimeout #(.focus ^js @input-ref) 10)))
+       (js/setTimeout #(.focus ^js @input-ref) 250)))
    [(:message-id reply)]))
 
 (defn edit-mentions
