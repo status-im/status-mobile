@@ -548,6 +548,22 @@ class TestOneToOneChatMultipleSharedDevicesNewUiTwo(MultipleSharedDeviceTestCase
         self.message_1, self.message_2, self.message_3, self.message_4 = \
             "Message 1", "Message 2", "Message 3", "Message 4"
 
+    @marks.skip  # ToDo: can't be implemented with current SauceLabs emulators screen resolution
+    def test_1_1_chat_send_image_with_camera(self):
+        self.chat_1.just_fyi("Device 1 sends a camera image")
+        image_description = "camera test"
+        self.chat_1.send_image_with_camera(description=image_description)
+        for chat in self.chat_1, self.chat_2:
+            chat_name = "sender" if chat.driver.number == 0 else "receiver"
+            chat.just_fyi("%s checks image message" % chat_name.capitalize())
+            chat_element = chat.chat_element_by_text(image_description)
+            if chat_element.is_element_displayed(30):
+                if not chat_element.image_in_message.is_element_image_similar_to_template('saucelabs_camera_image.png'):
+                    self.errors.append("Not expected image is shown to the %s." % chat_name)
+            else:
+                self.errors.append("Message with camera image is not shown in chat for %s" % chat_name)
+        self.errors.verify_no_errors()
+
     @marks.testrail_id(702783)
     @marks.xfail(reason="Data delivery issue")
     def test_1_1_chat_is_shown_message_sent_delivered_from_offline(self):
