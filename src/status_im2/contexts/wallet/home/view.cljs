@@ -8,6 +8,7 @@
     [status-im2.contexts.wallet.common.activity-tab.view :as activity]
     [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im2.contexts.wallet.common.temp :as temp]
+    [status-im2.contexts.wallet.common.utils :as utils]
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -38,14 +39,6 @@
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
 
-(defn get-balance
-  [balances address]
-  (.toFixed (->> balances
-                 (filter #(= (:address %) address))
-                 first
-                 :balance)
-            2))
-
 (defn account-cards
   [{:keys [accounts loading? balances profile]}]
   (let [accounts-with-balances (mapv (fn [account]
@@ -56,9 +49,9 @@
                                                                                   :wallet-accounts (:address account)])
                                               :loading?            loading?
                                               :balance             (str "$"
-                                                                        (get-balance balances
-                                                                                     (:address
-                                                                                      account)))))
+                                                                        (utils/get-balance-by-address balances
+                                                                                                      (:address
+                                                                                                       account)))))
                                      accounts)]
     (conj accounts-with-balances (add-account-placeholder (:customization-color profile)))))
 
