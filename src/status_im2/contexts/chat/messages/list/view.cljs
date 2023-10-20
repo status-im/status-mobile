@@ -171,7 +171,7 @@
   [style]
   (cond-> style
     platform/android?
-    (assoc :scale-y -1)))
+    (assoc :scale-y -1.02)))
 
 (defn actions
   [chat-id cover-bg-color]
