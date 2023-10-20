@@ -1,12 +1,11 @@
 (ns status-im2.common.home.top-nav.view
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [status-im.multiaccounts.core :as multiaccounts]
-   [status-im2.common.home.top-nav.style :as style]
-   [status-im2.constants :as constants]
-   [utils.debounce :refer [dispatch-and-chill]]
-   [utils.re-frame :as rf]))
+    [quo.core :as quo]
+    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im2.common.home.top-nav.style :as style]
+    [status-im2.constants :as constants]
+    [utils.debounce :refer [dispatch-and-chill]]
+    [utils.re-frame :as rf]))
 
 (defn view
   "[top-nav props]
