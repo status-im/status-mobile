@@ -40,7 +40,7 @@
 
 (views/defview account-card
   [{:keys [address color type] :as account}]
-  (views/letsubs [currency        [:wallet/currency]
+  (views/letsubs [currency        [:wallet-legacy/currency]
                   portfolio-value [:account-portfolio-value address]
                   window-width    [:dimensions/window-width]
                   prices-loading? [:prices-loading?]]
@@ -63,7 +63,7 @@
                           :color       colors/white-transparent-70-persist}}
        (address/normalized-hex address)]]
      [react/view {:position :absolute :top 12 :right 12}
-      [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet/share-popover address])}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet-legacy/share-popover address])}
        [icons/icon :main-icons/share
         {:color               colors/white-persist
          :accessibility-label :share-wallet-address-icon}]]]
@@ -81,17 +81,17 @@
          (i18n/label :t/wallet-send)
          :main-icons/send
          colors/white-persist
-         #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])])
+         #(re-frame/dispatch [:wallet-legacy/prepare-transaction-from-wallet account])])
       [react/view {:style (styles/divider)}]
       [button
        (i18n/label :t/receive)
        :main-icons/receive
        colors/white-persist
-       #(re-frame/dispatch [:wallet/share-popover address])]]]))
+       #(re-frame/dispatch [:wallet-legacy/share-popover address])]]]))
 
 (views/defview transactions
   [address]
-  (views/letsubs [data [:wallet.transactions.history/screen address]]
+  (views/letsubs [data [:wallet-legacy.transactions.history/screen address]]
     [history/history-list data address]))
 
 (defn opensea-link
@@ -115,10 +115,10 @@
 
 (views/defview assets-and-collections-new
   [address]
-  (views/letsubs [{:keys [tokens]}       [:wallet/visible-assets-with-values address]
-                  currency               [:wallet/currency]
+  (views/letsubs [{:keys [tokens]}       [:wallet-legacy/visible-assets-with-values address]
+                  currency               [:wallet-legacy/currency]
                   opensea-enabled?       [:opensea-enabled?]
-                  collectible-collection [:wallet/collectible-collection address]]
+                  collectible-collection [:wallet-legacy/collectible-collection address]]
     ;ethereum-network? [:ethereum-network?]]
     (let [tab @selected-tab]
       [react/view {:flex 1}
@@ -176,12 +176,12 @@
       (i18n/label :t/wallet-send)
       :main-icons/send
       colors/blue-persist
-      #(re-frame/dispatch [:wallet/prepare-transaction-from-wallet account])])
+      #(re-frame/dispatch [:wallet-legacy/prepare-transaction-from-wallet account])])
    [button
     (i18n/label :t/receive)
     :main-icons/receive
     colors/blue-persist
-    #(re-frame/dispatch [:wallet/share-popover address])]])
+    #(re-frame/dispatch [:wallet-legacy/share-popover address])]])
 
 (defn anim-listener
   [anim-y scroll-y]
@@ -231,10 +231,10 @@
 
 (views/defview assets-and-collections
   [address]
-  (views/letsubs [{:keys [tokens]}       [:wallet/visible-assets-with-values address]
-                  currency               [:wallet/currency]
+  (views/letsubs [{:keys [tokens]}       [:wallet-legacy/visible-assets-with-values address]
+                  currency               [:wallet-legacy/currency]
                   opensea-enabled?       [:opensea-enabled?]
-                  collectible-collection [:wallet/collectible-collection address]
+                  collectible-collection [:wallet-legacy/collectible-collection address]
                   ethereum-network?      [:ethereum-network?]]
     (let [{:keys [tab]} @state]
       [react/view {:flex 1}
@@ -272,11 +272,11 @@
 (defn account-new
   [selected-account]
   (let [;{:keys [name address] :as account} (rf/sub [:account-by-address selected-account])
-        currency        (rf/sub [:wallet/currency])
+        currency        (rf/sub [:wallet-legacy/currency])
         portfolio-value (rf/sub [:account-portfolio-value selected-account])
         width           (rf/sub [:dimensions/window-width])
         button-width    (/ (- width 40 (* 2 12)) 3)]
-    ;fetching-error (rf/sub [:wallet/fetching-error])]
+    ;fetching-error (rf/sub [:wallet-legacy/fetching-error])]
     [react/view
      {:flex                    1
       :background-color        (quo.colors/theme-colors quo.colors/white quo.colors/neutral-90)
@@ -306,7 +306,7 @@
 (views/defview account
   []
   (views/letsubs [{:keys [name address] :as current-account} [:multiaccount/current-account]
-                  fetching-error                             [:wallet/fetching-error]]
+                  fetching-error                             [:wallet-legacy/fetching-error]]
     (let [anim-y   (animation/create-value button-group-height)
           scroll-y (animation/create-value 0)]
       (anim-listener anim-y scroll-y)
@@ -327,7 +327,7 @@
          :refreshControl        (common/refresh-control
                                  (and
                                   @common/updates-counter
-                                  @(re-frame/subscribe [:wallet/refreshing-history?])))}
+                                  @(re-frame/subscribe [:wallet-legacy/refreshing-history?])))}
         (when fetching-error
           [react/view
            {:style {:flex        1

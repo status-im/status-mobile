@@ -7,6 +7,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im2.constants :as constants]
     [status-im2.contexts.contacts.drawers.nickname-drawer.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -38,23 +39,22 @@
         :accessibility-label accessibility-label}
        [quo/text
         {:weight :semi-bold
-         :size   :heading-1} title]
+         :size   :heading-2} title]
        [rn/view {:style (style/context-container)}
-        [quo/user-avatar
-         {:full-name         primary-name
-          :profile-picture   photo-path
-          :size              :xxs
-          :status-indicator? false}]
-        [quo/text
-         {:weight :medium
-          :size   :paragraph-2
-          :style  {:margin-left 4}} primary-name]]
+        [quo/context-tag
+         {:type            :default
+          :blur?           false
+          :profile-picture photo-path
+          :full-name       primary-name
+          :size            24}]]
        [quo/input
         {:type              :text
-         :blur?             true
+         :blur?             false
          :placeholder       (i18n/label :t/type-nickname)
          :auto-focus        true
-         :max-length        32
+         :max-length        constants/profile-name-max-length
+         :label             (i18n/label :t/nickname)
+         :char-limit        constants/profile-name-max-length
          :on-change-text    (fn [nickname]
                               (reset! entered-nickname nickname))
          :on-submit-editing #(add-nickname-and-show-toast primary-name @entered-nickname public-key)}]

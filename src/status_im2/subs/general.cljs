@@ -147,7 +147,7 @@
    (get-in animations [type item-id :delete-swiped])))
 
 (re-frame/reg-sub
- :search/recipient-filter
+ :wallet-legacy/search-recipient-filter
  :<- [:ui/search]
  (fn [search]
    (get search :recipient-filter)))
@@ -157,12 +157,6 @@
  :<- [:ui/search]
  (fn [search]
    (get search :currency-filter)))
-
-(re-frame/reg-sub
- :search/token-filter
- :<- [:ui/search]
- (fn [search]
-   (get search :token-filter)))
 
 (defn- node-version
   [web3-node-version]

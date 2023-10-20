@@ -102,7 +102,7 @@
   (let [{:keys [maxFeePerGas maxPriorityFeePerGas]} (get db :signing/edit-fee)
         latest-base-fee                             (money/wei->gwei
                                                      (money/bignumber
-                                                      (get db :wallet/current-base-fee)))
+                                                      (get db :wallet-legacy/current-base-fee)))
         fee-error                                   (cond
                                                       (or (:error maxFeePerGas)
                                                           (:error maxPriorityFeePerGas))
@@ -119,7 +119,7 @@
 (defn validate-max-priority-fee
   [db]
   (let [{:keys [maxPriorityFeePerGas]} (get db :signing/edit-fee)
-        latest-priority-fee            (get db :wallet/current-priority-fee)
+        latest-priority-fee            (get db :wallet-legacy/current-priority-fee)
         fee-error                      (cond
                                          (:error maxPriorityFeePerGas)
                                          nil
@@ -182,10 +182,10 @@
 (rf/defn set-fee-option
   {:events [:signing.edit-fee.ui/set-option]}
   [{:keys [db] :as cofx} option]
-  (let [tip               (get db :wallet/current-priority-fee)
-        slow              (get db :wallet/slow-base-fee)
-        normal            (get db :wallet/normal-base-fee)
-        fast              (get db :wallet/fast-base-fee)
+  (let [tip               (get db :wallet-legacy/current-priority-fee)
+        slow              (get db :wallet-legacy/slow-base-fee)
+        normal            (get db :wallet-legacy/normal-base-fee)
+        fast              (get db :wallet-legacy/fast-base-fee)
         {:keys [fee tip]} (get (get-fee-options tip slow normal fast) option)]
     {:db (-> db
              (assoc-in [:signing/edit-fee :selected-fee-option] option)
@@ -201,7 +201,7 @@
   [{:keys [db]} value]
   (let [{:keys [maxFeePerGas maxPriorityFeePerGas]}
         (get db :signing/edit-fee)
-        latest-base-fee (get db :wallet/current-base-fee)
+        latest-base-fee (get db :wallet-legacy/current-base-fee)
         max-fee-value (:value-number maxFeePerGas)
         max-priority-fee-value (:value-number maxPriorityFeePerGas)
         new-value (money/bignumber value)

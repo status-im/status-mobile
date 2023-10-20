@@ -206,7 +206,7 @@
                :add-new-account-pin           (keycard/enter-pin-screen-did-load %)
                :keycard-authentication-method (keycard/authentication-method-screen-did-load %)
                :multiaccounts                 (keycard/multiaccounts-screen-did-load %)
-               :wallet                        (wallet/wallet-will-focus %)
+               :wallet-legacy                 (wallet/wallet-will-focus %)
                nil)))
 
 ;;TODO :replace by named events
@@ -252,5 +252,5 @@
 
 (re-frame/reg-event-fx :buy-crypto.ui/open-screen
  (fn []
-   {:fx [[:dispatch [:wallet/keep-watching]]
+   {:fx [[:dispatch [:wallet-legacy/keep-watching]]
          [:dispatch [:open-modal :buy-crypto nil]]]}))

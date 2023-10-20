@@ -1024,3 +1024,67 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
             self.errors.append("Sender was navigated out of 1-1 chat")
 
         self.errors.verify_no_errors()
+
+    @marks.testrail_id(703629)
+    def test_community_join_when_node_owner_offline(self):
+        for home in self.homes:
+            home.navigate_back_to_home_view()
+        self.home_2.jump_to_messages_home()
+        self.home_1.jump_to_communities_home()
+
+        self.home_1.just_fyi("Device 1 creates open community")
+        self.home_1.create_community(community_type="open")
+        community_name = "open community"
+        self.community_1.share_community(community_name, self.username_2)
+
+        self.home_1.just_fyi("Device 1 goes offline")
+        app_package = self.device_1.driver.current_package
+        self.device_1.driver.terminate_app(app_package)
+
+        self.home_2.just_fyi("Device 2 requests to join the community")
+        self.home_2.get_chat(self.username_1).click()
+        self.chat_2.chat_element_by_text(community_name).view_community_button.click()
+        self.community_2.join_community(open_community=False)
+        exp_text = "You requested to join “%s”" % community_name
+        if self.community_2.toast_content_element.is_element_displayed(10):
+            cur_text = self.community_2.toast_content_element.text
+            if cur_text != exp_text:
+                self.errors.append(
+                    "Text \"%s\" in shown toast element doesn't match expected \"%s\"" % (cur_text, exp_text))
+        else:
+            self.errors.append("Toast element with the text \"%s\" doesn't appear" % exp_text)
+        if not self.community_2.community_status_pending.is_element_displayed():
+            self.errors.append("Pending status is not displayed")
+        self.community_2.toast_content_element.wait_for_invisibility_of_element(30)
+        self.community_2.close_community_view_button.click()
+        self.home_2.pending_communities_tab.click()
+        if self.home_2.get_chat(community_name, community=True).is_element_displayed():
+            self.home_2.get_chat(community_name, community=True).click()
+        else:
+            self.errors.append("%s is not listed inside Pending communities tab" % community_name)
+
+        self.home_1.just_fyi("Device 1 goes back online")
+        self.home_1.driver.activate_app(app_package)
+        self.device_1.sign_in()
+
+        self.home_2.just_fyi("Device 2 checks that he's joined the community")
+        exp_text = "You joined “%s”" % community_name
+        if self.community_2.toast_content_element.is_element_displayed(60):
+            cur_text = self.community_2.toast_content_element.text
+            if cur_text != exp_text:
+                self.errors.append(
+                    "Text \"%s\" in shown toast element doesn't match expected \"%s\"" % (cur_text, exp_text))
+        # else:
+        #     self.errors.append("Toast element with the text \"%s\" doesn't appear" % exp_text)
+        # ToDo: add verification when toast is fixed
+        if not self.community_2.community_status_joined.is_element_displayed():
+            self.errors.append("Joined status is not displayed")
+        self.community_2.close_community_view_button.click()
+        self.home_2.joined_communities_tab.click()
+        chat_element = self.home_2.get_chat(community_name, community=True)
+        if chat_element.is_element_displayed(30):
+            chat_element.click()
+        else:
+            self.errors.append("%s is not listed inside Joined communities tab" % community_name)
+
+        self.errors.verify_no_errors()

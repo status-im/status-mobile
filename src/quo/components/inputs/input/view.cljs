@@ -77,7 +77,7 @@
                               (when on-change-text (on-change-text new-text))
                               (let [amount-chars (count new-text)]
                                 (reset! char-count amount-chars)
-                                (when (>= amount-chars char-limit)
+                                (when (and (>= amount-chars char-limit) on-char-limit-reach)
                                   (on-char-limit-reach amount-chars))))]
     (fn [{:keys [blur? theme error? right-icon left-icon disabled? small? button
                  label char-limit multiline? clearable? on-focus on-blur container-style]

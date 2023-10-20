@@ -415,8 +415,12 @@ class CommunityView(HomeView):
 
         #### NEW UI
         # Communities initial page
+        self.close_community_view_button = Button(
+            self.driver,
+            xpath="//*[@content-desc='community-options-for-community']/../*[1]//android.widget.ImageView")
         self.community_description_text = Text(self.driver, accessibility_id="community-description-text")
         self.community_status_joined = Text(self.driver, accessibility_id="status-tag-positive")
+        self.community_status_pending = Text(self.driver, accessibility_id="status-tag-pending")
 
     def join_community(self, password=common_password, open_community=True):
         self.driver.info("Joining community")
@@ -754,10 +758,6 @@ class ChatView(BaseView):
         self.view_profile_new_contact_button = Button(self.driver, accessibility_id="new-contact-button")
 
         # Chat header
-        self.user_name_text = Text(self.driver, accessibility_id="chat-name-text")
-        self.user_name_text_new_UI = Text(
-            self.driver,
-            xpath="//*[@content-desc='user-avatar']/../following-sibling::android.widget.TextView")
         self.add_to_contacts = Button(self.driver, accessibility_id="add-to-contacts-button")
         ## Options
         self.chat_options = ChatOptionsButton(self.driver)

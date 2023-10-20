@@ -25,7 +25,7 @@
   {:utils/dispatch-later
    ;; We need to give previous sheet some time to be fully hidden
    [{:ms       200
-     :dispatch [:wallet.accounts/verify-pin]}]})
+     :dispatch [:wallet-legacy.accounts/verify-pin]}]})
 
 (rf/defn hide-pin-sheet
   {:events [:keycard/new-account-pin-sheet-hide]}
@@ -44,7 +44,7 @@
       (subs (native-module/sha3 normalized-key) 26))))
 
 (rf/defn generate-new-keycard-account
-  {:events [:wallet.accounts/generate-new-keycard-account]}
+  {:events [:wallet-legacy.accounts/generate-new-keycard-account]}
   [{:keys [db]}]
   (let [path-num (inc (get-in db [:profile/profile :latest-derived-path]))
         path     (str constants/path-wallet-root "/" path-num)
@@ -53,7 +53,7 @@
      (assoc-in
       db
       [:keycard :on-export-success]
-      #(vector :wallet.accounts/account-stored
+      #(vector :wallet-legacy.accounts/account-stored
                (let [public-key (utils.hex/normalize-hex %)]
                  {;; Strip leading 04 prefix denoting uncompressed key format
                   :address    (eip55/address->checksum
@@ -66,11 +66,11 @@
      :keycard/export-key {:pin pin :path path}}))
 
 (rf/defn verify-pin
-  {:events [:wallet.accounts/verify-pin]}
+  {:events [:wallet-legacy.accounts/verify-pin]}
   [cofx]
   (common/verify-pin
    cofx
    {:pin-step          :export-key
-    :on-card-connected :wallet.accounts/verify-pin
-    :on-success        :wallet.accounts/generate-new-keycard-account
+    :on-card-connected :wallet-legacy.accounts/verify-pin
+    :on-success        :wallet-legacy.accounts/generate-new-keycard-account
     :on-failure        :keycard/new-account-pin-sheet}))
