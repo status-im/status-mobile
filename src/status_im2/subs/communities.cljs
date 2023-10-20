@@ -214,9 +214,10 @@
    joined
    categories
    collapsed-categories
-   full-chats-data]
+   full-chats-data
+   public-key]
   (fn [acc
-       [_ {:keys [name categoryID position id emoji can-post?]}]]
+       [_ {:keys [name categoryID position id emoji can-post? members]}]]
     (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
                   unviewed-mentions-count
@@ -239,7 +240,8 @@
                              :position         position
                              :mentions-count   (or unviewed-mentions-count 0)
                              :locked?          (or (not joined)
-                                                   (not can-post?))
+                                                   (not can-post?)
+                                                   (not (contains? members public-key)))
                              :id               id}]
       (update-in acc-with-category [category-id :chats] conj chat))))
 
@@ -248,14 +250,16 @@
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])
     (re-frame/subscribe [:chats/chats])
-    (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])])
- (fn [[{:keys [joined categories chats]} full-chats-data collapsed-categories] [_ community-id]]
+    (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])
+    (re-frame/subscribe [:profile/profile])])
+ (fn [[{:keys [joined categories chats]} full-chats-data collapsed-categories {:keys [public-key]}] [_ community-id]]
    (let [reduce-fn (reduce-over-categories
                     community-id
                     joined
                     categories
                     collapsed-categories
-                    full-chats-data)
+                    full-chats-data
+                    public-key)
          categories-and-chats
          (->>
            chats
