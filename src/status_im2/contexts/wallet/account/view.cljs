@@ -8,6 +8,7 @@
     [status-im2.contexts.wallet.account.style :as style]
     [status-im2.contexts.wallet.account.tabs.view :as tabs]
     [status-im2.contexts.wallet.common.temp :as temp]
+    [status-im2.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -63,9 +64,14 @@
    {:id :about :label (i18n/label :t/about) :accessibility-label :about}])
 
 (defn view
-  []
-  (let [top          (safe-area/get-top)
-        selected-tab (reagent/atom (:id (first tabs-data)))]
+  [account-address]
+  (let [accounts        (rf/sub [:profile/wallet-accounts])
+        account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
+        account         (utils/get-account-by-address accounts account-address)
+        top             (safe-area/get-top)
+        selected-tab    (reagent/atom (:id (first tabs-data)))
+        balances        (rf/sub [:wallet-2/balances])
+        balance         (utils/get-balance-by-address balances account-address)]
     (fn []
       [rn/view
        {:style {:flex       1
@@ -84,7 +90,10 @@
                                                                   :gradient-cover?     true
                                                                   :customization-color :purple}])
                              :emoji               "🍑"}}]
-       [quo/account-overview temp/account-overview-state]
+       [quo/account-overview {:current-value       (utils/prettify-balance balance)
+                              :account-name        (:name account)
+                              :account             :default ;; for now
+                              :customization-color :blue}] ;; for now
        [quo/wallet-graph {:time-frame :empty}]
        [quo/wallet-ctas
         {:send-action #(rf/dispatch [:open-modal :wallet-select-address])

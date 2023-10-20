@@ -48,10 +48,8 @@
                                               :on-press            #(rf/dispatch [:navigate-to
                                                                                   :wallet-accounts (:address account)])
                                               :loading?            loading?
-                                              :balance             (str "$"
-                                                                        (utils/get-balance-by-address balances
-                                                                                                      (:address
-                                                                                                       account)))))
+                                              :balance             (utils/prettify-balance (utils/get-balance-by-address balances
+                                                                                                                         (:address account)))))
                                      accounts)]
     (conj accounts-with-balances (add-account-placeholder (:customization-color profile)))))
 

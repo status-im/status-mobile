@@ -8,8 +8,17 @@
 
 (defn get-balance-by-address
   [balances address]
-  (.toFixed (->> balances
-                 (filter #(= (:address %) address))
-                 first
-                 :balance)
-            2))
+  (->> balances
+       (filter #(= (:address %) address))
+       first
+       :balance))
+
+(defn get-account-by-address
+  [accounts address]
+  (->> accounts
+       (filter #(= (:address %) address))
+       first))
+
+(defn prettify-balance
+  [balance]
+  (str "$" (.toFixed balance 2)))
