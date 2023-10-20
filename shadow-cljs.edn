@@ -5,11 +5,9 @@
                 [re-frame "1.3.0"]
                 [binaryage/oops "0.7.2"]
                 [com.andrewmcveigh/cljs-time "0.5.2"]
-                [status-im/timbre "4.10.0-2-status"]
-                [hickory "0.7.1"]
-                [cljs-bean "1.3.0"]
-                [com.cognitect/transit-cljs "0.8.248"]
-                [mvxcvi/alphabase "1.0.0"]
+                [com.taoensso/timbre "6.3.1"]
+                [cljs-bean "1.9.0"]
+                [com.cognitect/transit-cljs "0.8.280"]
                 [camel-snake-kebab "0.4.3"]
 
                 ;; Dev dependencies
@@ -21,16 +19,11 @@
                 ;; Use the same version specified in the Nix dependency.
                 [clj-kondo/clj-kondo "2023.09.07"]
 
-                ;; We don't use the encore library, but re-frisk requires re-frisk/sente (fork of
-                ;; com.taoensso/sente), which in turn requires encore. We need to bump encore to
-                ;; 3.21.0+ to remove a warning displayed while shadow-cljs starts (commit
-                ;; https://github.com/ptaoussanis/encore/commit/f7a21567b9611a63999609ca183c7fb175034bd6).
-                [com.taoensso/encore "3.21.0"]
                 ;; Routing
                 [bidi "2.1.6"]
                 ;; Test dependencies
                 [day8.re-frame/test "0.1.5"]
-                [com.taoensso/tufte "2.1.0"]]
+                [com.taoensso/tufte "2.6.3"]]
 
  ;; port and middleware for repl in development
  :nrepl {:port       7888

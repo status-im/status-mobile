@@ -84,8 +84,7 @@
        [l message]
        (s/add l message))
 
-(tufte/add-basic-println-handler! {:format-pstats-opts {:columns      [:n-calls :mean :min :max :clock
-                                                                       :total]
+(tufte/add-basic-println-handler! {:format-pstats-opts {:columns      [:n :mean :min :max :clock :sum]
                                                         :format-id-fn name}})
 
 (deftest ^:benchmark benchmark-list
