@@ -252,7 +252,8 @@
     (re-frame/subscribe [:chats/chats])
     (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])
     (re-frame/subscribe [:profile/profile])])
- (fn [[{:keys [joined categories chats]} full-chats-data collapsed-categories {:keys [public-key]}] [_ community-id]]
+ (fn [[{:keys [joined categories chats]} full-chats-data collapsed-categories {:keys [public-key]}]
+      [_ community-id]]
    (let [reduce-fn (reduce-over-categories
                     community-id
                     joined
