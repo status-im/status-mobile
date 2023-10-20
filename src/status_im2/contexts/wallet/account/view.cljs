@@ -60,10 +60,18 @@
   [account-address]
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
+<<<<<<< HEAD
       (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
             account         (rf/sub [:wallet/account account-address])
             networks        (rf/sub [:wallet/network-details])]
         [rn/view {:style style/container}
+=======
+<<<<<<< HEAD
+      (let [networks (rf/sub [:wallet/network-details])]
+        [rn/view
+         {:style {:flex       1
+                  :margin-top top}}
+>>>>>>> 7a5ddb266 (updates)
          [quo/page-nav
           {:type              :wallet-networks
            :background        :blur
@@ -96,3 +104,35 @@
            :on-change      #(reset! selected-tab %)
            :scrollable?    true}]
          [tabs/view {:selected-tab @selected-tab}]]))))
+=======
+      [rn/view
+       {:style {:flex       1
+                :margin-top top}}
+       [quo/page-nav
+        {:type              :wallet-networks
+         :background        :blur
+         :icon-name         :i/close
+         :on-press          #(rf/dispatch [:navigate-back])
+         :networks          networks-list
+         :networks-on-press #(js/alert "Pressed Networks")
+         :right-side        :account-switcher
+         :account-switcher  {:customization-color :purple
+                             :on-press            #(rf/dispatch [:show-bottom-sheet
+                                                                 {:content account-options}])
+                             :emoji               "🍑"}}]
+       [quo/account-overview temp/account-overview-state]
+       [quo/wallet-graph {:time-frame :empty}]
+       [quo/wallet-ctas
+        {:send-action #(rf/dispatch [:open-modal :wallet-select-address])
+         :buy-action  #(rf/dispatch [:show-bottom-sheet
+                                     {:content buy-drawer}])
+         :bridge-action #(rf/dispatch [:open-modal :wallet-bridge])}]
+       [quo/tabs
+        {:style          style/tabs
+         :size           32
+         :default-active @selected-tab
+         :data           tabs-data
+         :on-change      #(reset! selected-tab %)
+         :scrollable?    true}]
+       [tabs/view {:selected-tab @selected-tab}]])))
+>>>>>>> 3e4945851 (updates)
