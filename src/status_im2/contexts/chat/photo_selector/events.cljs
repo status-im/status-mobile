@@ -60,7 +60,7 @@
                       :my-albums   []})]
     ;; Get the "recent" album first
     (cameraroll/get-photos
-     {:first 1 :groupTypes "All"}
+     {:first 1 :groupTypes "All" :assetType "Photos"}
      (fn [res-recent]
        (swap! albums assoc
          :smart-album
@@ -74,7 +74,7 @@
             (if (pos? response-count)
               (doseq [album res-albums]
                 (cameraroll/get-photos
-                 {:first 1 :groupTypes "Albums" :groupName (:title album)}
+                 {:first 1 :groupTypes "Albums" :groupName (:title album) :assetType "Photos"}
                  (fn [res]
                    (let [uri (get-in (first (:edges res)) [:node :image :uri])]
                      (swap! albums update :my-albums conj (merge album {:uri uri}))
@@ -100,7 +100,8 @@
 (rf/defn on-camera-roll-get-albums
   {:events [:on-camera-roll-get-albums]}
   [{:keys [db]} albums]
-  {:db (assoc db :camera-roll/albums albums)})
+  {:db       (assoc db :camera-roll/albums albums)
+   :dispatch [:photo-selector/camera-roll-get-ios-photo-count]})
 
 (rf/defn get-photos-count-ios
   {:events [:on-camera-roll-get-images-count-ios]}

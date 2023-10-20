@@ -2188,7 +2188,7 @@
   dependencies:
     merge-options "^3.0.4"
 
-"@react-native-camera-roll/camera-roll@git+https://github.com/status-im/react-native-camera-roll.git#refs/tags/v5.1.1.1-test":
+"@react-native-camera-roll/camera-roll@git+https://github.com/status-im/react-native-camera-roll.git#refs/tags/v5.1.1.1":
   version "5.10.0"
   resolved "git+https://github.com/status-im/react-native-camera-roll.git#174f8c6ad88e5bad9d9bd207f42173e567ec3138"
 
