@@ -14,7 +14,7 @@
     [status-im.utils.deprecated-types :as types]
     [status-im.utils.hex :as hex]
     [status-im.utils.mobile-sync :as utils.mobile-sync]
-    [status-im.wallet.core :as wallet]
+    [status-im.wallet.core :as wallet-legacy]
     [status-im.wallet.prices :as prices]
     [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
@@ -27,7 +27,7 @@
     [utils.security.core :as security]))
 
 (rf/defn start-adding-new-account
-  {:events [:wallet.accounts/start-adding-new-account]}
+  {:events [:wallet-legacy.accounts/start-adding-new-account]}
   [{:keys [db] :as cofx} {:keys [type] :as add-account}]
   (let [{:keys [latest-derived-path]} (:profile/profile db)
         path-num                      (inc latest-derived-path)
@@ -54,7 +54,7 @@
     (let [{:keys [error publicKey address]} (types/json->clj result)]
       (if error
         (re-frame/dispatch [::new-account-error :account-error error])
-        (re-frame/dispatch [:wallet.accounts/account-stored
+        (re-frame/dispatch [:wallet-legacy.accounts/account-stored
                             {:address    address
                              :public-key publicKey
                              :type       type
@@ -93,7 +93,7 @@
                     (if error
                       (re-frame/dispatch [::new-account-error :account-error error])
                       (re-frame/dispatch
-                       [:wallet.accounts/account-stored
+                       [:wallet-legacy.accounts/account-stored
                         {:address    address
                          :public-key publicKey
                          :key-uid    keyUid
@@ -123,7 +123,8 @@
    (native-module/verify
     address
     hashed-password
-    #(re-frame/dispatch [:wallet.accounts/add-new-account-password-verifyied % hashed-password]))))
+    #(re-frame/dispatch [:wallet-legacy.accounts/add-new-account-password-verifyied %
+                         hashed-password]))))
 
 (re-frame/reg-fx
  ::generate-account
@@ -166,11 +167,11 @@
   [{:keys [db]} passphrase hashed-password]
   {:db                               (assoc-in db [:add-account :step] :generating)
    ::multiaccounts/validate-mnemonic [(security/safe-unmask-data passphrase)
-                                      #(re-frame/dispatch [:wallet.accounts/seed-validated
+                                      #(re-frame/dispatch [:wallet-legacy.accounts/seed-validated
                                                            % passphrase hashed-password])]})
 
 (rf/defn new-account-seed-validated
-  {:events [:wallet.accounts/seed-validated]}
+  {:events [:wallet-legacy.accounts/seed-validated]}
   [{:keys [db] :as cofx} phrase-warnings passphrase hashed-password]
   (let [error             (:error (types/json->clj phrase-warnings))
         {:keys [key-uid]} (:profile/profile db)]
@@ -220,7 +221,7 @@
       (rf/merge cofx
                 {:json-rpc/call [{:method     method
                                   :params     params
-                                  :on-success #(re-frame/dispatch [::wallet/restart])}]
+                                  :on-success #(re-frame/dispatch [::wallet-legacy/restart])}]
                  :db            (-> db
                                     (assoc :profile/wallet-accounts new-accounts)
                                     (dissoc :add-account))}
@@ -231,7 +232,7 @@
                    {}))))))
 
 (rf/defn account-generated
-  {:events [:wallet.accounts/account-stored]}
+  {:events [:wallet-legacy.accounts/account-stored]}
   [{:keys [db] :as cofx} {:keys [address] :as account}]
   (let [accounts (:profile/wallet-accounts db)]
     (if (some #(when (= (:address %) address) %) accounts)
@@ -240,9 +241,9 @@
                 {:db (update-in db [:add-account :account] merge account)}
                 (save-new-account)
                 (if (utils.mobile-sync/syncing-allowed? cofx)
-                  (wallet/set-max-block address 0)
-                  (wallet/update-balances nil true))
-                (wallet/fetch-collectibles-collection)
+                  (wallet-legacy/set-max-block address 0)
+                  (wallet-legacy/update-balances nil true))
+                (wallet-legacy/fetch-collectibles-collection)
                 (prices/update-prices)
                 (navigation/navigate-back)))))
 
@@ -254,7 +255,7 @@
                         :type    :watch})))
 
 (rf/defn add-new-account-password-verifyied
-  {:events [:wallet.accounts/add-new-account-password-verifyied]}
+  {:events [:wallet-legacy.accounts/add-new-account-password-verifyied]}
   [{:keys [db] :as cofx} result hashed-password]
   (let [{:keys [error]} (types/json->clj result)]
     (if (not (string/blank? error))
@@ -274,7 +275,7 @@
                       :hashed-password hashed-password}})
 
 (rf/defn set-account-to-watch
-  {:events [:wallet.accounts/set-account-to-watch]}
+  {:events [:wallet-legacy.accounts/set-account-to-watch]}
   [{:keys [db]} account]
   (let [name? (and (>= (count account) 3)
                    (not (hex/valid-hex? account)))]
@@ -286,10 +287,10 @@
              [(chain/chain-id db)
               (stateofus/ens-name-parse account)
               #(re-frame/dispatch
-                [:wallet.accounts/set-account-to-watch %])]))))
+                [:wallet-legacy.accounts/set-account-to-watch %])]))))
 
 (rf/defn add-new-account
-  {:events [:wallet.accounts/add-new-account]}
+  {:events [:wallet-legacy.accounts/add-new-account]}
   [{:keys [db] :as cofx} hashed-password]
   (let [{:keys [type step]} (:add-account db)]
     (log/debug "[wallet] add-new-account"
@@ -306,7 +307,7 @@
         nil))))
 
 (rf/defn save-account
-  {:events [:wallet.accounts/save-account]}
+  {:events [:wallet-legacy.accounts/save-account]}
   [{:keys [db]} account {:keys [name color hidden]}]
   (let [accounts     (:profile/wallet-accounts db)
         new-account  (cond-> account
@@ -320,7 +321,7 @@
      :db            (assoc db :profile/wallet-accounts new-accounts)}))
 
 (rf/defn delete-account
-  {:events [:wallet.accounts/delete-account]}
+  {:events [:wallet-legacy.accounts/delete-account]}
   [{:keys [db] :as cofx} account]
   (let [accounts        (:profile/wallet-accounts db)
         new-accounts    (vec (remove #(= account %) accounts))
@@ -331,7 +332,7 @@
                                 :on-success #()}]
                :db            (-> db
                                   (assoc :profile/wallet-accounts new-accounts)
-                                  (update-in [:wallet :accounts] dissoc deleted-address))}
+                                  (update-in [:wallet-legacy :accounts] dissoc deleted-address))}
               (navigation/pop-to-root :shell-stack))))
 
 (re-frame/reg-fx
@@ -349,7 +350,7 @@
             (on-success))))))))
 
 (rf/defn delete-account-key
-  {:events [:wallet.accounts/delete-key]}
+  {:events [:wallet-legacy.accounts/delete-key]}
   [{:keys [db] :as cofx} account password on-error]
   (let [deleted-address (:address account)
         dapps-address   (get-in cofx [:db :profile/profile :dapps-address])]
@@ -362,11 +363,11 @@
         :password   password
         :on-success #(do
                        (re-frame/dispatch [:hide-popover])
-                       (re-frame/dispatch [:wallet.accounts/delete-account account]))
+                       (re-frame/dispatch [:wallet-legacy.accounts/delete-account account]))
         :on-error   on-error}})))
 
 (rf/defn view-only-qr-scanner-result
-  {:events [:wallet.add-new/qr-scanner-result]}
+  {:events [:wallet-legacy.add-new/qr-scanner-result]}
   [{db :db :as cofx} data _]
   (let [address (:address (eip681/parse-uri data))]
     (rf/merge cofx
@@ -384,7 +385,7 @@
    (list-selection/open-share obj)))
 
 (rf/defn wallet-accounts-share
-  {:events [:wallet.accounts/share]}
+  {:events [:wallet-legacy.accounts/share]}
   [_ address]
   {:list.selection/open-share {:message (eip55/address->checksum address)}})
 

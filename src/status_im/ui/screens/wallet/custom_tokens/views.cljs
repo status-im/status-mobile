@@ -20,14 +20,15 @@
     (swap! debounce-timers assoc
       field-key
       (js/setTimeout
-       #(re-frame/dispatch [:wallet.custom-token.ui/field-is-edited field-key (string/trim value)])
+       #(re-frame/dispatch [:wallet-legacy.custom-token.ui/field-is-edited field-key
+                            (string/trim value)])
        500))))
 
 (defview add-custom-token
   []
   (letsubs [{:keys [contract name decimals in-progress? error error-name error-symbol]
              :as   m}
-            [:wallet/custom-token-screen]]
+            [:wallet-legacy/custom-token-screen]]
     (let [sym (:symbol m)]
       [react/keyboard-avoiding-view {:flex 1 :background-color colors/white}
        [react/scroll-view
@@ -50,7 +51,7 @@
            ;;tooltip covers button
            [react/view {:position :absolute :z-index 1000 :right 0 :top 10}
             [react/touchable-highlight
-             {:on-press #(re-frame/dispatch [:wallet.custom-token.ui/contract-address-paste])}
+             {:on-press #(re-frame/dispatch [:wallet-legacy.custom-token.ui/contract-address-paste])}
              [react/text {:style {:color colors/blue}}
               (i18n/label :t/paste)]]])
          [quo/text-input
@@ -117,7 +118,7 @@
                           (string/blank? name)
                           (string/blank? sym)
                           (string/blank? decimals)))
-           :on-press #(re-frame/dispatch [:wallet.custom-token.ui/add-pressed])}
+           :on-press #(re-frame/dispatch [:wallet-legacy.custom-token.ui/add-pressed])}
           (i18n/label :t/add)]}]])))
 
 (defview custom-token-details
@@ -166,4 +167,5 @@
          {:theme    :negative
           :title    (i18n/label :t/remove-token)
           :icon     :main-icons/delete
-          :on-press #(re-frame/dispatch [:wallet.custom-token.ui/remove-pressed token true])}])]]))
+          :on-press #(re-frame/dispatch [:wallet-legacy.custom-token.ui/remove-pressed token
+                                         true])}])]]))

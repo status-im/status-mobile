@@ -19,23 +19,23 @@
 
 ;; FIXME(Ferossgp): Should be part of QR scanner not wallet
 (rf/defn toggle-flashlight
-  {:events [:wallet/toggle-flashlight]}
+  {:events [:wallet-legacy/toggle-flashlight]}
   [{:keys [db]}]
-  (let [flashlight-state (get-in db [:wallet :send-transaction :camera-flashlight])
+  (let [flashlight-state (get-in db [:wallet-legacy :send-transaction :camera-flashlight])
         toggled-state    (if (= :on flashlight-state) :off :on)]
-    {:db (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state)}))
+    {:db (assoc-in db [:wallet-legacy :send-transaction :camera-flashlight] toggled-state)}))
 
 (defn- find-address-name
   [db address]
   (:name (contact.db/find-contact-by-address (:contacts/contacts db) address)))
 
 (rf/defn set-recipient
-  {:events [:wallet.send/set-recipient]}
+  {:events [:wallet-legacy.send/set-recipient]}
   [{:keys [db]} address]
   {:db       (-> db
-                 (dissoc :wallet/recipient)
+                 (dissoc :wallet-legacy/recipient)
                  (assoc-in [:ui/search :recipient-filter] nil)
-                 (assoc-in [:wallet/prepare-transaction :to] address))
+                 (assoc-in [:wallet-legacy/prepare-transaction :to] address))
    :dispatch [:navigate-back]})
 
 (re-frame/reg-fx
@@ -65,7 +65,7 @@
     :or       {sym :ETH}}
    all-tokens]
   (assoc db
-         :wallet/prepare-transaction
+         :wallet-legacy/prepare-transaction
          (cond-> {:to      address
                   :to-name (or name (find-address-name db address))
                   :from    (wallet.utils/get-default-account
@@ -80,26 +80,26 @@
            sym       (assoc :symbol sym))))
 
 (rf/defn request-uri-parsed
-  {:events [:wallet/request-uri-parsed]}
-  [{{:networks/keys [networks current-network]
-     :wallet/keys   [all-tokens]
-     :as            db}
+  {:events [:wallet-legacy/request-uri-parsed]}
+  [{{:networks/keys      [networks current-network]
+     :wallet-legacy/keys [all-tokens]
+     :as                 db}
     :db}
    {:keys [chain-id] :as data}
    uri]
   (let [{:keys [address gasPrice] :as details}
         (eip681/extract-request-details data all-tokens)]
     (if address
-      (if (:wallet/recipient db)
+      (if (:wallet-legacy/recipient db)
         {:db (update db
-                     :wallet/recipient assoc
-                     :resolved-address address
-                     :address          address)}
-        (if (:wallet/prepare-transaction db)
+                     :wallet-legacy/recipient assoc
+                     :resolved-address        address
+                     :address                 address)}
+        (if (:wallet-legacy/prepare-transaction db)
           {:db (update db
-                       :wallet/prepare-transaction assoc
-                       :to                         address
-                       :to-name                    (find-address-name db address))}
+                       :wallet-legacy/prepare-transaction assoc
+                       :to                                address
+                       :to-name                           (find-address-name db address))}
           (let [current-chain-id (get-in networks [current-network :config :NetworkId])]
             (merge {:db       (fill-prepare-transaction-details db details all-tokens)
                     :dispatch [:open-modal :prepare-send-transaction]}
@@ -107,7 +107,8 @@
                      {:signing/update-gas-price
                       {:success-callback
                        #(re-frame/dispatch
-                         [:wallet.send/update-gas-price-success :wallet/prepare-transaction %])
+                         [:wallet-legacy.send/update-gas-price-success :wallet-legacy/prepare-transaction
+                          %])
                        :network-id (get-in (chain/current-network db)
                                            [:config :NetworkId])}})
                    (when (and chain-id (not= current-chain-id chain-id))
@@ -116,14 +117,14 @@
       {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})})))
 
 (rf/defn qr-scanner-allowed
-  {:events [:wallet.send/qr-scanner]}
+  {:events [:wallet-legacy.send/qr-scanner]}
   [{:keys [db] :as cofx} options]
   (rf/merge cofx
             (bottom-sheet/hide-bottom-sheet-old)
             (qr-scaner/scan-qr-code options)))
 
 (rf/defn parse-eip681-uri-and-resolve-ens
-  {:events [:wallet/parse-eip681-uri-and-resolve-ens]}
+  {:events [:wallet-legacy/parse-eip681-uri-and-resolve-ens]}
   [{db :db :as cofx} {:keys [message uri paths ens-names error]} ignore-url]
   (if-not error
     ;; first we get a vector of ens-names to resolve and a vector of paths of these names
@@ -136,7 +137,7 @@
         :callback
         (fn [addresses]
           (re-frame/dispatch
-           [:wallet/request-uri-parsed
+           [:wallet-legacy/request-uri-parsed
             ;; we replace ens-names at their path in the message by their actual address
             (reduce (fn [message [path address]]
                       (assoc-in message path address))
@@ -153,7 +154,7 @@
         {:ui/show-error (i18n/label :t/wallet-invalid-address {:data uri})}))))
 
 (rf/defn qr-scanner-result
-  {:events [:wallet.send/qr-scanner-result]}
+  {:events [:wallet-legacy.send/qr-scanner-result]}
   [cofx data {:keys [ignore-url]}]
   (rf/merge cofx
             (navigation/navigate-back)

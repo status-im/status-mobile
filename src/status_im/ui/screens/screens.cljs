@@ -141,8 +141,8 @@
 
    ;;WALLET
 
-   {:name      :wallet
-    :on-focus  [:wallet/tab-opened]
+   {:name      :wallet-legacy
+    :on-focus  [:wallet-legacy/tab-opened]
     ;;TODO wallet redesign
     ;;:options   {:statusBar {:backgroundColor quo.colors/neutral-5}}
     :component wallet.accounts/accounts-overview-old}
@@ -171,7 +171,7 @@
     :options   {:insets {:top? true}}
     :component wallet-settings/manage-assets}
    {:name      :wallet-add-custom-token
-    :on-focus  [:wallet/wallet-add-custom-token]
+    :on-focus  [:wallet-legacy/wallet-add-custom-token]
     :options   {:topBar {:title {:text (i18n/label :t/add-custom-token)}}
                 :insets {:top? true}}
     :component custom-tokens/add-custom-token}
@@ -473,7 +473,7 @@
 
    ;[Wallet] Prepare Transaction
    {:name        :prepare-send-transaction
-    :on-dissmiss [:wallet/cancel-transaction-command]
+    :on-dissmiss [:wallet-legacy/cancel-transaction-command]
     :options     {:topBar             {:title {:text (i18n/label :t/send-transaction)}}
                   :swipeToDismiss     false
                   :hardwareBackButton {:dismissModalOnPress false}
@@ -483,7 +483,7 @@
 
    ;[Wallet] Request Transaction
    {:name        :request-transaction
-    :on-dissmiss [:wallet/cancel-transaction-command]
+    :on-dissmiss [:wallet-legacy/cancel-transaction-command]
     :options     {:topBar             {:title {:text (i18n/label :t/request-transaction)}}
                   :swipeToDismiss     false
                   :hardwareBackButton {:dismissModalOnPress false}
