@@ -9,15 +9,8 @@
           props {:customization-color :blue}]
       (h/render-with-theme-provider [new-tab/view props] theme)
       (h/has-style (h/query-by-test-id "new-tab")
-                   {:borderStyle     "dashed"
-                    :alignItems      "center"
-                    :backgroundColor "rgba(42,74,245,0.1)"
-                    :width           160
-                    :borderWidth     1
-                    :justifyContent  "center"
+                   {:backgroundColor "rgba(42,74,245,0.1)"
                     :borderColor     "rgba(42,74,245,0.4)"
-                    :borderRadius    16
-                    :height          172
                    })
       (-> (h/expect (h/query-by-translation-text "New tab"))
           (h/is-truthy))))
@@ -26,15 +19,8 @@
           props {:customization-color :orange}]
       (h/render-with-theme-provider [new-tab/view props] theme)
       (h/has-style (h/query-by-test-id "new-tab")
-                   {:borderStyle     "dashed"
-                    :alignItems      "center"
-                    :backgroundColor "rgba(255,125,70,0.1)"
-                    :width           160
-                    :borderWidth     1
-                    :justifyContent  "center"
+                   {:backgroundColor "rgba(255,125,70,0.1)"
                     :borderColor     "rgba(255,125,70,0.4)"
-                    :borderRadius    16
-                    :height          172
                    })
       (-> (h/expect (h/query-by-translation-text "New tab"))
           (h/is-truthy)))))

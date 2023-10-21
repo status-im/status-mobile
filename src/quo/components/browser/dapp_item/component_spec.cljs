@@ -2,7 +2,9 @@
   (:require [quo.components.browser.dapp-item.view :as dapp-item]
             [quo.foundations.resources :as quo.resources]
             [test-helpers.component :as h]))
+
 (def aave (quo.resources/get-dapp :aave))
+
 (h/describe "dapp-item"
   (h/test "default render"
     (let [theme :light

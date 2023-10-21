@@ -2,7 +2,7 @@
   (:require [quo.components.browser.new-tab.style :as style]
             [quo.components.markdown.text :as text]
             [quo.components.buttons.button.view :as button]
-            [quo.theme :as theme]
+            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [utils.i18n :as i18n]))
 
@@ -27,4 +27,4 @@
      :number-of-lines 1}
     (i18n/label :t/new-tab)]])
 
-(def view (theme/with-theme view-internal))
+(def view (quo.theme/with-theme view-internal))
