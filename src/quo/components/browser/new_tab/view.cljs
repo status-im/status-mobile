@@ -9,7 +9,7 @@
 (defn view-internal
   [{:keys [customization-color theme]}]
   [rn/view
-   {:test-ID "new-tab"
+   {:accessibility-label :new-tab
     :style   (style/container customization-color theme)}
    [button/button
     {:type                :primary
@@ -17,7 +17,6 @@
      :on-press            #(js/alert "TODO: to be implemented")
      :size                32
      :icon-only?          true
-     :accessibility-label :new-tab
      :customization-color customization-color}
     :i/add]
    [rn/view {:style style/gap}]

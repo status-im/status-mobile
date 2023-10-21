@@ -8,7 +8,7 @@
     (let [theme :light
           props {:customization-color :blue}]
       (h/render-with-theme-provider [new-tab/view props] theme)
-      (h/has-style (h/query-by-test-id "new-tab")
+      (h/has-style (h/query-by-label-text :new-tab)
                    {:backgroundColor "rgba(42,74,245,0.1)"
                     :borderColor     "rgba(42,74,245,0.4)"
                    })
@@ -18,7 +18,7 @@
     (let [theme :dark
           props {:customization-color :orange}]
       (h/render-with-theme-provider [new-tab/view props] theme)
-      (h/has-style (h/query-by-test-id "new-tab")
+      (h/has-style (h/query-by-label-text :new-tab)
                    {:backgroundColor "rgba(255,125,70,0.1)"
                     :borderColor     "rgba(255,125,70,0.4)"
                    })
