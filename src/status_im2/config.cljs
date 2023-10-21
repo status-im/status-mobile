@@ -74,7 +74,7 @@
 
 (def default-multiaccount
   {:preview-privacy?                   blank-preview?
-   :wallet/visible-tokens              {:mainnet #{:SNT}}
+   :wallet-legacy/visible-tokens       {:mainnet #{:SNT}}
    :currency                           :usd
    :appearance                         0
    :profile-pictures-show-to           2
@@ -87,7 +87,7 @@
 
 (defn default-visible-tokens
   [chain]
-  (get-in default-multiaccount [:wallet/visible-tokens chain]))
+  (get-in default-multiaccount [:wallet-legacy/visible-tokens chain]))
 
 (def mainnet-networks
   [{:id                  "mainnet_rpc"

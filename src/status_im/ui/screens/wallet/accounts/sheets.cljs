@@ -41,7 +41,7 @@
        :icon                :main-icons/refresh
        :accessibility-label :wallet-scan-token
        :on-press            #(hide-sheet-and-dispatch
-                              [:wallet/update-balances nil true])}]
+                              [:wallet-legacy/update-balances nil true])}]
      [list.item/list-item
       {:theme               :accent
        :title               (i18n/label :t/set-currency)
@@ -74,14 +74,14 @@
        :icon                :main-icons/send
        :accessibility-label :send-transaction-button
        :on-press            #(hide-sheet-and-dispatch
-                              [:wallet/prepare-transaction-from-wallet account])}])
+                              [:wallet-legacy/prepare-transaction-from-wallet account])}])
    [list.item/list-item
     {:theme               :accent
      :title               (i18n/label :t/share)
      :icon                :main-icons/share
      :accessibility-label :share-account-button
      :on-press            #(hide-sheet-and-dispatch
-                            [:wallet/share-popover (:address account)])}]
+                            [:wallet-legacy/share-popover (:address account)])}]
    (when-not wallet
      [list.item/list-item
       {:theme               :accent
@@ -89,7 +89,7 @@
        :icon                :main-icons/hide
        :accessibility-label :hide-account-button
        :on-press            #(hide-sheet-and-dispatch
-                              [:wallet.accounts/save-account account {:hidden true}])}])])
+                              [:wallet-legacy.accounts/save-account account {:hidden true}])}])])
 
 (defn add-account
   []
@@ -101,7 +101,7 @@
        :icon                :main-icons/add
        :accessibility-label :add-account-sheet-generate
        :on-press            #(hide-sheet-and-dispatch
-                              [:wallet.accounts/start-adding-new-account
+                              [:wallet-legacy.accounts/start-adding-new-account
                                {:type :generate}])}]
      [list.item/list-item
       {:theme               :accent
@@ -109,7 +109,7 @@
        :icon                :main-icons/show
        :accessibility-label :add-account-sheet-watch
        :on-press            #(hide-sheet-and-dispatch
-                              [:wallet.accounts/start-adding-new-account
+                              [:wallet-legacy.accounts/start-adding-new-account
                                {:type :watch}])}]
      (when-not keycard?
        [list.item/list-item
@@ -118,7 +118,7 @@
          :icon                :main-icons/text
          :accessibility-label :add-account-sheet-seed
          :on-press            #(hide-sheet-and-dispatch
-                                [:wallet.accounts/start-adding-new-account
+                                [:wallet-legacy.accounts/start-adding-new-account
                                  {:type :seed}])}])
      (when-not keycard?
        [list.item/list-item
@@ -127,7 +127,7 @@
          :icon                :main-icons/address
          :accessibility-label :add-account-sheet-private-key
          :on-press            #(hide-sheet-and-dispatch
-                                [:wallet.accounts/start-adding-new-account
+                                [:wallet-legacy.accounts/start-adding-new-account
                                  {:type :key}])}])]))
 
 (defn account-settings

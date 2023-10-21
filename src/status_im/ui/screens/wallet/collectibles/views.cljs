@@ -16,7 +16,7 @@
     [status-im.ui.components.toastable-highlight :refer [toastable-highlight-view]]
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.wallet.components.views :as wallet.components]
-    [status-im.wallet.core :as wallet]
+    [status-im.wallet.core :as wallet-legacy]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -120,7 +120,7 @@
     {:width         width
      :border-radius 16
      :margin-bottom 16}
-    :on-press (when clickable? #(re-frame/dispatch [::wallet/show-nft-details asset]))
+    :on-press (when clickable? #(re-frame/dispatch [::wallet-legacy/show-nft-details asset]))
     :accessibility-label
     :nft-asset}
    (cond
@@ -152,9 +152,9 @@
 
 (defn nft-assets
   [{:keys [num-assets address collectible-slug]}]
-  (let [assets    (rf/sub [:wallet/collectible-assets-by-collection-and-address address
+  (let [assets    (rf/sub [:wallet-legacy/collectible-assets-by-collection-and-address address
                            collectible-slug])
-        fetching? (rf/sub [:wallet/fetching-assets-by-collectible-slug collectible-slug])]
+        fetching? (rf/sub [:wallet-legacy/fetching-assets-by-collectible-slug collectible-slug])]
     [react/view
      {:flex            1
       :flex-wrap       :wrap
@@ -179,7 +179,7 @@
 
 (defn nft-collections
   [address]
-  (let [collection (rf/sub [:wallet/collectible-collection address])]
+  (let [collection (rf/sub [:wallet-legacy/collectible-collection address])]
     [:<>
      (for [[index collectible] (map-indexed vector collection)]
        ^{:key (:slug collectible)}
@@ -207,7 +207,7 @@
                                 :border-bottom-width 8
                                 :border-color        colors/gray-lighter}
          :on-open #(re-frame/dispatch
-                    [::wallet/fetch-collectible-assets-by-owner-and-collection
+                    [::wallet-legacy/fetch-collectible-assets-by-owner-and-collection
                      address
                      (:slug collectible)
                      (:owned_asset_count collectible)])
@@ -251,7 +251,7 @@
 
 (defn nft-details-modal
   []
-  (let [nft (rf/sub [:wallet/selected-collectible])]
+  (let [nft (rf/sub [:wallet-legacy/selected-collectible])]
     [react/scroll-view
      [topbar/topbar
       {:navigation    {:icon :main-icons/close}

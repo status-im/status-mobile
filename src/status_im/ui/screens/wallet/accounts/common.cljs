@@ -22,14 +22,14 @@
   (utils.utils/set-timeout
    (fn []
      (swap! updates-counter inc)
-     (when @(re-frame/subscribe [:wallet/refreshing-history?])
+     (when @(re-frame/subscribe [:wallet-legacy/refreshing-history?])
        (schedule-counter-reset)))
    1000))
 
 (defn refresh-action
   []
   (schedule-counter-reset)
-  (re-frame/dispatch [:wallet.ui/pull-to-refresh-history]))
+  (re-frame/dispatch [:wallet-legacy.ui/pull-to-refresh-history]))
 
 (defn refresh-control
   [refreshing?]

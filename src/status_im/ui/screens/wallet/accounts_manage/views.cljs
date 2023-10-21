@@ -26,7 +26,7 @@
         :disabled            wallet
         :title               name
         :subtitle            (utils/get-shortened-checksum-address address)
-        :on-press            #(rf/dispatch [:wallet.accounts/save-account account
+        :on-press            #(rf/dispatch [:wallet-legacy.accounts/save-account account
                                             {:hidden (not hidden)}])}])}))
 
 (defn manage

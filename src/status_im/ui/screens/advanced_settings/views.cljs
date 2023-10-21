@@ -121,7 +121,7 @@
                   network-name                     [:network-name]
                   waku-bloom-filter-mode           [:waku/bloom-filter-mode]
                   wakuv2-flag                      [:waku/v2-flag]
-                  transactions-management-enabled? [:wallet/transactions-management-enabled?]
+                  transactions-management-enabled? [:wallet-legacy/transactions-management-enabled?]
                   current-log-level                [:log-level/current-log-level]
                   current-fleet                    [:fleets/current-fleet]]
     [list/flat-list

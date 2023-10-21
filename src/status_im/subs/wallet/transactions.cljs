@@ -10,14 +10,14 @@
     [utils.money :as money]))
 
 (re-frame/reg-sub
- :wallet/accounts
- :<- [:wallet]
+ :wallet-legacy/accounts
+ :<- [:wallet-legacy]
  (fn [wallet]
    (get wallet :accounts)))
 
 (re-frame/reg-sub
- :wallet/account-by-transaction-hash
- :<- [:wallet/accounts]
+ :wallet-legacy/account-by-transaction-hash
+ :<- [:wallet-legacy/accounts]
  (fn [accounts [_ tx-hash]]
    (some (fn [[address account]]
            (when-let [transaction (get-in account [:transactions tx-hash])]
@@ -25,14 +25,14 @@
          accounts)))
 
 (re-frame/reg-sub
- :wallet/transactions
- :<- [:wallet]
+ :wallet-legacy/transactions
+ :<- [:wallet-legacy]
  (fn [wallet [_ address]]
    (get-in wallet [:accounts address :transactions])))
 
 (re-frame/reg-sub
- :wallet/filters
- :<- [:wallet]
+ :wallet-legacy/filters
+ :<- [:wallet-legacy]
  (fn [wallet]
    (get wallet :filters)))
 
@@ -61,9 +61,9 @@
                      :currency-text currency-text))))
 
 (re-frame/reg-sub
- :wallet.transactions/transactions
+ :wallet-legacy.transactions/transactions
  (fn [[_ address] _]
-   [(re-frame/subscribe [:wallet/transactions address])
+   [(re-frame/subscribe [:wallet-legacy/transactions address])
     (re-frame/subscribe [:contacts/contacts-by-address])
     (re-frame/subscribe [:ethereum/native-currency])])
  (fn [[transactions contacts native-currency]]
@@ -76,8 +76,8 @@
            transactions)))
 
 (re-frame/reg-sub
- :wallet.transactions/all-filters?
- :<- [:wallet/filters]
+ :wallet-legacy.transactions/all-filters?
+ :<- [:wallet-legacy/filters]
  (fn [filters]
    (= wallet.db/default-wallet-filters
       filters)))
@@ -89,8 +89,8 @@
    :failed   (i18n/label :t/failed)})
 
 (re-frame/reg-sub
- :wallet.transactions/filters
- :<- [:wallet/filters]
+ :wallet-legacy.transactions/filters
+ :<- [:wallet-legacy/filters]
  (fn [filters]
    (map (fn [id]
           (let [checked? (filters id)]
@@ -98,20 +98,20 @@
              :label    (filters-labels id)
              :checked? checked?
              :on-touch #(if checked?
-                          (re-frame/dispatch [:wallet.transactions/remove-filter id])
-                          (re-frame/dispatch [:wallet.transactions/add-filter id]))}))
+                          (re-frame/dispatch [:wallet-legacy.transactions/remove-filter id])
+                          (re-frame/dispatch [:wallet-legacy.transactions/add-filter id]))}))
         wallet.db/default-wallet-filters)))
 
 (re-frame/reg-sub
- :wallet.transactions.filters/screen
- :<- [:wallet.transactions/filters]
- :<- [:wallet.transactions/all-filters?]
+ :wallet-legacy.transactions.filters/screen
+ :<- [:wallet-legacy.transactions/filters]
+ :<- [:wallet-legacy.transactions/all-filters?]
  (fn [[filters all-filters?]]
    {:all-filters?        all-filters?
     :filters             filters
     :on-touch-select-all (when-not all-filters?
                            #(re-frame/dispatch
-                             [:wallet.transactions/add-all-filters]))}))
+                             [:wallet-legacy.transactions/add-all-filters]))}))
 
 (defn- enrich-transaction-for-list
   [filters
@@ -134,7 +134,7 @@
               :contact                     to-contact
               :address                     to))
      :time-formatted (datetime/timestamp->time timestamp)
-     :on-touch-fn    #(re-frame/dispatch [:wallet.ui/show-transaction-details
+     :on-touch-fn    #(re-frame/dispatch [:wallet-legacy.ui/show-transaction-details
                                           (:hash transaction)
                                           address]))))
 
@@ -149,11 +149,11 @@
                :data  (sort-by :timestamp > transactions)}))))
 
 (re-frame/reg-sub
- :wallet.transactions.history/screen
+ :wallet-legacy.transactions.history/screen
  (fn [[_ address] _]
-   [(re-frame/subscribe [:wallet.transactions/transactions address])
-    (re-frame/subscribe [:wallet/filters])
-    (re-frame/subscribe [:wallet.transactions/all-filters?])])
+   [(re-frame/subscribe [:wallet-legacy.transactions/transactions address])
+    (re-frame/subscribe [:wallet-legacy/filters])
+    (re-frame/subscribe [:wallet-legacy.transactions/all-filters?])])
  (fn [[transactions filters all-filters?] [_ address]]
    {:all-filters? all-filters?
     :total (count transactions)
@@ -164,9 +164,9 @@
          (group-transactions-by-date))}))
 
 (re-frame/reg-sub
- :wallet/recipient-recent-txs
+ :wallet-legacy/recipient-recent-txs
  (fn [[_ address] _]
-   [(re-frame/subscribe [:wallet.transactions/transactions address])])
+   [(re-frame/subscribe [:wallet-legacy.transactions/transactions address])])
  (fn [[transactions] _]
    (->> transactions
         vals
@@ -175,9 +175,9 @@
         (take 3))))
 
 (re-frame/reg-sub
- :wallet.transactions.details/current-transaction
+ :wallet-legacy.transactions.details/current-transaction
  (fn [[_ _ address] _]
-   [(re-frame/subscribe [:wallet.transactions/transactions address])
+   [(re-frame/subscribe [:wallet-legacy.transactions/transactions address])
     (re-frame/subscribe [:ethereum/native-currency])
     (re-frame/subscribe [:chain-id])])
  (fn [[transactions native-currency chain-id] [_ tx-hash _]]
@@ -222,9 +222,9 @@
                         (:hash transaction))}))))))
 
 (re-frame/reg-sub
- :wallet.transactions.details/screen
+ :wallet-legacy.transactions.details/screen
  (fn [[_ tx-hash address] _]
-   [(re-frame/subscribe [:wallet.transactions.details/current-transaction tx-hash address])
+   [(re-frame/subscribe [:wallet-legacy.transactions.details/current-transaction tx-hash address])
     (re-frame/subscribe [:ethereum/current-block])])
  (fn [[transaction current-block]]
    (let [confirmations (wallet.db/get-confirmations transaction

@@ -51,7 +51,7 @@
                                    (reset! timer (js/setTimeout #(reset! valid-ens-or-address? true)
                                                                 2000)))]
     (fn []
-      (let [scanned-address (rf/sub [:wallet-2/scanned-address])]
+      (let [scanned-address (rf/sub [:wallet/scanned-address])]
         [quo/address-input
          {:on-scan               #(rf/dispatch [:open-modal :scan-address])
           :ens-regex             constants/regx-ens
@@ -61,9 +61,9 @@
           :on-detect-address     on-detect-address-or-ens
           :on-change-text        (fn [text]
                                    (when-not (= scanned-address text)
-                                     (rf/dispatch [:wallet-2/clean-scanned-address]))
+                                     (rf/dispatch [:wallet/clean-scanned-address]))
                                    (reset! input-value text))
-          :on-clear              #(rf/dispatch [:wallet-2/clean-scanned-address])
+          :on-clear              #(rf/dispatch [:wallet/clean-scanned-address])
           :valid-ens-or-address? @valid-ens-or-address?}]))))
 
 (defn- f-view-internal
@@ -73,7 +73,7 @@
         on-close      #(rf/dispatch [:dismiss-modal :wallet-select-address])
         on-change-tab #(reset! selected-tab %)]
     (fn []
-      (rn/use-effect (fn [] #(rf/dispatch [:wallet-2/clean-scanned-address])))
+      (rn/use-effect (fn [] #(rf/dispatch [:wallet/clean-scanned-address])))
       [rn/scroll-view
        {:content-container-style      (style/container margin-top)
         :keyboard-should-persist-taps :never

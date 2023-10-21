@@ -80,7 +80,7 @@
 
 (defn chain-explorer-link
   [address]
-  (let [link @(re-frame/subscribe [:wallet/chain-explorer-link address])]
+  (let [link @(re-frame/subscribe [:wallet-legacy/chain-explorer-link address])]
     [react/touchable-highlight
      {:on-press #(when link
                    (.openURL ^js react/linking link))}
@@ -127,13 +127,14 @@
 
 (defn history-list
   [{:keys [transaction-history-sections total]} address]
-  (let [fetching-recent-history? @(re-frame/subscribe [:wallet/fetching-recent-tx-history? address])
-        fetching-more-history?   @(re-frame/subscribe [:wallet/fetching-tx-history? address])
+  (let [fetching-recent-history? @(re-frame/subscribe [:wallet-legacy/fetching-recent-tx-history?
+                                                       address])
+        fetching-more-history?   @(re-frame/subscribe [:wallet-legacy/fetching-tx-history? address])
         keycard-account?         @(re-frame/subscribe [:multiaccounts/keycard-account?])
         custom-rpc-node?         @(re-frame/subscribe [:custom-rpc-node])
-        non-archival-rpc-node?   @(re-frame/subscribe [:wallet/non-archival-node])
-        binance-chain?           @(re-frame/subscribe [:wallet/binance-chain?])
-        all-fetched?             @(re-frame/subscribe [:wallet/tx-history-fetched? address])
+        non-archival-rpc-node?   @(re-frame/subscribe [:wallet-legacy/non-archival-node])
+        binance-chain?           @(re-frame/subscribe [:wallet-legacy/binance-chain?])
+        all-fetched?             @(re-frame/subscribe [:wallet-legacy/tx-history-fetched? address])
         syncing-allowed?         @(re-frame/subscribe [:mobile-network/syncing-allowed?])]
     [react/view {:flex 1}
      [chain-explorer-link address]
@@ -280,7 +281,7 @@
   (letsubs [{:keys [url type confirmations confirmations-progress
                     date amount-text currency-text]
              :as   transaction}
-            [:wallet.transactions.details/screen tx-hash address]]
+            [:wallet-legacy.transactions.details/screen tx-hash address]]
     [react/view {:flex 1}
      ;;TODO options should be replaced by bottom sheet ,and topbar should be used here
      [topbar/topbar
