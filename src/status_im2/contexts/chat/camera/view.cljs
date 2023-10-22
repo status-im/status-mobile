@@ -1,5 +1,6 @@
 (ns status-im2.contexts.chat.camera.view
   (:require
+    [oops.core :refer [oget]]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.camera-kit :as camera-kit]
@@ -141,7 +142,9 @@
          :flash-mode  (if @flash :on :off)
          :camera-type @camera-type
          :zoom        @current-zoom
-         :maxZoom     3}])
+         :maxZoom     3
+         :onZoom      (fn [event]
+                        (reset! current-zoom (oget event "nativeEvent.zoom")))}])
      (when-not @uri
        [zoom-buttons top insets rotate current-zoom])
      [rn/view {:style (style/confirmation-container insets @uri)}
