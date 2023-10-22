@@ -13,5 +13,5 @@
 
 (defn view
   []
-  [preview/preview-container {:flex 1}
+  [preview/preview-container {:flex 1 :avoid-rendering-pressable? true}
    [quo/dapp-favorites {:dapps dapp-favorites}]])

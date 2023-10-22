@@ -311,13 +311,48 @@
                          style)}]
          children)])
 
-(defn- f-preview-container
-  [{:keys [state descriptor blur? blur-dark-only?
-           component-container-style
-           blur-container-style blur-view-props blur-height show-blur-background?]
+(defn preview-container-content
+  [{:keys [state descriptor blur? component-container-style blur-container-style blur-view-props
+           blur-height show-blur-background?]
     :or   {blur-height 200}}
    & children]
   (let [theme (quo.theme/use-theme-value)]
+    [rn/view {}
+     (when descriptor
+       [rn/view {:style style/customizer-container}
+        [customizer state descriptor]])
+     (if blur?
+       [rn/view {:style (merge style/component-container component-container-style)}
+        (into [blur-view
+               {:theme                 theme
+                :show-blur-background? show-blur-background?
+                :height                blur-height
+                :style                 (merge {:width     "100%"
+                                               :flex-grow 1}
+                                              (when-not show-blur-background?
+                                                {:padding-horizontal 0
+                                                 :top                0})
+                                              blur-container-style)
+                :blur-view-props       (merge {:blur-type theme}
+                                              blur-view-props)}]
+              children)]
+       (into [rn/view {:style (merge style/component-container component-container-style)}]
+             children))]))
+
+(defn- f-preview-container
+  [{:keys [state descriptor blur? blur-dark-only? component-container-style blur-container-style
+           blur-view-props blur-height show-blur-background? avoid-rendering-pressable?]
+    :or   {blur-height 200}}
+   & children]
+  (let [content (preview-container-content {:state                     state
+                                            :descriptor                descriptor
+                                            :blur                      blur?
+                                            :component-container-style component-container-style
+                                            :blur-container-style      blur-container-style
+                                            :blur-view-props           blur-view-props
+                                            :blur-height               blur-height
+                                            :show-blur-background      show-blur-background?}
+                                           children)]
     (rn/use-effect (fn []
                      (when blur-dark-only?
                        (if blur?
@@ -330,28 +365,8 @@
      [common/navigation-bar]
      [rn/scroll-view
       {:style                           (style/panel-basic)
-       :shows-vertical-scroll-indicator false
-       :keyboard-should-persist-taps    :handled}
-      (when descriptor
-        [rn/view {:style style/customizer-container}
-         [customizer state descriptor]])
-      (if blur?
-        [rn/view {:style (merge style/component-container component-container-style)}
-         (into [blur-view
-                {:theme                 theme
-                 :show-blur-background? show-blur-background?
-                 :height                blur-height
-                 :style                 (merge {:width     "100%"
-                                                :flex-grow 1}
-                                               (when-not show-blur-background?
-                                                 {:padding-horizontal 0
-                                                  :top                0})
-                                               blur-container-style)
-                 :blur-view-props       (merge {:blur-type theme}
-                                               blur-view-props)}]
-               children)]
-        (into [rn/view {:style (merge style/component-container component-container-style)}]
-              children))]]))
+       :shows-vertical-scroll-indicator false}
+      (if avoid-rendering-pressable? content [rn/pressable {:on-press rn/dismiss-keyboard!} content])]]))
 
 (defn preview-container
   [& args]

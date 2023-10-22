@@ -10,7 +10,7 @@
   [{:keys [customization-color theme]}]
   [rn/view
    {:accessibility-label :new-tab
-    :style   (style/container customization-color theme)}
+    :style               (style/container customization-color theme)}
    [button/button
     {:type                :primary
      :hit-slop            32
