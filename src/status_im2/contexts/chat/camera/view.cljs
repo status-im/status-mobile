@@ -140,7 +140,8 @@
          :style       (style/camera-window width camera-window-height top)
          :flash-mode  (if @flash :on :off)
          :camera-type @camera-type
-         :zoom        @current-zoom}])
+         :zoom        @current-zoom
+         :maxZoom     3}])
      (when-not @uri
        [zoom-buttons top insets rotate current-zoom])
      [rn/view {:style (style/confirmation-container insets @uri)}
