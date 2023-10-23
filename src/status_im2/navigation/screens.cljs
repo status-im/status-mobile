@@ -12,6 +12,7 @@
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
+    [status-im2.contexts.debug.view :as debug]
     [status-im2.contexts.emoji-picker.view :as emoji-picker]
     [status-im2.contexts.onboarding.create-password.view :as create-password]
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
@@ -53,7 +54,11 @@
   (concat
    (old-screens/screens)
 
-   [{:name      :activity-center
+   [{:name      :debug
+     :options   {:sheet? true}
+     :component debug/view}
+
+    {:name      :activity-center
      :options   options/transparent-screen-options
      :component activity-center/view}
 
