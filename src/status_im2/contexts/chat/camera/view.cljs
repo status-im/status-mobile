@@ -176,5 +176,5 @@
                :current-orientation (atom orientation/portrait)
                :flash               flash
                :toggle-flash        #(swap! flash not)
-               :current-zoom        (reagent/atom 1)}] ;
+               :current-zoom        (reagent/atom 1)}]
     [:f> f-camera-screen args]))
