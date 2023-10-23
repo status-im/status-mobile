@@ -14,7 +14,6 @@ stdenv.mkDerivation {
     "patchJavaPhase"
     "patchReactNativePhase"
     "patchPodPhase"
-    "patchReactNativeCameraKitPhase"
     "installPhase"
   ];
 
@@ -97,13 +96,6 @@ stdenv.mkDerivation {
     substituteInPlace ./node_modules/react-native/React/CoreModules/RCTActionSheetManager.mm --replace \
           '[RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];' \
           '[RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];'
-  '';
-  #  Remove predefined minimum iOS target on ReactNativeCameraKit is required.
-  #  Because we use different minimum versions.
-  patchReactNativeCameraKitPhase = ''
-    substituteInPlace ./node_modules/react-native-camera-kit/ios/ReactNativeCameraKit.xcodeproj/project.pbxproj --replace \
-      'IPHONEOS_DEPLOYMENT_TARGET = 10.0;' \
-      'IPHONEOS_DEPLOYMENT_TARGET = 11.0;'
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try
