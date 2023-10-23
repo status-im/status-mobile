@@ -9,7 +9,8 @@
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [react-native.platform :as platform]))
 
 (def maximum-image-size-px 2000)
 
@@ -95,7 +96,8 @@
 (re-frame/reg-fx
  :camera-roll-get-photos-count-ios
  (fn []
-   (get-photos-count-ios-fx #(re-frame/dispatch [:on-camera-roll-get-images-count-ios %]))))
+   (when platform/ios?
+     (get-photos-count-ios-fx #(re-frame/dispatch [:on-camera-roll-get-images-count-ios %])))))
 
 (rf/defn on-camera-roll-get-albums
   {:events [:on-camera-roll-get-albums]}
