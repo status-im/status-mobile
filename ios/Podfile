@@ -75,12 +75,6 @@ abstract_target 'Status' do
         # TODO : remove after upgrading to react-native 0.72.x
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)', '_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION']
       end
-      case target.name
-      when 'ReactNativeCameraKit'
-        target.build_configurations.each do |config|
-          config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
-        end
-      end
     end
   end
 

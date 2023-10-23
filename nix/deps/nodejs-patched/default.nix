@@ -15,6 +15,7 @@ stdenv.mkDerivation {
     "patchReactNativePhase"
     "patchPodPhase"
     "installPhase"
+    "patchReactNativeCameraKitPhase"
   ];
 
   # First symlink all modules as is
@@ -96,6 +97,12 @@ stdenv.mkDerivation {
     substituteInPlace ./node_modules/react-native/React/CoreModules/RCTActionSheetManager.mm --replace \
           '[RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];' \
           '[RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];'
+  '';
+  patchReactNativeCameraKitPhase = ''
+
+    substituteInPlace ./node_modules/react-native-camera-kit/ios/ReactNativeCameraKit.xcodeproj/project.pbxproj --replace \
+      'IPHONEOS_DEPLOYMENT_TARGET = 10.0;' \
+      ' '
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try
