@@ -95,25 +95,12 @@
            notification-count
            activity-center-on-press
            scan-on-press
-           qr-code-on-press
-           for-qa-only-cellular-network
-           for-qa-only-no-network
-           for-qa-only-network-type]
+           qr-code-on-press]
     :as   props}]
   (let [button-common-props (get-button-common-props {:theme    theme
                                                       :jump-to? jump-to?
                                                       :blur?    blur?})]
     [rn/view {:style style/right-section}
-     (when (= for-qa-only-network-type "cellular")
-       [button/button
-        (merge (dissoc button-common-props :icon-only?)
-               for-qa-only-cellular-network)
-        "🦄"])
-     (when (= for-qa-only-network-type "none")
-       [button/button
-        (merge (dissoc button-common-props :icon-only?)
-               for-qa-only-no-network)
-        "💀"])
      [button/button
       (assoc button-common-props :accessibility-label :open-scanner-button :on-press scan-on-press)
       :i/scan]
@@ -160,8 +147,5 @@
    :qr-code-on-press callback
    :notification-count number
    :max-unread-notifications used to specify max number for counter
-   :for-qa-only-cellular-network used for testing purposed
-   :for-qa-only-no-network used for testing purposed
-   :for-qa-only-network-type used for testing purposed
    "
   (quo.theme/with-theme view-internal))
