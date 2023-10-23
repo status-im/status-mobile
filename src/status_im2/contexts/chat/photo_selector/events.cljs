@@ -6,11 +6,11 @@
     [react-native.core :as rn]
     [react-native.image-resizer :as image-resizer]
     [react-native.permissions :as permissions]
+    [react-native.platform :as platform]
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [react-native.platform :as platform]))
+    [utils.re-frame :as rf]))
 
 (def maximum-image-size-px 2000)
 
