@@ -21,8 +21,8 @@
 
 ;; domains should be without the trailing slash
 (def domains
-  {:external "https://status.app"
-   :internal "status-app:/"})
+  {:external "https://join.status.im"
+   :internal "status-im:/"})
 
 (def links
   {:private-chat       "%s/p/%s"
@@ -81,20 +81,17 @@
   (log/info "universal-links: handling community" community-id)
   (navigation/navigate-to cofx :community {:community-id community-id}))
 
+
 (rf/defn handle-navigation-to-desktop-community-from-mobile
   {:events [:handle-navigation-to-desktop-community-from-mobile]}
   [cofx deserialized-key]
-  (rf/merge
-   cofx
-   {:dispatch [:navigate-to :community-overview deserialized-key]}
-   (navigation/pop-to-root :shell-stack)))
+  (navigation/navigate-to cofx :community-overview deserialized-key))
 
 (rf/defn handle-desktop-community
   [cofx {:keys [community-id]}]
   (native-module/deserialize-and-compress-key
    community-id
    (fn [deserialized-key]
-     (rf/dispatch [:chat.ui/resolve-community-info (str deserialized-key)])
      (rf/dispatch [:handle-navigation-to-desktop-community-from-mobile (str deserialized-key)]))))
 
 (rf/defn handle-community-chat
@@ -215,8 +212,9 @@
                       (.then dispatch-url))
                  200)
   (.addEventListener ^js react/linking "url" url-event-listener)
-  ;;StartSearchForLocalPairingPeers() shouldn't be called ATM from the UI It can be called after the
-  ;;error "route ip+net: netlinkrib: permission denied" is fixed on status-go side
+  ;;StartSearchForLocalPairingPeers() shouldn't be called ATM from the UI
+  ;;It can be called after the error "route ip+net: netlinkrib: permission denied" is fixed on status-go
+  ;;side
   #_(native-module/start-searching-for-local-pairing-peers
      #(log/info "[local-pairing] errors from local-pairing-preflight-outbound-check ->" %)))
 

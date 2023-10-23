@@ -29,7 +29,7 @@
 			<string>im.status.ethereum.applink</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>status-app</string>
+				<string>status-im</string>
 			</array>
 		</dict>
 		<dict>

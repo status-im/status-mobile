@@ -5,8 +5,8 @@
 
 ;; domains should be without the trailing slash
 (def domains
-  {:external "https://status.app"
-   :internal "status-app:/"})
+  {:external "https://join.status.im"
+   :internal "status-im:/"})
 
 (def links
   {:private-chat "%s/p/%s"
