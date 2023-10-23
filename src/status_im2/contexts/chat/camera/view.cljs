@@ -142,8 +142,8 @@
          :flash-mode  (if @flash :on :off)
          :camera-type @camera-type
          :zoom        @current-zoom
-         :maxZoom     3
-         :onZoom      (fn [event]
+         :max-zoom    3
+         :on-zoom     (fn [event]
                         (reset! current-zoom (oget event "nativeEvent.zoom")))}])
      (when-not @uri
        [zoom-buttons top insets rotate current-zoom])
