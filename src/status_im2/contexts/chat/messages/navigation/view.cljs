@@ -15,13 +15,16 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defonce ^:const title-opacity-interpolation-start 50)
+(defonce ^:const title-opacity-interpolation-end 80)
+
 (defn f-view
   [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
            back-icon animate-topbar-name? keyboard-shown?]}]
   (let [{:keys [group-chat chat-id]} chat
         opacity-animation            (reanimated/interpolate scroll-y
-                                                             [50
-                                                              80]
+                                                             [title-opacity-interpolation-start
+                                                              title-opacity-interpolation-end]
                                                              [0 1]
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "extend"})

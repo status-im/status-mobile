@@ -26,7 +26,9 @@
 (defonce ^:const loading-indicator-page-loading-height 100)
 (defonce ^:const scroll-animation-input-range [0 50])
 (defonce ^:const min-message-height 32)
-
+(defonce ^:const content-height-with-two-messages 560)
+(defonce ^:const scroll-y-values-small-name-big-name-touching 100)
+(defonce ^:const scroll-y-middle-big-name 135)
 (defonce messages-list-ref (atom nil))
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
@@ -278,7 +280,7 @@
         current-y      (oops/oget event "nativeEvent.contentOffset.y")]
     (when (pos? (- content-size-y current-y))
       (if
-        (< 135 (- content-size-y current-y))
+        (< scroll-y-middle-big-name (- content-size-y current-y))
         (reset! animate-topbar-name? true)
         (reset! animate-topbar-name? false))
       (reanimated/set-shared-value scroll-y (- content-size-y current-y)))))
@@ -327,10 +329,12 @@
                                             (if (or
                                                  (and keyboard-shown?
                                                       less-than-two-messages?
-                                                      (> 100 (reanimated/get-shared-value scroll-y))
-                                                      (< 560
+                                                      (> scroll-y-values-small-name-big-name-touching
+                                                         (reanimated/get-shared-value scroll-y))
+                                                      (< content-height-with-two-messages
                                                          (reanimated/get-shared-value content-height)))
-                                                 (< 135 (reanimated/get-shared-value scroll-y)))
+                                                 (< scroll-y-middle-big-name
+                                                    (reanimated/get-shared-value scroll-y)))
                                               (reset! animate-topbar-name? true)
                                               (reset! animate-topbar-name? false))
                                             ;; NOTE(alwx): here we set the initial value of `scroll-y`
