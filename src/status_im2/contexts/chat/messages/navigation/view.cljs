@@ -34,7 +34,7 @@
                                                              [0 1]
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "clamp"})
-        translate-animation          (reanimated/use-shared-value 50)
+        translate-animation          (reanimated/use-shared-value title-opacity-interpolation-start)
         title-opacity-animation      (reanimated/use-shared-value 0)]
     (rn/use-effect (fn []
                      (if (or (and keyboard-shown?
@@ -44,7 +44,7 @@
                            (reanimated/animate opacity-animation 1)
                            (reanimated/animate translate-animation 0))
                        (do (reanimated/animate title-opacity-animation 0)
-                           (reanimated/animate translate-animation 50))))
+                           (reanimated/animate translate-animation title-opacity-interpolation-start))))
                    [@animate-topbar-name?])
     [rn/view {:style (style/navigation-view chat-screen-loaded?)}
      [reanimated/view
