@@ -74,8 +74,13 @@
   [{:keys [focused?]}
    {:keys [container-opacity]}
    {:keys [input-text images link-previews? reply audio]}]
-  (when (and (not @focused?) (utils/empty-input? input-text images link-previews? reply audio))
-    (reanimated/animate-delay container-opacity constants/empty-opacity 200)))
+  (reanimated/animate-delay
+   container-opacity
+   (if (and (not @focused?)
+            (utils/empty-input? input-text images link-previews? reply audio))
+     constants/empty-opacity
+     1)
+   200))
 
 (defn component-will-unmount
   [{:keys [keyboard-show-listener keyboard-hide-listener keyboard-frame-listener]}]
@@ -101,7 +106,11 @@
   (rn/use-effect
    (fn []
      (reenter-screen-effect state dimensions subscriptions))
-   [max-height subscriptions]))
+   [max-height subscriptions])
+  (rn/use-effect
+   (fn []
+     (empty-effect state animations subscriptions))
+   [subscriptions]))
 
 (defn use-edit
   [{:keys [input-ref]}

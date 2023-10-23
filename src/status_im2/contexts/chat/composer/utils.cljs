@@ -209,21 +209,13 @@
 
 (defn init-animations
   [{:keys [input-text images link-previews? reply audio]}
-   lines content-height max-height opacity background-y]
+   lines content-height max-height opacity container-opacity background-y]
   (let [initial-height        (if (> lines 1)
                                 constants/multiline-minimized-height
                                 constants/input-height)
         bottom-content-height 0]
     {:gradient-opacity  (reanimated/use-shared-value 0)
-     :container-opacity (reanimated/use-shared-value
-                         (if (empty-input?
-                              input-text
-                              images
-                              link-previews?
-                              reply
-                              audio)
-                           0.7
-                           1))
+     :container-opacity container-opacity
      :height            (reanimated/use-shared-value
                          initial-height)
      :saved-height      (reanimated/use-shared-value

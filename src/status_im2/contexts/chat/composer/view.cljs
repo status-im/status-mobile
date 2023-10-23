@@ -32,6 +32,7 @@
            window-height
            blur-height
            opacity
+           container-opacity
            background-y
            theme]} props state]
   (let [{:keys [chat-screen-loaded?]
@@ -52,6 +53,7 @@
                                   content-height
                                   max-height
                                   opacity
+                                  container-opacity
                                   background-y)
         dimensions               {:content-height content-height
                                   :max-height     max-height
@@ -144,22 +146,24 @@
 
 (defn composer
   [{:keys [insets scroll-to-bottom-fn show-floating-scroll-down-button?]}]
-  (let [window-height (:height (rn/get-window))
-        theme         (quo.theme/use-theme-value)
-        opacity       (reanimated/use-shared-value 0)
-        background-y  (reanimated/use-shared-value (- window-height))
-        blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
-                                                      (:bottom insets)))
-        extra-params  {:insets                            insets
-                       :window-height                     window-height
-                       :scroll-to-bottom-fn               scroll-to-bottom-fn
-                       :show-floating-scroll-down-button? show-floating-scroll-down-button?
-                       :blur-height                       blur-height
-                       :opacity                           opacity
-                       :background-y                      background-y
-                       :theme                             theme}
-        props         (utils/init-props)
-        state         (utils/init-state)]
+  (let [window-height     (:height (rn/get-window))
+        theme             (quo.theme/use-theme-value)
+        opacity           (reanimated/use-shared-value 0)
+        container-opacity (reanimated/use-shared-value 1)
+        background-y      (reanimated/use-shared-value (- window-height))
+        blur-height       (reanimated/use-shared-value (+ constants/composer-default-height
+                                                          (:bottom insets)))
+        extra-params      {:insets                            insets
+                           :window-height                     window-height
+                           :scroll-to-bottom-fn               scroll-to-bottom-fn
+                           :show-floating-scroll-down-button? show-floating-scroll-down-button?
+                           :blur-height                       blur-height
+                           :opacity                           opacity
+                           :background-y                      background-y
+                           :theme                             theme
+                           :container-opacity                 container-opacity}
+        props             (utils/init-props)
+        state             (utils/init-state)]
     [rn/view (when platform/ios? {:style {:z-index 1}})
      [reanimated/view {:style (style/background opacity background-y window-height)}]
      [sub-view/blur-view
