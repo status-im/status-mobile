@@ -145,7 +145,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.device_2.create_user(third_user=True, username=new_username_2)
 
         self.device_2.just_fyi('Device2 sends a contact request to Device1 using his profile link')
-        self.home_2.driver.set_clipboard_text("https://join.status.im/u/" + self.public_key_1)
+        self.home_2.driver.set_clipboard_text("https://status.app/u/" + self.public_key_1)
         self.home_2.chats_tab.click()
         self.home_2.new_chat_button.click_until_presence_of_element(self.home_2.add_a_contact_chat_bottom_sheet_button)
         self.home_2.add_a_contact_chat_bottom_sheet_button.click()
