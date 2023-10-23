@@ -104,12 +104,12 @@
         network-id                                  (str (get-in networks
                                                                  [current-network :config :NetworkId]))]
     (rf/merge cofx
-              (cond-> {:wallet/initialize-transactions-management-enabled nil
-                       :wallet/initialize-wallet
+              (cond-> {:wallet-legacy/initialize-transactions-management-enabled nil
+                       :wallet-legacy/initialize-wallet
                        [network-id
                         current-network-config
                         (fn [accounts tokens custom-tokens favourites]
-                          (re-frame/dispatch [:wallet/initialize-wallet
+                          (re-frame/dispatch [:wallet-legacy/initialize-wallet
                                               accounts tokens custom-tokens favourites]))]
                        :check-eip1559-activation {:network-id network-id}
                        :chat/open-last-chat (get-in db [:profile/profile :key-uid])}
@@ -136,7 +136,7 @@
               {:db         (dissoc db :profile/login)
                :dispatch-n [[:logging/initialize-web3-client-version]
                             (when (and new-account? (not recovered-account?))
-                              [:wallet/set-initial-blocks-range])
+                              [:wallet-legacy/set-initial-blocks-range])
                             [:ens/update-usernames ensUsernames]]}
               (login-existing-profile settings account))))
 

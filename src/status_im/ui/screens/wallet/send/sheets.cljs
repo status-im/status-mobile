@@ -11,13 +11,13 @@
 (defn asset
   [currency token]
   [react/touchable-highlight
-   {:on-press #(re-frame/dispatch [:wallet.send/set-symbol (:symbol token)])}
+   {:on-press #(re-frame/dispatch [:wallet-legacy.send/set-symbol (:symbol token)])}
    [common/render-asset token nil nil (:code currency)]])
 
 (views/defview assets
   [address]
-  (views/letsubs [{:keys [tokens]} [:wallet/visible-assets-with-values address]
-                  currency         [:wallet/currency]]
+  (views/letsubs [{:keys [tokens]} [:wallet-legacy/visible-assets-with-values address]
+                  currency         [:wallet-legacy/currency]]
     [react/view
      {:style {:height 300}}
      [list/flat-list
@@ -47,6 +47,7 @@
   []
   (re-frame/dispatch [:bottom-sheet/hide-old])
   (js/setTimeout #(re-frame/dispatch [:bottom-sheet/show-sheet-old
-                                      {:content        (fn [] [accounts-list :to :wallet.send/set-field])
+                                      {:content        (fn [] [accounts-list :to
+                                                               :wallet-legacy.send/set-field])
                                        :content-height 300}])
                  400))

@@ -181,7 +181,7 @@
 (re-frame/reg-sub
  :contacts/active-with-ens-names
  :<- [:contacts/active]
- :<- [:search/recipient-filter]
+ :<- [:wallet-legacy/search-recipient-filter]
  (fn [[contacts search-filter]]
    (let [contacts (filter :ens-verified contacts)]
      (if (string/blank? search-filter)

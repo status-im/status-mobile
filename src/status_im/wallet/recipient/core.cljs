@@ -25,15 +25,15 @@
    (ens/address chain-id ens-name cb)))
 
 (re-frame/reg-fx
- :wallet.recipient/address-paste
+ :wallet-legacy.recipient/address-paste
  (fn []
    (react/get-from-clipboard
-    #(re-frame/dispatch [:wallet.recipient/address-changed (string/trim %)]))))
+    #(re-frame/dispatch [:wallet-legacy.recipient/address-changed (string/trim %)]))))
 
 (rf/defn address-paste-pressed
-  {:events [:wallet.recipient/address-paste-pressed]}
+  {:events [:wallet-legacy.recipient/address-paste-pressed]}
   [_]
-  {:wallet.recipient/address-paste nil})
+  {:wallet-legacy.recipient/address-paste nil})
 
 (rf/defn set-recipient
   {:events [::recipient-address-resolved]}
@@ -47,8 +47,8 @@
           (if (eip55/valid-address-checksum? checksum)
             (rf/merge cofx
                       {:db (-> db
-                               (assoc-in [:wallet/recipient :searching] false)
-                               (assoc-in [:wallet/recipient :resolved-address] checksum))}
+                               (assoc-in [:wallet-legacy/recipient :searching] false)
+                               (assoc-in [:wallet-legacy/recipient :resolved-address] checksum))}
                       (json-rpc/call
                        {:method            "eth_getCode"
                         :params            [checksum "latest"]
@@ -58,7 +58,7 @@
                                                                  :t/warning-sending-to-contract-descr)))
                         :number-of-retries 3}))
             {:ui/show-error (i18n/label :t/wallet-invalid-address-checksum {:data recipient})
-             :db            (assoc-in db [:wallet/recipient :searching] false)}))
+             :db            (assoc-in db [:wallet-legacy/recipient :searching] false)}))
         (and (not (string/blank? recipient))
              (not (string/starts-with? recipient "0x"))
              (ens/valid-eth-name-prefix? recipient))
@@ -72,34 +72,34 @@
                {:chain-id (chain/chain-id db)
                 :ens-name ens-name
                 :cb       #(re-frame/dispatch [::recipient-address-resolved % @resolve-last-id])}})
-            {:db (assoc-in db [:wallet/recipient :searching] false)}))
+            {:db (assoc-in db [:wallet-legacy/recipient :searching] false)}))
         :else
-        {:db (assoc-in db [:wallet/recipient :searching] false)}))))
+        {:db (assoc-in db [:wallet-legacy/recipient :searching] false)}))))
 
 (rf/defn address-changed
-  {:events [:wallet.recipient/address-changed]}
+  {:events [:wallet-legacy.recipient/address-changed]}
   [{:keys [db] :as cofx} new-identity]
   (rf/merge cofx
             {:db (update db
-                         :wallet/recipient assoc
-                         :address          new-identity
-                         :resolved-address nil
-                         :searching        true)}
+                         :wallet-legacy/recipient assoc
+                         :address                 new-identity
+                         :resolved-address        nil
+                         :searching               true)}
             (set-recipient new-identity nil)))
 
 (rf/defn recipient-modal-closed
-  {:events [:wallet/recipient-modal-closed]}
+  {:events [:wallet-legacy/recipient-modal-closed]}
   [{:keys [db]}]
-  {:db (dissoc db :wallet/recipient)})
+  {:db (dissoc db :wallet-legacy/recipient)})
 
 (rf/defn add-favourite
-  {:events [:wallet/add-favourite]}
+  {:events [:wallet-legacy/add-favourite]}
   [{:keys [db] :as cofx} address name]
   (let [new-favourite {:address   address
                        :name      (or name "")
                        :favourite true}]
     (rf/merge cofx
-              {:db            (assoc-in db [:wallet/favourites address] new-favourite)
+              {:db            (assoc-in db [:wallet-legacy/favourites address] new-favourite)
                :json-rpc/call [{:method     "wallet_addSavedAddress"
                                 :params     [new-favourite]
                                 :on-success #()}]}

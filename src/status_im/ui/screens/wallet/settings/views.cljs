@@ -21,7 +21,7 @@
   [topbar/topbar
    {:title (i18n/label :t/wallet-assets)
     :navigation
-    {:on-press #(re-frame/dispatch [:wallet.settings.ui/navigate-back-pressed])}}])
+    {:on-press #(re-frame/dispatch [:wallet-legacy.settings.ui/navigate-back-pressed])}}])
 
 (defn hide-sheet-and-dispatch
   [event]
@@ -44,7 +44,7 @@
          :title    (i18n/label :t/remove-token)
          :icon     :main-icons/delete
          :on-press #(hide-sheet-and-dispatch
-                     [:wallet.custom-token.ui/remove-pressed token])}])]))
+                     [:wallet-legacy.custom-token.ui/remove-pressed token])}])]))
 
 (defn render-token
   [_]
@@ -69,7 +69,8 @@
                                [chat-icon/custom-icon-view-list title color])
         :title               title
         :subtitle            (name sym)
-        :on-press            #(re-frame/dispatch [:wallet.settings/toggle-visible-token (keyword sym)
+        :on-press            #(re-frame/dispatch [:wallet-legacy.settings/toggle-visible-token
+                                                  (keyword sym)
                                                   (not checked?)])
         :on-long-press       #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                                   {:content (custom-token-actions-view token)}])}])}))
@@ -82,9 +83,9 @@
   []
   (letsubs [{search-filter                           :search-filter
              {custom-tokens true default-tokens nil} :tokens}
-            [:wallet/filtered-grouped-chain-tokens]]
+            [:wallet-legacy/filtered-grouped-chain-tokens]]
     {:component-will-unmount #(do
-                                (re-frame/dispatch [:search/token-filter-changed nil])
+                                (re-frame/dispatch [:wallet-legacy/search-token-filter-changed nil])
                                 (reset! search-active? false))}
     [react/view {:flex 1 :background-color colors/white}
      [toolbar]
@@ -95,12 +96,12 @@
        [search-input/search-input-old
         {:search-active? search-active?
          :search-filter  search-filter
-         :on-cancel      #(re-frame/dispatch [:search/token-filter-changed nil])
+         :on-cancel      #(re-frame/dispatch [:wallet-legacy/search-token-filter-changed nil])
          :on-focus       (fn [search-filter]
                            (when-not search-filter
-                             (re-frame/dispatch [:search/token-filter-changed ""])))
+                             (re-frame/dispatch [:wallet-legacy/search-token-filter-changed ""])))
          :on-change      (fn [text]
-                           (re-frame/dispatch [:search/token-filter-changed text]))}]]
+                           (re-frame/dispatch [:wallet-legacy/search-token-filter-changed text]))}]]
       [list/section-list
        {:header
         [react/view {:margin-top 16}

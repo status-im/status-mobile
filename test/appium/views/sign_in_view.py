@@ -143,7 +143,6 @@ class SignInView(BaseView):
         self.i_m_new_in_status_button = Button(self.driver, accessibility_id="new-to-status-button")
 
         self.migration_password_input = EditBox(self.driver, accessibility_id="enter-password-input")
-        self.login_button = LogInButton(self.driver)
         self.access_key_button = AccessKeyButton(self.driver)
         self.generate_key_button = Button(self.driver, accessibility_id="generate-old-key")
         self.your_keys_more_icon = Button(self.driver, xpath="//androidx.appcompat.widget.LinearLayoutCompat")
@@ -220,7 +219,7 @@ class SignInView(BaseView):
             pass
 
     def create_user(self, password=common_password, keycard=False, enable_notifications=False, second_user=False,
-                    username="test user"):
+                    third_user=False, username="test user"):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s', enable_notification: '%s')" %
                          (password, str(keycard), str(enable_notifications)), device=False)
         if self.element_by_text('CONTINUE').is_element_displayed(5):
@@ -229,10 +228,12 @@ class SignInView(BaseView):
             self.show_profiles_button.wait_and_click(20)
             self.plus_profiles_button.click()
             self.create_new_profile_button.click()
-            self.generate_keys_button.click_until_presence_of_element(self.profile_your_name_edit_box)
+        elif third_user:
+            self.plus_profiles_button.click()
+            self.create_new_profile_button.click()
         else:
             self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_keys_button)
-            self.generate_keys_button.click_until_presence_of_element(self.profile_your_name_edit_box)
+        self.generate_keys_button.click_until_presence_of_element(self.profile_your_name_edit_box)
         self.set_profile(username)
         self.set_password(password)
         if self.enable_biometric_maybe_later_button.is_element_displayed(10):

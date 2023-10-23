@@ -52,9 +52,9 @@
 
 (defn create-new-account!
   []
-  (rf/dispatch-sync [:wallet.accounts/start-adding-new-account {:type :generate}])
+  (rf/dispatch-sync [:wallet-legacy.accounts/start-adding-new-account {:type :generate}])
   (rf/dispatch-sync [:set-in [:add-account :account :name] account-name])
-  (rf/dispatch [:wallet.accounts/add-new-account (native-module/sha3 password)]))
+  (rf/dispatch [:wallet-legacy.accounts/add-new-account (native-module/sha3 password)]))
 
 (defn assert-new-account-created
   []
@@ -120,7 +120,7 @@
        (assert-messenger-started)
        (create-new-account!) ; create a new account
        (rf-test/wait-for
-         [:wallet.accounts/account-stored]
+         [:wallet-legacy.accounts/account-stored]
          (assert-new-account-created) ; assert account was created
          (logout!)
          (rf-test/wait-for [::logout/logout-method]))))))

@@ -227,7 +227,7 @@
               ;; now for simplicity do not hide bottom sheet when generating key
               ;; and exporting key but should be refactored.
               (when-not (contains? #{:keycard/generate-and-load-key
-                                     :wallet.accounts/generate-new-keycard-account
+                                     :wallet-legacy.accounts/generate-new-keycard-account
                                      :keycard/remove-key-with-unpair
                                      :keycard/unpair-and-delete}
                                    on-verified)
@@ -236,7 +236,7 @@
                                      :keycard/generate-and-load-key
                                      :keycard/remove-key-with-unpair
                                      :keycard/unpair-and-delete
-                                     :wallet.accounts/generate-new-keycard-account}
+                                     :wallet-legacy.accounts/generate-new-keycard-account}
                                    on-verified)
                 (common/get-application-info nil))
               (when on-verified

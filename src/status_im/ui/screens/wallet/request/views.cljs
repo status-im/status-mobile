@@ -37,6 +37,6 @@
        :padding-horizontal 16
        :padding-bottom     16}
       [quo/button
-       {:on-press            #(re-frame/dispatch [:wallet.accounts/share address])
+       {:on-press            #(re-frame/dispatch [:wallet-legacy.accounts/share address])
         :accessibility-label :share-address-button}
        (i18n/label :t/share-address)]]]))

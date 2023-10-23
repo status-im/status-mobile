@@ -184,7 +184,7 @@
 (rf/defn prepare-unconfirmed-transaction
   [{:keys [db now]} new-tx-hash
    {:keys [value gasPrice maxFeePerGas maxPriorityFeePerGas gas data to from hash]} symbol amount]
-  (let [token       (tokens/symbol->token (:wallet/all-tokens db) symbol)
+  (let [token       (tokens/symbol->token (:wallet-legacy/all-tokens db) symbol)
         from        (eip55/address->checksum from)
         ;;if there is a hash in the tx object that means we resending transaction
         old-tx-hash hash
@@ -208,8 +208,8 @@
     (log/info "[signing] prepare-unconfirmed-transaction" tx)
     {:db (-> db
              ;;remove old transaction, because we replace it with the new one
-             (update-in [:wallet :accounts from :transactions] dissoc old-tx-hash)
-             (assoc-in [:wallet :accounts from :transactions new-tx-hash] tx))}))
+             (update-in [:wallet-legacy :accounts from :transactions] dissoc old-tx-hash)
+             (assoc-in [:wallet-legacy :accounts from :transactions new-tx-hash] tx))}))
 
 (defn get-method-type
   [data]
@@ -223,7 +223,7 @@
 
 (defn get-transfer-token
   [db to data]
-  (let [{:keys [decimals] :as token} (tokens/address->token (:wallet/all-tokens db) to)]
+  (let [{:keys [decimals] :as token} (tokens/address->token (:wallet-legacy/all-tokens db) to)]
     (when (and token data (string? data))
       (when-let [type (get-method-type data)]
         (let [[address value _] (native-module/decode-parameters
@@ -258,7 +258,7 @@
                 :symbol  :ETH
                 :value   value
                 :amount  (str eth-amount)
-                :token   (tokens/asset-for (:wallet/all-tokens db)
+                :token   (tokens/asset-for (:wallet-legacy/all-tokens db)
                                            (chain/get-current-network db)
                                            :ETH)}
                (not (nil? token))
@@ -352,7 +352,7 @@
          {:db (assoc-in (:db cofx) [:signing/edit-fee :gas-price-loading?] true)
           :signing/update-gas-price
           {:success-callback #(re-frame/dispatch
-                               [:wallet.send/update-gas-price-success :signing/tx % tx-obj])
+                               [:wallet-legacy.send/update-gas-price-success :signing/tx % tx-obj])
            :error-callback   #(re-frame/dispatch [:signing/update-gas-price-error %])
            :network-id       (get-in (chain/current-network db)
                                      [:config :NetworkId])}})))))
@@ -528,14 +528,14 @@
             (check-queue)))
 
 (rf/defn sign-transaction-button-clicked-from-chat
-  {:events [:wallet.ui/sign-transaction-button-clicked-from-chat]}
+  {:events [:wallet-legacy.ui/sign-transaction-button-clicked-from-chat]}
   [{:keys [db] :as cofx} {:keys [to amount from token]}]
   (let [{:keys [symbol address]} token
         amount-hex               (str "0x" (native-module/number-to-hex amount))
         to-norm                  (address/normalized-hex (if (string? to) to (:address to)))
         from-address             (:address from)
         identity                 (:current-chat-id db)
-        db                       (dissoc db :wallet/prepare-transaction :signing/edit-fee)]
+        db                       (dissoc db :wallet-legacy/prepare-transaction :signing/edit-fee)]
     (if to-norm
       (rf/merge
        cofx
@@ -563,15 +563,15 @@
          :on-success  #(re-frame/dispatch [:transport/message-sent %])}]})))
 
 (rf/defn sign-transaction-button-clicked-from-request
-  {:events [:wallet.ui/sign-transaction-button-clicked-from-request]}
+  {:events [:wallet-legacy.ui/sign-transaction-button-clicked-from-request]}
   [{:keys [db] :as cofx} {:keys [amount from token]}]
-  (let [{:keys [request-parameters chat-id]} (:wallet/prepare-transaction db)
+  (let [{:keys [request-parameters chat-id]} (:wallet-legacy/prepare-transaction db)
         {:keys [symbol address]}             token
         amount-hex                           (str "0x" (native-module/number-to-hex amount))
         to-norm                              (:address request-parameters)
         from-address                         (:address from)]
     (rf/merge cofx
-              {:db (dissoc db :wallet/prepare-transaction :signing/edit-fee)}
+              {:db (dissoc db :wallet-legacy/prepare-transaction :signing/edit-fee)}
               (fn [cofx]
                 (sign
                  cofx
@@ -590,14 +590,14 @@
                              :data       (native-module/encode-transfer to-norm amount-hex)})})))))
 
 (rf/defn sign-transaction-button-clicked
-  {:events [:wallet.ui/sign-transaction-button-clicked]}
+  {:events [:wallet-legacy.ui/sign-transaction-button-clicked]}
   [{:keys [db] :as cofx} {:keys [to amount from token gas gasPrice maxFeePerGas maxPriorityFeePerGas]}]
   (let [{:keys [symbol address]} token
         amount-hex               (str "0x" (native-module/number-to-hex amount))
         to-norm                  (address/normalized-hex (if (string? to) to (:address to)))
         from-address             (:address from)]
     (rf/merge cofx
-              {:db (dissoc db :wallet/prepare-transaction :signing/edit-fee)}
+              {:db (dissoc db :wallet-legacy/prepare-transaction :signing/edit-fee)}
               (sign
                {:tx-obj (merge (if (eip1559/sync-enabled?)
                                  {:from                 from-address

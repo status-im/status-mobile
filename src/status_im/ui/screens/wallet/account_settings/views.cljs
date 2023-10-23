@@ -43,7 +43,7 @@
                                 (str @error)))}]
        [quo/button
         {:on-press            (fn []
-                                (re-frame/dispatch [:wallet.accounts/delete-key
+                                (re-frame/dispatch [:wallet-legacy.accounts/delete-key
                                                     account
                                                     @password
                                                     #(reset! error :wrong-password)])
@@ -109,7 +109,7 @@
                [{:label (i18n/label :t/apply)
                  :on-press
                  #(do
-                    (re-frame/dispatch [:wallet.accounts/save-account
+                    (re-frame/dispatch [:wallet-legacy.accounts/save-account
                                         account
                                         @new-account])
                     (reset! new-account nil))}]))]
@@ -172,5 +172,6 @@
            {:theme    :negative
             :title    (i18n/label :t/delete-account)
             :on-press #(if (= :watch type)
-                         (re-frame/dispatch [:wallet.settings/show-delete-account-confirmation account])
+                         (re-frame/dispatch [:wallet-legacy.settings/show-delete-account-confirmation
+                                             account])
                          (re-frame/dispatch [:show-popover {:view [delete-account account]}]))}]])]]]))

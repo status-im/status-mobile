@@ -25,10 +25,10 @@
 ;;bottom sheet
 (reg-root-key-sub :bottom-sheet :bottom-sheet)
 
-; media-server
+;;media-server
 (reg-root-key-sub :mediaserver/port :mediaserver/port)
 
-;; push notifications
+;;push notifications
 (reg-root-key-sub :push-notifications/preferences :push-notifications/preferences)
 
 ;;general
@@ -79,7 +79,7 @@
 (reg-root-key-sub :multiaccount/reset-password-form-vals :multiaccount/reset-password-form-vals)
 (reg-root-key-sub :multiaccount/reset-password-errors :multiaccount/reset-password-errors)
 (reg-root-key-sub :multiaccount/resetting-password? :multiaccount/resetting-password?)
-;; delete profile
+;;delete profile
 (reg-root-key-sub :delete-profile/error :delete-profile/error)
 (reg-root-key-sub :delete-profile/keep-keys-on-keycard? :delete-profile/keep-keys-on-keycard?)
 
@@ -128,119 +128,9 @@
 (reg-root-key-sub :messages/pin-messages :pin-messages)
 (reg-root-key-sub :messages/pin-modal :pin-modal)
 
-; Messages home view -> tabs
 (reg-root-key-sub :messages-home/selected-tab :messages-home/selected-tab)
 
-;;browser
-(reg-root-key-sub :browsers :browser/browsers)
-(reg-root-key-sub :browser/options :browser/options)
-(reg-root-key-sub :dapps/permissions :dapps/permissions)
-(reg-root-key-sub :bookmarks :bookmarks/bookmarks)
-(reg-root-key-sub :browser/screen-id :browser/screen-id)
-
-;;stickers
-(reg-root-key-sub :stickers/selected-pack :stickers/selected-pack)
-(reg-root-key-sub :stickers/packs :stickers/packs)
-(reg-root-key-sub :stickers/recent-stickers :stickers/recent-stickers)
-
-;;mailserver
-(reg-root-key-sub :mailserver/current-id :mailserver/current-id)
-(reg-root-key-sub :mailserver/mailservers :mailserver/mailservers)
-(reg-root-key-sub :mailserver.edit/mailserver :mailserver.edit/mailserver)
-(reg-root-key-sub :mailserver/state :mailserver/state)
-(reg-root-key-sub :mailserver/pending-requests :mailserver/pending-requests)
-(reg-root-key-sub :mailserver/request-error? :mailserver/request-error)
-(reg-root-key-sub :mailserver/fetching-gaps-in-progress :mailserver/fetching-gaps-in-progress)
-
-;;contacts
-(reg-root-key-sub :contacts/contacts-raw :contacts/contacts)
-(reg-root-key-sub :contacts/current-contact-identity :contacts/identity)
-(reg-root-key-sub :contacts/current-contact-ens-name :contacts/ens-name)
-(reg-root-key-sub :contacts/new-identity :contacts/new-identity)
-(reg-root-key-sub :group/selected-contacts :group/selected-contacts)
-(reg-root-key-sub :contacts/search-query :contacts/search-query)
-
-;;wallet
-(reg-root-key-sub :wallet :wallet)
-(reg-root-key-sub :prices :prices)
-(reg-root-key-sub :prices-loading? :prices-loading?)
-(reg-root-key-sub :wallet.transactions :wallet.transactions)
-(reg-root-key-sub :wallet/custom-token-screen :wallet/custom-token-screen)
-(reg-root-key-sub :wallet/prepare-transaction :wallet/prepare-transaction)
-(reg-root-key-sub :wallet-service/manual-setting :wallet-service/manual-setting)
-(reg-root-key-sub :wallet/recipient :wallet/recipient)
-(reg-root-key-sub :wallet/favourites :wallet/favourites)
-(reg-root-key-sub :wallet/refreshing-history? :wallet/refreshing-history?)
-(reg-root-key-sub :wallet/fetching-error :wallet/fetching-error)
-(reg-root-key-sub :wallet/non-archival-node :wallet/non-archival-node)
-(reg-root-key-sub :wallet/current-base-fee :wallet/current-base-fee)
-(reg-root-key-sub :wallet/slow-base-fee :wallet/slow-base-fee)
-(reg-root-key-sub :wallet/normal-base-fee :wallet/normal-base-fee)
-(reg-root-key-sub :wallet/fast-base-fee :wallet/fast-base-fee)
-(reg-root-key-sub :wallet/current-priority-fee :wallet/current-priority-fee)
-(reg-root-key-sub :wallet/transactions-management-enabled? :wallet/transactions-management-enabled?)
-(reg-root-key-sub :wallet/all-tokens :wallet/all-tokens)
-(reg-root-key-sub :wallet/collectible-collections :wallet/collectible-collections)
-(reg-root-key-sub :wallet/fetching-collection-assets :wallet/fetching-collection-assets)
-(reg-root-key-sub :wallet/collectible-assets :wallet/collectible-assets)
-(reg-root-key-sub :wallet/selected-collectible :wallet/selected-collectible)
-(reg-root-key-sub :wallet/modal-selecting-source-token? :wallet/modal-selecting-source-token?)
-(reg-root-key-sub :wallet/swap-from-token :wallet/swap-from-token)
-(reg-root-key-sub :wallet/swap-to-token :wallet/swap-to-token)
-(reg-root-key-sub :wallet/swap-from-token-amount :wallet/swap-from-token-amount)
-(reg-root-key-sub :wallet/swap-to-token-amount :wallet/swap-to-token-amount)
-(reg-root-key-sub :wallet/swap-advanced-mode? :wallet/swap-advanced-mode?)
-
-;; Wallet 2
-(reg-root-key-sub :wallet-2/scanned-address :wallet-2/scanned-address)
-
-;;; Link previews
-
-(reg-root-key-sub :link-previews-whitelist :link-previews-whitelist)
-(reg-root-key-sub :chat/link-previews :chat/link-previews)
-
-;;commands
-(reg-root-key-sub :commands/select-account :commands/select-account)
-
-;;ethereum
-(reg-root-key-sub :ethereum/current-block :ethereum/current-block)
-
-;;ens
-(reg-root-key-sub :ens/registration :ens/registration)
-(reg-root-key-sub :ens/registrations :ens/registrations)
-(reg-root-key-sub :ens/names :ens/names)
-
-;;signing
-(reg-root-key-sub :signing/sign :signing/sign)
-(reg-root-key-sub :signing/tx :signing/tx)
-(reg-root-key-sub :signing/edit-fee :signing/edit-fee)
-
-;;intro-wizard
-(reg-root-key-sub :intro-wizard-state :intro-wizard)
-
-(reg-root-key-sub :toasts :toasts)
-(reg-root-key-sub :popover/popover :popover/popover)
-(reg-root-key-sub :visibility-status-popover/popover :visibility-status-popover/popover)
-(reg-root-key-sub :add-account :add-account)
-
-(reg-root-key-sub :keycard :keycard)
-
-(reg-root-key-sub :auth-method :auth-method)
-
-;; keycard
-(reg-root-key-sub :keycard/banner-hidden :keycard/banner-hidden)
-
-;; delete profile
-(reg-root-key-sub :delete-profile/error :delete-profile/error)
-(reg-root-key-sub :delete-profile/keep-keys-on-keycard? :delete-profile/keep-keys-on-keycard?)
-
-;; push notifications
-(reg-root-key-sub :push-notifications/servers :push-notifications/servers)
-(reg-root-key-sub :push-notifications/preferences :push-notifications/preferences)
-
-(reg-root-key-sub :buy-crypto/on-ramps :buy-crypto/on-ramps)
-
-;; communities
+;;communities
 (reg-root-key-sub :communities :communities)
 (reg-root-key-sub :communities/create :communities/create)
 (reg-root-key-sub :communities/create-channel :communities/create-channel)
@@ -252,9 +142,12 @@
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
 (reg-root-key-sub :contract-communities :contract-communities)
 
-;;; Wallet 2
+;;wallet 2
 (reg-root-key-sub :wallet-2/tokens :wallet-2/tokens)
 (reg-root-key-sub :wallet-2/tokens-loading? :wallet-2/tokens-loading?)
 
-;; activity center
+;;activity center
 (reg-root-key-sub :activity-center :activity-center)
+
+;;wallet
+(reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)
