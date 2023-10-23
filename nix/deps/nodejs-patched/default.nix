@@ -103,7 +103,7 @@ stdenv.mkDerivation {
   patchReactNativeCameraKitPhase = ''
     substituteInPlace ./node_modules/react-native-camera-kit/ios/ReactNativeCameraKit.xcodeproj/project.pbxproj --replace \
       'IPHONEOS_DEPLOYMENT_TARGET = 10.0;' \
-      ' '
+      'IPHONEOS_DEPLOYMENT_TARGET = 11.0;'
   '';
 
   # The ELF types are incompatible with the host platform, so let's not even try
