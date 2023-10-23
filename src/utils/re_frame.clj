@@ -56,7 +56,7 @@
             (when js/goog.DEBUG
               (when (taoensso.timbre/level>=
                      :trace
-                     (:level taoensso.timbre/*config*))
+                     (:min-level taoensso.timbre/*config*))
                 (println
                  (clojure.string/join
                   (concat

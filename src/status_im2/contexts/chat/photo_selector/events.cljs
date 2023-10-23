@@ -43,7 +43,7 @@
         (merge {:first      num
                 :assetType  "Photos"
                 :groupTypes (if (= album (i18n/label :t/recent)) "All" "Albums")
-                :groupName  (when (not= album (i18n/label :t/recent)) album)
+                :groupName  (if (not= album (i18n/label :t/recent)) album "")
                 :include    ["imageSize"]}
                (when end-cursor
                  {:after end-cursor}))
