@@ -12,7 +12,9 @@
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [status-im2.contexts.debug-component.events :as d]
+    [re-frame.core :as rf]))
 
 (defn- f-slider
   [{:keys [disabled?]}]
@@ -112,3 +114,10 @@
   [:f> f-slider props])
 
 (def view (quo.theme/with-theme view-internal))
+
+(comment
+  (rf/dispatch [:debug-component
+                [view
+                 {:track-icon          :face-id
+                  :track-text          "BYEE"
+                  :customization-color :blue}]]))

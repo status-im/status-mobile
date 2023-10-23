@@ -148,4 +148,5 @@
 (reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)
 
 ;;debug
-(reg-root-key-sub :debug/view :debug/view)
+(when js/goog.DEBUG
+  (reg-root-key-sub :debug/component :debug/component))

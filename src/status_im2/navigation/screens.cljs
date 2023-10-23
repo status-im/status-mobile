@@ -12,7 +12,7 @@
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
-    [status-im2.contexts.debug.view :as debug]
+    [status-im2.contexts.debug-component.view :as debug-component]
     [status-im2.contexts.emoji-picker.view :as emoji-picker]
     [status-im2.contexts.onboarding.create-password.view :as create-password]
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
@@ -54,11 +54,7 @@
   (concat
    (old-screens/screens)
 
-   [{:name      :debug
-     :options   {:sheet? true}
-     :component debug/view}
-
-    {:name      :activity-center
+   [{:name      :activity-center
      :options   options/transparent-screen-options
      :component activity-center/view}
 
@@ -276,6 +272,11 @@
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
      :component scan-address/view}]
+
+   (when js/goog.DEBUG
+     [{:name      :dev-debug-component-sheet
+       :options   {:sheet? true}
+       :component debug-component/view}])
 
    (when config/quo-preview-enabled?
      quo.preview/screens)
