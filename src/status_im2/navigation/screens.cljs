@@ -50,6 +50,7 @@
     [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im2.contexts.wallet.scan-account.view :as scan-address]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
+    [status-im2.contexts.wallet.send.select-asset.view :as wallet-select-asset]
     [status-im2.navigation.options :as options]
     [status-im2.navigation.transitions :as transitions]))
 
@@ -290,6 +291,9 @@
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext}
      :component wallet-select-address/view}
+
+    {:name      :wallet-select-asset
+     :component wallet-select-asset/view}
 
     {:name      :scan-address
      :options   (merge

@@ -50,7 +50,10 @@
           send-address          (rf/sub [:wallet/send-address])
           valid-ens-or-address? (rf/sub [:wallet/valid-ens-or-address?])]
       [quo/address-input
-       {:on-focus              #(reset! input-focused? true)
+       {:on-focus              (fn []
+                                 (when (empty? @input-value)
+                                   (rf/dispatch [:wallet/clean-local-suggestions]))
+                                 (reset! input-focused? true))
         :on-blur               #(reset! input-focused? false)
         :on-scan               (fn []
                                  (rn/dismiss-keyboard!)
@@ -130,16 +133,15 @@
   []
   (let [margin-top     (safe-area/get-top)
         selected-tab   (reagent/atom (:id (first tabs-data)))
-        on-close       #(rf/dispatch [:navigate-back])
+        on-close       (fn []
+                         (rf/dispatch [:wallet/clean-scanned-address])
+                         (rf/dispatch [:wallet/clean-local-suggestions])
+                         (rf/dispatch [:navigate-back]))
         on-change-tab  #(reset! selected-tab %)
         input-value    (reagent/atom "")
         input-focused? (reagent/atom false)]
     (fn []
       (let [valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
-        (rn/use-effect (fn []
-                         (fn []
-                           (rf/dispatch [:wallet/clean-scanned-address])
-                           (rf/dispatch [:wallet/clean-local-suggestions]))))
         [rn/scroll-view
          {:content-container-style      (style/container margin-top)
           :keyboard-should-persist-taps :handled
@@ -173,7 +175,10 @@
                 :type                :primary
                 :disabled?           (not valid-ens-or-address?)
                 :container-style     style/button
-                :on-press            #(js/alert "Not implemented yet")}
+                :on-press            (fn []
+                                       (rf/dispatch [:wallet/select-send-address @input-value])
+                                       (rf/dispatch [:navigate-to-within-stack
+                                                     [:wallet-select-asset :wallet-select-address]]))}
                (i18n/label :t/continue)])]
            [:<>
             [quo/tabs

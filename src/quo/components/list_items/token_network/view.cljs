@@ -19,7 +19,7 @@
     [preview-list/view
      {:type   :network
       :size   :size-14
-      :number 3}
+      :number (count networks)}
      networks]]])
 
 (defn- values
