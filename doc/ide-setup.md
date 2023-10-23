@@ -200,7 +200,7 @@ command.
    is necessary so the VSCode extension finds the project's `.zprintrc`.
 2. Install the extension
    [vscode-clj-zprint](https://github.com/rflagreca/vscode-clj-zprint). By the
-   way, did you know this extension is writen in ClojureScript?
+   way, did you know this extension is written in ClojureScript?
 3. Copy the recommended settings from our repository in
    [.vscode/settings.example.json](/.vscode/settings.example.json) and merge it
    with your workspace settings in `.vscode/settings.json`.
