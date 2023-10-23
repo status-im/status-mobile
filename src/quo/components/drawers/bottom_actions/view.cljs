@@ -26,7 +26,7 @@
   [props]
   (let [{:keys [actions description button-one-label button-two-label
                 button-one-press button-two-press theme
-                scroll? button-one-type button-two-type]}
+                scroll? button-one-type button-two-type disabled?]}
         (merge default-props props)]
     [:<>
      [rn/view {:style style/buttons-container}
@@ -41,6 +41,7 @@
        {:size            40
         :container-style style/button-container
         :type            button-one-type
+        :disabled?       disabled?
         :background      (when scroll? :blur)
         :on-press        button-one-press} button-one-label]]
      (when description
