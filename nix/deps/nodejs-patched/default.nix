@@ -14,8 +14,8 @@ stdenv.mkDerivation {
     "patchJavaPhase"
     "patchReactNativePhase"
     "patchPodPhase"
-    "installPhase"
     "patchReactNativeCameraKitPhase"
+    "installPhase"
   ];
 
   # First symlink all modules as is
@@ -98,8 +98,9 @@ stdenv.mkDerivation {
           '[RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];' \
           '[RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];'
   '';
+  #  Remove predefined minimum iOS target on ReactNativeCameraKit is required.
+  #  Because we use different minimum versions.
   patchReactNativeCameraKitPhase = ''
-
     substituteInPlace ./node_modules/react-native-camera-kit/ios/ReactNativeCameraKit.xcodeproj/project.pbxproj --replace \
       'IPHONEOS_DEPLOYMENT_TARGET = 10.0;' \
       ' '
