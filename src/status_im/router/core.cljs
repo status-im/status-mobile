@@ -30,6 +30,10 @@
 
 (def handled-schemes (set (into uri-schemes web-urls)))
 
+(def group-chat-extractor
+  {[#"(.*)" :params] {""  :group-chat
+                      "/" :group-chat}})
+
 (def eip-extractor
   {#{[:prefix "-" :address]
      [:address]}
@@ -39,9 +43,13 @@
 
 (def routes
   [""
-   {handled-schemes {["c/" :community-data] :community
-                     ["cc/" :chat-data]     :community-chat
-                     ["u/" :user-data]      :user}
+   {handled-schemes {["c/" :community-data]        :community
+                     ["cc/" :community-channel-id] :community-chat
+                     ["p/" :chat-id]               :private-chat
+                     ["cr/" :community-id]         :community-requests
+                     "g/"                          group-chat-extractor
+                     ["wallet/" :account]          :wallet-account
+                     ["u/" :user-data]             :user}
     ethereum-scheme eip-extractor}])
 
 (defn parse-query-params
@@ -58,8 +66,7 @@
 
 (defn match-uri
   [uri]
-  ;;
-  (let [;; bidi has trouble parse path with `=` in it extract `=` here and add back to parsed
+  (let [ ;; bidi has trouble parse path with `=` in it extract `=` here and add back to parsed
         ;; base64url regex based on https://datatracker.ietf.org/doc/html/rfc4648#section-5 may
         ;; include invalid base64 (invalid length, length of any base64 encoded string must be a
         ;; multiple of 4)
@@ -71,7 +78,7 @@
         (if equal-end-of-base64url (string/replace-first uri equal-end-of-base64url "") uri)
 
         fragment (parse-fragment uri)
-        ens? (ens/is-valid-eth-name? fragment)
+        ens?     (ens/is-valid-eth-name? fragment)
 
         {:keys [handler route-params] :as parsed}
         (assoc (bidi/match-route routes uri-without-equal-in-path)
@@ -87,8 +94,8 @@
       (and equal-end-of-base64url (= handler :community) (:community-data route-params))
       (update-in [:route-params :community-data] #(str % equal-end-of-base64url))
 
-      (and equal-end-of-base64url (= handler :community-chat) (:chat-data route-params))
-      (update-in [:route-params :chat-data] #(str % equal-end-of-base64url))
+      (and fragment (= handler :community-chat) (:community-channel-id route-params))
+      (assoc-in [:route-params :community-id] fragment)
 
       (and equal-end-of-base64url (= handler :user) (:user-data route-params))
       (update-in [:route-params :user-data] #(str % equal-end-of-base64url))
@@ -174,6 +181,15 @@
                            (cb {:type  :private-chat
                                 :error :invalid-chat-id})))))
 
+(defn match-community-channel-async
+  [{:keys [community-channel-id community-id]} cb]
+  (if (validators/valid-compressed-key? community-id)
+    (native-module/deserialize-and-compress-key
+     community-id
+     #(cb {:type :community-chat :chat-id (str % community-channel-id)}))
+    (cb {:type  :community-chat
+         :error :not-found})))
+
 (defn match-browser
   [uri {:keys [domain]}]
   ;; NOTE: We rebuild domain from original URI and matched domain
@@ -238,8 +254,8 @@
     :community))
 
 (defn handle-uri
-  [chain _chats uri cb]
-  (let [{:keys [handler route-params]} (match-uri uri)]
+  [chain chats uri cb]
+  (let [{:keys [handler route-params query-params]} (match-uri uri)]
     (log/info "[router] uri " uri " matched " handler " with " route-params)
     (cond
 
@@ -253,36 +269,31 @@
       (and (= handler :user) (:user-id route-params))
       (match-contact-async chain route-params cb)
 
-      ;; ;; NOTE: removed in `match-uri`, might need this in the future
-      ;; (= handler :private-chat)
-      ;; (match-private-chat-async chain route-params cb)
+      ;; NOTE: removed in `match-uri`, might need this in the future
+      (= handler :private-chat)
+      (match-private-chat-async chain route-params cb)
 
-      ;; ;; NOTE: removed in `match-uri`, might need this in the future
-      ;; (= handler :group-chat)
-      ;; (cb (match-group-chat chats query-params))
+      ;; NOTE: removed in `match-uri`, might need this in the future
+      (= handler :group-chat)
+      (cb (match-group-chat chats query-params))
 
       (validators/valid-public-key? uri)
       (match-contact-async chain {:user-id uri} cb)
 
-      ;; ;; NOTE: removed in `match-uri`, might need this in the future
-      ;; (= handler :community-requests)
-      ;; (cb {:type handler :community-id (:community-id route-params)})
+      ;; NOTE: removed in `match-uri`, might need this in the future
+      (= handler :community-requests)
+      (cb {:type handler :community-id (:community-id route-params)})
 
       (and (= handler :community) (:community-id route-params))
       (cb {:type         (community-route-type route-params)
            :community-id (:community-id route-params)})
 
-      ;; ;; TODO: jump to community overview for now, should jump to community channel
-      ;; (and (= handler :community-chat) (:chat-id route-params))
-      ;; (cb {:type handler :chat-id (:chat-id route-params)})
+      (= handler :community-chat)
+      (match-community-channel-async route-params cb)
 
-      (and (= handler :community-chat) (:community-id route-params))
-      (cb {:type         (community-route-type route-params)
-           :community-id (:community-id route-params)})
-
-      ;; ;; NOTE: removed in `match-uri`, might need this in the future
-      ;; (= handler :wallet-account)
-      ;; (cb (match-wallet-account route-params))
+      ;; NOTE: removed in `match-uri`, might need this in the future
+      (= handler :wallet-account)
+      (cb (match-wallet-account route-params))
 
       (address/address? uri)
       (cb (address->eip681 uri))
