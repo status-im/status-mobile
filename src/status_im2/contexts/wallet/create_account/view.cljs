@@ -21,12 +21,19 @@
 (defn get-keypair-data
   [name derivation-path]
   [{:title             (keypair-string name)
-    :button-props      {:title (i18n/label :t/edit)}
     :left-icon         :i/placeholder
+    :action            :button
+    :action-props      {:on-press    #(js/alert "Button pressed!")
+                        :button-text (i18n/label :t/edit)
+                        :alignment   :flex-start}
     :description       :text
     :description-props {:text (i18n/label :t/on-device)}}
    {:title             (i18n/label :t/derivation-path)
-    :button-props      {:title (i18n/label :t/edit)}
+    :action            :button
+    :action-props      {:on-press    #(rf/dispatch [:navigate-to :wallet-edit-derivation-path])
+                        :button-text (i18n/label :t/edit)
+                        :icon-left   :i/placeholder
+                        :alignment   :flex-start}
     :left-icon         :i/derivated-path
     :description       :text
     :description-props {:text derivation-path}}])
