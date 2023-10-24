@@ -11,23 +11,23 @@
     [utils.i18n :as i18n]))
 
 (defn- f-view
-  [{:keys [theme]}]
+  [_]
   (let [account-color (reagent/atom :blue)
         address-name  (reagent/atom "")
         address       (reagent/atom "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2")]
-    (fn []
+    (fn [{:keys [theme]}]
       [floating-button-page/view
-       {:button-props {:container-style     {:z-index 2}
-                       :customization-color @account-color
-                       :on-press            #(js/alert "to be implemented")}
-        :button-label "Save address"}
-       [quo/page-nav
-        {:type       :no-title
-         :text-align :left
-         :right-side []
-         :background :blur
-         :icon-name  :i/close
-         :on-press   #(rf/dispatch [:dismiss-modal :wallet-save-address])}]
+       {:header [quo/page-nav
+                 {:type       :no-title
+                  :text-align :left
+                  :right-side []
+                  :background :blur
+                  :icon-name  :i/close
+                  :on-press   #(rf/dispatch [:dismiss-modal :wallet-save-address])}]
+        :footer [quo/button {:container-style     {:z-index 2}
+                             :customization-color @account-color
+                             :on-press            #(js/alert "to be implemented")}
+                 "Save address"]}
        [rn/view {:style {:flex 1}}
         [quo/wallet-user-avatar
          {:container-style     {:margin-bottom     12
@@ -77,7 +77,8 @@
                                                     :network-name :arbitrum}
                                                    {:short-name   "opt"
                                                     :network-name :optimism}]
-                                        :address  @address}])}]]])))
+                                        :address  @address}])}]]
+       ])))
 
 (defn view-internal [props] [:f> f-view props])
 

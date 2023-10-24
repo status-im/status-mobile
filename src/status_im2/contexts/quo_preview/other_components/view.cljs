@@ -33,21 +33,26 @@
                          :z-index          10}}]
 
        [floating-button-page/view
-        {:blur? false
+        {:blur?  false
+         :header [quo/page-nav
+                  {:type       :no-title
+                   :text-align :left
+                   :right-side []
+                   :background :blur
+                   :icon-name  :i/close
+                   :on-press   #(rf/dispatch [:navigate-back])}]
+         :footer [quo/button {:container-style     {:z-index 2}
+                              :customization-color (if @button-pressed? :army :blue)
+                              :on-press            (fn []
+                                                     (prn @acc-height)
+                                                     (swap! acc-height + 20)
+                                                     (swap! button-pressed? not))} ;#(js/alert "to be implemented")
+                  "Save address"]
          #_#_:button-props {:container-style     {:z-index 2}
                             :customization-color :army
                             :on-press            #(js/alert "to be implemented")}
          ;:button-label  "Save address"
          }
-
-        [quo/page-nav
-         {:type       :no-title
-          :text-align :left
-          :right-side []
-          :background :blur
-          :icon-name  :i/close
-          :on-press   #(rf/dispatch [:navigate-back])}]
-
         [rn/view {:style {:flex     1
                           ;:height   @acc-height
                           :overflow :hidden}}
@@ -74,20 +79,7 @@
          [quo/input {:label "label"
                      :value "value"}]
          [quo/input {:label "label"
-                     :value "value"}]
-
-
-         ]
-
-
-        [quo/button {:container-style     {:z-index 2}
-                     :customization-color (if @button-pressed? :army :blue)
-                     :on-press            (fn []
-                                            (prn @acc-height)
-                                            (swap! acc-height + 20)
-                                            (swap! button-pressed? not)) ;#(js/alert "to be implemented")
-                     }
-         "Save address"]
+                     :value "value"}]]
 
         ]
        #_[rn/view {:position         :absolute

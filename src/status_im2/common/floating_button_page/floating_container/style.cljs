@@ -13,7 +13,7 @@
    :align-self       :flex-end
    ;;    :margin-bottom (+ top 10)
    :background-color (when (and background-shown? (not blur?))
-                       (colors/theme-colors colors/black colors/neutral-70 theme))})
+                       (colors/theme-colors colors/white colors/neutral-70 theme))})
 
 
 (defn view-container

@@ -32,15 +32,13 @@
     false))
 
 (defn f-view
-  [{:keys [blur?]}
-   header
-   page-content
-   button-component]
+  [{:keys [header footer blur?]}
+   page-content]
   (reagent/with-let [theme                     (quo.theme/use-theme-value)
                      window-height             (:height (rn/get-window))
 
                      floating-container-height (reagent/atom 0)
-                     header-height        (reagent/atom 0)
+                     header-height             (reagent/atom 0)
                      content-container-height  (reagent/atom 0)
                      show-keyboard?            (reagent/atom false)
                      content-scroll-y          (reagent/atom 0)
@@ -64,7 +62,8 @@
                              :available-space (- window-height
                                                  keyboard-height
                                                  @floating-container-height
-                                                 (safe-area/get-top))
+                                                 (safe-area/get-top)
+                                                 50)
                              :content-height  (+ @content-scroll-y
                                                  @content-container-height
                                                  @header-height)})]
@@ -88,6 +87,7 @@
                        (let [height (oops/oget event "nativeEvent.layout.height")]
                          (reset! content-container-height height)))}
          page-content]]
+
        [rn/keyboard-avoiding-view
         {:style          (style/keyboard-view-style keyboard-shown)
          :pointer-events :box-none}
@@ -100,7 +100,7 @@
                               (let [height (oops/oget event "nativeEvent.layout.height")]
                                 (prn height "height height height")
                                 (reset! floating-container-height height)))}
-         button-component
+         footer
          ;[ button-props button-label]
          ]]])
     (finally
