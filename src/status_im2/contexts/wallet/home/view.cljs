@@ -8,6 +8,7 @@
     [status-im2.contexts.wallet.common.activity-tab.view :as activity]
     [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im2.contexts.wallet.common.temp :as temp]
+    [status-im2.contexts.wallet.common.token-value.view :as token-value]
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -74,7 +75,7 @@
          :on-change      #(reset! selected-tab %)}]
        (case @selected-tab
          :assets       [rn/flat-list
-                        {:render-fn               quo/token-value
+                        {:render-fn               token-value/view
                          :data                    temp/tokens
                          :key                     :assets-list
                          :content-container-style {:padding-horizontal 8}}]
