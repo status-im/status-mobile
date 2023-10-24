@@ -1,6 +1,7 @@
 (ns status-im2.contexts.wallet.address-watch.view
   (:require
     [clojure.string :as string]
+    [re-frame.core :as re-frame]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.clipboard :as clipboard]
@@ -13,8 +14,8 @@
 
 (defn view-internal
   []
-  (let [top         (safe-area/get-top)
-        bottom      (safe-area/get-bottom)
+  (let [top (safe-area/get-top)
+        bottom (safe-area/get-bottom)
         input-value (reagent/atom "")]
     (fn []
       [rn/view
@@ -43,6 +44,9 @@
          {:icon-only? true
           :type       :outline} :i/scan]]
        [rn/view {:style (style/button-container bottom)}
-        [quo/text "[WIP] Bottom Actions"]]])))
+        [quo/bottom-actions
+         {:button-one-label     (i18n/label :t/continue)
+          :button-one-disabled? false                       ;; TODO: use variable instead of hardcoded value
+          :button-one-press     #(re-frame/dispatch [:navigate-to :address-to-watch-edit])}]]])))
 
 (def view (quo.theme/with-theme view-internal))

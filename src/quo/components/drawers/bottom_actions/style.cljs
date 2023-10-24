@@ -5,8 +5,7 @@
 (def buttons-container
   {:flex-direction     :row
    :justify-content    :space-around
-   :padding-vertical   12
-   :padding-horizontal 20})
+   :padding-vertical   12})
 
 (def button-container
   {:flex 1})
