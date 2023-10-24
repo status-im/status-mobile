@@ -152,7 +152,7 @@
     :component wallet.account/account}
    {:name      :add-new-account
     ;;TODO dynamic title
-    :options   {:insets {:top? true}}
+    :options   {:insets {:top? true :bottom? true}}
     :component add-account/add-account-view}
    {:name      :add-new-account-pin
     ;;TODO dynamic title
