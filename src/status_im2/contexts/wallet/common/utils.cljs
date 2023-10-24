@@ -15,9 +15,7 @@
 
 (defn get-account-by-address
   [accounts address]
-  (->> accounts
-       (filter #(= (:address %) address))
-       first))
+  (some #(when (= (:address %) address) %) accounts))
 
 (defn prettify-balance
   [balance]
