@@ -1,7 +1,6 @@
 (ns status-im.ui.components.text
   (:require
     [react-native.core :as rn]
-    [react-native.reanimated :as animated]
     [reagent.core :as reagent]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.typography :as typography]))
@@ -44,7 +43,7 @@
   []
   (let [this      (reagent/current-component)
         props     (reagent/props this)
-        component (if (:animated? props) animated/text rn/text)]
+        component rn/text]
     (into [component
            (merge {:style (text-style props)}
                   (dissoc props

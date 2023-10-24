@@ -211,7 +211,7 @@
     {:style    styles/round-action-button
      :on-press on-press}
     (icons/icon icon {:color colors/white})]
-   [quo/text
+   [components.core/text
     {:color :secondary
      :size  :small
      :style {:margin-top (:tiny spacing/spacing)}}
@@ -348,7 +348,7 @@
                      :margin-top        8
                      :margin-horizontal 67.5
                      :text-align        :center}}
-            [quo/text
+            [components.core/text
              {:color :secondary
               :size  :small
               :style {:text-align :center}}
