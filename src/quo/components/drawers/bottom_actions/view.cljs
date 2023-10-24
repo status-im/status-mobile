@@ -38,12 +38,13 @@
           :type            button-two-type
           :on-press        button-two-press} button-two-label])
       [button/button
-       {:size            40
-        :container-style style/button-container
-        :type            button-one-type
-        :disabled?       disabled?
-        :background      (when scroll? :blur)
-        :on-press        button-one-press} button-one-label]]
+       {:size                40
+        :container-style     style/button-container
+        :type                button-one-type
+        :disabled?           disabled?
+        :background          (when scroll? :blur)
+        :on-press            button-one-press
+        :accessibility-label :button-one} button-one-label]]
      (when description
        [text/text
         {:size  :paragraph-2

@@ -7,7 +7,7 @@
   {:left               0
    :right              0
    :padding-horizontal 20
-   :padding-top        (if label 12 0)
+   :padding-top        (when label 12)
    :padding-bottom     8})
 
 (defn settings-items
