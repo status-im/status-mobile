@@ -38,7 +38,7 @@
   {:padding-vertical 8})
 
 (def color-picker
-  {:padding-horizontal 12})
+  {:padding-horizontal 20})
 
 (def divider-2
   {:margin-top    4
