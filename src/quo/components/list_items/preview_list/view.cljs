@@ -64,11 +64,11 @@
 (defn- view-internal
   "[preview-list opts items]
    opts
-   {:type          :user/:communities/:accounts/:tokens/:collectibles/:dapps/:network
-    :size          :size-32 | :size-24 | :size-20 | :size-16 | :size-14
-    :number        number of items in the list (optional)
-    :blur?         overflow-label blur?}
-   items           preview list items (only 4 items is required for preview)
+   {:type   :user/:communities/:accounts/:tokens/:collectibles/:dapps/:network
+    :size   :size-32 | :size-24 | :size-20 | :size-16 | :size-14
+    :number number of items in the list (optional)
+    :blur?  overflow-label blur?}
+   items    preview list items (only 4 items is required for preview)
   "
   [{:keys [type size number blur?]} items]
   (let [size-key    (if (contains? properties/sizes size) size :size-24)
