@@ -64,6 +64,7 @@
     [status-im.ui.screens.wallet.accounts-manage.views :as accounts-manage]
     [status-im.ui.screens.wallet.accounts.views :as wallet.accounts]
     [status-im.ui.screens.wallet.add-new.views :as add-account]
+    [status-im.ui.screens.wallet.address-add-edit.views :as address-add-edit]
     [status-im.ui.screens.wallet.buy-crypto.views :as wallet.buy-crypto]
     [status-im.ui.screens.wallet.collectibles.views :as wallet.collectibles]
     [status-im.ui.screens.wallet.custom-tokens.views :as custom-tokens]
@@ -218,6 +219,9 @@
     ;;TODO dynamic title
     :options   {:insets {:top? true}}
     :component wallet.swap/asset-selector}
+
+   {:name      :address-to-watch-edit
+    :component address-add-edit/address-add-edit}
 
    ;;PROFILE
 
