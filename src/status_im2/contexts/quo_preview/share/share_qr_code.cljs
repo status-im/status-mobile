@@ -38,7 +38,7 @@
               {:key "🐧"}]}
    (preview/customization-color-option)])
 
-(def possible-networks [:ethereum :optimism :arbitrum :my-network])
+(def possible-networks [:ethereum :optimism :arbitrum :myNet])
 
 (def wallet-multichain-descriptor
   [{:key     :emoji
@@ -67,7 +67,7 @@
     (str (name network-kw) ":")))
 
 (def ^:private profile-link
-  "https://join.status.im/u/zQ3shfozoVJF6oUBcgcaaaK3sipoZFPYXZ5FbHvMXGc5Wrqnu")
+  "https://join.status.im/u/zQ3shfc5Wqnu")
 
 (def ^:private wallet-address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2")
 
@@ -87,13 +87,12 @@
 (defn view
   []
   (let [state (reagent/atom {:type                :profile
-                             :blur?               true
                              :qr-data             profile-link
                              :on-share-press      #(js/alert "share pressed")
                              :on-text-press       #(js/alert "text pressed")
                              :on-text-long-press  #(js/alert "text long press")
                              :profile-picture     nil
-                             :full-name           "Abcd User"
+                             :full-name           "My User"
                              :customization-color :purple
                              :emoji               "🐈"
                              :on-info-press       #(js/alert "Info pressed")

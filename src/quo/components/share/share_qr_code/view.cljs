@@ -13,6 +13,7 @@
             [quo.theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]
+            [react-native.platform :as platform]
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
 
@@ -29,7 +30,8 @@
   [{:keys [share-qr-type on-info-press on-legacy-press on-multichain-press]}]
   [rn/view {:style style/header-container}
    [tab/view
-    {:id                          :wallet-legacy-tab
+    {:accessibility-label         :share-qr-code-legacy-tab
+     :id                          :wallet-legacy-tab
      :active-item-container-style style/header-tab-active
      :item-container-style        style/header-tab-inactive
      :size                        24
@@ -38,7 +40,8 @@
     "Legacy"]
    [rn/view {:style style/space-between-tabs}]
    [tab/view
-    {:id                          :wallet-multichain-tab
+    {:accessibility-label         :share-qr-code-multichain-tab
+     :id                          :wallet-multichain-tab
      :active-item-container-style style/header-tab-active
      :item-container-style        style/header-tab-inactive
      :size                        24
@@ -46,9 +49,10 @@
      :on-press                    on-multichain-press}
     "Multichain"]
    [rn/pressable
-    {:style    style/info-icon
-     :on-press on-info-press
-     :hit-slop 6}
+    {:accessibility-label :share-qr-code-info-icon
+     :style               style/info-icon
+     :on-press            on-info-press
+     :hit-slop            6}
     [icon/icon :i/info
      {:size  20
       :color style/info-icon-color}]]])
@@ -61,16 +65,17 @@
      (i18n/label :t/wallet-address))])
 
 (defn- info-text
-  [{:keys [width on-press on-long-press]} qr-data-text]
+  [{:keys [width on-press on-long-press ellipsize?]} qr-data-text]
   [rn/pressable
-   {:style         (style/data-text width)
-    :on-press      on-press
-    :on-long-press on-long-press}
+   {:accessibility-label :share-qr-code-info-text
+    :style               (style/data-text width)
+    :on-press            on-press
+    :on-long-press       on-long-press}
    [text/text
-    {:size            :paragraph-1
-     :weight          :medium
-     :ellipsize-mode  :middle
-     :number-of-lines 1}
+    (cond-> {:size   :paragraph-1
+             :weight :monospace}
+      ellipsize? (assoc :number-of-lines 1
+                        :ellipsize-mode  :middle))
     qr-data-text]])
 
 (defn- share-button
@@ -81,7 +86,7 @@
      :type                :grey
      :background          :blur
      :size                style/share-button-size
-     :accessibility-label :share-profile
+     :accessibility-label :link-to-profile
      :on-press            on-press}
     :i/share]])
 
@@ -107,6 +112,7 @@
     [info-label share-qr-type]
     [info-text
      {:width         component-width
+      :ellipsize?    true
       :on-press      on-text-press
       :on-long-press on-text-long-press}
      qr-data]]
@@ -146,7 +152,7 @@
         :type                :grey
         :background          :blur
         :size                32
-        :accessibility-label :qr-network-settings
+        :accessibility-label :share-qr-code-settings
         :on-press            on-settings-press}
        :i/advanced]]
      [rn/view {:style style/divider-container}
@@ -188,28 +194,50 @@
       nil)]])
 
 (defn view
-  "
-  [share-qr-type qr-image-uri qr-data component-width customization-color
-   on-share-press on-text-press on-text-long-press full-name profile-picture
-   emoji on-info-press networks on-settings-press blur?]
-  "
-  [{:keys [blur?] :as props}] ;;TODO: only for android
+  "Receives the following properties:
+   - type:                :profile | :wallet-legacy | :wallet-multichain
+   - qr-image-uri:        Image source value.
+   - qr-data:             Text to show below the QR code.
+   - on-text-press:       Callback for the `qr-data` text.
+   - on-text-long-press:  Callback for the `qr-data` text.
+   - on-share-press:      Callback for the share button.
+   - customization-color: Custom color for the QR code component.
+   - unblur-on-android?:  [Android only] disables blur for this component.
+
+   Depending on the `type`, different properties are accepted:
+   `:profile`
+     - full-name:       User full name.
+     - profile-picture: map ({:source image-source}) or any image source.
+   `:wallet-legacy`
+     - emoji:               Emoji in a string to show in the QR code.
+     - on-info-press:       Callback for the info icon.
+     - on-legacy-press:     Callback for the legacy tab.
+     - on-multichain-press: Callback for the multichain tab.
+   `:wallet-multichain`
+     - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
+     - on-settings-press:   Callback for the settings button.
+     - emoji:               Emoji in a string to show in the QR code.
+     - on-info-press:       Callback for the info icon.
+     - on-legacy-press:     Callback for the legacy tab.
+     - on-multichain-press: Callback for the multichain tab."
+  [{:keys [unblur-on-android?] :as props}]
   (reagent/with-let [component-width     (reagent/atom nil)
-                     container-component (if blur?
+                     container-component (if (and platform/android? unblur-on-android?)
+                                           [rn/view {:background-color style/overlay-color}]
                                            [blur/view
-                                            {:blur-radius   20
-                                             ;:blur-amount 20 ;; TODO: set it on iOS
-                                             :overlay-color style/overlay-color}]
-                                           [rn/view {:background-color style/overlay-color}])]
+                                            {:blur-radius      20
+                                             :blur-amount      20
+                                             :blur-type        :transparent
+                                             :overlay-color    style/overlay-color
+                                             :background-color style/overlay-color}])]
     [quo.theme/provider {:theme :dark}
      [rn/view
-      {:style     style/outer-container
-       :on-layout #(reset! component-width (oops/oget % "nativeEvent.layout.width"))}
+      {:accessibility-label :share-qr-code
+       :style               style/outer-container
+       :on-layout           #(reset! component-width (oops/oget % "nativeEvent.layout.width"))}
       (conj container-component
             (when @component-width
               [share-qr-code
                (-> props
                    (assoc :component-width @component-width)
                    (clojure.set/rename-keys {:type :share-qr-type}))]))]]))
-
-;;TODO: check missing accessibility ids
