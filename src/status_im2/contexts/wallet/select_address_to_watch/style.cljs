@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.address-watch.style)
+(ns status-im2.contexts.wallet.select-address-to-watch.style)
 
 (def header-container
   {:margin-horizontal 20
@@ -12,9 +12,7 @@
 
 (defn button-container
   [bottom]
-  {:position        :absolute
-   :bottom          (+ bottom 12)
-   :left            20
-   :right           20
-   :justify-content :center
-   :align-items     :center})
+  {:position :absolute
+   :bottom   (+ bottom 12)
+   :left     20
+   :right    20})

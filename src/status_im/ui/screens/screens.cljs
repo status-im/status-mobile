@@ -73,6 +73,7 @@
     [status-im.ui.screens.wallet.settings.views :as wallet-settings]
     [status-im.ui.screens.wallet.swap.views :as wallet.swap]
     [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
+    [status-im2.contexts.wallet.add-watch-only-account.views :as address-add-edit]
     [status-im2.contexts.chat.group-details.view :as group-details]
     [utils.i18n :as i18n]))
 
@@ -218,6 +219,9 @@
     ;;TODO dynamic title
     :options   {:insets {:top? true}}
     :component wallet.swap/asset-selector}
+
+   {:name      :address-to-watch-edit
+    :component address-add-edit/address-add-edit}
 
    ;;PROFILE
 
