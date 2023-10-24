@@ -110,7 +110,7 @@ This one is straightforward, just evaluate a navigation dispatch form from anywh
 ```cljs
 (comment (rf/dispatch [:navigate-to :your-favorite-buggy-screen]))
 ```
-| TIP: you can run this from an untracked user namespace `(ns user)`, from which you can experiment or interact with the repl. This is where I usually keep my development navigation forms (thanks to @ilmotta for both these tips).
+> TIP: you can run this from an untracked user namespace `(ns user)`, from which you can experiment or interact with the REPL. This is where I usually keep my development navigation forms (thanks to @ilmotta for both these tips).
 
 #### REPL-ing a component
 This was is also straighforward, but there are some small differences. Just like above, we only have to evaluate a dispatch form, as follows:
@@ -125,5 +125,5 @@ This was is also straighforward, but there are some small differences. Just like
 ```
 When evaluated, a full-screen bottom sheet will appear with your component inside. You can make changes to the props or the component internals and re-evaluate the changed forms, after which the component will be re-mounted without running a reload (unless you save the file). Other times it's quicker to just hit save and the component will be reloaded as usual (except for the props you evaluated, which have to be re-evaluated when changed).
 
-| TIP: you can have multiple versions of the component as separate comments to check for the component variations
-| UP-FOR-DISCUSSION: would be cool to leave comments with component usages at the bottom of the component file, especially where the props are more complex e.g. in most of `status-im` components. I saw/read this was somewhat common with clojure(script) and I feel like it would be useful in this case, but would rather have the more experienced clojure devs who maybe tried it in the past chip in on this.
+> TIP: you can have multiple versions of the component as separate comments to check for the component variations
+> UP-FOR-DISCUSSION: would be cool to leave comments with component usages at the bottom of the component file, especially where the props are more complex e.g. in most of `status-im` components. I saw/read this was somewhat common with clojure(script) and I feel like it would be useful in this case, but would rather have the more experienced clojure devs who maybe tried it in the past chip in on this.
