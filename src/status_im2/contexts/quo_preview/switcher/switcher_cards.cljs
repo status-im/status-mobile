@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.switcher.switcher-cards
   (:require
     [quo.foundations.colors :as colors]
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
     [status-im2.constants :as constants]
@@ -10,8 +9,7 @@
     [status-im2.contexts.shell.jump-to.constants :as shell.constants]))
 
 (def descriptor
-  [{:label   "Type"
-    :key     :type
+  [{:key     :type
     :type    :select
     :options [{:key   shell.constants/communities-discover
                :value "Communities Discover"}
@@ -33,27 +31,15 @@
                :value "Wallet Graph"}
               {:key   shell.constants/empty-card
                :value "Empty Card"}]}
-   {:label "Title"
-    :key   :title
-    :type  :text}
-   {:label "New Notifications?"
-    :key   :new-notifications?
-    :type  :boolean}
-   {:label "Banner?"
-    :key   :banner?
-    :type  :boolean}
-   {:label   "Notification Indicator"
-    :key     :notification-indicator
+   {:key :title :type :text}
+   {:key :new-notifications? :type :boolean}
+   {:key :banner? :type :boolean}
+   {:key     :notification-indicator
     :type    :select
-    :options [{:key   :counter
-               :value :counter}
-              {:key   :unread-dot
-               :value :unread-dot}]}
-   {:label "Counter Label"
-    :key   :counter-label
-    :type  :text}
-   {:label   "Content Type"
-    :key     :content-type
+    :options [{:key :counter}
+              {:key :unread-dot}]}
+   {:key :counter-label :type :text}
+   {:key     :content-type
     :type    :select
     :options [{:key   constants/content-type-text
                :value :text}
@@ -69,21 +55,10 @@
                :value :community}
               {:key   constants/content-type-link
                :value :link}]}
-   {:label "Last Message"
-    :key   :last-message
-    :type  :text}
-   {:label "Customization"
-    :key :customization-color
-    :type :select
-    :options
-    (map
-     (fn [c]
-       {:key   c
-        :value c})
-     (keys colors/customization))}])
+   {:key :last-message :type :text}
+   (preview/customization-color-option)])
 
 ;; Mocked Data
-
 (def banner (resources/get-mock-image :community-banner))
 (def sticker {:source (resources/get-mock-image :sticker)})
 (def community-avatar {:source (resources/get-mock-image :community-logo)})
@@ -151,7 +126,7 @@
      :else
      {})))
 
-(defn preview-switcher-cards
+(defn view
   []
   (let [state (reagent/atom {:type                   shell.constants/private-group-chat-card
                              :title                  "Alisher Yakupov"
@@ -165,10 +140,7 @@
                              :preview-label-color    colors/white})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view {:padding-bottom 150}
-        [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
-         [switcher-cards/card (get-mock-data @state)]]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-vertical 60}}
+       [switcher-cards/card (get-mock-data @state)]])))
