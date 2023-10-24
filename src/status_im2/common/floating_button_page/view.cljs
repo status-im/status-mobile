@@ -10,18 +10,17 @@
    [status-im2.common.floating-button-page.floating-container.view :as floating-container]
    [status-im2.common.floating-button-page.style :as style]))
 
-(defn show-bottom-background
-  [{:keys [scroll-view-height floating-container-height keyboard-view-height
-           content-container-height content-scroll-y keyboard-shown?]}]
+(defn show-background
+  [{:keys [keyboard-shown? available-space content-height]}]
   (when keyboard-shown?
-       (if platform/android?
-         (< (- scroll-view-height floating-container-height) content-container-height)
-         (< (- scroll-view-height keyboard-view-height) (- content-container-height content-scroll-y)))))
+    (< content-height available-space)))
 
 (defn f-view
   [{:keys [blur? button-props button-label button-height] :or
     {button-height constants/button-height}} header page-content button-component]
   (reagent/with-let [theme (quo.theme/use-theme-value)
+                     window-height           (:height (rn/get-window))
+
                      floating-container-height (reagent/atom button-height)
                      scroll-view-height       (reagent/atom 0)
                      content-container-height (reagent/atom 0)
@@ -42,13 +41,10 @@
                                                   #(reset! show-keyboard? false))]
     (let [{:keys [keyboard-shown
                   keyboard-height]} (hooks/use-keyboard)
-          show-background?    (show-bottom-background
-                               {:scroll-view-height @scroll-view-height
-                                :floating-container-height @floating-container-height
-                                :keyboard-view-height keyboard-height
-                                :content-container-height @content-container-height
-                                :content-scroll-y @content-scroll-y
-                                :keyboard-shown? keyboard-shown})]
+          show-background? (show-background
+                            {:keyboard-shown? keyboard-shown
+                             :available-space   (- window-height keyboard-height @floating-container-height)
+                             :content-height     (+ @content-scroll-y @content-container-height)})]
       [rn/view {:style style/page-container}
        header
        [rn/scroll-view
@@ -60,16 +56,14 @@
                                     (let [y (oops/oget event "nativeEvent.contentOffset.y")]
                                       (reset! content-scroll-y y)))
          :scroll-event-throttle   64
-         :content-container-style {:flexGrow 1
-                                   
-                                   }}
+         :content-container-style {:flexGrow 1}}
         [rn/view
          {:style {:border-width 1
                   :border-color :red}
           :on-layout (fn [event]
                        (let [height (oops/oget event "nativeEvent.layout.height")]
                          (reset! content-container-height height)))}
-          page-content]]
+         page-content]]
        [rn/keyboard-avoiding-view
         {:style          style/keyboard-view-style
          :pointer-events :box-none}
