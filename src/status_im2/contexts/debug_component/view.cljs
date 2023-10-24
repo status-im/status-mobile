@@ -1,15 +1,18 @@
 (ns status-im2.contexts.debug-component.view
-  (:require [react-native.core :as rn]
-            [utils.re-frame :as rf]))
+  (:require
+    [react-native.core :as rn]
+    [utils.re-frame :as rf]))
 
-(def ^:private container
+(def ^:private container-style
   {:flex               1
    :padding-horizontal 20
-   :justify-content    :center})
+   :padding-top        80
+   :align-items        :center})
 
 (defn view
   []
-  (let [debug-view (rf/sub [:debug/component])]
-    [rn/view {:style container}
-     (when-not (nil? debug-view)
-       debug-view)]))
+  (let [component (rf/sub [:debug/component])]
+    [rn/view
+     {:style container-style}
+     (when-not (nil? component)
+       component)]))
