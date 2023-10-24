@@ -125,7 +125,7 @@
             [album-selector/album-selector sheet album? selected-album top])
           [:<>
            [gesture/flat-list
-            {:key-fn                  identity
+            {:key-fn                  #(hash (:uri %))
              :render-fn               render-image
              :render-data             {:window-width window-width :selected selected-images}
              :data                    camera-roll-photos
