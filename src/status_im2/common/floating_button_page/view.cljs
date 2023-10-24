@@ -1,15 +1,14 @@
 (ns status-im2.common.floating-button-page.view
   (:require
-   [oops.core :as oops]
-   [quo.theme :as quo.theme]
-   [react-native.core :as rn]
-   [react-native.hooks :as hooks]
-   [react-native.platform :as platform]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im2.common.floating-button-page.constants :as constants]
-   [status-im2.common.floating-button-page.floating-container.view :as floating-container]
-   [status-im2.common.floating-button-page.style :as style]))
+    [oops.core :as oops]
+    [quo.theme :as quo.theme]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.common.floating-button-page.floating-container.view :as floating-container]
+    [status-im2.common.floating-button-page.style :as style]))
 
 (defn show-background
   [{:keys [keyboard-shown? available-space content-height] :as props}]
@@ -21,15 +20,15 @@
     (< available-space content-height)))
 
 #_(when keyboard-shown
-  (cond
-    platform/android?
-    (< (- @scroll-view-height button-container-height) @content-container-height)
+    (cond
+      platform/android?
+      (< (- @scroll-view-height button-container-height) @content-container-height)
 
-    platform/ios?
-    (< (- @scroll-view-height keyboard-view-height) (- @content-container-height content-scroll-y))
+      platform/ios?
+      (< (- @scroll-view-height keyboard-view-height) (- @content-container-height content-scroll-y))
 
-    :else
-    false))
+      :else
+      false))
 
 (defn f-view
   [{:keys [header footer blur?]}
@@ -57,22 +56,23 @@
                                                            #(reset! show-keyboard? false))]
     (let [{:keys [keyboard-shown
                   keyboard-height]} (hooks/use-keyboard)
-          show-background? (show-background
-                            {:keyboard-shown? keyboard-shown
-                             :available-space (- window-height
-                                                 keyboard-height
-                                                 @floating-container-height
-                                                 (safe-area/get-top)
-                                                 50)
-                             :content-height  (+ @content-scroll-y
-                                                 @content-container-height
-                                                 @header-height)})]
+          show-background?          (show-background
+                                     {:keyboard-shown? keyboard-shown
+                                      :available-space (- window-height
+                                                          keyboard-height
+                                                          @floating-container-height
+                                                          (safe-area/get-top)
+                                                          50)
+                                      :content-height  (+ @content-scroll-y
+                                                          @content-container-height
+                                                          @header-height)})]
 
       [rn/view {:style style/page-container}
 
-       [rn/view {:on-layout (fn [event]
-                              (let [height (oops/oget event "nativeEvent.layout.height")]
-                                (reset! header-height height)))}
+       [rn/view
+        {:on-layout (fn [event]
+                      (let [height (oops/oget event "nativeEvent.layout.height")]
+                        (reset! header-height height)))}
         header]
        [rn/scroll-view
         {:on-scroll               (fn [event]
@@ -102,7 +102,7 @@
                                 (reset! floating-container-height height)))}
          footer
          ;[ button-props button-label]
-         ]]])
+        ]]])
     (finally
      (oops/ocall show-listener "remove")
      (oops/ocall hide-listener "remove"))))

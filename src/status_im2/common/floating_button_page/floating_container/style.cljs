@@ -1,6 +1,6 @@
 (ns status-im2.common.floating-button-page.floating-container.style
-  (:require  [quo.foundations.colors :as colors]
-             [react-native.platform :as platform]))
+  (:require [quo.foundations.colors :as colors]
+            [react-native.platform :as platform]))
 
 ;; TODO: consider modals and customizable props
 (defn container

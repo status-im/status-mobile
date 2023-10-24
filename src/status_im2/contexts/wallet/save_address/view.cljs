@@ -24,9 +24,10 @@
                   :background :blur
                   :icon-name  :i/close
                   :on-press   #(rf/dispatch [:dismiss-modal :wallet-save-address])}]
-        :footer [quo/button {:container-style     {:z-index 2}
-                             :customization-color @account-color
-                             :on-press            #(js/alert "to be implemented")}
+        :footer [quo/button
+                 {:container-style     {:z-index 2}
+                  :customization-color @account-color
+                  :on-press            #(js/alert "to be implemented")}
                  "Save address"]}
        [rn/view {:style {:flex 1}}
         [quo/wallet-user-avatar
@@ -78,7 +79,7 @@
                                                    {:short-name   "opt"
                                                     :network-name :optimism}]
                                         :address  @address}])}]]
-       ])))
+      ])))
 
 (defn view-internal [props] [:f> f-view props])
 

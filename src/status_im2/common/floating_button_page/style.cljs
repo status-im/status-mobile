@@ -1,6 +1,4 @@
-(ns status-im2.common.floating-button-page.style
-  (:require [react-native.platform :as platform]
-            [status-im2.common.floating-button-page.constants :as constants]))
+(ns status-im2.common.floating-button-page.style)
 
 (def page-container
   {:position :absolute
@@ -10,9 +8,10 @@
    :right    0
    :z-index  100})
 
-(defn keyboard-view-style [keyboard-shown?]
+(defn keyboard-view-style
+  [keyboard-shown?]
   {:border-width 1
    :border-color :blue
    ;:padding-bottom (if-not keyboard-shown? 12 0)
-   })
+  })
 

@@ -1,17 +1,16 @@
 (ns status-im2.common.floating-button-page.view2
   (:require
-   [oops.core :as oops]
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [react-native.blur :as blur]
-   [react-native.core :as rn]
-   [react-native.hooks :as hooks]
-   [react-native.platform :as platform]
-   [react-native.safe-area :as safe-area]
-   [reagent.core :as reagent]
-   [status-im2.common.floating-button-page.constants :as constants]
-   [status-im2.common.floating-button-page.style :as style]
-   ))
+    [oops.core :as oops]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [react-native.blur :as blur]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
+    [react-native.safe-area :as safe-area]
+    [reagent.core :as reagent]
+    [status-im2.common.floating-button-page.constants :as constants]
+    [status-im2.common.floating-button-page.style :as style]))
 
 (defn show-button-background
   [keyboard-height keyboard-shown content-scroll-y scroll-view-height content-container-height]
@@ -19,7 +18,7 @@
         keyboard-view-height    (+ keyboard-height button-container-height)]
     (when keyboard-shown
       (if
-       platform/android?
+        platform/android?
         (< (- scroll-view-height button-container-height) content-container-height)
         (< (- scroll-view-height keyboard-view-height) (- content-container-height content-scroll-y))))))
 
@@ -52,20 +51,20 @@
   [{:keys [button-props button-label]} header children]
   (reagent/with-let [scroll-view-height       (reagent/atom 0)
                      content-container-height (reagent/atom 0)
-                     show-keyboard?   (reagent/atom false)
-                     content-scroll-y (reagent/atom 0)
-                     show-listener    (oops/ocall rn/keyboard
-                                                  "addListener"
-                                                  (if platform/android?
-                                                    "keyboardDidShow"
-                                                    "keyboardWillShow")
-                                                  #(reset! show-keyboard? true))
-                     hide-listener    (oops/ocall rn/keyboard
-                                                  "addListener"
-                                                  (if platform/android?
-                                                    "keyboardDidHide"
-                                                    "keyboardWillHide")
-                                                  #(reset! show-keyboard? false))]
+                     show-keyboard?           (reagent/atom false)
+                     content-scroll-y         (reagent/atom 0)
+                     show-listener            (oops/ocall rn/keyboard
+                                                          "addListener"
+                                                          (if platform/android?
+                                                            "keyboardDidShow"
+                                                            "keyboardWillShow")
+                                                          #(reset! show-keyboard? true))
+                     hide-listener            (oops/ocall rn/keyboard
+                                                          "addListener"
+                                                          (if platform/android?
+                                                            "keyboardDidHide"
+                                                            "keyboardWillHide")
+                                                          #(reset! show-keyboard? false))]
 
     (let [{:keys [keyboard-shown
                   keyboard-height]} (hooks/use-keyboard)
@@ -103,8 +102,8 @@
           :keyboard-height  keyboard-height}
          [quo/button button-props button-label]]]])
     (finally
-      (oops/ocall show-listener "remove")
-      (oops/ocall hide-listener "remove"))))
+     (oops/ocall show-listener "remove")
+     (oops/ocall hide-listener "remove"))))
 
 (defn view
   [props header children]
