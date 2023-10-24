@@ -2188,6 +2188,10 @@
   dependencies:
     merge-options "^3.0.4"
 
+"@react-native-camera-roll/camera-roll@git+https://github.com/status-im/react-native-camera-roll.git#refs/tags/v5.1.1.1":
+  version "5.10.0"
+  resolved "git+https://github.com/status-im/react-native-camera-roll.git#174f8c6ad88e5bad9d9bd207f42173e567ec3138"
+
 "@react-native-community/audio-toolkit@git+https://github.com/tbenr/react-native-audio-toolkit.git#refs/tags/v2.0.3-status-v6":
   version "2.0.3"
   resolved "git+https://github.com/tbenr/react-native-audio-toolkit.git#7ae9055cf6169b30f5089bda7bfcfc1c40a715e5"
@@ -2199,10 +2203,6 @@
 "@react-native-community/blur@git+https://github.com/status-im/react-native-blur#refs/tags/v4.3.3-status":
   version "4.3.3"
   resolved "git+https://github.com/status-im/react-native-blur#c140cc8e7d54e3318af0a7c149b5d64b54de3419"
-
-"@react-native-community/cameraroll@git+https://github.com/status-im/react-native-cameraroll.git#refs/tags/v4.0.4-status.0":
-  version "4.0.4"
-  resolved "git+https://github.com/status-im/react-native-cameraroll.git#337c5a515e9b0f0728882f73568075553415f523"
 
 "@react-native-community/cli-clean@^8.0.4":
   version "8.0.4"
@@ -7018,11 +7018,6 @@ lodash@^3.10.0:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
   integrity sha1-W/Rejkm6QYnhfUgnid/RW9FAt7Y=
 
-lodash@^4.14.2:
-  version "4.17.19"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
-  integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
-
 lodash@^4.17.10, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
@@ -8774,12 +8769,10 @@ react-native-blob-util@^0.13.18:
     base-64 "0.1.0"
     glob "^7.1.6"
 
-react-native-camera-kit@^13.0.0:
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-camera-kit/-/react-native-camera-kit-13.0.0.tgz#983d9146cdeb0ec0cb0c0a86b7fa5f7690df08f6"
-  integrity sha512-fnkyivCG2xzS+14/doP8pCAYNafYaTyg5J0t+JJltJdgKSHf328OG44Rd+fnbbEOydZxgy/bcuLB24R0kCbynw==
-  dependencies:
-    lodash "^4.14.2"
+react-native-camera-kit@14.0.0-beta13:
+  version "14.0.0-beta13"
+  resolved "https://registry.yarnpkg.com/react-native-camera-kit/-/react-native-camera-kit-14.0.0-beta13.tgz#7d1c40571e7e7ce2c4b6bd6f58807f7573217c3c"
+  integrity sha512-49q6l/Y3j1QMUDPGqIqkUzdraNtKWVQz5X4U8qfixSe+MeWe0N1vWlWWr8iH1apxQCS5v0dKPlYot0e3VKy05g==
 
 react-native-codegen@^0.69.2:
   version "0.69.2"
