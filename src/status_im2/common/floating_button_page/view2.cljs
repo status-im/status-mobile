@@ -1,4 +1,4 @@
-(ns status-im2.common.floating-button-page.view
+(ns status-im2.common.floating-button-page.view2
   (:require
    [oops.core :as oops]
    [quo.core :as quo]

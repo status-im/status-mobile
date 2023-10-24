@@ -10,8 +10,9 @@
    :right    0
    :z-index  100})
 
-(def keyboard-view-style
+(defn keyboard-view-style [keyboard-shown?]
   {:border-width 1
    :border-color :blue
-   :padding-bottom 12})
+   ;:padding-bottom (if-not keyboard-shown? 12 0)
+   })
 

@@ -190,11 +190,12 @@
              :icon-color (when (= :default info-type) colors/white-70-blur)
              :style      style/info-message}
             info-message]
-           [quo/text
-            {:size   :paragraph-2
-             :weight :medium
-             :style  style/color-title}
-            (i18n/label :t/accent-colour)]
+           [rn/view {:style {:margin-top 80}}
+            [quo/text
+             {:size   :paragraph-2
+              :weight :medium
+              :style  style/color-title}
+             (i18n/label :t/accent-colour)]]
            [quo/color-picker
             {:blur?            true
              :default-selected :blue
