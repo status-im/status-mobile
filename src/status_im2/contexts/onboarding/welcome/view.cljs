@@ -4,6 +4,7 @@
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
+    [status-im2.common.resources :as resources]
     [status-im2.constants :as constants]
     [status-im2.contexts.onboarding.welcome.style :as style]
     [utils.i18n :as i18n]
@@ -40,9 +41,9 @@
        :icon-name  :i/arrow-left
        :on-press   #(rf/dispatch [:navigate-back-within-stack :enable-notifications])}]
      [page-title]
-     [rn/view {:style style/page-illustration}
-      [quo/text
-       "Illustration here"]]
+     [rn/image
+      {:style  style/page-illustration
+       :source (resources/get-image :welcome-illustration)}]
      [rn/view {:style (style/buttons insets)}
       [quo/button
        {:on-press            (fn []

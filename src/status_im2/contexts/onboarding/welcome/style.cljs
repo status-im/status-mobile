@@ -1,6 +1,4 @@
-(ns status-im2.contexts.onboarding.welcome.style
-  (:require
-    [quo.foundations.colors :as colors]))
+(ns status-im2.contexts.onboarding.welcome.style)
 
 (def default-margin 20)
 
@@ -10,13 +8,10 @@
    :padding-top (:top insets)})
 
 (def page-illustration
-  {:flex              1
-   :background-color  colors/danger-50
-   :align-items       :center
-   :margin-horizontal default-margin
-   :border-radius     20
-   :margin-top        default-margin
-   :justify-content   :center})
+  {:resize-mode   :stretch
+   :resize-method :scale
+   :margin-top    12
+   :margin-bottom 4})
 
 (defn buttons
   [insets]
