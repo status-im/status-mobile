@@ -67,18 +67,17 @@
                  :else    theme)
         {:keys [icon-color background-color text-color border-color]}
         (themes theme')]
-    (println "theme" theme' background-color)
+
     [rn/touchable-without-feedback
-     (merge (when on-press
+     (merge {:disabled            disabled
+             :accessibility-label accessibility-label}
+            (when on-press
               {:on-press on-press})
             (when on-long-press
               {:on-long-press on-long-press}))
      [rn/view
-      (merge {:background-color    background-color
-              :border-radius       border-radius
-              :type                type
-              :disabled            disabled
-              :accessibility-label accessibility-label}
+      (merge {:background-color background-color
+              :border-radius    border-radius}
              (when border-color
                {:border-color border-color
                 :border-width 1}))

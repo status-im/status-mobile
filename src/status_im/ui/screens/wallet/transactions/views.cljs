@@ -244,10 +244,11 @@
            to to-wallet to-contact
            gas-limit gas-price-gwei gas-price-eth gas-used
            fee-cap-gwei tip-cap-gwei
-           cost nonce data]}]
+           cost nonce data]
+    :as   tx}]
   [react/view {:style styles/details-block}
    [details-list-row :t/block block]
-   [details-list-row :t/hash hash]
+   [details-list-row :t/hash (:hash tx)]
    [details-list-row :t/from-capitalized
     [{:accessibility-label (if from-wallet :sender-name-text :sender-address-text)}
      (or from-wallet from-contact from)]
