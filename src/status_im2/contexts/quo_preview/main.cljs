@@ -408,13 +408,13 @@
    :switchers         [{:name      :group-messaging-card
                         :component group-messaging-card/view}
                        {:name      :switcher-cards
-                        :component switcher-cards/preview-switcher-cards}]
+                        :component switcher-cards/view}]
    :tabs              [{:name      :segmented
-                        :component segmented/preview-segmented}
+                        :component segmented/view}
                        {:name      :tabs
-                        :component tabs/preview-tabs}
+                        :component tabs/view}
                        {:name      :account-selector
-                        :component account-selector/preview-this}]
+                        :component account-selector/view}]
    :tags              [{:name      :context-tags
                         :component context-tags/preview-context-tags}
                        {:name      :network-tags
@@ -432,7 +432,7 @@
                        {:name      :token-tag
                         :component token-tag/preview-token-tag}]
    :text-combinations [{:name      :text-combinations
-                        :component text-combinations/preview}]
+                        :component text-combinations/view}]
    :wallet            [{:name :account-card :component account-card/preview-account-card}
                        {:name :account-origin :component account-origin/view}
                        {:name      :account-overview

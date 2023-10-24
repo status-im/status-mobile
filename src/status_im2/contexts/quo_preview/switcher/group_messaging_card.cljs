@@ -6,46 +6,27 @@
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Title"
-    :key   :title
-    :type  :text}
-   {:label   "Status"
-    :key     :status
+  [{:key :title :type :text}
+   {:key     :status
     :type    :select
-    :options [{:key   :read
-               :value :read}
-              {:key   :unread
-               :value :unread}
-              {:key   :mention
-               :value :mention}]}
-   {:label "Counter Label"
-    :key   :counter-label
-    :type  :text}
-   {:label   "Type"
-    :key     :type
+    :options [{:key :read}
+              {:key :unread}
+              {:key :mention}]}
+   {:key :counter-label :type :text}
+   {:key     :type
     :type    :select
     :options [{:key   :message
                :value :text}
-              {:key   :photo
-               :value :photo}
-              {:key   :sticker
-               :value :sticker}
-              {:key   :gif
-               :value :gif}
-              {:key   :audio
-               :value :audio}
-              {:key   :community
-               :value :community}
-              {:key   :link
-               :value :link}
+              {:key :photo}
+              {:key :sticker}
+              {:key :gif}
+              {:key :audio}
+              {:key :community}
+              {:key :link}
               {:key   :code
                :value :code-snippet}]}
-   {:label "Last Message"
-    :key   :last-message
-    :type  :text}
-   {:label "Avatar:"
-    :key   :avatar?
-    :type  :boolean}
+   {:key :last-message :type :text}
+   {:key :avatar? :type :boolean}
    (preview/customization-color-option)])
 
 ;; Mock data

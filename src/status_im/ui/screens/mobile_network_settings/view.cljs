@@ -53,8 +53,5 @@
         :on-press            #(hide-sheet-and-dispatch [:mobile-network/restore-defaults])}
        (i18n/label :t/restore-defaults)]]]))
 
-(def settings-sheet
-  {:content sheets/settings-sheet})
-
 (def offline-sheet
   {:content sheets/offline-sheet})
