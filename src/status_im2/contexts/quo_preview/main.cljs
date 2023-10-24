@@ -119,6 +119,7 @@
      numbered-keyboard]
     [status-im2.contexts.quo-preview.onboarding.small-option-card :as
      small-option-card]
+    [status-im2.contexts.quo-preview.other-components.view :as other-components]
     [status-im2.contexts.quo-preview.password.tips :as tips]
     [status-im2.contexts.quo-preview.profile.collectible :as collectible]
     [status-im2.contexts.quo-preview.profile.profile-card :as profile-card]
@@ -174,7 +175,9 @@
     [utils.re-frame :as rf]))
 
 (def screens-categories
-  {:foundations       [{:name      :shadows
+  {:other-components  [{:name      :other-components
+                        :component other-components/view}]
+   :foundations       [{:name      :shadows
                         :component shadows/view}]
    :animated-list     [{:name      :animated-header-list
                         :component animated-header-list/mock-screen}]

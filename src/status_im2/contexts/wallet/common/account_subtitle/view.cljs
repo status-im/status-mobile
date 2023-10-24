@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.common.account-subtitle.view
-  (:require [quo2.core :as quo]
-            [quo2.foundations.colors :as colors]))
+  (:require [quo.core :as quo]
+            [quo.foundations.colors :as colors]))
 
 (defn view
   [{:keys [address theme networks]}]

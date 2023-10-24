@@ -1,7 +1,7 @@
 (ns status-im2.contexts.wallet.save-address.view
   (:require
-    [quo2.core :as quo]
-    [quo2.theme :as quo.theme]
+    [quo.core :as quo]
+    [quo.theme :as quo.theme]
     [re-frame.core :as rf]
     [react-native.core :as rn]
     [reagent.core :as reagent]

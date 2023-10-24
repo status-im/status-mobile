@@ -1,6 +1,6 @@
 (ns status-im2.contexts.wallet.save-address.style
   (:require
-    [quo2.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]))
 
 (def color-picker-container
   {:padding-vertical 12})
