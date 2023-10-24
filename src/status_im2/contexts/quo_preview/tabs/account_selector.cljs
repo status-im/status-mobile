@@ -1,23 +1,14 @@
 (ns status-im2.contexts.quo-preview.tabs.account-selector
   (:require
-    [quo.components.tabs.account-selector :as quo]
-    [react-native.core :as rn]
+    [quo.core :as quo]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Show Label?:"
-    :key   :show-label?
-    :type  :boolean}
-   {:label "Transparent Background?:"
-    :key   :transparent?
-    :type  :boolean}
-   {:label "Account Text"
-    :key   :account-text
-    :type  :text}
-   {:label "Label Text"
-    :key   :label-text
-    :type  :text}])
+  [{:key :show-label? :type :boolean}
+   {:key :transparent? :type :boolean}
+   {:key :account-text :type :text}
+   {:key :label-text :type :text}])
 
 ;; keeping this unused data structure in the code for now
 ;; will reference them when I introduce multiple account support
@@ -46,7 +37,7 @@
     :account-emoji "🍟"
     :label-text    "Label 3"}])
 
-(defn preview-this
+(defn view
   []
   (let [state (reagent/atom {:show-label?   true
                              :transparent?  false
@@ -56,10 +47,7 @@
                              :label-text    "Label"})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view {:padding-bottom 150}
-        [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
-         [quo/account-selector @state]]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-vertical 60}}
+       [quo/account-selector @state]])))
