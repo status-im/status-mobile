@@ -1,6 +1,7 @@
 (ns status-im2.contexts.wallet.address-watch.view
   (:require
     [clojure.string :as string]
+    [re-frame.core :as re-frame]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.clipboard :as clipboard]
@@ -13,9 +14,10 @@
 
 (defn view-internal
   []
-  (let [top         (safe-area/get-top)
-        bottom      (safe-area/get-bottom)
-        input-value (reagent/atom "")]
+  (let [top                      (safe-area/get-top)
+        bottom                   (safe-area/get-bottom)
+        input-value              (reagent/atom "")
+        {:keys [accounts-count]} (rf/sub [:get-screen-params])]
     (fn []
       [rn/view
        {:style {:flex       1
@@ -37,12 +39,18 @@
           :container-style {:margin-right 12
                             :flex         1}
           :weight          :monospace
-          :on-change       #(reset! input-value %)
+          :on-change       #(reset! input-value (.. % -nativeEvent -text))
           :default-value   @input-value}]
         [quo/button
          {:icon-only? true
           :type       :outline} :i/scan]]
        [rn/view {:style (style/button-container bottom)}
-        [quo/text "[WIP] Bottom Actions"]]])))
+        [quo/bottom-actions
+         {:button-one-label     (i18n/label :t/continue)
+          :button-one-disabled? (clojure.string/blank? @input-value)
+          :button-one-press     #(re-frame/dispatch [:navigate-to
+                                                     :address-to-watch-edit
+                                                     {:accounts-count accounts-count
+                                                      :address        @input-value}])}]]])))
 
 (def view (quo.theme/with-theme view-internal))
