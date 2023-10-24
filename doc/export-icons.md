@@ -4,7 +4,7 @@
 
 ![](images/export-icons/export-icons.gif)
 
-1. Export from figma 2 pngs 2x and 3x put them in `./resources/images/icons`
+1. Export from figma 2 pngs 2x and 3x put them in `./resources/images/icons2`
 2. if necessary, rename file so that filename contains only lower case chars, e.g. `"Icon-Name@2x.png"` should be renamed to `"icon_name@2x.png"`.
 3. In the app `icon_name.png` still can be accessed as `icon-name`, so in order to use can add the next code:
     ```clojure
