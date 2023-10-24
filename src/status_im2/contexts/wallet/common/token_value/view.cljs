@@ -3,7 +3,6 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-
 (defn token-value-drawer
   []
   [:<>
