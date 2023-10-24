@@ -1,6 +1,7 @@
 (ns status-im2.subs.wallet-2.wallet
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
+            [status-im2.contexts.wallet.common.utils :as utils]
             [utils.number]))
 
 (defn- calculate-raw-balance
@@ -38,3 +39,11 @@
    (for [{:keys [address]} accounts]
      {:address address
       :balance (calculate-balance address tokens)})))
+
+(re-frame/reg-sub
+ :wallet-2/account
+ :<- [:profile/wallet-accounts]
+ :<- [:wallet-2/balances]
+ (fn [[accounts balances] [_ account-address]]
+   (assoc (utils/get-account-by-address accounts account-address) 
+          :balance (utils/get-balance-by-address balances account-address))))

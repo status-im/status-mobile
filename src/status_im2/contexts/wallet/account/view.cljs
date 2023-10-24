@@ -65,46 +65,43 @@
 
 (defn view
   [account-address]
-  (let [accounts        (rf/sub [:profile/wallet-accounts])
-        account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
-        account         (utils/get-account-by-address accounts account-address)
-        top             (safe-area/get-top)
-        selected-tab    (reagent/atom (:id (first tabs-data)))
-        balances        (rf/sub [:wallet-2/balances])
-        balance         (utils/get-balance-by-address balances account-address)]
+  (let [top             (safe-area/get-top)
+        selected-tab    (reagent/atom (:id (first tabs-data)))]
     (fn []
-      [rn/view
-       {:style {:flex       1
-                :margin-top top}}
-       [quo/page-nav
-        {:type              :wallet-networks
-         :background        :blur
-         :icon-name         :i/close
-         :on-press          #(rf/dispatch [:navigate-back])
-         :networks          networks-list
-         :networks-on-press #(js/alert "Pressed Networks")
-         :right-side        :account-switcher
-         :account-switcher  {:customization-color :purple
-                             :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                 {:content             account-options
-                                                                  :gradient-cover?     true
-                                                                  :customization-color :purple}])
-                             :emoji               "🍑"}}]
-       [quo/account-overview
-        {:current-value       (utils/prettify-balance balance)
-         :account-name        (:name account)
-         :account             :default ;; for now
-         :customization-color :blue}] ;; for now
-       [quo/wallet-graph {:time-frame :empty}]
-       [quo/wallet-ctas
-        {:send-action #(rf/dispatch [:open-modal :wallet-select-address])
-         :buy-action  #(rf/dispatch [:show-bottom-sheet
-                                     {:content buy-drawer}])}]
-       [quo/tabs
-        {:style          style/tabs
-         :size           32
-         :default-active @selected-tab
-         :data           tabs-data
-         :on-change      #(reset! selected-tab %)
-         :scrollable?    true}]
-       [tabs/view {:selected-tab @selected-tab}]])))
+      (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
+            account         (rf/sub [:wallet-2/account account-address])]
+        [rn/view
+         {:style {:flex       1
+                  :margin-top top}}
+         [quo/page-nav
+          {:type              :wallet-networks
+           :background        :blur
+           :icon-name         :i/close
+           :on-press          #(rf/dispatch [:navigate-back])
+           :networks          networks-list
+           :networks-on-press #(js/alert "Pressed Networks")
+           :right-side        :account-switcher
+           :account-switcher  {:customization-color :purple
+                               :on-press            #(rf/dispatch [:show-bottom-sheet
+                                                                   {:content             account-options
+                                                                    :gradient-cover?     true
+                                                                    :customization-color :purple}])
+                               :emoji               "🍑"}}]
+         [quo/account-overview
+          {:current-value       (utils/prettify-balance (:balance account))
+           :account-name        (:name account)
+           :account             :default
+           :customization-color :blue}]
+         [quo/wallet-graph {:time-frame :empty}]
+         [quo/wallet-ctas
+          {:send-action #(rf/dispatch [:open-modal :wallet-select-address])
+           :buy-action  #(rf/dispatch [:show-bottom-sheet
+                                       {:content buy-drawer}])}]
+         [quo/tabs
+          {:style          style/tabs
+           :size           32
+           :default-active @selected-tab
+           :data           tabs-data
+           :on-change      #(reset! selected-tab %)
+           :scrollable?    true}]
+         [tabs/view {:selected-tab @selected-tab}]]))))
