@@ -36,3 +36,36 @@
                               :qr-size     (or 400 (int size))
                               :error-level :highest})]
     [quo/qr-code (assoc props :qr-image-uri qr-media-server-uri)]))
+
+(defn- get-network-short-name-url
+  [network-kw]
+  (case network-kw
+    :ethereum "eth:"
+    :optimism "opt:"
+    :arbitrum "arb1:"
+    (str (name network-kw) ":")))
+
+(defn- get-qr-data-for-wallet-multichain
+  [qr-data networks]
+  (as-> networks $
+    (map get-network-short-name-url $)
+    (apply str $)
+    (str $ qr-data)))
+
+(defn share-qr-code
+  [{:keys         [qr-data qr-data-label-shown networks]
+    share-qr-type :type
+    :as           props}]
+  (let [label               (or qr-data-label-shown qr-data)
+        share-qr-data       (if (= share-qr-type :wallet-multichain)
+                              (get-qr-data-for-wallet-multichain qr-data networks)
+                              qr-data)
+        qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
+                             {:url         share-qr-data
+                              :port        (rf/sub [:mediaserver/port])
+                              :qr-size     500
+                              :error-level :highest})]
+    [quo/share-qr-code
+     (assoc props
+            :qr-data      label
+            :qr-image-uri qr-media-server-uri)]))
