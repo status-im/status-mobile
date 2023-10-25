@@ -2357,11 +2357,8 @@
     "latamex-description": "Easily buy crypto in Argentina, Mexico and Brazil.",
     "account-info": "Account info",
     "account-name-input-placeholder": "Account name",
-<<<<<<< HEAD
     "network-preferences": "Network preferences",
     "network-preferences-desc": "Select which network this address is happy to receive funds on",
-    "layer-2": "Layer 2"
-=======
+    "layer-2": "Layer 2",
     "manage-tokens": "Manage tokens"
->>>>>>> 1645f5aa0 (wallet: token value drawer)
 }
