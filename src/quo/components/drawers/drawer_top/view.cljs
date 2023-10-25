@@ -8,6 +8,7 @@
     [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.tags.context-tag.view :as context-tag]
+    [quo.components.wallet.address-text.view :as address-text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
@@ -59,15 +60,14 @@
 
 (defn- account-subtitle
   [{:keys [networks theme blur? description]}]
-  [rn/view {:style style/row}
-   (for [network networks]
-     ^{:key (str network)}
-     [network-view network])
-   [text/text
-    {:size   :paragraph-2
-     :weight :regular
-     :style  (style/description theme blur?)}
-    description]])
+  (if networks
+    [address-text/view {:networks networks
+                        :address  description}]
+    [text/text
+     {:size   :paragraph-2
+      :weight :regular
+      :style  (style/description theme blur?)}
+     description]))
 
 (defn- default-keypair-subtitle
   [{:keys [description theme blur?]}]
