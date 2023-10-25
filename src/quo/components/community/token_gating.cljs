@@ -3,7 +3,7 @@
     [clojure.string :as string]
     [quo.components.community.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.components.tags.token-tag :as token-tag]
+    [quo.components.tags.token-tag.view :as token-tag]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [utils.i18n :as i18n]))
@@ -14,17 +14,17 @@
    {:style (style/token-row padding?)}
    (doall
     (map-indexed (fn [token-index token]
-                   (let [{:keys [img-src amount sufficient? purchasable? loading?]} token]
+                   (let [{:keys [img-src amount sufficient? purchasable?]} token]
                      ^{:key token-index}
                      [rn/view {:style style/token-tag-spacing}
-                      [token-tag/token-tag
-                       {:symbol      (:symbol token)
-                        :value       amount
-                        :size        24
-                        :sufficient? sufficient?
-                        :purchasable purchasable?
-                        :loading?    loading?
-                        :img-src     img-src}]]))
+                      [token-tag/view
+                       {:token-symbol  (:symbol token)
+                        :token-value   amount
+                        :size          :size-24
+                        :options       (cond
+                                         sufficient?  :hold
+                                         purchasable? :add)
+                        :token-img-src img-src}]]))
                  tokens))])
 
 (defn- internal-view

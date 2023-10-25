@@ -132,7 +132,7 @@
     quo.components.tags.tag
     quo.components.tags.tags
     quo.components.tags.tiny-tag.view
-    quo.components.tags.token-tag
+    quo.components.tags.token-tag.view
     quo.components.text-combinations.view
     quo.components.wallet.account-card.view
     quo.components.wallet.account-origin.view
@@ -360,7 +360,7 @@
 (def tag quo.components.tags.tag/tag)
 (def tags quo.components.tags.tags/tags)
 (def tiny-tag quo.components.tags.tiny-tag.view/view)
-(def token-tag quo.components.tags.token-tag/tag)
+(def token-tag quo.components.tags.token-tag.view/view)
 
 ;;;; Text combinations
 (def text-combinations quo.components.text-combinations.view/view)
