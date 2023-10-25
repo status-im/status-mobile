@@ -56,9 +56,16 @@
   [rn/view {:style style/about-tab}
    [quo/data-item
     (merge temp/data-item-state
+<<<<<<< HEAD
            {:custom-subtitle (fn [] [description
                                      {:theme   theme
                                       :address temp/address}])
+=======
+           {:custom-subtitle (fn [] [quo/address-text
+                                     {:networks [:ethereum :optimism :arbitrum]
+                                      :address  temp/address
+                                      :type     :long}])
+>>>>>>> 43a104637 (address text)
             :container-style {:margin-bottom 12}
             :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])})]
    [quo/account-origin temp/account-origin-state]])

@@ -4,11 +4,11 @@
     [quo.components.icon :as icon]
     [quo.components.list-items.account-list-card.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.address-text.view :as address-text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [quo.components.wallet.address-text.view :as address-text]))
+    [reagent.core :as reagent]))
 
 (defn- internal-view
   []
@@ -27,8 +27,10 @@
           {:weight :semi-bold
            :size   :paragraph-2}
           (:name account-props)]
-         [address-text/view {:networks networks
-                             :address (:address account-props)}]]]
+         [address-text/view
+          {:networks networks
+           :address  (:address account-props)
+           :type     :short}]]]
        (when (= action :icon)
          [rn/pressable {:on-press on-options-press}
           [icon/icon :i/options

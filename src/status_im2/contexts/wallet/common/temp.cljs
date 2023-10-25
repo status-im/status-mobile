@@ -148,7 +148,7 @@
   {:title                "Trip to Vegas"
    :type                 :account
    :networks             [:ethereum :optimism :arbitrum]
-   :description          "0x62b...0a5"
+   :description          "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4"
    :account-avatar-emoji "🍑"
    :customization-color  :purple})
 
@@ -156,12 +156,12 @@
   [{:customization-color :flamingo
     :emoji               "🍿"
     :name                "New House"
-    :address             "0x21a...49e"
+    :address             "0x21af6E0Ba4C4530735616e1Ee7ff5FbCB726f493"
     :networks            [:ethereum :optimism]}
    {:customization-color :blue
     :emoji               "🎮"
     :name                "My savings"
-    :address             "0x43c...98d"
+    :address             "0x43cf6E0Ba4C4530735616e1Ee7ff5FbCB726f98d"
     :networks            [:ethereum]}])
 
 (def asset-snt

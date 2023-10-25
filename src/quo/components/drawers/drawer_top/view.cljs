@@ -61,8 +61,10 @@
 (defn- account-subtitle
   [{:keys [networks theme blur? description]}]
   (if networks
-    [address-text/view {:networks networks
-                        :address  description}]
+    [address-text/view
+     {:networks networks
+      :address  description
+      :type     :short}]
     [text/text
      {:size   :paragraph-2
       :weight :regular

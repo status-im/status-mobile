@@ -31,8 +31,10 @@
           :color (if blur?
                    colors/white-opa-40
                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}]])]
-    [address-text/view {:networks (:networks account-props)
-                        :address  (:address account-props)}]]])
+    [address-text/view
+     {:networks (:networks account-props)
+      :address  (:address account-props)
+      :type     :short}]]])
 
 (defn- balance-view
   [{:keys [balance-props type theme]}]
