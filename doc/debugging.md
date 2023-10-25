@@ -103,17 +103,19 @@ adb logcat | grep 'ReactNativeJS\|StatusModule\|GoLog'
 
 When building/fixing/refactoring components, it can be annoying to set-up the component for instant visual feedback (i.e. finding it in the UI when fixing/refactoring; finding a place for it when building from scratch). Very often if the location of the screen containing your component nested deeply in the app, you might have to do a lot of repeated navigation, nevermind logging in every time the app reloads (even with fast refresh disabled this happens quite often).
 
-To aleviate this discomfort and make the development cycle more *pleasant*, you can use one of the following options (*_both of which involve the ... REPL ༼ つ ╹ ╹ ༽つ, so make sure you have that set-up with your IDE/editor_*)
+To alleviate this discomfort and make the development cycle more *pleasant*, you can use one of the following options (*_both of which involve the ... REPL ༼ つ ╹ ╹ ༽つ, so make sure you have that set-up with your IDE/editor_*)
 
 #### REPL-ing to a screen
+
 This one is straightforward, just evaluate a navigation dispatch form from anywhere:
 ```cljs
 (comment (rf/dispatch [:navigate-to :your-favorite-buggy-screen]))
 ```
-> TIP: you can run this from an untracked user namespace `(ns user)`, from which you can experiment or interact with the REPL. This is where I usually keep my development navigation forms (thanks to @ilmotta for both these tips).
+> TIP: you can run this from an untracked user namespace `(ns user)`, from which you can experiment or interact with the REPL. This is where I usually keep my development navigation forms.
 
 #### REPL-ing a component
-This was is also straighforward, but there are some small differences. Just like above, we only have to evaluate a dispatch form, as follows:
+
+This is also straighforward, but there are some small differences. Just like above, we only have to evaluate a dispatch form, as follows:
 ```cljs
 ;; example debugging a quo component, although it could be any other component e.g. from the `status-im2` ns.
 (comment (re-frame/dispatch [:debug-component
@@ -125,6 +127,6 @@ This was is also straighforward, but there are some small differences. Just like
 ```
 When evaluated, a full-screen bottom sheet will appear with your component inside. You can make changes to the props or the component internals and re-evaluate the changed forms, after which the component will be re-mounted without running a reload (unless you save the file). Other times it's quicker to just hit save and the component will be reloaded as usual (except for the props you evaluated, which have to be re-evaluated when changed).
 
-> TIP: you can have multiple versions of the component as separate comments to check for the component variations
+> TIP: You can have multiple versions of the component as separate comments to check for the component variations
 
-> UP-FOR-DISCUSSION: would be cool to leave comments with component usages at the bottom of the component file, especially where the props are more complex e.g. in most of `status-im` components. I saw/read this was somewhat common with clojure(script) and I feel like it would be useful in this case, but would rather have the more experienced clojure devs who maybe tried it in the past chip in on this.
+> TIP: You can leave `comment` blocks at the end of component files (other than quo, since can be previewed in other ways) with usages of components, which other developers can use for visualisation/testing.

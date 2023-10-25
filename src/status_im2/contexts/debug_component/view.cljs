@@ -14,5 +14,5 @@
   (let [component (rf/sub [:debug/component])]
     [rn/view
      {:style container-style}
-     (when-not (nil? component)
+     (when component
        component)]))
