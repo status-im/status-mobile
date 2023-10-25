@@ -1,5 +1,6 @@
 (ns status-im2.contexts.wallet.common.network-preferences.view
   (:require [quo.core :as quo]
+            [quo.theme :as quo.theme]
             [quo.foundations.colors :as colors]
             [quo.foundations.resources :as resources]
             [status-im2.contexts.wallet.common.network-preferences.style :as style]
