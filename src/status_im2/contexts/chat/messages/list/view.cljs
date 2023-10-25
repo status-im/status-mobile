@@ -257,6 +257,7 @@
   [{:keys [chat-id invitation-admin]}]
   [rn/view
    [chat.group/group-chat-footer chat-id invitation-admin]])
+
 (defn footer-on-layout
   [e messages-view-header-height]
   (let [height (oops/oget e "nativeEvent.layout.height")
@@ -322,10 +323,12 @@
        :key-fn                            list-key-fn
        :ref                               list-ref
        :bounces                           false
+       ;; TODO(alwx): list-header indicates offsets
        :header                            [:<>
                                            [list-header insets (:able-to-send-message? context) theme]
                                            (when (= (:chat-type chat) constants/private-group-chat-type)
                                              [list-group-chat-header chat])]
+       ;; TODO(alwx): list-footer is basically a header, yes
        :footer                            [list-footer
                                            {:theme                       theme
                                             :chat                        chat

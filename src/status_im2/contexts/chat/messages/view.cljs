@@ -67,6 +67,7 @@
        :on-end-reached?                   on-end-reached?
        :messages-list-on-layout-finished? messages-list-on-layout-finished?}]
 
+     ;; TODO(alwx): this part is basically the top bar itself, shown only when scrolled
      [messages.navigation/navigation-view
       {:scroll-y                scroll-y
        :animate-topbar-name?    animate-topbar-name?

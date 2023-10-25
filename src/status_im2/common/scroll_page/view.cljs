@@ -102,6 +102,7 @@
                  overlay-shown? sticky-header]}
          children]
       [:<>
+       ;; TODO(alwx): that's the header itself
        [:f> f-scroll-page-header
         {:scroll-height  @scroll-height
          :height         height
@@ -112,6 +113,7 @@
          :collapsed?     collapsed?
          :page-nav-props page-nav-props
          :overlay-shown? overlay-shown?}]
+
        [rn/scroll-view
         {:content-container-style           {:flex-grow 1}
          :content-inset-adjustment-behavior :never
