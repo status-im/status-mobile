@@ -145,7 +145,7 @@
    :justify-content :center
    :left            0
    :right           0
-   :bottom          16
+   :bottom          56
    :height          40})
 
 (defn send-button

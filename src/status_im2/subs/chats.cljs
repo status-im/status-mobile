@@ -454,3 +454,18 @@
    [(re-frame/subscribe [:chats/chat (str community-id channel-id)])])
  (fn [[chat]]
    (:muted? chat)))
+
+(re-frame/reg-sub
+ :camera-roll/total-photos-count-android
+ (fn [{:keys [camera-roll/albums]}]
+   (->> albums
+        :my-albums
+        (reduce
+         (fn [total-album-count current-album]
+           (+ total-album-count (:count current-album)))
+         0))))
+
+(re-frame/reg-sub
+ :camera-roll/total-photos-count-ios
+ (fn [{:keys [camera-roll/ios-images-count]}]
+   ios-images-count))

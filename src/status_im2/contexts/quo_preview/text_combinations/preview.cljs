@@ -1,28 +1,15 @@
 (ns status-im2.contexts.quo-preview.text-combinations.preview
   (:require
-    [quo.components.text-combinations.view :as quo]
-    [react-native.core :as rn]
+    [quo.core :as quo]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Title"
-    :key   :title
-    :type  :text}
-   {:label :avatar
-    :key   :avatar
-    :type  :boolean}
-   {:label   "Description type:"
-    :key     :description
-    :type    :select
-    :options [{:key   :none
-               :value nil}
-              {:key   :description
-               :value :description}]}
-   {:label "Description text"
-    :key   :description-props
-    :type  :text}])
+  [{:key :title :type :text}
+   {:key :avatar :type :boolean}
+   {:key  :description
+    :type :text}])
 
 (defn state->text-combinations-props
   [state]
@@ -30,20 +17,15 @@
     (assoc state :avatar (resources/get-mock-image :user-picture-male4))
     state))
 
-(defn preview
+(defn view
   []
   (let [state (reagent/atom {:title                           "Title"
                              :title-accessibility-label       :title
-                             :description                     nil
-                             :description-props               ""
+                             :description                     ""
                              :description-accessibility-label :subtitle})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view {:padding-bottom 150}
-        [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
-         [quo/view
-          (state->text-combinations-props @state)]]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-vertical 60}}
+       [quo/text-combinations (state->text-combinations-props @state)]])))
