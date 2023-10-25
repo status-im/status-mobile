@@ -118,10 +118,10 @@ This one is straightforward, just evaluate a navigation dispatch form from anywh
 This is also straighforward, but there are some small differences. Just like above, we only have to evaluate a dispatch form, as follows:
 ```cljs
 ;; example debugging a quo component, although it could be any other component e.g. from the `status-im2` ns.
-(comment (re-frame/dispatch [:debug-component
+(comment (re-frame/dispatch [:dev/preview-component
                       [quo/slide-button
                        {:track-icon          :face-id
-                        :track-text          ":debug-component example"
+                        :track-text          "preview component example"
                         :customization-color :blue
                         :on-complete         identity}]]))
 ```

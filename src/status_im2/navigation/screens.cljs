@@ -1,5 +1,6 @@
 (ns status-im2.navigation.screens
   (:require
+    [dev.component-preview.view :as component-preview]
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.config :as config]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
@@ -12,7 +13,6 @@
     [status-im2.contexts.communities.actions.request-to-join.view :as join-menu]
     [status-im2.contexts.communities.discover.view :as communities.discover]
     [status-im2.contexts.communities.overview.view :as communities.overview]
-    [status-im2.contexts.debug-component.view :as debug-component]
     [status-im2.contexts.emoji-picker.view :as emoji-picker]
     [status-im2.contexts.onboarding.create-password.view :as create-password]
     [status-im2.contexts.onboarding.create-profile.view :as create-profile]
@@ -274,9 +274,9 @@
      :component scan-address/view}]
 
    (when js/goog.DEBUG
-     [{:name      :dev-debug-component-sheet
+     [{:name      :dev-component-preview
        :options   {:sheet? true}
-       :component debug-component/view}])
+       :component component-preview/view}])
 
    (when config/quo-preview-enabled?
      quo.preview/screens)

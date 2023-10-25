@@ -149,4 +149,4 @@
 
 ;;debug
 (when js/goog.DEBUG
-  (reg-root-key-sub :debug/component :debug/component))
+  (reg-root-key-sub :dev/previewed-component :dev/previewed-component))

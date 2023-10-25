@@ -1,4 +1,4 @@
-(ns status-im2.contexts.debug-component.view
+(ns dev.component-preview.view
   (:require
     [react-native.core :as rn]
     [utils.re-frame :as rf]))
@@ -11,8 +11,6 @@
 
 (defn view
   []
-  (let [component (rf/sub [:debug/component])]
-    [rn/view
-     {:style container-style}
-     (when component
-       component)]))
+  (let [component (rf/sub [:dev/previewed-component])]
+    [rn/view {:style container-style}
+     (when component component)]))
