@@ -27,8 +27,8 @@
     :action       :selector
     :action-props {:type :checkbox}}])
 
-(defn view
-  [{:keys [address on-save]}]
+(defn- view-internal
+  [{:keys [address on-save theme]}]
   [:<>
    [quo/drawer-top
     {:title       (i18n/label :t/network-preferences)
@@ -44,7 +44,8 @@
      :subtitle        address
      :container-style (merge style/data-item
                              {:background-color (colors/theme-colors colors/neutral-2_5
-                                                                     colors/neutral-90)})}]
+                                                                     colors/neutral-90
+                                                                     theme)})}]
    [quo/category
     {:list-type :settings
      :data      mainnet}]
@@ -56,3 +57,5 @@
     {:button-one-label (i18n/label :t/update)
      :disabled?        true
      :button-one-press on-save}]])
+
+(def view (quo.theme/with-theme view-internal))
