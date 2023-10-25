@@ -219,7 +219,12 @@
      - emoji:               Emoji in a string to show in the QR code.
      - on-info-press:       Callback for the info icon.
      - on-legacy-press:     Callback for the legacy tab.
-     - on-multichain-press: Callback for the multichain tab."
+     - on-multichain-press: Callback for the multichain tab.
+
+     WARNING on Android:
+     Sometimes while using a blur layer on top of another on Android, this component looks
+     bad because of the `blur/view`, so we can set `unblur-on-android? true` to fix it.
+     "
   [{:keys [unblur-on-android?] :as props}]
   (reagent/with-let [component-width     (reagent/atom nil)
                      container-component (if (and platform/android? unblur-on-android?)
