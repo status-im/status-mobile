@@ -176,16 +176,17 @@
   [rn/view {:style style/content-container}
    (when (#{:wallet-legacy :wallet-multichain} share-qr-type)
      [header props])
-   [qr-code/view
-    {:qr-image-uri        qr-image-uri
-     :size                (style/qr-code-size component-width)
-     :avatar              (if (= share-qr-type :profile)
-                            :profile
-                            :wallet-account)
-     :customization-color (style/qr-image-background-color customization-color)
-     :full-name           full-name
-     :profile-picture     profile-picture
-     :emoji               emoji}]
+   [quo.theme/provider {:theme :light}
+    [qr-code/view
+     {:qr-image-uri        qr-image-uri
+      :size                (style/qr-code-size component-width)
+      :avatar              (if (= share-qr-type :profile)
+                             :profile
+                             :wallet-account)
+      :customization-color customization-color
+      :full-name           full-name
+      :profile-picture     profile-picture
+      :emoji               emoji}]]
    [rn/view {:style style/bottom-container}
     (case share-qr-type
       :profile           [profile-bottom props]
