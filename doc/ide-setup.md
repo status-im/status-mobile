@@ -196,8 +196,13 @@ recommend configuring VSCode to auto-format Clojure files on every save,
 otherwise you'll need to constantly rely on the much slower `make lint-fix`
 command.
 
-1. Create a file `~/.zprintrc` with the content `{:search-config? true}`. This
-   is necessary so the VSCode extension finds the project's `.zprintrc`.
+1. Create a file `~/.zprintrc` and enable the `:search-config?` option. This is
+   necessary so the VSCode extension finds the project's `.zprintrc`.
+
+```bash
+echo "{:search-config? true}" > ~/.zprintrc
+```
+
 2. Install the extension
    [vscode-clj-zprint](https://github.com/rflagreca/vscode-clj-zprint). By the
    way, did you know this extension is written in ClojureScript?
