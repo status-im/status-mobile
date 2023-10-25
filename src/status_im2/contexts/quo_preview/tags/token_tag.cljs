@@ -1,21 +1,19 @@
 (ns status-im2.contexts.quo-preview.tags.token-tag
   (:require
-    [quo.components.tags.token-tag :as quo]
+    [quo.core :as quo]
     [quo.foundations.resources :as resources]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Size:"
-    :key     :size
+  [{:key     :size
     :type    :select
-    :options [{:key   :big
-               :value "big"}
-              {:key   :small
-               :value "small"}]}
-   {:label   "Value:"
-    :key     :value
+    :options [{:key   :size-24
+               :value "Size 24"}
+              {:key   :size-32
+               :value "Size 32"}]}
+   {:key     :token-value
     :type    :select
     :options [{:key   0
                :value "0"}
@@ -27,14 +25,17 @@
                :value "1000"}
               {:key   10000
                :value "10000"}]}
-   {:label "Is Sufficient:"
-    :key   :sufficient?
-    :type  :boolean}
-   {:label "Is Purchasable:"
-    :key   :purchasable?
-    :type  :boolean}
-   {:label   "Token:"
-    :key     :token
+   {:key     :options
+    :type    :select
+    :options [{:key   false
+               :value false}
+              {:key   :add
+               :value :add}
+              {:key   :hold
+               :value :hold}]}
+   {:key  :blur?
+    :type :boolean}
+   {:key     :token-symbol
     :type    :select
     :options [{:key   "ETH"
                :value "ETH"}
@@ -44,17 +45,21 @@
 (def eth-token (resources/get-token :eth))
 (def snt-token (resources/get-token :snt))
 
-(defn preview-token-tag
+(defn view
   []
-  (let [state (reagent/atom {:size :big :value 10 :token "ETH" :sufficient? false :purchasable? false})]
+  (let [state (reagent/atom {:size         :size-24
+                             :token-value  10
+                             :token-symbol "ETH"
+                             :options      false
+                             :blur?        false})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view {:padding-bottom 150}
-        [rn/view
-         {:padding-vertical 60
-          :align-items      :center}
-         [quo/token-tag
-          (merge @state
-                 {:token-img-src (if (= (get-in @state [:token]) "ETH") eth-token snt-token)})]]]])))
+       {:state                 state
+        :blur?                 (:blur? @state)
+        :show-blur-background? true
+        :descriptor            descriptor}
+       [rn/view {:style {:align-items :center}}
+        [quo/token-tag
+         (assoc @state
+                :token-img-src
+                (if (= (get-in @state [:token-symbol]) "ETH") eth-token snt-token))]]])))
