@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.tags.status-tags
   (:require
-    [quo.components.tags.status-tags :as quo]
-    [quo.foundations.colors :as colors]
+    [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]
@@ -31,7 +30,7 @@
     :key   :blur?
     :type  :boolean}])
 
-(defn preview-status-tags
+(defn view
   []
   (let [state (reagent/atom {:status :positive
                              :size   :small
@@ -48,11 +47,9 @@
                                   (assoc :status {:type :pending})
                                   (assoc :label (i18n/label :t/pending))))]
         [preview/preview-container
-         {:state      state
-          :descriptor descriptor}
-         [rn/view {:padding-bottom 150}
-          [preview/blur-view
-           {:show-blur-background? (:blur? @state)
-            :blur-view-props       {:blur-type     :dark
-                                    :overlay-color colors/neutral-80-opa-80}
-            :style                 {:align-self :center}} [quo/status-tag props]]]]))))
+         {:state                 state
+          :show-blur-background? true
+          :blur?                 (:blur? @state)
+          :descriptor            descriptor}
+         [rn/view {:style {:flex-direction :row}}
+          [quo/status-tag props]]]))))
