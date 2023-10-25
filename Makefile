@@ -278,7 +278,7 @@ run-android: export ANDROID_ABI_INCLUDE ?= $(shell ./scripts/adb_devices_arch.sh
 run-android: ##@run Build Android APK and start it on the device
 	npx react-native run-android --appIdSuffix debug
 
-SIMULATOR=iPhone 11 Pro
+SIMULATOR=iPhone 14
 run-ios: export TARGET := ios
 run-ios: export IOS_STATUS_GO_TARGETS := iossimulator/amd64
 run-ios: ##@run Build iOS app and start it in a simulator/device
