@@ -74,9 +74,11 @@
 (defn- set-qr-data-based-on-type
   [_ state-atom {old-type :type :as _old-state} {new-type :type :as _new-state}]
   (when (not= old-type new-type)
-    (swap! state-atom assoc :qr-data (if (= new-type :profile)
-                                       profile-link
-                                       wallet-address))))
+    (swap! state-atom assoc
+      :qr-data
+      (if (= new-type :profile)
+        profile-link
+        wallet-address))))
 
 (defn view
   []
@@ -94,7 +96,7 @@
                              :on-multichain-press #(js/alert (str "Tab " % " pressed"))
                              :networks            (take 2 possible-networks)
                              :on-settings-press   #(js/alert "Settings pressed")})
-        _     (add-watch state :change set-qr-data-based-on-type)]
+        _ (add-watch state :change set-qr-data-based-on-type)]
     (fn []
       (let [qr-url              (if (= (:type @state) :wallet-multichain)
                                   (as-> (:networks @state) $
