@@ -1,8 +1,8 @@
 (ns status-im2.contexts.wallet.common.network-preferences.view
   (:require [quo.core :as quo]
-            [quo.theme :as quo.theme]
             [quo.foundations.colors :as colors]
             [quo.foundations.resources :as resources]
+            [quo.theme :as quo.theme]
             [status-im2.contexts.wallet.common.network-preferences.style :as style]
             [utils.i18n :as i18n]))
 
