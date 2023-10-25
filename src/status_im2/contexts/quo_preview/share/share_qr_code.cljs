@@ -71,18 +71,12 @@
 
 (def ^:private wallet-address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd2")
 
-(defn- reset-qr-data
-  [share-qr-type state-atom]
-  [:<>
-   (rn/use-effect
-    (fn []
-      (swap! state-atom assoc
-        :qr-data
-        (if (= share-qr-type :profile)
-          profile-link
-          wallet-address))
-      nil)
-    [share-qr-type])])
+(defn- set-qr-data-based-on-type
+  [_ state-atom {old-type :type :as _old-state} {new-type :type :as _new-state}]
+  (when (not= old-type new-type)
+    (swap! state-atom assoc :qr-data (if (= new-type :profile)
+                                       profile-link
+                                       wallet-address))))
 
 (defn view
   []
@@ -99,7 +93,8 @@
                              :on-legacy-press     #(js/alert (str "Tab " % " pressed"))
                              :on-multichain-press #(js/alert (str "Tab " % " pressed"))
                              :networks            (take 2 possible-networks)
-                             :on-settings-press   #(js/alert "Settings pressed")})]
+                             :on-settings-press   #(js/alert "Settings pressed")})
+        _     (add-watch state :change set-qr-data-based-on-type)]
     (fn []
       (let [qr-url              (if (= (:type @state) :wallet-multichain)
                                   (as-> (:networks @state) $
@@ -128,8 +123,6 @@
                    :align-items        :center
                    :padding-horizontal 20
                    :padding-vertical   30}}
-          ;; Hack to reset the `:qr-data` atom value when the `:type` changes
-          [:f> reset-qr-data (:type @state) state]
           [rn/view
            {:style {:position :absolute
                     :top      0
