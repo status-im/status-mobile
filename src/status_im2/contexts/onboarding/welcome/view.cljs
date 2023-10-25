@@ -1,8 +1,10 @@
 (ns status-im2.contexts.onboarding.welcome.view
   (:require
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
+    [react-native.linear-gradient :as linear-gradient]
     [react-native.safe-area :as safe-area]
     [status-im2.common.resources :as resources]
     [status-im2.constants :as constants]
@@ -31,6 +33,7 @@
   []
   (let [profile-color         (rf/sub [:onboarding-2/customization-color])
         {:keys [status-type]} (rf/sub [:multiaccount/current-user-visibility-status])
+        window                (rf/sub [:dimensions/window])
         insets                (safe-area/get-insets)]
     [rn/view {:style (style/page-container insets)}
      (when (nil? status-type)
@@ -42,9 +45,13 @@
        :on-press   #(rf/dispatch [:navigate-back-within-stack :enable-notifications])}]
      [page-title]
      [rn/image
-      {:style  style/page-illustration
+      {:style  (style/page-illustration (:width window))
        :source (resources/get-image :welcome-illustration)}]
      [rn/view {:style (style/buttons insets)}
+      (when rn/small-screen?
+        [linear-gradient/linear-gradient
+         {:style  style/bottom-shadow
+          :colors [colors/neutral-100-opa-0 colors/neutral-100-opa-80]}])
       [quo/button
        {:on-press            (fn []
                                (rf/dispatch [:init-root :shell-stack])
