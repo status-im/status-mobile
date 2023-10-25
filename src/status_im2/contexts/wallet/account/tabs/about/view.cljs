@@ -1,14 +1,18 @@
 (ns status-im2.contexts.wallet.account.tabs.about.view
   (:require
     [quo.core :as quo]
+<<<<<<< HEAD
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
+=======
+>>>>>>> ae9b0723f (lint)
     [react-native.core :as rn]
     [status-im2.contexts.wallet.account.tabs.about.style :as style]
     [status-im2.contexts.wallet.common.temp :as temp]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+<<<<<<< HEAD
 (defn description
   [{:keys [address theme]}]
   (let [networks-list (rf/sub [:wallet/network-details])]
@@ -26,6 +30,8 @@
        :weight :monospace}
       address]]))
 
+=======
+>>>>>>> ae9b0723f (lint)
 (defn about-options
   []
   [quo/action-drawer

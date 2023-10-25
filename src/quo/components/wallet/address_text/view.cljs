@@ -11,7 +11,7 @@
           [text/text
            {:size  :paragraph-2
             :style {:color (colors/resolve-color network theme)}}
-           (str (subs (name network) 0 3) ":")])
+           (str (subs (name network) 0 3) (when (= network :arbitrum) "1") ":")])
         networks)
    [text/text
     {:size   :paragraph-2
