@@ -102,7 +102,6 @@
                  overlay-shown? sticky-header]}
          children]
       [:<>
-       ;; TODO(alwx): that's the header itself
        [:f> f-scroll-page-header
         {:scroll-height  @scroll-height
          :height         height

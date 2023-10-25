@@ -12,6 +12,7 @@
     [react-native.reanimated :as reanimated]
     [status-im.ui.screens.chat.group :as chat.group]
     [status-im.ui.screens.chat.message.gap :as message.gap]
+    [status-im2.common.top-bar.view :as top-bar]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.constants :as composer.constants]
     [status-im2.contexts.chat.messages.content.view :as message]
@@ -212,42 +213,35 @@
         online?              (rf/sub [:visibility-status-updates/online? chat-id])
         contact              (when-not group-chat
                                (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path           (rf/sub [:chats/photo-path chat-id])
-        border-animation     (reanimated/interpolate scroll-y
-                                                     [30 125]
-                                                     [14 0]
-                                                     header-extrapolation-option)]
-    [rn/view (add-inverted-y-android {:flex 1})
-     [rn/view
-      {:style     (style/header-container all-loaded? theme)
-       :on-layout on-layout}
-      [rn/view {:style (style/header-cover cover-bg-color theme)}]
-      [reanimated/view {:style (style/header-bottom-part border-animation theme)}
-       [rn/view {:style style/header-avatar}
-        [rn/view {:style {:align-items :flex-start}}
-         (when-not group-chat
-           [list-footer-avatar
-            {:scroll-y        scroll-y
-             :display-name    display-name
-             :online?         online?
-             :profile-picture photo-path}])]
-        [rnio/view
+        photo-path           (rf/sub [:chats/photo-path chat-id])]
+    [top-bar/abstract-list-header
+      {:inverted-y-on-android? true
+       :show?                  all-loaded?
+       :theme                  theme
+       :cover-bg-color         cover-bg-color
+       :scroll-y               scroll-y
+       :on-layout              on-layout
+       :avatar-component       (fn [] (when-not group-chat
+                                        [list-footer-avatar
+                                         {:scroll-y        scroll-y
+                                          :display-name    display-name
+                                          :online?         online?
+                                          :profile-picture photo-path}]))
+       :title-component        (fn [] [rnio/view
          {:on-change (fn [view-visible?]
                        (reset! big-name-visible? view-visible?))
-          :style     {:flex-direction :row
-                      :margin-top     (if group-chat 54 12)}}
-         [quo/text
-          {:weight          :semi-bold
-           :size            :heading-1
-           :style           {:flex-shrink 1}
-           :number-of-lines 1}
-          display-name]
-         [contact-icon contact theme]]
-        (when bio
-          [quo/text {:style style/bio}
-           bio])
-        [actions chat-id cover-bg-color]]]]
-     [loading-view chat-id messages-view-height messages-view-header-height]]))
+                                       :style {:flex-direction :row
+                                                :margin-top     (if group-chat 54 12)}}
+                                       [quo/text
+                                        {:weight          :semi-bold
+                                         :size            :heading-1
+                                         :style           {:flex-shrink 1}
+                                         :number-of-lines 1}
+                                        display-name]
+                                       [contact-icon contact theme]])
+       :description            bio
+       :actions-component      (fn [] [actions chat-id cover-bg-color])
+       :loading-component      (fn [] [loading-view chat-id messages-view-height messages-view-header-height])}]))
 
 (defn list-footer
   [props]
