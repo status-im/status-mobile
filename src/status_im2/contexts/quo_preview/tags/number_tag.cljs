@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.tags.number-tag
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -27,16 +26,16 @@
    {:key  :blur?
     :type :boolean}])
 
-(defn preview
+(defn view
   []
   (let [state (reagent/atom {:type   :squared
                              :number "148"
                              :size   :size-32
                              :blur?  false})]
     (fn []
-      [preview/preview-container {:state state :descriptor descriptor}
-       [rn/view
-        {:padding-vertical 60
-         :flex-direction   :row
-         :justify-content  :center}
-        [quo/number-tag @state]]])))
+      [preview/preview-container
+       {:state                 state
+        :descriptor            descriptor
+        :blur?                 (:blur? @state)
+        :show-blur-background? true}
+       [quo/number-tag @state]])))

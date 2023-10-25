@@ -2,11 +2,12 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(def container
+(defn container
+  [label]
   {:left               0
    :right              0
    :padding-horizontal 20
-   :padding-top        12
+   :padding-top        (when label 12)
    :padding-bottom     8})
 
 (defn settings-items

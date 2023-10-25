@@ -150,7 +150,7 @@
               :auto-complete       :password
               :secure-text-entry   (not @password-shown?)
               :right-icon          {:style-fn  style/password-icon
-                                    :icon-name (if @password-shown? :i/hide :i/reveal)
+                                    :icon-name (if @password-shown? :i/hide-password :i/reveal)
                                     :on-press  #(swap! password-shown? not)})])))
 
 (defn input-internal
