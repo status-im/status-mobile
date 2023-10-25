@@ -15,6 +15,7 @@
         networks)
    [text/text
     {:size   :paragraph-2
+     ;; TODO: monospace font https://github.com/status-im/status-mobile/issues/17009
      :weight :monospace
      :style  {:color (when (= type :short)
                        (if blur?
