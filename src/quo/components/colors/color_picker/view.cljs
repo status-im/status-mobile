@@ -17,20 +17,22 @@
    - `default-selected` Default selected color name.
    - `on-change` Callback called when a color is selected `(fn [color-name])`.
    - `blur?` Boolean to enable blur background support.}"
-  [{:keys [default-selected]}]
+  [{:keys [default-selected window-width]}]
   (let [selected (reagent/atom default-selected)]
     (fn [{:keys [blur? on-change feng-shui? container-style]}]
       [rn/scroll-view
        {:horizontal                        true
         :shows-horizontal-scroll-indicator false
         :content-container-style           container-style}
-       (doall (map (fn [color]
-                     [color/view
-                      {:selected? (= color @selected)
-                       :on-press  #(on-change-handler selected % on-change)
-                       :blur?     blur?
-                       :key       color
-                       :color     color}])
-                   ;; TODO: using :feng-shui? temporarily while b & w is being developed.
-                   ;; https://github.com/status-im/status-mobile/discussions/16676
-                   (if feng-shui? (conj color-list :feng-shui) color-list)))])))
+       (doall (map-indexed (fn [idx color]
+                             [color/view
+                              {:selected?    (= color @selected)
+                               :on-press     #(on-change-handler selected % on-change)
+                               :blur?        blur?
+                               :key          color
+                               :color        color
+                               :idx          idx
+                               :window-width window-width}])
+                           ;; TODO: using :feng-shui? temporarily while b & w is being developed.
+                           ;; https://github.com/status-im/status-mobile/discussions/16676
+                           (if feng-shui? (conj color-list :feng-shui) color-list)))])))
