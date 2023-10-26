@@ -30,7 +30,7 @@
     :key  :blur?}])
 
 
-(defn preview
+(defn view
   []
   (let [state (reagent/atom {:title    "Tag"
                              :status   :default
@@ -46,7 +46,6 @@
                  :justify-content :center
                  :flex            1}}
         [quo/network-tags
-         {:networks (nth community-networks (dec (:networks @state)))
-          :status   (:status @state)
-          :title    (:title @state)
-          :blur?    (:blur? @state)}]]])))
+         (assoc @state
+                :networks
+                (nth community-networks (dec (:networks @state))))]]])))

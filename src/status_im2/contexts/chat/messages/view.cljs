@@ -86,12 +86,13 @@
        :photo-path           photo-path
        :keyboard-shown?      keyboard-shown}]
 
-     (if able-to-send-message?
-       [:f> composer.view/composer
-        {:insets                            insets
-         :scroll-to-bottom-fn               list.view/scroll-to-bottom
-         :show-floating-scroll-down-button? show-floating-scroll-down-button?}]
-       [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat])]))
+     (when (seq chat)
+       (if able-to-send-message?
+         [:f> composer.view/composer
+          {:insets                            insets
+           :scroll-to-bottom-fn               list.view/scroll-to-bottom
+           :show-floating-scroll-down-button? show-floating-scroll-down-button?}]
+         [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]))]))
 
 (defn chat
   []
