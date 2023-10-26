@@ -108,14 +108,17 @@ To alleviate this discomfort and make the development cycle more *pleasant*, you
 #### REPL-ing to a screen
 
 This one is straightforward, just evaluate a navigation dispatch form from anywhere:
+
 ```cljs
 (comment (rf/dispatch [:navigate-to :your-favorite-buggy-screen]))
 ```
+
 > TIP: you can run this from an untracked user namespace `(ns user)`, from which you can experiment or interact with the REPL. This is where I usually keep my development navigation forms.
 
 #### REPL-ing a component
 
 This is also straighforward, but there are some small differences. Just like above, we only have to evaluate a dispatch form, as follows:
+
 ```cljs
 ;; example debugging a quo component, although it could be any other component e.g. from the `status-im2` ns.
 (comment (re-frame/dispatch [:dev/preview-component
@@ -125,6 +128,7 @@ This is also straighforward, but there are some small differences. Just like abo
                         :customization-color :blue
                         :on-complete         identity}]]))
 ```
+
 When evaluated, a full-screen bottom sheet will appear with your component inside. You can make changes to the props or the component internals and re-evaluate the changed forms, after which the component will be re-mounted without running a reload (unless you save the file). Other times it's quicker to just hit save and the component will be reloaded as usual (except for the props you evaluated, which have to be re-evaluated when changed).
 
 > TIP: You can have multiple versions of the component as separate comments to check for the component variations
