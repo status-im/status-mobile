@@ -146,6 +146,7 @@
 
 ;;wallet
 (reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)
+(reg-root-key-sub :wallet/create-account :wallet/create-account)
 
 ;;debug
 (when js/goog.DEBUG

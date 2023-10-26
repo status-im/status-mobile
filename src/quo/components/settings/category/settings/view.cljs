@@ -9,12 +9,13 @@
 
 (defn- category-internal
   [{:keys [label data blur? theme]}]
-  [rn/view {:style style/container}
-   [text/text
-    {:weight :medium
-     :size   :paragraph-2
-     :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
-    label]
+  [rn/view {:style (style/container label)}
+   (when label
+     [text/text
+      {:weight :medium
+       :size   :paragraph-2
+       :style  {:color (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}}
+      label])
    [rn/flat-list
     {:data      data
      :style     (style/settings-items theme blur?)

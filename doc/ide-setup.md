@@ -17,9 +17,10 @@ You can use any Clojure enabled editor. Here are instructions for developing the
   - [REPL!](#repl)
     - [Connecting to REPL to IntelliJ](#connecting-to-repl-to-intellij)
     - [Connecting REPL and IntelliJ to `status-mobile`](#connecting-repl-and-intellij-to-status-mobile)
-- [Using Calva](#using-calva)
-  - [Start and connect the REPL](#start-and-connect-the-repl)
-  - [Use the REPL](#use-the-repl)
+- [Visual Studio Code](#visual-studio-code)
+  - [Set up the REPL](#set-up-the-repl)
+  - [Auto-format files on save](#auto-format-files-on-save)
+- [Using Emacs with CIDER](#using-emacs-with-cider)
 
 ## Using Cursive
 
@@ -160,24 +161,24 @@ Following the above should give you the below result:
 
 For additional details on issues you may face when setting up REPL with Cursive [see this document](https://notes.status.im/9Gr7kqF8SzC_SmYK0eB7uQ?view#Connecting-Cursive--IntelliJ-IDEA-to-REPL-Problems)
 
-## Using Calva
+## Visual Studio Code
 
-For VS Code users.
+### Set up the REPL
 
-0. Install Calva.
+1. Install Calva extension.
+2. Open the `status-mobile` folder.
+3. Start [Status development](starting-guide.md#development) (Starting the
+   `run-clojure` and `run-metro` jobs in split view in the VS Code integrated
+   terminal works great).
+4. Run the VS Code command: **Calva: Connect to a running REPL Server in the
+   project**.
+   - Select the project type `shadow-cljs`.
+   - Accept the suggested connection `host:port`.
+   - Select to connect to the `:mobile` build.
 
-### Start and connect the REPL
-
-1. Open the `status-mobile` folder.
-1. Start [Status development](starting-guide.md#development) (Starting the `run-clojure` and `run-metro` jobs in split view in the VS Code integrated terminal works great.)
-1. Run the VS Code command: **Calva: Connect to a running REPL Server in the project**
-   1. Select the project type `shadow-cljs`
-   1. Accept the suggested connection `host:port`
-   1. Select to connect to the `:mobile` build
-
-### Use the REPL
-
-Open any `.cljs` file in the project and evaluate forms in it. See https://calva.io/try-first/ for some starter tips and links. Confirm that your REPL is connected to the app by evaluating:
+Open any `.cljs` file in the project and evaluate forms in it. See
+https://calva.io/try-first/ for some starter tips and links. Confirm that your
+REPL is connected to the app by evaluating:
 
 ```clojure
 (js/alert "Hello from Status App!")
@@ -185,9 +186,35 @@ Open any `.cljs` file in the project and evaluate forms in it. See https://calva
 
 🎉 Tada! You are ready to use the REPL to improve Status.im! 🎉
 
-Please consider bookmarking [calva.io](https://calva.io/) for quick access to the Calva documentation. 
+Consider bookmarking [calva.io](https://calva.io/) for quick access to the Calva
+documentation.
 
-## Using Emacs/Cider
+### Auto-format files on save
+
+We format Clojure code with [zprint](https://github.com/kkinnear/zprint). We
+recommend configuring VSCode to auto-format Clojure files on every save,
+otherwise you'll need to constantly rely on the much slower `make lint-fix`
+command.
+
+1. Create a file `~/.zprintrc` and enable the `:search-config?` option. This is
+   necessary so the VSCode extension finds the project's `.zprintrc`.
+
+```bash
+echo "{:search-config? true}" > ~/.zprintrc
+```
+
+2. Install the extension
+   [vscode-clj-zprint](https://github.com/rflagreca/vscode-clj-zprint). By the
+   way, did you know this extension is written in ClojureScript?
+3. Copy the recommended settings from our repository in
+   [.vscode/settings.example.json](/.vscode/settings.example.json) and merge it
+   with your workspace settings in `.vscode/settings.json`.
+
+The extension `vscode-clj-zprint` is only available for VSCode. If you are using
+VSCodium, you'll need to build the `vsix` (extension) yourself (it's easy, only
+`yarn` and `vsce` are required).
+
+## Using Emacs with CIDER
 
 1. Install Emacs/Cider/etc. (there is a lot of variability in how to manage things in emacs, so please google for help with this)
 2. Add a local ~/.shadow-cljs/config.edn file like below (corresponding to the version numbers of the packages you are using):
@@ -198,5 +225,3 @@ Please consider bookmarking [calva.io](https://calva.io/) for quick access to th
   [cider/cider-nrepl "0.28.4"]
   [cider/piggieback "0.5.2"]]}
 ```
-
-
