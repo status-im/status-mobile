@@ -20,7 +20,9 @@
               {:key   :add-account
                :value "Add Account"}
               {:key   :empty
-               :value "Empty"}]}
+               :value "Empty"}
+              {:key   :missing-keypair
+               :value "Missing Keypair"}]}
    {:label   "Customization color:"
     :key     :customization-color
     :type    :select
@@ -73,13 +75,24 @@
      :emoji               "🍑"}
 
     :watch-only
-    {:name             "Alisher account"
-     :balance          "€2,269.12"
-     :percentage-value "16.9%"
-     :amount           "€570.24"
-     :metrics?         true
-     :type             :watch-only
-     :emoji            "💸"}
+    {:name                "Ben’s fortune"
+     :balance             "€2,269.12"
+     :percentage-value    "16.9%"
+     :amount              "€570.24"
+     :metrics?            true
+     :type                :watch-only
+     :customization-color :army
+     :emoji               "💸"}
+
+    :missing-keypair
+    {:name                "Trip to Vegas"
+     :balance             "€2,269.12"
+     :percentage-value    "16.9%"
+     :amount              "€570.24"
+     :metrics?            true
+     :customization-color :turquoise
+     :type                :missing-keypair
+     :emoji               "🎲"}
 
     :add-account
     {:customization-color :blue
