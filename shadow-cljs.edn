@@ -9,6 +9,7 @@
                 [cljs-bean "1.9.0"]
                 [com.cognitect/transit-cljs "0.8.280"]
                 [camel-snake-kebab "0.4.3"]
+                [metosin/malli "0.13.0"]
 
                 ;; Dev dependencies
                 [refactor-nrepl "2.5.0"]
@@ -50,6 +51,7 @@
                     :after-load-async  status-im2.setup.hot-reload/reload
                     :build-notify      status-im2.setup.hot-reload/build-notify
                     :preloads          [re-frisk-remote.preload
+                                        status-im2.setup.schema-preload
                                         ;; In order to use component test helpers in the REPL we
                                         ;; need to preload namespaces that are not normally required
                                         ;; by production code, such as
@@ -71,6 +73,10 @@
                             :warnings           {:fn-deprecated false}
                             :closure-defines    {re-frame.trace/trace-enabled? true}
                             :source-map         false
+                            ;; This seems to be necessary while using the REPL,
+                            ;; otherwise sometimes you'll get weird errors when
+                            ;; instrumenting functions.
+                            :static-fns         false
                             :infer-externs      true}
          ;; if you want to use a real device, set your local ip
          ;; in the SHADOW_HOST env variable to make sure that
@@ -104,6 +110,7 @@
    :output-dir "target/test"
    :optimizations :simple
    :target :node-test
+   :dev {:devtools {:preloads [status-im2.setup.schema-preload]}}
    ;; Uncomment line below to `make test-watch` a specific file
    ;; :ns-regexp "status-im2.subs.messages-test$"
    :main status-im.test-runner/main
@@ -139,7 +146,14 @@
    :compiler-options {:optimizations :simple
                       :source-map    false}}
   :component-test {:target           :npm-module
-                   :entries          [quo.core-spec status-im2.core-spec]
+                   :entries          [;; We need to tell shadow-cljs to compile
+                                      ;; the preloads namespace because it will
+                                      ;; be used directly by Jest in the option
+                                      ;; setupFilesAfterEnv.
+                                      status-im2.setup.schema-preload
+
+                                      quo.core-spec
+                                      status-im2.core-spec]
                    :ns-regexp        "component-spec$"
                    :output-dir       "component-spec"
                    :compiler-options {:warnings-as-errors false

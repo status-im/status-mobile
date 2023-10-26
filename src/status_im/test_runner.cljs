@@ -8,6 +8,7 @@
     status-im.subs.root
     status-im2.setup.i18n-resources
     [status-im2.setup.interceptors :as interceptors]
+    [status-im2.setup.schema :as schema]
     status-im2.subs.root
     [utils.re-frame :as rf]))
 
@@ -118,6 +119,7 @@
   [& args]
   (reset-test-data!)
   (interceptors/register-global-interceptors)
+  (schema/setup!)
   (rf/set-mergeable-keys #{:filters/load-filters
                            :pairing/set-installation-metadata
                            :dispatch-n

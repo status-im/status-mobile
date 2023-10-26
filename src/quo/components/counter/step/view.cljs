@@ -2,9 +2,10 @@
   (:require
     [quo.components.counter.step.style :as style]
     [quo.components.markdown.text :as text]
-    [quo.theme :as theme]
+    quo.theme
     [react-native.core :as rn]
-    [utils.number]))
+    [utils.number]
+    utils.schema))
 
 (defn- view-internal
   [{:keys [type accessibility-label theme in-blur-view? customization-color]} value]
@@ -25,4 +26,19 @@
        :size   :label
        :style  {:color (style/text-color type theme)}} label]]))
 
-(def view (theme/with-theme view-internal))
+(def ?schema
+  [:=>
+   [:catn
+    [:props
+     [:map {:closed true}
+      [:accessibility-label {:optional true} :keyword]
+      [:customization-color {:optional true} :schema.common/customization-color]
+      [:in-blur-view? {:optional true} :boolean]
+      [:theme :schema.common/theme]
+      [:type {:optional true} [:enum :active :complete :neutral]]]]
+    [:value [:maybe [:or :string :int]]]]
+   :any])
+
+(utils.schema/=> view-internal ?schema)
+
+(def view (quo.theme/with-theme #'view-internal))

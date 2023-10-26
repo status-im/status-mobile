@@ -16,10 +16,17 @@
                 :clj-kondo-config              {:level :error}
                 :cond-else                     {:level :error}
                 :consistent-alias              {:level   :error
-                                                :aliases {clojure.string  string
-                                                          clojure.set     set
-                                                          clojure.walk    walk
-                                                          taoensso.timbre log}}
+                                                :aliases {clojure.set      set
+                                                          clojure.string   string
+                                                          clojure.walk     walk
+                                                          malli.core       malli
+                                                          malli.dev.pretty malli.pretty
+                                                          malli.dev.virhe  malli.virhe
+                                                          malli.error      malli.error
+                                                          malli.generator  malli.generator
+                                                          malli.transform  malli.transform
+                                                          malli.util       malli.util
+                                                          taoensso.timbre  log}}
                 :deprecated-namespace          {:level :warning}
                 :docstring-blank               {:level :error}
                 :equals-true                   {:level :error}
