@@ -5,12 +5,31 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.contexts.wallet.common.temp :as temp]
+    [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
+    [status-im2.contexts.wallet.common.utils :as utils]
     [status-im2.contexts.wallet.create-account.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (def diamond-emoji "\uD83D\uDC8E")
+
+(defn keypair-string
+  [full-name]
+  (let [first-name (utils/get-first-name full-name)]
+    (i18n/label :t/keypair-title {:name first-name})))
+
+(defn get-keypair-data
+  [name derivation-path]
+  [{:title             (keypair-string name)
+    :button-props      {:title (i18n/label :t/edit)}
+    :left-icon         :i/placeholder
+    :description       :text
+    :description-props {:text (i18n/label :t/on-device)}}
+   {:title             (i18n/label :t/derivation-path)
+    :button-props      {:title (i18n/label :t/edit)}
+    :left-icon         :i/derivated-path
+    :description       :text
+    :description-props {:text derivation-path}}])
 
 (defn- view-internal
   []
@@ -18,7 +37,12 @@
         bottom               (safe-area/get-bottom)
         account-color        (reagent/atom :blue)
         emoji                (reagent/atom diamond-emoji)
+        number-of-accounts   (count (rf/sub [:profile/wallet-accounts]))
+        account-name         (reagent/atom (i18n/label :t/default-account-name
+                                                       {:number (inc number-of-accounts)}))
+        derivation-path      (reagent/atom (utils/get-derivation-path number-of-accounts))
         {:keys [public-key]} (rf/sub [:profile/profile])
+        on-change-text       #(reset! account-name %)
         display-name         (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))]
     (fn [{:keys [theme]}]
       [rn/view
@@ -50,13 +74,14 @@
                                                         (reset! emoji selected-emoji))}])
           :container-style style/reaction-button-container} :i/reaction]]
        [quo/title-input
-        {:color           :red
-         :placeholder     "Type something here"
-         :max-length      24
-         :blur?           true
-         :disabled?       false
-         :default-value   "Account 2"
-         :container-style style/title-input-container}]
+        {:customization-color @account-color
+         :placeholder         "Type something here"
+         :on-change-text      on-change-text
+         :max-length          24
+         :blur?               true
+         :disabled?           false
+         :default-value       @account-name
+         :container-style     style/title-input-container}]
        [quo/divider-line]
        [rn/view
         {:style style/color-picker-container}
@@ -74,13 +99,20 @@
        [quo/category
         {:list-type :settings
          :label     (i18n/label :t/origin)
-         :data      (temp/create-account-state display-name)}]
-       [quo/slide-button
-        {:track-text          (i18n/label :t/slide-to-sign)
-         :track-icon          :face-id
+         :data      (get-keypair-data display-name @derivation-path)}]
+       [standard-auth/view
+        {:size                :size-48
+         :track-text          (i18n/label :t/slide-to-create-account)
          :customization-color @account-color
-         :on-complete         (fn []
-                                (js/alert "Functionality not implemented"))
+         :on-enter-password   (fn [entered-password]
+                                (rf/dispatch [:wallet/derive-address-and-add-account
+                                              entered-password
+                                              {:emoji        @emoji
+                                               :color        @account-color
+                                               :path         @derivation-path
+                                               :account-name @account-name}]))
+         :biometric-auth?     false
+         :auth-button-label   (i18n/label :t/confirm)
          :container-style     (style/slide-button-container bottom)}]])))
 
 (def view (quo.theme/with-theme view-internal))
