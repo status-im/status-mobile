@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [react-native.image-resizer :as image-resizer]
     [react-native.permissions :as permissions]
+    [react-native.platform :as platform]
     [status-im2.constants :as constants]
     [taoensso.timbre :as log]
     [utils.i18n :as i18n]
@@ -56,25 +57,25 @@
 
 (defn get-albums
   [callback]
-  (let [albums (atom {:smart-albums []
-                      :my-albums    []})]
+  (let [albums (atom {:smart-album []
+                      :my-albums   []})]
     ;; Get the "recent" album first
     (cameraroll/get-photos
-     {:first 1 :groupTypes "All"}
+     {:first 1 :groupTypes "All" :assetType "Photos"}
      (fn [res-recent]
        (swap! albums assoc
-         :smart-albums
-         [{:title (i18n/label :t/recent)
-           :uri   (get-in (first (:edges res-recent)) [:node :image :uri])}])
+         :smart-album
+         {:title (i18n/label :t/recent)
+          :uri   (get-in (first (:edges res-recent)) [:node :image :uri])})
        ;; Get albums, then loop over albums and get each one's cover (first photo)
        (cameraroll/get-albums
-        {:assetType :Photos}
+        {:assetType "Photos"}
         (fn [res-albums]
           (let [response-count (count res-albums)]
             (if (pos? response-count)
               (doseq [album res-albums]
                 (cameraroll/get-photos
-                 {:first 1 :groupTypes "Albums" :groupName (:title album)}
+                 {:first 1 :groupTypes "Albums" :groupName (:title album) :assetType "Photos"}
                  (fn [res]
                    (let [uri (get-in (first (:edges res)) [:node :image :uri])]
                      (swap! albums update :my-albums conj (merge album {:uri uri}))
@@ -83,20 +84,41 @@
                        (callback @albums))))))
               (callback @albums)))))))))
 
+(defn get-photos-count-ios-fx
+  [cb]
+  (cameraroll/get-photos-count-ios cb))
+
 (re-frame/reg-fx
  :camera-roll-get-albums
  (fn []
    (get-albums #(re-frame/dispatch [:on-camera-roll-get-albums %]))))
 
+(re-frame/reg-fx
+ :camera-roll-get-photos-count-ios
+ (fn []
+   (when platform/ios?
+     (get-photos-count-ios-fx #(re-frame/dispatch [:on-camera-roll-get-images-count-ios %])))))
+
 (rf/defn on-camera-roll-get-albums
   {:events [:on-camera-roll-get-albums]}
   [{:keys [db]} albums]
-  {:db (assoc db :camera-roll/albums albums)})
+  {:db       (assoc db :camera-roll/albums albums)
+   :dispatch [:photo-selector/camera-roll-get-ios-photo-count]})
+
+(rf/defn get-photos-count-ios
+  {:events [:on-camera-roll-get-images-count-ios]}
+  [{:keys [db]} count]
+  {:db (assoc db :camera-roll/ios-images-count count)})
 
 (rf/defn camera-roll-get-albums
   {:events [:photo-selector/camera-roll-get-albums]}
   [_]
   {:camera-roll-get-albums nil})
+
+(rf/defn camera-roll-get-ios-photo-count
+  {:events [:photo-selector/camera-roll-get-ios-photo-count]}
+  [_]
+  {:camera-roll-get-photos-count-ios nil})
 
 (rf/defn camera-roll-select-album
   {:events [:chat.ui/camera-roll-select-album]}

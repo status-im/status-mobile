@@ -20,4 +20,11 @@
                   :button-one-label button-one
                   :button-two-label button-two}])
       (h/is-truthy (h/get-by-text button-one))
-      (h/is-truthy (h/get-by-text button-two)))))
+      (h/is-truthy (h/get-by-text button-two))))
+
+  (h/test "render disabled button"
+    (h/render [bottom-actions/view
+               {:description      "Sample description"
+                :disabled?        true
+                :button-one-label "button"}])
+    (h/is-disabled (h/get-by-label-text :button-one))))

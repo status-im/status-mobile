@@ -14,7 +14,7 @@
 (defn- internal-view
   []
   (let [state (reagent/atom :default)]
-    (fn [{:keys [theme customization-color status token metrics? values on-press]}]
+    (fn [{:keys [theme customization-color status token metrics? values on-press on-long-press]}]
       (let [bg-opacity                                                      (case @state
                                                                               :active  10
                                                                               :pressed 5
@@ -28,6 +28,7 @@
                                  (reset! state :active)
                                  (js/setTimeout #(reset! state :default) 300)
                                  on-press)
+          :on-long-press       on-long-press
           :accessibility-label :container}
          [rn/view
           {:style {:flex-direction :row

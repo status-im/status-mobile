@@ -433,6 +433,7 @@
     "decline": "Decline",
     "decryption-failed-content": "An error occured decrypting your data. You might need to erase your old data and generate a new account. Tap “Apply” to erase or “Cancel” to try again",
     "default": "Default",
+    "default-account-name": "Account {{number}}",
     "delete": "Delete",
     "delete-and-leave-group": "Delete and leave group",
     "delete-bootnode": "Delete bootnode",
@@ -1893,6 +1894,7 @@
     "select-token-to-swap": "Select token to Swap",
     "select-token-to-receive": "Select token to receive",
     "slide-to-reveal-code": "Slide to reveal code",
+    "slide-to-create-account": "Slide to create account",
     "minimum-received": "Minimum received",
     "powered-by-paraswap": "Powered by Paraswap",
     "priority": "Priority",
@@ -2356,5 +2358,10 @@
     "moonpay-description": "The new standard for fiat to crypto, supports Apple Pay.",
     "latamex-description": "Easily buy crypto in Argentina, Mexico and Brazil.",
     "account-info": "Account info",
-    "account-name-input-placeholder": "Account name"
+    "account-name-input-placeholder": "Account name",
+    "network-preferences": "Network preferences",
+    "network-preferences-desc": "Select which network this address is happy to receive funds on",
+    "layer-2": "Layer 2",
+    "manage-tokens": "Manage tokens",
+    "sign transactions": "sign transactions"
 }

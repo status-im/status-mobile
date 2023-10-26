@@ -37,6 +37,6 @@
          :color icon-color}]]
       [rn/image
        {:source icon
-        :style  {:width 32 :height 32}}])))
+        :style  {:width component-size :height component-size}}])))
 
 (def icon-avatar (quo.theme/with-theme icon-avatar-internal))
