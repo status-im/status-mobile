@@ -77,6 +77,7 @@
     quo.components.list-items.preview-list.view
     quo.components.list-items.saved-address.view
     quo.components.list-items.saved-contact-address.view
+    quo.components.list-items.token-network.view
     quo.components.list-items.token-value.view
     quo.components.list-items.user-list
     quo.components.loaders.skeleton-list.view
@@ -112,7 +113,6 @@
     quo.components.selectors.selectors.view
     quo.components.settings.accounts.view
     quo.components.settings.category.view
-    quo.components.settings.category.view
     quo.components.settings.data-item.view
     quo.components.settings.privacy-option.view
     quo.components.settings.reorder-item.view
@@ -132,7 +132,7 @@
     quo.components.tags.tag
     quo.components.tags.tags
     quo.components.tags.tiny-tag.view
-    quo.components.tags.token-tag
+    quo.components.tags.token-tag.view
     quo.components.text-combinations.view
     quo.components.wallet.account-card.view
     quo.components.wallet.account-origin.view
@@ -278,6 +278,7 @@
 (def community-list-item quo.components.list-items.community.view/view)
 (def saved-address quo.components.list-items.saved-address.view/view)
 (def saved-contact-address quo.components.list-items.saved-contact-address.view/view)
+(def token-network quo.components.list-items.token-network.view/view)
 (def token-value quo.components.list-items.token-value.view/view)
 
 ;;;; Loaders
@@ -360,7 +361,7 @@
 (def tag quo.components.tags.tag/tag)
 (def tags quo.components.tags.tags/tags)
 (def tiny-tag quo.components.tags.tiny-tag.view/view)
-(def token-tag quo.components.tags.token-tag/tag)
+(def token-tag quo.components.tags.token-tag.view/view)
 
 ;;;; Text combinations
 (def text-combinations quo.components.text-combinations.view/view)

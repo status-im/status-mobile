@@ -14,6 +14,7 @@
     [status-im2.contexts.communities.actions.community-options.view :as options]
     [status-im2.contexts.communities.overview.style :as style]
     [status-im2.contexts.communities.overview.utils :as utils]
+    [utils.debounce :as debounce]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -210,7 +211,7 @@
    (when (and (not locked?) id)
      {:on-press      (fn []
                        (rf/dispatch [:dismiss-keyboard])
-                       (rf/dispatch [:chat/navigate-to-chat (str community-id id)]))
+                       (debounce/dispatch-and-chill [:chat/navigate-to-chat (str community-id id)] 1000))
       :on-long-press #(rf/dispatch
                        [:show-bottom-sheet
                         {:content (fn []

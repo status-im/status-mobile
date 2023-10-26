@@ -92,6 +92,7 @@
     [status-im2.contexts.quo-preview.list-items.preview-lists :as preview-lists]
     [status-im2.contexts.quo-preview.list-items.saved-address :as saved-address]
     [status-im2.contexts.quo-preview.list-items.saved-contact-address :as saved-contact-address]
+    [status-im2.contexts.quo-preview.list-items.token-network :as token-network]
     [status-im2.contexts.quo-preview.list-items.token-value :as token-value]
     [status-im2.contexts.quo-preview.list-items.user-list :as user-list]
     [status-im2.contexts.quo-preview.loaders.skeleton-list :as skeleton-list]
@@ -151,6 +152,7 @@
     [status-im2.contexts.quo-preview.tags.number-tag :as number-tag]
     [status-im2.contexts.quo-preview.tags.permission-tag :as permission-tag]
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
+    [status-im2.contexts.quo-preview.tags.tag :as tag]
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.tiny-tag :as tiny-tag]
     [status-im2.contexts.quo-preview.tags.token-tag :as token-tag]
@@ -327,6 +329,8 @@
                         :component saved-address/view}
                        {:name      :saved-contact-address
                         :component saved-contact-address/view}
+                       {:name      :token-network
+                        :component token-network/preview-token-network}
                        {:name      :token-value
                         :component token-value/view}
                        {:name      :user-list
@@ -416,21 +420,23 @@
                        {:name      :account-selector
                         :component account-selector/view}]
    :tags              [{:name      :context-tags
-                        :component context-tags/preview-context-tags}
+                        :component context-tags/view}
                        {:name      :network-tags
-                        :component network-tags/preview}
+                        :component network-tags/view}
                        {:name      :number-tag
-                        :component number-tag/preview}
+                        :component number-tag/view}
                        {:name      :permission-tag
-                        :component permission-tag/preview-permission-tag}
+                        :component permission-tag/view}
                        {:name      :status-tags
-                        :component status-tags/preview-status-tags}
+                        :component status-tags/view}
+                       {:name      :tag
+                        :component tag/view}
                        {:name      :tags
-                        :component tags/preview-tags}
+                        :component tags/view}
                        {:name      :tiny-tag
                         :component tiny-tag/preview-tiny-tag}
                        {:name      :token-tag
-                        :component token-tag/preview-token-tag}]
+                        :component token-tag/view}]
    :text-combinations [{:name      :text-combinations
                         :component text-combinations/view}]
    :wallet            [{:name :account-card :component account-card/preview-account-card}

@@ -83,3 +83,5 @@
 (def reg-fx re-frame/reg-fx)
 
 (def dispatch-sync re-frame/dispatch-sync)
+
+(def reg-event-fx re-frame/reg-event-fx)

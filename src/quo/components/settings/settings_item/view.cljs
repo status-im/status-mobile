@@ -97,7 +97,9 @@
                        {:type :outline
                         :size 24})
                 (:button-text action-props)]
-     :selector [selectors/toggle action-props]
+     :selector (if (= (:type action-props) :checkbox)
+                 [selectors/checkbox action-props]
+                 [selectors/toggle action-props])
      nil)])
 
 (defn- internal-view
