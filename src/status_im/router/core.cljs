@@ -49,7 +49,9 @@
                      ["cr/" :community-id]         :community-requests
                      "g/"                          group-chat-extractor
                      ["wallet/" :account]          :wallet-account
-                     ["u/" :user-data]             :user}
+                     ["u/" :user-data]             :user
+                     "c"                           :community
+                     "u"                           :user}
     ethereum-scheme eip-extractor}])
 
 (defn parse-query-params
