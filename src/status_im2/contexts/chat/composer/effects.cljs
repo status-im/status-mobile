@@ -112,7 +112,10 @@
      (let [edit-text        (get-in edit [:content :text])
            text-value-count (count @text-value)]
        (when (and edit @input-ref)
-         (.focus ^js @input-ref)
+         ;; A small setTimeout is necessary to ensure the statement is enqueued and will get executed
+         ;; ASAP.
+         ;; https://github.com/software-mansion/react-native-screens/issues/472
+         (js/setTimeout #(.focus ^js @input-ref) 250)
          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
          (reset! text-value edit-text)
          (reset! saved-cursor-position (if (zero? text-value-count)
@@ -129,7 +132,7 @@
      (when reply
        (reanimated/animate container-opacity 1))
      (when (and reply @input-ref)
-       (.focus ^js @input-ref)))
+       (js/setTimeout #(.focus ^js @input-ref) 250)))
    [(:message-id reply)]))
 
 (defn edit-mentions
@@ -181,7 +184,7 @@
                                         (+ (reanimated/get-shared-value last-height) value))))
        (let [curr-text @text-value]
          (reset! text-value (str @text-value " "))
-         (js/setTimeout #(reset! text-value curr-text) 10)))
+         (js/setTimeout #(reset! text-value curr-text) 100)))
      (reset! sending-links? link-previews?))
    [link-previews?]))
 
@@ -208,7 +211,7 @@
                                         (+ (reanimated/get-shared-value last-height) value))))
        (let [curr-text @text-value]
          (reset! text-value (str @text-value " "))
-         (js/setTimeout #(reset! text-value curr-text) 10)))
+         (js/setTimeout #(reset! text-value curr-text) 100)))
      (reset! sending-images? (boolean (seq images))))
    [(boolean (seq images))]))
 
