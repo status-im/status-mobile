@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
+    [quo.components.colors.color.constants :as constants]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.blur :as blur]
@@ -33,6 +34,12 @@
 (defn length-not-valid [s] (< (count (string/trim (str s))) min-length))
 (def scroll-view-height (reagent/atom 0))
 (def content-container-height (reagent/atom 0))
+(defn iphone-11-Pro-20-pixel-from-width
+  [window-width]
+  ;; Divide iPhone 11 Pro VW by the desired value
+  (let [calculate-ratio (/ constants/IPHONE_11_PRO_VIEWPORT_WIDTH 20)]
+    ;; Divide window width by the ratio to get a dynamic value. Based on the VW width
+    (int (/ window-width calculate-ratio))))
 
 (defn validation-message
   [s]
@@ -131,7 +138,8 @@
           {:keys [keyboard-shown keyboard-height]} (hooks/use-keyboard)
           show-background?                         (show-button-background keyboard-height
                                                                            keyboard-shown
-                                                                           @content-scroll-y)]
+                                                                           @content-scroll-y)
+          {window-width :width}                    (rn/get-window)]
       [rn/view {:style style/page-container}
        [quo/page-nav
         {:margin-top navigation-bar-top
@@ -194,11 +202,13 @@
             {:size   :paragraph-2
              :weight :medium
              :style  style/color-title}
-            (i18n/label :t/accent-colour)]
-           [quo/color-picker
-            {:blur?            true
-             :default-selected :blue
-             :on-change        on-change}]]]]]
+            (i18n/label :t/accent-colour)]]]
+         [quo/color-picker
+          {:blur?            true
+           :default-selected :blue
+           :on-change        on-change
+           :window-width     window-width
+           :container-style  {:padding-left (iphone-11-Pro-20-pixel-from-width window-width)}}]]]
 
        [rn/keyboard-avoiding-view
         {:style          {:position :absolute

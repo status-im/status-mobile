@@ -19,7 +19,9 @@
            selected?
            on-press
            blur?
-           theme]
+           theme
+           idx
+           window-width]
     :as   props}]
   (let [border?   (and (not blur?) (not selected?))
         hex-color (if (= :feng-shui color)
@@ -29,7 +31,7 @@
                                          theme))]
 
     [rn/pressable
-     {:style               (style/color-button hex-color selected?)
+     {:style               (style/color-button hex-color selected? idx window-width)
       :accessibility-label :color-picker-item
       :on-press            #(on-press color)}
      (if (and (= :feng-shui color) (not selected?))
