@@ -1,16 +1,18 @@
 (ns status-im.ui.screens.qr-scanner.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
     [react-native.camera-kit :as camera-kit]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.core :as quo]
     [status-im.ui.components.react :as react]
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.screens.qr-scanner.styles :as styles]
     [status-im2.config :as config]
-    [utils.i18n :as i18n]))
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defn get-qr-code-data
   [^js event]
@@ -85,13 +87,18 @@
   [opts data]
   (re-frame/dispatch [:qr-scanner.callback/scan-qr-code-success opts (get-qr-code-data data)]))
 
-(defview qr-scanner
+(defn- navigate-back-handler
   []
-  (letsubs [read-once?             (atom false)
-            {:keys [height width]} [:dimensions/window]
-            camera-flashlight      [:wallet-legacy.send/camera-flashlight]
-            opts                   [:get-screen-params]
-            camera-ref             (atom nil)]
+  (re-frame/dispatch [:navigate-back])
+  true)
+
+(defn f-qr-scanner
+  []
+  (let [read-once?             (reagent/atom false)
+        {:keys [height width]} (rf/sub [:dimensions/window])
+        camera-flashlight      (rf/sub [:wallet-legacy.send/camera-flashlight])
+        opts                   (rf/sub [:get-screen-params])
+        camera-ref             (reagent/atom nil)]
     [react/view
      {:flex             1
       :background-color colors/black-persist}
@@ -111,3 +118,11 @@
                             (reset! read-once? true)
                             (on-barcode-read opts %))}]]
         [viewfinder (int (* 2 (/ (min height width) 3)))]])]))
+
+(defn qr-scanner
+  []
+  (reagent/create-class
+   {:display-name           "qr-scanner"
+    :component-did-mount    #(rn/hw-back-add-listener navigate-back-handler)
+    :component-will-unmount #(rn/hw-back-remove-listener navigate-back-handler)
+    :reagent-render         f-qr-scanner}))
