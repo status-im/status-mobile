@@ -166,6 +166,7 @@
     [status-im2.contexts.quo-preview.wallet.network-amount :as network-amount]
     [status-im2.contexts.quo-preview.wallet.network-bridge :as network-bridge]
     [status-im2.contexts.quo-preview.wallet.network-link :as network-link]
+    [status-im2.contexts.quo-preview.wallet.network-routing :as network-routing]
     [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
@@ -447,6 +448,7 @@
                        {:name :network-amount :component network-amount/preview}
                        {:name :network-bridge :component network-bridge/preview}
                        {:name :network-link :component network-link/preview}
+                       {:name :network-routing :component network-routing/preview}
                        {:name :progress-bar :component progress-bar/preview}
                        {:name :summary-info :component summary-info/preview}
                        {:name :token-input :component token-input/preview}
