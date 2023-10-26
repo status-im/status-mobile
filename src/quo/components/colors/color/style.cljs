@@ -1,24 +1,38 @@
 (ns quo.components.colors.color.style
   (:require
+    [quo.components.colors.color.constants :as constants]
     [quo.foundations.colors :as colors]))
 
-(def color-button-common
-  {:width             48
-   :height            48
-   :border-width      4
-   :border-radius     24
-   :margin-horizontal 4
-   :transform         [{:rotate "45deg"}]
-   :border-color      :transparent})
+(defn color-button-common
+  [window-width]
+  {:width         48
+   :height        48
+   :border-width  4
+   :border-radius 24
+   :margin-right  (-> window-width
+                      (- constants/IPHONE_11_PRO_VIEWPORT_WIDTH) ;We want the design to be 100%
+                                                                 ;identical to Figma on iPhone 11
+                                                                 ;Pro, So we're using it's VW here.
+                      (/ 6) ;Dividing by an appropriate factor to get a reasonable value for each VW
+                            ;on other devices (This will yield 0 on iPhone 11 Pro, Which is what we
+                            ;want)
+                      (+ 8)) ;Add same margin that's on Figma for 11 Pro, This value will increase
+                             ;based on the device VW because of the division above.
+   :transform     [{:rotate "45deg"}]
+   :border-color  :transparent})
 
 (defn color-button
-  [color selected?]
-  (merge color-button-common
-         (when selected?
-           {:border-top-color    (colors/alpha color 0.4)
-            :border-end-color    (colors/alpha color 0.4)
-            :border-bottom-color (colors/alpha color 0.2)
-            :border-start-color  (colors/alpha color 0.2)})))
+  ([color selected?]
+   (color-button color selected? nil nil))
+  ([color selected? idx window-width]
+   (merge (color-button-common window-width)
+          (when selected?
+            {:border-top-color    (colors/alpha color 0.4)
+             :border-end-color    (colors/alpha color 0.4)
+             :border-bottom-color (colors/alpha color 0.2)
+             :border-start-color  (colors/alpha color 0.2)}
+            (when (zero? idx)
+              {:margin-left -4})))))
 
 (defn color-circle
   [color border?]
