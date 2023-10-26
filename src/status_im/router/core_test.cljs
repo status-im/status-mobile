@@ -40,15 +40,31 @@
 
    "https://status.app/cc/G54AAKwObLdpiGjXnckYzRcOSq0QQAS_CURGfqVU42ceGHCObstUIknTTZDOKF3E8y2MSicncpO7fTskXnoACiPKeejvjtLTGWNxUhlT7fyQS7Jrr33UVHluxv_PLjV2ePGw5GQ33innzeK34pInIgUGs5RjdQifMVmURalxxQKwiuoY5zwIjixWWRHqjHM=#zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11"
     [:community-chat
-     {:chat-data
+     {:community-data
       "G54AAKwObLdpiGjXnckYzRcOSq0QQAS_CURGfqVU42ceGHCObstUIknTTZDOKF3E8y2MSicncpO7fTskXnoACiPKeejvjtLTGWNxUhlT7fyQS7Jrr33UVHluxv_PLjV2ePGw5GQ33innzeK34pInIgUGs5RjdQifMVmURalxxQKwiuoY5zwIjixWWRHqjHM="
       :community-id "zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11"}]
 
    "status-app://cc/G54AAKwObLdpiGjXnckYzRcOSq0QQAS_CURGfqVU42ceGHCObstUIknTTZDOKF3E8y2MSicncpO7fTskXnoACiPKeejvjtLTGWNxUhlT7fyQS7Jrr33UVHluxv_PLjV2ePGw5GQ33innzeK34pInIgUGs5RjdQifMVmURalxxQKwiuoY5zwIjixWWRHqjHM=#zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11"
     [:community-chat
-     {:chat-data
+     {:community-data
       "G54AAKwObLdpiGjXnckYzRcOSq0QQAS_CURGfqVU42ceGHCObstUIknTTZDOKF3E8y2MSicncpO7fTskXnoACiPKeejvjtLTGWNxUhlT7fyQS7Jrr33UVHluxv_PLjV2ePGw5GQ33innzeK34pInIgUGs5RjdQifMVmURalxxQKwiuoY5zwIjixWWRHqjHM="
       :community-id "zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11"}]
+
+   "https://status.app/cc/c432709e-fc73-440d-bb67-cb3a0929dfda#zQ3shZL6dXiFCbDyxnXxwQa9v8QFC2q19subFtyxd7kVszMVo"
+    [:community-chat
+     {:community-data
+      "c432709e-fc73-440d-bb67-cb3a0929dfda"
+      :community-channel-id
+      "c432709e-fc73-440d-bb67-cb3a0929dfda"
+      :community-id "zQ3shZL6dXiFCbDyxnXxwQa9v8QFC2q19subFtyxd7kVszMVo"}]
+
+   "status-app://cc/c432709e-fc73-440d-bb67-cb3a0929dfda#zQ3shZL6dXiFCbDyxnXxwQa9v8QFC2q19subFtyxd7kVszMVo"
+    [:community-chat
+     {:community-data
+      "c432709e-fc73-440d-bb67-cb3a0929dfda"
+      :community-channel-id
+      "c432709e-fc73-440d-bb67-cb3a0929dfda"
+      :community-id "zQ3shZL6dXiFCbDyxnXxwQa9v8QFC2q19subFtyxd7kVszMVo"}]
 
    "https://status.app/c/iyKACkQKB0Rvb2RsZXMSJ0NvbG9yaW5nIHRoZSB3b3JsZCB3aXRoIGpveSDigKIg4bSXIOKAohiYohsiByMxMzFEMkYqAwEhMwM=#zQ3shYSHp7GoiXaauJMnDcjwU2yNjdzpXLosAWapPS4CFxc11"
     [:community
