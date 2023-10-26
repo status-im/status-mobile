@@ -17,7 +17,7 @@
 
 (defn authorize
   [{:keys [on-enter-password biometric-auth? on-auth-success on-auth-fail on-close
-           fallback-button-label theme blur?]}]
+           auth-button-label theme blur? customization-color auth-button-icon-left]}]
   (biometric/get-supported-type
    (fn [biometric-type]
      (if (and biometric-auth? biometric-type)
@@ -43,8 +43,10 @@
                         :shell?   blur?
                         :content  (fn []
                                     [enter-password/view
-                                     {:on-enter-password on-enter-password
-                                      :button-label      fallback-button-label}])}]))))))
+                                     {:customization-color customization-color
+                                      :on-enter-password   on-enter-password
+                                      :button-icon-left    auth-button-icon-left
+                                      :button-label        auth-button-label}])}]))))))
 
 (defn- view-internal
   [_]
@@ -53,26 +55,31 @@
     (fn [{:keys [biometric-auth?
                  track-text
                  customization-color
-                 fallback-button-label
+                 auth-button-label
                  on-enter-password
                  on-auth-success
                  on-auth-fail
+                 auth-button-icon-left
                  size
                  theme
-                 blur?]}]
+                 blur?
+                 container-style]}]
       [rn/view {:style {:flex 1}}
        [quo/slide-button
         {:size                size
+         :container-style     container-style
          :customization-color customization-color
          :on-reset            (when @reset-slider? #(reset! reset-slider? false))
          :on-complete         #(authorize {:on-close              on-close
+                                           :auth-button-icon-left auth-button-icon-left
                                            :theme                 theme
                                            :blur?                 blur?
+                                           :customization-color   customization-color
                                            :on-enter-password     on-enter-password
                                            :biometric-auth?       biometric-auth?
                                            :on-auth-success       on-auth-success
                                            :on-auth-fail          on-auth-fail
-                                           :fallback-button-label fallback-button-label})
+                                           :auth-button-label     auth-button-label})
          :track-icon          (if biometric-auth? :i/face-id :password)
          :track-text          track-text}]])))
 

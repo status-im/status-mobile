@@ -188,14 +188,16 @@
                             native-module/sha3)]
     {:json-rpc/call [{:method     "accounts_verifyPassword"
                       :params     [hashed-password]
-                      :on-success #(do (rf/dispatch [:profile.login/verified-database-password %]) (cb))
+                      :on-success #(rf/dispatch [:profile.login/verified-database-password % cb])
                       :on-error   #(log/error "accounts_verifyPassword error" %)}]}))
 
 (rf/defn verify-database-password-success
   {:events [:profile.login/verified-database-password]}
-  [{:keys [db] :as cofx} valid?]
+  [{:keys [db] :as cofx} valid? callback]
   (if valid?
     (do
+      (when (fn? callback)
+        (callback))
       {:db (update db
                    :profile/login
                    dissoc
