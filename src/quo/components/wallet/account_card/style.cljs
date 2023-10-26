@@ -36,7 +36,7 @@
    :padding-bottom     9})
 
 (def profile-container
-  {:margin-bottom  6
+  {:margin-bottom  8
    :flex-direction :row})
 
 (def metrics-container
