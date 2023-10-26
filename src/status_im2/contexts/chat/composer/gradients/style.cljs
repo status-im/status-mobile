@@ -11,7 +11,7 @@
    {:height   80
     :position :absolute
     :z-index  z-index
-    :top      0
+    :top      constants/bar-container-height
     :left     0
     :right    0}))
 
