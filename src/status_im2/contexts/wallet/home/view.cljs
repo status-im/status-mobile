@@ -42,19 +42,17 @@
 
 (defn account-cards
   [{:keys [accounts loading? balances profile]}]
-  (let [accounts-with-balances (mapv (fn [account]
-                                       (assoc account
-                                              :type                :empty
-                                              :customization-color (:customization-color profile)
-                                              :on-press            #(rf/dispatch [:navigate-to
-                                                                                  :wallet-accounts
-                                                                                  (:address account)])
-                                              :loading?            loading?
-                                              :balance             (utils/prettify-balance
-                                                                    (utils/get-balance-by-address
-                                                                     balances
-                                                                     (:address account)))))
-                                     accounts)]
+  (let [accounts-with-balances
+        (mapv
+         (fn [account]
+           (assoc account
+                  :type                :empty
+                  :customization-color (:customization-color profile)
+                  :on-press            #(rf/dispatch [:navigate-to :wallet-accounts (:address account)])
+                  :loading?            loading?
+                  :balance             (utils/prettify-balance
+                                        (utils/get-balance-by-address balances (:address account)))))
+         accounts)]
     (conj accounts-with-balances (add-account-placeholder (:customization-color profile)))))
 
 (defn- view-internal
