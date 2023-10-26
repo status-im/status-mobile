@@ -131,6 +131,13 @@
          :accessibility-label :appearance-settings-button
          :chevron             true
          :on-press            #(re-frame/dispatch [:navigate-to :quo-preview])}])
+     (when config/quo-preview-enabled?
+       [list.item/list-item
+        {:icon                :main-icons/appearance
+         :title               "Status IM Components"
+         :accessibility-label :status-im-common-components
+         :chevron             true
+         :on-press            #(re-frame/dispatch [:navigate-to :status-im-preview])}])
      [list.item/list-item
       {:icon                :main-icons/appearance
        :title               (i18n/label :t/appearance)

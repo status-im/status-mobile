@@ -317,10 +317,10 @@
          children)])
 
 (defn- f-preview-container
-  [{:keys [state descriptor blur? blur-dark-only?
+  [{:keys [title state descriptor blur? blur-dark-only?
            component-container-style
            blur-container-style blur-view-props blur-height show-blur-background?]
-    :or   {blur-height 200}}
+    :or   {blur-height 200 title "quo component"}}
    & children]
   (let [theme (quo.theme/use-theme-value)]
     (rn/use-effect (fn []
@@ -332,7 +332,7 @@
     [rn/view
      {:style {:top  (safe-area/get-top)
               :flex 1}}
-     [common/navigation-bar]
+     [common/navigation-bar {:title title}]
      [rn/scroll-view
       {:style                           (style/panel-basic)
        :shows-vertical-scroll-indicator false}
