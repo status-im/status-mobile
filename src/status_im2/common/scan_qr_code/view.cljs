@@ -21,7 +21,7 @@
 (defonce camera-permission-granted? (reagent/atom false))
 
 (defn- header
-  [{:keys [title subtitle]}]
+  [{:keys [title subtitle show-subtitle? bottom-padding?]}]
   [:<>
    [rn/view {:style style/header-container}
     [quo/button
@@ -35,13 +35,14 @@
    [quo/text
     {:size   :heading-1
      :weight :semi-bold
-     :style  style/header-text}
+     :style  (style/header-text bottom-padding?)}
     title]
-   [quo/text
-    {:size   :paragraph-1
-     :weight :regular
-     :style  style/header-sub-text}
-    subtitle]])
+   (when show-subtitle?
+     [quo/text
+      {:size   :paragraph-1
+       :weight :regular
+       :style  style/header-sub-text}
+      subtitle])])
 
 (defn get-labels-and-on-press-method
   []
@@ -109,21 +110,22 @@
     [white-border :bottom-right]]])
 
 (defn- viewfinder
-  [qr-view-finder]
+  [qr-view-finder helper-text?]
   (let [layout-size (+ (:width qr-view-finder) 2)]
     [rn/view {:style (style/viewfinder-container qr-view-finder)}
      [white-square layout-size]
-     [quo/text
-      {:size   :paragraph-2
-       :weight :regular
-       :style  style/viewfinder-text}
-      (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)]]))
+     (when helper-text?
+       [quo/text
+        {:size   :paragraph-2
+         :weight :regular
+         :style  style/viewfinder-text}
+        (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)])]))
 
 (defn- scan-qr-code-tab
-  [qr-view-finder]
+  [qr-view-finder helper-text?]
   (if (and @camera-permission-granted?
            (boolean (not-empty qr-view-finder)))
-    [viewfinder qr-view-finder]
+    [viewfinder qr-view-finder helper-text?]
     [camera-permission-view]))
 
 (defn- check-qr-code-and-navigate
@@ -176,7 +178,7 @@
     #(.remove app-state-listener)))
 
 (defn f-view-internal
-  [{:keys [title subtitle validate-fn on-success-scan error-message]}]
+  [{:keys [title subtitle validate-fn on-success-scan error-message show-subtitle? bottom-padding?]}]
   (let [insets             (safe-area/get-insets)
         qr-code-succeed?   (reagent/atom false)
         qr-view-finder     (reagent/atom {})
@@ -217,13 +219,15 @@
              :set-rescan-timeout    set-rescan-timeout}])
          [rn/view {:style (style/root-container (:top insets))}
           [header
-           {:title    title
-            :subtitle subtitle}]
+           {:title           title
+            :subtitle        subtitle
+            :show-subtitle?  show-subtitle?
+            :bottom-padding? bottom-padding?}]
           (when (empty? @qr-view-finder)
             [:<>
              [rn/view {:style style/scan-qr-code-container}]
              [qr-scan-hole-area qr-view-finder]])
-          [scan-qr-code-tab @qr-view-finder]
+          [scan-qr-code-tab @qr-view-finder show-subtitle?]
           [rn/view {:style style/flex-spacer}]
           (when show-camera?
             [quo.theme/provider {:theme :light}

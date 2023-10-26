@@ -38,10 +38,11 @@
    :padding-horizontal screen-padding
    :margin-vertical    12})
 
-(def header-text
+(defn header-text
+  [bottom-padding?]
   {:padding-horizontal screen-padding
    :padding-top        12
-   :padding-bottom     8
+   :padding-bottom     (when bottom-padding? 8)
    :color              colors/white})
 
 (def header-sub-text
@@ -53,7 +54,7 @@
    :margin-top         20})
 
 (def scan-qr-code-container
-  {:margin-top 19})
+  {:margin-top 20})
 
 (def qr-view-finder
   {:margin-horizontal screen-padding
