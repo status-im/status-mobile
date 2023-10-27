@@ -9,10 +9,6 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
-(def networks
-  [{:source (quo.resources/get-network :ethereum)}
-   {:source (quo.resources/get-network :optimism)}
-   {:source (quo.resources/get-network :arbitrum)}])
 
 (defn wallet-temporary-navigation
   []
@@ -28,7 +24,8 @@
    [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-saved-addresses])}
     "Saved Addresses"]])
 
-(def wallet-overview-state
+(defn wallet-overview-state
+  [networks]
   {:state             :default
    :time-frame        :none
    :metrics           :none
@@ -110,8 +107,6 @@
    :account-name        "Account 1"
    :account             :default
    :customization-color :blue})
-
-(def network-names [:ethereum :optimism :arbitrum])
 
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
 

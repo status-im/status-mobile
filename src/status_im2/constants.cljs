@@ -358,3 +358,17 @@
 
 (def ^:const ens-action-type-register 1)
 (def ^:const ens-action-type-set-pub-key 2)
+
+;; wallet
+(def ^:const mainnet-chain-id 1)
+(def ^:const optimism-chain-id 10)
+(def ^:const arbitrum-chain-id 42161)
+(def ^:const goerli-chain-id 5)
+
+(def ^:const mainnet-short-name "eth")
+(def ^:const optimism-short-name "opt")
+(def ^:const arbitrum-short-name "arb1")
+
+(def ^:const mainnet-network-name :ethereum)
+(def ^:const optimism-network-name :optimism)
+(def ^:const arbitrum-network-name :arbitrum)

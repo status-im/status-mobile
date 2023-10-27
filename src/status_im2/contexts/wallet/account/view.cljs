@@ -1,7 +1,6 @@
 (ns status-im2.contexts.wallet.account.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
@@ -49,11 +48,6 @@
                  :padding-bottom     8}
      :render-fn quo/settings-item}]])
 
-(def ^:private networks-list
-  [{:source (quo.resources/get-network :ethereum)}
-   {:source (quo.resources/get-network :optimism)}
-   {:source (quo.resources/get-network :arbitrum)}])
-
 (def tabs-data
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
@@ -67,34 +61,35 @@
   (let [top          (safe-area/get-top)
         selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      [rn/view
-       {:style {:flex       1
-                :margin-top top}}
-       [quo/page-nav
-        {:type              :wallet-networks
-         :background        :blur
-         :icon-name         :i/close
-         :on-press          #(rf/dispatch [:navigate-back])
-         :networks          networks-list
-         :networks-on-press #(js/alert "Pressed Networks")
-         :right-side        :account-switcher
-         :account-switcher  {:customization-color :purple
-                             :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                 {:content             account-options
-                                                                  :gradient-cover?     true
-                                                                  :customization-color :purple}])
-                             :emoji               "🍑"}}]
-       [quo/account-overview temp/account-overview-state]
-       [quo/wallet-graph {:time-frame :empty}]
-       [quo/wallet-ctas
-        {:send-action #(rf/dispatch [:open-modal :wallet-select-address])
-         :buy-action  #(rf/dispatch [:show-bottom-sheet
-                                     {:content buy-drawer}])}]
-       [quo/tabs
-        {:style          style/tabs
-         :size           32
-         :default-active @selected-tab
-         :data           tabs-data
-         :on-change      #(reset! selected-tab %)
-         :scrollable?    true}]
-       [tabs/view {:selected-tab @selected-tab}]])))
+      (let [networks (rf/sub [:wallet/network-details])]
+        [rn/view
+         {:style {:flex       1
+                  :margin-top top}}
+         [quo/page-nav
+          {:type              :wallet-networks
+           :background        :blur
+           :icon-name         :i/close
+           :on-press          #(rf/dispatch [:navigate-back])
+           :networks          networks
+           :networks-on-press #(js/alert "Pressed Networks")
+           :right-side        :account-switcher
+           :account-switcher  {:customization-color :purple
+                               :on-press            #(rf/dispatch [:show-bottom-sheet
+                                                                   {:content             account-options
+                                                                    :gradient-cover?     true
+                                                                    :customization-color :purple}])
+                               :emoji               "🍑"}}]
+         [quo/account-overview temp/account-overview-state]
+         [quo/wallet-graph {:time-frame :empty}]
+         [quo/wallet-ctas
+          {:send-action #(rf/dispatch [:open-modal :wallet-select-address])
+           :buy-action  #(rf/dispatch [:show-bottom-sheet
+                                       {:content buy-drawer}])}]
+         [quo/tabs
+          {:style          style/tabs
+           :size           32
+           :default-active @selected-tab
+           :data           tabs-data
+           :on-change      #(reset! selected-tab %)
+           :scrollable?    true}]
+         [tabs/view {:selected-tab @selected-tab}]]))))
