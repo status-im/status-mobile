@@ -235,9 +235,9 @@
    (.toHaveProp (js/expect element) (camel-snake-kebab/->camelCaseString prop) value)))
 
 (defn get-rerender-fn
-  "Rerenders a component.
+  "Returns a rerender function from React Native Testing Library.
    Takes a JS Object representing a component and returns a function that accepts hiccup
-   representing the component to rerender with, optionally, the new props.
+   representing the component to rerender with the new props to rerender it.
    e.g.
      (let [rerender-fn (h/get-rerender-fn
                         (h/render [my-component {:prop-1 :A
