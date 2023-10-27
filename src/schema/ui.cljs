@@ -3,22 +3,14 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]))
 
-(def ^:private schema-error?
-  (reagent/atom false))
-
-(defn show-schema-error
-  []
-  (reset! schema-error? true))
-
-(defn clear-schema-error
-  []
-  (reset! schema-error? false))
+(def schema-errors
+  (reagent/atom #{}))
 
 (defn view
   []
-  (let [on-press #(reset! schema-error? false)]
+  (let [on-press #(reset! schema-errors #{})]
     (fn []
-      (when @schema-error?
+      (when (seq @schema-errors)
         [rn/pressable
          {:on-press on-press
           :style    {:position                  :absolute

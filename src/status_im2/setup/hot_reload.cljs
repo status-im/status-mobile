@@ -22,7 +22,7 @@
   (reset! label "reloading UI")
   (re-frame/clear-subscription-cache!)
   (schema/setup!)
-  (schema.ui/clear-schema-error)
+  (reset! schema.ui/schema-errors #{})
   (swap! cnt inc))
 
 (defn before-reload

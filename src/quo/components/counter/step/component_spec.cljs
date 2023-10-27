@@ -1,7 +1,6 @@
 (ns quo.components.counter.step.component-spec
   (:require
     [quo.components.counter.step.view :as step]
-    quo.theme
     [test-helpers.component :as h]))
 
 (defn render

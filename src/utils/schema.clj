@@ -16,5 +16,5 @@
   removed in non-debug environments."
   [schema-id ?schema f]
   `(if ^boolean js/goog.DEBUG
-     (utils.schema/instrument-fn ~schema-id ~?schema ~f)
+     (utils.schema/-instrument ~schema-id ~?schema ~f)
      ~f))
