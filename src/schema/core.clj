@@ -1,7 +1,7 @@
 (ns schema.core)
 
 (defmacro =>
-  "Same as `malli.core/-instrument`, but instrumentation code will be completely
+  "Same as `malli.core/=>`, but instrumentation code will be completely
   removed in non-debug environments.
 
   Note: the type hint is mandatory so the Closure compiler can remove the code
@@ -12,7 +12,7 @@
      ~sym))
 
 (defmacro instrument
-  "Same as `malli.core/-instrument`, but instrumentation code will be completely
+  "Same as `schema.core/-instrument`, but instrumentation code will be completely
   removed in non-debug environments."
   [schema-id ?schema f]
   `(if ^boolean js/goog.DEBUG
