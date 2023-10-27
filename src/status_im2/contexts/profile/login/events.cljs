@@ -22,6 +22,7 @@
     [status-im2.contexts.profile.rpc :as profile.rpc]
     [status-im2.contexts.push-notifications.events :as notifications]
     [status-im2.contexts.shell.activity-center.events :as activity-center]
+    [status-im2.contexts.wallet.events :as wallet]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
@@ -91,6 +92,7 @@
               (activity-center/notifications-fetch-pending-contact-requests)
               (activity-center/update-seen-state)
               (activity-center/notifications-fetch-unread-count)
+              (wallet/get-ethereum-chains)
               (redirect-to-root))))
 
 ;; login phase 2, we want to load and show chats faster so we split login into 2 phases
