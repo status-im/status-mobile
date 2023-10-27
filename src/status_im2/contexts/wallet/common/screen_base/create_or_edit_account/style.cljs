@@ -14,7 +14,8 @@
    :z-index  -1})
 
 (def account-avatar-container
-  {:padding-horizontal 20
+  {:flex               1
+   :padding-horizontal 20
    :padding-top        12})
 
 (def reaction-button-container

@@ -7,8 +7,9 @@
     [react-native.core :as rn]))
 
 (def default-props
-  {:button-one-type :primary
-   :button-two-type :grey})
+  {:button-one-type     :primary
+   :button-two-type     :grey
+   :customization-color :blue})
 
 (defn- view-internal
   "Options:
@@ -26,13 +27,14 @@
        :theme - :light/:dark
        :scroll? - bool (default false) - Whether the iOS Home Indicator should be
        rendered
+       :customization-color - keyword (default nil) - Color for the first button
        :button-one-type - same as button/button :type
        :button-two-type - same as button/button :type"
   [props]
   (let [{:keys [actions description button-one-disabled?
                 button-two-disabled? button-one-label button-two-label
                 button-one-press button-two-press theme
-                scroll? button-one-type button-two-type]}
+                scroll? customization-color button-one-type button-two-type]}
         (merge default-props props)]
     [:<>
      [rn/view {:style style/buttons-container}
@@ -45,12 +47,13 @@
           :type            button-two-type
           :on-press        button-two-press} button-two-label])
       [button/button
-       {:size            40
-        :disabled?       button-one-disabled?
-        :container-style style/button-container
-        :type            button-one-type
-        :background      (when scroll? :blur)
-        :on-press        button-one-press} button-one-label]]
+       {:size                40
+        :disabled?           button-one-disabled?
+        :container-style     style/button-container
+        :type                button-one-type
+        :background          (when scroll? :blur)
+        :on-press            button-one-press
+        :customization-color customization-color} button-one-label]]
      (when description
        [text/text
         {:size  :paragraph-2

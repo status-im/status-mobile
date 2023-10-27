@@ -220,7 +220,7 @@
     :options   {:insets {:top? true}}
     :component wallet.swap/asset-selector}
 
-   {:name :address-to-watch-edit
+   {:name      :address-to-watch-edit
     :component address-add-edit/address-add-edit}
 
    ;;PROFILE

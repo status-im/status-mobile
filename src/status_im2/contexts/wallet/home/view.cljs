@@ -12,6 +12,8 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(declare account-cards)
+
 (defn new-account
   []
   [quo/action-drawer
@@ -24,7 +26,9 @@
       :accessibility-label :add-a-contact
       :label               (i18n/label :t/add-address)
       :sub-label           (i18n/label :t/add-address-description)
-      :on-press            #(rf/dispatch [:navigate-to :wallet-address-watch])
+      :on-press            #(rf/dispatch [:navigate-to :wallet-address-watch
+                                          {:accounts-count (count
+                                           account-cards)}])
       :add-divider?        true}]]])
 
 (def account-cards
