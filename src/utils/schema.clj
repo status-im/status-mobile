@@ -8,7 +8,7 @@
   at compile time."
   [sym value]
   `(if ^boolean js/goog.DEBUG
-     (malli.core/=> ~sym ~value)
+     (malli.core/=> ~sym (malli.core/schema ~value))
      ~sym))
 
 (defmacro instrument

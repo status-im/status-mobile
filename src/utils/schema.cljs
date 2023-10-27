@@ -40,6 +40,6 @@
   Avoid using this function directly. Prefer the macro
   `utils.schema/instrument`."
   [schema-id ?schema f]
-  (malli/-instrument {:schema ?schema
+  (malli/-instrument {:schema (malli/schema ?schema)
                       :report (reporter {:title (str "Schema error - " schema-id)})}
                      f))
