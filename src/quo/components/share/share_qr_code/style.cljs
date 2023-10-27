@@ -16,7 +16,7 @@
    :padding-top        12
    :padding-bottom     8})
 
-;; Header
+;;; Header
 (def header-container
   {:flex-direction :row
    :margin-bottom  12})
@@ -31,12 +31,12 @@
 
 (def info-icon-color colors/white-opa-40)
 
-;; QR code
+;;; QR code
 (defn qr-code-size
   [total-width]
   (- total-width (* 2 padding-horizontal)))
 
-;; Bottom part
+;;; Bottom part
 (def bottom-container
   {:margin-top      8
    :flex-direction  :row
@@ -56,7 +56,7 @@
   [total-width]
   {:width (- total-width (* 2 padding-horizontal) share-button-size share-button-gap)})
 
-;; Wallet variants
+;;; Wallet variants
 (def wallet-data-and-share-container
   {:margin-top      2
    :flex-direction  :row
@@ -73,7 +73,7 @@
 
 (def wallet-multichain-data-container {:margin-top 4})
 
-;; Dashed line
+;;; Dashed line
 (def divider-container
   {:height            8
    :margin-horizontal 4
