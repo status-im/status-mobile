@@ -30,7 +30,7 @@
          [address-text/view
           {:networks networks
            :address  (:address account-props)
-           :type     :short}]]]
+           :format   :short}]]]
        (when (= action :icon)
          [rn/pressable {:on-press on-options-press}
           [icon/icon :i/options

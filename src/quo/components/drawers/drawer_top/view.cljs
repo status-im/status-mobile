@@ -33,14 +33,6 @@
                        :profile-picture   profile-picture}]
     nil))
 
-(defn- network-view
-  [network]
-  [text/text
-   {:size   :paragraph-2
-    :weight :regular
-    :style  (style/network-text-color (:name network))}
-   (str (name (:short network)) ":")])
-
 (defn- keypair-subtitle
   [{:keys [theme blur? keycard?]}]
   [rn/view {:style style/row}
@@ -64,7 +56,7 @@
     [address-text/view
      {:networks networks
       :address  description
-      :type     :short}]
+      :format   :short}]
     [text/text
      {:size   :paragraph-2
       :weight :regular

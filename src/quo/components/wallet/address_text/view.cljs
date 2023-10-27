@@ -1,26 +1,30 @@
 (ns quo.components.wallet.address-text.view
   (:require [quo.components.markdown.text :as text]
+            [quo.components.wallet.address-text.style :as style]
             [quo.foundations.colors :as colors]
+            [quo.theme]
             [utils.address :as utils]))
 
-(defn- view-internal
-  [{:keys [networks address type blur? theme]}]
+(defn- colored-network-text
+  [theme network]
   [text/text
-   (map (fn [network]
-          ^{:key (str network)}
-          [text/text
-           {:size  :paragraph-2
-            :style {:color (colors/resolve-color network theme)}}
-           (str (subs (name network) 0 3) (when (= network :arbitrum) "1") ":")])
-        networks)
-   [text/text
-    {:size   :paragraph-2
-     ;; TODO: monospace font https://github.com/status-im/status-mobile/issues/17009
-     :weight :monospace
-     :style  {:color (when (= type :short)
-                       (if blur?
-                         colors/white-opa-40
-                         (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)))}}
-    (if (= type :short) (utils/get-short-wallet-address address) address)]])
+   {:size  :paragraph-2
+    :style {:color (colors/resolve-color network theme)}}
+   (utils/get-network-short-name network)])
+
+(defn- view-internal
+  [{:keys [networks address blur? theme format]}]
+  (let [network-text-xf (map #(colored-network-text theme %))
+        address-text    [text/text
+                         {:size   :paragraph-2
+                          ;; TODO: monospace font https://github.com/status-im/status-mobile/issues/17009
+                          :weight :monospace
+                          :style  (style/address-text format blur? theme)}
+                         (if (= format :short)
+                           (utils/get-short-wallet-address address)
+                           address)]]
+    (as-> networks $ ;; Take vector of networks
+      (into [text/text] network-text-xf $) ;; make colored text and inserts them into [text/text]
+      (conj $ address-text)))) ;; Add address-text hiccup at the end
 
 (def view (quo.theme/with-theme view-internal))

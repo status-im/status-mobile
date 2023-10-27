@@ -70,8 +70,12 @@
            {:custom-subtitle (fn [] [quo/address-text
                                      {:networks [:ethereum :optimism :arbitrum]
                                       :address  temp/address
+<<<<<<< HEAD
                                       :type     :long}])
 >>>>>>> 43a104637 (address text)
+=======
+                                      :format   :long}])
+>>>>>>> 230f4a384 (review)
             :container-style {:margin-bottom 12}
             :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])})]
    [quo/account-origin temp/account-origin-state]])

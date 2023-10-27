@@ -34,7 +34,7 @@
     [address-text/view
      {:networks (:networks account-props)
       :address  (:address account-props)
-      :type     :short}]]])
+      :format   :short}]]])
 
 (defn- balance-view
   [{:keys [balance-props type theme]}]

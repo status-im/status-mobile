@@ -42,7 +42,7 @@
          :custom-subtitle (fn [] [quo/address-text
                                   {:networks [:ethereum :optimism :arbitrum]
                                    :address  account-address
-                                   :type     :long}])
+                                   :format   :long}])
          :on-press        (fn []
                             (rf/dispatch [:show-bottom-sheet
                                           {:content (fn [] [network-preferences/view
