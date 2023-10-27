@@ -5,8 +5,10 @@
     [clojure.string :as string]
     [shadow.test :as st]
     [shadow.test.env :as env]
+    status-im.subs.root
     status-im2.setup.i18n-resources
     [status-im2.setup.interceptors :as interceptors]
+    status-im2.subs.root
     [utils.re-frame :as rf]))
 
 (defonce repl? (atom false))
