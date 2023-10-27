@@ -2,10 +2,19 @@
   (:require-macros utils.schema)
   (:require
     [malli.core :as malli]
-    [malli.dev.pretty :as malli.pretty]))
+    [malli.dev.pretty :as malli.pretty]
+    schema.ui))
+
+(defn ui-reporter
+  "Prints to STDOUT and signals a schema error should be displayed on screen."
+  [printer]
+  (let [report (malli.pretty/reporter printer)]
+    (fn [type data]
+      (report type data)
+      (schema.ui/show-schema-error))))
 
 (defn reporter
-  "Custom reporter optimized for small screens.
+  "Build custom reporter.
 
   We might need to use `malli.dev.pretty/thrower` instead of
   `malli.dev.pretty/report`, otherwise calls to memoized functions won't fail on
@@ -22,7 +31,7 @@
      (if (exists? js/jest)
        ;; Report schema errors as an exception to signal a failure to Jest.
        (malli.pretty/thrower printer)
-       (malli.pretty/reporter printer)))))
+       (ui-reporter printer)))))
 
 (defn instrument-fn
   "Similar to `malli/=>`, but should be used to instrument functional Reagent

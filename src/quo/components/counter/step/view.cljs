@@ -31,9 +31,9 @@
    [:catn
     [:props
      [:map {:closed true}
-      [:accessibility-label {:optional true} :keyword]
-      [:customization-color {:optional true} :schema.common/customization-color]
-      [:in-blur-view? {:optional true} :boolean]
+      [:accessibility-label {:optional true} [:maybe :keyword]]
+      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
+      [:in-blur-view? {:optional true} [:maybe :boolean]]
       [:theme :schema.common/theme]
       [:type {:optional true} [:enum :active :complete :neutral]]]]
     [:value [:maybe [:or :string :int]]]]
