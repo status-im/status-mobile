@@ -14,9 +14,9 @@
 
 (defn view-internal
   []
-  (let [top (safe-area/get-top)
-        bottom (safe-area/get-bottom)
-        input-value (reagent/atom "")
+  (let [top                      (safe-area/get-top)
+        bottom                   (safe-area/get-bottom)
+        input-value              (reagent/atom "")
         {:keys [accounts-count]} (rf/sub [:get-screen-params])]
     (fn []
       [rn/view
@@ -49,7 +49,8 @@
          {:button-one-label     (i18n/label :t/continue)
           :button-one-disabled? (clojure.string/blank? @input-value)
           :button-one-press     #(re-frame/dispatch [:navigate-to
-                                                     :address-to-watch-edit {:accounts-count accounts-count
-                                                                             :address        @input-value}])}]]])))
+                                                     :address-to-watch-edit
+                                                     {:accounts-count accounts-count
+                                                      :address        @input-value}])}]]])))
 
 (def view (quo.theme/with-theme view-internal))

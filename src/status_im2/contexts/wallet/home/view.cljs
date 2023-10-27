@@ -28,7 +28,7 @@
       :sub-label           (i18n/label :t/add-address-description)
       :on-press            #(rf/dispatch [:navigate-to :wallet-address-watch
                                           {:accounts-count (count
-                                           account-cards)}])
+                                                            account-cards)}])
       :add-divider?        true}]]])
 
 (def account-cards

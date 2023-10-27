@@ -16,21 +16,21 @@
 (defn- view-internal
   []
   (let [{:keys [accounts-count address]} (rf/sub [:get-screen-params])
-        account-name (reagent/atom (str "Account " accounts-count))
-        address-title (i18n/label :t/watch-address)
-        account-color (reagent/atom :purple)
-        account-emoji (reagent/atom (utils/random-emoji))
-        on-change-name #(reset! account-name %)
-        on-change-color #(reset! account-color %)
-        on-change-emoji #(reset! account-emoji %)
-        safe-bottom (safe-area/get-bottom)]
+        account-name                     (reagent/atom (str "Account " accounts-count))
+        address-title                    (i18n/label :t/watch-address)
+        account-color                    (reagent/atom :purple)
+        account-emoji                    (reagent/atom (utils/random-emoji))
+        on-change-name                   #(reset! account-name %)
+        on-change-color                  #(reset! account-color %)
+        on-change-emoji                  #(reset! account-emoji %)
+        safe-bottom                      (safe-area/get-bottom)]
     (fn []
       [rn/view {:style style/container}
        [create-or-edit-account/view
         {:page-nav-right-side [{:icon-name :i/info
                                 :on-press
                                 #(js/alert
-                                   "Get info (to be
+                                  "Get info (to be
                                 implemented)")}]
          :account-name        @account-name
          :account-emoji       @account-emoji
@@ -48,7 +48,7 @@
           :status          :default
           :size            :default
           :container-style style/data-item
-          :on-press #(js/alert "To be implemented")}]]
+          :on-press        #(js/alert "To be implemented")}]]
        [rn/view {:style (style/button-container safe-bottom)}
         [quo/bottom-actions
          {:button-one-label     (i18n/label :t/create-account)
