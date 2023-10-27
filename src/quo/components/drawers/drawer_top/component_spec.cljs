@@ -57,7 +57,7 @@
                {:title                "Title"
                 :type                 :account
                 :account-avatar-emoji "🍿"
-                :networks             [{:name :ethereum :short :eth}]
+                :networks             [:ethereum]
                 :description          "0x62b...0a5"
                 :customization-color  :purple}])
     (h/is-truthy (h/get-by-text "Title"))
