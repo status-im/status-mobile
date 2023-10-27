@@ -38,12 +38,12 @@
     [quo/qr-code (assoc props :qr-image-uri qr-media-server-uri)]))
 
 (defn- get-network-short-name-url
-  [network-kw]
-  (case network-kw
+  [network]
+  (case network
     :ethereum "eth:"
     :optimism "opt:"
     :arbitrum "arb1:"
-    (str (name network-kw) ":")))
+    (str (name network) ":")))
 
 (defn- get-qr-data-for-wallet-multichain
   [qr-data networks]

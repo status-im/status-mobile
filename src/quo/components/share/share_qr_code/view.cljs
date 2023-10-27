@@ -136,38 +136,38 @@
 
 (def ^:private known-networks #{:ethereum :optimism :arbitrum})
 
+(defn- get-network-image-source
+  [network]
+  {:source (quo.resources/get-network (get known-networks network :unknown))})
+
 (defn wallet-multichain-bottom
   [{:keys [share-qr-type component-width qr-data on-text-press on-text-long-press
            on-share-press networks on-settings-press]}]
-  (let [network-image-source (fn [network]
-                               {:source (-> known-networks
-                                            (get network :unknown)
-                                            (quo.resources/get-network))})]
-    [rn/view {:style style/wallet-multichain-container}
-     [rn/view {:style style/wallet-multichain-networks}
-      [preview-list/view {:type :network :size :size-32}
-       (map network-image-source networks)]
-      [button/button
-       {:icon-only?          true
-        :type                :grey
-        :background          :blur
-        :size                32
-        :accessibility-label :share-qr-code-settings
-        :on-press            on-settings-press}
-       :i/advanced]]
-     [rn/view {:style style/divider-container}
-      [dashed-line component-width]]
-     [rn/view {:style style/wallet-multichain-data-container}
-      [info-label share-qr-type]
-      [rn/view {:style style/wallet-data-and-share-container}
-       [info-text
-        {:width         component-width
-         :on-press      on-text-press
-         :on-long-press on-text-long-press}
-        [wallet-multichain-colored-address qr-data]]
-       [share-button
-        {:alignment :top
-         :on-press  on-share-press}]]]]))
+  [rn/view {:style style/wallet-multichain-container}
+   [rn/view {:style style/wallet-multichain-networks}
+    [preview-list/view {:type :network :size :size-32}
+     (map get-network-image-source networks)]
+    [button/button
+     {:icon-only?          true
+      :type                :grey
+      :background          :blur
+      :size                32
+      :accessibility-label :share-qr-code-settings
+      :on-press            on-settings-press}
+     :i/advanced]]
+   [rn/view {:style style/divider-container}
+    [dashed-line component-width]]
+   [rn/view {:style style/wallet-multichain-data-container}
+    [info-label share-qr-type]
+    [rn/view {:style style/wallet-data-and-share-container}
+     [info-text
+      {:width         component-width
+       :on-press      on-text-press
+       :on-long-press on-text-long-press}
+      [wallet-multichain-colored-address qr-data]]
+     [share-button
+      {:alignment :top
+       :on-press  on-share-press}]]]])
 
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name

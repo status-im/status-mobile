@@ -1,11 +1,12 @@
 (ns status-im2.contexts.quo-preview.share.share-qr-code
-  (:require [quo.core :as quo]
-            [react-native.core :as rn]
-            [reagent.core :as reagent]
-            [status-im2.common.resources :as resources]
-            [status-im2.contexts.quo-preview.preview :as preview]
-            [utils.image-server :as image-server]
-            [utils.re-frame :as rf]))
+  (:require
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]
+    [utils.image-server :as image-server]
+    [utils.re-frame :as rf]))
 
 (def descriptor
   [{:key   :qr-data
@@ -59,12 +60,12 @@
                :value "Ethereum, Optimism, Arbitrum and unknown"}]}])
 
 (defn- get-network-short-name-url
-  [network-kw]
-  (case network-kw
+  [network]
+  (case network
     :ethereum "eth:"
     :optimism "opt:"
     :arbitrum "arb1:"
-    (str (name network-kw) ":")))
+    (str (name network) ":")))
 
 (def ^:private profile-link
   "https://join.status.im/u/zQ3shfc5Wqnu")
