@@ -1,5 +1,6 @@
 (ns status-im2.navigation.screens
   (:require
+    [dev.component-preview.view :as component-preview]
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.config :as config]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
@@ -271,6 +272,11 @@
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
      :component scan-address/view}]
+
+   (when js/goog.DEBUG
+     [{:name      :dev-component-preview
+       :options   {:sheet? true}
+       :component component-preview/view}])
 
    (when config/quo-preview-enabled?
      quo.preview/screens)
