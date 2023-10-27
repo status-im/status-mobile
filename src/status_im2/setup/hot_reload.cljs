@@ -3,7 +3,7 @@
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    schema.ui
+    schema.state
     [status-im2.setup.schema :as schema]))
 
 (defonce cnt (reagent/atom 0))
@@ -22,7 +22,7 @@
   (reset! label "reloading UI")
   (re-frame/clear-subscription-cache!)
   (schema/setup!)
-  (reset! schema.ui/schema-errors #{})
+  (reset! schema.state/errors #{})
   (swap! cnt inc))
 
 (defn before-reload

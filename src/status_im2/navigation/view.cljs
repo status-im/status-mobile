@@ -5,7 +5,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    schema.ui
+    schema.view
     [status-im.bottom-sheet.sheets :as bottom-sheets-old]
     [status-im.ui.screens.popover.views :as popover]
     [status-im.ui.screens.profile.visibility-status.views :as visibility-status-views]
@@ -74,7 +74,7 @@
         (when js/goog.DEBUG
           [:<>
            [reloader/reload-view]
-           [schema.ui/view]])]))))
+           [schema.view/view]])]))))
 
 (def bottom-sheet
   (reagent/reactify-component

@@ -26,6 +26,7 @@
                                                           malli.generator  malli.generator
                                                           malli.transform  malli.transform
                                                           malli.util       malli.util
+                                                          schema.core      schema
                                                           taoensso.timbre  log}}
                 :deprecated-namespace          {:level :warning}
                 :docstring-blank               {:level :error}

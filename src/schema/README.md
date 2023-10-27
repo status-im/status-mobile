@@ -16,12 +16,12 @@ If you don't do this, the aliased var will not be instrumented.
 
 ```clojure
 ;; bad, view-internal is instrumented, but both aliases don't use a var quote.
-(utils.schema/=> view-internal ?schema)
+(schema.core/=> view-internal ?schema)
 (def view (quo.theme/with-theme view-internal))
 (def button quo.components.buttons.button.view/button)
 
 ;; good
-(utils.schema/=> view-internal ?schema)
+(schema.core/=> view-internal ?schema)
 (def view (quo.theme/with-theme #'view-internal))
 (def button #'quo.components.buttons.button.view/button)
 ```

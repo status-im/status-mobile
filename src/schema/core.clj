@@ -1,4 +1,4 @@
-(ns utils.schema)
+(ns schema.core)
 
 (defmacro =>
   "Same as `malli.core/-instrument`, but instrumentation code will be completely
@@ -16,5 +16,5 @@
   removed in non-debug environments."
   [schema-id ?schema f]
   `(if ^boolean js/goog.DEBUG
-     (utils.schema/-instrument ~schema-id ~?schema ~f)
+     (schema.core/-instrument ~schema-id ~?schema ~f)
      ~f))

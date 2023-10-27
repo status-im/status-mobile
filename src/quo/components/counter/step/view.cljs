@@ -4,8 +4,8 @@
     [quo.components.markdown.text :as text]
     quo.theme
     [react-native.core :as rn]
-    [utils.number]
-    utils.schema))
+    [schema.core :as schema]
+    [utils.number]))
 
 (def ?schema
   [:=>
@@ -41,6 +41,6 @@
       label]]))
 
 (def ^:private view-internal-instrumented
-  (utils.schema/instrument ::step ?schema #'view-internal))
+  (schema/instrument ::step ?schema #'view-internal))
 
 (def view (quo.theme/with-theme #'view-internal-instrumented))

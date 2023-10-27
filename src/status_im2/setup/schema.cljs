@@ -8,8 +8,8 @@
     malli.instrument
     malli.util
     schema.common
-    schema.registry
-    utils.schema))
+    [schema.core :as schema]
+    schema.registry))
 
 ;;;; Formatters
 ;; These formatters replace the original ones provided by Malli. They are more
@@ -92,5 +92,5 @@
   ;; call unstrument! manually.
   (malli.instrument/unstrument!)
 
-  (malli.dev/start! {:report (utils.schema/reporter)})
+  (malli.dev/start! {:report (schema/reporter)})
   (println "Schemas initialized."))

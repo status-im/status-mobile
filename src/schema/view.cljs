@@ -1,16 +1,13 @@
-(ns schema.ui
+(ns schema.view
   (:require
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
-
-(def schema-errors
-  (reagent/atom #{}))
+    schema.state))
 
 (defn view
   []
-  (let [on-press #(reset! schema-errors #{})]
+  (let [on-press #(reset! schema.state/errors #{})]
     (fn []
-      (when (seq @schema-errors)
+      (when (seq @schema.state/errors)
         [rn/pressable
          {:on-press on-press
           :style    {:position                  :absolute

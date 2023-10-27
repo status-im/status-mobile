@@ -1,17 +1,17 @@
-(ns utils.schema
-  (:require-macros utils.schema)
+(ns schema.core
+  (:require-macros schema.core)
   (:require
     [malli.core :as malli]
     [malli.dev.pretty :as malli.pretty]
-    schema.ui))
+    schema.state))
 
-(defn ui-reporter
+(defn- ui-reporter
   "Prints to STDOUT and signals a schema error should be displayed on screen."
   [schema-id printer]
   (let [report (malli.pretty/reporter printer)]
     (fn [type data]
       (report type data)
-      (swap! schema.ui/schema-errors conj schema-id))))
+      (swap! schema.state/errors conj schema-id))))
 
 (defn reporter
   "Build custom reporter.
@@ -40,7 +40,7 @@
   [schema-id validate-input f]
   (fn [& args]
     (when (validate-input args)
-      (swap! schema.ui/schema-errors disj schema-id))
+      (swap! schema.state/errors disj schema-id))
     (apply f args)))
 
 (defn -instrument
@@ -51,8 +51,8 @@
   We use a validator cached by `malli.core/validator`, so that validation is
   performed once.
 
-  Do not use this function directly, this is only used by the macro
-  `utils.schema/instrument`."
+  Do NOT use this function directly, this is only used by the macro
+  `schema.core/instrument`."
   [schema-id ?schema f]
   (let [?schema               (malli/schema ?schema)
         {schema-input :input} (malli/-function-info ?schema)
