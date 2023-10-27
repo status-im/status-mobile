@@ -36,15 +36,16 @@
            theme]} props state]
   (let [{:keys [chat-screen-loaded?]
          :as   subscriptions}    (utils/init-subs)
-        content-height           (reagent/atom (or (:input-content-height
+        content-height           (reagent/atom (or (:input-content-height ; Actual text height
                                                     subscriptions)
                                                    constants/input-height))
         {:keys [keyboard-shown]} (hooks/use-keyboard)
-        max-height               (utils/calc-max-height subscriptions
+        max-height               (utils/calc-max-height subscriptions ; Max allowed height for the composer view
                                                         window-height
                                                         @(:kb-height state)
                                                         insets)
-        lines                    (utils/calc-lines (- @content-height constants/extra-content-offset))
+        lines                    (utils/calc-lines (- @content-height constants/extra-content-offset)) ; Current lines count
+        ;; Maximum number of lines that can be displayed when composer in maximized
         max-lines                (utils/calc-lines max-height)
         animations               (utils/init-animations
                                   subscriptions
@@ -59,6 +60,7 @@
                                   :lines          lines
                                   :max-lines      max-lines}
         show-bottom-gradient?    (utils/show-bottom-gradient? state dimensions)
+        ;; Cursor position, needed to determine where to display the mentions view
         cursor-pos               (utils/cursor-y-position-relative-to-container
                                   props
                                   state)]
@@ -146,7 +148,7 @@
   (let [window-height (:height (rn/get-window))
         theme         (quo.theme/use-theme-value)
         opacity       (reanimated/use-shared-value 0)
-        background-y  (reanimated/use-shared-value (- window-height))
+        background-y  (reanimated/use-shared-value (- window-height)) ; Y position of background overlay
         blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
                                                       (:bottom insets)))
         extra-params  {:insets                            insets
@@ -157,10 +159,10 @@
                        :opacity                           opacity
                        :background-y                      background-y
                        :theme                             theme}
-        props         (utils/init-props)
-        state         (utils/init-state)]
+        props         (utils/init-props) ; Non-reactive state
+        state         (utils/init-state)] ; Reactive state
     [rn/view (when platform/ios? {:style {:z-index 1}})
-     [reanimated/view {:style (style/background opacity background-y window-height)}]
+     [reanimated/view {:style (style/background opacity background-y window-height)}] ; background overlay
      [sub-view/blur-view
       {:layout-height blur-height
        :focused?      (:focused? state)

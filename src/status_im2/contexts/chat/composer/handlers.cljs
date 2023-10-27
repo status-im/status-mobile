@@ -14,6 +14,7 @@
     [utils.re-frame :as rf]))
 
 (defn focus
+  "Animate to the `saved-height`, display background-overlay if needed, and set cursor position"
   [{:keys [input-ref] :as props}
    {:keys [text-value focused? lock-selection? saved-cursor-position]}
    {:keys [height saved-height last-height opacity background-y container-opacity]
@@ -36,6 +37,7 @@
   (reset! show-floating-scroll-down-button? false))
 
 (defn blur
+  "Save the current height, minimize the composer, animate-out the background, and save cursor position"
   [{:keys [text-value focused? lock-selection? cursor-position saved-cursor-position gradient-z-index
            maximized? recording?]}
    {:keys [height saved-height last-height gradient-opacity container-opacity opacity background-y]}
@@ -67,6 +69,7 @@
         (rf/dispatch [:chat.ui/set-input-maximized false])))))
 
 (defn content-size-change
+  "Save new text height, expand composer if possible, show background overlay if needed"
   [event
    {:keys [maximized? lock-layout? text-value]}
    {:keys [height saved-height opacity background-y]}
@@ -101,6 +104,7 @@
       (reset! lock-layout? (> lines 2)))))
 
 (defn scroll
+  "Hide or show top gradient while scroll"
   [event
    {:keys [scroll-y]}
    {:keys [gradient-z-index focused?]}
@@ -119,9 +123,7 @@
   [text
    {:keys [input-ref record-reset-fn]}
    {:keys [text-value cursor-position recording?]}]
-  (debounce/debounce-and-dispatch [:link-preview/unfurl-urls text]
-                                  constants/unfurl-debounce-ms)
-
+  "Update `text-value`, update cursor selection, find links, find mentions"
   (reset! text-value text)
   (reagent/next-tick #(when @input-ref
                         (.setNativeProps ^js @input-ref
@@ -131,6 +133,8 @@
     (@record-reset-fn)
     (reset! recording? false))
   (rf/dispatch [:chat.ui/set-chat-input-text text])
+  (debounce/debounce-and-dispatch [:link-preview/unfurl-urls text]
+                                  constants/unfurl-debounce-ms)
   (if (string/ends-with? text "@")
     (rf/dispatch [:mention/on-change-text text])
     (debounce/debounce-and-dispatch [:mention/on-change-text text] 300)))
@@ -139,6 +143,7 @@
   [event
    {:keys [input-ref selection-event selection-manager]}
    {:keys [lock-selection? cursor-position first-level? menu-items]}]
+  "A method that handles our custom selector for `B I U`"
   (let [start             (oops/oget event "nativeEvent.selection.start")
         end               (oops/oget event "nativeEvent.selection.end")
         selection?        (not= start end)

@@ -3,8 +3,12 @@
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.reanimated :as reanimated]
+<<<<<<< HEAD
     [status-im2.contexts.chat.composer.gradients.style :as style]
     [utils.re-frame :as rf]))
+=======
+    [status-im2.contexts.chat.composer.gradients.style :as style]))
+>>>>>>> 342b176fa (composer docs)
 
 (defn f-view
   [{:keys [input-ref]}

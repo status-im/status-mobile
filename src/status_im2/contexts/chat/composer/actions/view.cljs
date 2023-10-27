@@ -22,6 +22,7 @@
    window-height
    edit
    scroll-to-bottom-fn]
+  "Minimize composer, animate-out background overlay, clear input and flush state"
   (reanimated/animate height comp-constants/input-height)
   (reanimated/set-shared-value saved-height comp-constants/input-height)
   (reanimated/set-shared-value last-height comp-constants/input-height)
@@ -47,6 +48,7 @@
   (let [{:keys [text-value]} state
         customization-color  (rf/sub [:profile/customization-color])]
     (rn/use-effect (fn []
+                     ;; Handle send button opacity animation and z-index when input content changes
                      (if (or (seq @text-value) images?)
                        (when (or (not= @z-index 1) (not= (reanimated/get-shared-value btn-opacity) 1))
                          (reset! z-index 1)

@@ -25,6 +25,7 @@
    {:keys [text-value]}
    {:keys [height saved-height]}
    {:keys [max-height]}]
+  "Opening emoji KB on iOS while maximized will cause a flicker up and down. This method handles that."
   (let [start-h         (oops/oget event "startCoordinates.height")
         end-h           (oops/oget event "endCoordinates.height")
         diff            (- end-h start-h)
