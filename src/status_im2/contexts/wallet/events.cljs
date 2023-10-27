@@ -1,6 +1,7 @@
 (ns status-im2.contexts.wallet.events
   (:require
     [native-module.core :as native-module]
+    [status-im2.data-store.wallet :as data-store]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
@@ -51,3 +52,26 @@
                       (rf/dispatch [:wallet/add-account password account-details
                                     (first derived-adress-details)]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses password account-details on-success]]]})))
+
+(rf/defn get-ethereum-chains
+  {:events [:wallet/get-ethereum-chains]}
+  [{:keys [db]}]
+  {:fx [[:json-rpc/call
+         [{:method     "wallet_getEthereumChains"
+           :params     []
+           :on-success [:wallet/get-ethereum-chains-success]
+           :on-error   #(log/info "failed to get networks " %)}]]]})
+
+(rf/reg-event-fx
+ :wallet/get-ethereum-chains-success
+ (fn [{:keys [db]} [data]]
+   (let [network-data
+         {:test (map #(->> %
+                           :Test
+                           data-store/<-rpc)
+                     data)
+          :prod (map #(->> %
+                           :Prod
+                           data-store/<-rpc)
+                     data)}]
+     {:db (assoc db :wallet/networks network-data)})))
