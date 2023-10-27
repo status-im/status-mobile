@@ -37,7 +37,7 @@
      :size                        24
      :active                      (= :wallet-legacy share-qr-type)
      :on-press                    on-legacy-press}
-    "Legacy"]
+    (i18n/label :t/legacy)]
    [rn/view {:style style/space-between-tabs}]
    [tab/view
     {:accessibility-label         :share-qr-code-multichain-tab
@@ -47,7 +47,7 @@
      :size                        24
      :active                      (= :wallet-multichain share-qr-type)
      :on-press                    on-multichain-press}
-    "Multichain"]
+    (i18n/label :t/multichain)]
    [rn/pressable
     {:accessibility-label :share-qr-code-info-icon
      :style               style/info-icon
