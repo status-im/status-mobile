@@ -30,18 +30,19 @@
   {:db (assoc db :peer-stats peer-stats :peers-count (count (:peers peer-stats)))})
 
 (rf/defn handle-local-pairing-signals
-  [{:keys [db]} {:keys [type action data error] :as event}]
+  [{:keys [db]} {:keys [type action data error receiving-device?] :as event}]
   (log/info "local pairing signal received"
             {:event event})
   (let [{:keys [account password]}      data
         role                            (get-in db [:syncing :role])
-        receiver?                       (= role constants/local-pairing-role-receiver)
+        receiver?                       (or (= role constants/local-pairing-role-receiver)
+                                            receiving-device?)
         sender?                         (= role constants/local-pairing-role-sender)
         connection-success?             (and (= type
                                                 constants/local-pairing-event-connection-success)
                                              (= action
                                                 constants/local-pairing-action-connect))
-        error-on-pairing?               (contains? constants/local-pairing-event-errors type)
+        error-on-pairing?               (get constants/local-pairing-event-errors type :generic-error)
         completed-pairing?              (and (= type
                                                 constants/local-pairing-event-transfer-success)
                                              (= action

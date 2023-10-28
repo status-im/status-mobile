@@ -59,14 +59,16 @@
         default-node-config-string (.stringify js/JSON (clj->js default-node-config))
         callback
         (fn [final-node-config]
-          (let [config-map (.stringify js/JSON
-                                       (clj->js
-                                        {:receiverConfig {:kdfIterations config/default-kdf-iterations
-                                                          :nodeConfig final-node-config
-                                                          :settingCurrentNetwork config/default-network
-                                                          :deviceType platform/os
-                                                          :deviceName
-                                                          (native-module/get-installation-name)}}))]
+          (let [config-map      (.stringify js/JSON
+                                            (clj->js
+                                             {:receiverConfig
+                                              {:kdfIterations config/default-kdf-iterations
+                                               :nodeConfig final-node-config
+                                               :settingCurrentNetwork config/default-network
+                                               :deviceType platform/os
+                                               :deviceName
+                                               (native-module/get-installation-name)}}))
+                includes-error? #(string/includes? res "error")]
             (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
             (native-module/input-connection-string-for-bootstrapping
              connection-string
@@ -74,7 +76,9 @@
              (fn [res]
                (signals/handle-local-pairing-signals
                 cofx
-                nil)
+                {:error             (when (includes-error? res)
+                                      (str "generic-error: " res))
+                 :receiving-device? true})
                (log/info "Initiated local pairing"
                          {:response res
                           :event    :syncing/input-connection-string-for-bootstrapping})))))]
