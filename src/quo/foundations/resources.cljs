@@ -37,7 +37,7 @@
   [k]
   (get tokens k))
 
-(def networks
+(def ^:private networks
   {:arbitrum (js/require "../resources/images/networks/Arbitrum.png")
    :ethereum (js/require "../resources/images/networks/Ethereum.png")
    :gnosis   (js/require "../resources/images/networks/Gnosis.png")

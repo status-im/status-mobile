@@ -7,7 +7,7 @@
 (def empty-username "Account 1")
 
 (defn get-test-data
-  [type watch-only? empty-type? loading? metrics?]
+  [{:keys [type watch-only? empty-type? loading? no-metrics?]}]
   {:name                (if empty-type? empty-username username)
    :balance             "€1,000.00"
    :percentage-value    "50%"
@@ -15,17 +15,18 @@
    :customization-color :blue
    :watch-only?         watch-only?
    :loading?            loading?
-   :metrics?            metrics?
+   :metrics?            (not no-metrics?)
    :type                type})
 
 (h/describe "Account_card tests"
   (h/test "Renders Default"
-    (let [data (get-test-data :default false false false true)]
+    (let [data (get-test-data {:type :default})]
       (h/render [account-card/view data])
       (h/is-truthy (h/get-by-text username))))
 
   (h/test "Renders Watch-Only"
-    (let [data (get-test-data :watch-only true false false true)]
+    (let [data (get-test-data {:type        :watch-only
+                               :watch-only? true})]
       (h/render [account-card/view data])
       (h/is-truthy (h/get-by-text username))))
 
@@ -35,9 +36,15 @@
       (h/is-truthy (h/get-by-label-text :add-account))))
 
   (h/test "Renders Empty"
-    (let [data (get-test-data :empty false true false true)]
+    (let [data (get-test-data {:type        :empty
+                               :empty-type? true})]
       (h/render [account-card/view data])
       (h/is-truthy (h/get-by-text empty-username))))
+
+  (h/test "Renders Missing Keypair"
+    (let [data (get-test-data {:type :missing-keypair})]
+      (h/render [account-card/view data])
+      (h/is-truthy (h/get-by-text username))))
 
   (h/test "Add account on press fires correctly"
     (let [on-press (h/mock-fn)
@@ -48,16 +55,20 @@
       (h/was-called on-press)))
 
   (h/test "Renders component without metrics"
-    (let [data (get-test-data :default false false false false)]
+    (let [data (get-test-data {:type        :default
+                               :no-metrics? true})]
       (h/render [account-card/view data])
       (h/is-falsy (h/query-by-label-text :metrics))))
 
   (h/test "Renders loading state"
-    (let [data (get-test-data :default false false true true)]
+    (let [data (get-test-data {:type     :default
+                               :loading? true})]
       (h/render [account-card/view data])
       (h/is-truthy (h/get-by-label-text :loading))))
 
   (h/test "Renders loading state without metrics"
-    (let [data (get-test-data :default false false true false)]
+    (let [data (get-test-data {:type        :default
+                               :no-metrics? true
+                               :loading?    true})]
       (h/render [account-card/view data])
       (h/is-falsy (h/query-by-label-text :metrics)))))

@@ -433,6 +433,7 @@
     "decline": "Decline",
     "decryption-failed-content": "An error occured decrypting your data. You might need to erase your old data and generate a new account. Tap “Apply” to erase or “Cancel” to try again",
     "default": "Default",
+    "default-account-name": "Account {{number}}",
     "delete": "Delete",
     "delete-and-leave-group": "Delete and leave group",
     "delete-bootnode": "Delete bootnode",
@@ -1893,6 +1894,7 @@
     "select-token-to-swap": "Select token to Swap",
     "select-token-to-receive": "Select token to receive",
     "slide-to-reveal-code": "Slide to reveal code",
+    "slide-to-create-account": "Slide to create account",
     "minimum-received": "Minimum received",
     "powered-by-paraswap": "Powered by Paraswap",
     "priority": "Priority",
@@ -2126,6 +2128,7 @@
     "ensure-qr-code-in-focus-to-scan": "Ensure that the QR code is in focus to scan",
     "i-dont-have-status-on-another-device": "I don’t have Status on another device",
     "ensure-qr-code-is-in-focus-to-scan": "Ensure that the QR code is in focus to scan",
+    "ensure-both-devices-are-on-the-same-network": "Ensure both devices are on the same network",
     "error-this-is-not-a-sync-qr-code": "Oops! This is not a sync QR code",
     "error-syncing-connection-failed": "Oops! Connection failed. Try again",
     "camera-permission-denied": "Permission denied",
@@ -2360,5 +2363,6 @@
     "network-preferences": "Network preferences",
     "network-preferences-desc": "Select which network this address is happy to receive funds on",
     "layer-2": "Layer 2",
-    "manage-tokens": "Manage tokens"
+    "manage-tokens": "Manage tokens",
+    "sign transactions": "sign transactions"
 }

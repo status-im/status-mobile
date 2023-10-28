@@ -51,33 +51,35 @@
   (let [top          (safe-area/get-top)
         selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      [rn/view
-       {:style {:margin-top top
-                :flex       1}}
-       [common.top-nav/view]
-       [rn/view {:style style/overview-container}
-        [quo/wallet-overview temp/wallet-overview-state]]
-       [rn/pressable
-        {:on-long-press #(rf/dispatch [:show-bottom-sheet {:content temp/wallet-temporary-navigation}])}
-        [quo/wallet-graph {:time-frame :empty}]]
-       [rn/view {:style style/accounts-container}
-        [rn/flat-list
-         {:style      style/accounts-list
-          :data       account-cards
-          :horizontal true
-          :separator  [rn/view {:style {:width 12}}]
-          :render-fn  quo/account-card}]]
-       [quo/tabs
-        {:style          style/tabs
-         :size           32
-         :default-active @selected-tab
-         :data           tabs-data
-         :on-change      #(reset! selected-tab %)}]
-       (case @selected-tab
-         :assets       [rn/flat-list
-                        {:render-fn               token-value/view
-                         :data                    temp/tokens
-                         :key                     :assets-list
-                         :content-container-style {:padding-horizontal 8}}]
-         :collectibles [collectibles/view]
-         [activity/view])])))
+      (let [networks (rf/sub [:wallet/network-details])]
+        [rn/view
+         {:style {:margin-top top
+                  :flex       1}}
+         [common.top-nav/view]
+         [rn/view {:style style/overview-container}
+          [quo/wallet-overview (temp/wallet-overview-state networks)]]
+         [rn/pressable
+          {:on-long-press #(rf/dispatch [:show-bottom-sheet
+                                         {:content temp/wallet-temporary-navigation}])}
+          [quo/wallet-graph {:time-frame :empty}]]
+         [rn/view {:style style/accounts-container}
+          [rn/flat-list
+           {:style      style/accounts-list
+            :data       account-cards
+            :horizontal true
+            :separator  [rn/view {:style {:width 12}}]
+            :render-fn  quo/account-card}]]
+         [quo/tabs
+          {:style          style/tabs
+           :size           32
+           :default-active @selected-tab
+           :data           tabs-data
+           :on-change      #(reset! selected-tab %)}]
+         (case @selected-tab
+           :assets       [rn/flat-list
+                          {:render-fn               token-value/view
+                           :data                    temp/tokens
+                           :key                     :assets-list
+                           :content-container-style {:padding-horizontal 8}}]
+           :collectibles [collectibles/view]
+           [activity/view])]))))
