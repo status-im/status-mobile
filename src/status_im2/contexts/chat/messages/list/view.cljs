@@ -294,8 +294,12 @@
                    (not @big-name-visible?)
                    more-than-two-messages?
                    keyboard-shown?)
-                  (reset! animate-topbar-name? true)
-                  (reset! animate-topbar-name? false))))
+                  (do
+                    (reset! animate-topbar-opacity? true)
+                    (reset! animate-topbar-name? true))
+                  (do
+                    (reset! animate-topbar-name? false)
+                    (reset! animate-topbar-opacity? false)))))
     (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
 
 (defn f-messages-list-content
@@ -349,6 +353,9 @@
                                                                          scroll-y)
                                                   content-height-shared (reanimated/get-shared-value
                                                                          content-height)]
+                                              (when (and (not keyboard-shown?)
+                                                         (> content-height-shared 900))
+                                                (reset! animate-topbar-opacity? true))
                                               (when (or (= scroll-y-shared 0)
                                                         (> (Math/abs (- content-height-shared y))
                                                            min-message-height))

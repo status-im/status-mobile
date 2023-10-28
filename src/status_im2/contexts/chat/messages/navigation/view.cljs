@@ -35,7 +35,17 @@
         more-than-two-messages?      (<= 2 (count messages))]
     (rn/use-effect
      (fn []
-       (if @animate-topbar-opacity?
+       (if (or
+            (or (and more-than-two-messages?
+                     (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
+                     keyboard-shown?)
+                @animate-topbar-name?
+
+                (not @big-name-visible?)
+                (and (neg? (reanimated/get-shared-value scroll-y))
+                     more-than-two-messages?
+                     keyboard-shown?))
+            @animate-topbar-opacity?)
          (reanimated/animate opacity-animation 1)
          (reanimated/animate opacity-animation 0))
        (if (or (and more-than-two-messages?

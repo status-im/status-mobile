@@ -107,6 +107,6 @@
          :messages-view-height              (reagent/atom 0)
          :messages-view-header-height       (reagent/atom 0)
          :animate-topbar-name?              (reagent/atom false)
-         :big-name-visible?                 (reagent/atom false)
-         :animate-topbar-opacity?           (reagent/atom true)}]
+         :big-name-visible?                 (reagent/atom true)
+         :animate-topbar-opacity?           (reagent/atom false)}]
     [:f> f-chat inner-state-atoms]))
