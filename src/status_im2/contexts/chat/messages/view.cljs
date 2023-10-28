@@ -14,7 +14,8 @@
     [utils.re-frame :as rf]))
 
 (defn f-chat
-  [{:keys [extra-keyboard-height show-floating-scroll-down-button? animate-topbar-name?]
+  [{:keys [extra-keyboard-height show-floating-scroll-down-button? animate-topbar-name?
+           big-name-visible?]
     :as   inner-state-atoms}]
   (let [insets                                   (safe-area/get-insets)
         scroll-y                                 (reanimated/use-shared-value 0)
@@ -58,8 +59,8 @@
                                       (- (reanimated/get-shared-value scroll-y)
                                          @extra-keyboard-height))))
      [keyboard-shown keyboard-height])
-    ;; Note - Don't pass `behavior :height` to keyboard avoiding view,
-    ;; It breaks composer - https://github.com/status-im/status-mobile/issues/16595
+    ;; Note - Don't pass `behavior :height` to keyboard avoiding view,. It breaks composer -
+    ;; https://github.com/status-im/status-mobile/issues/16595
     [rn/keyboard-avoiding-view
      {:style                    (style/keyboard-avoiding-container insets)
       :keyboard-vertical-offset (- (:bottom insets))}
@@ -72,7 +73,8 @@
        :cover-bg-color       :turquoise
        :keyboard-shown?      keyboard-shown
        :inner-state-atoms    inner-state-atoms
-       :animate-topbar-name? animate-topbar-name?}]
+       :animate-topbar-name? animate-topbar-name?
+       :big-name-visible?    big-name-visible?}]
 
      [messages.navigation/navigation-view
       {:scroll-y             scroll-y
@@ -84,7 +86,8 @@
        :display-name         display-name
        :online?              online?
        :photo-path           photo-path
-       :keyboard-shown?      keyboard-shown}]
+       :keyboard-shown?      keyboard-shown
+       :big-name-visible?    big-name-visible?}]
 
      (when (seq chat)
        (if able-to-send-message?
@@ -101,5 +104,6 @@
          :show-floating-scroll-down-button? (reagent/atom false)
          :messages-view-height              (reagent/atom 0)
          :messages-view-header-height       (reagent/atom 0)
-         :animate-topbar-name?              (reagent/atom false)}]
+         :animate-topbar-name?              (reagent/atom false)
+         :big-name-visible?                 (reagent/atom false)}]
     [:f> f-chat inner-state-atoms]))

@@ -20,14 +20,9 @@
 
 (defn f-view
   [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
-           back-icon animate-topbar-name? keyboard-shown?]}]
+           back-icon animate-topbar-name? keyboard-shown? big-name-visible?]}]
   (let [{:keys [group-chat chat-id]} chat
-        opacity-animation            (reanimated/interpolate scroll-y
-                                                             [title-opacity-interpolation-start
-                                                              title-opacity-interpolation-end]
-                                                             [0 1]
-                                                             {:extrapolateLeft  "clamp"
-                                                              :extrapolateRight "extend"})
+        opacity-animation            (reanimated/use-shared-value 0)
         banner-opacity-animation     (reanimated/interpolate scroll-y
                                                              [(+ style/navigation-bar-height 150)
                                                               (+ style/navigation-bar-height 200)]
@@ -35,17 +30,27 @@
                                                              {:extrapolateLeft  "clamp"
                                                               :extrapolateRight "clamp"})
         translate-animation          (reanimated/use-shared-value title-opacity-interpolation-start)
-        title-opacity-animation      (reanimated/use-shared-value 0)]
-    (rn/use-effect (fn []
-                     (if (or (and keyboard-shown?
-                                  (neg? (reanimated/get-shared-value scroll-y)))
-                             @animate-topbar-name?)
-                       (do (reanimated/animate title-opacity-animation 1)
-                           (reanimated/animate opacity-animation 1)
-                           (reanimated/animate translate-animation 0))
-                       (do (reanimated/animate title-opacity-animation 0)
-                           (reanimated/animate translate-animation title-opacity-interpolation-start))))
-                   [@animate-topbar-name?])
+        title-opacity-animation      (reanimated/use-shared-value 0)
+        messages                     (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        more-than-two-messages?      (<= 2 (count messages))]
+    (rn/use-effect
+     (fn []
+       (if (or (and more-than-two-messages?
+                    (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
+                    keyboard-shown?)
+               @animate-topbar-name?
+               (not @big-name-visible?)
+               (and (neg? (reanimated/get-shared-value scroll-y))
+                    more-than-two-messages?
+                    keyboard-shown?))
+         (do
+           (reanimated/animate title-opacity-animation 1)
+           (reanimated/animate opacity-animation 1)
+           (reanimated/animate translate-animation 0))
+         (do (reanimated/animate title-opacity-animation 0)
+             (reanimated/animate opacity-animation 0)
+             (reanimated/animate translate-animation title-opacity-interpolation-start))))
+     [@animate-topbar-name? @big-name-visible? keyboard-shown?])
     [rn/view {:style (style/navigation-view chat-screen-loaded?)}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]
