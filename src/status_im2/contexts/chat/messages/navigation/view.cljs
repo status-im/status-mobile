@@ -20,7 +20,7 @@
 
 (defn f-view
   [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
-           back-icon animate-topbar-name? keyboard-shown? big-name-visible?]}]
+           back-icon animate-topbar-name? keyboard-shown? big-name-visible? animate-topbar-opacity?]}]
   (let [{:keys [group-chat chat-id]} chat
         opacity-animation            (reanimated/use-shared-value 0)
         banner-opacity-animation     (reanimated/interpolate scroll-y
@@ -35,6 +35,9 @@
         more-than-two-messages?      (<= 2 (count messages))]
     (rn/use-effect
      (fn []
+       (if @animate-topbar-opacity?
+         (reanimated/animate opacity-animation 1)
+         (reanimated/animate opacity-animation 0))
        (if (or (and more-than-two-messages?
                     (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
                     keyboard-shown?)
@@ -45,12 +48,11 @@
                     keyboard-shown?))
          (do
            (reanimated/animate title-opacity-animation 1)
-           (reanimated/animate opacity-animation 1)
            (reanimated/animate translate-animation 0))
-         (do (reanimated/animate title-opacity-animation 0)
-             (reanimated/animate opacity-animation 0)
-             (reanimated/animate translate-animation title-opacity-interpolation-start))))
-     [@animate-topbar-name? @big-name-visible? keyboard-shown?])
+         (do
+           (reanimated/animate title-opacity-animation 0)
+           (reanimated/animate translate-animation title-opacity-interpolation-start))))
+     [@animate-topbar-name? @big-name-visible? keyboard-shown? @animate-topbar-opacity?])
     [rn/view {:style (style/navigation-view chat-screen-loaded?)}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]

@@ -277,10 +277,17 @@
        [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
-  [event scroll-y animate-topbar-name? more-than-two-messages? big-name-visible? keyboard-shown? timeout]
+  [event scroll-y animate-topbar-name? more-than-two-messages? big-name-visible? keyboard-shown? timeout
+   animate-topbar-opacity?]
   (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y      (oops/oget event "nativeEvent.contentOffset.y")]
+
+    (if (< 50 (- content-size-y current-y))
+      (when-not @animate-topbar-opacity?
+        (reset! animate-topbar-opacity? true))
+      (when @animate-topbar-opacity?
+        (reset! animate-topbar-opacity? false)))
     (when-not timeout
       (timeout #(if
                   (and
@@ -293,7 +300,7 @@
 
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
-           animate-topbar-name? big-name-visible?]}]
+           animate-topbar-name? big-name-visible? animate-topbar-opacity?]}]
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
         {:keys [keyboard-height]}             (hooks/use-keyboard)
@@ -311,7 +318,6 @@
        :key-fn                            list-key-fn
        :ref                               list-ref
        :bounces                           false
-       :deceleration-rate                 "fast"
        :header                            [:<>
                                            [list-header insets (:able-to-send-message? context) theme]
                                            (when (= (:chat-type chat) constants/private-group-chat-type)
@@ -372,7 +378,8 @@
                                                               more-than-two-messages?
                                                               big-name-visible?
                                                               keyboard-shown?
-                                                              timeout))
+                                                              timeout
+                                                              animate-topbar-opacity?))
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
