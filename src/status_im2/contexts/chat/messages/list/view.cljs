@@ -283,7 +283,7 @@
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y      (oops/oget event "nativeEvent.contentOffset.y")]
 
-    (if (< 50 (- content-size-y current-y))
+    (if (< 90 (- content-size-y current-y))
       (when-not @animate-topbar-opacity?
         (reset! animate-topbar-opacity? true))
       (when @animate-topbar-opacity?
