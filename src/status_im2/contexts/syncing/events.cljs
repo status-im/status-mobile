@@ -6,6 +6,7 @@
     [react-native.platform :as platform]
     [status-im.data-store.settings :as data-store.settings]
     [status-im.node.core :as node]
+    [status-im.signals.core :as signals]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.syncing.utils :as sync-utils]
@@ -52,7 +53,7 @@
 (rf/defn initiate-local-pairing-with-connection-string
   {:events       [:syncing/input-connection-string-for-bootstrapping]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
-  [{:keys [random-guid-generator db]} connection-string]
+  [{:keys [random-guid-generator db] :as cofx} connection-string]
   (let [installation-id (random-guid-generator)
         default-node-config (get-default-node-config installation-id)
         default-node-config-string (.stringify js/JSON (clj->js default-node-config))
@@ -70,9 +71,13 @@
             (native-module/input-connection-string-for-bootstrapping
              connection-string
              config-map
-             #(log/info "Initiated local pairing"
-                        {:response %
-                         :event    :syncing/input-connection-string-for-bootstrapping}))))]
+             (fn [res]
+               (signals/handle-local-pairing-signals
+                cofx
+                nil)
+               (log/info "Initiated local pairing"
+                         {:response res
+                          :event    :syncing/input-connection-string-for-bootstrapping})))))]
     (native-module/prepare-dir-and-update-config "" default-node-config-string callback)))
 
 (rf/defn preparations-for-connection-string
