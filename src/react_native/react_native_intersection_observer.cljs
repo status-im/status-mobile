@@ -10,4 +10,3 @@
 (defn flat-list
   [props]
   [flat-list-comp (base-list-props props)])
-
