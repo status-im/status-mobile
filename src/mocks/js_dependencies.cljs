@@ -302,7 +302,7 @@
 
 (def react-native-intersection-observer
   #js
-   {:InView      #js {}
+   {:InView     #js {}
     :IOFlatList #js {}})
 
 (def react-native-languages
