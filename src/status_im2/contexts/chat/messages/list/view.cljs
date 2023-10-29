@@ -30,6 +30,8 @@
 (defonce ^:const content-height-with-two-messages 560)
 (defonce ^:const scroll-y-values-small-name-big-name-touching 100)
 (defonce ^:const scroll-y-middle-big-name 135)
+(defonce ^:const content-height-shared-big-name-invisible-value 900)
+(defonce ^:const topbar-visible-scroll-y-value 90)
 (defonce messages-list-ref (atom nil))
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
@@ -277,30 +279,30 @@
        [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
-  [event scroll-y animate-topbar-name? more-than-two-messages? big-name-visible? keyboard-shown? timeout
+  [event scroll-y animate-topbar-name? more-than-two-messages? big-name-visible? keyboard-shown?
    animate-topbar-opacity?]
   (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
-        current-y      (oops/oget event "nativeEvent.contentOffset.y")]
+        current-y      (oops/oget event "nativeEvent.contentOffset.y")
+        scroll-distance (- content-size-y current-y)]
 
-    (if (< 90 (- content-size-y current-y))
+    (if (< topbar-visible-scroll-y-value scroll-distance)
       (when-not @animate-topbar-opacity?
         (reset! animate-topbar-opacity? true))
       (when @animate-topbar-opacity?
         (reset! animate-topbar-opacity? false)))
-    (when-not timeout
-      (timeout #(if
-                  (and
-                   (not @big-name-visible?)
-                   more-than-two-messages?
-                   keyboard-shown?)
-                  (do
-                    (reset! animate-topbar-opacity? true)
-                    (reset! animate-topbar-name? true))
-                  (do
-                    (reset! animate-topbar-name? false)
-                    (reset! animate-topbar-opacity? false)))))
-    (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
+    (if
+     (and
+      (not @big-name-visible?)
+      more-than-two-messages?
+      keyboard-shown?)
+      (do
+        (reset! animate-topbar-opacity? true)
+        (reset! animate-topbar-name? true))
+      (do
+        (reset! animate-topbar-name? false)
+        (reset! animate-topbar-opacity? false)))
+    (reanimated/set-shared-value scroll-y scroll-distance)))
 
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
@@ -353,9 +355,12 @@
                                                                          scroll-y)
                                                   content-height-shared (reanimated/get-shared-value
                                                                          content-height)]
-                                              (when (and (not keyboard-shown?)
-                                                         (> content-height-shared 900))
-                                                (reset! animate-topbar-opacity? true))
+                                              (when (and (= :initial-render @big-name-visible?)
+                                                     (not keyboard-shown?)
+                                                     (> content-height-shared content-height-shared-big-name-invisible-value))
+                                                (prn @big-name-visible?)
+                                                (reset! animate-topbar-opacity? true)
+                                                (reset! animate-topbar-name? true))
                                               (when (or (= scroll-y-shared 0)
                                                         (> (Math/abs (- content-height-shared y))
                                                            min-message-height))
@@ -376,17 +381,14 @@
        :on-momentum-scroll-begin          state/start-scrolling
        :on-momentum-scroll-end            state/stop-scrolling
        :scroll-event-throttle             16
-       :on-scroll                         (fn [event]
-
-                                            (let [timeout #(js/setTimeout % 250)]
+       :on-scroll                         (fn [event] 
                                               (scroll-handler event
                                                               scroll-y
                                                               animate-topbar-name?
                                                               more-than-two-messages?
                                                               big-name-visible?
                                                               keyboard-shown?
-                                                              timeout
-                                                              animate-topbar-opacity?))
+                                                              animate-topbar-opacity?)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
