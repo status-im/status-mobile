@@ -27,11 +27,9 @@
 (defonce ^:const loading-indicator-page-loading-height 100)
 (defonce ^:const scroll-animation-input-range [0 50])
 (defonce ^:const min-message-height 32)
-(defonce ^:const content-height-with-two-messages 560)
-(defonce ^:const scroll-y-values-small-name-big-name-touching 100)
-(defonce ^:const scroll-y-middle-big-name 135)
 (defonce ^:const content-height-shared-big-name-invisible-value 900)
 (defonce ^:const topbar-visible-scroll-y-value 90)
+(defonce ^:const root-margin-for-big-name-visibility-detector {:bottom -35})
 (defonce messages-list-ref (atom nil))
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
@@ -230,10 +228,10 @@
              :online?         online?
              :profile-picture photo-path}])]
         [rnio/view
-         {:onChange (fn [view-visible?]
-                      (reset! big-name-visible? view-visible?))
-          :style    {:flex-direction :row
-                     :margin-top     (if group-chat 54 12)}}
+         {:on-change (fn [view-visible?]
+                       (reset! big-name-visible? view-visible?))
+          :style     {:flex-direction :row
+                      :margin-top     (if group-chat 54 12)}}
          [quo/text
           {:weight          :semi-bold
            :size            :heading-1
@@ -320,7 +318,7 @@
                 messages-view-header-height]} inner-state-atoms]
     [rn/view {:style {:flex 1}}
      [rnio/flat-list
-      {:rootMargin                        {:bottom -35}
+      {:root-margin                       root-margin-for-big-name-visibility-detector
        :key-fn                            list-key-fn
        :ref                               list-ref
        :bounces                           false
@@ -356,8 +354,8 @@
                                                   content-height-shared (reanimated/get-shared-value
                                                                          content-height)]
                                               (when (and (= :initial-render @big-name-visible?)
-                                                     (not keyboard-shown?)
-                                                     (> content-height-shared content-height-shared-big-name-invisible-value))
+                                                         (not keyboard-shown?)
+                                                         (> content-height-shared content-height-shared-big-name-invisible-value))
                                                 (prn @big-name-visible?)
                                                 (reset! animate-topbar-opacity? true)
                                                 (reset! animate-topbar-name? true))
@@ -381,14 +379,14 @@
        :on-momentum-scroll-begin          state/start-scrolling
        :on-momentum-scroll-end            state/stop-scrolling
        :scroll-event-throttle             16
-       :on-scroll                         (fn [event] 
-                                              (scroll-handler event
-                                                              scroll-y
-                                                              animate-topbar-name?
-                                                              more-than-two-messages?
-                                                              big-name-visible?
-                                                              keyboard-shown?
-                                                              animate-topbar-opacity?)
+       :on-scroll                         (fn [event]
+                                            (scroll-handler event
+                                                            scroll-y
+                                                            animate-topbar-name?
+                                                            more-than-two-messages?
+                                                            big-name-visible?
+                                                            keyboard-shown?
+                                                            animate-topbar-opacity?)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
