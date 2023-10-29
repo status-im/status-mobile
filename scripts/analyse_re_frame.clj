@@ -47,4 +47,8 @@
                                                 used-translation-keys)]
 
     (report-issues (map #(assoc % :reason "Missing Translation Key") missing-translations))
-    (run! #(println "Unused Translation Key:" %) unused-translation-keys)))
+    (run! #(println "Unused Translation Key:" %) unused-translation-keys)
+    (if (and (empty? missing-translations)
+             (empty? unused-translation-keys))
+      0
+      1)))
