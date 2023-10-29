@@ -1,4 +1,4 @@
-(ns analyse-re-frame
+(ns lint-translations
   (:require
    [clj-kondo.core :as kondo]
    [clojure.data.json :as json]
