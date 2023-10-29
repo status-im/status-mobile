@@ -279,9 +279,9 @@
 (defn scroll-handler
   [event scroll-y animate-topbar-name? more-than-two-messages? big-name-visible? keyboard-shown?
    animate-topbar-opacity?]
-  (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
-                          (oops/oget event "nativeEvent.layoutMeasurement.height"))
-        current-y      (oops/oget event "nativeEvent.contentOffset.y")
+  (let [content-size-y  (- (oops/oget event "nativeEvent.contentSize.height")
+                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
+        current-y       (oops/oget event "nativeEvent.contentOffset.y")
         scroll-distance (- content-size-y current-y)]
 
     (if (< topbar-visible-scroll-y-value scroll-distance)
@@ -290,10 +290,10 @@
       (when @animate-topbar-opacity?
         (reset! animate-topbar-opacity? false)))
     (if
-     (and
-      (not @big-name-visible?)
-      more-than-two-messages?
-      keyboard-shown?)
+      (and
+       (not @big-name-visible?)
+       more-than-two-messages?
+       keyboard-shown?)
       (do
         (reset! animate-topbar-opacity? true)
         (reset! animate-topbar-name? true))
@@ -353,10 +353,11 @@
                                                                          scroll-y)
                                                   content-height-shared (reanimated/get-shared-value
                                                                          content-height)]
-                                              (when (and (= :initial-render @big-name-visible?)
-                                                         (not keyboard-shown?)
-                                                         (> content-height-shared content-height-shared-big-name-invisible-value))
-                                                (prn @big-name-visible?)
+                                              (when (and
+                                                     (= :initial-render @big-name-visible?)
+                                                     (not keyboard-shown?)
+                                                     (> content-height-shared
+                                                        content-height-shared-big-name-invisible-value))
                                                 (reset! animate-topbar-opacity? true)
                                                 (reset! animate-topbar-name? true))
                                               (when (or (= scroll-y-shared 0)
