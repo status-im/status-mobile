@@ -13,7 +13,8 @@
 (defn view
   []
   (let [state (reagent/atom {:address  "0x0ah...78b"
-                             :networks [:ethereum :optimism]})]
+                             :networks [{:name :ethereum :short "eth"}
+                                        {:name :optimism :short "opt"}]})]
     (fn []
       [preview/preview-container
        {:state                 state

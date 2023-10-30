@@ -68,7 +68,9 @@
                                       :address temp/address}])
 =======
            {:custom-subtitle (fn [] [quo/address-text
-                                     {:networks [:ethereum :optimism :arbitrum]
+                                     {:networks [{:name :ethereum :short "eth"}
+                                                 {:name :optimism :short "opt"}
+                                                 {:name :arbitrum :short "arb1"}]
                                       :address  temp/address
 <<<<<<< HEAD
                                       :type     :long}])
