@@ -185,6 +185,7 @@
 (def regx-address #"^0x[a-fA-F0-9]{40}$")
 (def regx-address-contains #"(?i)0x[a-fA-F0-9]{40}")
 (def regx-starts-with-uuid #"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+(def regx-address-fragment #"^0x[a-fA-F0-9]{1,40}$")
 
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")

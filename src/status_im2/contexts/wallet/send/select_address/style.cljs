@@ -21,3 +21,8 @@
   {:justify-content :center
    :flex            1
    :margin-bottom   44})
+
+(def button
+  {:justify-self      :flex-end
+   :margin-bottom     46
+   :margin-horizontal 20})

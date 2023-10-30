@@ -4,7 +4,9 @@
     [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [react-native.background-timer :as background-timer]
     [status-im2.common.data-store.wallet :as data-store]
+    [status-im2.contexts.wallet.temp :as temp]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.re-frame :as rf]
@@ -39,7 +41,7 @@
 (rf/defn clean-scanned-address
   {:events [:wallet/clean-scanned-address]}
   [{:keys [db]}]
-  {:db (dissoc db :wallet/scanned-address)})
+  {:db (dissoc db :wallet/scanned-address :wallet/send-address)})
 
 (rf/reg-event-fx :wallet/create-derived-addresses
  (fn [{:keys [db]} [password {:keys [path]} on-success]]
@@ -155,3 +157,66 @@
          [:dispatch
           [:wallet/request-collectibles
            {:start-at-index start-at-index}]])]})))
+
+(rf/reg-event-fx :wallet/fetch-address-suggestions
+ (fn [{:keys [db]} [address]]
+   {:db (assoc db
+               :wallet/local-suggestions
+               (cond
+                 (= address
+                    (get-in
+                     temp/address-local-suggestion-saved-contact-address-mock
+                     [:accounts 0 :address]))
+                 [temp/address-local-suggestion-saved-contact-address-mock]
+                 (= address
+                    (get temp/address-local-suggestion-saved-address-mock
+                         :address))
+                 [temp/address-local-suggestion-saved-address-mock]
+                 :else (temp/find-matching-addresses address))
+               :wallet/valid-ens-or-address?
+               false)}))
+
+(rf/reg-event-fx :wallet/ens-validation-success
+ (fn [{:keys [db]} [ens]]
+   {:db (assoc db
+               :wallet/local-suggestions     (if (= ens
+                                                    (:ens temp/ens-local-suggestion-saved-address-mock))
+                                               [temp/ens-local-suggestion-saved-address-mock]
+                                               [temp/ens-local-suggestion-mock])
+               :wallet/valid-ens-or-address? true)}))
+
+(rf/reg-event-fx :wallet/address-validation-success
+ (fn [{:keys [db]} [_]]
+   {:db (assoc db :wallet/valid-ens-or-address? true)}))
+
+(rf/reg-event-fx :wallet/validate-address
+ (fn [{:keys [db]} [address]]
+   (let [current-timeout (get db :wallet/search-timeout)
+         timeout         (background-timer/set-timeout
+                          #(rf/dispatch [:wallet/address-validation-success address])
+                          2000)]
+     (background-timer/clear-timeout current-timeout)
+     {:db (assoc db
+                 :wallet/valid-ens-or-address? false
+                 :wallet/search-timeout        timeout)})))
+
+(rf/reg-event-fx :wallet/validate-ens
+ (fn [{:keys [db]} [ens]]
+   (let [current-timeout (get db :wallet/search-timeout)
+         timeout         (background-timer/set-timeout
+                          #(rf/dispatch [:wallet/ens-validation-success ens])
+                          2000)]
+     (background-timer/clear-timeout current-timeout)
+     {:db (assoc db
+                 :wallet/valid-ens-or-address? false
+                 :wallet/search-timeout        timeout)})))
+
+(rf/reg-event-fx :wallet/clean-local-suggestions
+ (fn [{:keys [db]}]
+   (let [current-timeout (get db :wallet/search-timeout)]
+     (background-timer/clear-timeout current-timeout)
+     {:db (assoc db :wallet/local-suggestions [] :wallet/valid-ens-or-address? false)})))
+
+(rf/reg-event-fx :wallet/select-send-address
+ (fn [{:keys [db]} [address]]
+   {:db (assoc db :wallet/send-address address)}))
