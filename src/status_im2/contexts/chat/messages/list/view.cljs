@@ -75,7 +75,8 @@
                     (reanimated/set-shared-value scroll-y
                                                  (+ (reanimated/get-shared-value scroll-y)
                                                     (* n 200))))]
-    (reset! big-name-visible? true)
+    (when platform/ios?
+      (reset! big-name-visible? true))
     (if @state/scrolling
       (rf/dispatch [:chat.ui/load-more-messages-for-current-chat on-loaded])
       (background-timer/set-timeout #(rf/dispatch [:chat.ui/load-more-messages-for-current-chat
