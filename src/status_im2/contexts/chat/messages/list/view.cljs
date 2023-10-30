@@ -326,7 +326,7 @@
         recording?                            (rf/sub [:chats/recording?])
         all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
         more-than-two-messages?               (<= 2 (count messages))
-        on-end-reached?                       (reagent/atom 0)
+        on-end-reached?                       (reagent/atom false)
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
@@ -373,7 +373,8 @@
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
-                                            (reset! on-end-reached? false)
+                                            (when-not (= :initial-render @big-name-visible?)
+                                              (reset! on-end-reached? false))
                                             ;; NOTE(alwx): here we set the initial value of
                                             ;; `scroll-y` which is needed because by default the
                                             ;; chat is scrolled to the bottom and no initial
