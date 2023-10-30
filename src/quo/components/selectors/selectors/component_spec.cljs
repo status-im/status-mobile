@@ -6,27 +6,27 @@
 
 (defn render-toggle
   ([]
-   (render-toggle {}))
+   (render-toggle {:type :toggle}))
   ([opts]
-   (h/render (reagent/as-element [selectors/toggle opts]))))
+   (h/render (reagent/as-element [selectors/view (assoc opts :type :toggle)]))))
 
 (defn render-checkbox
   ([]
-   (render-checkbox {}))
+   (render-checkbox {:type :checkbox}))
   ([opts]
-   (h/render (reagent/as-element [selectors/checkbox opts]))))
+   (h/render (reagent/as-element [selectors/view (assoc opts :type :checkbox)]))))
 
-(defn render-checkbox-prefill
+(defn render-filled-checkbox
   ([]
-   (render-checkbox-prefill {}))
+   (render-filled-checkbox {:type :filled-checkbox}))
   ([opts]
-   (h/render (reagent/as-element [selectors/checkbox-prefill opts]))))
+   (h/render (reagent/as-element [selectors/view (assoc opts :type :filled-checkbox)]))))
 
 (defn render-radio
   ([]
-   (render-radio {}))
+   (render-radio {:type :radio}))
   ([opts]
-   (h/render (reagent/as-element [selectors/radio opts]))))
+   (h/render (reagent/as-element [selectors/view (assoc opts :type :radio)]))))
 
 (h/test "default render of toggle component"
   (render-toggle)
@@ -58,12 +58,12 @@
     (h/fire-event :press (h/get-by-test-id "checkbox-component"))
     (h/was-called mock-fn)))
 
-(h/test "default render of checkbox-prefill component"
-  (render-checkbox-prefill)
-  (h/is-truthy (h/get-by-test-id "checkbox-prefill-component")))
+(h/test "default render of filled-checkbox component"
+  (render-filled-checkbox)
+  (h/is-truthy (h/get-by-test-id "filled-checkbox-component")))
 
-(h/test "checkbox-prefill component on change is working"
+(h/test "filled-checkbox component on change is working"
   (let [mock-fn (h/mock-fn)]
-    (render-checkbox-prefill {:on-change mock-fn})
-    (h/fire-event :press (h/get-by-test-id "checkbox-prefill-component"))
+    (render-filled-checkbox {:on-change mock-fn})
+    (h/fire-event :press (h/get-by-test-id "filled-checkbox-component"))
     (h/was-called mock-fn)))

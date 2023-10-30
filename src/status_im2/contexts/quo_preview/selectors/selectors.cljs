@@ -11,13 +11,14 @@
    (preview/customization-color-option)])
 
 (defn selector-preview
-  [text component {:keys [disabled? blur? customization-color]}]
+  [text type {:keys [disabled? blur? customization-color]}]
   [rn/view
    {:style {:margin      6
             :align-items :center}}
    [quo/text {:size :paragraph-1} text]
-   [component
-    {:container-style     {:margin 4}
+   [quo/selectors
+    {:type                type
+     :container-style     {:margin 4}
      :disabled?           disabled?
      :blur?               blur?
      :customization-color customization-color}]])
@@ -34,7 +35,7 @@
         :blur?                 (:blur? @state)
         :show-blur-background? true
         :blur-height           300}
-       [selector-preview "Toggle" quo/toggle @state]
-       [selector-preview "Radio" quo/radio @state]
-       [selector-preview "Checkbox" quo/checkbox @state]
-       [selector-preview "Checkbox Prefill" quo/checkbox-prefill @state]])))
+       [selector-preview "Toggle" :toggle @state]
+       [selector-preview "Radio" :radio @state]
+       [selector-preview "Checkbox" :checkbox @state]
+       [selector-preview "Filled Checkbox" :filled-checkbox @state]])))
