@@ -62,7 +62,7 @@
     (fn []
       (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
             account         (rf/sub [:wallet/account account-address])
-            networks (rf/sub [:wallet/network-details])]
+            networks        (rf/sub [:wallet/network-details])]
         [rn/view {:style style/container}
          [quo/page-nav
           {:type              :wallet-networks
