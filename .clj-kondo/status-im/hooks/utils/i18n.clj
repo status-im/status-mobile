@@ -1,9 +1,9 @@
-(ns hooks.core
+(ns hooks.utils.i18n
   (:require [clj-kondo.hooks-api :as api]))
 
-(defn i18n-label
-  "Verify call to `i18n/label` pass the translation keyword qualified with `t`.
-   Returns the node with the keyword marked as a definition and `i18n/label` as
+(defn label
+  "Verify call to `utils.i18n/label` pass the translation keyword qualified with `t`.
+   Returns the node with the keyword marked as a definition and `utils.i18n/label` as
    the function that registered it."
   [{:keys [node] :as expr}]
   (let [[f translation-key-node & remainder] (:children node)
@@ -20,15 +20,15 @@
 
 (comment
   ;; Valid
-  (i18n-label {:node (api/parse-string "(i18n/label :t/foo
+  (label {:node (api/parse-string "(i18n/label :t/foo
                                                     {:var \"hello\"}) )")
-               :cljc false
-               :lang :cljs
-               :filename ""
-               :config {}
-               :ns ""
-               :context nil})
+          :cljc false
+          :lang :cljs
+          :filename ""
+          :config {}
+          :ns ""
+          :context nil})
 
   ;; Invalid
-  (i18n-label {:node (api/parse-string "(i18n/label :foo)")})
+  (label {:node (api/parse-string "(i18n/label :foo)")})
   )

@@ -12,7 +12,7 @@
    {:lint paths
     :config
     {:output {:analysis {:keywords true}}
-     :hooks  {:analyze-call '{utils.i18n/label hooks.core/i18n-label}}}}))
+     :hooks  {:analyze-call '{utils.i18n/label hooks.utils.i18n/label}}}}))
 
 (defn- filter-on-usage [syms]
   (fn [analysis-keywords]
