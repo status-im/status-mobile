@@ -10,7 +10,6 @@
     [react-native.platform :as platform]
     [react-native.react-native-intersection-observer :as rnio]
     [react-native.reanimated :as reanimated]
-    [reagent.core :as reagent]
     [status-im.ui.screens.chat.group :as chat.group]
     [status-im.ui.screens.chat.message.gap :as message.gap]
     [status-im2.constants :as constants]
@@ -30,7 +29,10 @@
 (defonce ^:const min-message-height 32)
 (defonce ^:const content-height-shared-big-name-invisible-value 900)
 (defonce ^:const topbar-visible-scroll-y-value 100)
-(defonce ^:const root-margin-for-big-name-visibility-detector {:bottom -35})
+(defonce ^:const topbar-invisible-scroll-y-value 135)
+(defn- root-margin-for-big-name-visibility-detector
+  [composer-active?]
+  {:bottom (if composer-active? -80 -35)})
 (defonce messages-list-ref (atom nil))
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
@@ -317,7 +319,8 @@
 
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
-           animate-topbar-name? big-name-visible? animate-topbar-opacity? composer-active?]}]
+           animate-topbar-name? big-name-visible? animate-topbar-opacity? composer-active?
+           on-end-reached?]}]
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
         {:keys [keyboard-height]}             (hooks/use-keyboard)
@@ -326,11 +329,15 @@
         recording?                            (rf/sub [:chats/recording?])
         all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
         more-than-two-messages?               (<= 2 (count messages))
-        on-end-reached?                       (reagent/atom false)
+        small-name-visible-threshold?         (> topbar-invisible-scroll-y-value
+                                                 (reanimated/get-shared-value scroll-y))
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
     (rn/use-effect (fn []
+                     (when (and composer-active?
+                                small-name-visible-threshold?)
+                       (reset! big-name-visible? true))
                      (if (and
                           more-than-two-messages?
                           (and (not @big-name-visible?)
@@ -341,10 +348,10 @@
                        (do
                          (reset! animate-topbar-opacity? false)
                          (reset! animate-topbar-name? false))))
-                   [composer-active? @big-name-visible?])
+                   [composer-active? @big-name-visible? @on-end-reached? small-name-visible-threshold?])
     [rn/view {:style {:flex 1}}
      [rnio/flat-list
-      {:root-margin                       root-margin-for-big-name-visibility-detector
+      {:root-margin                       (root-margin-for-big-name-visibility-detector composer-active?)
        :key-fn                            list-key-fn
        :ref                               list-ref
        :bounces                           false
@@ -371,7 +378,9 @@
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
-                                            (when-not (= :initial-render @big-name-visible?)
+                                            (when-not (or
+                                                       (not @big-name-visible?)
+                                                       (= :initial-render @big-name-visible?))
                                               (reset! on-end-reached? false))
                                             ;; NOTE(alwx): here we set the initial value of
                                             ;; `scroll-y` which is needed because by default the

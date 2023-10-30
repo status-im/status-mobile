@@ -15,7 +15,7 @@
 
 (defn f-chat
   [{:keys [extra-keyboard-height show-floating-scroll-down-button? animate-topbar-name?
-           big-name-visible? animate-topbar-opacity?]
+           big-name-visible? animate-topbar-opacity? on-end-reached?]
     :as   inner-state-atoms}]
   (let [insets                                   (safe-area/get-insets)
         scroll-y                                 (reanimated/use-shared-value 0)
@@ -77,7 +77,8 @@
        :animate-topbar-name?    animate-topbar-name?
        :big-name-visible?       big-name-visible?
        :animate-topbar-opacity? animate-topbar-opacity?
-       :composer-active?        focused?}]
+       :composer-active?        focused?
+       :on-end-reached?         on-end-reached?}]
 
      [messages.navigation/navigation-view
       {:scroll-y                scroll-y
@@ -91,7 +92,8 @@
        :photo-path              photo-path
        :big-name-visible?       big-name-visible?
        :animate-topbar-opacity? animate-topbar-opacity?
-       :composer-active?        focused?}]
+       :composer-active?        focused?
+       :on-end-reached?         on-end-reached?}]
 
      (when (seq chat)
        (if able-to-send-message?
@@ -110,5 +112,6 @@
          :messages-view-header-height       (reagent/atom 0)
          :animate-topbar-name?              (reagent/atom false)
          :big-name-visible?                 (reagent/atom :initial-render)
-         :animate-topbar-opacity?           (reagent/atom false)}]
+         :animate-topbar-opacity?           (reagent/atom false)
+         :on-end-reached?                   (reagent/atom false)}]
     [:f> f-chat inner-state-atoms]))
