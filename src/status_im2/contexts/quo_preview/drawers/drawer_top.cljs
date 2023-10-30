@@ -45,7 +45,7 @@
                   :type                 :default
                   :label                "Drawer label"
                   :keycard?             true
-                  :networks             [:ethereum]
+                  :networks             [{:name :ethereum :short-name "eth"}]
                   :description          "0x62b...0a5"
                   :button-icon          :i/placeholder
                   :community-name       "Coinbase"

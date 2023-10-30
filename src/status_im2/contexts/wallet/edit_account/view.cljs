@@ -39,7 +39,12 @@
          :right-icon      :i/advanced
          :card?           true
          :title           (i18n/label :t/address)
-         :subtitle        account-address
+         :custom-subtitle (fn [] [quo/address-text
+                                  {:networks [{:name :ethereum :short-name "eth"}
+                                              {:name :optimism :short-name "opt"}
+                                              {:name :arbitrum :short-name "arb1"}]
+                                   :address  account-address
+                                   :format   :long}])
          :on-press        (fn []
                             (rf/dispatch [:show-bottom-sheet
                                           {:content (fn [] [network-preferences/view

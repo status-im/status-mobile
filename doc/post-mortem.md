@@ -13,7 +13,7 @@ QA process was focused on account creation and login with keycard, and this bug 
 
 ## Resolution process
 
-- the commit was reverted locally by the developer which fixed the issue localy and confirmed the faulty commit
+- the commit was reverted locally by the developer which fixed the issue locally and confirmed the faulty commit
 - the bug was only reproducible on iOS which strongly hinted at a potential issue with native code
 - the missing method was not the origin of the problem but was found at this point and further analysis lead to the shadowing error
 
