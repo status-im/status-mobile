@@ -60,8 +60,8 @@
   (let [accounts     (rf/sub [:profile/wallet-accounts])
         top          (safe-area/get-top)
         selected-tab (reagent/atom (:id (first tabs-data)))
-        loading?     (rf/sub [:wallet-2/tokens-loading?])
-        balances     (rf/sub [:wallet-2/balances])
+        loading?     (rf/sub [:wallet/tokens-loading?])
+        balances     (rf/sub [:wallet/balances])
         profile      (rf/sub [:profile/profile])]
     [rn/view
      {:style {:margin-top top
@@ -98,6 +98,6 @@
 
 (defn view
   []
-  (rf/dispatch [:wallet-2/get-wallet-token])
+  (rf/dispatch [:wallet/get-wallet-token])
   (fn []
     [view-internal]))

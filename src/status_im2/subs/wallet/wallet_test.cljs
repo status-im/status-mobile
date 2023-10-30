@@ -1,4 +1,4 @@
-(ns status-im2.subs.wallet-2.wallet-test
+(ns status-im2.subs.wallet.wallet-test
   (:require [cljs.test :refer [is testing]]
             [re-frame.db :as rf-db]
             status-im2.subs.root
@@ -53,12 +53,12 @@
     :hidden  false
     :removed false}])
 
-(h/deftest-sub :wallet-2/balances
+(h/deftest-sub :wallet/balances
   [sub-name]
   (testing "returns vector of maps containing :address and :balance"
     (swap! rf-db/app-db assoc
       :profile/wallet-accounts accounts
-      :wallet-2/tokens         tokens)
+      :wallet/tokens         tokens)
     (is (= [{:address "0x1"
              :balance 3250}
             {:address "0x2"

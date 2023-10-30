@@ -69,7 +69,7 @@
         selected-tab    (reagent/atom (:id (first tabs-data)))]
     (fn []
       (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
-            account         (rf/sub [:wallet-2/account account-address])]
+            account         (rf/sub [:wallet/account account-address])]
         [rn/view
          {:style {:flex       1
                   :margin-top top}}
