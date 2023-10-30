@@ -1,26 +1,27 @@
 (ns status-im2.contexts.chat.messages.list.view
   (:require
-    [oops.core :as oops]
-    [quo.core :as quo]
-    [quo.foundations.colors :as colors]
-    [quo.theme :as quo.theme]
-    [react-native.background-timer :as background-timer]
-    [react-native.core :as rn]
-    [react-native.hooks :as hooks]
-    [react-native.platform :as platform]
-    [react-native.react-native-intersection-observer :as rnio]
-    [react-native.reanimated :as reanimated]
-    [status-im.ui.screens.chat.group :as chat.group]
-    [status-im.ui.screens.chat.message.gap :as message.gap]
-    [status-im2.constants :as constants]
-    [status-im2.contexts.chat.composer.constants :as composer.constants]
-    [status-im2.contexts.chat.messages.content.view :as message]
-    [status-im2.contexts.chat.messages.list.state :as state]
-    [status-im2.contexts.chat.messages.list.style :as style]
-    [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
-    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+   [oops.core :as oops]
+   [quo.core :as quo]
+   [quo.foundations.colors :as colors]
+   [quo.theme :as quo.theme]
+   [react-native.background-timer :as background-timer]
+   [react-native.core :as rn]
+   [react-native.hooks :as hooks]
+   [react-native.platform :as platform]
+   [react-native.react-native-intersection-observer :as rnio]
+   [react-native.reanimated :as reanimated]
+   [reagent.core :as reagent]
+   [status-im.ui.screens.chat.group :as chat.group]
+   [status-im.ui.screens.chat.message.gap :as message.gap]
+   [status-im2.constants :as constants]
+   [status-im2.contexts.chat.composer.constants :as composer.constants]
+   [status-im2.contexts.chat.messages.content.view :as message]
+   [status-im2.contexts.chat.messages.list.state :as state]
+   [status-im2.contexts.chat.messages.list.style :as style]
+   [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
+   [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
+   [utils.i18n :as i18n]
+   [utils.re-frame :as rf]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -68,15 +69,14 @@
             first-not-visible))))))
 
 (defn list-on-end-reached
-  [scroll-y big-name-visible?]
+  [scroll-y on-end-reached?]
   ;; FIXME: that's a bit of a hack but we need to update `scroll-y` once the new messages
   ;; are fetched in order for the header to work properly
   (let [on-loaded (fn [n]
                     (reanimated/set-shared-value scroll-y
                                                  (+ (reanimated/get-shared-value scroll-y)
                                                     (* n 200))))]
-    (when platform/ios?
-      (reset! big-name-visible? true))
+    (reset! on-end-reached? true)
     (if @state/scrolling
       (rf/dispatch [:chat.ui/load-more-messages-for-current-chat on-loaded])
       (background-timer/set-timeout #(rf/dispatch [:chat.ui/load-more-messages-for-current-chat
@@ -318,14 +318,15 @@
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
            animate-topbar-name? big-name-visible? animate-topbar-opacity? composer-active?]}]
-  (let [theme                                 (quo.theme/use-theme-value)
-        {window-height :height}               (rn/get-window)
-        {:keys [keyboard-height]}             (hooks/use-keyboard)
-        context                               (rf/sub [:chats/current-chat-message-list-view-context])
-        messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
-        recording?                            (rf/sub [:chats/recording?])
-        all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
-        more-than-two-messages?               (<= 2 (count messages))
+  (let [theme                                                                                        (quo.theme/use-theme-value)
+        {window-height :height}                                                                      (rn/get-window)
+        {:keys [keyboard-height]}                                                                    (hooks/use-keyboard)
+        context                                                                                      (rf/sub [:chats/current-chat-message-list-view-context])
+        messages                                                                                     (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        recording?                                                                                   (rf/sub [:chats/recording?])
+        all-loaded?                                                                                  (rf/sub [:chats/all-loaded? (:chat-id chat)])
+        on-end-reached?                                                                              (reagent/atom false)
+        more-than-two-messages?                                                                      (<= 2 (count messages))
 
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
@@ -343,7 +344,7 @@
                          (reset! big-name-visible? true)
                          (reset! animate-topbar-opacity? false)
                          (reset! animate-topbar-name? false))))
-                   [composer-active? @big-name-visible?])
+                   [composer-active? @big-name-visible? @on-end-reached?])
     [rn/view {:style {:flex 1}}
      [rnio/flat-list
       {:root-margin                       root-margin-for-big-name-visibility-detector
@@ -390,7 +391,7 @@
                                                                                 (- (when keyboard-shown?
                                                                                      keyboard-height))))
                                                 (reanimated/set-shared-value content-height y))))
-       :on-end-reached                    #(list-on-end-reached scroll-y big-name-visible?)
+       :on-end-reached                    #(list-on-end-reached scroll-y on-end-reached?)
        :on-scroll-to-index-failed         identity
        :scroll-indicator-insets           {:top (if (:able-to-send-message? context)
                                                   (- composer.constants/composer-default-height 16)
