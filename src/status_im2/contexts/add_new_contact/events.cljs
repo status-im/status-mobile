@@ -175,8 +175,11 @@
   (let [contact (get-in db [:contacts/new-identity])]
     (when (= (:input contact) input)
       (let [state (cond
-                    (or (string/includes? (:message err) "fallback failed")
-                        (string/includes? (:message err) "no such host"))
+                    (and (string? err) (string/includes? err "invalid public key"))
+                    {:state :invalid :msg :t/not-a-chatkey}
+                    (and (string? (:message err))
+                         (or (string/includes? (:message err) "fallback failed")
+                             (string/includes? (:message err) "no such host")))
                     {:state :invalid :msg :t/lost-connection}
                     :else {:state :invalid})]
         {:db (assoc db :contacts/new-identity (merge contact state))}))))
