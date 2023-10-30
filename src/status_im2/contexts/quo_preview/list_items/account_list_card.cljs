@@ -20,7 +20,8 @@
                                                 :type                :default
                                                 :name                "Trip to Vegas"
                                                 :address             "0x0ah...78b"}
-                             :networks         [:ethereum :optimism]
+                             :networks         [{:name :ethereum :short-name "eth"}
+                                                {:name :optimism :short-name "opt"}]
                              :action           :none
                              :on-press         (fn [] (js/alert "Item pressed"))
                              :on-options-press (fn [] (js/alert "Options pressed"))
