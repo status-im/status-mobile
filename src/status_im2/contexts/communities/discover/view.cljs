@@ -6,7 +6,6 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
-    [status-im.ui.components.react :as react]
     [status-im2.common.scroll-page.view :as scroll-page]
     [status-im2.contexts.communities.actions.community-options.view :as options]
     [status-im2.contexts.communities.discover.style :as style]
@@ -117,7 +116,7 @@
            featured-communities
            view-type
            selected-tab]}]
-  [react/animated-view
+  [rn/view
    [screen-title]
    (when (pos? featured-communities-count)
      [:<>
