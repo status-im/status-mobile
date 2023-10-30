@@ -24,8 +24,8 @@
                          (if (= format :short)
                            (utils/get-short-wallet-address address)
                            address)]]
-    (as-> networks $ ;; Take vector of networks
-      (into [text/text] network-text-xf $) ;; make colored text and inserts them into [text/text]
-      (conj $ address-text)))) ;; Add address-text hiccup at the end
+    (as-> networks $
+      (into [text/text] network-text-xf $)
+      (conj $ address-text))))
 
 (def view (quo.theme/with-theme view-internal))
