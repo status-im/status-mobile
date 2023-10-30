@@ -63,13 +63,14 @@
           selected-tab (reagent/atom (:id (first tabs-data)))
           loading?     (rf/sub [:wallet/tokens-loading?])
           balances     (rf/sub [:wallet/balances])
-          profile      (rf/sub [:profile/profile])]
+          profile      (rf/sub [:profile/profile])
+          networks     (rf/sub [:wallet/network-details])]
       [rn/view
        {:style {:margin-top top
                 :flex       1}}
        [common.top-nav/view]
        [rn/view {:style style/overview-container}
-        [quo/wallet-overview temp/wallet-overview-state]]
+        [quo/wallet-overview (temp/wallet-overview-state networks)]]
        [rn/pressable
         {:on-long-press #(rf/dispatch [:show-bottom-sheet {:content temp/wallet-temporary-navigation}])}
         [quo/wallet-graph {:time-frame :empty}]]
