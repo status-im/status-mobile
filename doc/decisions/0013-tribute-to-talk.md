@@ -18,7 +18,7 @@ The whitepaper also proposes that the deposit is only forfeited to the recipient
 
 Considering:
 - the absence of efficient ways to perform anonymous transactions (zk-snarks could be used in the future for that)
-- the impossibility to prove that a recipient has made an actual reply and not some kind of automated reply (captcha solution was proposed, but wouldn't be pratical until we can use a solution such as swarm feeds that allow users to make free updates to their captcha without on-chain transactions)
+- the impossibility to prove that a recipient has made an actual reply and not some kind of automated reply (captcha solution was proposed, but wouldn't be practical until we can use a solution such as swarm feeds that allow users to make free updates to their captcha without on-chain transactions)
 - the limited time to develop the feature
 
 We opted for a solution that:
@@ -28,8 +28,8 @@ We opted for a solution that:
 
 ## Manifests
 
-Since TtT related informations aren't stored on chain, they need to be stored somewhere else.
-For the first iteration of TtT we opted for IPFS, which is already used accross the app for other forms of content, through Infura IPFS gateway.
+Since TtT related information aren't stored on chain, they need to be stored somewhere else.
+For the first iteration of TtT we opted for IPFS, which is already used across the app for other forms of content, through Infura IPFS gateway.
 
 On IPFS we store what we call a ttt manifest, which is a json file with the following format:
 
