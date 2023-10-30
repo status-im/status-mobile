@@ -28,7 +28,7 @@
 (defonce ^:const scroll-animation-input-range [0 50])
 (defonce ^:const min-message-height 32)
 (defonce ^:const content-height-shared-big-name-invisible-value 900)
-(defonce ^:const topbar-visible-scroll-y-value 90)
+(defonce ^:const topbar-visible-scroll-y-value 100)
 (defonce ^:const root-margin-for-big-name-visibility-detector {:bottom -35})
 (defonce messages-list-ref (atom nil))
 
@@ -68,13 +68,14 @@
             first-not-visible))))))
 
 (defn list-on-end-reached
-  [scroll-y]
+  [scroll-y big-name-visible?]
   ;; FIXME: that's a bit of a hack but we need to update `scroll-y` once the new messages
   ;; are fetched in order for the header to work properly
   (let [on-loaded (fn [n]
                     (reanimated/set-shared-value scroll-y
                                                  (+ (reanimated/get-shared-value scroll-y)
                                                     (* n 200))))]
+    (reset! big-name-visible? true)
     (if @state/scrolling
       (rf/dispatch [:chat.ui/load-more-messages-for-current-chat on-loaded])
       (background-timer/set-timeout #(rf/dispatch [:chat.ui/load-more-messages-for-current-chat
@@ -277,12 +278,21 @@
        [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
-  [event scroll-y animate-topbar-name? more-than-two-messages? big-name-visible? keyboard-shown?
-   animate-topbar-opacity?]
+  [event scroll-y animate-topbar-name? more-than-two-messages? big-name-visible? composer-active?
+   animate-topbar-opacity? content-height]
   (let [content-size-y  (- (oops/oget event "nativeEvent.contentSize.height")
                            (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y       (oops/oget event "nativeEvent.contentOffset.y")
         scroll-distance (- content-size-y current-y)]
+
+    (when (and
+           (not composer-active?)
+           (= :initial-render @big-name-visible?)
+           (> (reanimated/get-shared-value
+               content-height)
+              content-height-shared-big-name-invisible-value))
+      (reset! animate-topbar-opacity? true)
+      (reset! animate-topbar-name? true))
 
     (if (< topbar-visible-scroll-y-value scroll-distance)
       (when-not @animate-topbar-opacity?
@@ -291,9 +301,9 @@
         (reset! animate-topbar-opacity? false)))
     (if
       (and
-       (not @big-name-visible?)
        more-than-two-messages?
-       keyboard-shown?)
+       composer-active?
+       (not @big-name-visible?))
       (do
         (reset! animate-topbar-opacity? true)
         (reset! animate-topbar-name? true))
@@ -304,7 +314,7 @@
 
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
-           animate-topbar-name? big-name-visible? animate-topbar-opacity?]}]
+           animate-topbar-name? big-name-visible? animate-topbar-opacity? composer-active?]}]
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
         {:keys [keyboard-height]}             (hooks/use-keyboard)
@@ -313,9 +323,24 @@
         recording?                            (rf/sub [:chats/recording?])
         all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
         more-than-two-messages?               (<= 2 (count messages))
+
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
+    (rn/use-effect (fn []
+                     (if (and
+                          more-than-two-messages?
+                          (or (not @big-name-visible?)
+                              (= :initial-render @big-name-visible?)))
+                       (do
+                         (reset! big-name-visible? false)
+                         (reset! animate-topbar-opacity? true)
+                         (reset! animate-topbar-name? true))
+                       (do
+                         (reset! big-name-visible? true)
+                         (reset! animate-topbar-opacity? false)
+                         (reset! animate-topbar-name? false))))
+                   [composer-active? @big-name-visible?])
     [rn/view {:style {:flex 1}}
      [rnio/flat-list
       {:root-margin                       root-margin-for-big-name-visibility-detector
@@ -353,13 +378,6 @@
                                                                          scroll-y)
                                                   content-height-shared (reanimated/get-shared-value
                                                                          content-height)]
-                                              (when (and
-                                                     (= :initial-render @big-name-visible?)
-                                                     (not keyboard-shown?)
-                                                     (> content-height-shared
-                                                        content-height-shared-big-name-invisible-value))
-                                                (reset! animate-topbar-opacity? true)
-                                                (reset! animate-topbar-name? true))
                                               (when (or (= scroll-y-shared 0)
                                                         (> (Math/abs (- content-height-shared y))
                                                            min-message-height))
@@ -369,7 +387,7 @@
                                                                                 (- (when keyboard-shown?
                                                                                      keyboard-height))))
                                                 (reanimated/set-shared-value content-height y))))
-       :on-end-reached                    #(list-on-end-reached scroll-y)
+       :on-end-reached                    #(list-on-end-reached scroll-y big-name-visible?)
        :on-scroll-to-index-failed         identity
        :scroll-indicator-insets           {:top (if (:able-to-send-message? context)
                                                   (- composer.constants/composer-default-height 16)
@@ -386,8 +404,9 @@
                                                             animate-topbar-name?
                                                             more-than-two-messages?
                                                             big-name-visible?
-                                                            keyboard-shown?
-                                                            animate-topbar-opacity?)
+                                                            composer-active?
+                                                            animate-topbar-opacity?
+                                                            content-height)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?

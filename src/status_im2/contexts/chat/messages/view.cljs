@@ -44,7 +44,8 @@
         photo-path                               (rf/sub [:chats/photo-path chat-id])
         back-icon                                (if (= chat-type constants/one-to-one-chat-type)
                                                    :i/close
-                                                   :i/arrow-left)]
+                                                   :i/arrow-left)
+        {:keys [focused?]}                       (rf/sub [:chats/current-chat-input])]
     (rn/use-effect
      (fn []
        ;; If keyboard is shown then adjust `scroll-y`
@@ -75,7 +76,8 @@
        :inner-state-atoms       inner-state-atoms
        :animate-topbar-name?    animate-topbar-name?
        :big-name-visible?       big-name-visible?
-       :animate-topbar-opacity? animate-topbar-opacity?}]
+       :animate-topbar-opacity? animate-topbar-opacity?
+       :composer-active?        focused?}]
 
      [messages.navigation/navigation-view
       {:scroll-y                scroll-y
@@ -87,9 +89,9 @@
        :display-name            display-name
        :online?                 online?
        :photo-path              photo-path
-       :keyboard-shown?         keyboard-shown
        :big-name-visible?       big-name-visible?
-       :animate-topbar-opacity? animate-topbar-opacity?}]
+       :animate-topbar-opacity? animate-topbar-opacity?
+       :composer-active?        focused?}]
 
      (when (seq chat)
        (if able-to-send-message?

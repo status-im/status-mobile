@@ -20,7 +20,7 @@
 
 (defn f-view
   [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
-           back-icon animate-topbar-name? keyboard-shown? big-name-visible? animate-topbar-opacity?]}]
+           back-icon animate-topbar-name? composer-active? big-name-visible? animate-topbar-opacity?]}]
   (let [{:keys [group-chat chat-id]} chat
         opacity-animation            (reanimated/use-shared-value 0)
         banner-opacity-animation     (reanimated/interpolate scroll-y
@@ -32,37 +32,45 @@
         translate-animation          (reanimated/use-shared-value title-opacity-interpolation-start)
         title-opacity-animation      (reanimated/use-shared-value 0)
         messages                     (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
-        more-than-two-messages?      (<= 2 (count messages))]
+        more-than-two-messages?      (<= 2 (count messages))
+        more-than-seven-messages?    (<= 7 (count messages))]
     (rn/use-effect
      (fn []
        (if (or
-            (or (and more-than-two-messages?
-                     (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
-                     keyboard-shown?)
-                @animate-topbar-name?
+            (and (not composer-active?)
+                 more-than-seven-messages?
+                 (= :initial-render @big-name-visible?))
+            (and more-than-two-messages?
+                 (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
+                 composer-active?)
 
-                (not @big-name-visible?)
-                (and (neg? (reanimated/get-shared-value scroll-y))
-                     more-than-two-messages?
-                     keyboard-shown?))
+            (not @big-name-visible?)
+            (and more-than-two-messages?
+                 composer-active?)
+            @animate-topbar-name?
             @animate-topbar-opacity?)
          (reanimated/animate opacity-animation 1)
          (reanimated/animate opacity-animation 0))
-       (if (or (and more-than-two-messages?
-                    (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
-                    keyboard-shown?)
-               @animate-topbar-name?
-               (not @big-name-visible?)
-               (and (neg? (reanimated/get-shared-value scroll-y))
-                    more-than-two-messages?
-                    keyboard-shown?))
+       (if (or
+            (and (not composer-active?)
+                 more-than-seven-messages?
+                 (= :initial-render @big-name-visible?))
+            (and more-than-two-messages?
+                 (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
+                 composer-active?)
+
+            (not @big-name-visible?)
+            (and more-than-two-messages?
+                 composer-active?)
+            @animate-topbar-name?
+            @animate-topbar-opacity?)
          (do
            (reanimated/animate title-opacity-animation 1)
            (reanimated/animate translate-animation 0))
          (do
            (reanimated/animate title-opacity-animation 0)
            (reanimated/animate translate-animation title-opacity-interpolation-start))))
-     [@animate-topbar-name? @big-name-visible? keyboard-shown? @animate-topbar-opacity?])
+     [@animate-topbar-name? @big-name-visible? composer-active? @animate-topbar-opacity?])
     [rn/view {:style (style/navigation-view chat-screen-loaded?)}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]
