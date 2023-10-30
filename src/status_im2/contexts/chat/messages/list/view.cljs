@@ -43,12 +43,14 @@
                             {:animated true})))
 
 (defn on-scroll
-  [evt show-floating-scroll-down-button?]
+  [evt show-floating-scroll-down-button? on-end-reached?]
   (let [y                  (oops/oget evt "nativeEvent.contentOffset.y")
         layout-height      (oops/oget evt "nativeEvent.layoutMeasurement.height")
         threshold-height   (* (/ layout-height 100)
                               threshold-percentage-to-show-floating-scroll-down-button)
         reached-threshold? (> y threshold-height)]
+    (when @on-end-reached?
+      (reset! on-end-reached? false))
     (when (not= reached-threshold? @show-floating-scroll-down-button?)
       (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
       (reset! show-floating-scroll-down-button? reached-threshold?))))
@@ -411,7 +413,7 @@
                                                             composer-active?
                                                             animate-topbar-opacity?
                                                             content-height)
-                                            (on-scroll event show-floating-scroll-down-button?))
+                                            (on-scroll event show-floating-scroll-down-button? on-end-reached?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
                                                                 (colors/theme-colors
