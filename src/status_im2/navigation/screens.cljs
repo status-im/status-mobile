@@ -249,6 +249,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     {:name      :wallet-accounts
      :options   {:insets {:top? true}}
      :component wallet-accounts/view}
@@ -259,6 +260,8 @@
 =======
 >>>>>>> 3f129bdcb (wallet: bridge screen)
 
+=======
+>>>>>>> af4fa042f (lint)
     {:name      :wallet-edit-account
      :component wallet-edit-account/view}
 
@@ -268,6 +271,7 @@
     {:name      :wallet-bridge
      :component bridge/view}
 
+<<<<<<< HEAD
     {:name      :wallet-address-watch
      :component wallet-address-watch/view}
 
@@ -283,6 +287,8 @@
       :component wallet-create-account/view}
 >>>>>>> f72469fd9 (updates)
 =======
+=======
+>>>>>>> f98753572 (lint)
     {:name      :wallet-collectible
      :component wallet-collectible/view}
 >>>>>>> 4e9e8068f (wallet: bridge screen)
@@ -299,19 +305,17 @@
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext}
      :component wallet-select-address/view}
-
-
-    [{:name      :dev-component-preview
-      :options   {:sheet? true}
-      :component component-preview/view}]
-
-    (when config/quo-preview-enabled?
-      quo.preview/screens)
+    
     {:name      :scan-address
      :options   (merge
                  options/dark-screen
                  {:modalPresentationStyle :overCurrentContext})
      :component scan-address/view}]
+
+   (when js/goog.DEBUG
+     [{:name      :dev-component-preview
+       :options   {:sheet? true}
+       :component component-preview/view}])
 
    (when config/quo-preview-enabled?
      quo.preview/screens)
