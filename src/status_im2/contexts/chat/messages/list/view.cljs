@@ -130,13 +130,15 @@
 
 (defn list-header
   [insets able-to-send-message? theme]
-  [rn/view
-   {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)
-    :height           (+ (if able-to-send-message?
-                           (+ composer.constants/composer-default-height
-                              jump-to.constants/floating-shell-button-height
-                              (:bottom insets))
-                           (- 70 (:bottom insets))))}])
+  (let [images (rf/sub [:chats/sending-image])]
+    [rn/view
+     {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)
+      :height           (if able-to-send-message?
+                          (+ composer.constants/composer-default-height
+                             jump-to.constants/floating-shell-button-height
+                             (if (seq images) composer.constants/images-container-height 0)
+                             (:bottom insets))
+                          (- 70 (:bottom insets)))}]))
 
 (defn f-list-footer-avatar
   [{:keys [scroll-y display-name online? profile-picture]}]
