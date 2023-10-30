@@ -37,8 +37,8 @@
     [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
-    [status-im2.contexts.wallet.account.view :as wallet-accounts]
     [status-im2.contexts.wallet.account.bridge.view :as bridge]
+    [status-im2.contexts.wallet.account.view :as wallet-accounts]
     [status-im2.contexts.wallet.address-watch.view :as wallet-address-watch]
     [status-im2.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
@@ -54,196 +54,200 @@
 (defn screens
   []
   (concat
-    (old-screens/screens)
+   (old-screens/screens)
 
-    [{:name      :activity-center
-      :options   options/transparent-screen-options
-      :component activity-center/view}
+   [{:name      :activity-center
+     :options   options/transparent-screen-options
+     :component activity-center/view}
 
-     {:name      :share-shell
-      :options   options/transparent-screen-options
-      :component share/view}
+    {:name      :share-shell
+     :options   options/transparent-screen-options
+     :component share/view}
 
-     {:name      :shell-stack
-      :component shell/shell-stack}
+    {:name      :shell-stack
+     :component shell/shell-stack}
 
-     {:name      :chat
-      :options   {:insets     {:top? true}
-                  :popGesture false}
-      :component chat/chat}
+    {:name      :chat
+     :options   {:insets     {:top? true}
+                 :popGesture false}
+     :component chat/chat}
 
-     {:name      :start-a-new-chat
-      :options   {:sheet? true}
-      :component new-chat/view}
+    {:name      :start-a-new-chat
+     :options   {:sheet? true}
+     :component new-chat/view}
 
-     {:name      :group-add-manage-members
-      :options   {:sheet? true}
-      :component group-details/add-manage-members}
+    {:name      :group-add-manage-members
+     :options   {:sheet? true}
+     :component group-details/add-manage-members}
 
-     {:name      :community-requests-to-join
-      :options   {:sheet? true}
-      :component join-menu/request-to-join}
+    {:name      :community-requests-to-join
+     :options   {:sheet? true}
+     :component join-menu/request-to-join}
 
-     {:name      :lightbox
-      :options   options/lightbox
-      :component lightbox/lightbox}
+    {:name      :lightbox
+     :options   options/lightbox
+     :component lightbox/lightbox}
 
-     {:name      :photo-selector
-      :options   {:sheet? true}
-      :component photo-selector/photo-selector}
+    {:name      :photo-selector
+     :options   {:sheet? true}
+     :component photo-selector/photo-selector}
 
-     {:name      :camera-screen
-      :options   options/camera-screen
-      :component camera-screen/camera-screen}
+    {:name      :camera-screen
+     :options   options/camera-screen
+     :component camera-screen/camera-screen}
 
-     {:name      :new-contact
-      :options   {:sheet? true}
-      :component add-new-contact/new-contact}
+    {:name      :new-contact
+     :options   {:sheet? true}
+     :component add-new-contact/new-contact}
 
-     {:name      :how-to-pair
-      :options   (assoc options/dark-screen :sheet? true)
-      :component how-to-pair/view}
+    {:name      :how-to-pair
+     :options   (assoc options/dark-screen :sheet? true)
+     :component how-to-pair/view}
 
-     {:name      :find-sync-code
-      :options   (assoc options/dark-screen :sheet? true)
-      :component find-sync-code/view}
+    {:name      :find-sync-code
+     :options   (assoc options/dark-screen :sheet? true)
+     :component find-sync-code/view}
 
-     {:name      :discover-communities
-      :component communities.discover/view}
+    {:name      :discover-communities
+     :component communities.discover/view}
 
-     {:name      :community-overview
-      :component communities.overview/overview}
+    {:name      :community-overview
+     :component communities.overview/overview}
 
-     {:name      :settings-syncing
-      :options   (merge options/dark-screen {:insets {:top? true}})
-      :component settings-syncing/view}
+    {:name      :settings-syncing
+     :options   (merge options/dark-screen {:insets {:top? true}})
+     :component settings-syncing/view}
 
-     {:name      :settings-setup-syncing
-      :options   (merge options/dark-screen {:insets {:top? true}})
-      :component settings-setup-syncing/view}
+    {:name      :settings-setup-syncing
+     :options   (merge options/dark-screen {:insets {:top? true}})
+     :component settings-setup-syncing/view}
 
-     ;; Onboarding
-     {:name      :intro
-      :options   {:theme :dark}
-      :on-focus  [:onboarding/overlay-dismiss]
-      :component intro/view}
+    ;; Onboarding
+    {:name      :intro
+     :options   {:theme :dark}
+     :on-focus  [:onboarding/overlay-dismiss]
+     :component intro/view}
 
-     {:name      :profiles
-      :options   {:theme  :dark
-                  :layout options/onboarding-layout}
-      :on-focus  [:onboarding/overlay-dismiss]
-      :component profiles/view}
+    {:name      :profiles
+     :options   {:theme  :dark
+                 :layout options/onboarding-layout}
+     :on-focus  [:onboarding/overlay-dismiss]
+     :component profiles/view}
 
-     {:name      :new-to-status
-      :options   {:theme                  :dark
-                  :layout                 options/onboarding-transparent-layout
-                  :animations             (merge
-                                            transitions/new-to-status-modal-animations
-                                            transitions/push-animations-for-transparent-background)
-                  :popGesture             false
-                  :modalPresentationStyle :overCurrentContext}
-      :component new-to-status/new-to-status}
+    {:name      :new-to-status
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge
+                                          transitions/new-to-status-modal-animations
+                                          transitions/push-animations-for-transparent-background)
+                 :popGesture             false
+                 :modalPresentationStyle :overCurrentContext}
+     :component new-to-status/new-to-status}
 
-     {:name      :create-profile
-      :options   {:theme      :dark
-                  :layout     options/onboarding-transparent-layout
-                  :animations transitions/push-animations-for-transparent-background
-                  :popGesture false}
-      :component create-profile/create-profile}
+    {:name      :create-profile
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
+     :component create-profile/create-profile}
 
-     {:name      :create-profile-password
-      :options   {:theme      :dark
-                  :insets     {:top false}
-                  :layout     options/onboarding-transparent-layout
-                  :animations transitions/push-animations-for-transparent-background
-                  :popGesture false}
-      :component create-password/create-password}
+    {:name      :create-profile-password
+     :options   {:theme      :dark
+                 :insets     {:top false}
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
+     :component create-password/create-password}
 
-     {:name      :enable-biometrics
-      :options   {:theme      :dark
-                  :layout     options/onboarding-transparent-layout
-                  :animations transitions/push-animations-for-transparent-background
-                  :popGesture false}
-      :component enable-biometrics/enable-biometrics}
+    {:name      :enable-biometrics
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
+     :component enable-biometrics/enable-biometrics}
 
-     {:name      :generating-keys
-      :options   {:theme              :dark
-                  :layout             options/onboarding-transparent-layout
-                  :animations         transitions/push-animations-for-transparent-background
-                  :popGesture         false
-                  :hardwareBackButton {:dismissModalOnPress false
-                                       :popStackOnPress     false}}
-      :component generating-keys/generating-keys}
+    {:name      :generating-keys
+     :options   {:theme              :dark
+                 :layout             options/onboarding-transparent-layout
+                 :animations         transitions/push-animations-for-transparent-background
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}
+     :component generating-keys/generating-keys}
 
-     {:name      :enter-seed-phrase
-      :options   {:theme      :dark
-                  :layout     options/onboarding-transparent-layout
-                  :animations transitions/push-animations-for-transparent-background
-                  :popGesture false}
-      :component enter-seed-phrase/enter-seed-phrase}
+    {:name      :enter-seed-phrase
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
+     :component enter-seed-phrase/enter-seed-phrase}
 
-     {:name      :enable-notifications
-      :options   {:theme                  :dark
-                  :layout                 options/onboarding-transparent-layout
-                  :animations             (merge transitions/new-to-status-modal-animations
-                                                 transitions/push-animations-for-transparent-background)
-                  :modalPresentationStyle :overCurrentContext}
-      :component enable-notifications/enable-notifications}
+    {:name      :enable-notifications
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge transitions/new-to-status-modal-animations
+                                                transitions/push-animations-for-transparent-background)
+                 :modalPresentationStyle :overCurrentContext}
+     :component enable-notifications/enable-notifications}
 
-     {:name      :identifiers
-      :component identifiers/view
-      :options   {:theme              :dark
-                  :layout             options/onboarding-transparent-layout
-                  :animations         transitions/push-animations-for-transparent-background
-                  :popGesture         false
-                  :hardwareBackButton {:dismissModalOnPress false
-                                       :popStackOnPress     false}}}
+    {:name      :identifiers
+     :component identifiers/view
+     :options   {:theme              :dark
+                 :layout             options/onboarding-transparent-layout
+                 :animations         transitions/push-animations-for-transparent-background
+                 :popGesture         false
+                 :hardwareBackButton {:dismissModalOnPress false
+                                      :popStackOnPress     false}}}
 
-     {:name      :scan-sync-code-page
-      :options   options/dark-screen
-      :component scan-sync-code-page/view}
+    {:name      :scan-sync-code-page
+     :options   options/dark-screen
+     :component scan-sync-code-page/view}
 
-     {:name      :sign-in-intro
-      :options   {:layout                 options/onboarding-transparent-layout
-                  :animations             (merge
-                                            transitions/sign-in-modal-animations
-                                            transitions/push-animations-for-transparent-background)
-                  :modalPresentationStyle :overCurrentContext}
-      :component sign-in/animated-view}
+    {:name      :sign-in-intro
+     :options   {:layout                 options/onboarding-transparent-layout
+                 :animations             (merge
+                                          transitions/sign-in-modal-animations
+                                          transitions/push-animations-for-transparent-background)
+                 :modalPresentationStyle :overCurrentContext}
+     :component sign-in/animated-view}
 
-     {:name      :sign-in
-      :options   {:theme                  :dark
-                  :modalPresentationStyle :overCurrentContext
-                  :layout                 options/onboarding-layout}
-      :component sign-in/view}
+    {:name      :sign-in
+     :options   {:theme                  :dark
+                 :modalPresentationStyle :overCurrentContext
+                 :layout                 options/onboarding-layout}
+     :component sign-in/view}
 
-     {:name      :syncing-progress
-      :options   {:theme      :dark
-                  :layout     options/onboarding-layout
-                  :popGesture false}
-      :component syncing-devices/view}
+    {:name      :syncing-progress
+     :options   {:theme      :dark
+                 :layout     options/onboarding-layout
+                 :popGesture false}
+     :component syncing-devices/view}
 
-     {:name      :syncing-progress-intro
-      :options   {:theme      :dark
-                  :layout     options/onboarding-transparent-layout
-                  :animations transitions/push-animations-for-transparent-background
-                  :popGesture false}
-      :component syncing-devices/view-onboarding}
+    {:name      :syncing-progress-intro
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background
+                 :popGesture false}
+     :component syncing-devices/view-onboarding}
 
-     {:name      :syncing-results
-      :options   {:theme :dark}
-      :component syncing-results/view}
+    {:name      :syncing-results
+     :options   {:theme :dark}
+     :component syncing-results/view}
 
-     {:name      :welcome
-      :options   {:theme      :dark
-                  :layout     options/onboarding-transparent-layout
-                  :animations transitions/push-animations-for-transparent-background}
-      :component welcome/view}
+    {:name      :welcome
+     :options   {:theme      :dark
+                 :layout     options/onboarding-transparent-layout
+                 :animations transitions/push-animations-for-transparent-background}
+     :component welcome/view}
 
-     {:name      :emoji-picker
-      :options   {:sheet? true}
-      :component emoji-picker/view}
+    {:name      :emoji-picker
+     :options   {:sheet? true}
+     :component emoji-picker/view}
 
+    {:name      :wallet-accounts
+     :component wallet-accounts/view}
+
+<<<<<<< HEAD
 <<<<<<< HEAD
     {:name      :wallet-accounts
      :options   {:insets {:top? true}}
@@ -252,24 +256,22 @@
      {:name      :wallet-accounts
       :component wallet-accounts/view}
 >>>>>>> 7a5ddb266 (updates)
+=======
+>>>>>>> 3f129bdcb (wallet: bridge screen)
 
-<<<<<<< HEAD
     {:name      :wallet-edit-account
      :component wallet-edit-account/view}
 
     {:name      :wallet-address-watch
      :component wallet-address-watch/view}
-=======
-     {:name      :wallet-bridge
-      :component bridge/view}
->>>>>>> 3e4945851 (updates)
 
-     {:name      :wallet-address-watch
-      :component wallet-address-watch/view}
+    {:name      :wallet-bridge
+     :component bridge/view}
 
-     {:name      :wallet-collectible
-      :component wallet-collectible/view}
+    {:name      :wallet-address-watch
+     :component wallet-address-watch/view}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     {:name      :wallet-edit-derivation-path
      :component wallet-edit-derivation-path/view}
@@ -280,35 +282,39 @@
      {:name      :wallet-create-account
       :component wallet-create-account/view}
 >>>>>>> f72469fd9 (updates)
-
-     {:name      :wallet-saved-address
-      :component wallet-saved-address/view}
-
-     {:name      :wallet-saved-addresses
-      :component wallet-saved-addresses/view}
-
-     {:name      :wallet-select-address
-      :options   {:modalPresentationStyle :overCurrentContext}
-      :component wallet-select-address/view}
-
-<<<<<<< HEAD
-   (when js/goog.DEBUG
-     [{:name      :dev-component-preview
-       :options   {:sheet? true}
-       :component component-preview/view}])
-
-   (when config/quo-preview-enabled?
-     quo.preview/screens)
 =======
-     {:name      :scan-address
-      :options   (merge
-                   options/dark-screen
-                   {:modalPresentationStyle :overCurrentContext})
-      :component scan-address/view}]
->>>>>>> 3e4945851 (updates)
+    {:name      :wallet-collectible
+     :component wallet-collectible/view}
+>>>>>>> 4e9e8068f (wallet: bridge screen)
+
+    {:name      :wallet-create-account
+     :component wallet-create-account/view}
+
+    {:name      :wallet-saved-address
+     :component wallet-saved-address/view}
+
+    {:name      :wallet-saved-addresses
+     :component wallet-saved-addresses/view}
+
+    {:name      :wallet-select-address
+     :options   {:modalPresentationStyle :overCurrentContext}
+     :component wallet-select-address/view}
+
+
+    [{:name      :dev-component-preview
+      :options   {:sheet? true}
+      :component component-preview/view}]
 
     (when config/quo-preview-enabled?
       quo.preview/screens)
+    {:name      :scan-address
+     :options   (merge
+                 options/dark-screen
+                 {:modalPresentationStyle :overCurrentContext})
+     :component scan-address/view}]
 
-    (when config/quo-preview-enabled?
-      quo.preview/main-screens)))
+   (when config/quo-preview-enabled?
+     quo.preview/screens)
+
+   (when config/quo-preview-enabled?
+     quo.preview/main-screens)))

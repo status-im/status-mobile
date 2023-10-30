@@ -268,3 +268,33 @@
     :image             :icon-avatar
     :image-props       {:icon (status.resources/get-service-image :latamex)}
     :on-press          #(rn/open-url "https://latamex.com")}])
+
+(def networks-list
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}
+   {:source (quo.resources/get-network :zksync)}
+   {:source (quo.resources/get-network :polygon)}])
+
+(def bridge-token-list
+  [{:token               (quo.resources/get-token :snt)
+    :label               "Status"
+    :token-value         "0.00 SNT"
+    :fiat-value          "€0.00"
+    :networks            networks-list
+    :state               :default
+    :customization-color :blue}
+   {:token               (quo.resources/get-token :eth)
+    :label               "Ethereum"
+    :token-value         "0.00 ETH"
+    :fiat-value          "€0.00"
+    :networks            networks-list
+    :state               :default
+    :customization-color :blue}
+   {:token               (quo.resources/get-token :dai)
+    :label               "Dai"
+    :token-value         "0.00 DAI"
+    :fiat-value          "€0.00"
+    :networks            networks-list
+    :state               :default
+    :customization-color :blue}])

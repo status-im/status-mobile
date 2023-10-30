@@ -2361,13 +2361,13 @@
     "ramp-description": "Global crypto to fiat flow.",
     "moonpay-description": "The new standard for fiat to crypto, supports Apple Pay.",
     "latamex-description": "Easily buy crypto in Argentina, Mexico and Brazil.",
-<<<<<<< HEAD
     "account-info": "Account info",
     "account-name-input-placeholder": "Account name",
     "network-preferences": "Network preferences",
     "network-preferences-desc": "Select which network this address is happy to receive funds on",
     "layer-2": "Layer 2",
     "manage-tokens": "Manage tokens",
+<<<<<<< HEAD
 <<<<<<< HEAD
     "sign transactions": "sign transactions",
     "edit-derivation-path": "Edit derivation path",
@@ -2383,4 +2383,8 @@
     "search-assets": "Search assets"
 >>>>>>> 3e4945851 (updates)
 >>>>>>> f72469fd9 (updates)
+=======
+    "sign transactions": "sign transactions",
+    "search-assets": "Search assets"
+>>>>>>> 4e9e8068f (wallet: bridge screen)
 }
