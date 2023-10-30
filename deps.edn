@@ -1,3 +1,0 @@
-{:paths ["src" "scripts"]
- :deps {clj-kondo/clj-kondo {:mvn/version "2023.09.07"}
-        org.clojure/data.json {:mvn/version "2.4.0"}}}

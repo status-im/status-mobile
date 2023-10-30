@@ -1,8 +1,12 @@
+#!/usr/bin/env bb
+
 (ns lint-translations
-  (:require
-   [clj-kondo.core :as kondo]
-   [clojure.data.json :as json]
-   [clojure.set :as set]))
+  (:require [babashka.pods :as pods]))
+
+(pods/load-pod 'clj-kondo/clj-kondo "2023.09.07")
+(require '[pod.borkdude.clj-kondo :as kondo])
+(require '[cheshire.core :as json])
+(require '[clojure.set :as set])
 
 (defn- safe-name [x]
   (when x (name x)))
@@ -32,7 +36,7 @@
                      (->keyword incorrect-usage)))))
 
 (defn extract-translation-keys [file]
-  (-> file slurp json/read-str keys))
+  (-> file slurp json/parse-string keys))
 
 (def translation-file "translations/en.json")
 
@@ -52,3 +56,6 @@
              (empty? unused-translation-keys))
       0
       1)))
+
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply -main *command-line-args*))
