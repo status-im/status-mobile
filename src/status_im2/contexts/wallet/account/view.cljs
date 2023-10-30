@@ -3,7 +3,6 @@
     [quo.core :as quo]
     [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.wallet.account.style :as style]
     [status-im2.contexts.wallet.account.tabs.view :as tabs]
@@ -65,14 +64,11 @@
 
 (defn view
   [account-address]
-  (let [top          (safe-area/get-top)
-        selected-tab (reagent/atom (:id (first tabs-data)))]
+  (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
       (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
             account         (rf/sub [:wallet/account account-address])]
-        [rn/view
-         {:style {:flex       1
-                  :margin-top top}}
+        [rn/view {:style style/container}
          [quo/page-nav
           {:type              :wallet-networks
            :background        :blur
