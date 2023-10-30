@@ -12,11 +12,11 @@ Join us in creating a browser, messenger, and gateway to a decentralized world. 
 
 ## Why?
 
-We believe in a medium of pure free trade, economies with fair, permission-less access and a world without intermediaries. We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.
+We believe in a medium of pure free trade, economies with fair, permission-less access, and a world without intermediaries. We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.
 
 We want to take responsibility for our data, and the way we conduct ourselves privately and promote this way of life to a mass audience.
 
-We want deep insights into our own economies so we can make informed, data-driven decisions on how to make our lives better. The Ethereum blockchain, Smart Contracts, Swarm and Whisper provide us with a path forward.
+We want deep insights into our own economies so we can make informed, data-driven decisions on how to make our lives better. The Ethereum blockchain, Smart Contracts, Swarm, and Whisper provide us with a path forward.
 
 If this interests you, **help us make Status a reality** - anyone can contribute and we need everyone at any skill level to participate.
 
