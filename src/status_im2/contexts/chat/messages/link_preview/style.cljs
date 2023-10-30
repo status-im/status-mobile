@@ -2,12 +2,9 @@
   (:require
     [quo.foundations.colors :as colors]
     [quo.foundations.typography :as typography]
-    [status-im.ui.components.react :as react]))
+    [react-native.core :as rn]))
 
-(def screen-width
-  (-> "window"
-      react/get-dimensions
-      :width))
+(def screen-width (:width (rn/get-window)))
 
 (defn scale-dimensions
   "Scale a given height and width to be maximum percentage allowed of the screen width"
@@ -82,4 +79,3 @@
            {:height 170})
          {:overflow      :hidden
           :border-radius 12}))
-
