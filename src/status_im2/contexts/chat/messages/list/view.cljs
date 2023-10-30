@@ -1,27 +1,27 @@
 (ns status-im2.contexts.chat.messages.list.view
   (:require
-   [oops.core :as oops]
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [quo.theme :as quo.theme]
-   [react-native.background-timer :as background-timer]
-   [react-native.core :as rn]
-   [react-native.hooks :as hooks]
-   [react-native.platform :as platform]
-   [react-native.react-native-intersection-observer :as rnio]
-   [react-native.reanimated :as reanimated]
-   [status-im.ui.screens.chat.group :as chat.group]
-   [status-im.ui.screens.chat.message.gap :as message.gap]
-   [status-im2.constants :as constants]
-   [status-im2.contexts.chat.composer.constants :as composer.constants]
-   [status-im2.contexts.chat.messages.content.view :as message]
-   [status-im2.contexts.chat.messages.list.state :as state]
-   [status-im2.contexts.chat.messages.list.style :as style]
-   [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
-   [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]
-   [reagent.core :as reagent]))
+    [oops.core :as oops]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [react-native.background-timer :as background-timer]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
+    [react-native.react-native-intersection-observer :as rnio]
+    [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
+    [status-im.ui.screens.chat.group :as chat.group]
+    [status-im.ui.screens.chat.message.gap :as message.gap]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.constants :as composer.constants]
+    [status-im2.contexts.chat.messages.content.view :as message]
+    [status-im2.contexts.chat.messages.list.state :as state]
+    [status-im2.contexts.chat.messages.list.style :as style]
+    [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
+    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -57,16 +57,16 @@
   [e]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-            (when-let [last-visible-element (aget (oops/oget e "viewableItems")
-                                                  (dec (oops/oget e "viewableItems.length")))]
-              (let [index             (oops/oget last-visible-element "index")
+      (when-let [last-visible-element (aget (oops/oget e "viewableItems")
+                                            (dec (oops/oget e "viewableItems.length")))]
+        (let [index             (oops/oget last-visible-element "index")
               ;; Get first not visible element, if it's a datemark/gap
               ;; we might add messages on receiving as they do not have
               ;; a clock value, but usually it will be a message
-                    first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
-                (when (and first-not-visible
-                           (= :message (:type first-not-visible)))
-                  first-not-visible))))))
+              first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
+          (when (and first-not-visible
+                     (= :message (:type first-not-visible)))
+            first-not-visible))))))
 
 (defn list-on-end-reached
   [scroll-y on-end-reached?]
@@ -303,10 +303,10 @@
       (when @animate-topbar-opacity?
         (reset! animate-topbar-opacity? false)))
     (if
-     (and
-      more-than-two-messages?
-      composer-active?
-      (not @big-name-visible?))
+      (and
+       more-than-two-messages?
+       composer-active?
+       (not @big-name-visible?))
       (do
         (reset! animate-topbar-opacity? true)
         (reset! animate-topbar-name? true))
@@ -318,15 +318,15 @@
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
            animate-topbar-name? big-name-visible? animate-topbar-opacity? composer-active?]}]
-  (let [theme                                                                                        (quo.theme/use-theme-value)
-        {window-height :height}                                                                      (rn/get-window)
-        {:keys [keyboard-height]}                                                                    (hooks/use-keyboard)
-        context                                                                                      (rf/sub [:chats/current-chat-message-list-view-context])
-        messages                                                                                     (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
-        recording?                                                                                   (rf/sub [:chats/recording?])
-        all-loaded?                                                                                  (rf/sub [:chats/all-loaded? (:chat-id chat)])
-        more-than-two-messages?                                                                      (<= 2 (count messages))
-        on-end-reached?                                                                              (reagent/atom 0)
+  (let [theme                                 (quo.theme/use-theme-value)
+        {window-height :height}               (rn/get-window)
+        {:keys [keyboard-height]}             (hooks/use-keyboard)
+        context                               (rf/sub [:chats/current-chat-message-list-view-context])
+        messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        recording?                            (rf/sub [:chats/recording?])
+        all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
+        more-than-two-messages?               (<= 2 (count messages))
+        on-end-reached?                       (reagent/atom 0)
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
