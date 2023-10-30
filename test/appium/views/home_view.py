@@ -564,4 +564,4 @@ class HomeView(BaseView):
         self.link_to_profile_text.click()
         c_text = self.driver.get_clipboard_text()
         self.click_system_back_button()
-        return c_text.split("/")[-1]
+        return c_text.split("#")[-1]
