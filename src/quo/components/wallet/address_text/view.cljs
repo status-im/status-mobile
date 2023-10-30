@@ -7,11 +7,11 @@
 
 (defn- colored-network-text
   [theme network]
-  (let [{:keys [name short]} network]
-  [text/text
-   {:size  :paragraph-2
-    :style {:color (colors/resolve-color name theme)}}
-   (str short ":")]))
+  (let [{:keys [name short-name]} network]
+    [text/text
+     {:size  :paragraph-2
+      :style {:color (colors/resolve-color name theme)}}
+     (str short-name ":")]))
 
 (defn- view-internal
   [{:keys [networks address blur? theme format]}]

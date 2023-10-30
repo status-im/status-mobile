@@ -57,9 +57,9 @@
    [quo/data-item
     (merge temp/data-item-state
            {:custom-subtitle (fn [] [quo/address-text
-                                     {:networks [{:name :ethereum :short "eth"}
-                                                 {:name :optimism :short "opt"}
-                                                 {:name :arbitrum :short "arb1"}]
+                                     {:networks [{:name :ethereum :short-name "eth"}
+                                                 {:name :optimism :short-name "opt"}
+                                                 {:name :arbitrum :short-name "arb1"}]
                                       :address  temp/address
                                       :format   :long}])
             :container-style {:margin-bottom 12}

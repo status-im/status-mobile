@@ -77,11 +77,3 @@
   [value]
   (when value
     (str (subs value 0 5) "..." (subs value (- (count value) 3) (count value)))))
-
-(defn get-network-short-name
-  [network]
-  (case network
-    :ethereum "eth:"
-    :optimism "opt:"
-    :arbitrum "arb1:"
-    (str (name network) ":")))

@@ -108,9 +108,10 @@
    :account             :default
    :customization-color :blue})
 
-(def network-names [{:name :ethereum :short "eth"}
-                    {:name :optimism :short "opt"}
-                    {:name :arbitrum :short "arb1"}])
+(def network-names
+  [{:name :ethereum :short-name "eth"}
+   {:name :optimism :short-name "opt"}
+   {:name :arbitrum :short-name "arb1"}])
 
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
 
@@ -151,9 +152,9 @@
 (def account-data
   {:title                "Trip to Vegas"
    :type                 :account
-   :networks             [{:name :ethereum :short "eth"}
-                          {:name :optimism :short "opt"}
-                          {:name :arbitrum :short "arb1"}]
+   :networks             [{:name :ethereum :short-name "eth"}
+                          {:name :optimism :short-name "opt"}
+                          {:name :arbitrum :short-name "arb1"}]
    :description          "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4"
    :account-avatar-emoji "🍑"
    :customization-color  :purple})
@@ -163,13 +164,13 @@
     :emoji               "🍿"
     :name                "New House"
     :address             "0x21af6E0Ba4C4530735616e1Ee7ff5FbCB726f493"
-    :networks            [{:name :ethereum :short "eth"}
-                          {:name :optimism :short "opt"}]}
+    :networks            [{:name :ethereum :short-name "eth"}
+                          {:name :optimism :short-name "opt"}]}
    {:customization-color :blue
     :emoji               "🎮"
     :name                "My savings"
     :address             "0x43cf6E0Ba4C4530735616e1Ee7ff5FbCB726f98d"
-    :networks            [{:name :ethereum :short "eth"}]}])
+    :networks            [{:name :ethereum :short-name "eth"}]}])
 
 (def asset-snt
   {:size       24
