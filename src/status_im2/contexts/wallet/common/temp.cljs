@@ -108,13 +108,10 @@
    :account             :default
    :customization-color :blue})
 
-<<<<<<< HEAD
-=======
 (def network-names [{:name :ethereum :short "eth"}
                     {:name :optimism :short "opt"}
                     {:name :arbitrum :short "arb1"}])
 
->>>>>>> 724763552 (review)
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
 
 (def data-item-state
