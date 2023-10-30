@@ -333,17 +333,15 @@
     (rn/use-effect (fn []
                      (if (and
                           more-than-two-messages?
-                          (or (not @big-name-visible?)
-                              (= :initial-render @big-name-visible?)))
+                          (and (not @big-name-visible?)
+                               (not= :initial-render @big-name-visible?)))
                        (do
-                         (reset! big-name-visible? false)
                          (reset! animate-topbar-opacity? true)
                          (reset! animate-topbar-name? true))
                        (do
-                         (reset! big-name-visible? true)
                          (reset! animate-topbar-opacity? false)
                          (reset! animate-topbar-name? false))))
-                   [composer-active? @big-name-visible? @on-end-reached?])
+                   [composer-active? @big-name-visible?])
     [rn/view {:style {:flex 1}}
      [rnio/flat-list
       {:root-margin                       root-margin-for-big-name-visibility-detector
