@@ -10,7 +10,8 @@
                     :type                :default
                     :name                "Trip to Vegas"
                     :address             "0x0ah...71a"}
-    :networks      [:ethereum :optimism]
+    :networks      [{:name :ethereum :short-name "eth"}
+                    {:name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}])
 

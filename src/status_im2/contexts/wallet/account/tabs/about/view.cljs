@@ -52,13 +52,16 @@
       :label               (i18n/label :t/share-address)}]]])
 
 (defn- view-internal
-  [{:keys [theme]}]
+  []
   [rn/view {:style style/about-tab}
    [quo/data-item
     (merge temp/data-item-state
-           {:custom-subtitle (fn [] [description
-                                     {:theme   theme
-                                      :address temp/address}])
+           {:custom-subtitle (fn [] [quo/address-text
+                                     {:networks [{:name :ethereum :short-name "eth"}
+                                                 {:name :optimism :short-name "opt"}
+                                                 {:name :arbitrum :short-name "arb1"}]
+                                      :address  temp/address
+                                      :format   :long}])
             :container-style {:margin-bottom 12}
             :on-press        #(rf/dispatch [:show-bottom-sheet {:content about-options}])})]
    [quo/account-origin temp/account-origin-state]])
