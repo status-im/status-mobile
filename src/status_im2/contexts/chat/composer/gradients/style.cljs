@@ -8,10 +8,10 @@
   [opacity z-index]
   (reanimated/apply-animations-to-style
    {:opacity opacity}
-   {:height   80
+   {:height   (when (pos-int? z-index) 80)
     :position :absolute
     :z-index  z-index
-    :top      constants/bar-container-height
+    :top      (+ constants/bar-container-height constants/edit-container-height)
     :left     0
     :right    0}))
 
