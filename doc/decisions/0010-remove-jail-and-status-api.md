@@ -18,7 +18,7 @@ While neat in theory, it has some serious downsides:
   As a result of that, more dynamic/state requiring things (like the live tx detail in `/send` command messages) were very hard to do,
   so instead of "eating our own dogfood", we decided to side-step the API and implement such things as hard-coded logic in the app, while partly
   retaining the js code for "easier" things (like parameter declaration).
-  Needles to say, such efforts produced code of very poor quality, riddling our app with hard-coded "magic" everywhere in the codebase, completly
+  Needles to say, such efforts produced code of very poor quality, riddling our app with hard-coded "magic" everywhere in the codebase, completely
   defeating the point of "dogfooding" while still requiring more effort and being much more error prone (no way to unit test jail logic) because 
   of the need to asynchronously communicate with jail for leftover logic in command messages (the parts not hardcoded in app).
   

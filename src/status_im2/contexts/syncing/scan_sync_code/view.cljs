@@ -191,7 +191,7 @@
       {:size   :paragraph-2
        :weight :regular
        :style  style/viewfinder-text}
-      (i18n/label :t/ensure-qr-code-is-in-focus-to-scan)]]))
+      (i18n/label :t/ensure-both-devices-are-on-the-same-network)]]))
 
 (defn- scan-qr-code-tab
   [qr-view-finder]

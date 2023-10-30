@@ -2,10 +2,10 @@
   (:require
     [quo.components.selectors.reaction-resource :as reactions.resource]
     [quo.core :as quo]
+    [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [reagent.core :as reagent]
-    [status-im.ui.components.react :as react]
     [status-im2.common.contact-list-item.view :as contact-list-item]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.reply.view :as reply]
@@ -119,7 +119,7 @@
    (when (and (not (or deleted? deleted-for-me?))
               (not= content-type constants/content-type-audio))
      [{:type     :main
-       :on-press #(react/copy-to-clipboard
+       :on-press #(clipboard/set-string
                    (reply/get-quoted-text-with-mentions
                     (get content :parsed-text)))
        :label    (i18n/label :t/copy-text)

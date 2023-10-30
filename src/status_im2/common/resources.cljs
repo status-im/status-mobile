@@ -46,7 +46,8 @@
    :no-contacts-to-invite-light   (js/require "../resources/images/ui2/no-contacts-to-invite-light.png")
    :no-contacts-to-invite-dark    (js/require "../resources/images/ui2/no-contacts-to-invite-dark.png")
    :no-notifications-light        (js/require "../resources/images/ui2/no-notifications-light.png")
-   :no-notifications-dark         (js/require "../resources/images/ui2/no-notifications-dark.png")})
+   :no-notifications-dark         (js/require "../resources/images/ui2/no-notifications-dark.png")
+   :welcome-illustration          (js/require "../resources/images/ui2/welcome_illustration.png")})
 
 (def ui-themed
   {:no-messages

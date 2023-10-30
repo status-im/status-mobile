@@ -4,18 +4,11 @@
     [quo.components.icon :as icon]
     [quo.components.list-items.account.style :as style]
     [quo.components.markdown.text :as text]
+    [quo.components.wallet.address-text.view :as address-text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]))
-
-(defn- network-view
-  [network]
-  [text/text
-   {:size   :paragraph-2
-    :weight :regular
-    :style  {:color (colors/custom-color (:name network))}}
-   (str (name (:short network)) ":")])
 
 (defn- account-view
   [{:keys [account-props title-icon? blur? theme]
@@ -38,15 +31,10 @@
           :color (if blur?
                    colors/white-opa-40
                    (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}]])]
-    [text/text {:size :paragraph-2}
-     (for [network (:networks account-props)]
-       ^{:key (str network)}
-       [network-view network])
-     [text/text
-      {:size   :paragraph-2
-       :weight :monospace
-       :style  (style/account-address blur? theme)}
-      (:address account-props)]]]])
+    [address-text/view
+     {:networks (:networks account-props)
+      :address  (:address account-props)
+      :format   :short}]]])
 
 (defn- balance-view
   [{:keys [balance-props type theme]}]

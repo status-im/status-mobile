@@ -1,7 +1,7 @@
 # Patching
 
 ## Libraries
-If 3rd party library has an issue and fix is not yet released (or we can't switch to a new release), we use forks. Fix should be commited to the fork, tagged and referenced from package.json.
+If 3rd party library has an issue and fix is not yet released (or we can't switch to a new release), we use forks. Fix should be committed to the fork, tagged and referenced from package.json.
 
 Example: [`react-native-hole-view`](https://github.com/status-im/react-native-hole-view#refs/tags/v2.1.1-status)
 
