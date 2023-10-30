@@ -7,24 +7,24 @@
     [utils.security.core :as security]))
 
 (rf/defn get-wallet-token
-  {:events [:wallet-2/get-wallet-token]}
+  {:events [:wallet/get-wallet-token]}
   [{:keys [db]}]
   (let [params (map :address (:profile/wallet-accounts db))]
     {:json-rpc/call [{:method     "wallet_getWalletToken"
                       :params     [params]
-                      :on-success #(rf/dispatch [:wallet-2/get-wallet-token-success %])
+                      :on-success #(rf/dispatch [:wallet/get-wallet-token-success %])
                       :on-error   (fn [error]
                                     (log/info "failed to get wallet token"
-                                              {:event  :wallet-2/get-wallet-token
+                                              {:event  :wallet/get-wallet-token
                                                :error  error
                                                :params params}))}]}))
 
 (rf/defn get-wallet-token-success
-  {:events [:wallet-2/get-wallet-token-success]}
+  {:events [:wallet/get-wallet-token-success]}
   [{:keys [db]} data]
   {:db (assoc db
-              :wallet-2/tokens          data
-              :wallet-2/tokens-loading? false)})
+              :wallet/tokens          data
+              :wallet/tokens-loading? false)})
 
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}

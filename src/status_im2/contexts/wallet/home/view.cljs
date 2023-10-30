@@ -8,7 +8,7 @@
     [status-im2.contexts.wallet.common.activity-tab.view :as activity]
     [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im2.contexts.wallet.common.temp :as temp]
-    [status-im2.contexts.wallet.common.token-value.view :as token-value]
+    [status-im2.contexts.wallet.common.utils :as utils]
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -39,28 +39,19 @@
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
 
-(defn get-balance
-  [balances address]
-  (.toFixed (->> balances
-                 (filter #(= (:address %) address))
-                 first
-                 :balance)
-            2))
-
 (defn account-cards
   [{:keys [accounts loading? balances profile]}]
-  (let [accounts-with-balances (mapv (fn [account]
-                                       (assoc account
-                                              :type                :empty
-                                              :customization-color (:customization-color profile)
-                                              :on-press            #(rf/dispatch [:navigate-to
-                                                                                  :wallet-accounts])
-                                              :loading?            loading?
-                                              :balance             (str "$"
-                                                                        (get-balance balances
-                                                                                     (:address
-                                                                                      account)))))
-                                     accounts)]
+  (let [accounts-with-balances
+        (mapv
+         (fn [account]
+           (assoc account
+                  :type                :empty
+                  :customization-color (:customization-color profile)
+                  :on-press            #(rf/dispatch [:navigate-to :wallet-accounts (:address account)])
+                  :loading?            loading?
+                  :balance             (utils/prettify-balance
+                                        (utils/get-balance-by-address balances (:address account)))))
+         accounts)]
     (conj accounts-with-balances (add-account-placeholder (:customization-color profile)))))
 
 (defn- view-internal
@@ -68,8 +59,8 @@
   (let [accounts     (rf/sub [:profile/wallet-accounts])
         top          (safe-area/get-top)
         selected-tab (reagent/atom (:id (first tabs-data)))
-        loading?     (rf/sub [:wallet-2/tokens-loading?])
-        balances     (rf/sub [:wallet-2/balances])
+        loading?     (rf/sub [:wallet/tokens-loading?])
+        balances     (rf/sub [:wallet/balances])
         profile      (rf/sub [:profile/profile])]
     [rn/view
      {:style {:margin-top top
@@ -106,6 +97,6 @@
 
 (defn view
   []
-  (rf/dispatch [:wallet-2/get-wallet-token])
+  (rf/dispatch [:wallet/get-wallet-token])
   (fn []
     [view-internal]))
