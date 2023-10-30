@@ -72,3 +72,8 @@
           abbreviated-public-key   (str first-part-of-public-key ellipsis last-part-of-public-key)]
       abbreviated-public-key)
     nil))
+
+(defn get-short-wallet-address
+  [value]
+  (when value
+    (str (subs value 0 5) "..." (subs value (- (count value) 3) (count value)))))

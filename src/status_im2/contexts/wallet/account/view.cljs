@@ -1,7 +1,6 @@
 (ns status-im2.contexts.wallet.account.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.resources :as quo.resources]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.wallet.account.style :as style]
@@ -49,11 +48,6 @@
                  :padding-bottom     8}
      :render-fn quo/settings-item}]])
 
-(def ^:private networks-list
-  [{:source (quo.resources/get-network :ethereum)}
-   {:source (quo.resources/get-network :optimism)}
-   {:source (quo.resources/get-network :arbitrum)}])
-
 (def tabs-data
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
@@ -67,14 +61,15 @@
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
       (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
-            account         (rf/sub [:wallet/account account-address])]
+            account         (rf/sub [:wallet/account account-address])
+            networks (rf/sub [:wallet/network-details])]
         [rn/view {:style style/container}
          [quo/page-nav
           {:type              :wallet-networks
            :background        :blur
            :icon-name         :i/close
            :on-press          #(rf/dispatch [:navigate-back])
-           :networks          networks-list
+           :networks          networks
            :networks-on-press #(js/alert "Pressed Networks")
            :right-side        :account-switcher
            :account-switcher  {:customization-color :purple

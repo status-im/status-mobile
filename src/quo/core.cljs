@@ -137,10 +137,12 @@
     quo.components.wallet.account-card.view
     quo.components.wallet.account-origin.view
     quo.components.wallet.account-overview.view
+    quo.components.wallet.address-text.view
     quo.components.wallet.keypair.view
     quo.components.wallet.network-amount.view
     quo.components.wallet.network-bridge.view
     quo.components.wallet.network-link.view
+    quo.components.wallet.network-routing.view
     quo.components.wallet.progress-bar.view
     quo.components.wallet.summary-info.view
     quo.components.wallet.token-input.view
@@ -370,9 +372,11 @@
 (def account-card quo.components.wallet.account-card.view/view)
 (def account-origin quo.components.wallet.account-origin.view/view)
 (def account-overview quo.components.wallet.account-overview.view/view)
+(def address-text quo.components.wallet.address-text.view/view)
 (def keypair quo.components.wallet.keypair.view/view)
 (def network-amount quo.components.wallet.network-amount.view/view)
 (def network-bridge quo.components.wallet.network-bridge.view/view)
+(def network-routing quo.components.wallet.network-routing.view/view)
 (def progress-bar quo.components.wallet.progress-bar.view/view)
 (def summary-info quo.components.wallet.summary-info.view/view)
 (def network-link quo.components.wallet.network-link.view/view)

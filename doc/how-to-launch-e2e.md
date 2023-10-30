@@ -64,7 +64,7 @@ tests (otherwise some PRs could wait their turn of the scheduled Jenkins job til
 
 ## Analysing test results (and why test fails to pass)
 
-After automated test run finished test results could be found in GH comment (if the test suite ran agaist PR) and TestRail. There are two states of the test: Passed and Failed. Test failure happens when certain condition of test step has not met or automated test can not proceed execution because it can not find the respective element on screen it expects should be there.
+After automated test run finished test results could be found in GH comment (if the test suite ran against PR) and TestRail. There are two states of the test: Passed and Failed. Test failure happens when certain condition of test step has not met or automated test can not proceed execution because it can not find the respective element on screen it expects should be there.
 
 Several examples of when test fails to succeed:
 

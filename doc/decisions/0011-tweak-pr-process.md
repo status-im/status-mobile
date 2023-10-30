@@ -13,7 +13,7 @@ accepted
 
 There was a generally dissatisfaction with our PR flow process from multiple stakeholders, including devs, QA and design. These largely centered around size, speed of integration and quality of PRs.
 
-For more details, please see pain points in the meeting notes held end of February here: https://notes.status.im/C5pj8g7gQOu9Wo8PtDZsMw?edit# as well as the preceeding Discuss thread: https://discuss.status.im/t/better-pull-requests-process/1044
+For more details, please see pain points in the meeting notes held end of February here: https://notes.status.im/C5pj8g7gQOu9Wo8PtDZsMw?edit# as well as the preceding Discuss thread: https://discuss.status.im/t/better-pull-requests-process/1044
 
 Also see conversations in Core Dev Call #12 and #13: https://github.com/status-im/pm/
 

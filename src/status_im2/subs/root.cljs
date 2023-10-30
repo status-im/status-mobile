@@ -11,6 +11,7 @@
     status-im2.subs.pairing
     status-im2.subs.profile
     status-im2.subs.shell
+    status-im2.subs.wallet.networks
     status-im2.subs.wallet.wallet))
 
 (defn reg-root-key-sub
@@ -142,7 +143,7 @@
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
 (reg-root-key-sub :contract-communities :contract-communities)
 
-;;wallet 2
+;;wallet
 (reg-root-key-sub :wallet/tokens :wallet/tokens)
 (reg-root-key-sub :wallet/tokens-loading? :wallet/tokens-loading?)
 
@@ -152,3 +153,8 @@
 ;;wallet
 (reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)
 (reg-root-key-sub :wallet/create-account :wallet/create-account)
+(reg-root-key-sub :wallet/networks :wallet/networks)
+
+;;debug
+(when js/goog.DEBUG
+  (reg-root-key-sub :dev/previewed-component :dev/previewed-component))
