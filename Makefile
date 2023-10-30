@@ -318,6 +318,10 @@ lint: ##@test Run code style checks
 	sh scripts/lint-trailing-newline.sh && \
 	node_modules/.bin/prettier --write .
 
+lint-translations: export TARGET := clojure
+lint-translations: ##@ Test Translations
+	scripts/lint_translations.clj
+
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
 lint-fix: export TARGET := clojure
 lint-fix: ##@test Run code style checks and fix issues
