@@ -1,27 +1,27 @@
 (ns status-im2.contexts.chat.messages.list.view
   (:require
-   [oops.core :as oops]
-   [quo.core :as quo]
-   [quo.foundations.colors :as colors]
-   [quo.theme :as quo.theme]
-   [react-native.background-timer :as background-timer]
-   [react-native.core :as rn]
-   [react-native.hooks :as hooks]
-   [react-native.platform :as platform]
-   [react-native.react-native-intersection-observer :as rnio]
-   [react-native.reanimated :as reanimated]
-   [reagent.core :as reagent]
-   [status-im.ui.screens.chat.group :as chat.group]
-   [status-im.ui.screens.chat.message.gap :as message.gap]
-   [status-im2.constants :as constants]
-   [status-im2.contexts.chat.composer.constants :as composer.constants]
-   [status-im2.contexts.chat.messages.content.view :as message]
-   [status-im2.contexts.chat.messages.list.state :as state]
-   [status-im2.contexts.chat.messages.list.style :as style]
-   [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
-   [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
-   [utils.i18n :as i18n]
-   [utils.re-frame :as rf]))
+    [oops.core :as oops]
+    [quo.core :as quo]
+    [quo.foundations.colors :as colors]
+    [quo.theme :as quo.theme]
+    [react-native.background-timer :as background-timer]
+    [react-native.core :as rn]
+    [react-native.hooks :as hooks]
+    [react-native.platform :as platform]
+    [react-native.react-native-intersection-observer :as rnio]
+    [react-native.reanimated :as reanimated]
+    [status-im.ui.screens.chat.group :as chat.group]
+    [status-im.ui.screens.chat.message.gap :as message.gap]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.chat.composer.constants :as composer.constants]
+    [status-im2.contexts.chat.messages.content.view :as message]
+    [status-im2.contexts.chat.messages.list.state :as state]
+    [status-im2.contexts.chat.messages.list.style :as style]
+    [status-im2.contexts.chat.messages.navigation.style :as navigation.style]
+    [status-im2.contexts.shell.jump-to.constants :as jump-to.constants]
+    [utils.i18n :as i18n]
+    [utils.re-frame :as rf]
+    [reagent.core :as reagent]))
 
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
@@ -43,14 +43,12 @@
                             {:animated true})))
 
 (defn on-scroll
-  [evt show-floating-scroll-down-button? on-end-reached?]
+  [evt show-floating-scroll-down-button?]
   (let [y                  (oops/oget evt "nativeEvent.contentOffset.y")
         layout-height      (oops/oget evt "nativeEvent.layoutMeasurement.height")
         threshold-height   (* (/ layout-height 100)
                               threshold-percentage-to-show-floating-scroll-down-button)
         reached-threshold? (> y threshold-height)]
-    (when @on-end-reached?
-      (reset! on-end-reached? false))
     (when (not= reached-threshold? @show-floating-scroll-down-button?)
       (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
       (reset! show-floating-scroll-down-button? reached-threshold?))))
@@ -327,9 +325,8 @@
         messages                                                                                     (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
         recording?                                                                                   (rf/sub [:chats/recording?])
         all-loaded?                                                                                  (rf/sub [:chats/all-loaded? (:chat-id chat)])
-        on-end-reached?                                                                              (reagent/atom false)
         more-than-two-messages?                                                                      (<= 2 (count messages))
-
+        on-end-reached?                                                                              (reagent/atom 0)
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
@@ -376,6 +373,7 @@
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
+                                            (reset! on-end-reached? false)
                                             ;; NOTE(alwx): here we set the initial value of
                                             ;; `scroll-y` which is needed because by default the
                                             ;; chat is scrolled to the bottom and no initial
@@ -413,7 +411,7 @@
                                                             composer-active?
                                                             animate-topbar-opacity?
                                                             content-height)
-                                            (on-scroll event show-floating-scroll-down-button? on-end-reached?))
+                                            (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
                                                                 (colors/theme-colors
