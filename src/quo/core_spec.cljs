@@ -79,6 +79,7 @@
     [quo.components.wallet.keypair.component-spec]
     [quo.components.wallet.network-amount.component-spec]
     [quo.components.wallet.network-bridge.component-spec]
+    [quo.components.wallet.network-routing.component-spec]
     [quo.components.wallet.progress-bar.component-spec]
     [quo.components.wallet.summary-info.component-spec]
     [quo.components.wallet.token-input.component-spec]
