@@ -75,7 +75,7 @@
               {:db (assoc db
                           :chats/loading?           true
                           :networks/current-network current-network
-                          :wallet/tokens-loading? true
+                          :wallet/tokens-loading?   true
                           :networks/networks        (merge networks config/default-networks-by-id)
                           :profile/profile          (merge profile settings))}
               (notifications/load-preferences)

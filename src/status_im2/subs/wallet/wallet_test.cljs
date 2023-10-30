@@ -58,7 +58,7 @@
   (testing "returns vector of maps containing :address and :balance"
     (swap! rf-db/app-db assoc
       :profile/wallet-accounts accounts
-      :wallet/tokens         tokens)
+      :wallet/tokens           tokens)
     (is (= [{:address "0x1"
              :balance 3250}
             {:address "0x2"
@@ -69,11 +69,15 @@
   [sub-name]
   (testing "returns current account with balance base on the account-address"
     (swap! rf-db/app-db assoc
-           :profile/wallet-accounts accounts
-           :wallet/tokens         tokens
-           :wallet/balances         [{:address "0x1"
-                                      :balance 3250}
-                                     {:address "0x2"
-                                      :balance 2100}])
-    (is (= {:address "0x1", :name "Main account", :hidden false, :removed false, :balance 3250}
+      :profile/wallet-accounts accounts
+      :wallet/tokens           tokens
+      :wallet/balances         [{:address "0x1"
+                                 :balance 3250}
+                                {:address "0x2"
+                                 :balance 2100}])
+    (is (= {:address "0x1"
+            :name    "Main account"
+            :hidden  false
+            :removed false
+            :balance 3250}
            (rf/sub [sub-name "0x1"])))))

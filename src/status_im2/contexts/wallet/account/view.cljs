@@ -65,8 +65,8 @@
 
 (defn view
   [account-address]
-  (let [top             (safe-area/get-top)
-        selected-tab    (reagent/atom (:id (first tabs-data)))]
+  (let [top          (safe-area/get-top)
+        selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
       (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
             account         (rf/sub [:wallet/account account-address])]

@@ -45,5 +45,7 @@
  :<- [:profile/wallet-accounts]
  :<- [:wallet/balances]
  (fn [[accounts balances] [_ account-address]]
-   (assoc (utils/get-account-by-address accounts account-address) 
-          :balance (utils/get-balance-by-address balances account-address))))
+   (assoc
+    (utils/get-account-by-address accounts account-address)
+    :balance
+    (utils/get-balance-by-address balances account-address))))
