@@ -159,8 +159,8 @@
                        :opacity                           opacity
                        :background-y                      background-y
                        :theme                             theme}
-        props         (utils/init-props) ; Non-reactive state
-        state         (utils/init-state)] ; Reactive state
+        props         (utils/init-non-reactive-state)
+        state         (utils/init-reactive-state)]
     [rn/view (when platform/ios? {:style {:z-index 1}})
      [reanimated/view {:style (style/background opacity background-y window-height)}] ; background overlay
      [sub-view/blur-view
