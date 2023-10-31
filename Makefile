@@ -320,7 +320,7 @@ lint: ##@test Run code style checks
 
 lint-translations: export TARGET := clojure
 lint-translations: ##@ Test Translations
-	scripts/lint_translations.clj
+	scripts/lint_missing_translations.clj
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
 lint-fix: export TARGET := clojure

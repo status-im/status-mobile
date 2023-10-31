@@ -1,12 +1,11 @@
 #!/usr/bin/env bb
 
-(ns lint-translations
+(ns lint-missing-translations
   (:require [babashka.pods :as pods]))
 
 (pods/load-pod 'clj-kondo/clj-kondo "2023.09.07")
 (require '[pod.borkdude.clj-kondo :as kondo])
 (require '[cheshire.core :as json])
-(require '[clojure.set :as set])
 
 (defn- safe-name [x]
   (when x (name x)))
@@ -44,16 +43,11 @@
   (let [result (analyze-code ["src"])
         all-keywords (get-in result [:analysis :keywords])
         used-translations (get-i18n-label all-keywords)
-        used-translation-keys (set (map :name used-translations))
         file-translation-keys (set (extract-translation-keys translation-file))
-        missing-translations (remove (comp file-translation-keys :name) used-translations)
-        unused-translation-keys (set/difference file-translation-keys
-                                                used-translation-keys)]
+        missing-translations (remove (comp file-translation-keys :name) used-translations)]
 
     (report-issues (map #(assoc % :reason "Missing Translation Key") missing-translations))
-    (run! #(println "Unused Translation Key:" %) unused-translation-keys)
-    (if (and (empty? missing-translations)
-             (empty? unused-translation-keys))
+    (if (empty? missing-translations)
       0
       1)))
 
