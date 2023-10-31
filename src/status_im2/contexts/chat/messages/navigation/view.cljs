@@ -36,17 +36,20 @@
         more-than-seven-messages?    (<= 7 (count messages))]
     (rn/use-effect
      (fn []
-       (if (or
-            (and (not composer-active?)
-                 more-than-seven-messages?
-                 (= :initial-render @big-name-visible?))
-            (and more-than-two-messages?
-                 (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
-                 composer-active?)
-            (and more-than-two-messages?
-                 composer-active?)
-            @animate-topbar-name?
-            @animate-topbar-opacity?)
+       (if (when-not (and
+                      @on-end-reached?
+                      (not composer-active?))
+             (or
+              (and (not composer-active?)
+                   more-than-seven-messages?
+                   (= :initial-render @big-name-visible?))
+              (and more-than-two-messages?
+                   (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
+                   composer-active?)
+              (and more-than-two-messages?
+                   composer-active?)
+              @animate-topbar-name?
+              @animate-topbar-opacity?))
          (do
            (reanimated/animate title-opacity-animation 1)
            (reanimated/animate opacity-animation 1)

@@ -283,12 +283,13 @@
        [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
-  [event scroll-y animate-topbar-opacity?]
+  [event scroll-y animate-topbar-opacity? on-end-reached?]
   (let [content-size-y  (- (oops/oget event "nativeEvent.contentSize.height")
                            (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y       (oops/oget event "nativeEvent.contentOffset.y")
         scroll-distance (- content-size-y current-y)]
-
+    (when (and @on-end-reached? (> scroll-distance 0))
+      (reset! on-end-reached? false))
     (if (< topbar-visible-scroll-y-value scroll-distance)
       (when-not @animate-topbar-opacity?
         (reset! animate-topbar-opacity? true))
@@ -297,8 +298,7 @@
     (reanimated/set-shared-value scroll-y scroll-distance)))
 
 (defn f-messages-list-content
-  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
-           animate-topbar-name? big-name-visible? animate-topbar-opacity? composer-active?
+  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms big-name-visible? animate-topbar-opacity? composer-active?
            on-end-reached?]}]
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
@@ -307,7 +307,6 @@
         messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
         recording?                            (rf/sub [:chats/recording?])
         all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
-        more-than-two-messages?               (<= 2 (count messages))
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
@@ -373,7 +372,7 @@
        :on-momentum-scroll-end            state/stop-scrolling
        :scroll-event-throttle             16
        :on-scroll                         (fn [event]
-                                            (scroll-handler event scroll-y animate-topbar-opacity?)
+                                            (scroll-handler event scroll-y animate-topbar-opacity? on-end-reached?)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
