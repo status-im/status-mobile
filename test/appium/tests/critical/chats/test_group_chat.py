@@ -242,6 +242,7 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
         self.chats[0].navigate_back_to_chat_view()
 
         self.chats[1].navigate_back_to_home_view()
+        app_package = self.drivers[2].current_package
 
         self.chats[2].just_fyi("Member_2 opens the image and saves it")
         self.chats[2].chat_element_by_text(image_description).image_in_message.click()
@@ -258,12 +259,25 @@ class TestGroupChatMultipleDeviceMergedNewUI(MultipleSharedDeviceTestCase):
             self.errors.append("Message about saving a photo is not shown for member_2.")
         self.chats[2].navigate_back_to_chat_view()
 
+        # workaround for app closed after navigating back from gallery
+        if not self.chats[2].chats_tab.is_element_displayed():
+            self.drivers[2].activate_app(app_package)
+            SignInView(self.drivers[2]).sign_in()
+        self.homes[2].chats_tab.click()
+        self.homes[2].get_chat(self.chat_name).click()
+
         self.chats[2].just_fyi("Member_2 checks that image was saved in gallery")
         self.chats[2].show_images_button.click()
         self.chats[2].allow_button.click_if_shown()
         if not self.chats[2].get_image_by_index(0).is_element_image_similar_to_template("saucelabs_sauce_gallery.png"):
             self.errors.append("Image is not saved to gallery for member_2.")
         self.chats[2].navigate_back_to_chat_view()
+
+        # workaround for app closed after navigating back from gallery
+        if not self.chats[2].chats_tab.is_element_displayed():
+            self.drivers[2].activate_app(app_package)
+            SignInView(self.drivers[2]).sign_in()
+        self.homes[2].chats_tab.click()
 
         self.errors.verify_no_errors()
 
