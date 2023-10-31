@@ -151,11 +151,12 @@
            (i18n/label :t/you-eligible-to-join)
            (i18n/label :t/you-not-eligible-to-join))]
         [info-button]]
-       [quo/text {:style {:padding-horizontal 12 :padding-bottom 18} :size :paragraph-2}
-        (if can-request-access?
-          (i18n/label :t/you-hold-number-of-hold-tokens-of-these
-                      {:number-of-hold-tokens number-of-hold-tokens})
-          (i18n/label :t/you-must-hold))]
+       (when (pos? number-of-hold-tokens)
+         [quo/text {:style {:padding-horizontal 12 :padding-bottom 18} :size :paragraph-2}
+          (if can-request-access?
+            (i18n/label :t/you-hold-number-of-hold-tokens-of-these
+                        {:number-of-hold-tokens number-of-hold-tokens})
+            (i18n/label :t/you-must-hold))])
        [quo/token-requirement-list
         {:tokens   tokens
          :padding? true}]

@@ -280,19 +280,23 @@
                               (reduce #(+ %1 (if %2 1 0)) acc criteria))
                             0
                             (:permissions token-permissions-check))
-    :tokens                (map (fn [[perm-key {:keys [token_criteria]}]]
-                                  (let [check-criteria (get-in token-permissions-check
-                                                               [:permissions perm-key :criteria])]
-                                    (map
-                                     (fn [{sym :symbol amount :amount} sufficient?]
-                                       {:symbol      sym
-                                        :sufficient? (when (seq check-criteria) sufficient?)
-                                        :loading?    checking-permissions?
-                                        :amount      amount
-                                        :img-src     (get token-images sym)})
-                                     token_criteria
-                                     (or check-criteria token_criteria))))
-                                token-permissions)}))
+    :tokens                (->> token-permissions
+                                (filter (fn [[_ {:keys [type]}]]
+                                          (contains?
+                                           constants/community-token-permission-non-channel-permissions
+                                           type)))
+                                (map (fn [[perm-key {:keys [token_criteria]}]]
+                                       (let [check-criteria (get-in token-permissions-check
+                                                                    [:permissions perm-key :criteria])]
+                                         (map
+                                          (fn [{sym :symbol amount :amount} sufficient?]
+                                            {:symbol      sym
+                                             :sufficient? (when (seq check-criteria) sufficient?)
+                                             :loading?    checking-permissions?
+                                             :amount      amount
+                                             :img-src     (get token-images sym)})
+                                          token_criteria
+                                          (or check-criteria token_criteria))))))}))
 
 (re-frame/reg-sub
  :community/images
