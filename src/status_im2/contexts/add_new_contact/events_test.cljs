@@ -12,6 +12,7 @@
 (def ens "esep")
 (def ens-stateofus-eth (str ens ".stateofus.eth"))
 (def link-ckey (str "https://status.app/u#" ckey))
+(def link-ckey-with-encoded-data (str "https://status.app/u/CwSACgcKBVBhdmxvAw==#" ckey))
 (def link-ens (str "https://status.app/u#" ens))
 
 ;;; unit tests (no app-db involved)
@@ -22,56 +23,61 @@
                                            :input           i}))
                 (events/init-contact e))
 
-   ""            {:user-public-key user-ukey
-                  :input           ""
-                  :type            :empty
-                  :state           :empty}
+   ""                          {:user-public-key user-ukey
+                                :input           ""
+                                :type            :empty
+                                :state           :empty}
 
-   " "           {:user-public-key user-ukey
-                  :input           " "
-                  :type            :empty
-                  :state           :empty}
+   " "                         {:user-public-key user-ukey
+                                :input           " "
+                                :type            :empty
+                                :state           :empty}
 
-   ukey          {:user-public-key user-ukey
-                  :input           ukey
-                  :id              ukey
-                  :type            :public-key
-                  :public-key      ukey
-                  :state           :invalid
-                  :msg             :t/not-a-chatkey}
+   ukey                        {:user-public-key user-ukey
+                                :input           ukey
+                                :id              ukey
+                                :type            :public-key
+                                :public-key      ukey
+                                :state           :invalid
+                                :msg             :t/not-a-chatkey}
 
-   ens           {:user-public-key user-ukey
-                  :input           ens
-                  :id              ens
-                  :type            :ens
-                  :ens             ens-stateofus-eth
-                  :state           :resolve-ens}
+   ens                         {:user-public-key user-ukey
+                                :input           ens
+                                :id              ens
+                                :type            :ens
+                                :ens             ens-stateofus-eth
+                                :state           :resolve-ens}
 
-   (str " " ens) {:user-public-key user-ukey
-                  :input           (str " " ens)
-                  :id              ens
-                  :type            :ens
-                  :ens             ens-stateofus-eth
-                  :state           :resolve-ens}
+   (str " " ens)               {:user-public-key user-ukey
+                                :input           (str " " ens)
+                                :id              ens
+                                :type            :ens
+                                :ens             ens-stateofus-eth
+                                :state           :resolve-ens}
 
-   ckey          {:user-public-key user-ukey
-                  :input           ckey
-                  :id              ckey
-                  :type            :compressed-key
-                  :state           :decompress-key}
+   ckey                        {:user-public-key user-ukey
+                                :input           ckey
+                                :id              ckey
+                                :type            :compressed-key
+                                :state           :decompress-key}
 
-   link-ckey     {:user-public-key user-ukey
-                  :input           link-ckey
-                  :id              ckey
-                  :type            :compressed-key
-                  :state           :decompress-key}
+   link-ckey                   {:user-public-key user-ukey
+                                :input           link-ckey
+                                :id              ckey
+                                :type            :compressed-key
+                                :state           :decompress-key}
+   link-ckey-with-encoded-data {:user-public-key user-ukey
+                                :input           link-ckey-with-encoded-data
+                                :id              ckey
+                                :type            :compressed-key
+                                :state           :decompress-key}
 
-   link-ens      {:user-public-key user-ukey
-                  :input           link-ens
-                  :id              ens
-                  :type            :ens
-                  :ens             ens-stateofus-eth
-                  :state           :resolve-ens}))
+   link-ens                    {:user-public-key user-ukey
+                                :input           link-ens
+                                :id              ens
+                                :type            :ens
+                                :ens             ens-stateofus-eth
+                                :state           :resolve-ens}))
 
 ;;; event handler tests (no callbacks)
 
