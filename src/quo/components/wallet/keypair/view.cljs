@@ -84,9 +84,9 @@
 (defn- view-internal
   []
   (let [selected? (reagent/atom true)]
-    (fn [{:keys [accounts action] :as props}]
+    (fn [{:keys [accounts action container-style] :as props}]
       [rn/pressable
-       {:style    (style/container (merge props {:selected? @selected?}))
+       {:style    (merge (style/container (merge props {:selected? @selected?})) container-style)
         :on-press #(when (= action :selector) (reset! selected? (not @selected?)))}
        [rn/view {:style style/header-container}
         [avatar props]

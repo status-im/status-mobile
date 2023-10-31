@@ -4,8 +4,7 @@
 
 (defn container
   [{:keys [blur? customization-color theme selected?]}]
-  {:flex           1
-   :border-radius  20
+  {:border-radius  20
    :border-width   1
    :border-color   (if selected?
                      (if blur?
@@ -28,5 +27,4 @@
 (def title-container
   {:flex-direction  :row
    :align-items     :center
-   :justify-content :space-between
-   :flex            1})
+   :justify-content :space-between})

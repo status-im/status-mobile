@@ -1,5 +1,6 @@
 (ns status-im2.contexts.wallet.create-account.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
@@ -23,22 +24,41 @@
 (defn get-keypair-data
   [name derivation-path]
   [{:title             (keypair-string name)
+<<<<<<< HEAD
     :left-icon         :i/placeholder
     :action            :button
     :action-props      {:on-press    #(js/alert "Button pressed!")
+=======
+    :image             :avatar
+    :image-props       {:full-name           "A Y"
+                        :size                :xxs
+                        :customization-color :blue}
+    :action            :button
+    :action-props      {:on-press    #(rf/dispatch [:navigate-to :wallet-select-keypair])
+>>>>>>> 7ee3de610 (wallet: keypair screen)
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text
     :description-props {:text (i18n/label :t/on-device)}}
    {:title             (i18n/label :t/derivation-path)
+<<<<<<< HEAD
     :action            :button
     :action-props      {:on-press    #(rf/dispatch [:navigate-to :wallet-edit-derivation-path])
                         :button-text (i18n/label :t/edit)
                         :icon-left   :i/placeholder
                         :alignment   :flex-start}
     :left-icon         :i/derivated-path
+=======
+    :image             :icon
+    :image-props       :i/derivated-path
+    :action            :button
+    :action-props      {:on-press    #(js/alert "Button pressed!")
+                        :button-text (i18n/label :t/edit)
+                        :icon-left   :i/placeholder
+                        :alignment   :flex-start}
+>>>>>>> 7ee3de610 (wallet: keypair screen)
     :description       :text
-    :description-props {:text derivation-path}}])
+    :description-props {:text (string/replace derivation-path #"/" " / ")}}])
 
 (defn- view-internal
   []
