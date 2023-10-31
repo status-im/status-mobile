@@ -1,18 +1,17 @@
 (ns status-im2.common.floating-button-page.floating-container.style
-  (:require [react-native.platform :as platform]))
+  (:require [react-native.safe-area :as safe-area]))
 
-(def container
-  {:width      "100%"
-   :margin-top :auto
-   :align-self :flex-end})
+(defn content-container
+  [blur? keyboard-shown?]
+  (let [margin-bottom (if keyboard-shown? 0 (safe-area/get-bottom))]
+    (cond-> {:margin-top         :auto
+             :overflow           :hidden
+             :margin-bottom      margin-bottom
+             :padding-vertical   12
+             :padding-horizontal 20}
+      blur? (dissoc :padding-vertical :padding-horizontal))))
 
-(def view-container
-  (assoc container
-         :padding-left   20
-         :padding-right  20
-         :padding-top    12
-         :padding-bottom 12))
-
-(def blur-container
-  (merge container
-         (when platform/android? {:margin-left 20})))
+(def blur-inner-container
+  {:background-color   :transparent ; required, otherwise blur-view will shrink
+   :padding-vertical   12
+   :padding-horizontal 20})

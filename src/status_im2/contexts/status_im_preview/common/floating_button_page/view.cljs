@@ -10,7 +10,7 @@
 
 (defn view
   []
-  (let [content-height (reagent/atom 300)
+  (let [content-height (reagent/atom 450)
         slide?         (reagent/atom false)]
     (fn []
       [rn/view
