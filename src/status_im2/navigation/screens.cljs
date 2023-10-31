@@ -243,6 +243,7 @@
      :component emoji-picker/view}
 
     {:name      :wallet-accounts
+     :options   {:insets {:top? true}}
      :component wallet-accounts/view}
 
     {:name      :wallet-edit-account
