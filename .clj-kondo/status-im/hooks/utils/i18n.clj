@@ -15,7 +15,7 @@
                                :type    :status-im.linter/invalid-translation-keyword)))
     (assoc expr :node
            (api/list-node
-            (list* (api/reg-keyword! translation-key-node fsym)
+            (list* f (api/reg-keyword! translation-key-node fsym)
                    remainder)))))
 
 (comment
