@@ -13,13 +13,10 @@
 
 (defn view-internal
   []
-  (let [top         (safe-area/get-top)
-        bottom      (safe-area/get-bottom)
+  (let [bottom      (safe-area/get-bottom)
         input-value (reagent/atom "")]
     (fn []
-      [rn/view
-       {:style {:flex       1
-                :margin-top top}}
+      [rn/view {:style {:flex       1}}
        [quo/page-nav
         {:type      :no-title
          :icon-name :i/close

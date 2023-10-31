@@ -1,10 +1,5 @@
 (ns status-im2.contexts.wallet.account.bridge.style)
 
-(defn container
-  [top]
-  {:flex       1
-   :margin-top top})
-
 (def header-container
   {:padding-horizontal 20
    :padding-vertical   12})

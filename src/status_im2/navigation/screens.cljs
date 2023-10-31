@@ -245,6 +245,7 @@
      :component emoji-picker/view}
 
     {:name      :wallet-accounts
+     :options   {:insets {:top? true}}
      :component wallet-accounts/view}
 
 <<<<<<< HEAD
@@ -266,9 +267,11 @@
      :component wallet-edit-account/view}
 
     {:name      :wallet-address-watch
+     :options   {:insets {:top? true}}
      :component wallet-address-watch/view}
 
     {:name      :wallet-bridge
+     :options   {:insets {:top? true}}
      :component bridge/view}
 
 <<<<<<< HEAD
@@ -294,6 +297,7 @@
 >>>>>>> 4e9e8068f (wallet: bridge screen)
 
     {:name      :wallet-create-account
+     :options   {:insets {:top? true}}
      :component wallet-create-account/view}
 
     {:name      :wallet-saved-address
@@ -305,7 +309,7 @@
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext}
      :component wallet-select-address/view}
-    
+
     {:name      :scan-address
      :options   (merge
                  options/dark-screen

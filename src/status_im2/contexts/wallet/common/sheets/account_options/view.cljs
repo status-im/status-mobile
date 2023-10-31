@@ -1,7 +1,7 @@
-(ns status-im2.contexts.wallet.common.account-options.view
+(ns status-im2.contexts.wallet.common.sheets.account-options.view
   (:require [quo.core :as quo]
             [react-native.core :as rn]
-            [status-im2.contexts.wallet.common.account-options.style :as style]
+            [status-im2.contexts.wallet.common.sheets.account-options.style :as style]
             [status-im2.contexts.wallet.common.temp :as temp]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))

@@ -2,9 +2,9 @@
   (:require [quo.core :as quo]
             [quo.theme :as quo.theme]
             [reagent.core :as reagent]
-            [status-im2.contexts.wallet.common.network-preferences.view :as network-preferences]
             [status-im2.contexts.wallet.common.screen-base.create-or-edit-account.view :as
              create-or-edit-account]
+            [status-im2.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
             [status-im2.contexts.wallet.edit-account.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))

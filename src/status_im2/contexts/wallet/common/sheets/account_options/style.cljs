@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.common.account-options.style)
+(ns status-im2.contexts.wallet.common.sheets.account-options.style)
 
 (def drawer-section-label
   {:padding-horizontal 20

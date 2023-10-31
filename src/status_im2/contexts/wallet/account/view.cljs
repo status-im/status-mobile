@@ -5,7 +5,7 @@
     [reagent.core :as reagent]
     [status-im2.contexts.wallet.account.style :as style]
     [status-im2.contexts.wallet.account.tabs.view :as tabs]
-    [status-im2.contexts.wallet.common.account-options.view :as account-options]
+    [status-im2.contexts.wallet.common.sheets.account-options.view :as account-options]
     [status-im2.contexts.wallet.common.temp :as temp]
     [status-im2.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
@@ -30,7 +30,11 @@
    {:id :about :label (i18n/label :t/about) :accessibility-label :about}])
 
 (defn view
+<<<<<<< HEAD
   [account-address]
+=======
+  []
+>>>>>>> 06758aab0 (review)
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
 <<<<<<< HEAD
@@ -44,10 +48,14 @@
 =======
 >>>>>>> 3f129bdcb (wallet: bridge screen)
       (let [networks (rf/sub [:wallet/network-details])]
+<<<<<<< HEAD
         [rn/view
          {:style {:flex       1
                   :margin-top top}}
 >>>>>>> 7a5ddb266 (updates)
+=======
+        [rn/view {:style {:flex       1}}
+>>>>>>> 06758aab0 (review)
          [quo/page-nav
           {:type              :wallet-networks
            :background        :blur
