@@ -1,7 +1,7 @@
 (ns quo.components.colors.color.style
   (:require
-    [quo.components.colors.color.constants :as constants]
-    [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]
+    [utils.responsiveness :as responsiveness]))
 
 (defn color-button-common
   [window-width]
@@ -10,7 +10,7 @@
    :border-width  4
    :border-radius 24
    :margin-right  (-> window-width
-                      (- constants/IPHONE_11_PRO_VIEWPORT_WIDTH) ;We want the design to be 100%
+                      (- responsiveness/IPHONE_11_PRO_VIEWPORT_WIDTH) ;We want the design to be 100%
                                                                  ;identical to Figma on iPhone 11
                                                                  ;Pro, So we're using it's VW here.
                       (/ 6) ;Dividing by an appropriate factor to get a reasonable value for each VW
@@ -25,14 +25,12 @@
   ([color selected?]
    (color-button color selected? nil nil))
   ([color selected? idx window-width]
-   (merge (color-button-common window-width)
-          (when selected?
-            {:border-top-color    (colors/alpha color 0.4)
-             :border-end-color    (colors/alpha color 0.4)
-             :border-bottom-color (colors/alpha color 0.2)
-             :border-start-color  (colors/alpha color 0.2)}
-            (when (zero? idx)
-              {:margin-left -4})))))
+   (cond-> (color-button-common window-width)
+     selected?   (assoc :border-top-color    (colors/alpha color 0.4)
+                        :border-end-color    (colors/alpha color 0.4)
+                        :border-bottom-color (colors/alpha color 0.2)
+                        :border-start-color  (colors/alpha color 0.2))
+     (zero? idx) (assoc :margin-left -4))))
 
 (defn color-circle
   [color border?]
