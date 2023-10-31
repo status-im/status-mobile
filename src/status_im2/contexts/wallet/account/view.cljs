@@ -2,11 +2,11 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.contexts.wallet.account.style :as style]
     [status-im2.contexts.wallet.account.tabs.view :as tabs]
     [status-im2.contexts.wallet.common.temp :as temp]
+    [status-im2.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -57,14 +57,13 @@
    {:id :about :label (i18n/label :t/about) :accessibility-label :about}])
 
 (defn view
-  []
-  (let [top          (safe-area/get-top)
-        selected-tab (reagent/atom (:id (first tabs-data)))]
+  [account-address]
+  (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      (let [networks (rf/sub [:wallet/network-details])]
-        [rn/view
-         {:style {:flex       1
-                  :margin-top top}}
+      (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
+            account         (rf/sub [:wallet/account account-address])
+            networks        (rf/sub [:wallet/network-details])]
+        [rn/view {:style style/container}
          [quo/page-nav
           {:type              :wallet-networks
            :background        :blur
@@ -79,7 +78,11 @@
                                                                     :gradient-cover?     true
                                                                     :customization-color :purple}])
                                :emoji               "🍑"}}]
-         [quo/account-overview temp/account-overview-state]
+         [quo/account-overview
+          {:current-value       (utils/prettify-balance (:balance account))
+           :account-name        (:name account)
+           :account             :default
+           :customization-color :blue}]
          [quo/wallet-graph {:time-frame :empty}]
          [quo/wallet-ctas
           {:send-action #(rf/dispatch [:open-modal :wallet-select-address])
