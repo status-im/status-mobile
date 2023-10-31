@@ -213,6 +213,10 @@ class MuteButton(Button):
     def text(self):
         return self.find_element().find_element(by=MobileBy.CLASS_NAME, value="android.widget.TextView").text
 
+    @property
+    def unmute_caption_text(self):
+        return self.find_element().find_element(by=MobileBy.XPATH, value="//android.widget.TextView[2]").text
+
 
 class HomeView(BaseView):
     def __init__(self, driver):
@@ -277,6 +281,7 @@ class HomeView(BaseView):
         self.clear_history_button = Button(self.driver, accessibility_id="clear-history")
         self.mute_chat_button = MuteButton(self.driver, accessibility_id="mute-chat")
         self.mute_community_button = MuteButton(self.driver, accessibility_id="mute-community")
+        self.unmute_community_button = MuteButton(self.driver, accessibility_id="unmute-community")
         self.mute_channel_button = MuteButton(self.driver, accessibility_id="chat-toggle-muted")
         self.mark_all_messages_as_read_button = Button(self.driver, accessibility_id="mark-as-read")
 
