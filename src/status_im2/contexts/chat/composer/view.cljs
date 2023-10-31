@@ -40,11 +40,14 @@
                                                     subscriptions)
                                                    constants/input-height))
         {:keys [keyboard-shown]} (hooks/use-keyboard)
-        max-height               (utils/calc-max-height subscriptions ; Max allowed height for the composer view
+        max-height               (utils/calc-max-height subscriptions ; Max allowed height for the
+                                                                      ; composer view
                                                         window-height
                                                         @(:kb-height state)
                                                         insets)
-        lines                    (utils/calc-lines (- @content-height constants/extra-content-offset)) ; Current lines count
+        lines                    (utils/calc-lines (- @content-height constants/extra-content-offset)) ; Current
+                                                                                                       ; lines
+                                                                                                       ; count
         ;; Maximum number of lines that can be displayed when composer in maximized
         max-lines                (utils/calc-lines max-height)
         animations               (utils/init-animations
@@ -162,7 +165,8 @@
         props         (utils/init-non-reactive-state)
         state         (utils/init-reactive-state)]
     [rn/view (when platform/ios? {:style {:z-index 1}})
-     [reanimated/view {:style (style/background opacity background-y window-height)}] ; background overlay
+     [reanimated/view {:style (style/background opacity background-y window-height)}] ; background
+                                                                                      ; overlay
      [sub-view/blur-view
       {:layout-height blur-height
        :focused?      (:focused? state)
