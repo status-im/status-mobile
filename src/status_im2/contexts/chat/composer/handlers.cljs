@@ -120,10 +120,10 @@
       (js/setTimeout #(reset! gradient-z-index 0) 300))))
 
 (defn change-text
+  "Update `text-value`, update cursor selection, find links, find mentions"
   [text
    {:keys [input-ref record-reset-fn]}
    {:keys [text-value cursor-position recording?]}]
-  "Update `text-value`, update cursor selection, find links, find mentions"
   (reset! text-value text)
   (reagent/next-tick #(when @input-ref
                         (.setNativeProps ^js @input-ref
@@ -140,10 +140,10 @@
     (debounce/debounce-and-dispatch [:mention/on-change-text text] 300)))
 
 (defn selection-change
+  "A method that handles our custom selector for `B I U`"
   [event
    {:keys [input-ref selection-event selection-manager]}
    {:keys [lock-selection? cursor-position first-level? menu-items]}]
-  "A method that handles our custom selector for `B I U`"
   (let [start             (oops/oget event "nativeEvent.selection.start")
         end               (oops/oget event "nativeEvent.selection.end")
         selection?        (not= start end)

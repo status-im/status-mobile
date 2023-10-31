@@ -16,13 +16,13 @@
     [utils.re-frame :as rf]))
 
 (defn send-message
+  "Minimize composer, animate-out background overlay, clear input and flush state"
   [{:keys [sending-images? sending-links?]}
    {:keys [text-value focused? maximized?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]}
    window-height
    edit
    scroll-to-bottom-fn]
-  "Minimize composer, animate-out background overlay, clear input and flush state"
   (reanimated/animate height comp-constants/input-height)
   (reanimated/set-shared-value saved-height comp-constants/input-height)
   (reanimated/set-shared-value last-height comp-constants/input-height)
