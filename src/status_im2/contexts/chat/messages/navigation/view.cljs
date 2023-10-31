@@ -43,22 +43,19 @@
             (and more-than-two-messages?
                  (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
                  composer-active?)
-
-            (not @big-name-visible?)
             (and more-than-two-messages?
                  composer-active?)
             @animate-topbar-name?
             @animate-topbar-opacity?)
          (do
-           (reanimated/animate opacity-animation 1)
            (reanimated/animate title-opacity-animation 1)
+           (reanimated/animate opacity-animation 1)
            (reanimated/animate translate-animation 0))
          (do
            (reanimated/animate title-opacity-animation 0)
            (reanimated/animate opacity-animation 0)
            (reanimated/animate translate-animation title-opacity-interpolation-start))))
-     [@animate-topbar-name? @big-name-visible? composer-active? @animate-topbar-opacity?
-      @on-end-reached?])
+     [@animate-topbar-name? @big-name-visible? @animate-topbar-opacity? composer-active? @on-end-reached?])
     [rn/view {:style (style/navigation-view chat-screen-loaded?)}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]

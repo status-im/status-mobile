@@ -283,37 +283,16 @@
        [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
-  [event scroll-y animate-topbar-name? more-than-two-messages? big-name-visible? composer-active?
-   animate-topbar-opacity? content-height]
+  [event scroll-y animate-topbar-opacity?]
   (let [content-size-y  (- (oops/oget event "nativeEvent.contentSize.height")
                            (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y       (oops/oget event "nativeEvent.contentOffset.y")
         scroll-distance (- content-size-y current-y)]
 
-    (when (and
-           (not composer-active?)
-           (= :initial-render @big-name-visible?)
-           (> (reanimated/get-shared-value
-               content-height)
-              content-height-shared-big-name-invisible-value))
-      (reset! animate-topbar-opacity? true)
-      (reset! animate-topbar-name? true))
-
     (if (< topbar-visible-scroll-y-value scroll-distance)
       (when-not @animate-topbar-opacity?
         (reset! animate-topbar-opacity? true))
       (when @animate-topbar-opacity?
-        (reset! animate-topbar-opacity? false)))
-    (if
-      (and
-       more-than-two-messages?
-       composer-active?
-       (not @big-name-visible?))
-      (do
-        (reset! animate-topbar-opacity? true)
-        (reset! animate-topbar-name? true))
-      (do
-        (reset! animate-topbar-name? false)
         (reset! animate-topbar-opacity? false)))
     (reanimated/set-shared-value scroll-y scroll-distance)))
 
@@ -329,26 +308,9 @@
         recording?                            (rf/sub [:chats/recording?])
         all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
         more-than-two-messages?               (<= 2 (count messages))
-        small-name-visible-threshold?         (> topbar-invisible-scroll-y-value
-                                                 (reanimated/get-shared-value scroll-y))
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
-    (rn/use-effect (fn []
-                     (when (and composer-active?
-                                small-name-visible-threshold?)
-                       (reset! big-name-visible? true))
-                     (if (and
-                          more-than-two-messages?
-                          (and (not @big-name-visible?)
-                               (not= :initial-render @big-name-visible?)))
-                       (do
-                         (reset! animate-topbar-opacity? true)
-                         (reset! animate-topbar-name? true))
-                       (do
-                         (reset! animate-topbar-opacity? false)
-                         (reset! animate-topbar-name? false))))
-                   [composer-active? @big-name-visible? @on-end-reached? small-name-visible-threshold?])
     [rn/view {:style {:flex 1}}
      [rnio/flat-list
       {:root-margin                       (root-margin-for-big-name-visibility-detector composer-active?)
@@ -411,14 +373,7 @@
        :on-momentum-scroll-end            state/stop-scrolling
        :scroll-event-throttle             16
        :on-scroll                         (fn [event]
-                                            (scroll-handler event
-                                                            scroll-y
-                                                            animate-topbar-name?
-                                                            more-than-two-messages?
-                                                            big-name-visible?
-                                                            composer-active?
-                                                            animate-topbar-opacity?
-                                                            content-height)
+                                            (scroll-handler event scroll-y animate-topbar-opacity?)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?
