@@ -22,7 +22,7 @@
   (fn [analysis-keywords]
     (filter (comp syms :reg) analysis-keywords)))
 
-(def get-i18n-label (filter-on-usage #{'i18n/label}))
+(def get-i18n-label (filter-on-usage #{'utils.i18n/label}))
 
 (defn- ->keyword [analysis-keyword]
   (keyword (safe-name (:ns analysis-keyword)) (:name analysis-keyword)))

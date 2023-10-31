@@ -6,8 +6,7 @@
    Returns the node with the keyword marked as a definition and `utils.i18n/label` as
    the function that registered it."
   [{:keys [node] :as expr}]
-  (let [[f translation-key-node & remainder] (:children node)
-        {fsym :value} f]
+  (let [[f translation-key-node & remainder] (:children node)]
     (when (and (api/keyword-node? translation-key-node)
                (not= "t" (-> translation-key-node api/sexpr namespace)))
       (api/reg-finding! (assoc (meta translation-key-node)
@@ -15,7 +14,7 @@
                                :type    :status-im.linter/invalid-translation-keyword)))
     (assoc expr :node
            (api/list-node
-            (list* f (api/reg-keyword! translation-key-node fsym)
+            (list* f (api/reg-keyword! translation-key-node 'utils.i18n/label)
                    remainder)))))
 
 (comment
