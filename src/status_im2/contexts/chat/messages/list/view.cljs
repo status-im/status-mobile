@@ -298,7 +298,8 @@
     (reanimated/set-shared-value scroll-y scroll-distance)))
 
 (defn f-messages-list-content
-  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms big-name-visible? animate-topbar-opacity? composer-active?
+  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
+           big-name-visible? animate-topbar-opacity? composer-active?
            on-end-reached?]}]
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
@@ -372,7 +373,10 @@
        :on-momentum-scroll-end            state/stop-scrolling
        :scroll-event-throttle             16
        :on-scroll                         (fn [event]
-                                            (scroll-handler event scroll-y animate-topbar-opacity? on-end-reached?)
+                                            (scroll-handler event
+                                                            scroll-y
+                                                            animate-topbar-opacity?
+                                                            on-end-reached?)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?

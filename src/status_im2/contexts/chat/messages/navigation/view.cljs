@@ -38,7 +38,8 @@
      (fn []
        (if (when-not (and
                       @on-end-reached?
-                      (not composer-active?))
+                      (not composer-active?)
+                      big-name-visible?)
              (or
               (and (not composer-active?)
                    more-than-seven-messages?
@@ -58,7 +59,8 @@
            (reanimated/animate title-opacity-animation 0)
            (reanimated/animate opacity-animation 0)
            (reanimated/animate translate-animation title-opacity-interpolation-start))))
-     [@animate-topbar-name? @big-name-visible? @animate-topbar-opacity? composer-active? @on-end-reached?])
+     [@animate-topbar-name? @big-name-visible? @animate-topbar-opacity? composer-active?
+      @on-end-reached?])
     [rn/view {:style (style/navigation-view chat-screen-loaded?)}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]
