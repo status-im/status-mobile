@@ -52,4 +52,6 @@
       1)))
 
 (when (= *file* (System/getProperty "babashka.file"))
-  (apply -main *command-line-args*))
+  (->> *command-line-args*
+       (apply -main)
+       System/exit))
