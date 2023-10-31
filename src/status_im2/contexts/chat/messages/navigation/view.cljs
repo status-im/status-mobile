@@ -39,7 +39,7 @@
        (if (when-not (and
                       @on-end-reached?
                       (not composer-active?)
-                      @big-name-visible?)
+                      (true? @big-name-visible?))
              (or
               (and (not composer-active?)
                    more-than-seven-messages?
