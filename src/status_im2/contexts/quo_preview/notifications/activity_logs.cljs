@@ -105,7 +105,7 @@
   {:body  "Your favorite color is Turquoise."
    :title "What's my favorite color?"})
 
-(defn preview-activity-logs
+(defn view
   []
   (let [state (reagent/atom {:button-1-label "Decline"
                              :button-1-type  :danger

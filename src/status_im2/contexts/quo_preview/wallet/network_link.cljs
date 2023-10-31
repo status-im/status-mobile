@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.wallet.network-link
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -14,35 +13,27 @@
     :vault "Arbitrum"}])
 
 (def descriptor
-  [{:label   "Shape:"
-    :key     :shape
+  [{:key     :shape
     :type    :select
-    :options [{:key   :linear
-               :value "Linear"}
-              {:key   :1x
-               :value "1x"}
-              {:key   :2x
-               :value "2x"}]}
-   {:label   "Source:"
-    :key     :source
+    :options [{:key :linear}
+              {:key :1x}
+              {:key :2x}]}
+   {:key     :source
     :type    :select
     :options networks}
-   {:label   "Destination:"
-    :key     :destination
+   {:key     :destination
     :type    :select
     :options networks}])
 
-(defn preview
+(defn view
   []
   (let [state (reagent/atom {:shape       :linear
                              :source      :ethereum
                              :destination :optimism})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view
-        {:style {:flex        1
-                 :padding-top 40
-                 :align-items :center}}
-        [quo/network-link @state]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-top 40
+                                    :align-items :center}}
+       [quo/network-link @state]])))

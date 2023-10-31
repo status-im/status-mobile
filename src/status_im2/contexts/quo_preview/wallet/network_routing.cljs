@@ -6,8 +6,7 @@
             [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label   "Number of networks"
-    :key     :number-networks
+  [{:key     :number-networks
     :type    :select
     :options [{:key 2} {:key 3} {:key 4} {:key 5}]}])
 
@@ -78,7 +77,7 @@
                   [quo/text "Total amount: " (reduce + (map :amount asked-networks))]]
                  asked-networks)]))))
 
-(defn preview
+(defn view
   []
   (let [descriptor-state (reagent/atom {:total-amount    400
                                         :number-networks 4
@@ -88,7 +87,8 @@
                                         :max-amount-3    250
                                         :max-amount-4    200})]
     (fn []
-      [preview/preview-container {:state descriptor-state :descriptor descriptor}
-       [rn/view {:style {:flex 1 :margin-vertical 28}}
-        ^{:key (str "preview-network-routing-" (:number-networks @descriptor-state))}
-        [preview-internal @descriptor-state]]])))
+      [preview/preview-container
+       {:state                     descriptor-state
+        :descriptor                descriptor
+        :component-container-style {:margin-vertical 28}}
+       [preview-internal @descriptor-state]])))

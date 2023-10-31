@@ -1,23 +1,17 @@
 (ns status-im2.contexts.quo-preview.wallet.network-bridge
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 
 (def descriptor
-  [{:label   "Network:"
-    :key     :network
+  [{:key     :network
     :type    :select
-    :options [{:key   :ethereum
-               :value "Ethereum"}
-              {:key   :optimism
-               :value "Optimism"}
-              {:key   :arbitrum
-               :value "Arbitrum"}]}
-   {:label   "Status:"
-    :key     :status
+    :options [{:key :ethereum}
+              {:key :optimism}
+              {:key :arbitrum}]}
+   {:key     :status
     :type    :select
     :options [{:key :default :value :default}
               {:key :locked :value :locked}
@@ -25,19 +19,16 @@
               {:key :disabled :value :disabled}
               {:key :add :value :add}]}])
 
-(defn preview
+(defn view
   []
   (let [state (reagent/atom {:network :ethereum
                              :status  :default
                              :amount  "50 SNT"})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view
-        {:style {:flex               1
-                 :padding-horizontal 20}}
-        [rn/view
-         {:style {:flex        1
-                  :margin-top  50
-                  :align-items :center}} [quo/network-bridge @state]]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-horizontal 20
+                                    :margin-top         50
+                                    :align-items        :center}}
+       [quo/network-bridge @state]])))
