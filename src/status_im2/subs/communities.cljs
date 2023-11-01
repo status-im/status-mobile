@@ -210,19 +210,17 @@
   - Nil: no lock
   - True: locked
   - False: unlocked"
-  [{community-id :id token-permissions :token-permissions joined? :joined}
+  [{community-id :id token-permissions :token-permissions}
    {chat-id :id can-post? :can-post?}]
-  (if (not joined?)
-    true
-    (let [chat-permissions (->> token-permissions
-                                (map second)
-                                (filter (fn [{:keys [chat_ids]}]
-                                          (some (fn [permission-chat-id]
-                                                  (= permission-chat-id (str community-id chat-id)))
-                                                chat_ids))))]
-      (cond
-        (empty? chat-permissions) nil
-        :else                     (not can-post?)))))
+  (let [chat-permissions (->> token-permissions
+                              (map second)
+                              (filter (fn [{:keys [chat_ids]}]
+                                        (some (fn [permission-chat-id]
+                                                (= permission-chat-id (str community-id chat-id)))
+                                              chat_ids))))]
+    (cond
+      (empty? chat-permissions) nil
+      :else                     (not can-post?))))
 
 (defn reduce-over-categories
   [community
