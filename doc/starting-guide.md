@@ -30,23 +30,23 @@ You need to have an emulator like [AVD](https://developer.android.com/studio/run
 
 #### Running on a simulator
 
-We highly recommend using the `iPhone 11 Pro` simulator as its screen dimensions match with our design.
+We highly recommend using the `iPhone 13` simulator as its screen dimensions match with our design.
 
-If you have Xcode `v12.x` (and above) installed in your system, you need to follow the below steps to add `iPhone 11 Pro` simulator:
+If you have Xcode `v12.x` (and above) installed in your system, you need to follow the below steps to add `iPhone 13` simulator:
 
 1. Open Xcode
 2. Menu `>` Window `>` Devices and Simulators
 3. Tap `+` button on bottom left
-4. Select **Device Type** as `iPhone 11 Pro`
+4. Select **Device Type** as `iPhone 13`
 5. Leave the **Simulator Name** empty and tap on **Create**
 
 ##### NOTE ⚠️
 
-Running `make run-ios` will target `iPhone 11 Pro` by default.
+Running `make run-ios` will target `iPhone 13` by default.
 
 If you need to run on any other simulator, you can specify the simulator type by adding the `SIMULATOR` flag:
 ```sh
-make run-ios SIMULATOR="iPhone 11 Pro"
+make run-ios SIMULATOR="iPhone 13"
 ```
 
 #### Running on a physical device
