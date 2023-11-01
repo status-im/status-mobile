@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.contexts.wallet.create-account.select-keypair.style :as style]
+    [utils.address :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -20,7 +21,7 @@
 
 (defn view
   []
-  (let [{:keys [public-key]} (rf/sub [:profile/profile])
+  (let [{:keys [public-key compressed-key]} (rf/sub [:profile/profile])
         display-name         (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))]
     [rn/view {:style {:flex 1}}
      [quo/page-nav
@@ -35,14 +36,14 @@
        :button-on-press #(js/alert "not implemented")}]
      [quo/keypair
       (merge
-       {:customization-color :blue
-        :type                :default-keypair
-        :stored              :on-device
-        :on-options-press    #(js/alert "Options pressed")
-        :action              :selector
-        :blur?               false
-        :details             {:full-name display-name
-                              :address   "zQ3...6fBd2"}
-        :accounts            accounts
-        :container-style     {:margin-horizontal 20
-                              :margin-vertical   8}})]]))
+        {:customization-color :blue
+         :type                :default-keypair
+         :stored              :on-device
+         :on-options-press    #(js/alert "Options pressed")
+         :action              :selector
+         :blur?               false
+         :details             {:full-name display-name
+                               :address   (utils/get-shortened-compressed-key compressed-key)}
+         :accounts            accounts
+         :container-style     {:margin-horizontal 20
+                               :margin-vertical   8}})]]))
