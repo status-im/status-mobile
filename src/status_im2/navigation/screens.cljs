@@ -248,21 +248,6 @@
      :options   {:insets {:top? true}}
      :component wallet-accounts/view}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    {:name      :wallet-accounts
-     :options   {:insets {:top? true}}
-     :component wallet-accounts/view}
-=======
-     {:name      :wallet-accounts
-      :component wallet-accounts/view}
->>>>>>> 7a5ddb266 (updates)
-=======
->>>>>>> 3f129bdcb (wallet: bridge screen)
-
-=======
->>>>>>> af4fa042f (lint)
     {:name      :wallet-edit-account
      :component wallet-edit-account/view}
 
