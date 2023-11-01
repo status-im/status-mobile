@@ -107,7 +107,7 @@
            (= handler :community-chat)
            (:community-data route-params)
            (string? (:community-data route-params))
-           (string/includes? (:community-data route-params) "-"))
+           (re-find constants/regx-starts-with-uuid (:community-data route-params)))
       (assoc-in [:route-params :community-channel-id] (:community-data route-params))
 
       (and equal-end-of-base64url (= handler :user) (:user-data route-params))
