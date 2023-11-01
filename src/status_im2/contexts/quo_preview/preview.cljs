@@ -258,7 +258,11 @@
             :padding-horizontal 20}}
    (doall
     (for [desc descriptors
-          :let [descriptor (merge desc {:state state})]]
+          :let [desc-path  (:path desc)
+                new-state  (if desc-path
+                             (reagent/cursor state desc-path)
+                             state)
+                descriptor (assoc desc :state new-state)]]
       ^{:key (:key desc)}
       [:<>
        (case (:type desc)

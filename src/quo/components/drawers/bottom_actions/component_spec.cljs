@@ -18,13 +18,19 @@
       (h/render [bottom-actions/view
                  {:actions          :2-actions
                   :button-one-label button-one
+                  :button-one-props {:icon-left :i/arrow-left}
                   :button-two-label button-two}])
       (h/is-truthy (h/get-by-text button-one))
+      (h/is-truthy (h/get-by-label-text :icon))
       (h/is-truthy (h/get-by-text button-two))))
 
   (h/test "render disabled button"
     (h/render [bottom-actions/view
                {:description      "Sample description"
-                :disabled?        true
+                :button-one-props {:disabled? true}
                 :button-one-label "button"}])
-    (h/is-disabled (h/get-by-label-text :button-one))))
+    (h/is-disabled (h/get-by-label-text :button-one)))
+
+  (h/test "sane defaults"
+    (h/render [bottom-actions/view {}])
+    (h/is-truthy (h/get-by-label-text :button-one))))
