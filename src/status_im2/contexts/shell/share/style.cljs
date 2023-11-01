@@ -29,15 +29,8 @@
    :color              colors/white})
 
 (def qr-code-container
-  {:padding-top        12
-   :padding-bottom     8
-   :padding-horizontal 12
-   :border-radius      16
-   :margin-top         8
-   :margin-horizontal  screen-padding
-   :background-color   colors/white-opa-5
-   :flex-direction     :column
-   :justify-content    :center})
+  {:margin-horizontal 20
+   :margin-top        8})
 
 (def emoji-hash-container
   {:border-radius     16

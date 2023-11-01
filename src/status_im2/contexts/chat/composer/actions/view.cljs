@@ -172,11 +172,12 @@
   [edit]
   (let [images-count (count (vals (rf/sub [:chats/sending-image])))]
     [quo/composer-button
-     {:on-press        (if edit
-                         #(js/alert "This feature is temporarily unavailable in edit mode.")
-                         #(go-to-camera images-count))
-      :icon            :i/camera
-      :container-style {:margin-right 12}}]))
+     {:on-press            (if edit
+                             #(js/alert "This feature is temporarily unavailable in edit mode.")
+                             #(go-to-camera images-count))
+      :accessibility-label :camera-button
+      :icon                :i/camera
+      :container-style     {:margin-right 12}}]))
 
 
 (defn open-photo-selector

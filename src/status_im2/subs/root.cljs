@@ -11,7 +11,8 @@
     status-im2.subs.pairing
     status-im2.subs.profile
     status-im2.subs.shell
-    status-im2.subs.wallet.networks))
+    status-im2.subs.wallet.networks
+    status-im2.subs.wallet.wallet))
 
 (defn reg-root-key-sub
   [sub-name db-key]
@@ -141,6 +142,10 @@
 (reg-root-key-sub :communities/collapsed-categories :communities/collapsed-categories)
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
 (reg-root-key-sub :contract-communities :contract-communities)
+
+;;wallet
+(reg-root-key-sub :wallet/tokens :wallet/tokens)
+(reg-root-key-sub :wallet/tokens-loading? :wallet/tokens-loading?)
 
 ;;activity center
 (reg-root-key-sub :activity-center :activity-center)

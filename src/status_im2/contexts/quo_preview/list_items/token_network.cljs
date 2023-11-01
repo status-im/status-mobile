@@ -36,7 +36,7 @@
    {:key  :show-alert-on-press?
     :type :boolean}])
 
-(defn preview-token-network
+(defn view
   []
   (let [state (reagent/atom {:token               (quo.resources/get-token :snt)
                              :label               "Status"

@@ -801,7 +801,8 @@ class ChatView(BaseView):
 
         # Images
         self.show_images_button = Button(self.driver, accessibility_id="open-images-button")
-        self.take_photo_button = Button(self.driver, accessibility_id="take-picture")
+        self.take_photo_button = Button(self.driver, accessibility_id="camera-button")
+        self.snap_button = Button(self.driver, accessibility_id="snap")
         self.image_from_gallery_button = Button(self.driver, accessibility_id="open-gallery")
         self.images_confirm_selection_button = Button(self.driver, accessibility_id="confirm-selection")
         self.images_area_in_gallery = Button(self.driver,
@@ -1229,6 +1230,15 @@ class ChatView(BaseView):
         [self.get_image_by_index(i).click() for i in indexes]
         self.images_confirm_selection_button.click()
         self.chat_message_input.send_keys(description)
+        self.send_message_button.click()
+
+    def send_image_with_camera(self, description=None):
+        self.take_photo_button.click()
+        self.allow_button.click_if_shown()
+        self.snap_button.click()
+        self.element_by_translation_id("use-photo").click()
+        if description:
+            self.chat_message_input.send_keys(description)
         self.send_message_button.click()
 
     @staticmethod

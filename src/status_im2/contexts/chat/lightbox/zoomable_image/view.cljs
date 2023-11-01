@@ -6,6 +6,7 @@
     [react-native.orientation :as orientation]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
+    [reagent.core :as r]
     [status-im2.contexts.chat.lightbox.animations :as anim]
     [status-im2.contexts.chat.lightbox.zoomable-image.constants :as c]
     [status-im2.contexts.chat.lightbox.zoomable-image.style :as style]
@@ -209,7 +210,8 @@
    image-dimensions-nil?]
   (let [{:keys [transparent? set-full-height?]} render-data
         portrait? (= curr-orientation orientation/portrait)
-        on-tap #(utils/toggle-opacity index render-data portrait?)
+        last-overlay-opacity (r/atom 0)
+        on-tap #(utils/toggle-opacity index render-data portrait? last-overlay-opacity)
         tap (tap-gesture on-tap)
         double-tap (double-tap-gesture dimensions animations rescale transparent? on-tap)
         pinch (pinch-gesture dimensions animations state rescale transparent? on-tap)
@@ -242,8 +244,8 @@
             zoom-out-signal                             (rf/sub [:lightbox/zoom-out-signal])
             {:keys [set-full-height? curr-orientation]} render-data
             focused?                                    (= shared-element-id message-id)
-            ;; TODO - remove `image-dimensions` check,
-            ;; once https://github.com/status-im/status-desktop/issues/10944 is fixed
+            ;; TODO - remove `image-dimensions` check, once
+            ;; https://github.com/status-im/status-desktop/issues/10944 is fixed
             image-dimensions-nil?                       (not (and image-width image-height))
             dimensions                                  (utils/get-dimensions
                                                          (or image-width (:screen-width render-data))
