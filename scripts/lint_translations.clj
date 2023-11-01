@@ -46,7 +46,7 @@
   (let [result (analyze-code ["src"])
         all-keywords (get-in result [:analysis :keywords])
         used-translations (filter (comp (partial = 't) :ns) all-keywords)
-        file-translation-keys (set (extract-translation-keys translation-file))
+        file-translation-keys (apply sorted-set (extract-translation-keys translation-file))
         missing-translations (remove (comp file-translation-keys :name) used-translations)
         used-translation-keys (set (map :name used-translations))
         possibly-unused-translation-keys (set/difference file-translation-keys used-translation-keys)
