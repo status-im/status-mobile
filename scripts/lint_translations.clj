@@ -14,9 +14,7 @@
 (defn- analyze-code [paths]
   (kondo/run!
    {:lint paths
-    :config
-    {:output {:analysis {:keywords true}}
-     :hooks  {:analyze-call '{utils.i18n/label hooks.utils.i18n/label}}}}))
+    :config {:output {:analysis {:keywords true}}}}))
 
 (defn- filter-on-usage [syms]
   (fn [analysis-keywords]
