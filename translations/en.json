@@ -2391,6 +2391,7 @@
     "address-already-in-use": "Address already being used",
     "address-copied": "Address copied",
     "no-dapps-description": "We want dApps!",
-    "select-asset": "Select asset"
+    "select-asset": "Select asset",
+    "send-limit": "Max: {{limit}}"
 }
 
