@@ -13,14 +13,14 @@
 
 (comment
   ;; Valid
-  (label {:node (hooks/parse-string "(i18n/label :t/foo {:var \"hello\"})")
-          :cljc false
-          :lang :cljs
+  (label {:node     (hooks/parse-string "(i18n/label :t/foo {:var \"hello\"})")
+          :cljc     false
+          :lang     :cljs
           :filename ""
-          :config {}
-          :ns ""
-          :context nil})
+          :config   {}
+          :ns       ""
+          :context  nil})
 
   ;; Invalid
   (label {:node (hooks/parse-string "(i18n/label :foo)")})
-  )
+)

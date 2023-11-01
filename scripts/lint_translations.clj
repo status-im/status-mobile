@@ -8,24 +8,29 @@
 (require '[cheshire.core :as json])
 (require '[clojure.set :as set])
 
-(defn- safe-name [x]
+(defn- safe-name
+  [x]
   (when x (name x)))
 
-(defn- analyze-code [paths]
+(defn- analyze-code
+  [paths]
   (kondo/run!
-   {:lint paths
+   {:lint   paths
     :config {:output {:analysis {:keywords true}}}}))
 
-(defn- filter-on-usage [syms]
+(defn- filter-on-usage
+  [syms]
   (fn [analysis-keywords]
     (filter (comp syms :reg) analysis-keywords)))
 
 (def get-i18n-label (filter-on-usage #{'utils.i18n/label}))
 
-(defn- ->keyword [analysis-keyword]
+(defn- ->keyword
+  [analysis-keyword]
   (keyword (safe-name (:ns analysis-keyword)) (:name analysis-keyword)))
 
-(defn- report-issues [incorrect-usages]
+(defn- report-issues
+  [incorrect-usages]
   (doseq [incorrect-usage incorrect-usages]
     (println (format "%s:%s %s %s"
                      (:filename incorrect-usage)
@@ -33,7 +38,8 @@
                      (:reason incorrect-usage)
                      (->keyword incorrect-usage)))))
 
-(defn extract-translation-keys [file]
+(defn extract-translation-keys
+  [file]
   (-> file slurp json/parse-string keys))
 
 (def translation-file "translations/en.json")
@@ -42,26 +48,28 @@
 
 (def possibly-unused-warning (format "Possibly Unused Translation Key in %s:" translation-file))
 
-(defn -main [& _args]
-  (let [result (analyze-code ["src"])
-        all-keywords (get-in result [:analysis :keywords])
-        used-translations (filter (comp (partial = 't) :ns) all-keywords)
-        file-translation-keys (apply sorted-set (extract-translation-keys translation-file))
-        missing-translations (remove (comp file-translation-keys :name) used-translations)
-        used-translation-keys (set (map :name used-translations))
+(defn -main
+  [& _args]
+  (let [result                           (analyze-code ["src"])
+        all-keywords                     (get-in result [:analysis :keywords])
+        used-translations                (filter (comp (partial = 't) :ns) all-keywords)
+        file-translation-keys            (apply sorted-set (extract-translation-keys translation-file))
+        missing-translations             (remove (comp file-translation-keys :name) used-translations)
+        used-translation-keys            (set (map :name used-translations))
         possibly-unused-translation-keys (set/difference file-translation-keys used-translation-keys)
 
-        ;; 
+        ;;
         ;; non-namespaced-translations (filter
         ;;                              (fn [kw] (and (not (:ns kw))
         ;;                                           (possibly-unused-translation-keys (:name kw))))
         ;;                              all-keywords)
         ;; unused-translation-keys (set/difference possibly-unused-translation-keys
         ;;                                         (set (map :name non-namespaced-translations)))
-        ]
+       ]
 
     (report-issues (map #(assoc % :reason "Undefined Translation Key") missing-translations))
-    ;; (report-issues (map #(assoc % :reason "Non-namespaced Translation Key") non-namespaced-translations))
+    ;; (report-issues (map #(assoc % :reason "Non-namespaced Translation Key")
+    ;; non-namespaced-translations))
     ;; (run! #(println unused-warning %) unused-translation-keys)
     (run! #(println possibly-unused-warning %) possibly-unused-translation-keys)
     (if (and (empty? missing-translations)
