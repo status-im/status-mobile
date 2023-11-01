@@ -204,14 +204,34 @@
         (sort-by :position)
         (into []))))
 
+(defn get-chat-lock-state
+  "Returns the chat lock state.
+
+  - Nil: no lock
+  - True: locked
+  - False: unlocked"
+  [{community-id :id token-permissions :token-permissions joined? :joined}
+   {chat-id :id can-post? :can-post?}]
+  (if (not joined?)
+    true
+    (let [chat-permissions (->> token-permissions
+                                (map second)
+                                (filter (fn [{:keys [chat_ids]}]
+                                          (some (fn [permission-chat-id]
+                                                  (= permission-chat-id (str community-id chat-id)))
+                                                chat_ids))))]
+      (cond
+        (empty? chat-permissions) nil
+        :else                     (not can-post?)))))
+
 (defn reduce-over-categories
-  [community-id
-   joined
+  [community
+   community-id
    categories
    collapsed-categories
    full-chats-data]
   (fn [acc
-       [_ {:keys [name categoryID position id emoji can-post?]}]]
+       [_ {:keys [name categoryID position id emoji] :as chat}]]
     (let [category-id       (if (seq categoryID) categoryID constants/empty-category-id)
           {:keys [unviewed-messages-count
                   unviewed-mentions-count
@@ -227,16 +247,15 @@
                                       :collapsed? (get collapsed-categories
                                                        category-id)
                                       :chats      [])))
-          chat              {:name             name
+          categorized-chat  {:name             name
                              :emoji            emoji
                              :muted?           muted
                              :unread-messages? (pos? unviewed-messages-count)
                              :position         position
                              :mentions-count   (or unviewed-mentions-count 0)
-                             :locked?          (or (not joined)
-                                                   (not can-post?))
+                             :locked?          (get-chat-lock-state community chat)
                              :id               id}]
-      (update-in acc-with-category [category-id :chats] conj chat))))
+      (update-in acc-with-category [category-id :chats] conj categorized-chat))))
 
 (re-frame/reg-sub
  :communities/categorized-channels
@@ -244,23 +263,19 @@
    [(re-frame/subscribe [:communities/community community-id])
     (re-frame/subscribe [:chats/chats])
     (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])])
- (fn [[{:keys [joined categories chats]} full-chats-data collapsed-categories] [_ community-id]]
+ (fn [[{:keys [categories chats] :as community} full-chats-data collapsed-categories] [_ community-id]]
    (let [reduce-fn (reduce-over-categories
+                    community
                     community-id
-                    joined
                     categories
                     collapsed-categories
                     full-chats-data)
          categories-and-chats
-         (->>
-           chats
-           (reduce
-            reduce-fn
-            {})
-           (sort-by (comp :position second))
-           (map (fn [[k v]]
-                  [k (update v :chats #(sort-by :position %))])))]
-
+         (->> chats
+              (reduce reduce-fn {})
+              (sort-by (comp :position second))
+              (map (fn [[k v]]
+                     [k (update v :chats #(sort-by :position %))])))]
      categories-and-chats)))
 
 (re-frame/reg-sub
