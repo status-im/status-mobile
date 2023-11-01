@@ -16,7 +16,7 @@
   (let [bottom      (safe-area/get-bottom)
         input-value (reagent/atom "")]
     (fn []
-      [rn/view {:style {:flex       1}}
+      [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:type      :no-title
          :icon-name :i/close

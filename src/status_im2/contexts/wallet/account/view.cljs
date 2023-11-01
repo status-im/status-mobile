@@ -49,6 +49,7 @@
 >>>>>>> 3f129bdcb (wallet: bridge screen)
       (let [networks (rf/sub [:wallet/network-details])]
 <<<<<<< HEAD
+<<<<<<< HEAD
         [rn/view
          {:style {:flex       1
                   :margin-top top}}
@@ -56,6 +57,9 @@
 =======
         [rn/view {:style {:flex       1}}
 >>>>>>> 06758aab0 (review)
+=======
+        [rn/view {:style {:flex 1}}
+>>>>>>> 9b2fb3df4 (review)
          [quo/page-nav
           {:type              :wallet-networks
            :background        :blur

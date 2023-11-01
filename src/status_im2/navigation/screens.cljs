@@ -271,7 +271,8 @@
      :component wallet-address-watch/view}
 
     {:name      :wallet-bridge
-     :options   {:insets {:top? true}}
+     :options   {:insets                 {:top? true}
+                 :modalPresentationStyle :overCurrentContext}
      :component bridge/view}
 
 <<<<<<< HEAD

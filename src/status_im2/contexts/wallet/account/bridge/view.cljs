@@ -21,7 +21,6 @@
                                                                {:content             account-options/view
                                                                 :gradient-cover?     true
                                                                 :customization-color :purple}])
-                           :state               :default
                            :emoji               "🍑"}}]
    [quo/text-combinations
     {:container-style style/header-container
