@@ -49,15 +49,15 @@
   [item index _ render-data]
   [:f> f-small-image item index _ render-data])
 
-
 (defn bottom-view
-  [messages index scroll-index insets animations derived item-width props state]
+  [messages index scroll-index insets animations derived item-width props state transparent?]
   (let [padding-horizontal (- (/ item-width 2) (/ c/focused-image-size 2))]
     [reanimated/linear-gradient
-     {:colors [colors/neutral-100-opa-100 colors/neutral-100-opa-50]
-      :start  {:x 0 :y 1}
-      :end    {:x 0 :y 0}
-      :style  (style/gradient-container insets animations derived)}
+     {:colors   [colors/neutral-100-opa-100 colors/neutral-100-opa-80 colors/neutral-100-opa-0]
+      :location [0.2 0.9]
+      :start    {:x 0 :y 1}
+      :end      {:x 0 :y 0}
+      :style    (style/gradient-container insets animations derived transparent?)}
      [text-sheet/view messages animations state props]
      [rn/flat-list
       {:ref                               #(reset! (:small-list-ref props) %)
