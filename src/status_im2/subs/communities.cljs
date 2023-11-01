@@ -204,25 +204,29 @@
         (sort-by :position)
         (into []))))
 
-(defn get-chat-lock-state
+(defn- get-chat-token-permissions
+  [{community-id :id permissions :token-permissions} chat-id]
+  (let [chat-composite-id (str community-id chat-id)]
+    (->> permissions
+         (map second)
+         (filter (fn [{composite-ids :chat_ids}]
+                   (some (fn [composite-id]
+                           (= composite-id chat-composite-id))
+                         composite-ids))))))
+
+(defn- get-chat-lock-state
   "Returns the chat lock state.
 
   - Nil: no lock
   - True: locked
   - False: unlocked"
-  [{community-id :id token-permissions :token-permissions}
-   {chat-id :id can-post? :can-post?}]
-  (let [chat-permissions (->> token-permissions
-                              (map second)
-                              (filter (fn [{:keys [chat_ids]}]
-                                        (some (fn [permission-chat-id]
-                                                (= permission-chat-id (str community-id chat-id)))
-                                              chat_ids))))]
+  [community {chat-id :id can-post? :can-post?}]
+  (let [chat-permissions (get-chat-token-permissions community chat-id)]
     (cond
       (empty? chat-permissions) nil
       :else                     (not can-post?))))
 
-(defn reduce-over-categories
+(defn- reduce-over-categories
   [community
    community-id
    categories
