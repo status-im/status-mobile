@@ -57,43 +57,40 @@
 
 (defn calc-top-content-height
   [reply? edit?]
-  (let [height (if reply? constants/reply-container-height 0)
-        height (if edit? (+ height constants/edit-container-height) height)]
-    height))
+  (cond-> 0
+    reply? (+ constants/reply-container-height)
+    edit?  (+ constants/edit-container-height)))
 
 (defn calc-bottom-content-height
   [images link-previews?]
-  (let [height (if (seq images) constants/images-container-height 0)
-        height (if link-previews? (+ height constants/links-container-height) height)]
-    height))
+  (cond-> 0
+    (seq images)   (+ constants/images-container-height)
+    link-previews? (+ constants/links-container-height)))
 
 (defn calc-reopen-height
-  [text-value min-height max-height content-height saved-height images link-previews?]
+  [text-value min-height max-height content-height saved-height]
   (if (empty? @text-value)
     min-height
-    (let [bottom-content-height (calc-bottom-content-height images link-previews?)
-          input-height          (min (+ @content-height bottom-content-height)
-                                     (reanimated/get-shared-value saved-height))]
+    (let [input-height (min @content-height
+                            (reanimated/get-shared-value saved-height))]
       (min max-height input-height))))
 
 (defn get-min-height
-  [lines images link-previews?]
-  (let [input-height          (if (> lines 1)
-                                constants/multiline-minimized-height
-                                constants/input-height)
-        bottom-content-height (calc-bottom-content-height images link-previews?)]
-    (+ input-height bottom-content-height)))
+  [lines]
+  (if (> lines 1)
+    constants/multiline-minimized-height
+    constants/input-height))
 
 (defn calc-max-height
-  [{:keys [reply edit]} window-height kb-height insets]
-  (let [margin-top (if platform/ios? (:top insets) (+ 10 (:top insets)))
-        max-height (- window-height
-                      margin-top
-                      kb-height
-                      constants/bar-container-height
-                      constants/actions-container-height)
-        max-height (- max-height (calc-top-content-height reply edit))]
-    max-height))
+  [{:keys [reply edit images link-previews?]} window-height kb-height insets]
+  (let [margin-top (if platform/ios? (:top insets) (+ 10 (:top insets)))]
+    (- window-height
+       margin-top
+       kb-height
+       constants/bar-container-height
+       constants/actions-container-height
+       (calc-top-content-height reply edit)
+       (calc-bottom-content-height images link-previews?))))
 
 (defn empty-input?
   [text images link-previews? reply? audio?]
@@ -124,21 +121,12 @@
         sub-text-lines-in-view (- sub-text-lines scrolled-lines)]
     (* sub-text-lines-in-view constants/line-height)))
 
-(defn calc-shell-neg-y
-  [insets maximized? extra-height]
-  (let [padding 12
-        neg-y   (if @maximized? -50 0)]
-    (- (+ constants/bar-container-height
-          constants/actions-container-height
-          (:bottom insets)
-          padding
-          extra-height
-          neg-y))))
-
 (defn calc-suggestions-position
   [cursor-pos max-height size
    {:keys [maximized?]}
-   {:keys [insets curr-height window-height keyboard-height reply edit]}]
+   {:keys [insets curr-height window-height keyboard-height reply edit]}
+   images
+   link-previews?]
   (let [base             (+ constants/composer-default-height (:bottom insets) 8)
         base             (+ base (- curr-height constants/input-height))
         base             (+ base (calc-top-content-height reply edit))
@@ -152,7 +140,8 @@
         (+ constants/actions-container-height (:bottom insets))
         (+ constants/actions-container-height (:bottom insets) (- max-height cursor-pos) 18))
       (if (< (+ base container-height) view-height)
-        base
+        (let [bottom-content-height (calc-bottom-content-height images link-previews?)]
+          (+ base bottom-content-height))
         (+ constants/actions-container-height (:bottom insets) (- curr-height cursor-pos) 18)))))
 
 (defn init-props

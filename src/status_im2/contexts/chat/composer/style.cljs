@@ -7,6 +7,8 @@
     [react-native.reanimated :as reanimated]
     [status-im2.contexts.chat.composer.constants :as constants]))
 
+(def border-top-radius 20)
+
 (defn shadow
   [focused? theme]
   (if platform/ios?
@@ -27,8 +29,8 @@
   (reanimated/apply-animations-to-style
    {:opacity container-opacity}
    (merge
-    {:border-top-left-radius  20
-     :border-top-right-radius 20
+    {:border-top-left-radius  border-top-radius
+     :border-top-right-radius border-top-radius
      :padding-horizontal      20
      :background-color        (colors/theme-colors colors/white colors/neutral-95 theme)
      :z-index                 3
@@ -55,7 +57,8 @@
   [height max-height]
   (reanimated/apply-animations-to-style
    {:height height}
-   {:max-height max-height}))
+   {:max-height max-height
+    :z-index    1}))
 
 (defn input-view
   [{:keys [recording?]}]
@@ -68,19 +71,17 @@
 (defn input-text
   [{:keys [saved-emoji-kb-extra-height]}
    {:keys [focused? maximized?]}
-   {:keys [link-previews? images]}
    {:keys [max-height theme]}]
-  (merge typography/paragraph-1
-         {:color               (colors/theme-colors :black :white theme)
-          :text-align-vertical :top
-          :position            (if @saved-emoji-kb-extra-height :relative :absolute)
-          :top                 0
-          :left                0
-          :right               (when (or focused? platform/ios?) 0)
-          :max-height          (- max-height
-                                  (if link-previews? constants/links-container-height 0)
-                                  (if (seq images) constants/images-container-height 0))
-          :padding-bottom      (when @maximized? 0)}))
+  (assoc typography/paragraph-1
+         :color               (colors/theme-colors :black :white theme)
+         :text-align-vertical :top
+         :position            (if @saved-emoji-kb-extra-height :relative :absolute)
+         :top                 0
+         :left                0
+         :right               (when (or focused? platform/ios?) 0)
+         :max-height          max-height
+         :padding-bottom      (when @maximized? 0)))
+
 (defn background
   [opacity background-y window-height]
   (reanimated/apply-animations-to-style
@@ -102,8 +103,8 @@
     :left                    0
     :right                   0
     :bottom                  0
-    :border-top-right-radius 20
-    :border-top-left-radius  20
+    :border-top-right-radius border-top-radius
+    :border-top-left-radius  border-top-radius
     :overflow                :hidden}))
 
 (defn blur-view
