@@ -67,11 +67,11 @@
         ;;                                         (set (map :name non-namespaced-translations)))
        ]
 
-    (report-issues (map #(assoc % :reason "Undefined Translation Key") missing-translations))
     ;; (report-issues (map #(assoc % :reason "Non-namespaced Translation Key")
     ;; non-namespaced-translations))
     ;; (run! #(println unused-warning %) unused-translation-keys)
     (run! #(println possibly-unused-warning %) possibly-unused-translation-keys)
+    (report-issues (map #(assoc % :reason "Undefined Translation Key") missing-translations))
     (if (and (empty? missing-translations)
              #_(empty? possibly-unused-translation-keys))
       0
