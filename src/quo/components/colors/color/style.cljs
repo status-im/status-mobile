@@ -11,8 +11,8 @@
    :border-radius 24
    :margin-right  (-> window-width
                       (- responsiveness/IPHONE_11_PRO_VIEWPORT_WIDTH) ;We want the design to be 100%
-                                                                 ;identical to Figma on iPhone 11
-                                                                 ;Pro, So we're using it's VW here.
+                      ;identical to Figma on iPhone 11
+                      ;Pro, So we're using it's VW here.
                       (/ 6) ;Dividing by an appropriate factor to get a reasonable value for each VW
                             ;on other devices (This will yield 0 on iPhone 11 Pro, Which is what we
                             ;want)
