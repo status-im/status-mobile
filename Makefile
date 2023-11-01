@@ -316,10 +316,7 @@ lint: ##@test Run code style checks
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
 	sh scripts/lint-trailing-newline.sh && \
-	node_modules/.bin/prettier --write .
-
-lint-translations: export TARGET := clojure
-lint-translations: ##@ Test Translations
+	node_modules/.bin/prettier --write . && \
 	scripts/lint_translations.clj
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
