@@ -331,7 +331,7 @@
                        {:name      :saved-contact-address
                         :component saved-contact-address/view}
                        {:name      :token-network
-                        :component token-network/preview-token-network}
+                        :component token-network/view}
                        {:name      :token-value
                         :component token-value/view}
                        {:name      :user-list
@@ -359,9 +359,9 @@
                        {:name      :floating-shell-button
                         :component floating-shell-button/view}]
    :notifications     [{:name      :activity-logs
-                        :component activity-logs/preview-activity-logs}
+                        :component activity-logs/view}
                        {:name      :activity-logs-photos
-                        :component activity-logs-photos/preview-activity-logs-photos}
+                        :component activity-logs-photos/view}
                        {:name      :toast
                         :component toast/view}
                        {:name      :notification
@@ -435,27 +435,27 @@
                        {:name      :tags
                         :component tags/view}
                        {:name      :tiny-tag
-                        :component tiny-tag/preview-tiny-tag}
+                        :component tiny-tag/view}
                        {:name      :token-tag
                         :component token-tag/view}]
    :text-combinations [{:name      :text-combinations
                         :component text-combinations/view}]
-   :wallet            [{:name :account-card :component account-card/preview-account-card}
+   :wallet            [{:name :account-card :component account-card/view}
                        {:name :account-origin :component account-origin/view}
                        {:name      :account-overview
-                        :component account-overview/preview-account-overview}
-                       {:name :keypair :component keypair/preview}
-                       {:name :network-amount :component network-amount/preview}
-                       {:name :network-bridge :component network-bridge/preview}
-                       {:name :network-link :component network-link/preview}
-                       {:name :network-routing :component network-routing/preview}
-                       {:name :progress-bar :component progress-bar/preview}
-                       {:name :summary-info :component summary-info/preview}
-                       {:name :token-input :component token-input/preview}
+                        :component account-overview/view}
+                       {:name :keypair :component keypair/view}
+                       {:name :network-amount :component network-amount/view}
+                       {:name :network-bridge :component network-bridge/view}
+                       {:name :network-link :component network-link/view}
+                       {:name :network-routing :component network-routing/view}
+                       {:name :progress-bar :component progress-bar/view}
+                       {:name :summary-info :component summary-info/view}
+                       {:name :token-input :component token-input/view}
                        {:name :wallet-activity :component wallet-activity/view}
                        {:name :transaction-summary :component transaction-summary/view}
                        {:name      :wallet-overview
-                        :component wallet-overview/preview-wallet-overview}]
+                        :component wallet-overview/view}]
    :keycard           [{:name :keycard-component :component keycard/view}]})
 
 (defn- category-view

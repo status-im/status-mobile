@@ -222,7 +222,7 @@
        {:state                     component-state
         :descriptor                descriptor
         :show-blur-background?     true
-        :component-container-style {:align-self :center}}
+        :component-container-style {:padding-bottom 50}}
        [quo/transaction-summary
         (merge {:on-press #(js/alert "Dropdown pressed")}
                @component-state)]])))

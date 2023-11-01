@@ -1,7 +1,6 @@
 (ns status-im2.contexts.quo-preview.wallet.keypair
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -62,30 +61,20 @@
   (map (fn [account] (assoc account :blur? blur?)) accounts))
 
 (def descriptor
-  [{:label   "Stored:"
-    :key     :stored
+  [{:key     :stored
     :type    :select
-    :options [{:key   :on-device
-               :value "On device"}
-              {:key   :on-keycard
-               :value "On Keycard"}]}
-   {:label   "Action:"
-    :key     :action
+    :options [{:key :on-device}
+              {:key :on-keycard}]}
+   {:key     :action
     :type    :select
-    :options [{:key   :selector
-               :value "Selector"}
-              {:key   :options
-               :value "Options"}]}
-   {:label   "Type:"
-    :key     :type
+    :options [{:key :selector}
+              {:key :options}]}
+   {:key     :type
     :type    :select
-    :options [{:key   :default-keypair
-               :value "Default keypair"}
-              {:key   :other
-               :value "Other"}]}
+    :options [{:key :default-keypair}
+              {:key :other}]}
    (preview/customization-color-option)
-   {:key  :blur?
-    :type :boolean}])
+   {:key :blur? :type :boolean}])
 
 (def default-details
   {:full-name "John Doe"
@@ -93,7 +82,7 @@
 
 (def other-details {:full-name "Metamask"})
 
-(defn preview
+(defn view
   []
   (let [state (reagent/atom {:customization-color :blue
                              :type                :default-keypair
@@ -103,18 +92,17 @@
                              :blur?               false})]
     (fn []
       [preview/preview-container
-       {:state                 state
-        :descriptor            descriptor
-        :blur?                 (:blur? @state)
-        :show-blur-background? true
-        :blur-dark-only?       true
-        :blur-height           400}
-       [rn/view
-        {:style {:padding-vertical 30
-                 :flex-direction   :row
-                 :justify-content  :center}}
-        [quo/keypair
-         (merge
-          @state
-          {:details  (if (= (:type @state) :default-keypair) default-details other-details)
-           :accounts (get-accounts (:blur? @state))})]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :blur?                     (:blur? @state)
+        :show-blur-background?     true
+        :blur-dark-only?           true
+        :blur-height               400
+        :component-container-style {:padding-vertical 30
+                                    :flex-direction   :row
+                                    :justify-content  :center}}
+       [quo/keypair
+        (merge
+         @state
+         {:details  (if (= (:type @state) :default-keypair) default-details other-details)
+          :accounts (get-accounts (:blur? @state))})]])))

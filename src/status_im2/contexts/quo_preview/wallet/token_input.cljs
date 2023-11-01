@@ -2,7 +2,6 @@
   (:require
     [quo.core :as quo]
     [quo.foundations.resources :as resources]
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -14,22 +13,16 @@
 (def title "Max: 200 SNT")
 
 (def descriptor
-  [{:label   "Token:"
-    :key     :token
+  [{:key     :token
     :type    :select
-    :options [{:key   :eth
-               :value "ETH"}
-              {:key   :snt
-               :value "SNT"}]}
-   {:label   "Currency:"
-    :key     :currency
+    :options [{:key :eth}
+              {:key :snt}]}
+   {:key     :currency
     :type    :select
-    :options [{:key   :usd
-               :value "USD"}
-              {:key   :eur
-               :value "EUR"}]}])
+    :options [{:key :usd}
+              {:key :eur}]}])
 
-(defn preview
+(defn view
   []
   (let [state (reagent/atom {:token               :eth
                              :currency            :usd
@@ -39,13 +32,9 @@
                              :customization-color :blue})]
     (fn []
       [preview/preview-container
-       {:state      state
-        :descriptor descriptor}
-       [rn/view
-        {:style {:flex               1
-                 :padding-horizontal 20}}
-        [rn/view
-         {:style {:flex        1
-                  :margin-top  50
-                  :align-items :center}}
-         [quo/token-input @state]]]])))
+       {:state                     state
+        :descriptor                descriptor
+        :component-container-style {:padding-horizontal 20
+                                    :margin-top         50
+                                    :align-items        :center}}
+       [quo/token-input @state]])))
