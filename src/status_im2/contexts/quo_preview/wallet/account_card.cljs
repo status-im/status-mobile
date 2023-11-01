@@ -1,56 +1,27 @@
 (ns status-im2.contexts.quo-preview.wallet.account-card
   (:require
-    [quo.components.icon :as icon]
-    [quo.components.markdown.text :as text]
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]
     [utils.collection]))
 
 (def descriptor
-  [{:label   "Type:"
-    :key     :type
+  [{:key     :type
     :type    :select
-    :options [{:key   :default
-               :value "Default"}
-              {:key   :watch-only
-               :value "Watch Only"}
-              {:key   :add-account
-               :value "Add Account"}
-              {:key   :empty
-               :value "Empty"}
-              {:key   :missing-keypair
-               :value "Missing Keypair"}]}
-   {:label   "Customization color:"
-    :key     :customization-color
-    :type    :select
-    :options (map (fn [[color-kw _]]
-                    {:key   color-kw
-                     :value (name color-kw)})
-                  colors/customization)}
-   {:label "Name:"
-    :key   :name
-    :type  :text}
-   {:label "Balance:"
-    :key   :balance
-    :type  :text}
-   {:label "Percentage value:"
-    :key   :percentage-value
-    :type  :text}
-   {:label "Amount:"
-    :key   :amount
-    :type  :text}
-   {:label "Metrics:"
-    :key   :metrics?
-    :type  :boolean}
-   {:label "Loading:"
-    :key   :loading?
-    :type  :boolean}
-   {:label "Emoji:"
-    :key   :emoji
-    :type  :text}])
+    :options [{:key :default}
+              {:key :watch-only}
+              {:key :add-account}
+              {:key :empty}
+              {:key :missing-keypair}]}
+   (preview/customization-color-option)
+   {:key :name :type :text}
+   {:key :balance :type :text}
+   {:key :percentage-value :type :text}
+   {:key :amount :type :text}
+   {:key :metrics? :type :boolean}
+   {:key :loading? :type :boolean}
+   {:key :emoji :type :text}])
 
 (defn initial-state
   [type]
@@ -101,7 +72,7 @@
      :type                :add-account}))
 
 
-(defn preview-account-card
+(defn view
   []
   (let [state (reagent/atom (initial-state :default))]
     [:f>
@@ -112,23 +83,4 @@
        [preview/preview-container
         {:state      state
          :descriptor descriptor}
-        [rn/view
-         {:style {:margin-vertical 40
-                  :padding-left    40
-                  :flex-direction  :row
-                  :align-items     :center}}
-         [text/text
-          {:size   :heading-1
-           :weight :semi-bold}
-          "Account card"]
-         [rn/view
-          {:style {:width            20
-                   :height           20
-                   :border-radius    60
-                   :background-color colors/success-50
-                   :align-items      :center
-                   :justify-content  :center
-                   :margin-left      8}}
-          [icon/icon :i/check {:color colors/white :size 16}]]]
-        [rn/view {:style {:align-items :center :margin-bottom 20}}
-         [quo/account-card @state]]])]))
+        [quo/account-card @state]])]))
