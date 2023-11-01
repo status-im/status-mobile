@@ -1,10 +1,11 @@
 (ns status-im2.contexts.chat.composer.images.style
   (:require
-    [quo.foundations.colors :as colors]))
+    [quo.foundations.colors :as colors]
+    [status-im2.contexts.chat.composer.constants :as constants]))
 
 (def image-container
-  {:padding-top    12
-   :padding-bottom 8
+  {:padding-top    constants/images-padding-top
+   :padding-bottom constants/images-padding-bottom
    :padding-right  12})
 
 (defn remove-photo-container
@@ -32,4 +33,3 @@
   {:width         56
    :height        56
    :border-radius 12})
-

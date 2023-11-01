@@ -86,7 +86,7 @@
       [sub-view/shell-button state scroll-to-bottom-fn show-floating-scroll-down-button?]
       [gesture/gesture-detector
        {:gesture
-        (drag-gesture/drag-gesture props state animations subscriptions dimensions keyboard-shown)}
+        (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
        [reanimated/view
         {:style     (style/sheet-container insets state animations theme)
          :on-layout #(handler/layout % state blur-height)}
@@ -97,7 +97,9 @@
            [edit/view state]])
         [reanimated/touchable-opacity
          {:active-opacity      1
-          :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
+          :on-press            (fn []
+                                 (when-let [ref @(:input-ref props)]
+                                   (.focus ^js ref)))
           :style               (style/input-container (:height animations) max-height)
           :accessibility-label :message-input-container}
          [rn/selectable-text-input
@@ -113,7 +115,6 @@
             :on-content-size-change #(handler/content-size-change %
                                                                   state
                                                                   animations
-                                                                  subscriptions
                                                                   dimensions
                                                                   (or keyboard-shown
                                                                       (:edit subscriptions)))
@@ -122,23 +123,21 @@
             :on-selection-change #(handler/selection-change % props state)
             :on-selection #(selection/on-selection % props state)
             :keyboard-appearance (quo.theme/theme-value :light :dark)
-            :max-height max-height
             :max-font-size-multiplier 1
             :multiline true
             :placeholder (i18n/label :t/type-something)
             :placeholder-text-color (colors/theme-colors colors/neutral-30 colors/neutral-50)
             :style (style/input-text props
                                      state
-                                     subscriptions
                                      {:max-height max-height
                                       :theme      theme})
             :max-length constants/max-text-size
-            :accessibility-label :chat-message-input}]]
-         (when chat-screen-loaded?
-           [:<>
-            [gradients/view props state animations show-bottom-gradient?]
-            [link-preview/view]
-            [images/images-list]])]
+            :accessibility-label :chat-message-input}]]]
+        (when chat-screen-loaded?
+          [:<>
+           [gradients/view props state animations show-bottom-gradient?]
+           [link-preview/view]
+           [images/images-list]])
         [:f> actions/view props state animations window-height insets scroll-to-bottom-fn
          subscriptions]]]]]))
 

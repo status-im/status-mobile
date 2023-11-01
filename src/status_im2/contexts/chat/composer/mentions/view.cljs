@@ -31,18 +31,19 @@
 
 (defn- f-view
   [suggestions-atom props state animations max-height cursor-pos images link-previews? reply edit]
-  (let [suggestions  (rf/sub [:chat/mention-suggestions])
-        opacity      (reanimated/use-shared-value (if (seq suggestions) 1 0))
-        size         (count suggestions)
-        data         {:keyboard-height @(:kb-height state)
-                      :insets          (safe-area/get-insets)
-                      :curr-height     (reanimated/get-shared-value (:height animations))
-                      :window-height   (:height (rn/get-window))
-                      :images          images
-                      :link-previews?  link-previews?
-                      :reply           reply
-                      :edit            edit}
-        mentions-pos (utils/calc-suggestions-position cursor-pos max-height size state data)]
+  (let [suggestions (rf/sub [:chat/mention-suggestions])
+        opacity (reanimated/use-shared-value (if (seq suggestions) 1 0))
+        size (count suggestions)
+        data {:keyboard-height @(:kb-height state)
+              :insets          (safe-area/get-insets)
+              :curr-height     (reanimated/get-shared-value (:height animations))
+              :window-height   (:height (rn/get-window))
+              :images          images
+              :link-previews?  link-previews?
+              :reply           reply
+              :edit            edit}
+        mentions-pos
+        (utils/calc-suggestions-position cursor-pos max-height size state data images link-previews?)]
     (rn/use-effect
      (fn []
        (if (seq suggestions)
