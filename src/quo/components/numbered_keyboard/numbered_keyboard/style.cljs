@@ -1,7 +1,7 @@
 (ns quo.components.numbered-keyboard.numbered-keyboard.style)
 
 (def container
-  {:flex               1
+  {:display            :flex
    :padding-top        8
    :padding-horizontal 48})
 
