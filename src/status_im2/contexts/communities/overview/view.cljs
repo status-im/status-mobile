@@ -262,7 +262,7 @@
         [status-tag pending? joined])
       [community-header name (when collapsed? (get-in images [:thumbnail :uri]))
        (when-not collapsed? description)]
-      (when-not collapsed?
+      (when (and (seq tags) (not collapsed?))
         [quo/community-tags
          {:tags            tags
           :last-item-style style/last-community-tag
