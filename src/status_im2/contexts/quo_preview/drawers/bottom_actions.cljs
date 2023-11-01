@@ -21,12 +21,24 @@
     :key     :actions
     :options [{:key :1-action}
               {:key :2-actions}]}
-   {:type    :select
-    :key     :button-two-type
-    :options button-options}
-   {:type    :select
-    :key     :button-one-type
-    :options button-options}
+   {:label   "Button 1 type"
+    :type    :select
+    :key     :type
+    :options button-options
+    :path    [:button-one-props]}
+   {:label "Button 1 disabled?"
+    :type  :boolean
+    :key   :disabled?
+    :path  [:button-one-props]}
+   {:label   "Button 2 type"
+    :type    :select
+    :key     :type
+    :options button-options
+    :path    [:button-two-props]}
+   {:label "Button 2 disabled?"
+    :type  :boolean
+    :key   :disabled?
+    :path  [:button-two-props]}
    {:key  :description
     :type :text}
    {:key  :button-one-label
@@ -42,10 +54,11 @@
                              :description      description
                              :button-one-label button-one
                              :button-two-label button-two
-                             :button-one-press (button-press 2)
-                             :button-two-press (button-press 1)
-                             :button-one-type  :primary
-                             :button-two-type  :grey
+                             :button-one-props {:on-press  (button-press 1)
+                                                :type      :primary
+                                                :icon-left :i/arrow-up}
+                             :button-two-props {:on-press (button-press 2)
+                                                :type     :grey}
                              :scroll?          false})]
     (fn []
       [preview/preview-container
