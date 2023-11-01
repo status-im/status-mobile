@@ -17,34 +17,35 @@
   :description - string (default nil) - Description to display below the title
   :button-one-label - string (default nil) - Label for the first button
   :button-two-label - string (default nil) - Label for the second button
-  :button-one-press - fn (default nil) - Function to call when the first button is pressed
-  :button-two-press - fn (default nil) - Function to call when the second button is pressed
+  :button-one-props - map with props for button one
+  :button-two-props - map with props for button two
   :theme - :light/:dark
-  :scroll - bool (default false) - Whether the iOS Home Indicator should be rendered
-  :button-one-type - same as button/button :type
-  :button-two-type - same as button/button :type"
+  :scroll? - bool (default false) - Whether the iOS Home Indicator should be rendered"
   [props]
   (let [{:keys [actions description button-one-label button-two-label
-                button-one-press button-two-press theme
-                scroll? button-one-type button-two-type disabled?]}
+                button-one-props button-two-props theme scroll?]}
         (merge default-props props)]
     [:<>
      [rn/view {:style style/buttons-container}
       (when (= actions :2-actions)
         [button/button
-         {:size            40
-          :background      (when scroll? :blur)
-          :container-style style/button-container-2-actions
-          :type            button-two-type
-          :on-press        button-two-press} button-two-label])
+         (merge
+          {:size                40
+           :background          (when scroll? :blur)
+           :container-style     style/button-container-2-actions
+           :theme               theme
+           :accessibility-label :button-two}
+          button-two-props)
+         button-two-label])
       [button/button
-       {:size                40
-        :container-style     style/button-container
-        :type                button-one-type
-        :disabled?           disabled?
-        :background          (when scroll? :blur)
-        :on-press            button-one-press
-        :accessibility-label :button-one} button-one-label]]
+       (merge
+        {:size                40
+         :container-style     style/button-container
+         :background          (when scroll? :blur)
+         :theme               theme
+         :accessibility-label :button-one}
+        button-one-props)
+       button-one-label]]
      (when description
        [text/text
         {:size  :paragraph-2

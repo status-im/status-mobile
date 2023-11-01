@@ -40,6 +40,7 @@
     [status-im2.contexts.wallet.account.view :as wallet-accounts]
     [status-im2.contexts.wallet.address-watch.view :as wallet-address-watch]
     [status-im2.contexts.wallet.collectible.view :as wallet-collectible]
+    [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.saved-address.view :as wallet-saved-address]
@@ -257,6 +258,9 @@
 
     {:name      :wallet-create-account
      :component wallet-create-account/view}
+
+    {:name      :wallet-edit-derivation-path
+     :component wallet-edit-derivation-path/view}
 
     {:name      :wallet-saved-address
      :component wallet-saved-address/view}
