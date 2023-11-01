@@ -22,7 +22,9 @@
    [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-create-account])}
     "Create Account"]
    [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-saved-addresses])}
-    "Saved Addresses"]])
+    "Saved Addresses"]
+   [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-send-input-amount])}
+    "Send: input amount"]])
 
 (defn wallet-overview-state
   [networks]
