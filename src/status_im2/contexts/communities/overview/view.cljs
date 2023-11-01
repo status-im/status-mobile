@@ -82,23 +82,23 @@
                  (+ 38 (int (Math/ceil (layout-y %))))
                  (into #{} (map (comp :name second) channels-list)))
     :style     {:margin-top 8 :flex 1}}
-   (doall
-    (for [[category-id {:keys [chats name collapsed?]}] channels-list]
-      [rn/view
-       {:key       category-id
-        ;; on-layout fires only when the component re-renders, so
-        ;; in case the category hasn't changed, it will not be fired
-        :on-layout #(on-category-layout name (int (layout-y %)))}
-       (when-not (= constants/empty-category-id category-id)
-         [quo/divider-label
-          {:on-press     #(collapse-category community-id category-id collapsed?)
-           :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
-           :chevron      :left}
-          name])
-       (when-not collapsed?
-         (into [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}]
-               (map #(channel-chat-item community-id community-color %))
-               chats))]))])
+   (for [[category-id {:keys [chats name collapsed?]}] channels-list]
+     [rn/view
+      {:key       category-id
+       ;; on-layout fires only when the component re-renders, so
+       ;; in case the category hasn't changed, it will not be fired
+       :on-layout #(on-category-layout name (int (layout-y %)))}
+      (when-not (= constants/empty-category-id category-id)
+        [quo/divider-label
+         {:on-press     #(collapse-category community-id category-id collapsed?)
+          :chevron-icon (if collapsed? :i/chevron-right :i/chevron-down)
+          :chevron      :left}
+         name])
+      (when-not collapsed?
+        [rn/view {:style {:padding-horizontal 8 :padding-bottom 8}}
+         (for [chat chats]
+           ^{:key (:id chat)}
+           [channel-chat-item community-id community-color chat])])])])
 
 (defn get-access-type
   [access]
