@@ -190,3 +190,7 @@ test/appium/tests/users.py
 
 ## git hooks
 lefthook.yml
+
+## clj-kondo
+/.clj-kondo/taoensso/*
+/.clj-kondo/babashka/*
