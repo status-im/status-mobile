@@ -30,36 +30,13 @@
    {:id :about :label (i18n/label :t/about) :accessibility-label :about}])
 
 (defn view
-<<<<<<< HEAD
   [account-address]
-=======
-  []
->>>>>>> 06758aab0 (review)
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-<<<<<<< HEAD
-<<<<<<< HEAD
       (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
             account         (rf/sub [:wallet/account account-address])
             networks        (rf/sub [:wallet/network-details])]
-        [rn/view {:style style/container}
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 3f129bdcb (wallet: bridge screen)
-      (let [networks (rf/sub [:wallet/network-details])]
-<<<<<<< HEAD
-<<<<<<< HEAD
-        [rn/view
-         {:style {:flex       1
-                  :margin-top top}}
->>>>>>> 7a5ddb266 (updates)
-=======
-        [rn/view {:style {:flex       1}}
->>>>>>> 06758aab0 (review)
-=======
         [rn/view {:style {:flex 1}}
->>>>>>> 9b2fb3df4 (review)
          [quo/page-nav
           {:type              :wallet-networks
            :background        :blur
@@ -70,8 +47,8 @@
            :right-side        :account-switcher
            :account-switcher  {:customization-color :purple
                                :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                   {:content account-options/view
-                                                                    :gradient-cover? true
+                                                                   {:content             account-options/view
+                                                                    :gradient-cover?     true
                                                                     :customization-color :purple}])
                                :emoji               "🍑"}}]
          [quo/account-overview
