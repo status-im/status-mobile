@@ -12,8 +12,9 @@
            on-change-color
            on-change-emoji section-label bottom-action? bottom-action-label bottom-action-props
            custom-bottom-action]} & children]
-  (let [{:keys [top bottom]} (safe-area/get-insets)
-        margin-top           (if (false? margin-top?) 0 top)]
+  (let [{:keys [top bottom]}  (safe-area/get-insets)
+        margin-top            (if (false? margin-top?) 0 top)
+        {window-width :width} (rn/get-window)]
     [rn/keyboard-avoiding-view
      {:style                    (style/root-container margin-top)
       :keyboard-vertical-offset (- bottom)}
@@ -58,7 +59,8 @@
         [quo/color-picker
          {:default-selected account-color
           :on-change        on-change-color
-          :container-style  style/color-picker}]]
+          :container-style  style/color-picker
+          :window-width     window-width}]]
        [quo/divider-line {:container-style style/divider-2}]
        (when section-label
          [quo/section-label

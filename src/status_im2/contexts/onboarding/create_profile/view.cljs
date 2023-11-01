@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [oops.core :as oops]
-    [quo.components.colors.color.constants :as constants]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.blur :as blur]
@@ -15,7 +14,8 @@
     [status-im2.contexts.onboarding.create-profile.style :as style]
     [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.responsiveness :as responsiveness]))
 
 ;; NOTE - validation should match with Desktop
 ;; https://github.com/status-im/status-desktop/blob/2ba96803168461088346bf5030df750cb226df4c/ui/imports/utils/Constants.qml#L468
@@ -34,12 +34,6 @@
 (defn length-not-valid [s] (< (count (string/trim (str s))) min-length))
 (def scroll-view-height (reagent/atom 0))
 (def content-container-height (reagent/atom 0))
-(defn iphone-11-Pro-20-pixel-from-width
-  [window-width]
-  ;; Divide iPhone 11 Pro VW by the desired value
-  (let [calculate-ratio (/ constants/IPHONE_11_PRO_VIEWPORT_WIDTH 20)]
-    ;; Divide window width by the ratio to get a dynamic value. Based on the VW width
-    (int (/ window-width calculate-ratio))))
 
 (defn validation-message
   [s]
@@ -208,7 +202,8 @@
            :default-selected :blue
            :on-change        on-change
            :window-width     window-width
-           :container-style  {:padding-left (iphone-11-Pro-20-pixel-from-width window-width)}}]]]
+           :container-style  {:padding-left (responsiveness/iphone-11-Pro-20-pixel-from-width
+                                             window-width)}}]]]
 
        [rn/keyboard-avoiding-view
         {:style          {:position :absolute
