@@ -1,30 +1,22 @@
 (ns status-im2.contexts.quo-preview.wallet.summary-info
   (:require
     [quo.core :as quo]
-    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 
 (def descriptor
-  [{:label   "Type:"
-    :key     :type
+  [{:key     :type
     :type    :select
-    :options [{:key   :status-account
-               :value "Status Account"}
-              {:key   :user
-               :value "User"}
-              {:key   :saved-account
-               :value "Saved Account"}
-              {:key   :account
-               :value "Account"}]}
-   {:label "Networks?:"
-    :key   :networks?
-    :type  :boolean}])
+    :options [{:key :status-account}
+              {:key :user}
+              {:key :saved-account}
+              {:key :account}]}
+   {:key :networks? :type :boolean}])
 
 
-(defn preview
+(defn view
   []
   (let [state                (reagent/atom {:type      :status-account
                                             :networks? true
@@ -48,9 +40,7 @@
     (fn []
       (let [account-props (if (= (:type @state) :status-account) status-account-props user-props)]
         [preview/preview-container
-         {:state      state
-          :descriptor descriptor}
-         [rn/view
-          {:style {:flex               1
-                   :padding-horizontal 20}}
-          [quo/summary-info (merge @state {:account-props account-props})]]]))))
+         {:state                     state
+          :descriptor                descriptor
+          :component-container-style {:padding-horizontal 20}}
+         [quo/summary-info (merge @state {:account-props account-props})]]))))

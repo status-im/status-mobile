@@ -56,7 +56,7 @@
      :data      networks-list}]
    [quo/bottom-actions
     {:button-one-label (i18n/label :t/update)
-     :disabled?        true
-     :button-one-press on-save}]])
+     :button-one-props {:disabled? true
+                        :on-press  on-save}}]])
 
 (def view (quo.theme/with-theme view-internal))

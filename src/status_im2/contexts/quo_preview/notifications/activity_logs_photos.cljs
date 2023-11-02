@@ -31,7 +31,7 @@
    (resources/get-mock-image :photo2)
    (resources/get-mock-image :photo3)])
 
-(defn preview-activity-logs-photos
+(defn view
   []
   (let [state (reagent/atom {:count 1})]
     (fn []

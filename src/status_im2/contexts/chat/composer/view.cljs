@@ -36,15 +36,19 @@
            theme]} props state]
   (let [{:keys [chat-screen-loaded?]
          :as   subscriptions}    (utils/init-subs)
-        content-height           (reagent/atom (or (:input-content-height
+        content-height           (reagent/atom (or (:input-content-height ; Actual text height
                                                     subscriptions)
                                                    constants/input-height))
         {:keys [keyboard-shown]} (hooks/use-keyboard)
-        max-height               (utils/calc-max-height subscriptions
+        max-height               (utils/calc-max-height subscriptions ; Max allowed height for the
+                                                                      ; composer view
                                                         window-height
                                                         @(:kb-height state)
                                                         insets)
-        lines                    (utils/calc-lines (- @content-height constants/extra-content-offset))
+        lines                    (utils/calc-lines (- @content-height constants/extra-content-offset)) ; Current
+                                                                                                       ; lines
+                                                                                                       ; count
+        ;; Maximum number of lines that can be displayed when composer in maximized
         max-lines                (utils/calc-lines max-height)
         animations               (utils/init-animations
                                   subscriptions
@@ -59,6 +63,7 @@
                                   :lines          lines
                                   :max-lines      max-lines}
         show-bottom-gradient?    (utils/show-bottom-gradient? state dimensions)
+        ;; Cursor position, needed to determine where to display the mentions view
         cursor-pos               (utils/cursor-y-position-relative-to-container
                                   props
                                   state)]
@@ -86,7 +91,7 @@
       [sub-view/shell-button state scroll-to-bottom-fn show-floating-scroll-down-button?]
       [gesture/gesture-detector
        {:gesture
-        (drag-gesture/drag-gesture props state animations subscriptions dimensions keyboard-shown)}
+        (drag-gesture/drag-gesture props state animations dimensions keyboard-shown)}
        [reanimated/view
         {:style     (style/sheet-container insets state animations theme)
          :on-layout #(handler/layout % state blur-height)}
@@ -97,7 +102,9 @@
            [edit/view state]])
         [reanimated/touchable-opacity
          {:active-opacity      1
-          :on-press            (when @(:input-ref props) #(.focus ^js @(:input-ref props)))
+          :on-press            (fn []
+                                 (when-let [ref @(:input-ref props)]
+                                   (.focus ^js ref)))
           :style               (style/input-container (:height animations) max-height)
           :accessibility-label :message-input-container}
          [rn/selectable-text-input
@@ -113,7 +120,6 @@
             :on-content-size-change #(handler/content-size-change %
                                                                   state
                                                                   animations
-                                                                  subscriptions
                                                                   dimensions
                                                                   (or keyboard-shown
                                                                       (:edit subscriptions)))
@@ -122,23 +128,21 @@
             :on-selection-change #(handler/selection-change % props state)
             :on-selection #(selection/on-selection % props state)
             :keyboard-appearance (quo.theme/theme-value :light :dark)
-            :max-height max-height
             :max-font-size-multiplier 1
             :multiline true
             :placeholder (i18n/label :t/type-something)
             :placeholder-text-color (colors/theme-colors colors/neutral-30 colors/neutral-50)
             :style (style/input-text props
                                      state
-                                     subscriptions
                                      {:max-height max-height
                                       :theme      theme})
             :max-length constants/max-text-size
-            :accessibility-label :chat-message-input}]]
-         (when chat-screen-loaded?
-           [:<>
-            [gradients/view props state animations show-bottom-gradient?]
-            [link-preview/view]
-            [images/images-list]])]
+            :accessibility-label :chat-message-input}]]]
+        (when chat-screen-loaded?
+          [:<>
+           [gradients/view props state animations show-bottom-gradient?]
+           [link-preview/view]
+           [images/images-list]])
         [:f> actions/view props state animations window-height insets scroll-to-bottom-fn
          subscriptions]]]]]))
 
@@ -147,7 +151,7 @@
   (let [window-height (:height (rn/get-window))
         theme         (quo.theme/use-theme-value)
         opacity       (reanimated/use-shared-value 0)
-        background-y  (reanimated/use-shared-value (- window-height))
+        background-y  (reanimated/use-shared-value (- window-height)) ; Y position of background overlay
         blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
                                                       (:bottom insets)))
         extra-params  {:insets                            insets
@@ -158,10 +162,11 @@
                        :opacity                           opacity
                        :background-y                      background-y
                        :theme                             theme}
-        props         (utils/init-props)
-        state         (utils/init-state)]
+        props         (utils/init-non-reactive-state)
+        state         (utils/init-reactive-state)]
     [rn/view (when platform/ios? {:style {:z-index 1}})
-     [reanimated/view {:style (style/background opacity background-y window-height)}]
+     [reanimated/view {:style (style/background opacity background-y window-height)}] ; background
+                                                                                      ; overlay
      [sub-view/blur-view
       {:layout-height blur-height
        :focused?      (:focused? state)

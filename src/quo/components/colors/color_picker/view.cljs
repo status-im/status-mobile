@@ -17,8 +17,9 @@
    - `default-selected` Default selected color name.
    - `on-change` Callback called when a color is selected `(fn [color-name])`.
    - `blur?` Boolean to enable blur background support.}"
-  [{:keys [default-selected window-width]}]
-  (let [selected (reagent/atom default-selected)]
+  [{:keys [default-selected]}]
+  (let [selected              (reagent/atom default-selected)
+        {window-width :width} (rn/get-window)]
     (fn [{:keys [blur? on-change feng-shui? container-style]}]
       [rn/scroll-view
        {:horizontal                        true

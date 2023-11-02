@@ -62,14 +62,16 @@
 
 ;;;; BOTTOM-VIEW
 (defn gradient-container
-  [insets {:keys [opacity]} {:keys [bottom-layout]}]
+  [insets {:keys [opacity]} {:keys [bottom-layout]} transparent?]
   (reanimated/apply-animations-to-style
    {:transform [{:translateY bottom-layout}]
     :opacity   opacity}
    {:position       :absolute
     :overflow       :visible
+    :display        (if @transparent? :none :flex)
     :bottom         0
     :padding-bottom (:bottom insets)
+    :padding-top    c/text-min-height
     :z-index        3}))
 
 (defn content-container
@@ -80,17 +82,27 @@
    :justify-content    :center})
 
 
-(defn background
+(defn background-bottom-gradient
   [{:keys [overlay-opacity]} z-index]
   (reanimated/apply-animations-to-style
-   {:opacity overlay-opacity}
-   {:background-color colors/neutral-100-opa-70
-    :position         :absolute
-    :top              0
-    :bottom           0
-    :z-index          z-index
-    :left             0
-    :right            0}))
+   {:opacity (reanimated/interpolate overlay-opacity [0 0.1 0.4 1] [0 0.1 1 1])}
+   {:position :absolute
+    :top      0
+    :bottom   0
+    :z-index  z-index
+    :left     0
+    :right    0}))
+
+(defn background-top-gradient
+  [{:keys [overlay-opacity]} z-index]
+  (reanimated/apply-animations-to-style
+   {:opacity (reanimated/interpolate overlay-opacity [0.3 1] [0 1])}
+   {:position :absolute
+    :top      0
+    :bottom   0
+    :z-index  z-index
+    :left     0
+    :right    0}))
 
 (defn bottom-inset-cover-up
   [insets]

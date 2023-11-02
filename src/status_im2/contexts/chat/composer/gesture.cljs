@@ -59,7 +59,6 @@
   [{:keys [input-ref] :as props}
    {:keys [gesture-enabled?] :as state}
    {:keys [height saved-height last-height opacity background-y container-opacity] :as animations}
-   {:keys [images link-previews?]}
    {:keys [max-height lines] :as dimensions}
    keyboard-shown]
   (let [expanding?       (atom true)
@@ -82,7 +81,7 @@
         (gesture/on-update
          (fn [event]
            (let [translation    (oops/oget event "translationY")
-                 min-height     (utils/get-min-height lines images link-previews?)
+                 min-height     (utils/get-min-height lines)
                  new-height     (- (reanimated/get-shared-value saved-height) translation)
                  bounded-height (utils.number/value-in-range new-height min-height max-height)]
              (when keyboard-shown

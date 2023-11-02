@@ -34,14 +34,14 @@
        (zipmap (repeat nil))))
   ([kv] (-> (init-contact) (merge kv))))
 
-(def url-regex #"^https?://status.app/u/(.+)")
+(def url-regex #"^https?://status.app/u(/([a-zA-Z0-9_-]+)(={0,2}))?#(.+)")
 
 (defn ->id
   [{:keys [input] :as contact}]
   (let [trimmed-input (utils.string/safe-trim input)]
     (->> {:id (if (empty? trimmed-input)
                 nil
-                (if-some [[_ id] (re-matches url-regex trimmed-input)]
+                (if-some [id (last (re-matches url-regex trimmed-input))]
                   id
                   trimmed-input))}
          (merge contact))))
@@ -175,8 +175,11 @@
   (let [contact (get-in db [:contacts/new-identity])]
     (when (= (:input contact) input)
       (let [state (cond
-                    (or (string/includes? (:message err) "fallback failed")
-                        (string/includes? (:message err) "no such host"))
+                    (and (string? err) (string/includes? err "invalid public key"))
+                    {:state :invalid :msg :t/not-a-chatkey}
+                    (and (string? (:message err))
+                         (or (string/includes? (:message err) "fallback failed")
+                             (string/includes? (:message err) "no such host")))
                     {:state :invalid :msg :t/lost-connection}
                     :else {:state :invalid})]
         {:db (assoc db :contacts/new-identity (merge contact state))}))))

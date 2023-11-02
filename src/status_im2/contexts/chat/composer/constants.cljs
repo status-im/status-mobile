@@ -17,9 +17,15 @@
 
 (def ^:const empty-opacity 0.7)
 
-(def ^:const images-container-height 76)
+(def ^:const images-padding-top 12)
+(def ^:const images-padding-bottom 8)
+(def ^:const images-container-height
+  (+ actions-container-height images-padding-top images-padding-bottom))
 
-(def ^:const links-container-height 76)
+(def ^:const links-padding-top 12)
+(def ^:const links-padding-bottom 8)
+(def ^:const links-container-height
+  (+ actions-container-height links-padding-top links-padding-bottom))
 
 (def ^:const reply-container-height 32)
 

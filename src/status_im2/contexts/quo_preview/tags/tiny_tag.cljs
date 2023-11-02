@@ -6,14 +6,10 @@
     [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:label "Blur?"
-    :key   :blur?
-    :type  :boolean}
-   {:label "Label"
-    :key   :label
-    :type  :text}])
+  [{:key :blur? :type :boolean}
+   {:key :label :type :text}])
 
-(defn preview-tiny-tag
+(defn view
   []
   (let [state (reagent/atom {:blur? false
                              :label "1,000 SNT"})]

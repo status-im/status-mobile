@@ -78,6 +78,13 @@ jest.mock('react-native-blob-util', () => ({
 
 jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
 
+jest.mock('react-native-static-safe-area-insets', () => ({
+  default: {
+    safeAreaInsetsTop: 0,
+    safeAreaInsetsBottom: 0,
+  },
+}));
+
 NativeModules.ReactLocalization = {
   language: 'en',
   locale: 'en',
