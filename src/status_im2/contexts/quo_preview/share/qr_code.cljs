@@ -62,16 +62,16 @@
   []
   (let [media-server-port (rf/sub [:mediaserver/port])
         state             (reagent/atom
-                           {:url                 "https://join.status.im/status"
-                            :size                250
-                            :avatar              :none
-                            :profile-picture     (resources/get-mock-image :user-picture-male5)
+                           {:url "https://status.app/u#zQ34e1zlOdas0pKnvrweeedsasas12adjie8"
+                            :size 250
+                            :avatar :none
+                            :profile-picture (resources/get-mock-image :user-picture-male5)
                             :customization-color :army
-                            :full-name           "Full Name"
-                            :emoji               "🍒"
-                            :picture             (resources/get-mock-image :community-logo)
-                            :f-name              "First Name"
-                            :l-name              "Last Name"})]
+                            :full-name "Full Name"
+                            :emoji "🍒"
+                            :picture (resources/get-mock-image :community-logo)
+                            :f-name "First Name"
+                            :l-name "Last Name"})]
     (fn []
       (let [qr-media-server-uri (image-server/get-qr-image-uri-for-any-url
                                  {:url         (:url @state)

@@ -24,7 +24,7 @@
 (defn universal-link
   [community-id]
   (str (:external universal-links/domains)
-       "/c/"
+       "/c#"
        community-id))
 
 (defn <-request-to-join-community-rpc

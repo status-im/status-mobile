@@ -106,11 +106,9 @@
    :target :node-test
    ;; Uncomment line below to `make test-watch` a specific file
    ;; :ns-regexp "status-im2.subs.messages-test$"
-   :main
-   status-im.test-runner/main
+   :main status-im.test-runner/main
    ;; set :ui-driven to true to let shadow-cljs inject node-repl
-   :ui-driven
-   true
+   :ui-driven true
    :closure-defines
    {status-im2.config/POKT_TOKEN                     #shadow/env "POKT_TOKEN"
     status-im2.config/INFURA_TOKEN                   #shadow/env "INFURA_TOKEN"
