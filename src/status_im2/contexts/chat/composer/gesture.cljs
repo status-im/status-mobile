@@ -102,7 +102,7 @@
                           (let [diff (- (reanimated/get-shared-value height)
                                         (reanimated/get-shared-value saved-height))]
                             (if @gesture-enabled?
-                              (if (>= diff 0)
+                              (if (and @expanding? (>= diff 0))
                                 (if (> diff constants/drag-threshold)
                                   (maximize state animations dimensions)
                                   (bounce-back animations dimensions starting-opacity))

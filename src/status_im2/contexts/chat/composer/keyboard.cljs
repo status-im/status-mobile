@@ -20,18 +20,28 @@
       (async-storage/set-item! :kb-default-height (str height)))))
 
 (defn handle-emoji-kb-ios
-  "Opening emoji KB on iOS while maximized will cause a flicker up and down. This method handles that."
+  "Opening emoji KB on iOS will cause a flicker up and down due to height differences.
+  This method handles that by adding the extra difference between the keyboards. When the input is
+  expanded to a point where the added difference will make the composer go beyond the screen causing a flicker,
+  we're subtracting the difference so it only reaches the allowed max-height. We're not animating these
+  changes to make it appear seamless during transitions between keyboard types when maximized."
   [event
    {:keys [emoji-kb-extra-height]}
    {:keys [text-value]}
    {:keys [height saved-height]}
    {:keys [max-height]}]
-  (let [start-h         (oops/oget event "startCoordinates.height")
-        end-h           (oops/oget event "endCoordinates.height")
-        diff            (- end-h start-h)
-        max-height-diff (- max-height diff)
-        curr-text       @text-value]
-    (if (> (reanimated/get-shared-value height) max-height-diff)
+  (let [start-h                  (oops/oget event "startCoordinates.height")
+        end-h                    (oops/oget event "endCoordinates.height")
+        diff                     (- end-h start-h)
+        max-height-diff          (- max-height diff)
+        curr-text                @text-value
+        almost-expanded?         (> (reanimated/get-shared-value height) max-height-diff)
+        ;; NOTE: the `keyboardWillChangeFrame` is dispatched sometimes when blurring (the input)
+        ;; with a diff of 103, which we don't want to react to as it causes the input to increase.
+        ;; 60 is an arbitrary number to avoid that, but still include the emoji keyboard difference
+        ;; (with some buffer).
+        smaller-than-emoji-diff? (< diff 60)]
+    (if (and almost-expanded? (pos? diff) smaller-than-emoji-diff?)
       (do
         (reanimated/set-shared-value height (- (reanimated/get-shared-value height) diff))
         (reanimated/set-shared-value saved-height (- (reanimated/get-shared-value saved-height) diff))

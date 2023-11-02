@@ -72,7 +72,7 @@
   "Save new text height, expand composer if possible, show background overlay if needed"
   [event
    {:keys [maximized? lock-layout? text-value]}
-   {:keys [height saved-height opacity background-y]}
+   {:keys [height saved-height last-height opacity background-y]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
   (when keyboard-shown
@@ -87,10 +87,11 @@
                                                     max-height)
           new-height   (min new-height max-height)]
       (reset! content-height content-size)
-      (when (utils/update-height? content-size height max-height maximized?)
+      (when (utils/update-height? content-size height max-height)
         (reanimated/animate height new-height)
+        (reanimated/set-shared-value last-height new-height)
         (reanimated/set-shared-value saved-height new-height))
-      (when (= new-height max-height)
+      (when (>= new-height max-height)
         (reset! maximized? true)
         (rf/dispatch [:chat.ui/set-input-maximized true]))
       (if (utils/show-background? max-height new-height maximized?)
