@@ -11,7 +11,7 @@
   (when checked-atom (swap! checked-atom not))
   (when on-change (on-change (not checked?))))
 
-(defn- selector-internal
+(defn- base-selector
   [{:keys [default-checked? checked?]}]
   (let [controlled-component? (some? checked?)
         internal-checked?     (when-not controlled-component?
@@ -28,14 +28,13 @@
                                                  :container-style     container-style
                                                  :customization-color customization-color
                                                  :theme               theme})]
-        [rn/touchable-without-feedback
+        [rn/pressable
          (when-not disabled?
            {:on-press #(handle-press on-change internal-checked? actual-checked?)})
          [rn/view
           {:style                             outer-styles
            :needs-offscreen-alpha-compositing true
            :accessibility-label               accessibility-label
-           :accessibility-role                :checkbox
            :testID                            test-id}
           [rn/view
            {:style (inner-style-fn {:theme               theme
@@ -45,39 +44,49 @@
            (when (and icon-style-fn actual-checked?)
              [icons/icon :i/check-small (icon-style-fn actual-checked? blur? theme)])]]]))))
 
-(def ^:private selector (quo.theme/with-theme selector-internal))
-
-(defn toggle
+(defn- toggle
   [props]
-  [selector
+  [base-selector
    (assoc props
           :label-prefix   "toggle"
           :outer-style-fn style/toggle
           :inner-style-fn style/toggle-inner)])
 
-(defn radio
+(defn- radio
   [props]
-  [selector
+  [base-selector
    (assoc props
           :label-prefix   "radio"
           :outer-style-fn style/radio
           :inner-style-fn style/radio-inner)])
 
-(defn checkbox
+(defn- checkbox
   [props]
-  [selector
+  [base-selector
    (assoc props
           :label-prefix   "checkbox"
           :outer-style-fn style/checkbox
           :inner-style-fn style/common-checkbox-inner
           :icon-style-fn  style/checkbox-check)])
 
-(defn checkbox-prefill
+(defn- filled-checkbox
   [props]
-  [selector
+  [base-selector
    (assoc props
-          :label-prefix   "checkbox-prefill"
-          :outer-style-fn style/checkbox-prefill
+          :label-prefix   "filled-checkbox"
+          :outer-style-fn style/filled-checkbox
           :inner-style-fn style/common-checkbox-inner
-          :icon-style-fn  style/checkbox-prefill-check)])
+          :icon-style-fn  style/filled-checkbox-check)])
 
+(defn view-internal
+  [{:keys [type]
+    :or   {type :toggle}
+    :as   props}]
+  (case type
+    :toggle          [toggle props]
+    :radio           [radio props]
+    :checkbox        [checkbox props]
+    :filled-checkbox [filled-checkbox props]
+    nil))
+
+(def view (quo.theme/with-theme view-internal))

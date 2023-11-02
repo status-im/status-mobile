@@ -27,8 +27,9 @@
       {:size  20
        :color (colors/theme-colors colors/neutral-50 colors/neutral-40)}]
      :checkbox
-     [selectors/checkbox
-      {:checked?            checked?
+     [selectors/view
+      {:type                :checkbox
+       :checked?            checked?
        :accessibility-label :user-list-toggle-check
        :disabled?           disabled?
        :on-change           (when on-check on-check)}]

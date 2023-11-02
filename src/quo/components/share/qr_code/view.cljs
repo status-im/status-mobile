@@ -3,7 +3,7 @@
     [quo.components.avatars.account-avatar.view :as account-avatar]
     [quo.components.avatars.channel-avatar.view :as channel-avatar]
     [quo.components.avatars.user-avatar.view :as user-avatar]
-    [quo.components.avatars.wallet-user-avatar :as wallet-avatar]
+    [quo.components.avatars.wallet-user-avatar.view :as wallet-avatar]
     [quo.components.share.qr-code.style :as style]
     [react-native.core :as rn]
     [react-native.fast-image :as fast-image]))

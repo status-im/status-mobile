@@ -6,7 +6,7 @@
   [customization-color theme]
   {:normal {:checked   (colors/resolve-color customization-color theme)
             :unchecked (colors/theme-colors colors/neutral-30 colors/neutral-80 theme)}
-   :blur   {:checked   (colors/theme-colors (colors/custom-color customization-color 50)
+   :blur   {:checked   (colors/theme-colors (colors/resolve-color customization-color theme)
                                             colors/white-opa-70
                                             theme)
             :unchecked (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-10 theme)}})
@@ -15,7 +15,7 @@
   [customization-color theme]
   {:normal {:checked   (colors/resolve-color customization-color theme)
             :unchecked (colors/theme-colors colors/neutral-30 colors/neutral-70 theme)}
-   :blur   {:checked   (colors/theme-colors (colors/custom-color customization-color 50)
+   :blur   {:checked   (colors/theme-colors (colors/resolve-color customization-color theme)
                                             colors/white
                                             theme)
             :unchecked (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-40 theme)}})
@@ -29,7 +29,7 @@
   [customization-color theme]
   {:normal {:checked   (colors/resolve-color customization-color theme)
             :unchecked (colors/theme-colors colors/white-opa-40 colors/neutral-80-opa-40 theme)}
-   :blur   {:checked   (colors/theme-colors (colors/custom-color customization-color 50)
+   :blur   {:checked   (colors/theme-colors (colors/resolve-color customization-color theme)
                                             colors/white)
             :unchecked colors/white-opa-5}})
 
@@ -38,7 +38,7 @@
   {:normal (colors/theme-colors colors/neutral-30 colors/neutral-70 theme)
    :blur   (colors/theme-colors colors/neutral-80-opa-20 colors/white-opa-40 theme)})
 
-(defn- checkbox-prefill-background-color
+(defn- filled-checkbox-background-color
   [theme]
   {:normal (colors/theme-colors colors/neutral-30 colors/neutral-80 theme)
    :blur   (colors/theme-colors colors/neutral-80-opa-10 colors/white-opa-10 theme)})
@@ -119,16 +119,16 @@
             (colors/theme-colors colors/white colors/neutral-100 theme)
             colors/white)})
 
-(defn checkbox-prefill
+(defn filled-checkbox
   [{:keys [disabled? blur? container-style theme]}]
   (assoc container-style
          :height           21
          :width            21
          :border-radius    6
          :opacity          (if disabled? 0.3 1)
-         :background-color (get-color (checkbox-prefill-background-color theme) blur?)))
+         :background-color (get-color (filled-checkbox-background-color theme) blur?)))
 
-(defn checkbox-prefill-check
+(defn filled-checkbox-check
   [checked? _blur? theme]
   {:size  20
    :color (when checked? (colors/theme-colors colors/neutral-100 colors/white theme))})

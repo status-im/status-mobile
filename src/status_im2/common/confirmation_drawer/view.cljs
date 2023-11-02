@@ -24,7 +24,9 @@
   [extra-action extra-text extra-action-selected?]
   (when extra-action
     [rn/view {:style {:margin-top 16 :flex-direction :row}}
-     [quo/checkbox {:on-change (fn [selected?] (reset! extra-action-selected? selected?))}]
+     [quo/selectors
+      {:type      :checkbox
+       :on-change #(reset! extra-action-selected? %)}]
      [quo/text {:style {:margin-left 10}} extra-text]]))
 
 (defn confirmation-drawer
