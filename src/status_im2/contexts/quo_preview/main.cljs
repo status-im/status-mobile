@@ -59,6 +59,8 @@
     [status-im2.contexts.quo-preview.dropdowns.dropdown :as dropdown]
     [status-im2.contexts.quo-preview.dropdowns.network-dropdown :as
      network-dropdown]
+    [status-im2.contexts.quo-preview.dropdowns.dropdown-input :as
+     dropdown-input]
     [status-im2.contexts.quo-preview.empty-state.empty-state :as empty-state]
     [status-im2.contexts.quo-preview.foundations.shadows :as shadows]
     [status-im2.contexts.quo-preview.gradient.gradient-cover :as gradient-cover]
@@ -269,7 +271,9 @@
    :dropdowns         [{:name      :dropdown
                         :component dropdown/view}
                        {:name      :network-dropdown
-                        :component network-dropdown/view}]
+                        :component network-dropdown/view}
+                       {:name      :dropdown-input
+                        :component dropdown-input/view}]
    :empty-state       [{:name      :empty-state
                         :component empty-state/view}]
    :gradient          [{:name      :gradient-cover
