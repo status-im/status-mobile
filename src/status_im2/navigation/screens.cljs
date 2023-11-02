@@ -1,6 +1,5 @@
 (ns status-im2.navigation.screens
   (:require
-    [status-im2.contexts.quo-preview.component-preview.view :as component-preview]
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.config :as config]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
@@ -28,6 +27,7 @@
     [status-im2.contexts.onboarding.syncing.results.view :as syncing-results]
     [status-im2.contexts.onboarding.welcome.view :as welcome]
     [status-im2.contexts.profile.profiles.view :as profiles]
+    [status-im2.contexts.quo-preview.component-preview.view :as component-preview]
     [status-im2.contexts.quo-preview.main :as quo.preview]
     [status-im2.contexts.shell.activity-center.view :as activity-center]
     [status-im2.contexts.shell.jump-to.view :as shell]
