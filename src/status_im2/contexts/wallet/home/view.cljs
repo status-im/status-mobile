@@ -43,15 +43,15 @@
   [{:keys [accounts loading? balances profile]}]
   (let [accounts-with-balances
         (mapv
-          (fn [account]
-            (assoc account
-              :type :empty
-              :customization-color (:customization-color profile)
-              :on-press #(rf/dispatch [:navigate-to :wallet-accounts (:address account)])
-              :loading? loading?
-              :balance (utils/prettify-balance
-                         (utils/get-balance-by-address balances (:address account)))))
-          accounts)]
+         (fn [account]
+           (assoc account
+                  :type                :empty
+                  :customization-color (:customization-color profile)
+                  :on-press            #(rf/dispatch [:navigate-to :wallet-accounts (:address account)])
+                  :loading?            loading?
+                  :balance             (utils/prettify-balance
+                                        (utils/get-balance-by-address balances (:address account)))))
+         accounts)]
     (conj accounts-with-balances (add-account-placeholder (:customization-color profile)))))
 
 (defn view
@@ -72,7 +72,8 @@
          [rn/view {:style style/overview-container}
           [quo/wallet-overview (temp/wallet-overview-state networks)]]
          [rn/pressable
-          {:on-long-press #(rf/dispatch [:show-bottom-sheet {:content temp/wallet-temporary-navigation}])}
+          {:on-long-press #(rf/dispatch [:show-bottom-sheet
+                                         {:content temp/wallet-temporary-navigation}])}
           [quo/wallet-graph {:time-frame :empty}]]
          [rn/flat-list
           {:style      style/accounts-list
@@ -90,10 +91,10 @@
            :data           tabs-data
            :on-change      #(reset! selected-tab %)}]
          (case @selected-tab
-           :assets [rn/flat-list
-                    {:render-fn               quo/token-value
-                     :data                    temp/tokens
-                     :key                     :assets-list
-                     :content-container-style {:padding-horizontal 8}}]
+           :assets       [rn/flat-list
+                          {:render-fn               quo/token-value
+                           :data                    temp/tokens
+                           :key                     :assets-list
+                           :content-container-style {:padding-horizontal 8}}]
            :collectibles [collectibles/view]
            [activity/view])]))))
