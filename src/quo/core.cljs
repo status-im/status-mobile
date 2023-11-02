@@ -7,7 +7,7 @@
     quo.components.avatars.group-avatar.view
     quo.components.avatars.icon-avatar
     quo.components.avatars.user-avatar.view
-    quo.components.avatars.wallet-user-avatar
+    quo.components.avatars.wallet-user-avatar.view
     quo.components.banners.banner.view
     quo.components.browser.browser-input.view
     quo.components.buttons.button.view
@@ -159,7 +159,7 @@
 (def group-avatar quo.components.avatars.group-avatar.view/view)
 (def icon-avatar quo.components.avatars.icon-avatar/icon-avatar)
 (def user-avatar quo.components.avatars.user-avatar.view/user-avatar)
-(def wallet-user-avatar quo.components.avatars.wallet-user-avatar/wallet-user-avatar)
+(def wallet-user-avatar quo.components.avatars.wallet-user-avatar.view/wallet-user-avatar)
 
 ;;;; Banner
 (def banner quo.components.banners.banner.view/view)
