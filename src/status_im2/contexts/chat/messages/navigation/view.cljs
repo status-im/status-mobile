@@ -37,6 +37,7 @@
         messages                                  (rf/sub [:chats/raw-chat-messages-stream
                                                            (:chat-id chat)])
         more-than-two-messages?                   (<= 2 (count messages))
+        more-than-four-messages?                  (<= 4 (count messages))
         more-than-eight-messages?                 (<= 8 (count messages))
         scroll-y-sending-eight-messages-threshold 469]
     (rn/use-effect
@@ -49,8 +50,8 @@
           (and
            (< 80 (reanimated/get-shared-value scroll-y))
            (not @on-end-reached?))
-          (and composer-active?
-               more-than-two-messages?)
+          (and (if platform/ios? more-than-two-messages? more-than-four-messages?)
+               composer-active?)
           (and
            (not @on-end-reached?)
            @animate-topbar-opacity?)
@@ -75,10 +76,10 @@
               (and (not composer-active?)
                    more-than-eight-messages?
                    (= :initial-render @big-name-visible?))
-              (and more-than-two-messages?
+              (and (if platform/ios? more-than-two-messages? more-than-four-messages?)
                    (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
                    composer-active?)
-              (and more-than-two-messages?
+              (and (if platform/ios? more-than-two-messages? more-than-four-messages?)
                    composer-active?)
               @animate-topbar-name?))
          (do
