@@ -10,7 +10,7 @@
 
 (def links
   {:private-chat "%s/p/%s"
-   :user         "%s/u/%s"
+   :user         "%s/u#%s"
    :browse       "%s/b/%s"})
 
 (defn universal-link?

@@ -80,11 +80,10 @@
          :button              (when empty-input?
                                 {:on-press paste-on-input
                                  :text     (i18n/label :t/paste)})
-         ;; NOTE: `scanned` has priority over `@input-value`, we clean it when the input
-         ;; is updated so that it's `nil` and `@input-value` is shown.
-         ;; To fastly clean it, we use `dispatch-sync`.
-         ;; This call could be avoided if `::qr-scanner/scan-code` were able to receive a
-         ;; callback function, not only a re-frame event as callback.
+         ;; NOTE: `scanned` has priority over `@input-value`, we clean it when the input is updated
+         ;; so that it's `nil` and `@input-value` is shown. To fastly clean it, we use
+         ;; `dispatch-sync`. This call could be avoided if `::qr-scanner/scan-code` were able to
+         ;; receive a callback function, not only a re-frame event as callback.
          :value               (or scanned @input-value)
          :on-change-text      (fn [new-text]
                                 (reset! input-value new-text)

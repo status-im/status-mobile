@@ -1,7 +1,6 @@
 (ns status-im.utils.universal-links.core
   (:require
     [clojure.string :as string]
-    [goog.string :as gstring]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
     [status-im.group-chats.core :as group-chats]
@@ -9,7 +8,6 @@
     [status-im.router.core :as router]
     [status-im.ui.components.react :as react]
     [status-im.wallet.choose-recipient.core :as choose-recipient]
-    [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
@@ -27,26 +25,10 @@
 (def links
   {:private-chat       "%s/p/%s"
    :community-requests "%s/cr/%s"
-   :community          "%s/c/%s"
+   :community          "%s/c#%s"
    :group-chat         "%s/g/%s"
-   :user               "%s/u/%s"
+   :user               "%s/u#%s"
    :browse             "%s/b/%s"})
-
-(defn generate-link
-  [link-type domain-type param]
-  (gstring/format (get links link-type)
-                  (get domains domain-type)
-                  param))
-
-(defn universal-link?
-  [url]
-  (boolean
-   (re-matches constants/regx-universal-link url)))
-
-(defn deep-link?
-  [url]
-  (boolean
-   (re-matches constants/regx-deep-link url)))
 
 (rf/defn handle-browse
   [cofx {:keys [url]}]
@@ -219,7 +201,6 @@
   ;;error "route ip+net: netlinkrib: permission denied" is fixed on status-go side
   #_(native-module/start-searching-for-local-pairing-peers
      #(log/info "[local-pairing] errors from local-pairing-preflight-outbound-check ->" %)))
-
 
 (defn finalize
   "Remove event listener for url"
