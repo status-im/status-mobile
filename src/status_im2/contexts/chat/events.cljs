@@ -294,7 +294,7 @@
             (clear-history chat-id remove-chat?)))
 
 (rf/defn close-and-remove-chat
-  "Closes the and removes it from chat list while retaining history, producing all necessary effects for that"
+  "Closes the chat and removes it from chat list while retaining history, producing all necessary effects for that"
   {:events [:chat.ui/close-chat]}
   [{:keys [db now] :as cofx} chat-id]
   (rf/merge cofx
