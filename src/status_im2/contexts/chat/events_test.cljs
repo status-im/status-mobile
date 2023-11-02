@@ -48,7 +48,7 @@
                                           "3" {:clock-value 2}}}
                       :chats    {chat-id {:last-message {:clock-value 10}}}}}]
     (testing "it deletes all the messages"
-      (let [actual (chat/remove-chat cofx chat-id)]
+      (let [actual (chat/close-and-remove-chat cofx chat-id)]
         (is (= nil (get-in actual [:db :messages chat-id])))))))
 
 (deftest multi-user-chat?

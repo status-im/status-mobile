@@ -157,6 +157,17 @@
                      :on-error   #(log/error "failed to create public chat" chat-id %)}]}
    (clear-history chat-id true)))
 
+(rf/defn remove-chat
+  "Removes chat with provided id from the chat list"
+  [{:keys [db now] :as cofx} chat-id]
+  (rf/merge
+   cofx
+   {:db (-> (if (get-in db [:chats chat-id :muted])
+                (assoc-in db [:chats chat-id :active] false)
+                (update db :chats dissoc chat-id))
+            (update :chats-home-list disj chat-id)
+            (assoc :current-chat-id nil))}))
+
 (rf/defn offload-messages
   {:events [:chat/offload-messages]}
   [{:keys [db]} chat-id]
@@ -282,16 +293,15 @@
                               :on-error   #(log/error "failed to clear history " chat-id %)}]}
             (clear-history chat-id remove-chat?)))
 
-(rf/defn remove-chat
-  "Removes chat completely from app, producing all necessary effects for that"
-  {:events [:chat.ui/remove-chat]}
+(rf/defn close-and-remove-chat
+  "Closes the and removes it from chat list while retaining history, producing all necessary effects for that"
+  {:events [:chat.ui/close-chat]}
   [{:keys [db now] :as cofx} chat-id]
   (rf/merge cofx
             {:effects/push-notifications-clear-message-notifications [chat-id]
              :dispatch                                               [:shell/close-switcher-card
                                                                       chat-id]}
-            (deactivate-chat chat-id)
-            (offload-messages chat-id)))
+            (remove-chat chat-id)))
 
 (rf/defn unmute-chat-community
   {:events [:chat/unmute-chat-community]}
@@ -383,15 +393,15 @@
                             (rf/dispatch [:chat.ui/clear-history chat-id false]))}})
 
 (rf/defn show-remove-chat-confirmation
-  {:events [:chat.ui/show-remove-confirmation]}
+  {:events [:chat.ui/show-close-confirmation]}
   [_ chat-id]
   {:ui/show-confirmation
    {:title               (i18n/label :t/delete-confirmation)
-    :content             (i18n/label :t/delete-chat-confirmation)
+    :content             (i18n/label :t/close-chat-confirmation)
     :confirm-button-text (i18n/label :t/delete)
     :on-accept           #(do
                             (rf/dispatch [:hide-bottom-sheet])
-                            (rf/dispatch [:chat.ui/remove-chat chat-id]))}})
+                            (rf/dispatch [:chat.ui/close-chat chat-id]))}})
 
 (rf/defn navigate-to-user-pinned-messages
   "Takes coeffects map and chat-id, returns effects necessary for navigation and preloading data"
