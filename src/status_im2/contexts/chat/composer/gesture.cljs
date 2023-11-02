@@ -43,8 +43,7 @@
     (reset! emoji-kb-extra-height nil))
   (reset! maximized? false)
   (rf/dispatch [:chat.ui/set-input-maximized false])
-  (when @input-ref
-    (.blur ^js @input-ref)))
+  (utils/blur-input input-ref))
 
 (defn bounce-back
   [{:keys [height saved-height opacity background-y]}
@@ -96,8 +95,8 @@
                                 max-height
                                 bounded-height
                                 saved-height))
-                 (when @input-ref ; sheet at min-height, collapse keyboard
-                   (.blur ^js @input-ref)))))))
+                 ; sheet at min-height, collapse keyboard
+                 (utils/blur-input input-ref))))))
         (gesture/on-end (fn []
                           (let [diff (- (reanimated/get-shared-value height)
                                         (reanimated/get-shared-value saved-height))]

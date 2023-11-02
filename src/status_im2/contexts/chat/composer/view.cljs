@@ -99,7 +99,9 @@
         (when chat-screen-loaded?
           [:<>
            [reply/view state]
-           [edit/view state]])
+           [edit/view
+            {:text-value (:text-value state)
+             :input-ref  (:input-ref props)}]])
         [reanimated/touchable-opacity
          {:active-opacity      1
           :on-press            (fn []
@@ -151,7 +153,8 @@
   (let [window-height (:height (rn/get-window))
         theme         (quo.theme/use-theme-value)
         opacity       (reanimated/use-shared-value 0)
-        background-y  (reanimated/use-shared-value (- window-height)) ; Y position of background overlay
+        background-y  (reanimated/use-shared-value (- window-height)) ; Y position of background
+                                                                      ; overlay
         blur-height   (reanimated/use-shared-value (+ constants/composer-default-height
                                                       (:bottom insets)))
         extra-params  {:insets                            insets

@@ -99,10 +99,18 @@
        (not reply?)
        (not audio?)))
 
+(defn blur-input
+  [input-ref]
+  (when @input-ref
+    (rf/dispatch [:chat.ui/set-input-focused false])
+    (.blur ^js @input-ref)))
+
 (defn cancel-edit-message
-  [{:keys [text-value]}]
+  [text-value input-ref]
   (reset! text-value "")
-  (rf/dispatch [:chat.ui/set-input-content-height constants/input-height]))
+  (blur-input input-ref)
+  (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
+  (rf/dispatch [:chat.ui/cancel-message-edit]))
 
 (defn count-lines
   [s]

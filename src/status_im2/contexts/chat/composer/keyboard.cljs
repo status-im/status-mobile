@@ -4,7 +4,8 @@
     [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]))
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.composer.utils :as utils]))
 
 (defn get-kb-height
   [curr-height default-height]
@@ -68,8 +69,8 @@
                                    #(handle-emoji-kb-ios % props state animations dimensions)))
   (reset! keyboard-hide-listener (.addListener rn/keyboard
                                                "keyboardDidHide"
-                                               #(when (and platform/android? @input-ref)
-                                                  (.blur ^js @input-ref)))))
+                                               #(when platform/android?
+                                                  (utils/blur-input input-ref)))))
 
 (defn handle-refocus-emoji-kb-ios
   [{:keys [saved-emoji-kb-extra-height]}
