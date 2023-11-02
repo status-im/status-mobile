@@ -48,8 +48,9 @@
      [text/text {:weight :semi-bold}
       (if (= type :default-keypair) (keypair-string full-name) full-name)]
      (if (= action :selector)
-       [selectors/radio
-        {:checked?            selected?
+       [selectors/view
+        {:type                :radio
+         :checked?            selected?
          :blur?               blur?
          :customization-color customization-color}]
        [rn/pressable {:on-press on-options-press}

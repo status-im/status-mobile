@@ -11,8 +11,9 @@
    {:on-press            on-change
     :accessibility-label :disclaimer-touchable-opacity}
    [rn/view {:style (merge container-style (style/container blur?))}
-    [selectors/checkbox
-     {:accessibility-label accessibility-label
+    [selectors/view
+     {:type                :checkbox
+      :accessibility-label accessibility-label
       :blur?               blur?
       :checked?            checked?
       :on-change           on-change}]
