@@ -81,19 +81,20 @@
                   :button-text         (i18n/label :t/clear-history)
                   :on-press            #(hide-sheet-and-dispatch [:chat.ui/clear-history chat-id])}])}]))
 
-(defn delete-chat-action
+(defn close-chat-action
   [{:keys [chat-id] :as item} inside-chat?]
   (hide-sheet-and-dispatch
    [:show-bottom-sheet
     {:content (fn []
                 [confirmation-drawer/confirmation-drawer
-                 {:title               (i18n/label :t/delete-chat?)
-                  :description         (i18n/label :t/delete-chat-confirmation)
+                 {:title               (i18n/label :t/close-chat)
+                  :description         (i18n/label :t/close-chat-confirmation)
                   :context             item
-                  :accessibility-label :delete-chat-confirm
-                  :button-text         (i18n/label :t/delete-chat)
+                  :accessibility-label :close-chat-confirm
+                  :button-text         (i18n/label :t/close-chat?)
+                  :close-button-text   (i18n/label :t/cancel)
                   :on-press            (fn []
-                                         (hide-sheet-and-dispatch [:chat.ui/remove-chat chat-id])
+                                         (hide-sheet-and-dispatch [:chat.ui/close-chat chat-id])
                                          (when inside-chat?
                                            (rf/dispatch [:navigate-back])))}])}]))
 
@@ -130,7 +131,7 @@
 (defn mute-chat-entry
   [chat-id chat-type muted-till]
   (let [muted? (rf/sub [:chats/muted chat-id])]
-    (entry {:icon                (if muted? :i/muted :i/activity-center)
+    (entry {:icon                (if muted? :i/activity-center :i/muted)
             :label               (i18n/label
                                   (if muted?
                                     :unmute-chat
@@ -146,7 +147,7 @@
 
 (defn mark-as-read-entry
   [chat-id needs-divider?]
-  (entry {:icon                :i/correct
+  (entry {:icon                :i/mark-as-read
           :label               (i18n/label :t/mark-as-read)
           :on-press            #(mark-all-read-action chat-id)
           :danger?             false
@@ -156,7 +157,7 @@
           :add-divider?        needs-divider?}))
 
 (defn clear-history-entry
-  [chat-id]
+  [chat-id needs-divider?]
   (entry {:icon                :i/delete
           :label               (i18n/label :t/clear-history)
           :on-press            #(clear-history-action chat-id)
@@ -164,17 +165,18 @@
           :sub-label           nil
           :accessibility-label :clear-history
           :chevron?            false
-          :add-divider?        true}))
+          :add-divider?        needs-divider?}))
 
-(defn delete-chat-entry
-  [item inside-chat?]
-  (entry {:icon                :i/delete
-          :label               (i18n/label :t/delete-chat)
-          :on-press            #(delete-chat-action item inside-chat?)
+(defn close-chat-entry
+  [item inside-chat? needs-divider?]
+  (entry {:icon                :i/close-circle
+          :label               (i18n/label :t/close-chat)
+          :on-press            #(close-chat-action item inside-chat?)
           :danger?             true
-          :accessibility-label :delete-chat
+          :accessibility-label :close-chat
           :sub-label           nil
-          :chevron?            false}))
+          :chevron?            false
+          :add-divider?        needs-divider?}))
 
 (defn leave-group-entry
   [item extra-data]
@@ -409,22 +411,21 @@
 
 (defn destructive-actions
   [{:keys [group-chat] :as item} inside-chat?]
-  [(clear-history-entry item)
-   (if group-chat
-     (leave-group-entry item nil)
-     (delete-chat-entry item inside-chat?))])
+  [(when (not group-chat)
+     (close-chat-entry item inside-chat? (not group-chat)))
+   (clear-history-entry item group-chat)
+   (when group-chat
+     (leave-group-entry item nil))])
 
 (defn notification-actions
-  [{:keys [chat-id group-chat public? chat-type muted-till]} inside-chat? needs-divider?]
+  [{:keys [chat-id public? chat-type muted-till group-chat]} inside-chat? needs-divider?]
   [(mark-as-read-entry chat-id needs-divider?)
    (mute-chat-entry chat-id chat-type muted-till)
    (notifications-entry false)
-   (when inside-chat?
+   (when (and inside-chat? group-chat)
      (fetch-messages-entry))
-   (when (or (not group-chat) public?)
+   (when public?
      (show-qr-entry))
-   (when-not group-chat
-     (share-profile-entry))
    (when public?
      (share-group-entry))])
 
@@ -443,9 +444,8 @@
 (defn one-to-one-actions
   [{:keys [chat-id] :as item} inside-chat?]
   [quo/action-drawer
-   [[(view-profile-entry chat-id)
-     (edit-nickname-entry chat-id)]
-    (notification-actions item inside-chat? false)
+   [[(view-profile-entry chat-id)]
+    (notification-actions item inside-chat? true)
     (destructive-actions item inside-chat?)]])
 
 (defn private-group-chat-actions
