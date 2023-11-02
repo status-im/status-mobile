@@ -1,7 +1,7 @@
 (ns status-im2.contexts.wallet.events
   (:require
     [native-module.core :as native-module]
-    [status-im2.data-store.wallet :as data-store]
+    [status-im2.common.data-store.wallet :as data-store]
     [taoensso.timbre :as log]
     [utils.re-frame :as rf]
     [utils.security.core :as security]))
