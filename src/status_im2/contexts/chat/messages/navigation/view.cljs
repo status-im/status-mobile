@@ -10,6 +10,7 @@
     [react-native.reanimated :as reanimated]
     [status-im2.common.home.actions.view :as actions]
     [status-im2.config :as config]
+    [status-im2.contexts.chat.messages.list.view :refer [topbar-invisible-scroll-y-value]]
     [status-im2.contexts.chat.messages.navigation.style :as style]
     [status-im2.contexts.chat.messages.pin.banner.view :as pin.banner]
     [utils.i18n :as i18n]
@@ -21,43 +22,70 @@
   [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
            back-icon animate-topbar-name? composer-active? big-name-visible? animate-topbar-opacity?
            on-end-reached?]}]
-  (let [{:keys [group-chat chat-id]} chat
-        opacity-animation            (reanimated/use-shared-value 0)
-        banner-opacity-animation     (reanimated/interpolate scroll-y
-                                                             [(+ style/navigation-bar-height 150)
-                                                              (+ style/navigation-bar-height 200)]
-                                                             [0 1]
-                                                             {:extrapolateLeft  "clamp"
-                                                              :extrapolateRight "clamp"})
-        translate-animation          (reanimated/use-shared-value title-opacity-interpolation-start)
-        title-opacity-animation      (reanimated/use-shared-value 0)
-        messages                     (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
-        more-than-two-messages?      (<= 2 (count messages))
-        more-than-seven-messages?    (<= 7 (count messages))]
+  (let [{:keys [group-chat chat-id]}              chat
+        opacity-animation                         (reanimated/use-shared-value 0)
+        banner-opacity-animation                  (reanimated/interpolate
+                                                   scroll-y
+                                                   [(+ style/navigation-bar-height 150)
+                                                    (+ style/navigation-bar-height 200)]
+                                                   [0 1]
+                                                   {:extrapolateLeft  "clamp"
+                                                    :extrapolateRight "clamp"})
+        translate-animation                       (reanimated/use-shared-value
+                                                   title-opacity-interpolation-start)
+        title-opacity-animation                   (reanimated/use-shared-value 0)
+        messages                                  (rf/sub [:chats/raw-chat-messages-stream
+                                                           (:chat-id chat)])
+        more-than-two-messages?                   (<= 2 (count messages))
+        more-than-eight-messages?                 (<= 8 (count messages))
+        scroll-y-sending-eight-messages-threshold 469]
     (rn/use-effect
      (fn []
+       (if
+         (or
+          (and (not composer-active?)
+               more-than-eight-messages?
+               (= :initial-render @big-name-visible?))
+          (and
+           (< 80 (reanimated/get-shared-value scroll-y))
+           (not @on-end-reached?))
+          (and composer-active?
+               more-than-two-messages?)
+          (and
+           (not @on-end-reached?)
+           @animate-topbar-opacity?)
+
+          (or
+           (< 350 (reanimated/get-shared-value scroll-y))
+           (and (pos? (count messages))
+                composer-active?
+                (< 85 (reanimated/get-shared-value scroll-y)))))
+         (reanimated/animate opacity-animation 1)
+         (reanimated/animate opacity-animation 0))
        (if (when-not (and
                       @on-end-reached?
                       (not composer-active?)
                       (true? @big-name-visible?))
              (or
+              (and
+               (and composer-active?
+                    (not @big-name-visible?))
+               (< topbar-invisible-scroll-y-value (reanimated/get-shared-value scroll-y)))
+              (<= scroll-y-sending-eight-messages-threshold (reanimated/get-shared-value scroll-y))
               (and (not composer-active?)
-                   more-than-seven-messages?
+                   more-than-eight-messages?
                    (= :initial-render @big-name-visible?))
               (and more-than-two-messages?
                    (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
                    composer-active?)
               (and more-than-two-messages?
                    composer-active?)
-              @animate-topbar-name?
-              @animate-topbar-opacity?))
+              @animate-topbar-name?))
          (do
            (reanimated/animate title-opacity-animation 1)
-           (reanimated/animate opacity-animation 1)
            (reanimated/animate translate-animation 0))
          (do
            (reanimated/animate title-opacity-animation 0)
-           (reanimated/animate opacity-animation 0)
            (reanimated/animate translate-animation title-opacity-interpolation-start))))
      [@animate-topbar-name? @big-name-visible? @animate-topbar-opacity? composer-active?
       @on-end-reached?])

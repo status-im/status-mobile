@@ -172,7 +172,9 @@
     (chat.state/reset-visible-item)
     (rf/merge cofx
               (merge
-               {:db                (dissoc db :current-chat-id)
+               {:db                (-> db
+                                       (dissoc :current-chat-id)
+                                       (assoc-in [:chat/inputs chat-id :focused?] false))
                 :async-storage-set {:chat-id nil
                                     :key-uid nil}}
                (let [community-id (get-in db [:chats chat-id :community-id])]

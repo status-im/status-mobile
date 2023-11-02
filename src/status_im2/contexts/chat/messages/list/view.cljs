@@ -27,12 +27,9 @@
 (defonce ^:const loading-indicator-page-loading-height 100)
 (defonce ^:const scroll-animation-input-range [0 50])
 (defonce ^:const min-message-height 32)
-(defonce ^:const content-height-shared-big-name-invisible-value 900)
-(defonce ^:const topbar-visible-scroll-y-value 100)
+(defonce ^:const topbar-visible-scroll-y-value 85)
 (defonce ^:const topbar-invisible-scroll-y-value 135)
-(defn- root-margin-for-big-name-visibility-detector
-  [composer-active?]
-  {:bottom (if composer-active? -80 -35)})
+(def root-margin-for-big-name-visibility-detector {:bottom -35})
 (defonce messages-list-ref (atom nil))
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
@@ -283,24 +280,31 @@
        [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
-  [event scroll-y animate-topbar-opacity? on-end-reached?]
+  [event scroll-y animate-topbar-opacity? on-end-reached? animate-topbar-name?]
   (let [content-size-y  (- (oops/oget event "nativeEvent.contentSize.height")
                            (oops/oget event "nativeEvent.layoutMeasurement.height"))
         current-y       (oops/oget event "nativeEvent.contentOffset.y")
         scroll-distance (- content-size-y current-y)]
-    (when (and @on-end-reached? (> scroll-distance 0))
+    (when (and @on-end-reached? (pos? scroll-distance))
       (reset! on-end-reached? false))
     (if (< topbar-visible-scroll-y-value scroll-distance)
-      (when-not @animate-topbar-opacity?
-        (reset! animate-topbar-opacity? true))
-      (when @animate-topbar-opacity?
-        (reset! animate-topbar-opacity? false)))
+      (reset! animate-topbar-opacity? true)
+      (reset! animate-topbar-opacity? false))
+    (if (< topbar-invisible-scroll-y-value scroll-distance)
+      (reset! animate-topbar-name? true)
+      (reset! animate-topbar-name? false))
     (reanimated/set-shared-value scroll-y scroll-distance)))
 
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
            big-name-visible? animate-topbar-opacity? composer-active?
-           on-end-reached?]}]
+           on-end-reached? animate-topbar-name?]}]
+  (rn/use-effect (fn []
+                   (if (and (not @on-end-reached?)
+                            (< topbar-visible-scroll-y-value (reanimated/get-shared-value scroll-y)))
+                     (reset! animate-topbar-opacity? true)
+                     (reset! animate-topbar-opacity? false)))
+                 [composer-active? @on-end-reached? @animate-topbar-opacity?])
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
         {:keys [keyboard-height]}             (hooks/use-keyboard)
@@ -313,7 +317,7 @@
                 messages-view-header-height]} inner-state-atoms]
     [rn/view {:style {:flex 1}}
      [rnio/flat-list
-      {:root-margin                       (root-margin-for-big-name-visibility-detector composer-active?)
+      {:root-margin                       root-margin-for-big-name-visibility-detector
        :key-fn                            list-key-fn
        :ref                               list-ref
        :bounces                           false
@@ -340,9 +344,17 @@
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
+                                            (if (or
+                                                 (< 400 (reanimated/get-shared-value scroll-y))
+                                                 (< topbar-visible-scroll-y-value
+                                                    (reanimated/get-shared-value scroll-y)))
+                                              (reset! animate-topbar-opacity? true)
+                                              (reset! animate-topbar-opacity? false))
                                             (when-not (or
                                                        (not @big-name-visible?)
-                                                       (= :initial-render @big-name-visible?))
+                                                       (= :initial-render @big-name-visible?)
+                                                       (pos? (reanimated/get-shared-value
+                                                              scroll-y)))
                                               (reset! on-end-reached? false))
                                             ;; NOTE(alwx): here we set the initial value of
                                             ;; `scroll-y` which is needed because by default the
@@ -368,7 +380,9 @@
                                                   0)}
        :keyboard-dismiss-mode             :interactive
        :keyboard-should-persist-taps      :always
-       :on-scroll-begin-drag              rn/dismiss-keyboard!
+       :on-scroll-begin-drag              #(do
+                                             (rf/dispatch [:chat.ui/set-input-focused false])
+                                             (rn/dismiss-keyboard!))
        :on-momentum-scroll-begin          state/start-scrolling
        :on-momentum-scroll-end            state/stop-scrolling
        :scroll-event-throttle             16
@@ -376,7 +390,8 @@
                                             (scroll-handler event
                                                             scroll-y
                                                             animate-topbar-opacity?
-                                                            on-end-reached?)
+                                                            on-end-reached?
+                                                            animate-topbar-name?)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?

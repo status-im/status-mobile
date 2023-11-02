@@ -152,7 +152,9 @@
                                  :outgoing-status outgoing-status})
           :on-press            (fn []
                                  (if (and platform/ios? keyboard-shown?)
-                                   (rn/dismiss-keyboard!)
+                                   (do
+                                     (rf/dispatch [:chat.ui/set-input-focused false])
+                                     (rn/dismiss-keyboard!))
                                    (when (and outgoing
                                               (not= outgoing-status :sending)
                                               (not @show-delivery-state?))
