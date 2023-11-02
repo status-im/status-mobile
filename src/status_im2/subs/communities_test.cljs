@@ -146,6 +146,97 @@
                          :unread-messages? false
                          :mentions-count   0}]}]]
         (rf/sub [sub-name "0x1"]))))
+  (testing "Channels with categories and token permissions"
+    (swap! rf-db/app-db assoc
+      :communities
+      {community-id {:id                community-id
+                     :token-permissions [[:token-permission-id-01
+                                          {:id "token-permission-id-01"
+                                           :type constants/community-token-permission-can-view-channel
+                                           :token_criteria [{:contract_addresses {:5 "0x0"}
+                                                             :type               1
+                                                             :symbol             "SNT"
+                                                             :amount             "0.0020000000000000"
+                                                             :decimals           18}]
+                                           :chat_ids [(str community-id "0x100")]}]
+                                         [:token-permission-id-02
+                                          {:id "token-permission-id-02"
+                                           :type constants/community-token-permission-become-member
+                                           :token_criteria [{:contract_addresses {:5 "0x0"}
+                                                             :type               1
+                                                             :symbol             "ETH"
+                                                             :amount             "0.0010000000000000"
+                                                             :decimals           18}]}]
+                                         [:token-permission-id-03
+                                          {:id "token-permission-id-03"
+                                           :type constants/community-token-permission-can-view-channel
+                                           :token_criteria [{:contract_addresses {:5 "0x0"}
+                                                             :type               1
+                                                             :symbol             "ETH"
+                                                             :amount             "0.1"
+                                                             :decimals           18}]
+                                           :chat_ids [(str community-id "0x300")]}]]
+                     :chats             {"0x100" {:id         "0x100"
+                                                  :position   1
+                                                  :name       "chat1"
+                                                  :muted?     nil
+                                                  :categoryID "1"
+                                                  :can-post?  false}
+                                         "0x200" {:id         "0x200"
+                                                  :position   2
+                                                  :name       "chat2"
+                                                  :muted?     nil
+                                                  :categoryID "1"
+                                                  :can-post?  false}
+                                         "0x300" {:id         "0x300"
+                                                  :position   3
+                                                  :name       "chat3"
+                                                  :muted?     nil
+                                                  :categoryID "2"
+                                                  :can-post?  true}}
+                     :categories        {"1" {:id       "1"
+                                              :position 2
+                                              :name     "category1"}
+                                         "2" {:id       "2"
+                                              :position 1
+                                              :name     "category2"}}
+                     :joined            true}})
+    (is
+     (= [["2"
+          {:id         "2"
+           :name       "category2"
+           :collapsed? nil
+           :position   1
+           :chats      [{:name             "chat3"
+                         :position         3
+                         :emoji            nil
+                         :muted?           nil
+                         :locked?          false
+                         :id               "0x300"
+                         :unread-messages? false
+                         :mentions-count   0}]}]
+         ["1"
+          {:id         "1"
+           :name       "category1"
+           :collapsed? nil
+           :position   2
+           :chats      [{:name             "chat1"
+                         :emoji            nil
+                         :position         1
+                         :muted?           nil
+                         :locked?          true
+                         :id               "0x100"
+                         :unread-messages? false
+                         :mentions-count   0}
+                        {:name             "chat2"
+                         :emoji            nil
+                         :position         2
+                         :muted?           nil
+                         :locked?          nil
+                         :id               "0x200"
+                         :unread-messages? false
+                         :mentions-count   0}]}]]
+        (rf/sub [sub-name "0x1"]))))
   (testing "Channels without categories"
     (swap! rf-db/app-db assoc
       :communities

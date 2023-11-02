@@ -217,9 +217,9 @@
 (defn- get-chat-lock-state
   "Returns the chat lock state.
 
-  - Nil: no lock
-  - True: locked
-  - False: unlocked"
+  - Nil:   no lock  (there are no permissions for the chat)
+  - True:  locked   (there are permissions and can-post? is false)
+  - False: unlocked (there are permissions and can-post? is true)"
   [community {chat-id :id can-post? :can-post?}]
   (let [chat-permissions (get-chat-token-permissions community chat-id)]
     (cond
