@@ -16,6 +16,7 @@
     [utils.re-frame :as rf]))
 
 (defn send-message
+  "Minimize composer, animate-out background overlay, clear input and flush state"
   [{:keys [sending-images? sending-links?]}
    {:keys [text-value focused? maximized?]}
    {:keys [height saved-height last-height opacity background-y container-opacity]}
@@ -47,6 +48,7 @@
   (let [{:keys [text-value]} state
         customization-color  (rf/sub [:profile/customization-color])]
     (rn/use-effect (fn []
+                     ;; Handle send button opacity animation and z-index when input content changes
                      (if (or (seq @text-value) images?)
                        (when (or (not= @z-index 1) (not= (reanimated/get-shared-value btn-opacity) 1))
                          (reset! z-index 1)
