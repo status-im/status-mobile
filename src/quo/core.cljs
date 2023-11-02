@@ -328,10 +328,7 @@
 (def reactions-selector quo.components.selectors.reactions-selector.view/view)
 (def react quo.components.selectors.react.view/view)
 (def react-selector quo.components.selectors.react-selector.view/view)
-(def checkbox quo.components.selectors.selectors.view/checkbox)
-(def toggle quo.components.selectors.selectors.view/toggle)
-(def radio quo.components.selectors.selectors.view/radio)
-(def checkbox-prefill quo.components.selectors.selectors.view/checkbox-prefill)
+(def selectors quo.components.selectors.selectors.view/view)
 
 ;;;; Settings
 (def account quo.components.settings.accounts.view/account)

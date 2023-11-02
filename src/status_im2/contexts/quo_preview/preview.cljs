@@ -197,8 +197,9 @@
             {:style    (style/multi-select-option)
              :on-press on-press}
             [rn/text {:style (style/field-text false)} v]
-            [quo/checkbox
-             {:checked?  checked?
+            [quo/selectors
+             {:type      :checkbox
+              :checked?  checked?
               :on-change on-press}]])))]
      [rn/view {:style (style/footer)}
       [rn/pressable
