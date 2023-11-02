@@ -1,6 +1,6 @@
 (ns status-im2.navigation.screens
   (:require
-    [dev.component-preview.view :as component-preview]
+    [status-im2.contexts.quo-preview.component-preview.view :as component-preview]
     [status-im.ui.screens.screens :as old-screens]
     [status-im2.config :as config]
     [status-im2.contexts.add-new-contact.views :as add-new-contact]
