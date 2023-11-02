@@ -8,11 +8,9 @@
 (require '[cheshire.core :as json])
 (require '[clojure.set :as set])
 
-(defn- analyze-code
-  [paths]
-  (kondo/run!
-   {:lint   paths
-    :config {:output {:analysis {:keywords true}}}}))
+(def src-paths ["src"])
+
+(def translation-file "translations/en.json")
 
 (defn- safe-name
   [x]
@@ -34,40 +32,24 @@
   [file]
   (-> file slurp json/parse-string keys))
 
-(def ^:private translation-file "translations/en.json")
-
-;; (def unused-warning (format "Unused Translation Key in %s:" translation-file))
 
 (def ^:private possibly-unused-warning
   (format "Possibly Unused Translation Key in %s:" translation-file))
 
 (defn -main
   [& _args]
-  (let [result                           (analyze-code ["src"])
+  (let [result                           (kondo/run!
+                                          {:lint   src-paths
+                                           :config {:output {:analysis {:keywords true}}}})
         all-keywords                     (get-in result [:analysis :keywords])
         used-translations                (filter (comp (partial = 't) :ns) all-keywords)
         file-translation-keys            (apply sorted-set (extract-translation-keys translation-file))
         missing-translations             (remove (comp file-translation-keys :name) used-translations)
         used-translation-keys            (set (map :name used-translations))
-        possibly-unused-translation-keys (set/difference file-translation-keys used-translation-keys)
-
-        ;;
-        ;; non-namespaced-translations (filter
-        ;;                              (fn [kw] (and (not (:ns kw))
-        ;;                                           (possibly-unused-translation-keys (:name kw))))
-        ;;                              all-keywords)
-        ;; unused-translation-keys (set/difference possibly-unused-translation-keys
-        ;;                                         (set (map :name non-namespaced-translations)))
-       ]
-
-    ;; (report-issues (map #(assoc % :reason "Non-namespaced Translation Key")
-    ;;                non-namespaced-translations))
-    ;; (run! #(println unused-warning %) unused-translation-keys)
+        possibly-unused-translation-keys (set/difference file-translation-keys used-translation-keys)]
     (run! #(println possibly-unused-warning %) possibly-unused-translation-keys)
     (report-issues (map #(assoc % :reason "Undefined Translation Key") missing-translations))
-    (if ;; (and
-      (empty? missing-translations)
-      ;;  (empty? possibly-unused-translation-keys))
+    (if (empty? missing-translations)
       0
       1)))
 
