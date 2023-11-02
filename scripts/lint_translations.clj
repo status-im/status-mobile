@@ -8,22 +8,15 @@
 (require '[cheshire.core :as json])
 (require '[clojure.set :as set])
 
-(defn- safe-name
-  [x]
-  (when x (name x)))
-
 (defn- analyze-code
   [paths]
   (kondo/run!
    {:lint   paths
     :config {:output {:analysis {:keywords true}}}}))
 
-(defn- filter-on-usage
-  [syms]
-  (fn [analysis-keywords]
-    (filter (comp syms :reg) analysis-keywords)))
-
-(def get-i18n-label (filter-on-usage #{'utils.i18n/label}))
+(defn- safe-name
+  [x]
+  (when x (name x)))
 
 (defn- ->keyword
   [analysis-keyword]
@@ -32,21 +25,21 @@
 (defn- report-issues
   [incorrect-usages]
   (doseq [incorrect-usage incorrect-usages]
-    (println (format "%s:%s %s %s"
-                     (:filename incorrect-usage)
-                     (:row incorrect-usage)
-                     (:reason incorrect-usage)
-                     (->keyword incorrect-usage)))))
+    (->> incorrect-usage
+         ((juxt :filename :row :reason ->keyword))
+         (apply format "%s:%s %s %s")
+         println)))
 
-(defn extract-translation-keys
+(defn- extract-translation-keys
   [file]
   (-> file slurp json/parse-string keys))
 
-(def translation-file "translations/en.json")
+(def ^:private translation-file "translations/en.json")
 
 ;; (def unused-warning (format "Unused Translation Key in %s:" translation-file))
 
-(def possibly-unused-warning (format "Possibly Unused Translation Key in %s:" translation-file))
+(def ^:private possibly-unused-warning
+  (format "Possibly Unused Translation Key in %s:" translation-file))
 
 (defn -main
   [& _args]
@@ -68,12 +61,13 @@
        ]
 
     ;; (report-issues (map #(assoc % :reason "Non-namespaced Translation Key")
-    ;; non-namespaced-translations))
+    ;;                non-namespaced-translations))
     ;; (run! #(println unused-warning %) unused-translation-keys)
     (run! #(println possibly-unused-warning %) possibly-unused-translation-keys)
     (report-issues (map #(assoc % :reason "Undefined Translation Key") missing-translations))
-    (if (and (empty? missing-translations)
-             #_(empty? possibly-unused-translation-keys))
+    (if ;; (and
+      (empty? missing-translations)
+      ;;  (empty? possibly-unused-translation-keys))
       0
       1)))
 
