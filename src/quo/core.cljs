@@ -85,6 +85,7 @@
     quo.components.markdown.text
     quo.components.messages.author.view
     quo.components.messages.gap
+    quo.components.messages.message.view
     quo.components.messages.system-message.view
     quo.components.navigation.bottom-nav-tab.view
     quo.components.navigation.floating-shell-button.view
@@ -299,6 +300,7 @@
 ;;;; Messages
 (def author quo.components.messages.author.view/view)
 (def gap quo.components.messages.gap/gap)
+(def message quo.components.messages.message.view/view)
 (def system-message quo.components.messages.system-message.view/system-message)
 
 ;;;; Notifications

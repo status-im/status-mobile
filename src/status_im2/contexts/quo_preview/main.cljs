@@ -100,6 +100,7 @@
     [status-im2.contexts.quo-preview.markdown.text :as text]
     [status-im2.contexts.quo-preview.messages.author :as messages-author]
     [status-im2.contexts.quo-preview.messages.gap :as messages-gap]
+    [status-im2.contexts.quo-preview.messages.message :as message]
     [status-im2.contexts.quo-preview.messages.system-message :as system-message]
     [status-im2.contexts.quo-preview.navigation.bottom-nav-tab :as
      bottom-nav-tab]
@@ -348,6 +349,8 @@
                         :component messages-author/view}
                        {:name      :gap
                         :component messages-gap/view}
+                       {:name      :message
+                        :component message/view}
                        {:name      :system-messages
                         :component system-message/view}]
    :navigation        [{:name      :bottom-nav-tab
