@@ -855,20 +855,25 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         chat_element.wait_for_sent_state()
         chat_element.long_press_element_by_coordinate()
         edit_done = False
-        edited_message = "0 abc (Edited)"
+        expected_message = ""
         try:
             self.channel_2.element_by_translation_id("edit-message").click()
-            for i in 31, 30, 29:
+            for i in range(29, 32):
                 self.channel_2.driver.press_keycode(i)
+            input_text = self.channel_2.chat_message_input.text
+            if 'cba' in input_text:  # sometimes method press_keycode adds symbols to the beginning of line
+                expected_message = "0 cba (Edited)"
+            else:
+                expected_message = "0 abc (Edited)"
             self.channel_2.send_message_button.click()
             edit_done = True
-            if chat_element.message_body_with_mention.text != edited_message:
+            if chat_element.message_body_with_mention.text != expected_message:
                 self.errors.append("Edited message is not shown correctly for the sender")
         except NoSuchElementException:
             self.errors.append("Can not edit a message with a mention")
         if edit_done:
             element = self.channel_1.chat_element_by_text(self.username_1).message_body_with_mention
-            if not element.is_element_displayed(10) or element.text != edited_message:
+            if not element.is_element_displayed(10) or element.text != expected_message:
                 self.errors.append("Edited message is not shown correctly for the (receiver) admin")
 
         self.home_2.navigate_back_to_home_view()
