@@ -1,4 +1,4 @@
-(ns dev.component-preview.view
+(ns status-im2.contexts.quo-preview.component-preview.view
   (:require
     [react-native.core :as rn]
     [utils.re-frame :as rf]))
