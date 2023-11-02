@@ -57,43 +57,44 @@
 (defn view
   []
   (rf/dispatch [:wallet/get-wallet-token])
-  (fn []
-    (let [accounts     (rf/sub [:profile/wallet-accounts])
-          top          (safe-area/get-top)
-          selected-tab (reagent/atom (:id (first tabs-data)))
-          loading?     (rf/sub [:wallet/tokens-loading?])
-          balances     (rf/sub [:wallet/balances])
-          profile      (rf/sub [:profile/profile])
-          networks     (rf/sub [:wallet/network-details])]
-      [rn/view
-       {:style {:margin-top top
-                :flex       1}}
-       [common.top-nav/view]
-       [rn/view {:style style/overview-container}
-        [quo/wallet-overview (temp/wallet-overview-state networks)]]
-       [rn/pressable
-        {:on-long-press #(rf/dispatch [:show-bottom-sheet {:content temp/wallet-temporary-navigation}])}
-        [quo/wallet-graph {:time-frame :empty}]]
-       [rn/flat-list
-        {:style      style/accounts-list
-         :data       (account-cards {:accounts accounts
-                                     :loading? loading?
-                                     :balances balances
-                                     :profile  profile})
-         :horizontal true
-         :separator  [rn/view {:style {:width 12}}]
-         :render-fn  quo/account-card}]
-       [quo/tabs
-        {:style          style/tabs
-         :size           32
-         :default-active @selected-tab
-         :data           tabs-data
-         :on-change      #(reset! selected-tab %)}]
-       (case @selected-tab
-         :assets       [rn/flat-list
-                        {:render-fn               quo/token-value
-                         :data                    temp/tokens
-                         :key                     :assets-list
-                         :content-container-style {:padding-horizontal 8}}]
-         :collectibles [collectibles/view]
-         [activity/view])])))
+  (let [selected-tab (reagent/atom (:id (first tabs-data)))]
+    (fn []
+      (let [accounts (rf/sub [:profile/wallet-accounts])
+            top      (safe-area/get-top)
+            loading? (rf/sub [:wallet/tokens-loading?])
+            balances (rf/sub [:wallet/balances])
+            profile  (rf/sub [:profile/profile])
+            networks (rf/sub [:wallet/network-details])]
+        [rn/view
+         {:style {:margin-top top
+                  :flex       1}}
+         [common.top-nav/view]
+         [rn/view {:style style/overview-container}
+          [quo/wallet-overview (temp/wallet-overview-state networks)]]
+         [rn/pressable
+          {:on-long-press #(rf/dispatch [:show-bottom-sheet
+                                         {:content temp/wallet-temporary-navigation}])}
+          [quo/wallet-graph {:time-frame :empty}]]
+         [rn/flat-list
+          {:style      style/accounts-list
+           :data       (account-cards {:accounts accounts
+                                       :loading? loading?
+                                       :balances balances
+                                       :profile  profile})
+           :horizontal true
+           :separator  [rn/view {:style {:width 12}}]
+           :render-fn  quo/account-card}]
+         [quo/tabs
+          {:style          style/tabs
+           :size           32
+           :default-active @selected-tab
+           :data           tabs-data
+           :on-change      #(reset! selected-tab %)}]
+         (case @selected-tab
+           :assets       [rn/flat-list
+                          {:render-fn               quo/token-value
+                           :data                    temp/tokens
+                           :key                     :assets-list
+                           :content-container-style {:padding-horizontal 8}}]
+           :collectibles [collectibles/view]
+           [activity/view])]))))

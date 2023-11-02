@@ -144,7 +144,7 @@
           (+ base bottom-content-height))
         (+ constants/actions-container-height (:bottom insets) (- curr-height cursor-pos) 18)))))
 
-(defn init-props
+(defn init-non-reactive-state
   []
   {:input-ref                   (atom nil)
    :selectable-input-ref        (atom nil)
@@ -160,7 +160,7 @@
    :selection-event             (atom nil)
    :selection-manager           (rn/selectable-text-input-manager)})
 
-(defn init-state
+(defn init-reactive-state
   []
   {:text-value            (reagent/atom "")
    :cursor-position       (reagent/atom 0)
