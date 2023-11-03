@@ -18,7 +18,9 @@
 (defn- asset-component
   []
   (fn [token _ _ _]
-    (let [on-press                #(js/alert "Not implemented yet")
+    (let [on-press                #(rf/dispatch [:navigate-to-within-stack
+                                                 [:wallet-transaction-confirmation
+                                                  :wallet-select-asset]])
           total-balance-formatted (.toFixed (:total-balance token) 2)
           balance-fiat-formatted  (.toFixed (:total-balance-fiat token) 2)
           currency-symbol         "$"]
