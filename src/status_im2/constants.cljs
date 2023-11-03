@@ -378,3 +378,5 @@
 (def ^:const chain-id-separator ":")
 
 (def ^:const account-default-customization-color :blue)
+
+(def ^:const wallet-account-name-max-length 20)

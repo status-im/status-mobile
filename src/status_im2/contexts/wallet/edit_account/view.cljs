@@ -13,15 +13,16 @@
 
 (defn show-toast
   [{:keys [type theme]}]
-  (let [messsage (condp = type
-                   :name  :t/edit-wallet-account-name-updated-message
-                   :color :t/edit-wallet-account-colour-updated-message
-                   :emoji :t/edit-wallet-account-emoji-updated-message)]
+  (let [message (case type
+                  :name  :t/edit-wallet-account-name-updated-message
+                  :color :t/edit-wallet-account-colour-updated-message
+                  :emoji :t/edit-wallet-account-emoji-updated-message
+                  nil)]
     (rf/dispatch [:toasts/upsert
                   {:id         :edit-account
                    :icon       :i/correct
                    :icon-color (colors/resolve-color :success theme)
-                   :text       (i18n/label messsage)}])))
+                   :text       (i18n/label message)}])))
 
 (defn- view-internal
   [{:keys [theme]}]
@@ -34,7 +35,6 @@
         account-color        (reagent/cursor edited-data [:customization-color])
         account-emoji        (reagent/cursor edited-data [:emoji])
         on-change-name       (fn [edited-name]
-                               ;;validation needs to be performed on the name (#17372)
                                (swap! edited-data assoc :name edited-name))
         show-confirm-button? (reagent/atom false)
         on-change-color      (fn [edited-color]

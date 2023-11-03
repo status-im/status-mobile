@@ -6,6 +6,7 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
+    [status-im2.constants :as constants]
     [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
     [status-im2.contexts.wallet.common.utils :as utils]
     [status-im2.contexts.wallet.create-account.style :as style]
@@ -83,7 +84,7 @@
         {:customization-color @account-color
          :placeholder         "Type something here"
          :on-change-text      on-change-text
-         :max-length          20
+         :max-length          constants/wallet-account-name-max-length
          :blur?               true
          :disabled?           false
          :default-value       @account-name

@@ -7,7 +7,7 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn mainnet
+(defn- mainnet
   [customization-color]
   [{:title        "Mainnet"
     :image        :icon-avatar
@@ -17,7 +17,7 @@
     :action-props {:type                :checkbox
                    :customization-color customization-color}}])
 
-(defn networks-list
+(defn- networks-list
   [customization-color]
   [{:title        "Optimism"
     :image        :icon-avatar

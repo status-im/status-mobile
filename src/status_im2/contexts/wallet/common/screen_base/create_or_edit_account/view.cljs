@@ -3,6 +3,7 @@
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
+            [status-im2.constants :as constants]
             [status-im2.contexts.wallet.common.screen-base.create-or-edit-account.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -46,7 +47,7 @@
          :i/reaction]]
        [quo/title-input
         {:placeholder     (i18n/label :t/account-name-input-placeholder)
-         :max-length      20
+         :max-length      constants/wallet-account-name-max-length
          :blur?           true
          :default-value   account-name
          :on-change-text  on-change-name
