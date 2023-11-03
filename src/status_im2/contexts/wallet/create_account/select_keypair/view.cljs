@@ -5,7 +5,8 @@
     [status-im2.contexts.wallet.create-account.select-keypair.style :as style]
     [utils.address :as utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.string :as string]))
 
 (def accounts
   [{:account-props {:customization-color :turquoise

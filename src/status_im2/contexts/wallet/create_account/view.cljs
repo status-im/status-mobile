@@ -14,7 +14,11 @@
     [status-im2.contexts.wallet.create-account.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
+<<<<<<< HEAD
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]))
+=======
+    [utils.string :as utils.string]))
+>>>>>>> 0e33260a9 (lint)
 
 (defn keypair-string
   [full-name]
@@ -30,7 +34,7 @@
     :action-props      {:on-press    #(js/alert "Button pressed!")
 =======
     :image             :avatar
-    :image-props       {:full-name           (utils/get-initials name)
+    :image-props       {:full-name           (utils.string/get-initials name 1)
                         :size                :xxs
                         :customization-color color}
     :action            :button
