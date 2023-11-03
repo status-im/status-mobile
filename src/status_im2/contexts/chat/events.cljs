@@ -159,14 +159,10 @@
 
 (rf/defn remove-chat
   "Removes chat with provided id from the chat list"
-  [{:keys [db now] :as cofx} chat-id]
-  (rf/merge
-   cofx
-   {:db (-> (if (get-in db [:chats chat-id :muted])
-                (assoc-in db [:chats chat-id :active] false)
-                (update db :chats dissoc chat-id))
-            (update :chats-home-list disj chat-id)
-            (assoc :current-chat-id nil))}))
+  [{:keys [db]} chat-id]
+  {:db (-> db
+           (update :chats-home-list disj chat-id)
+           (assoc :current-chat-id nil))})
 
 (rf/defn offload-messages
   {:events [:chat/offload-messages]}

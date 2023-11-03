@@ -43,13 +43,11 @@
 
 (deftest remove-chat-test
   (let [chat-id "1"
-        cofx    {:db {:messages {chat-id {"1" {:clock-value 1}
-                                          "2" {:clock-value 10}
-                                          "3" {:clock-value 2}}}
-                      :chats    {chat-id {:last-message {:clock-value 10}}}}}]
-    (testing "it deletes all the messages"
+        cofx    {:db {:current-chat-id chat-id
+                      :chats-home-list #{chat-id}}}]
+    (testing "it removes the chat with given id"
       (let [actual (chat/close-and-remove-chat cofx chat-id)]
-        (is (= nil (get-in actual [:db :messages chat-id])))))))
+        (is (= nil (get-in actual [:db :chats-home-list chat-id])))))))
 
 (deftest multi-user-chat?
   (let [chat-id "1"]
