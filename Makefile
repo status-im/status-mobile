@@ -274,7 +274,7 @@ run-re-frisk: ##@run Start re-frisk server
 # TODO: Migrate this to a Nix recipe, much the same way as nix/mobile/android/targets/release-android.nix
 run-android: export TARGET := android
 # INFO: If it's empty (no devices attached, parsing issues, script error) - for Nix it's the same as not set.
-run-android: export ANDROID_ABI_INCLUDE ?= $(shell ./scripts/adb_devices_arch.sh)
+run-android: export ANDROID_ABI_INCLUDE ?= $(shell ./scripts/adb_devices_abis.sh)
 run-android: ##@run Build Android APK and start it on the device
 	npx react-native run-android --appIdSuffix debug
 
