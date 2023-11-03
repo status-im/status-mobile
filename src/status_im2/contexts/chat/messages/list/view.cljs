@@ -346,7 +346,8 @@
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
                                             (if (or
-                                                 (< minimum-scroll-y-topbar-overlaying-avatar (reanimated/get-shared-value scroll-y))
+                                                 (< minimum-scroll-y-topbar-overlaying-avatar
+                                                    (reanimated/get-shared-value scroll-y))
                                                  (< topbar-visible-scroll-y-value
                                                     (reanimated/get-shared-value scroll-y)))
                                               (reset! animate-topbar-opacity? true)

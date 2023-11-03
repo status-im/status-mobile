@@ -64,7 +64,8 @@
            (< minimum-scroll-y-topbar-overlaying-avatar-2 (reanimated/get-shared-value scroll-y))
            (and (pos? (count messages))
                 composer-active?
-                (< minimum-scroll-y-topbar-overlaying-avatar-composer-active (reanimated/get-shared-value scroll-y)))))
+                (< minimum-scroll-y-topbar-overlaying-avatar-composer-active
+                   (reanimated/get-shared-value scroll-y)))))
          (reanimated/animate opacity-animation 1)
          (reanimated/animate opacity-animation 0))
        (if (when-not (and
@@ -80,7 +81,8 @@
               (and (not composer-active?)
                    more-than-eight-messages?
                    (= :initial-render @big-name-visible?))
-              ;; Keyboard height increasing is different between iOS and Android, That's why we have two values.
+              ;; Keyboard height increasing is different between iOS and Android, That's why we have two
+              ;; values.
               (and (if platform/ios? more-than-two-messages? more-than-four-messages?)
                    (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
                    composer-active?)
