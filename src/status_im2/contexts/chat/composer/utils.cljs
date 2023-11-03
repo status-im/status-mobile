@@ -108,7 +108,10 @@
 (defn cancel-edit-message
   [text-value input-ref]
   (reset! text-value "")
-  (blur-input input-ref)
+  ;; NOTE: adding a timeout to assure the input is blurred on the next tick
+  ;; after the `text-value` was cleared. Otherwise the height will be calculated
+  ;; with the old `text-value`, leading to wrong composer height after blur.
+  (js/setTimeout #(blur-input input-ref) 100)
   (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
   (rf/dispatch [:chat.ui/cancel-message-edit]))
 

@@ -110,17 +110,25 @@
   (rn/use-effect
    (fn []
      (let [edit-text        (get-in edit [:content :text])
-           text-value-count (count @text-value)]
+           text-value-count (count @text-value)
+           inject-edit-text (fn []
+                              (reset! text-value edit-text)
+                              (reset! saved-cursor-position (if (zero? text-value-count)
+                                                              (count edit-text)
+                                                              text-value-count))
+                              (.setNativeProps ^js @input-ref (clj->js {:text edit-text})))]
        (when (and edit @input-ref)
-         ;; A small setTimeout is necessary to ensure the statement is enqueued and will get executed
-         ;; ASAP.
-         ;; https://github.com/software-mansion/react-native-screens/issues/472
-         (js/setTimeout #(.focus ^js @input-ref) 250)
-         (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
-         (reset! text-value edit-text)
-         (reset! saved-cursor-position (if (zero? text-value-count)
-                                         (count edit-text)
-                                         text-value-count)))))
+         ;; NOTE: A small setTimeout is necessary to ensure the focus is enqueued and is executed
+         ;; ASAP. Check https://github.com/software-mansion/react-native-screens/issues/472
+         ;;
+         ;; The nested setTimeout is necessary to avoid both `on-focus` and `on-content-size-change`
+         ;; handlers triggering the height animation simultaneously, as this causes a jump in the
+         ;; UI. This way, `on-focus` will trigger first without changing the height, after which
+         ;; `on-content-size-change` will animate the height of the input based on the injected
+         ;; text.
+         (js/setTimeout #(do (.focus ^js @input-ref)
+                             (js/setTimeout inject-edit-text 250))
+                        250))))
    [(:message-id edit)]))
 
 (defn use-reply

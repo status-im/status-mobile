@@ -23,12 +23,14 @@
    show-floating-scroll-down-button?]
   (reset! focused? true)
   (rf/dispatch [:chat.ui/set-input-focused true])
-  (reanimated/animate height (reanimated/get-shared-value last-height))
-  (reanimated/set-shared-value saved-height (reanimated/get-shared-value last-height))
-  (reanimated/animate container-opacity 1)
-  (when (> (reanimated/get-shared-value last-height) (* constants/background-threshold max-height))
-    (reanimated/animate opacity 1)
-    (reanimated/set-shared-value background-y 0))
+  (let [last-height-value (reanimated/get-shared-value last-height)]
+    (reanimated/animate height last-height-value)
+    (reanimated/set-shared-value saved-height last-height-value)
+    (reanimated/animate container-opacity 1)
+    (when (> last-height-value (* constants/background-threshold max-height))
+      (reanimated/animate opacity 1)
+      (reanimated/set-shared-value background-y 0)))
+
   (js/setTimeout #(reset! lock-selection? false) 300)
   (when (and (not-empty @text-value) @input-ref)
     (.setNativeProps ^js @input-ref
@@ -91,7 +93,7 @@
         (reanimated/animate height new-height)
         (reanimated/set-shared-value last-height new-height)
         (reanimated/set-shared-value saved-height new-height))
-      (when (>= new-height max-height)
+      (when (= new-height max-height)
         (reset! maximized? true)
         (rf/dispatch [:chat.ui/set-input-maximized true]))
       (if (utils/show-background? max-height new-height maximized?)
