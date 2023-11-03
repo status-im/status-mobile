@@ -1049,7 +1049,9 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
     def test_community_join_when_node_owner_offline(self):
         for home in self.homes:
             home.navigate_back_to_home_view()
-        self.home_2.jump_to_messages_home()
+        self.home_2.jump_to_communities_home()
+        if self.home_2.get_chat(self.community_name, community=True).is_element_displayed():
+            CommunityView(self.home_2.driver).leave_community(self.community_name)
         self.home_1.jump_to_communities_home()
 
         self.home_1.just_fyi("Device 1 creates open community")
@@ -1062,6 +1064,7 @@ class TestCommunityMultipleDeviceMergedTwo(MultipleSharedDeviceTestCase):
         self.device_1.driver.terminate_app(app_package)
 
         self.home_2.just_fyi("Device 2 requests to join the community")
+        self.home_2.jump_to_messages_home()
         self.home_2.get_chat(self.username_1).click()
         self.chat_2.chat_element_by_text(community_name).view_community_button.click()
         self.community_2.join_community(open_community=False)

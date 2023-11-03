@@ -18,6 +18,7 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.loop.run_until_complete(run_in_parallel(((self.device_1.create_user, {'enable_notifications': True,
                                                                                    'username': self.username_1}),
                                                       (self.device_2.create_user, {'username': self.username_2}))))
+        self.device_2_users_number = 1
         self.homes = self.home_1, self.home_2 = self.device_1.get_home_view(), self.device_2.get_home_view()
         self.profile_1, self.profile_2 = self.home_1.get_profile_view(), self.home_2.get_profile_view()
         self.public_key_1 = self.home_1.get_public_key()
@@ -90,7 +91,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_2.profile_button.click()
         self.profile_2.logout()
         new_username = "new user"
-        self.device_2.create_user(second_user=True, username=new_username)
+        self.device_2.create_user(username=new_username, user_number=self.device_2_users_number)
+        self.device_2_users_number += 1
 
         self.device_2.just_fyi('Device2 sends a contact request to Device1 via Paste button and check user details')
         self.home_2.driver.set_clipboard_text(self.public_key_1)
@@ -142,7 +144,8 @@ class TestActivityCenterContactRequestMultipleDevicePR(MultipleSharedDeviceTestC
         self.home_2.profile_button.click()
         self.profile_2.logout()
         new_username_2 = "test user 123"
-        self.device_2.create_user(third_user=True, username=new_username_2)
+        self.device_2.create_user(username=new_username_2, user_number=self.device_2_users_number)
+        self.device_2_users_number += 1
 
         self.device_2.just_fyi('Device2 sends a contact request to Device1 using his profile link')
         self.home_2.driver.set_clipboard_text("https://status.app/u#" + self.public_key_1)
