@@ -29,8 +29,9 @@
     [rn/view {:style style/card-footer-label-container}
      [text/text {:size :paragraph-2} label]]
     [rn/view {:style style/card-footer-toggle-container}
-     [selectors/toggle
-      {:disabled? (not active?)
+     [selectors/view
+      {:type      :toggle
+       :disabled? (not active?)
        :on-change on-toggle}]]]])
 
 (defn- selection-indicator

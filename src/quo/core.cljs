@@ -7,7 +7,7 @@
     quo.components.avatars.group-avatar.view
     quo.components.avatars.icon-avatar
     quo.components.avatars.user-avatar.view
-    quo.components.avatars.wallet-user-avatar
+    quo.components.avatars.wallet-user-avatar.view
     quo.components.banners.banner.view
     quo.components.browser.browser-input.view
     quo.components.buttons.button.view
@@ -159,7 +159,7 @@
 (def group-avatar quo.components.avatars.group-avatar.view/view)
 (def icon-avatar quo.components.avatars.icon-avatar/icon-avatar)
 (def user-avatar quo.components.avatars.user-avatar.view/user-avatar)
-(def wallet-user-avatar quo.components.avatars.wallet-user-avatar/wallet-user-avatar)
+(def wallet-user-avatar quo.components.avatars.wallet-user-avatar.view/wallet-user-avatar)
 
 ;;;; Banner
 (def banner quo.components.banners.banner.view/view)
@@ -328,10 +328,7 @@
 (def reactions-selector quo.components.selectors.reactions-selector.view/view)
 (def react quo.components.selectors.react.view/view)
 (def react-selector quo.components.selectors.react-selector.view/view)
-(def checkbox quo.components.selectors.selectors.view/checkbox)
-(def toggle quo.components.selectors.selectors.view/toggle)
-(def radio quo.components.selectors.selectors.view/radio)
-(def checkbox-prefill quo.components.selectors.selectors.view/checkbox-prefill)
+(def selectors quo.components.selectors.selectors.view/view)
 
 ;;;; Settings
 (def account quo.components.settings.accounts.view/account)

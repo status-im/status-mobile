@@ -1,4 +1,4 @@
-(ns dev.component-preview.events
+(ns status-im2.contexts.quo-preview.component-preview.events
   (:require
     [quo.core :as quo]
     [re-frame.core :as re-frame]))
