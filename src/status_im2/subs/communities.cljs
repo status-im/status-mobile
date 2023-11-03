@@ -222,9 +222,9 @@
   - False: unlocked (there are permissions and can-post? is true)"
   [community {chat-id :id can-post? :can-post?}]
   (let [chat-permissions (get-chat-token-permissions community chat-id)]
-    (cond
-      (empty? chat-permissions) nil
-      :else                     (not can-post?))))
+    (if (empty? chat-permissions)
+      nil
+      (not can-post?))))
 
 (defn- reduce-over-categories
   [community
