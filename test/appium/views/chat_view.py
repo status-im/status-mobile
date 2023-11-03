@@ -448,11 +448,14 @@ class CommunityView(HomeView):
         self.get_chat(name).click()
         return chat_view
 
-    def leave_community(self):
-        self.driver.info("Leaving community")
-        self.community_options_button.wait_and_click()
-        self.community_info_button.wait_and_click()
-        self.leave_community_button.scroll_and_click()
+    def leave_community(self, community_name: str):
+        self.driver.info("Leaving %s" % community_name)
+        home = self.get_home_view()
+        home.communities_tab.click()
+        community_element = home.get_chat(community_name, community=True)
+        community_element.long_press_until_element_is_shown(self.leave_community_button)
+        self.leave_community_button.click()
+        self.leave_community_button.click()
 
     def get_channel_avatar(self, channel_name='general'):
         return Button(self.driver, xpath='//*[@text="# %s"]/../*[@content-desc="channel-avatar"]' % channel_name)
@@ -502,7 +505,6 @@ class CommunityView(HomeView):
         home = self.get_home_view()
         home.communities_tab.click()
         community_element = home.get_chat(community_name, community=True)
-        # community_element.long_press_until_element_is_shown(self.view_members_button)
         community_element.long_press_until_element_is_shown(self.share_community_button)
         self.share_community_button.click()
         for user_name in user_names_to_share:
