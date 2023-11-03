@@ -139,7 +139,7 @@
    :compiler-options {:optimizations :simple
                       :source-map    false}}
   :component-test {:target           :npm-module
-                   :entries          [quo.core-spec status-im2.core-spec]
+                   :entries          [status-im2.contexts.wallet.send.input-amount.component-spec]
                    :ns-regexp        "component-spec$"
                    :output-dir       "component-spec"
                    :compiler-options {:warnings-as-errors false

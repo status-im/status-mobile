@@ -22,7 +22,9 @@
    [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-create-account])}
     "Create Account"]
    [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-saved-addresses])}
-    "Saved Addresses"]])
+    "Saved Addresses"]
+   [quo/button {:on-press #(rf/dispatch [:navigate-to :wallet-send-input-amount])}
+    "Send: input amount"]])
 
 (defn wallet-overview-state
   [networks]
@@ -112,6 +114,13 @@
   [{:name :ethereum :short-name "eth"}
    {:name :optimism :short-name "opt"}
    {:name :arbitrum :short-name "arb1"}])
+
+(def networks-list
+  [{:source (quo.resources/get-network :ethereum)}
+   {:source (quo.resources/get-network :optimism)}
+   {:source (quo.resources/get-network :arbitrum)}
+   {:source (quo.resources/get-network :zksync)}
+   {:source (quo.resources/get-network :polygon)}])
 
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
 

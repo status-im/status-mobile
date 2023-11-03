@@ -17,13 +17,15 @@
 
 (defn- view-internal
   []
-  (fn [{:keys [disabled? theme blur? left-action delete-key? on-press]}]
+  (fn [{:keys [disabled? theme blur? left-action delete-key? on-press on-delete]
+        :or   {left-action :none}}]
     [rn/view
      {:style style/container}
      (for [row-index (range 1 4)]
        ^{:key row-index}
        [rn/view {:style style/row-container}
         (for [column-index (range 1 4)]
+          ^{:key column-index}
           [keyboard-item
            {:item      (+ (* (dec row-index) 3) column-index)
             :type      :digit
@@ -58,10 +60,10 @@
         :theme     theme}]
       (if delete-key?
         [keyboard-item
-         {:item      :i/delete
+         {:item      :i/backspace
           :type      :key
           :disabled? disabled?
-          :on-press  on-press
+          :on-press  on-delete
           :blur?     blur?
           :theme     theme}]
         [keyboard-item])]]))

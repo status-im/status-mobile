@@ -36,7 +36,7 @@
                   :blur?     false
                   :type      :digit} 1])
       (h/is-truthy (h/query-by-label-text :text-label))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/was-called on-press)))
 
   (h/test "Is not pressable when disabled is true"
@@ -47,5 +47,5 @@
                   :blur?     false
                   :type      :digit} 1])
       (h/is-truthy (h/query-by-label-text :text-label))
-      (h/fire-event :press (h/query-by-label-text :keyboard-key))
+      (h/fire-event :press (h/query-by-label-text :keyboard-key-1))
       (h/was-not-called on-press))))

@@ -2373,5 +2373,6 @@
     "reset": "Reset",
     "reveal-address": "Reveal address",
     "derive-addresses": "Derive addresses",
-    "address-activity": "This address has activity"
+    "address-activity": "This address has activity",
+    "send-limit": "Max: {{limit}}"
 }
