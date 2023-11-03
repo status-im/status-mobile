@@ -1,5 +1,6 @@
 (ns status-im2.contexts.wallet.account.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -35,10 +36,47 @@
   []
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
+<<<<<<< HEAD
       (let [{:keys [name color balance type]} (rf/sub [:wallet/current-viewing-account])
             watch-only?                       (= type :watch)]
+=======
+<<<<<<< HEAD
+      (let [{:keys [name color balance]} (rf/sub [:wallet/current-viewing-account])
+           ]
+>>>>>>> bb9b6daa9 (updates)
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
+=======
+<<<<<<< HEAD
+      (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
+            networks                           (rf/sub [:wallet/network-details])]
+=======
+      (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
+            tokens (rf/sub [:wallet/tokens])
+            account         (rf/sub [:wallet/account account-address])
+            networks        (rf/sub [:wallet/network-details])]
+<<<<<<< HEAD
+>>>>>>> 74f8b4535 (updates)
+        [rn/view {:style {:flex 1}}
+=======
+        (println "tokens" (get tokens (keyword (string/lower-case account-address))))
+        [rn/view {:style style/container}
+>>>>>>> 408212e7c (updates)
+         [quo/page-nav
+          {:type              :wallet-networks
+           :background        :blur
+           :icon-name         :i/close
+           :on-press          #(rf/dispatch [:wallet/close-account-page])
+           :networks          networks
+           :networks-on-press #(js/alert "Pressed Networks")
+           :right-side        :account-switcher
+           :account-switcher  {:customization-color color
+                               :on-press            #(rf/dispatch [:show-bottom-sheet
+                                                                   {:content account-options/view
+                                                                    :gradient-cover? true
+                                                                    :customization-color color}])
+                               :emoji               emoji}}]
+>>>>>>> f327a7f0e (updates)
          [quo/account-overview
           {:current-value       (utils/prettify-balance balance)
            :account-name        name
