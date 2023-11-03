@@ -80,7 +80,10 @@
   [opacity]
   [reanimated/view {:style (reanimated/apply-animations-to-style {:opacity opacity} {})}
    [quo/composer-button
-    {:on-press #(js/alert "to be implemented")
+    {:on-press (fn []
+                 (rf/dispatch [:chat.ui/set-input-focused false])
+                 (rn/dismiss-keyboard!)
+                 (js/alert "to be implemented"))
      :icon     :i/audio}]])
 
 (defn audio-button
@@ -213,13 +216,19 @@
   []
   [quo/composer-button
    {:icon            :i/reaction
-    :on-press        #(js/alert "to be implemented")
+    :on-press        (fn []
+                       (rf/dispatch [:chat.ui/set-input-focused false])
+                       (rn/dismiss-keyboard!)
+                       (js/alert "to be implemented"))
     :container-style {:margin-right 12}}])
 
 (defn format-button
   []
   [quo/composer-button
-   {:on-press #(js/alert "to be implemented")
+   {:on-press (fn []
+                (rf/dispatch [:chat.ui/set-input-focused false])
+                (rn/dismiss-keyboard!)
+                (js/alert "to be implemented"))
     :icon     :i/format}])
 
 (defn view

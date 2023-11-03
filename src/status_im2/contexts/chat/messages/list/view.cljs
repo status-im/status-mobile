@@ -8,6 +8,7 @@
     [react-native.core :as rn]
     [react-native.hooks :as hooks]
     [react-native.platform :as platform]
+    [react-native.react-native-intersection-observer :as rnio]
     [react-native.reanimated :as reanimated]
     [status-im.ui.screens.chat.group :as chat.group]
     [status-im.ui.screens.chat.message.gap :as message.gap]
@@ -24,9 +25,12 @@
 (defonce ^:const threshold-percentage-to-show-floating-scroll-down-button 75)
 (defonce ^:const loading-indicator-extra-spacing 250)
 (defonce ^:const loading-indicator-page-loading-height 100)
-(defonce ^:const scroll-animation-input-range [50 125])
+(defonce ^:const scroll-animation-input-range [0 50])
 (defonce ^:const min-message-height 32)
-
+(defonce ^:const topbar-visible-scroll-y-value 85)
+(defonce ^:const topbar-invisible-scroll-y-value 135)
+(defonce ^:const minimum-scroll-y-topbar-overlaying-avatar 400)
+(def root-margin-for-big-name-visibility-detector {:bottom -35})
 (defonce messages-list-ref (atom nil))
 
 (defn list-key-fn [{:keys [message-id value]}] (or message-id value))
@@ -64,15 +68,15 @@
                      (= :message (:type first-not-visible)))
             first-not-visible))))))
 
-
 (defn list-on-end-reached
-  [scroll-y]
+  [scroll-y on-end-reached?]
   ;; FIXME: that's a bit of a hack but we need to update `scroll-y` once the new messages
   ;; are fetched in order for the header to work properly
   (let [on-loaded (fn [n]
                     (reanimated/set-shared-value scroll-y
                                                  (+ (reanimated/get-shared-value scroll-y)
                                                     (* n 200))))]
+    (reset! on-end-reached? true)
     (if @state/scrolling
       (rf/dispatch [:chat.ui/load-more-messages-for-current-chat on-loaded])
       (background-timer/set-timeout #(rf/dispatch [:chat.ui/load-more-messages-for-current-chat
@@ -194,7 +198,7 @@
 
 (defn f-list-footer
   [{:keys [chat scroll-y cover-bg-color on-layout theme messages-view-height
-           messages-view-header-height]}]
+           messages-view-header-height big-name-visible?]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]} chat
         all-loaded?          (rf/sub [:chats/all-loaded? chat-id])
@@ -227,9 +231,11 @@
              :display-name    display-name
              :online?         online?
              :profile-picture photo-path}])]
-        [rn/view
-         {:style {:flex-direction :row
-                  :margin-top     (if group-chat 54 12)}}
+        [rnio/view
+         {:on-change (fn [view-visible?]
+                       (reset! big-name-visible? view-visible?))
+          :style     {:flex-direction :row
+                      :margin-top     (if group-chat 54 12)}}
          [quo/text
           {:weight          :semi-bold
            :size            :heading-1
@@ -275,14 +281,31 @@
        [message/message message-data context keyboard-shown?])]))
 
 (defn scroll-handler
-  [event scroll-y]
-  (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
-                          (oops/oget event "nativeEvent.layoutMeasurement.height"))
-        current-y      (oops/oget event "nativeEvent.contentOffset.y")]
-    (reanimated/set-shared-value scroll-y (- content-size-y current-y))))
+  [event scroll-y animate-topbar-opacity? on-end-reached? animate-topbar-name?]
+  (let [content-size-y  (- (oops/oget event "nativeEvent.contentSize.height")
+                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
+        current-y       (oops/oget event "nativeEvent.contentOffset.y")
+        scroll-distance (- content-size-y current-y)]
+    (when (and @on-end-reached? (pos? scroll-distance))
+      (reset! on-end-reached? false))
+    (if (< topbar-visible-scroll-y-value scroll-distance)
+      (reset! animate-topbar-opacity? true)
+      (reset! animate-topbar-opacity? false))
+    (if (< topbar-invisible-scroll-y-value scroll-distance)
+      (reset! animate-topbar-name? true)
+      (reset! animate-topbar-name? false))
+    (reanimated/set-shared-value scroll-y scroll-distance)))
 
 (defn f-messages-list-content
-  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms]}]
+  [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
+           big-name-visible? animate-topbar-opacity? composer-active?
+           on-end-reached? animate-topbar-name?]}]
+  (rn/use-effect (fn []
+                   (if (and (not @on-end-reached?)
+                            (< topbar-visible-scroll-y-value (reanimated/get-shared-value scroll-y)))
+                     (reset! animate-topbar-opacity? true)
+                     (reset! animate-topbar-opacity? false)))
+                 [composer-active? @on-end-reached? @animate-topbar-opacity?])
   (let [theme                                 (quo.theme/use-theme-value)
         {window-height :height}               (rn/get-window)
         {:keys [keyboard-height]}             (hooks/use-keyboard)
@@ -294,8 +317,9 @@
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
     [rn/view {:style {:flex 1}}
-     [rn/flat-list
-      {:key-fn                            list-key-fn
+     [rnio/flat-list
+      {:root-margin                       root-margin-for-big-name-visibility-detector
+       :key-fn                            list-key-fn
        :ref                               list-ref
        :bounces                           false
        :header                            [:<>
@@ -311,7 +335,8 @@
                                                                            %
                                                                            messages-view-header-height)
                                             :messages-view-header-height messages-view-header-height
-                                            :messages-view-height        messages-view-height}]
+                                            :messages-view-height        messages-view-height
+                                            :big-name-visible?           big-name-visible?}]
        :data                              messages
        :render-data                       {:theme           theme
                                            :context         context
@@ -320,10 +345,23 @@
        :render-fn                         render-fn
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
-                                            ;; NOTE(alwx): here we set the initial value of `scroll-y`
-                                            ;; which is needed because by default the chat is
-                                            ;; scrolled to the bottom and no initial `on-scroll`
-                                            ;; event is getting triggered
+                                            (if (or
+                                                 (< minimum-scroll-y-topbar-overlaying-avatar
+                                                    (reanimated/get-shared-value scroll-y))
+                                                 (< topbar-visible-scroll-y-value
+                                                    (reanimated/get-shared-value scroll-y)))
+                                              (reset! animate-topbar-opacity? true)
+                                              (reset! animate-topbar-opacity? false))
+                                            (when-not (or
+                                                       (not @big-name-visible?)
+                                                       (= :initial-render @big-name-visible?)
+                                                       (pos? (reanimated/get-shared-value
+                                                              scroll-y)))
+                                              (reset! on-end-reached? false))
+                                            ;; NOTE(alwx): here we set the initial value of
+                                            ;; `scroll-y` which is needed because by default the
+                                            ;; chat is scrolled to the bottom and no initial
+                                            ;; `on-scroll` event is getting triggered
                                             (let [scroll-y-shared       (reanimated/get-shared-value
                                                                          scroll-y)
                                                   content-height-shared (reanimated/get-shared-value
@@ -337,19 +375,25 @@
                                                                                 (- (when keyboard-shown?
                                                                                      keyboard-height))))
                                                 (reanimated/set-shared-value content-height y))))
-       :on-end-reached                    #(list-on-end-reached scroll-y)
+       :on-end-reached                    #(list-on-end-reached scroll-y on-end-reached?)
        :on-scroll-to-index-failed         identity
        :scroll-indicator-insets           {:top (if (:able-to-send-message? context)
                                                   (- composer.constants/composer-default-height 16)
                                                   0)}
        :keyboard-dismiss-mode             :interactive
        :keyboard-should-persist-taps      :always
-       :on-scroll-begin-drag              rn/dismiss-keyboard!
+       :on-scroll-begin-drag              #(do
+                                             (rf/dispatch [:chat.ui/set-input-focused false])
+                                             (rn/dismiss-keyboard!))
        :on-momentum-scroll-begin          state/start-scrolling
        :on-momentum-scroll-end            state/stop-scrolling
        :scroll-event-throttle             16
        :on-scroll                         (fn [event]
-                                            (scroll-handler event scroll-y)
+                                            (scroll-handler event
+                                                            scroll-y
+                                                            animate-topbar-opacity?
+                                                            on-end-reached?
+                                                            animate-topbar-name?)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
                                            {:background-color (if all-loaded?

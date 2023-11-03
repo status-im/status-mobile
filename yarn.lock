@@ -7008,7 +7008,7 @@ lodash.union@^4.6.0:
   resolved "https://registry.yarnpkg.com/lodash.union/-/lodash.union-4.6.0.tgz#48bb5088409f16f1821666641c44dd1aaae3cd88"
   integrity sha1-SLtQiECfFvGCFmZkHETdGqrjzYg=
 
-lodash@4.17.x, lodash@^4.17.21, lodash@^4.17.4, lodash@^4.7.0:
+lodash@4.17.x, lodash@^4.0.0, lodash@^4.17.21, lodash@^4.17.4, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -8874,6 +8874,13 @@ react-native-image-resizer@^1.2.3:
 "react-native-image-viewing@git+https://github.com/status-im/react-native-image-viewing.git#refs/tags/v0.2.1.status":
   version "0.2.1"
   resolved "git+https://github.com/status-im/react-native-image-viewing.git#94af89356f2e4e08f462370c77e4778d7626ce2f"
+
+react-native-intersection-observer@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-intersection-observer/-/react-native-intersection-observer-0.2.0.tgz#15a07cf2adbab6cd9821986168d5484405674ad9"
+  integrity sha512-h48i7AjYl1BLkfTupiJqv7dLUdLmxBIf4AxlrzvUvy5PLr3bnEFGTAMjaeUUcQklkdKSHRqIXP8wz1ex49my4g==
+  dependencies:
+    lodash "^4.0.0"
 
 "react-native-keychain@git+https://github.com/status-im/react-native-keychain.git#refs/tags/v.3.0.0-5-status":
   version "3.0.0-rc.3"
