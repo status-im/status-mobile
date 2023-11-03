@@ -14,7 +14,8 @@
   (rf/dispatch [:password-authentication/show
                 {:content (fn [] [password-authentication/view])}
                 {:label    (i18n/label :t/join-open-community)
-                 :on-press #(rf/dispatch [:communities/request-to-join-with-password id %])}])
+                 :on-press #(rf/dispatch [:communities/request-to-join
+                                          {:community-id id :password %}])}])
   (rf/dispatch [:navigate-back]))
 
 (defn request-to-join
