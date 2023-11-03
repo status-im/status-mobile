@@ -10,6 +10,12 @@
     [status-im2.contexts.onboarding.generating-keys.style :as style]
     [utils.i18n :as i18n]))
 
+(def first-title-display-time 3000)
+(def second-title-start-time 3500)
+(def second-title-display-time 1000)
+(def third-title-start-time 5500)
+(def transition-duration-time 500)
+
 (defn generate-keys-title
   []
   [quo/text-combinations
@@ -28,35 +34,31 @@
    {:container-style {:margin-horizontal 20}
     :title           (i18n/label :t/keys-saved)}])
 
-(def first-transition-delay-ms 2000)
-
-(def transition-duration-ms 500)
-
 (defn sequence-animation
   [generate-keys-opacity saving-keys-opacity keys-saved-opacity]
   (reanimated/set-shared-value generate-keys-opacity
                                (reanimated/with-delay
-                                first-transition-delay-ms
+                                first-title-display-time
                                 (reanimated/with-timing 0
-                                                        (js-obj "duration" transition-duration-ms
+                                                        (js-obj "duration" transition-duration-time
                                                                 "easing"   (:linear
                                                                             reanimated/easings)))))
   (reanimated/set-shared-value
    saving-keys-opacity
    (reanimated/with-sequence
-    (reanimated/with-delay 2000
+    (reanimated/with-delay second-title-start-time
                            (reanimated/with-timing 1
-                                                   (js-obj "duration" transition-duration-ms
+                                                   (js-obj "duration" transition-duration-time
                                                            "easing"   (:linear reanimated/easings))))
-    (reanimated/with-delay 1000
+    (reanimated/with-delay second-title-display-time
                            (reanimated/with-timing 0
-                                                   (js-obj "duration" transition-duration-ms
+                                                   (js-obj "duration" transition-duration-time
                                                            "easing"   (:linear reanimated/easings))))))
   (reanimated/set-shared-value keys-saved-opacity
                                (reanimated/with-delay
-                                4600
+                                third-title-start-time
                                 (reanimated/with-timing 1
-                                                        (js-obj "duration" transition-duration-ms
+                                                        (js-obj "duration" transition-duration-time
                                                                 "easing"   (:linear
                                                                             reanimated/easings))))))
 
