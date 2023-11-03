@@ -29,6 +29,7 @@
 (defonce ^:const min-message-height 32)
 (defonce ^:const topbar-visible-scroll-y-value 85)
 (defonce ^:const topbar-invisible-scroll-y-value 135)
+(defonce ^:const minimum-scroll-y-topbar-overlaying-avatar 400)
 (def root-margin-for-big-name-visibility-detector {:bottom -35})
 (defonce messages-list-ref (atom nil))
 
@@ -345,7 +346,7 @@
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
                                             (if (or
-                                                 (< 400 (reanimated/get-shared-value scroll-y))
+                                                 (< minimum-scroll-y-topbar-overlaying-avatar (reanimated/get-shared-value scroll-y))
                                                  (< topbar-visible-scroll-y-value
                                                     (reanimated/get-shared-value scroll-y)))
                                               (reset! animate-topbar-opacity? true)

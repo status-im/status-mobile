@@ -17,6 +17,10 @@
     [utils.re-frame :as rf]))
 
 (defonce ^:const title-opacity-interpolation-start 50)
+;; This has two possibilities, One when sending messages and one when opening chat.
+(defonce ^:const minimum-scroll-y-topbar-overlaying-avatar 80)
+(defonce ^:const minimum-scroll-y-topbar-overlaying-avatar-2 350)
+(defonce ^:const minimum-scroll-y-topbar-overlaying-avatar-composer-active 85)
 
 (defn f-view
   [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
@@ -48,7 +52,7 @@
                more-than-eight-messages?
                (= :initial-render @big-name-visible?))
           (and
-           (< 80 (reanimated/get-shared-value scroll-y))
+           (< minimum-scroll-y-topbar-overlaying-avatar (reanimated/get-shared-value scroll-y))
            (not @on-end-reached?))
           (and (if platform/ios? more-than-two-messages? more-than-four-messages?)
                composer-active?)
@@ -57,10 +61,10 @@
            @animate-topbar-opacity?)
 
           (or
-           (< 350 (reanimated/get-shared-value scroll-y))
+           (< minimum-scroll-y-topbar-overlaying-avatar-2 (reanimated/get-shared-value scroll-y))
            (and (pos? (count messages))
                 composer-active?
-                (< 85 (reanimated/get-shared-value scroll-y)))))
+                (< minimum-scroll-y-topbar-overlaying-avatar-composer-active (reanimated/get-shared-value scroll-y)))))
          (reanimated/animate opacity-animation 1)
          (reanimated/animate opacity-animation 0))
        (if (when-not (and
@@ -76,6 +80,7 @@
               (and (not composer-active?)
                    more-than-eight-messages?
                    (= :initial-render @big-name-visible?))
+              ;; Keyboard height increasing is different between iOS and Android, That's why we have two values.
               (and (if platform/ios? more-than-two-messages? more-than-four-messages?)
                    (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
                    composer-active?)
