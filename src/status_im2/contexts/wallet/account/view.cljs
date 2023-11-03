@@ -30,32 +30,31 @@
    {:id :about :label (i18n/label :t/about) :accessibility-label :about}])
 
 (defn view
-  [account-address]
+  []
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
-            account         (rf/sub [:wallet/account account-address])
-            networks        (rf/sub [:wallet/network-details])]
+      (let [{:keys [name customization-color emoji balance]} (rf/sub [:wallet/current-viewing-account])
+            networks                                         (rf/sub [:wallet/network-details])]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type              :wallet-networks
            :background        :blur
            :icon-name         :i/close
-           :on-press          #(rf/dispatch [:navigate-back])
+           :on-press          #(rf/dispatch [:wallet/close-account-page])
            :networks          networks
            :networks-on-press #(js/alert "Pressed Networks")
            :right-side        :account-switcher
-           :account-switcher  {:customization-color :purple
+           :account-switcher  {:customization-color customization-color
                                :on-press            #(rf/dispatch [:show-bottom-sheet
                                                                    {:content account-options/view
                                                                     :gradient-cover? true
-                                                                    :customization-color :purple}])
-                               :emoji               "🍑"}}]
+                                                                    :customization-color customization-color}])
+                               :emoji              emoji}}]
          [quo/account-overview
-          {:current-value       (utils/prettify-balance (:balance account))
-           :account-name        (:name account)
+          {:current-value       (utils/prettify-balance balance)
+           :account-name        name
            :account             :default
-           :customization-color :blue}]
+           :customization-color customization-color}]
          [quo/wallet-graph {:time-frame :empty}]
          [quo/wallet-ctas
           {:send-action   #(rf/dispatch [:open-modal :wallet-select-address])

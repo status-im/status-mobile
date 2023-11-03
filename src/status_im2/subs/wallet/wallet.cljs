@@ -1,6 +1,5 @@
 (ns status-im2.subs.wallet.wallet
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im2.contexts.wallet.common.utils :as utils]
             [utils.number]))
 
@@ -21,7 +20,7 @@
 
 (defn- calculate-balance
   [address tokens]
-  (let [token  (get tokens (keyword (string/lower-case address)))
+  (let [token  (get tokens (keyword address))
         result (reduce
                 (fn [acc item]
                   (let [total-values (* (total-per-token item)
@@ -32,8 +31,15 @@
     result))
 
 (re-frame/reg-sub
+ :wallet/accounts
+ :<- [:wallet]
+ (fn [{:keys [accounts]}]
+   (->> (vals accounts)
+        (sort-by :position))))
+
+(re-frame/reg-sub
  :wallet/balances
- :<- [:profile/wallet-accounts]
+ :<- [:wallet/accounts]
  :<- [:wallet/tokens]
  (fn [[accounts tokens]]
    (for [{:keys [address]} accounts]
@@ -41,11 +47,9 @@
       :balance (calculate-balance address tokens)})))
 
 (re-frame/reg-sub
- :wallet/account
- :<- [:profile/wallet-accounts]
+ :wallet/current-viewing-account
+ :<- [:wallet]
  :<- [:wallet/balances]
- (fn [[accounts balances] [_ account-address]]
-   (assoc
-    (utils/get-account-by-address accounts account-address)
-    :balance
-    (utils/get-balance-by-address balances account-address))))
+ (fn [[{:keys [current-viewing-account-address] :as wallet} balances]]
+   (-> (get-in wallet [:accounts current-viewing-account-address])
+       (assoc :balance (utils/get-balance-by-address balances current-viewing-account-address)))))

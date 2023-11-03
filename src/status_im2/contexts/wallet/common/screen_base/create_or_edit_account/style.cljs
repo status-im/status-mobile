@@ -22,10 +22,17 @@
    :bottom   0
    :left     76})
 
-(def title-input-container
-  {:padding-horizontal 20
-   :padding-top        12
-   :padding-bottom     16})
+(defn title-input-container
+  [error-message]
+  (cond-> {:padding-horizontal 20
+           :padding-top        12
+           :padding-bottom     16}
+    error-message
+    (assoc :padding-bottom 8)))
+
+(def error-container
+  {:margin-horizontal 20
+   :margin-bottom     16})
 
 (def divider-1
   {:margin-bottom 12})

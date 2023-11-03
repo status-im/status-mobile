@@ -23,6 +23,8 @@
            return-key-type
            size
            theme
+           on-focus
+           on-blur
            container-style]
     :or   {max-length    0
            auto-focus    false
@@ -48,8 +50,14 @@
           :accessibility-label :profile-title-input
           :keyboard-appearance (quo.theme/theme-value :light :dark theme)
           :return-key-type return-key-type
-          :on-focus #(swap! focused? (constantly true))
-          :on-blur #(swap! focused? (constantly false))
+          :on-focus (fn []
+                      (when (fn? on-focus)
+                        (on-focus))
+                      (swap! focused? (constantly true)))
+          :on-blur (fn []
+                     (when (fn? on-blur)
+                       (on-blur))
+                     (swap! focused? (constantly false)))
           :auto-focus auto-focus
           :input-mode :text
           :on-change-text on-change

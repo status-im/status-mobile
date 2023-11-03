@@ -4,34 +4,105 @@
     [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [quo.foundations.colors :as colors]
     [react-native.background-timer :as background-timer]
     [status-im2.common.data-store.wallet :as data-store]
     [status-im2.contexts.wallet.temp :as temp]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
+    [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
     [utils.transforms :as types]))
 
-(rf/defn get-wallet-token
-  {:events [:wallet/get-wallet-token]}
-  [{:keys [db]}]
-  (let [params (map :address (:profile/wallet-accounts db))]
-    {:json-rpc/call [{:method     "wallet_getWalletToken"
-                      :params     [params]
-                      :on-success #(rf/dispatch [:wallet/get-wallet-token-success %])
-                      :on-error   (fn [error]
-                                    (log/info "failed to get wallet token"
-                                              {:event  :wallet/get-wallet-token
-                                               :error  error
-                                               :params params}))}]}))
+(rf/reg-event-fx :wallet/show-account-created-toast
+ (fn [{:keys [db]} [address]]
+   (let [{:keys [name]} (get-in db [:wallet :accounts address])]
+     {:db (update db :wallet dissoc :navigate-to-account :new-account?)
+      :fx [[:dispatch
+            [:toasts/upsert
+             {:id         :new-wallet-account-created
+              :icon       :i/correct
+              :icon-color colors/success-50
+              :text       (i18n/label :t/account-created {:name name})}]]]})))
 
-(rf/defn get-wallet-token-success
-  {:events [:wallet/get-wallet-token-success]}
-  [{:keys [db]} data]
-  {:db (assoc db
-              :wallet/tokens          data
-              :wallet/tokens-loading? false)})
+(rf/reg-event-fx :wallet/navigate-to-account
+ (fn [{:keys [db]} [address]]
+   (let [new-account? (get-in db [:wallet :new-account?])]
+     (cond-> {:db (assoc-in db [:wallet :current-viewing-account-address] address)
+              :fx [[:dispatch [:navigate-to :wallet-accounts address]]]}
+
+       new-account?
+       (update :fx conj [:dispatch [:wallet/show-account-created-toast address]])))))
+
+(rf/reg-event-fx :wallet/close-account-page
+ (fn [{:keys [db]}]
+   {:db (update db :wallet dissoc :current-viewing-account-address)
+    :fx [[:dispatch [:navigate-back]]]}))
+
+(rf/reg-event-fx :wallet/get-accounts-success
+ (fn [{:keys [db]} [accounts]]
+   (let [wallet-db           (get db :wallet)
+         new-account?        (:new-account? wallet-db)
+         navigate-to-account (:navigate-to-account wallet-db)]
+     (cond-> {:db (reduce (fn [db {:keys [address] :as account}]
+                            (assoc-in db [:wallet :accounts address] account))
+                          db
+                          (data-store/rpc->accounts accounts))
+              :fx [[:dispatch [:wallet/get-wallet-token]]]}
+
+       new-account?
+       (update :fx
+               conj
+               [:dispatch [:hide-bottom-sheet]]
+               [:dispatch-later
+                [{:dispatch [:navigate-back]
+                  :ms       100}
+                 {:dispatch [:wallet/navigate-to-account navigate-to-account]
+                  :ms       300}]])))))
+
+(rf/reg-event-fx :wallet/get-accounts
+ (fn [_]
+   {:fx [[:json-rpc/call
+          [{:method     "accounts_getAccounts"
+            :on-success [:wallet/get-accounts-success]
+            :on-error   #(log/info "failed to get accounts "
+                                   {:error %
+                                    :event :wallet/get-accounts})}]]]}))
+
+(rf/reg-event-fx :wallet/save-account
+ (fn [{:keys [db]} [{:keys [address edited-data]} callback]]
+   (let [account        (get-in db [:wallet :accounts address])
+         edited-account (-> (merge account edited-data)
+                            data-store/<-account)]
+     {:fx [[:json-rpc/call
+            [{:method     "accounts_saveAccount"
+              :params     [edited-account]
+              :on-success (fn []
+                            (rf/dispatch [:wallet/get-accounts])
+                            (when (fn? callback)
+                              (callback)))
+              :on-error   #(log/info "failed to save account "
+                                     {:error %
+                                      :event :wallet/save-account})}]]]})))
+
+(rf/reg-event-fx :wallet/get-wallet-token
+ (fn [{:keys [db]}]
+   (let [addresses (map :address (vals (get-in db [:wallet :accounts])))]
+     {:fx [[:json-rpc/call
+            [{:method     "wallet_getWalletToken"
+              :params     [addresses]
+              :on-success [:wallet/get-wallet-token-success]
+              :on-error   #(log/info "failed to get wallet token "
+                                     {:error  %
+                                      :event  :wallet/get-wallet-token
+                                      :params addresses})}]]]})))
+
+(rf/reg-event-fx :wallet/get-wallet-token-success
+ (fn [{:keys [db]} [tokens]]
+   {:db (assoc db
+               :wallet/tokens          tokens
+               :wallet/tokens-loading? false)}))
 
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}
@@ -67,10 +138,14 @@
                          :address    address
                          :public-key public-key
                          :colorID    color}]
-     {:fx [[:json-rpc/call
+     {:db (update db
+                  :wallet              assoc
+                  :navigate-to-account address
+                  :new-account?        true)
+      :fx [[:json-rpc/call
             [{:method     "accounts_addAccount"
               :params     [sha3-pwd account-config]
-              :on-success #(rf/dispatch [:navigate-to :wallet-accounts])
+              :on-success [:wallet/get-accounts]
               :on-error   #(log/info "failed to create account " %)}]]]})))
 
 (rf/reg-event-fx :wallet/derive-address-and-add-account
