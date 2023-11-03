@@ -20,3 +20,52 @@
             effects     (events/clean-scanned-address {:db db})
             result-db   (:db effects)]
         (is (= result-db expected-db))))))
+
+(deftest store-collectibles
+  (let []
+    (testing "(displayable-collectible?) helper function"
+      (let [expected-results [[true {:image-url "https://..." :animation-url "https://..."}]
+                              [true {:image-url "" :animation-url "https://..."}]
+                              [true {:image-url nil :animation-url "https://..."}]
+                              [true {:image-url "https://..." :animation-url ""}]
+                              [true {:image-url "https://..." :animation-url nil}]
+                              [false {:image-url "" :animation-url nil}]
+                              [false {:image-url nil :animation-url nil}]
+                              [false {:image-url nil :animation-url ""}]
+                              [false {:image-url "" :animation-url ""}]]]
+        (doseq [[result collection] expected-results]
+          (is (= result (events/displayable-collectible? collection))))))
+    (testing "save-collectibles-request-details"
+      (let [db           {:wallet {}}
+            collectibles [{:image-url "https://..." :animation-url "https://..."}
+                          {:image-url "" :animation-url "https://..."}
+                          {:image-url "" :animation-url nil}]
+            expected-db  {:wallet {:collectibles [{:image-url "https://..." :animation-url "https://..."}
+                                                  {:image-url "" :animation-url "https://..."}]}}
+            effects      (events/store-collectibles {:db db} [collectibles])
+            result-db    (:db effects)]
+        (is (= result-db expected-db))))))
+
+(deftest clear-stored-collectibles
+  (let [db {:wallet {:collectibles [{:id 1} {:id 2}]}}]
+    (testing "clear-stored-collectibles"
+      (let [expected-db {:wallet {}}
+            effects     (events/clear-stored-collectibles {:db db})
+            result-db   (:db effects)]
+        (is (= result-db expected-db))))))
+
+(deftest save-collectibles-request-details
+  (let [db {:wallet {}}]
+    (testing "save-collectibles-request-details"
+      (let [expected-db {:wallet {:ongoing-collectibles-request {:addresses ["1" "2" "3"]}}}
+            effects     (events/save-collectibles-request-details {:db db} [{:addresses ["1" "2" "3"]}])
+            result-db   (:db effects)]
+        (is (= result-db expected-db))))))
+
+(deftest clear-collectibles-request-details
+  (let [db {:wallet {:ongoing-collectibles-request {:addresses ["1" "2" "3"]}}}]
+    (testing "clear-stored-collectibles"
+      (let [expected-db {:wallet {}}
+            effects     (events/clear-collectibles-request-details {:db db})
+            result-db   (:db effects)]
+        (is (= result-db expected-db))))))

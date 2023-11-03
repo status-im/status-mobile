@@ -1,10 +1,15 @@
 (ns status-im2.contexts.wallet.events
   (:require
+    [camel-snake-kebab.core :as csk]
+    [camel-snake-kebab.extras :as cske]
+    [clojure.string :as string]
     [native-module.core :as native-module]
     [status-im2.common.data-store.wallet :as data-store]
     [taoensso.timbre :as log]
+    [utils.ethereum.chain :as chain]
     [utils.re-frame :as rf]
-    [utils.security.core :as security]))
+    [utils.security.core :as security]
+    [utils.transforms :as types]))
 
 (rf/defn get-wallet-token
   {:events [:wallet/get-wallet-token]}
@@ -95,3 +100,78 @@
                            data-store/<-rpc)
                      data)}]
      {:db (assoc db :wallet/networks network-data)})))
+
+(def collectibles-request-batch-size 1000)
+
+(defn displayable-collectible?
+  [{:keys [image-url animation-url]}]
+  (or (not (string/blank? animation-url))
+      (not (string/blank? image-url))))
+
+(defn store-collectibles
+  [{:keys [db]} [collectibles]]
+  (let [stored-collectibles      (get-in db [:wallet :collectibles])
+        displayable-collectibles (filter displayable-collectible? collectibles)]
+    {:db (assoc-in db
+          [:wallet :collectibles]
+          (reduce conj displayable-collectibles stored-collectibles))}))
+
+(rf/reg-event-fx :wallet/store-collectibles store-collectibles)
+
+(defn clear-stored-collectibles
+  [{:keys [db]}]
+  {:db (update db :wallet dissoc :collectibles)})
+
+(rf/reg-event-fx :wallet/clear-stored-collectibles clear-stored-collectibles)
+
+(defn save-collectibles-request-details
+  [{:keys [db]} [request-details]]
+  {:db (assoc-in db [:wallet :ongoing-collectibles-request] request-details)})
+
+(rf/reg-event-fx :wallet/save-collectibles-request-details save-collectibles-request-details)
+
+(defn clear-collectibles-request-details
+  [{:keys [db]}]
+  {:db (update db :wallet dissoc :ongoing-collectibles-request)})
+
+(rf/reg-event-fx :wallet/clear-collectibles-request-details clear-collectibles-request-details)
+
+(rf/reg-event-fx :wallet/request-collectibles
+ (fn [{:keys [db]} [{:keys [addresses offset new-request?]}]]
+   (let [request-params [0
+                         [(chain/chain-id db)]
+                         addresses
+                         offset
+                         collectibles-request-batch-size]]
+     (merge
+      {:json-rpc/call [{:method     "wallet_filterOwnedCollectiblesAsync"
+                        :params     request-params
+                        :on-success #()
+                        :on-error   (fn [error]
+                                      (log/error "failed to request collectibles"
+                                                 {:event  :wallet/request-collectibles
+                                                  :error  error
+                                                  :params request-params}))}]}
+
+      {:fx (when new-request?
+             [[:dispatch [:wallet/clear-stored-collectibles]]
+              [:dispatch [:wallet/save-collectibles-request-details {:addresses addresses}]]])}))))
+
+(rf/reg-event-fx :wallet/owned-collectibles-filtering-done
+ (fn [{:keys [db]} [{:keys [message]}]]
+   (let [response                               (cske/transform-keys csk/->kebab-case-keyword
+                                                                     (types/json->clj message))
+         {:keys [collectibles has-more offset]} response
+         next-offset                            (+ offset (count collectibles))
+         addresses                              (get-in db
+                                                        [:wallet :ongoing-collectibles-request
+                                                         :addresses])]
+     {:fx
+      [[:dispatch [:wallet/store-collectibles collectibles]]
+       (if has-more
+         [:dispatch
+          [:wallet/request-collectibles
+           {:addresses addresses
+            :offset    next-offset}]]
+         [:dispatch [:wallet/clear-collectibles-request-details]])]})))
+

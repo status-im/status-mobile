@@ -1,5 +1,6 @@
 (ns status-im2.common.log
   (:require
+    [clojure.pprint :as p]
     [clojure.string :as string]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
@@ -37,10 +38,16 @@
                                 string/lower-case
                                 keyword))
         (log/merge-config!
-         {:output-fn (fn [& data]
-                       (let [res (apply log/default-output-fn data)]
-                         (add-log-entry res)
-                         res))})
+         {:output-fn  (fn [& data]
+                        (let [res (apply log/default-output-fn data)]
+                          (add-log-entry res)
+                          res))
+          :middleware [(fn [data]
+                         (update data
+                                 :vargs
+                                 (partial mapv #(if (string? %) % (with-out-str (p/pprint %))))))]
+
+         })
         (native-module/init-status-go-logging logging-params)))))
 
 (re-frame/reg-fx
