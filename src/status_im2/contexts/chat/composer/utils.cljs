@@ -112,6 +112,7 @@
   ;; after the `text-value` was cleared. Otherwise the height will be calculated
   ;; with the old `text-value`, leading to wrong composer height after blur.
   (js/setTimeout #(blur-input input-ref) 100)
+  (.setNativeProps ^js @input-ref (clj->js {:text ""}))
   (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
   (rf/dispatch [:chat.ui/cancel-message-edit]))
 
