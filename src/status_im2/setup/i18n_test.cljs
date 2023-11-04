@@ -7,11 +7,19 @@
     [status-im2.setup.i18n-resources :as i18n-resources]
     [utils.i18n :as i18n]))
 
+(defn- js-translations->namespaced-keys
+  [js-translations]
+  (->> js-translations
+       js->clj
+       keys
+       (map (partial keyword "t"))
+       set))
+
 ;; english as source of truth
 (def labels
-  (set (keys (js->clj (:en i18n-resources/translations-by-locale)
-                      :keywordize-keys
-                      true))))
+  (-> i18n-resources/translations-by-locale
+      :en
+      js-translations->namespaced-keys))
 
 (spec/def ::label labels)
 (spec/def ::labels (spec/coll-of ::label :kind set? :into #{}))
@@ -19,7 +27,7 @@
 (defn labels-for-all-locales
   []
   (->> i18n-resources/translations-by-locale
-       (mapcat #(-> % val (js->clj :keywordize-keys true) keys))
+       (mapcat (comp js-translations->namespaced-keys val))
        set))
 
 ;; checkpoints
@@ -1035,7 +1043,9 @@
 
 (defn locale->labels
   [locale]
-  (-> i18n-resources/translations-by-locale (get locale) (js->clj :keywordize-keys true) keys set))
+  (-> i18n-resources/translations-by-locale
+      (get locale)
+      js-translations->namespaced-keys))
 
 (defn locale->checkpoint
   [locale]
