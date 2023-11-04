@@ -4,14 +4,15 @@
     [react-native.core :as rn]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
     [utils.i18n :as i18n]
+    [clojure.string :as string]
     [utils.re-frame :as rf]))
 
 (defn- collectible-image-url
-  [{:keys [image_url animation_url animation_media_type]}]
-  (if (and (not= "" animation_url)
-           (not= animation_media_type "image/svg+xml"))
-    animation_url
-    image_url))
+  [{:keys [image-url animation-url animation-media-type]}]
+  (if (and (not (string/blank? animation-url))
+           (not= animation-media-type "image/svg+xml"))
+    animation-url
+    image-url))
 
 (defn view
   []
