@@ -12,6 +12,16 @@
 
 (def translation-file "translations/en.json")
 
+;; set the following to true when solving https://github.com/status-im/status-mobile/issues/17811
+(def flag-show-non-namespaced-translation-keys false)
+(def flag-show-non-namespaced-translation-keys-occurrences false) ;; this makes the output super verbose!
+
+;; set the following to true when solving https://github.com/status-im/status-mobile/issues/17813
+;; and keep it permanently on after #17811 and #17813 have both been solved
+(def flag-show-unused-translation-keys false)
+
+(def flag-show-missing-translation-keys true)
+
 (defn- safe-name
   [x]
   (when x (name x)))
@@ -55,30 +65,30 @@
         unused-translation-keys          (set/difference possibly-unused-translation-keys
                                                          (set (map :name non-namespaced-translations)))]
 
-    ;; uncomment to print a list of all non-namespaced translation keys
-    #_(run! #(println "Probably non-namespaced key" %)
-            (apply sorted-set (map :name non-namespaced-translations)))
+    ;; delete the following once #17811 and #17813 have both been solved
+    (doseq [k (apply sorted-set (map :name non-namespaced-translations))]
+      (when flag-show-non-namespaced-translation-keys
+        (println "Probably non-namespaced key" k))
+      (when flag-show-non-namespaced-translation-keys-occurrences
+        (->> non-namespaced-translations
+             (filter #(= k (:name %)))
+             (map #(assoc % :reason "Possibly non-namespaced translation key"))
+             report-issues)))
 
-    ;; uncomment to print all potential usages of non-namespaced translation keys
-    ;; note that this will list a lot of false positives, e.g. for `:default` or `:bold`
-    #_(report-issues (map #(assoc % :reason "Probably Non-namespaced Translation Key")
-                          non-namespaced-translations))
+    (when flag-show-unused-translation-keys
+      (run! #(println probably-unused-warning %) unused-translation-keys))
 
-    ;; uncomment to print all occurrences of probably unused translation keys
-    #_(run! #(println probably-unused-warning %) unused-translation-keys)
+    (when flag-show-missing-translation-keys
+      (report-issues (map #(assoc % :reason "Undefined Translation Key") missing-translations)))
 
-    ;; remove this line once the above one is uncommented
-    ;; this line is merely kept to prevent unused variable warnings
-    (run! (constantly probably-unused-warning) unused-translation-keys)
-
-    (report-issues (map #(assoc % :reason "Undefined Translation Key") missing-translations))
-
-    ;; uncomment more individual tests once we are ready for the script to actually fail on finding
-    ;; corresponding occurrences
     (if (and
-         (empty? missing-translations)
-         #_(empty? possibly-unused-translation-keys)
-         #_(empty? unused-translation-keys))
+         (or (not flag-show-missing-translation-keys)
+             (empty? missing-translations))
+         (or (not flag-show-unused-translation-keys)
+             (empty? possibly-unused-translation-keys))
+         (or (not flag-show-non-namespaced-translation-keys)
+             (not flag-show-non-namespaced-translation-keys-occurrences)
+             (empty? unused-translation-keys)))
       0
       1)))
 
