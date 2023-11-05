@@ -49,4 +49,3 @@
     (utils/get-account-by-address accounts account-address)
     :balance
     (utils/get-balance-by-address balances account-address))))
-

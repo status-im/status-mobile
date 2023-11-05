@@ -62,14 +62,12 @@
                  :new-request? true}])
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-
       (let [accounts (rf/sub [:profile/wallet-accounts])
             top      (safe-area/get-top)
             loading? (rf/sub [:wallet/tokens-loading?])
             balances (rf/sub [:wallet/balances])
             profile  (rf/sub [:profile/profile])
             networks (rf/sub [:wallet/network-details])]
-
         [rn/view
          {:style {:margin-top top
                   :flex       1}}

@@ -45,9 +45,7 @@
           :middleware [(fn [data]
                          (update data
                                  :vargs
-                                 (partial mapv #(if (string? %) % (with-out-str (p/pprint %))))))]
-
-         })
+                                 (partial mapv #(if (string? %) % (with-out-str (p/pprint %))))))]})
         (native-module/init-status-go-logging logging-params)))))
 
 (re-frame/reg-fx
