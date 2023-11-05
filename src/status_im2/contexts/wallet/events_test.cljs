@@ -53,19 +53,3 @@
             effects     (events/clear-stored-collectibles {:db db})
             result-db   (:db effects)]
         (is (= result-db expected-db))))))
-
-(deftest save-collectibles-request-details
-  (let [db {:wallet {}}]
-    (testing "save-collectibles-request-details"
-      (let [expected-db {:wallet {:ongoing-collectibles-request {:addresses ["1" "2" "3"]}}}
-            effects     (events/save-collectibles-request-details {:db db} [{:addresses ["1" "2" "3"]}])
-            result-db   (:db effects)]
-        (is (= result-db expected-db))))))
-
-(deftest clear-collectibles-request-details
-  (let [db {:wallet {:ongoing-collectibles-request {:addresses ["1" "2" "3"]}}}]
-    (testing "clear-stored-collectibles"
-      (let [expected-db {:wallet {}}
-            effects     (events/clear-collectibles-request-details {:db db})
-            result-db   (:db effects)]
-        (is (= result-db expected-db))))))

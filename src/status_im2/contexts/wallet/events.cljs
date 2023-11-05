@@ -124,54 +124,35 @@
 
 (rf/reg-event-fx :wallet/clear-stored-collectibles clear-stored-collectibles)
 
-(defn save-collectibles-request-details
-  [{:keys [db]} [request-details]]
-  {:db (assoc-in db [:wallet :ongoing-collectibles-request] request-details)})
-
-(rf/reg-event-fx :wallet/save-collectibles-request-details save-collectibles-request-details)
-
-(defn clear-collectibles-request-details
-  [{:keys [db]}]
-  {:db (update db :wallet dissoc :ongoing-collectibles-request)})
-
-(rf/reg-event-fx :wallet/clear-collectibles-request-details clear-collectibles-request-details)
-
 (rf/reg-event-fx :wallet/request-collectibles
- (fn [{:keys [db]} [{:keys [addresses offset new-request?]}]]
+ (fn [{:keys [db]} [{:keys [offset new-request?]}]]
    (let [request-params [0
                          [(chain/chain-id db)]
-                         addresses
+                         (map :address (:profile/wallet-accounts db))
                          offset
                          collectibles-request-batch-size]]
-     (merge
-      {:json-rpc/call [{:method     "wallet_filterOwnedCollectiblesAsync"
-                        :params     request-params
-                        :on-success #()
-                        :on-error   (fn [error]
-                                      (log/error "failed to request collectibles"
-                                                 {:event  :wallet/request-collectibles
-                                                  :error  error
-                                                  :params request-params}))}]}
-
-      {:fx (when new-request?
-             [[:dispatch [:wallet/clear-stored-collectibles]]
-              [:dispatch [:wallet/save-collectibles-request-details {:addresses addresses}]]])}))))
+     {:json-rpc/call [{:method     "wallet_filterOwnedCollectiblesAsync"
+                       :params     request-params
+                       :on-success #()
+                       :on-error   (fn [error]
+                                     (log/error "failed to request collectibles"
+                                                {:event  :wallet/request-collectibles
+                                                 :error  error
+                                                 :params request-params}))}]
+      :fx            (if new-request?
+                       [[:dispatch [:wallet/clear-stored-collectibles]]]
+                       [])})))
 
 (rf/reg-event-fx :wallet/owned-collectibles-filtering-done
- (fn [{:keys [db]} [{:keys [message]}]]
+ (fn [_ [{:keys [message]}]]
    (let [response                               (cske/transform-keys csk/->kebab-case-keyword
                                                                      (types/json->clj message))
          {:keys [collectibles has-more offset]} response
-         next-offset                            (+ offset (count collectibles))
-         addresses                              (get-in db
-                                                        [:wallet :ongoing-collectibles-request
-                                                         :addresses])]
+         next-offset                            (+ offset (count collectibles))]
      {:fx
       [[:dispatch [:wallet/store-collectibles collectibles]]
-       (if has-more
+       (when has-more
          [:dispatch
           [:wallet/request-collectibles
-           {:addresses addresses
-            :offset    next-offset}]]
-         [:dispatch [:wallet/clear-collectibles-request-details]])]})))
+           {:offset next-offset}]])]})))
 

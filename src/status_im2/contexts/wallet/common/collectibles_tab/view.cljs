@@ -1,10 +1,10 @@
 (ns status-im2.contexts.wallet.common.collectibles-tab.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
     [utils.i18n :as i18n]
-    [clojure.string :as string]
     [utils.re-frame :as rf]))
 
 (defn- collectible-image-url

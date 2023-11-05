@@ -54,23 +54,22 @@
          accounts)]
     (conj accounts-with-balances (add-account-placeholder (:customization-color profile)))))
 
-(defn f-view
+(defn view
   []
   (rf/dispatch [:wallet/get-wallet-token])
+  (rf/dispatch [:wallet/request-collectibles
+                {:offset       0
+                 :new-request? true}])
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      (let [accounts         (rf/sub [:profile/wallet-accounts])
-            top              (safe-area/get-top)
-            loading?         (rf/sub [:wallet/tokens-loading?])
-            balances         (rf/sub [:wallet/balances])
-            profile          (rf/sub [:profile/profile])
-            networks         (rf/sub [:wallet/network-details])
-            wallet-addresses (rf/sub [:wallet/all-addresses])]
-        (rn/use-effect (fn []
-                         (rf/dispatch [:wallet/request-collectibles
-                                       {:addresses    wallet-addresses
-                                        :offset       0
-                                        :new-request? true}])))
+
+      (let [accounts (rf/sub [:profile/wallet-accounts])
+            top      (safe-area/get-top)
+            loading? (rf/sub [:wallet/tokens-loading?])
+            balances (rf/sub [:wallet/balances])
+            profile  (rf/sub [:profile/profile])
+            networks (rf/sub [:wallet/network-details])]
+
         [rn/view
          {:style {:margin-top top
                   :flex       1}}
@@ -104,7 +103,3 @@
                            :content-container-style {:padding-horizontal 8}}]
            :collectibles [collectibles/view]
            [activity/view])]))))
-
-(defn view
-  []
-  [:f> f-view])

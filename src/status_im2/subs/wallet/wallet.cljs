@@ -50,8 +50,3 @@
     :balance
     (utils/get-balance-by-address balances account-address))))
 
-(re-frame/reg-sub
- :wallet/all-addresses
- :<- [:profile/wallet-accounts]
- (fn [accounts]
-   (map :address accounts)))
