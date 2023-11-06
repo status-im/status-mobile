@@ -58,6 +58,7 @@
 
                  "link"
                  (truncate-literal destination)
+
                  (truncate-literal literal))]
     {:components (conj (:components acc) (:components result))
      :length     (+ (:length acc) (:length result))}))
