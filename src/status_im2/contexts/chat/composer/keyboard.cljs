@@ -31,18 +31,13 @@
    {:keys [text-value]}
    {:keys [height saved-height]}
    {:keys [max-height]}]
-  (let [start-h                  (oops/oget event "startCoordinates.height")
-        end-h                    (oops/oget event "endCoordinates.height")
-        diff                     (- end-h start-h)
-        max-height-diff          (- max-height diff)
-        curr-text                @text-value
-        almost-expanded?         (> (reanimated/get-shared-value height) max-height-diff)
-        ;; NOTE: the `keyboardWillChangeFrame` is dispatched sometimes when blurring (the input)
-        ;; with a diff of 103, which we don't want to react to as it causes the input to increase.
-        ;; 60 is an arbitrary number to avoid that, but still include the emoji keyboard difference
-        ;; (with some buffer).
-        smaller-than-emoji-diff? (< diff 60)]
-    (if (and almost-expanded? (pos? diff) smaller-than-emoji-diff?)
+  (let [start-h          (oops/oget event "startCoordinates.height")
+        end-h            (oops/oget event "endCoordinates.height")
+        diff             (- end-h start-h)
+        max-height-diff  (- max-height diff)
+        curr-text        @text-value
+        almost-expanded? (> (reanimated/get-shared-value height) max-height-diff)]
+    (if (and almost-expanded? (pos? diff))
       (do
         (reanimated/set-shared-value height (- (reanimated/get-shared-value height) diff))
         (reanimated/set-shared-value saved-height (- (reanimated/get-shared-value saved-height) diff))
