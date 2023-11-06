@@ -76,7 +76,6 @@
     (effects/use-edit props state subscriptions)
     (effects/use-reply props animations subscriptions)
     (effects/update-input-mention props state subscriptions)
-    (effects/edit-mentions props state subscriptions)
     (effects/link-previews props state animations subscriptions)
     (effects/use-images props state animations subscriptions)
     [:<>

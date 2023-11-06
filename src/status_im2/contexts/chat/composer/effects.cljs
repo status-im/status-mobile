@@ -106,10 +106,15 @@
 (defn use-edit
   [{:keys [input-ref]}
    {:keys [text-value saved-cursor-position]}
-   {:keys [edit]}]
+   {:keys [edit input-with-mentions]}]
   (rn/use-effect
    (fn []
-     (let [edit-text        (get-in edit [:content :text])
+     (let [mention?         (some #(= :mention (first %)) (seq input-with-mentions))
+           mention-text     (reduce (fn [acc item]
+                                      (str acc (second item)))
+                                    ""
+                                    input-with-mentions)
+           edit-text        (if mention? mention-text (get-in edit [:content :text]))
            text-value-count (count @text-value)
            inject-edit-text (fn []
                               (reset! text-value edit-text)
@@ -128,7 +133,7 @@
          ;; text.
          (js/setTimeout #(do (.focus ^js @input-ref)
                              (js/setTimeout inject-edit-text 250))
-                        250))))
+                        100))))
    [(:message-id edit)]))
 
 (defn use-reply
@@ -142,23 +147,6 @@
      (when (and reply @input-ref)
        (js/setTimeout #(.focus ^js @input-ref) 250)))
    [(:message-id reply)]))
-
-(defn edit-mentions
-  [{:keys [input-ref]} {:keys [text-value cursor-position]} {:keys [input-with-mentions]}]
-  (rn/use-effect (fn []
-                   (let [input-text (reduce (fn [acc item]
-                                              (str acc (second item)))
-                                            ""
-                                            input-with-mentions)]
-                     (reset! text-value input-text)
-                     (reset! cursor-position (count input-text))
-                     (js/setTimeout #(when @input-ref
-                                       (.setNativeProps ^js @input-ref
-                                                        (clj->js {:selection {:start (count input-text)
-                                                                              :end   (count
-                                                                                      input-text)}})))
-                                    300)))
-                 [(some #(= :mention (first %)) (seq input-with-mentions))]))
 
 (defn update-input-mention
   [{:keys [input-ref]}
