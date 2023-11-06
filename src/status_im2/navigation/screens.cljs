@@ -45,7 +45,6 @@
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.saved-address.view :as wallet-saved-address]
-    [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im2.contexts.wallet.scan-account.view :as scan-address]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im2.navigation.options :as options]
@@ -252,7 +251,8 @@
      :component wallet-edit-account/view}
 
     {:name      :wallet-address-watch
-     :options   {:insets {:top? true}}
+     :options   {:insets {:top?    true
+                          :bottom? true}}
      :component wallet-address-watch/view}
 
     {:name      :wallet-bridge
@@ -260,27 +260,11 @@
                  :modalPresentationStyle :overCurrentContext}
      :component bridge/view}
 
-<<<<<<< HEAD
-    {:name      :wallet-address-watch
-     :component wallet-address-watch/view}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
     {:name      :wallet-edit-derivation-path
      :component wallet-edit-derivation-path/view}
 
-    {:name      :wallet-saved-address
-     :component wallet-saved-address/view}
-=======
-     {:name      :wallet-create-account
-      :component wallet-create-account/view}
->>>>>>> f72469fd9 (updates)
-=======
-=======
->>>>>>> f98753572 (lint)
     {:name      :wallet-collectible
      :component wallet-collectible/view}
->>>>>>> 4e9e8068f (wallet: bridge screen)
 
     {:name      :wallet-create-account
      :options   {:insets {:top? true}}
@@ -288,9 +272,6 @@
 
     {:name      :wallet-saved-address
      :component wallet-saved-address/view}
-
-    {:name      :wallet-saved-addresses
-     :component wallet-saved-addresses/view}
 
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext}

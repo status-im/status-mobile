@@ -40,9 +40,9 @@
          :card?           true
          :title           (i18n/label :t/address)
          :custom-subtitle (fn [] [quo/address-text
-                                  {:networks [{:name :ethereum :short-name "eth"}
-                                              {:name :optimism :short-name "opt"}
-                                              {:name :arbitrum :short-name "arb1"}]
+                                  {:networks [{:network-name :ethereum :short-name "eth"}
+                                              {:network-name :optimism :short-name "opt"}
+                                              {:network-name :arbitrum :short-name "arb1"}]
                                    :address  account-address
                                    :format   :long}])
          :on-press        (fn []

@@ -47,8 +47,8 @@
            :right-side        :account-switcher
            :account-switcher  {:customization-color :purple
                                :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                   {:content             account-options/view
-                                                                    :gradient-cover?     true
+                                                                   {:content account-options/view
+                                                                    :gradient-cover? true
                                                                     :customization-color :purple}])
                                :emoji               "🍑"}}]
          [quo/account-overview
