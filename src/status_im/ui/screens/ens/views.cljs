@@ -147,7 +147,7 @@
     :owned
     [help-message-text-element
      :t/ens-username-owned
-     :t/ens-username-continue]
+     :t/ens-username-owned-continue]
     :connected
     [help-message-text-element
      :t/ens-username-connected
