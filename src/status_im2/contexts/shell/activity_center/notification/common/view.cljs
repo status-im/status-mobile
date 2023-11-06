@@ -4,19 +4,19 @@
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
-    [status-im.multiaccounts.core :as multiaccounts]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [status-im2.contexts.shell.activity-center.notification.common.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn user-avatar-tag
   [user-id]
-  (let [{:keys [primary-name] :as contact} (rf/sub [:contacts/contact-by-identity user-id])]
+  (let [profile (rf/sub [:contacts/contact-by-identity user-id])]
     [quo/context-tag
      {:blur?           true
       :size            24
-      :full-name       primary-name
-      :profile-picture (multiaccounts/displayed-photo contact)}]))
+      :full-name       (profile.utils/displayed-name profile)
+      :profile-picture (profile.utils/photo profile)}]))
 
 (defn- render-swipe-action
   [{:keys [active-swipeable

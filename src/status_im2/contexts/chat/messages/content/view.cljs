@@ -72,7 +72,7 @@
 
 (defn system-message-contact-request
   [{:keys [chat-id timestamp-str from]} type]
-  (let [display-name         (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+  (let [[primary-name _]     (rf/sub [:contacts/contact-two-names-by-identity chat-id])
         contact              (rf/sub [:contacts/contact-by-address chat-id])
         photo-path           (when (seq (:images contact)) (rf/sub [:chats/photo-path chat-id]))
         customization-color  (rf/sub [:profile/customization-color])
@@ -80,7 +80,7 @@
     [quo/system-message
      {:type                type
       :timestamp           timestamp-str
-      :display-name        display-name
+      :display-name        primary-name
       :customization-color customization-color
       :photo-path          photo-path
       :incoming?           (not= public-key from)}]))

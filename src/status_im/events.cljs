@@ -118,7 +118,7 @@
   (let [current-theme-type (get-in cofx [:db :profile/profile :appearance])]
     (when (and (multiaccounts.model/logged-in? db)
                (= current-theme-type status-im2.constants/theme-type-system))
-      {:multiaccounts.ui/switch-theme-fx
+      {:profile.settings/switch-theme-fx
        [(get-in db [:profile/profile :appearance])
         (:view-id db) true]})))
 

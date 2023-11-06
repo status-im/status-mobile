@@ -880,10 +880,6 @@ RCT_EXPORT_METHOD(callRPC:(NSString *)payload
     });
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(generateAlias:(NSString *)publicKey) {
-  return StatusgoGenerateAlias(publicKey);
-}
-
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(keystoreDir) {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *rootUrl =[[fileManager
@@ -943,19 +939,6 @@ RCT_EXPORT_METHOD(initLogging:(BOOL)enabled
     callback(@[initResult]);
 }
 
-RCT_EXPORT_METHOD(generateAliasAsync:(NSString *)publicKey
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"generateAliasAsync() method called");
-#endif
-    NSString *result = StatusgoGenerateAlias(publicKey);
-    callback(@[result]);
-}
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(identicon:(NSString *)publicKey) {
-  return StatusgoIdenticon(publicKey);
-}
-
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(encodeTransfer:(NSString *)to
                                        value:(NSString *)value) {
   return StatusgoEncodeTransfer(to,value);
@@ -1011,15 +994,6 @@ RCT_EXPORT_METHOD(validateMnemonic:(NSString *)seed
     callback(@[result]);
 }
 
-RCT_EXPORT_METHOD(identiconAsync:(NSString *)publicKey
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"identiconAsync() method called");
-#endif
-    NSString *result = StatusgoIdenticon(publicKey);
-    callback(@[result]);
-}
-
 RCT_EXPORT_METHOD(createAccountAndLogin:(NSString *)request) {
 #if DEBUG
     NSLog(@"createAccountAndLogin() method called");
@@ -1032,16 +1006,6 @@ RCT_EXPORT_METHOD(restoreAccountAndLogin:(NSString *)request) {
     NSLog(@"restoreAccountAndLogin() method called");
 #endif
     StatusgoRestoreAccountAndLogin(request);
-}
-
-RCT_EXPORT_METHOD(generateAliasAndIdenticonAsync:(NSString *)publicKey
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"generateAliasAndIdenticonAsync() method called");
-#endif
-    NSString *identiconResult = StatusgoIdenticon(publicKey);
-    NSString *aliasResult = StatusgoGenerateAlias(publicKey);
-    callback(@[aliasResult, identiconResult]);
 }
 
 RCT_EXPORT_METHOD(callPrivateRPC:(NSString *)payload

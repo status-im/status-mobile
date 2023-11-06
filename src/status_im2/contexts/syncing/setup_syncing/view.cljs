@@ -25,7 +25,7 @@
 
 (defn view
   []
-  (let [{:keys [customization-color]} (rf/sub [:profile/multiaccount])
+  (let [{:keys [customization-color]} (rf/sub [:profile/profile-with-image])
         valid-for-ms                  (reagent/atom code-valid-for-ms)
         code                          (reagent/atom nil)
         delay-ms                      (reagent/atom nil)

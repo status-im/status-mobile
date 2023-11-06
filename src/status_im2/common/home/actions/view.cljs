@@ -342,9 +342,9 @@
 
 (defn remove-from-group-entry
   [{:keys [public-key]} chat-id]
-  (let [username (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))]
+  (let [[primary-name _] (rf/sub [:contacts/contact-two-names-by-identity public-key])]
     (entry {:icon                :i/placeholder
-            :label               (i18n/label :t/remove-user-from-group {:username username})
+            :label               (i18n/label :t/remove-user-from-group {:username primary-name})
             :on-press            #(hide-sheet-and-dispatch [:group-chats.ui/remove-member-pressed chat-id
                                                             public-key true])
             :danger?             true

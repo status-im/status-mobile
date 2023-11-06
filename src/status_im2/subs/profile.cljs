@@ -39,11 +39,11 @@
  :<- [:profile/profiles-overview]
  :<- [:mediaserver/port]
  :<- [:initials-avatar-font-file]
- (fn [[multiaccounts port font-file] [_ target-key-uid]]
-   (let [{:keys [images ens-name?] :as multiaccount} (get multiaccounts target-key-uid)
-         image-name                                  (-> images first :type)
-         override-ring?                              (when ens-name? false)]
-     (when multiaccount
+ (fn [[profiles port font-file] [_ target-key-uid]]
+   (let [{:keys [images ens-name?] :as profile} (get profiles target-key-uid)
+         image-name                             (-> images first :type)
+         override-ring?                         (when ens-name? false)]
+     (when profile
        {:fn
         (if image-name
           (image-server/get-account-image-uri-fn {:port           port
@@ -249,8 +249,8 @@
    (pos? (count (get multiaccount :images)))))
 
 (defn- replace-multiaccount-image-uri
-  [multiaccount ens-names port font-file avatar-opts]
-  (let [{:keys [key-uid ens-name? images]} multiaccount
+  [profile ens-names port font-file avatar-opts]
+  (let [{:keys [key-uid ens-name? images]} profile
         ens-name?                          (or ens-name? (seq ens-names))
         theme                              (theme/get-theme)
         avatar-opts                        (assoc avatar-opts :override-ring? (when ens-name? false))
@@ -271,16 +271,16 @@
                                                             :theme     theme
                                                             :font-file font-file}
                                                            avatar-opts))}])]
-    (assoc multiaccount :images new-images)))
+    (assoc profile :images new-images)))
 
 (re-frame/reg-sub
- :profile/multiaccount
+ :profile/profile-with-image
  :<- [:profile/profile]
  :<- [:ens/names]
  :<- [:mediaserver/port]
  :<- [:initials-avatar-font-file]
- (fn [[multiaccount ens-names port font-file] [_ avatar-opts]]
-   (replace-multiaccount-image-uri multiaccount ens-names port font-file avatar-opts)))
+ (fn [[profile ens-names port font-file] [_ avatar-opts]]
+   (replace-multiaccount-image-uri profile ens-names port font-file avatar-opts)))
 
 (re-frame/reg-sub
  :profile/login-profile

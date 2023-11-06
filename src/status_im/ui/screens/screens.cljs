@@ -521,7 +521,7 @@
     ;;TODO custom toolbar
     :options   {:insets {:bottom? true
                          :top?    true}}
-    :component contact/profile}
+    :component contact/profile-view}
 
    ;KEYCARD
    {:name      :keycard-onboarding-intro

@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.profile.group-chat.views
   (:require
     [re-frame.core :as re-frame]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.common.common :as components.common]
@@ -16,6 +15,7 @@
     [status-im.ui.screens.chat.utils :as chat.utils]
     [status-im.ui.screens.profile.components.styles :as profile.components.styles]
     [status-im2.constants :as constants]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [utils.debounce :as debounce]
     [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -26,15 +26,14 @@
    [list.item/list-item
     {:theme               :accent
      :icon                [chat-icon/contact-icon-contacts-tab member]
-     :title               (:primary-name member)
+     :title               (profile.utils/displayed-name member)
      :subtitle            (i18n/label :t/view-profile)
      :accessibility-label :view-chat-details-button
      :chevron             true
      :on-press            #(chat.sheets/hide-sheet-and-dispatch
                             [:chat.ui/show-profile
                              (:public-key member)])}]
-   (when (and us-admin?
-              (not (:admin? member)))
+   (when (and us-admin? (not (:admin? member)))
      [list.item/list-item
       {:theme               :accent
        :title               (i18n/label :t/make-admin)
@@ -54,10 +53,10 @@
 
 (defn render-member
   [{:keys [public-key] :as member} _ _ {:keys [chat-id admin? current-user-identity]}]
-  (let [{:keys [primary-name secondary-name]} member]
+  (let [{:keys [secondary-name]} member]
     [list.item/list-item
      (merge
-      {:title               primary-name
+      {:title               (profile.utils/displayed-name member)
        :subtitle            secondary-name
        :accessibility-label :member-item
        :icon                [chat-icon/contact-icon-contacts-tab member]
@@ -118,7 +117,7 @@
        (chat.utils/format-author-old contact)]
       [react/view {:flex-direction :row :align-items :flex-end}
        [react/view {:padding-left 16 :padding-top 4}
-        [photos/photo (multiaccounts/displayed-photo contact) {:size 36}]]]]
+        [photos/photo (profile.utils/photo contact) {:size 36}]]]]
      [list.item/list-item
       {:theme               :accent
        :disabled            (not allow-adding-members?)
@@ -137,9 +136,10 @@
 
 (defn contacts-list-item
   [{:keys [from] :as invitation}]
-  (let [contact (or @(re-frame/subscribe [:contacts/contact-by-identity from]) {:public-key from})]
+  (let [contact (or @(re-frame/subscribe [:contacts/contact-by-identity from])
+                    {:public-key from})]
     [list.item/list-item
-     {:title    (multiaccounts/displayed-name contact)
+     {:title    (profile.utils/displayed-name contact)
       :icon     [chat-icon/contact-icon-contacts-tab contact]
       :on-press #(re-frame/dispatch [:bottom-sheet/show-sheet-old
                                      {:content (fn []

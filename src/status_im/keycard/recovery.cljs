@@ -179,37 +179,30 @@
           ;; name might have been generated during recovery via passphrase
           (get-in db [:intro-wizard :derived constants/path-whisper-keyword])
           {:name name})]
-    ;; if a name is still `nil` we have to generate it before multiaccount's
-    ;; creation otherwise spec validation will fail
-    (if (nil? name)
-      {:keycard/generate-name
-       {:public-key whisper-public-key
-        :on-success ::on-name-generated}}
-      (rf/merge cofx
-                {:db (-> db
-                         (assoc-in [:keycard :setup-step] nil)
-                         (dissoc :intro-wizard))}
-                (multiaccounts.create/on-multiaccount-created
-                 {:recovered            (or recovered (get-in db [:intro-wizard :recovering?]))
-                  :derived              {constants/path-wallet-root-keyword
-                                         {:public-key wallet-root-public-key
-                                          :address    (eip55/address->checksum wallet-root-address)}
-                                         constants/path-whisper-keyword
-                                         {:public-key whisper-public-key
-                                          :address    (eip55/address->checksum whisper-address)
-                                          :name       name}
-                                         constants/path-default-wallet-keyword
-                                         {:public-key wallet-public-key
-                                          :address    (eip55/address->checksum wallet-address)}}
-                  :address              address
-                  :public-key           public-key
-                  :keycard-instance-uid instance-uid
-                  :key-uid              (address/normalized-hex key-uid)
-                  :keycard-pairing      pairing
-                  :keycard-paired-on    paired-on
-                  :chat-key             whisper-private-key}
-                 encryption-public-key
-                 {})))))
+    (rf/merge cofx
+              {:db (-> db
+                       (assoc-in [:keycard :setup-step] nil)
+                       (dissoc :intro-wizard))}
+              (multiaccounts.create/on-multiaccount-created
+               {:recovered            (or recovered (get-in db [:intro-wizard :recovering?]))
+                :derived              {constants/path-wallet-root-keyword
+                                       {:public-key wallet-root-public-key
+                                        :address    (eip55/address->checksum wallet-root-address)}
+                                       constants/path-whisper-keyword
+                                       {:public-key whisper-public-key
+                                        :address    (eip55/address->checksum whisper-address)}
+                                       constants/path-default-wallet-keyword
+                                       {:public-key wallet-public-key
+                                        :address    (eip55/address->checksum wallet-address)}}
+                :address              address
+                :public-key           public-key
+                :keycard-instance-uid instance-uid
+                :key-uid              (address/normalized-hex key-uid)
+                :keycard-pairing      pairing
+                :keycard-paired-on    paired-on
+                :chat-key             whisper-private-key}
+               encryption-public-key
+               {}))))
 
 (rf/defn return-to-keycard-login
   [{:keys [db] :as cofx}]
@@ -381,17 +374,3 @@
    {:on-card-connected :keycard/load-recovering-key-screen
     :handler           (common/dispatch-event :keycard/import-multiaccount)}))
 
-(rf/defn on-name-generated
-  {:events       [::on-name-generated]
-   :interceptors [(re-frame/inject-cofx :random-guid-generator)
-                  (re-frame/inject-cofx ::multiaccounts.create/get-signing-phrase)]}
-  [{:keys [db] :as cofx} whisper-name]
-  (rf/merge
-   cofx
-   {:db (update-in db
-                   [:keycard :profile/profile]
-                   (fn [multiacc]
-                     (assoc multiacc
-                            :recovered (get db :recovered-account?)
-                            :name      whisper-name)))}
-   (create-keycard-multiaccount)))
