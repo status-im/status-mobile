@@ -47,7 +47,8 @@
        [quo/button
         {:on-press #(do
                       (when-not wallet-set-up-passed?
-                        (re-frame/dispatch [:multiaccounts.ui/wallet-set-up-confirmed]))
+                        (re-frame/dispatch [:profile.settings/update-value
+                                            :wallet-set-up-passed? true]))
                       (re-frame/dispatch [:hide-popover]))
          :type     :secondary}
         (i18n/label :t/ok-got-it)]]]]))

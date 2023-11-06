@@ -12,7 +12,7 @@
 (defn view
   [contact-id contact-request-state group-chat]
   (let [customization-color (rf/sub [:profile/customization-color])
-        names               (rf/sub [:contacts/contact-two-names-by-identity contact-id])]
+        [primary-name _]    (rf/sub [:contacts/contact-two-names-by-identity contact-id])]
     [rn/view
      [permission-context/view
       [quo/button
@@ -29,11 +29,11 @@
          (or (not contact-request-state)
              (= contact-request-state
                 constants/contact-request-state-none))
-         (i18n/label :t/contact-request-chat-add {:name (first names)})
+         (i18n/label :t/contact-request-chat-add {:name primary-name})
 
          (= contact-request-state
             constants/contact-request-state-received)
-         (str (first names) " sent you a contact request")
+         (str primary-name " sent you a contact request")
 
          (= contact-request-state
             constants/contact-request-state-sent)

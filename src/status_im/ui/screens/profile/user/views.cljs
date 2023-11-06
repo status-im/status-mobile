@@ -5,7 +5,6 @@
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ethereum.stateofus :as stateofus]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.common.common :as components.common]
     [status-im.ui.components.copyable-text :as copyable-text]
@@ -18,11 +17,11 @@
     [status-im.ui.screens.profile.user.edit-picture :as edit]
     [status-im.ui.screens.profile.user.styles :as styles]
     [status-im.ui.screens.profile.visibility-status.views :as visibility-status]
-    [status-im.utils.gfycat.core :as gfy]
     [status-im.utils.universal-links.utils :as universal-links]
     [status-im.utils.utils :as utils]
     [status-im2.common.qr-codes.view :as qr-codes]
     [status-im2.config :as config]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -198,8 +197,8 @@
                   ens-verified
                   preferred-name
                   key-uid]
-           :as   account}
-          @(re-frame/subscribe [:profile/multiaccount])
+           :as   profile}
+          @(re-frame/subscribe [:profile/profile-with-image])
           customization-color (or (:color @(re-frame/subscribe [:onboarding-2/profile]))
                                   @(re-frame/subscribe [:profile/customization-color key-uid]))
           on-share #(re-frame/dispatch [:show-popover
@@ -224,12 +223,8 @@
                                                                          has-picture)}])
                               :color     (user-avatar.style/customization-color customization-color
                                                                                 (theme/get-theme))
-                              :title     (multiaccounts/displayed-name account)
-                              :photo     (multiaccounts/displayed-photo account)
+                              :title     (profile.utils/displayed-name profile)
+                              :photo     (profile.utils/photo profile)
                               :monospace (not ens-verified)
-                              :subtitle  (if (and ens-verified public-key)
-                                           (gfy/generate-gfy public-key)
-                                           (utils/get-shortened-address (or
-                                                                         compressed-key
-                                                                         public-key)))})}
+                              :subtitle  (utils/get-shortened-address (or compressed-key public-key))})}
         [content]]])))

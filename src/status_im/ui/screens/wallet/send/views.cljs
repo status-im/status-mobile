@@ -4,7 +4,6 @@
     [quo.core :as quo]
     [re-frame.core :as re-frame]
     [status-im.commands.core :as commands]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.ui.components.bottom-panel.views :as bottom-panel]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
     [status-im.ui.components.colors :as colors]
@@ -20,6 +19,7 @@
     [status-im.ui.screens.wallet.send.styles :as styles]
     [status-im.utils.utils :as utils]
     [status-im.wallet.utils :as wallet.utils]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [utils.address :as address]
     [utils.i18n :as i18n]
     [utils.money :as money]))
@@ -78,14 +78,14 @@
                                       :content-height 300}]))}])
 
 (defn render-contact
-  [contact from-chat?]
+  [{:keys [address] :as contact} from-chat?]
   (if from-chat?
     [list.item/list-item
-     {:title    (multiaccounts/displayed-name contact)
+     {:title    (profile.utils/displayed-name contact)
       :subtitle [components.core/text
                  {:monospace true
                   :color     :secondary}
-                 (utils/get-shortened-checksum-address (:address contact))]
+                 (utils/get-shortened-checksum-address address)]
       :icon     [chat-icon/contact-icon-contacts-tab contact]}]
     [list.item/list-item
      (merge {:title               (if-not contact
@@ -94,7 +94,7 @@
                                      {:size      :large
                                       :monospace true}
                                      (utils/get-shortened-checksum-address
-                                      (if (string? contact) contact (:address contact)))])
+                                      (if (string? contact) contact address))])
              :accessibility-label :choose-recipient-button
              :on-press            #(do
                                      (re-frame/dispatch [:dismiss-keyboard])

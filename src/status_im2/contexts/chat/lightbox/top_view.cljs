@@ -70,8 +70,7 @@
 (defn top-view
   [messages insets index animations derived landscape? screen-width]
   (let [{:keys [from timestamp]}  (first messages)
-        display-name              (first (rf/sub [:contacts/contact-two-names-by-identity
-                                                  from]))
+        [primary-name _]          (rf/sub [:contacts/contact-two-names-by-identity from])
         bg-color                  (if landscape?
                                     colors/neutral-100-opa-70
                                     colors/neutral-100-opa-0)
@@ -102,7 +101,7 @@
        [quo/text
         {:weight :semi-bold
          :size   :paragraph-1
-         :style  {:color colors/white}} display-name]
+         :style  {:color colors/white}} primary-name]
        [quo/text
         {:weight :medium
          :size   :paragraph-2

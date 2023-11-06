@@ -1,9 +1,9 @@
 (ns status-im2.common.home.top-nav.view
   (:require
     [quo.core :as quo]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im2.common.home.top-nav.style :as style]
     [status-im2.constants :as constants]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [utils.debounce :refer [dispatch-and-chill]]
     [utils.re-frame :as rf]))
 
@@ -14,22 +14,24 @@
    :jump-to? true/false
    :container-style passed to outer view of component}"
   [{:keys [container-style blur? jump-to?]}]
-  (let [{:keys [public-key]} (rf/sub [:profile/profile])
-        online?              (rf/sub [:visibility-status-updates/online? public-key])
-        account              (rf/sub [:profile/multiaccount])
-        customization-color  (rf/sub [:profile/customization-color])
-        avatar               {:online?         online?
-                              :full-name       (multiaccounts/displayed-name account)
-                              :profile-picture (multiaccounts/displayed-photo account)}
-        unread-count         (rf/sub [:activity-center/unread-count])
-        indicator            (rf/sub [:activity-center/unread-indicator])
-        notification-type    (case indicator
-                               :unread-indicator/seen :mention-seen ; should be `seen` - TODO discuss
-                                                                    ; with design team about
-                                                                    ; notifications for activity centre
-                               :unread-indicator/new  :mention ; should be :notification TODO
-                                                               ; https://github.com/status-im/status-mobile/issues/17102
-                               nil)]
+  (let [{:keys [public-key] :as profile} (rf/sub [:profile/profile-with-image])
+        online?                          (rf/sub [:visibility-status-updates/online?
+                                                  public-key])
+        customization-color              (rf/sub [:profile/customization-color])
+        avatar                           {:online?         online?
+                                          :full-name       (profile.utils/displayed-name profile)
+                                          :profile-picture (profile.utils/photo profile)}
+
+        unread-count                     (rf/sub [:activity-center/unread-count])
+        indicator                        (rf/sub [:activity-center/unread-indicator])
+        notification-type                (case indicator
+                                           ; should be `seen` TODO discuss with design team
+                                           ; notifications for activity centre
+                                           :unread-indicator/seen :mention-seen
+                                           ; should be :notification TODO
+                                           ; https://github.com/status-im/status-mobile/issues/17102
+                                           :unread-indicator/new  :mention
+                                           nil)]
     [quo/top-nav
      {:avatar-on-press          #(rf/dispatch [:navigate-to :my-profile])
       :scan-on-press            #(js/alert "to be implemented")

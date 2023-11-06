@@ -5,7 +5,6 @@
     [reagent.core :as reagent]
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.keycard.login :as keycard.login]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.react-native.resources :as resources]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.core :as quo]
@@ -19,6 +18,7 @@
     [status-im.ui.screens.keycard.pin.views :as pin.views]
     [status-im.ui.screens.keycard.styles :as styles]
     [status-im2.constants :as constants]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [status-im2.navigation.events :as navigation]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf])
@@ -212,7 +212,7 @@
     :reagent-render
     (fn [account small-screen?]
       ;;TODO this should be done in a subscription
-      [photos/photo (multiaccounts/displayed-photo account)
+      [photos/photo (profile.utils/photo account)
        {:size (if small-screen? 45 61)}])}))
 
 (defn access-is-reset
