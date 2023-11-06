@@ -30,7 +30,7 @@ You need to have an emulator like [AVD](https://developer.android.com/studio/run
 
 #### Running on a simulator
 
-We highly recommend using the `iPhone 13` simulator as its screen dimensions match with our design.
+We highly recommend using either the `iPhone 11 Pro` or `iPhone 13` simulator as its screen dimensions match with our design.
 
 If you have Xcode `v12.x` (and above) installed in your system, you need to follow the below steps to add `iPhone 13` simulator:
 
