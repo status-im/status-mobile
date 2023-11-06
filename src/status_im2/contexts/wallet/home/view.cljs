@@ -57,6 +57,9 @@
 (defn view
   []
   (rf/dispatch [:wallet/get-wallet-token])
+  (rf/dispatch [:wallet/request-collectibles
+                {:start-at-index 0
+                 :new-request?   true}])
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
       (let [accounts (rf/sub [:profile/wallet-accounts])

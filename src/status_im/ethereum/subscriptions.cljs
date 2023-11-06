@@ -74,9 +74,12 @@
             "blockNumber" blockNumber
             "accounts"    accounts)
   (case type
-    "new-transfers"              (new-transfers cofx blockNumber accounts)
-    "recent-history-fetching"    (recent-history-fetching-started cofx accounts)
-    "recent-history-ready"       (recent-history-fetching-ended cofx event)
-    "fetching-history-error"     (fetching-error cofx event)
-    "non-archival-node-detected" (non-archival-node-detected cofx event)
+    "new-transfers"                            (new-transfers cofx blockNumber accounts)
+    "recent-history-fetching"                  (recent-history-fetching-started cofx accounts)
+    "recent-history-ready"                     (recent-history-fetching-ended cofx event)
+    "fetching-history-error"                   (fetching-error cofx event)
+    "non-archival-node-detected"               (non-archival-node-detected cofx event)
+    "wallet-owned-collectibles-filtering-done" {:fx [[:dispatch
+                                                      [:wallet/owned-collectibles-filtering-done
+                                                       event]]]}
     (log/warn ::unknown-wallet-event :type type :event event)))
