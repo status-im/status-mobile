@@ -8,7 +8,7 @@
 
 (defn view
   []
-  (let [{:keys [name customization-color emoji address]} (rf/sub [:wallet/current-viewing-account])]
+  (let [{:keys [name color emoji address]} (rf/sub [:wallet/current-viewing-account])]
     [:<>
      [quo/drawer-top
       {:title                name
@@ -18,7 +18,7 @@
                               {:network-name :arbitrum :short-name "arb1"}]
        :description          address
        :account-avatar-emoji emoji
-       :customization-color  customization-color}]
+       :customization-color  color}]
      [quo/action-drawer
       [[{:icon                :i/edit
          :accessibility-label :edit

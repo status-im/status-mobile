@@ -8,35 +8,35 @@
             [utils.re-frame :as rf]))
 
 (defn- mainnet
-  [customization-color]
+  [account-color]
   [{:title        "Mainnet"
     :image        :icon-avatar
     :image-props  {:icon (resources/get-network :ethereum)
                    :size :size-20}
     :action       :selector
     :action-props {:type                :checkbox
-                   :customization-color customization-color}}])
+                   :customization-color account-color}}])
 
 (defn- networks-list
-  [customization-color]
+  [account-color]
   [{:title        "Optimism"
     :image        :icon-avatar
     :image-props  {:icon (resources/get-network :optimism)
                    :size :size-20}
     :action       :selector
     :action-props {:type                :checkbox
-                   :customization-color customization-color}}
+                   :customization-color account-color}}
    {:title        "Arbitrum"
     :image        :icon-avatar
     :image-props  {:icon (resources/get-network :arbitrum)
                    :size :size-20}
     :action       :selector
     :action-props {:type                :checkbox
-                   :customization-color customization-color}}])
+                   :customization-color account-color}}])
 
 (defn- view-internal
   [{:keys [on-save theme]}]
-  (let [{:keys [customization-color address]} (rf/sub [:wallet/current-viewing-account])]
+  (let [{:keys [color address]} (rf/sub [:wallet/current-viewing-account])]
     [:<>
      [quo/drawer-top
       {:title       (i18n/label :t/network-preferences)
@@ -56,15 +56,15 @@
                                                                        theme)})}]
      [quo/category
       {:list-type :settings
-       :data      (mainnet customization-color)}]
+       :data      (mainnet color)}]
      [quo/category
       {:list-type :settings
        :label     (i18n/label :t/layer-2)
-       :data      (networks-list customization-color)}]
+       :data      (networks-list color)}]
      [quo/bottom-actions
       {:button-one-label (i18n/label :t/update)
        :button-one-props {:disabled?           true
                           :on-press            on-save
-                          :customization-color customization-color}}]]))
+                          :customization-color color}}]]))
 
 (def view (quo.theme/with-theme view-internal))

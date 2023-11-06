@@ -15,17 +15,16 @@
   (string/join constants/chain-id-separator ids))
 
 (defn rpc->account
-  [{:keys [colorId] :as account}]
+  [account]
   (-> account
       (set/rename-keys {:prodPreferredChainIds :prod-preferred-chain-ids
                         :testPreferredChainIds :test-preferred-chain-ids
-                        :createdAt             :created-at})
+                        :createdAt             :created-at
+                        :colorId               :color})
       (update :prod-preferred-chain-ids chain-ids-string->set)
       (update :test-preferred-chain-ids chain-ids-string->set)
       (update :type keyword)
-      (assoc :customization-color
-             (if (seq colorId) (keyword colorId) constants/account-default-customization-color))
-      (dissoc :colorId)))
+      (update :color #(if (seq %) (keyword %) constants/account-default-customization-color))))
 
 (defn rpc->accounts
   [accounts]
@@ -34,14 +33,13 @@
        (map rpc->account)))
 
 (defn <-account
-  [{:keys [customization-color] :as account}]
+  [account]
   (-> account
       (set/rename-keys {:prod-preferred-chain-ids :prodPreferredChainIds
-                        :test-preferred-chain-ids :testPreferredChainIds})
+                        :test-preferred-chain-ids :testPreferredChainIds
+                        :color                    :colorId})
       (update :prodPreferredChainIds chain-ids-set->string)
-      (update :testPreferredChainIds chain-ids-set->string)
-      (assoc :colorId customization-color)
-      (dissoc :customization-color)))
+      (update :testPreferredChainIds chain-ids-set->string)))
 
 (defn <-rpc
   [network]

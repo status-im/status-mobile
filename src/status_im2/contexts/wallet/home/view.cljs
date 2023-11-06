@@ -43,13 +43,14 @@
   [{:keys [accounts loading? balances profile-color]}]
   (let [accounts-with-balances
         (mapv
-         (fn [{:keys [address] :as account}]
+         (fn [{:keys [color address] :as account}]
            (assoc account
-                  :type     :empty
-                  :on-press #(rf/dispatch [:wallet/navigate-to-account address])
-                  :loading? loading?
-                  :balance  (utils/prettify-balance
-                             (utils/get-balance-by-address balances address))))
+                  :customization-color color
+                  :type                :empty
+                  :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
+                  :loading?            loading?
+                  :balance             (utils/prettify-balance
+                                        (utils/get-balance-by-address balances address))))
          accounts)]
     (conj accounts-with-balances (add-account-placeholder profile-color))))
 

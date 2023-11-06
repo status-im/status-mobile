@@ -33,8 +33,8 @@
   []
   (let [selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      (let [{:keys [name customization-color emoji balance]} (rf/sub [:wallet/current-viewing-account])
-            networks                                         (rf/sub [:wallet/network-details])]
+      (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
+            networks                           (rf/sub [:wallet/network-details])]
         [rn/view {:style {:flex 1}}
          [quo/page-nav
           {:type              :wallet-networks
@@ -44,17 +44,17 @@
            :networks          networks
            :networks-on-press #(js/alert "Pressed Networks")
            :right-side        :account-switcher
-           :account-switcher  {:customization-color customization-color
+           :account-switcher  {:customization-color color
                                :on-press            #(rf/dispatch [:show-bottom-sheet
-                                                                   {:content account-options/view
-                                                                    :gradient-cover? true
-                                                                    :customization-color customization-color}])
-                               :emoji              emoji}}]
+                                                                   {:content             account-options/view
+                                                                    :gradient-cover?     true
+                                                                    :customization-color color}])
+                               :emoji               emoji}}]
          [quo/account-overview
           {:current-value       (utils/prettify-balance balance)
            :account-name        name
            :account             :default
-           :customization-color customization-color}]
+           :customization-color color}]
          [quo/wallet-graph {:time-frame :empty}]
          [quo/wallet-ctas
           {:send-action   #(rf/dispatch [:open-modal :wallet-select-address])

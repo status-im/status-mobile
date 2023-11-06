@@ -26,38 +26,37 @@
 
 (defn- view-internal
   [{:keys [theme]}]
-  (let [{:keys [name customization-color emoji address]
-         :as   account}      (rf/sub [:wallet/current-viewing-account])
-        edited-data          (reagent/atom {:name                name
-                                            :customization-color customization-color
-                                            :emoji               emoji})
-        account-name         (reagent/cursor edited-data [:name])
-        account-color        (reagent/cursor edited-data [:customization-color])
-        account-emoji        (reagent/cursor edited-data [:emoji])
-        on-change-name       (fn [edited-name]
-                               (swap! edited-data assoc :name edited-name))
-        show-confirm-button? (reagent/atom false)
-        on-change-color      (fn [edited-color]
-                               (swap! edited-data assoc :customization-color edited-color)
-                               (rf/dispatch [:wallet/save-account
-                                             {:address     address
-                                              :edited-data @edited-data}
-                                             #(show-toast {:type  :color
-                                                           :theme theme})]))
-        on-change-emoji      (fn [edited-emoji]
-                               (swap! edited-data assoc :emoji edited-emoji)
-                               (rf/dispatch [:wallet/save-account
-                                             {:address     address
-                                              :edited-data @edited-data}
-                                             #(show-toast {:type  :emoji
-                                                           :theme theme})]))
-        on-confirm           (fn []
-                               (rn/dismiss-keyboard!)
-                               (rf/dispatch [:wallet/save-account
-                                             {:address     address
-                                              :edited-data @edited-data}
-                                             #(show-toast {:type  :name
-                                                           :theme theme})]))]
+  (let [{:keys [name emoji address color]} (rf/sub [:wallet/current-viewing-account])
+        edited-data                        (reagent/atom {:name  name
+                                                          :color color
+                                                          :emoji emoji})
+        account-name                       (reagent/cursor edited-data [:name])
+        account-color                      (reagent/cursor edited-data [:color])
+        account-emoji                      (reagent/cursor edited-data [:emoji])
+        on-change-name                     (fn [edited-name]
+                                             (swap! edited-data assoc :name edited-name))
+        show-confirm-button?               (reagent/atom false)
+        on-change-color                    (fn [edited-color]
+                                             (swap! edited-data assoc :color edited-color)
+                                             (rf/dispatch [:wallet/save-account
+                                                           {:address     address
+                                                            :edited-data @edited-data}
+                                                           #(show-toast {:type  :color
+                                                                         :theme theme})]))
+        on-change-emoji                    (fn [edited-emoji]
+                                             (swap! edited-data assoc :emoji edited-emoji)
+                                             (rf/dispatch [:wallet/save-account
+                                                           {:address     address
+                                                            :edited-data @edited-data}
+                                                           #(show-toast {:type  :emoji
+                                                                         :theme theme})]))
+        on-confirm                         (fn []
+                                             (rn/dismiss-keyboard!)
+                                             (rf/dispatch [:wallet/save-account
+                                                           {:address     address
+                                                            :edited-data @edited-data}
+                                                           #(show-toast {:type  :name
+                                                                         :theme theme})]))]
     (fn []
       [create-or-edit-account/view
        {:page-nav-right-side [{:icon-name :i/delete
@@ -95,8 +94,7 @@
          :on-press        (fn []
                             (rf/dispatch [:show-bottom-sheet
                                           {:content (fn [] [network-preferences/view
-                                                            {:account account
-                                                             :on-save #(js/alert
+                                                            {:on-save #(js/alert
                                                                         "calling on save")}])}]))
          :container-style style/data-item}]])))
 
