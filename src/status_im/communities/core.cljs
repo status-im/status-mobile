@@ -99,7 +99,7 @@
           (assoc-in db [:communities/my-pending-requests-to-join community-id] request)
           (and (= constants/community-request-to-join-state-accepted state) (not deleted))
           (do (re-frame/dispatch [:toasts/upsert
-                                  {:icon       :correct
+                                  {:icon       :i/correct
                                    :id         :joined-community
                                    :icon-color (:positive-01 @colors/theme)
                                    :text       (i18n/label :t/joined-community {:community name})}])
