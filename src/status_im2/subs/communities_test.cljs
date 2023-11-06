@@ -374,23 +374,33 @@
                 :checking-permissions?   checking-permissions?
                 :permissions             {:access 3}
                 :token-images            {"ETH" token-image-eth}
-                :token-permissions       [[:abcde
-                                           {:id "abcde"
+                :token-permissions       [[:permission-id-01
+                                           {:id "permission-id-01"
                                             :type constants/community-token-permission-can-view-channel
                                             :token_criteria [{:contract_addresses {:5 "0x0"}
                                                               :type               1
                                                               :symbol             "SNT"
-                                                              :amount             "0.0020000000000000"
+                                                              :amount             "0.002"
                                                               :decimals           18}]
                                             :chat_ids [(str community-id
                                                             "89f98a1e-6776-4e5f-8626-8ab9f855253f")]}]
-                                          [:xyz
-                                           {:id "xyz"
+                                          [:permission-id-02
+                                           {:id "permission-id-02"
+                                            :type constants/community-token-permission-become-admin
+                                            :token_criteria [{:contract_addresses {:5 "0x0"}
+                                                              :type               1
+                                                              :symbol             "DAI"
+                                                              :amount             "5.0"
+                                                              :decimals           18}]
+                                            :chat_ids [(str community-id
+                                                            "89f98a1e-6776-4e5f-8626-8ab9f855253f")]}]
+                                          [:permission-id-03
+                                           {:id "permission-id-03"
                                             :type constants/community-token-permission-become-member
                                             :token_criteria [{:contract_addresses {:5 "0x0"}
                                                               :type               1
                                                               :symbol             "ETH"
-                                                              :amount             "0.0010000000000000"
+                                                              :amount             "0.001"
                                                               :decimals           18}]}]]
                 :name                    "Community super name"
                 :chats                   {"89f98a1e-6776-4e5f-8626-8ab9f855253f"
@@ -432,7 +442,7 @@
     (is (= {:can-request-access?   true
             :number-of-hold-tokens 2
             :tokens                [[{:symbol      "ETH"
-                                      :amount      "0.0010000000000000"
+                                      :amount      "0.001"
                                       :sufficient? nil
                                       :loading?    checking-permissions?
                                       :img-src     token-image-eth}]]}
