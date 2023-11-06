@@ -444,7 +444,6 @@
     "delete-bootnode-are-you-sure": "Are you sure you want to delete this bootnode?",
     "delete-bootnode-title": "Delete bootnode",
     "close-chat": "Close chat",
-    "close-chat?": "Confirm",
     "close-chat-confirmation": "This conversation will disappear from the list.\nIt will appear again if the contact sends a new message.",
     "delete-category-confirmation": "Are you sure you want to delete this category?",
     "delete-confirmation": "Delete?",

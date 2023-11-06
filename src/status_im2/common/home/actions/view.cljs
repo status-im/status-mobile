@@ -91,7 +91,7 @@
                   :description         (i18n/label :t/close-chat-confirmation)
                   :context             item
                   :accessibility-label :close-chat-confirm
-                  :button-text         (i18n/label :t/close-chat?)
+                  :button-text         (i18n/label :t/confirm)
                   :close-button-text   (i18n/label :t/cancel)
                   :on-press            (fn []
                                          (hide-sheet-and-dispatch [:chat.ui/close-chat chat-id])
