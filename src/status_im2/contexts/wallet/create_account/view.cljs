@@ -14,8 +14,7 @@
     [status-im2.contexts.wallet.create-account.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
-    [utils.string :as utils.string]))
+    [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]))
 
 (defn keypair-string
   [full-name]
@@ -23,12 +22,12 @@
     (i18n/label :t/keypair-title {:name first-name})))
 
 (defn get-keypair-data
-  [name derivation-path color]
+  [name derivation-path account-color]
   [{:title             (keypair-string name)
     :image             :avatar
     :image-props       {:full-name           (utils/get-initials name)
                         :size                :xxs
-                        :customization-color color}
+                        :customization-color account-color}
     :action            :button
     :action-props      {:on-press    #(rf/dispatch [:navigate-to :wallet-select-keypair])
                         :button-text (i18n/label :t/edit)

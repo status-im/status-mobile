@@ -5,8 +5,7 @@
     [status-im2.contexts.wallet.create-account.select-keypair.style :as style]
     [utils.address :as utils]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]
-    [utils.string :as string]))
+    [utils.re-frame :as rf]))
 
 (def accounts
   [{:account-props {:customization-color :turquoise
@@ -44,7 +43,7 @@
          :action              :selector
          :blur?               false
          :details             {:full-name display-name
-                               :address   (utils/get-shortened-compressed-key compressed-key)}
+                               :address   (utils/get-shortened-compressed-key compressed-key 5)}
          :accounts            accounts
          :container-style     {:margin-horizontal 20
                                :margin-vertical   8}})]]))
