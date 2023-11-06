@@ -4,6 +4,7 @@
             [status-im2.contexts.wallet.common.utils :as utils]
             [utils.number]))
 
+<<<<<<< HEAD
 (rf/reg-sub
  :wallet/ui
  :<- [:wallet]
@@ -15,11 +16,29 @@
  :-> :tokens-loading?)
 
 (rf/reg-sub
+<<<<<<< HEAD
  :wallet/watch-address-activity-state
  :<- [:wallet/ui]
  :-> :watch-address-activity-state)
 
 (rf/reg-sub
+=======
+=======
+(defn- calculate-balance
+  [address tokens]
+  (let [token  (get tokens (keyword address))
+        result (reduce
+                (fn [acc item]
+                  (let [total-values (* (utils/total-per-token item)
+                                        (get-in item [:marketValuesPerCurrency :USD :price]))]
+                    (+ acc total-values)))
+                0
+                token)]
+    result))
+
+(re-frame/reg-sub
+>>>>>>> c8bb0a581 (updates)
+>>>>>>> 302c755ce (updates)
  :wallet/accounts
  :<- [:wallet]
  :-> #(->> %

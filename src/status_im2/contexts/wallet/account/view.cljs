@@ -52,14 +52,19 @@
             networks                           (rf/sub [:wallet/network-details])]
 =======
       (let [account-address (or account-address (rf/sub [:get-screen-params :wallet-accounts]))
-            tokens (rf/sub [:wallet/tokens])
             account         (rf/sub [:wallet/account account-address])
             networks        (rf/sub [:wallet/network-details])]
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 74f8b4535 (updates)
+=======
+<<<<<<< HEAD
+>>>>>>> 347a673ba (updates)
         [rn/view {:style {:flex 1}}
 =======
         (println "tokens" (get tokens (keyword (string/lower-case account-address))))
+=======
+>>>>>>> 2286b1f46 (updates)
         [rn/view {:style style/container}
 >>>>>>> 408212e7c (updates)
          [quo/page-nav
@@ -90,6 +95,7 @@
                                            {:content buy-drawer}])
              :bridge-action #(rf/dispatch [:open-modal :wallet-bridge])}])
          [quo/tabs
+<<<<<<< HEAD
           {:style            style/tabs
            :size             32
            :default-active   @selected-tab
@@ -98,3 +104,14 @@
            :scrollable?      true
            :scroll-on-press? true}]
          [tabs/view {:selected-tab @selected-tab}]]))))
+=======
+          {:style          style/tabs
+           :size           32
+           :default-active @selected-tab
+           :data           tabs-data
+           :on-change      #(reset! selected-tab %)
+           :scrollable?    true}]
+         [tabs/view {:selected-tab @selected-tab
+                     :account-address account-address
+                     :account account}]]))))
+>>>>>>> 731614145 (updates)
