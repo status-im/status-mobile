@@ -220,32 +220,6 @@
                                     (log/error "failed to import community" %)
                                     (re-frame/dispatch [::failed-to-import %]))}]})
 
-(rf/defn request-to-join
-  {:events [:communities/request-to-join]}
-  [_ community-id]
-  {:json-rpc/call [{:method      "wakuext_requestToJoinCommunity"
-                    :params      [{:communityId community-id}]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:communities/requested-to-join %])
-                    :on-error    #(log/error "failed to request to join community" community-id)}]})
-
-(rf/defn requested-to-join-with-password-error
-  {:events [:communities/requested-to-join-with-password-error]}
-  [{:keys [db]} error]
-  {:db (assoc-in db [:password-authentication :error] error)})
-
-(rf/defn request-to-join-with-password
-  {:events [:communities/request-to-join-with-password]}
-  [_ community-id password]
-  {:json-rpc/call [{:method      "wakuext_requestToJoinCommunity"
-                    :params      [{:communityId community-id :password password}]
-                    :js-response true
-                    :on-success  #(re-frame/dispatch [:communities/requested-to-join %])
-                    :on-error    (fn [error]
-                                   (log/error "failed to request to join community" community-id error)
-                                   (re-frame/dispatch [:communities/requested-to-join-with-password-error
-                                                       error]))}]})
-
 (rf/defn get-user-requests-to-join
   {:events [:communities/get-user-requests-to-join]}
   [_]

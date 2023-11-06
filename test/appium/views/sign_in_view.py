@@ -218,21 +218,21 @@ class SignInView(BaseView):
         if set_image:
             pass
 
-    def create_user(self, password=common_password, keycard=False, enable_notifications=False, second_user=False,
-                    third_user=False, username="test user"):
+    def create_user(self, password=common_password, keycard=False, enable_notifications=False,
+                    username="test user", user_number=0):
         self.driver.info("## Creating new multiaccount (password:'%s', keycard:'%s', enable_notification: '%s')" %
                          (password, str(keycard), str(enable_notifications)), device=False)
         if self.element_by_text('CONTINUE').is_element_displayed(5):
             self.element_by_text('CONTINUE').click()
-        if second_user:
+        if user_number == 0:
+            self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_keys_button)
+        elif user_number == 1:
             self.show_profiles_button.wait_and_click(20)
             self.plus_profiles_button.click()
             self.create_new_profile_button.click()
-        elif third_user:
+        else:
             self.plus_profiles_button.click()
             self.create_new_profile_button.click()
-        else:
-            self.i_m_new_in_status_button.click_until_presence_of_element(self.generate_keys_button)
         self.generate_keys_button.click_until_presence_of_element(self.profile_your_name_edit_box)
         self.set_profile(username)
         self.set_password(password)
