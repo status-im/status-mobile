@@ -56,7 +56,7 @@
           :type                     :generated
           :chat                     false
           :test-preferred-chain-ids #{5 420 421613}
-          :customization-color      :blue
+          :color                    :blue
           :hidden                   false
           :prod-preferred-chain-ids #{1 10 42161}
           :position                 0
@@ -75,7 +75,7 @@
           :type                     :generated
           :chat                     false
           :test-preferred-chain-ids #{5 420 421613}
-          :customization-color      :purple
+          :color                    :purple
           :hidden                   false
           :prod-preferred-chain-ids #{1 10 42161}
           :position                 1
@@ -115,7 +115,7 @@
            :type                     :generated
            :chat                     false
            :test-preferred-chain-ids #{5 420 421613}
-           :customization-color      :blue
+           :color                    :blue
            :hidden                   false
            :prod-preferred-chain-ids #{1 10 42161}
            :position                 0
@@ -134,7 +134,7 @@
            :type                     :generated
            :chat                     false
            :test-preferred-chain-ids #{5 420 421613}
-           :customization-color      :purple
+           :color                    :purple
            :hidden                   false
            :prod-preferred-chain-ids #{1 10 42161}
            :position                 1
@@ -164,7 +164,7 @@
          :type                     :generated
          :chat                     false
          :test-preferred-chain-ids #{5 420 421613}
-         :customization-color      :blue
+         :color                    :blue
          :hidden                   false
          :prod-preferred-chain-ids #{1 10 42161}
          :position                 0
