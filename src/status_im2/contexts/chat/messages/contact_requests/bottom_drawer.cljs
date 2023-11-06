@@ -1,6 +1,5 @@
 (ns status-im2.contexts.chat.messages.contact-requests.bottom-drawer
   (:require
-    [quo.components.drawers.permission-context.view :as permission-context]
     [quo.core :as quo]
     [react-native.core :as rn]
     [status-im2.config :as config]
@@ -14,7 +13,7 @@
   (let [customization-color (rf/sub [:profile/customization-color])
         [primary-name _]    (rf/sub [:contacts/contact-two-names-by-identity contact-id])]
     [rn/view
-     [permission-context/view
+     [quo/permission-context
       [quo/button
        {:type      :ghost
         :size      24
