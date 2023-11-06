@@ -299,9 +299,7 @@
                             (:permissions token-permissions-check))
     :tokens                (->> token-permissions
                                 (filter (fn [[_ {:keys [type]}]]
-                                          (contains?
-                                           constants/community-token-permission-non-channel-permissions
-                                           type)))
+                                          (= type constants/community-token-permission-become-member)))
                                 (map (fn [[perm-key {:keys [token_criteria]}]]
                                        (let [check-criteria (get-in token-permissions-check
                                                                     [:permissions perm-key :criteria])]

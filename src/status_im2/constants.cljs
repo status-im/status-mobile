@@ -150,11 +150,6 @@
 (def ^:const community-token-permission-can-view-and-post-channel 4)
 (def ^:const community-token-permission-become-token-master 5)
 (def ^:const community-token-permission-become-token-owner 6)
-(def ^:const community-token-permission-non-channel-permissions
-  #{community-token-permission-become-admin
-    community-token-permission-become-member
-    community-token-permission-become-token-master
-    community-token-permission-become-token-owner})
 
 ;; Community rules for joining
 (def ^:const community-rule-ens-only "ens-only")
