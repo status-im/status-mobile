@@ -95,9 +95,7 @@
          {:type       :outline
           :icon-only? true
           :size       40
-          :on-press   #(rf/dispatch [:open-modal :scan-address
-                                     {:show-subtitle?  false
-                                      :bottom-padding? false}])}
+          :on-press   #(rf/dispatch [:open-modal :scan-profile-qr-code])}
          :i/scan]]])
     (finally
      (rf/dispatch [:contacts/clear-new-identity]))))
