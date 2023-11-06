@@ -18,6 +18,7 @@
    :percentage-change "0.00%"
    :networks          networks})
 
+<<<<<<< HEAD
 (def tokens
   [{:token               :snt
     :state               :default
@@ -43,6 +44,57 @@
                           :fiat-value        "€0.00"
                           :percentage-change "0.00"
                           :fiat-change       "€0.00"}}])
+=======
+(def collectibles
+  [{:image (status.resources/get-mock-image :collectible1)
+    :id    1}
+   {:image (status.resources/get-mock-image :collectible2)
+    :id    2}
+   {:image (status.resources/get-mock-image :collectible3)
+    :id    3}
+   {:image (status.resources/get-mock-image :collectible4)
+    :id    4}
+   {:image (status.resources/get-mock-image :collectible5)
+    :id    5}
+   {:image (status.resources/get-mock-image :collectible6)
+    :id    6}])
+
+(def collectible-details
+  nil
+  #_{:name             "#5946"
+     :description      "Bored Ape Yacht Club"
+     :image            (status.resources/get-mock-image :collectible-monkey)
+     :collection-image (status.resources/get-mock-image :bored-ape)
+     :traits           [{:title    "Background"
+                         :subtitle "Blue"
+                         :id       1}
+                        {:title    "Clothes"
+                         :subtitle "Bayc T Black"
+                         :id       2}
+                        {:title    "Eyes"
+                         :subtitle "Sleepy"
+                         :id       3}
+                        {:title    "Fur"
+                         :subtitle "Black"
+                         :id       4}
+                        {:title    "Hat"
+                         :subtitle "Beanie"
+                         :id       5}
+                        {:title    "Mouth"
+                         :subtitle "Bored Pipe"
+                         :id       6}]})
+
+(def account-overview-state
+  {:current-value       "€0.00"
+   :account-name        "Account 1"
+   :account             :default
+   :customization-color :blue})
+
+(def network-names
+  [{:network-name :ethereum :short-name "eth"}
+   {:network-name :optimism :short-name "opt"}
+   {:network-name :arbitrum :short-name "arb1"}])
+>>>>>>> 882153523 (wallet: account real data)
 
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
 

@@ -1,6 +1,5 @@
 (ns status-im2.contexts.wallet.account.view
   (:require
-    [clojure.string :as string]
     [quo.core :as quo]
     [react-native.core :as rn]
     [reagent.core :as reagent]
@@ -111,7 +110,14 @@
            :data           tabs-data
            :on-change      #(reset! selected-tab %)
            :scrollable?    true}]
+<<<<<<< HEAD
          [tabs/view {:selected-tab @selected-tab
                      :account-address account-address
                      :account account}]]))))
 >>>>>>> 731614145 (updates)
+=======
+         [tabs/view
+          {:selected-tab    @selected-tab
+           :account-address account-address
+           :account         account}]]))))
+>>>>>>> e7cf3bcf4 (wallet: account real data)
