@@ -58,45 +58,46 @@
   (rf/dispatch [:wallet/request-collectibles
                 {:start-at-index 0
                  :new-request?   true}])
-  (fn []
-    (let [accounts      (rf/sub [:wallet/accounts])
-          loading?      (rf/sub [:wallet/tokens-loading?])
-          balances      (rf/sub [:wallet/balances])
-          profile-color (rf/sub [:profile/customization-color])
-          networks      (rf/sub [:wallet/network-details])
-          top           (safe-area/get-top)
-          selected-tab  (reagent/atom (:id (first tabs-data)))]
-      [rn/view
-       {:style {:margin-top top
-                :flex       1}}
-       [common.top-nav/view]
-       [rn/view {:style style/overview-container}
-        [quo/wallet-overview (temp/wallet-overview-state networks)]]
-       [rn/pressable
-        {:on-long-press #(rf/dispatch [:show-bottom-sheet {:content temp/wallet-temporary-navigation}])}
-        [quo/wallet-graph {:time-frame :empty}]]
-       [rn/flat-list
-        {:style                             style/accounts-list
-         :content-container-style           style/accounts-list-container
-         :data                              (account-cards {:accounts      accounts
-                                                            :loading?      loading?
-                                                            :balances      balances
-                                                            :profile-color profile-color})
-         :horizontal                        true
-         :separator                         [rn/view {:style {:width 12}}]
-         :render-fn                         quo/account-card
-         :shows-horizontal-scroll-indicator false}]
-       [quo/tabs
-        {:style          style/tabs
-         :size           32
-         :default-active @selected-tab
-         :data           tabs-data
-         :on-change      #(reset! selected-tab %)}]
-       (case @selected-tab
-         :assets       [rn/flat-list
-                        {:render-fn               quo/token-value
-                         :data                    temp/tokens
-                         :key                     :assets-list
-                         :content-container-style {:padding-horizontal 8}}]
-         :collectibles [collectibles/view]
-         [activity/view])])))
+  (let [top          (safe-area/get-top)
+        selected-tab (reagent/atom (:id (first tabs-data)))]
+    (fn []
+      (let [accounts      (rf/sub [:wallet/accounts])
+            loading?      (rf/sub [:wallet/tokens-loading?])
+            balances      (rf/sub [:wallet/balances])
+            profile-color (rf/sub [:profile/customization-color])
+            networks      (rf/sub [:wallet/network-details])]
+        [rn/view
+         {:style {:margin-top top
+                  :flex       1}}
+         [common.top-nav/view]
+         [rn/view {:style style/overview-container}
+          [quo/wallet-overview (temp/wallet-overview-state networks)]]
+         [rn/pressable
+          {:on-long-press #(rf/dispatch [:show-bottom-sheet
+                                         {:content temp/wallet-temporary-navigation}])}
+          [quo/wallet-graph {:time-frame :empty}]]
+         [rn/flat-list
+          {:style                             style/accounts-list
+           :content-container-style           style/accounts-list-container
+           :data                              (account-cards {:accounts      accounts
+                                                              :loading?      loading?
+                                                              :balances      balances
+                                                              :profile-color profile-color})
+           :horizontal                        true
+           :separator                         [rn/view {:style {:width 12}}]
+           :render-fn                         quo/account-card
+           :shows-horizontal-scroll-indicator false}]
+         [quo/tabs
+          {:style          style/tabs
+           :size           32
+           :default-active @selected-tab
+           :data           tabs-data
+           :on-change      #(reset! selected-tab %)}]
+         (case @selected-tab
+           :assets       [rn/flat-list
+                          {:render-fn               quo/token-value
+                           :data                    temp/tokens
+                           :key                     :assets-list
+                           :content-container-style {:padding-horizontal 8}}]
+           :collectibles [collectibles/view]
+           [activity/view])]))))
