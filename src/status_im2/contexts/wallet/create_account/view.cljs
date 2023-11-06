@@ -14,11 +14,8 @@
     [status-im2.contexts.wallet.create-account.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-<<<<<<< HEAD
-    [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]))
-=======
+    [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
     [utils.string :as utils.string]))
->>>>>>> 0e33260a9 (lint)
 
 (defn keypair-string
   [full-name]
@@ -28,31 +25,17 @@
 (defn get-keypair-data
   [name derivation-path color]
   [{:title             (keypair-string name)
-<<<<<<< HEAD
-    :left-icon         :i/placeholder
-    :action            :button
-    :action-props      {:on-press    #(js/alert "Button pressed!")
-=======
     :image             :avatar
-    :image-props       {:full-name           (utils.string/get-initials name 1)
+    :image-props       {:full-name           (utils/get-initials name)
                         :size                :xxs
                         :customization-color color}
     :action            :button
     :action-props      {:on-press    #(rf/dispatch [:navigate-to :wallet-select-keypair])
->>>>>>> 7ee3de610 (wallet: keypair screen)
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text
     :description-props {:text (i18n/label :t/on-device)}}
    {:title             (i18n/label :t/derivation-path)
-<<<<<<< HEAD
-    :action            :button
-    :action-props      {:on-press    #(rf/dispatch [:navigate-to :wallet-edit-derivation-path])
-                        :button-text (i18n/label :t/edit)
-                        :icon-left   :i/placeholder
-                        :alignment   :flex-start}
-    :left-icon         :i/derivated-path
-=======
     :image             :icon
     :image-props       :i/derivated-path
     :action            :button
@@ -60,7 +43,6 @@
                         :button-text (i18n/label :t/edit)
                         :icon-left   :i/placeholder
                         :alignment   :flex-start}
->>>>>>> 7ee3de610 (wallet: keypair screen)
     :description       :text
     :description-props {:text (string/replace derivation-path #"/" " / ")}}])
 

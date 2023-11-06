@@ -2373,12 +2373,16 @@
 =======
     "sign transactions": "sign transactions",
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 6f32191f9 (wallet: keypair screen)
+=======
+>>>>>>> 5e8313828 (updates)
     "edit-derivation-path": "Edit derivation path",
     "path-format": "Path format",
     "reset": "Reset",
     "reveal-address": "Reveal address",
     "derive-addresses": "Derive addresses",
+<<<<<<< HEAD
 <<<<<<< HEAD
     "address-activity": "This address has activity",
     "sign transactions": "sign transactions",
@@ -2398,5 +2402,13 @@
     "keypairs-description": "Select keypair to derive your new account from"
 >>>>>>> 7ee3de610 (wallet: keypair screen)
 >>>>>>> 6f32191f9 (wallet: keypair screen)
+<<<<<<< HEAD
 >>>>>>> 37e067d47 (wallet: keypair screen)
+=======
+=======
+    "address-activity": "This address has activity",
+    "keypairs": "Keypairs",
+    "keypairs-description": "Select keypair to derive your new account from"
+>>>>>>> 5e8313828 (updates)
+>>>>>>> 8ddac375d (updates)
 }

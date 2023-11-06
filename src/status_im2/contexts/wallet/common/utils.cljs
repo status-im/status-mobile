@@ -24,9 +24,6 @@
 (defn get-derivation-path
   [number-of-accounts]
   (str constants/path-wallet-root "/" number-of-accounts))
-<<<<<<< HEAD
-
-<<<<<<< HEAD
 (defn format-derivation-path
   [path]
   (string/replace path "/" " / "))
@@ -35,11 +32,8 @@
   [number-of-accounts]
   (let [path (get-derivation-path number-of-accounts)]
     (format-derivation-path path)))
-=======
+
 (defn get-initials [name]
   (->> (clojure.string/split name #"\s+")
        (map first)
        (clojure.string/join " ")))
->>>>>>> 1b9d16aa1 (review)
-=======
->>>>>>> 0e33260a9 (lint)
