@@ -19,6 +19,9 @@
    :networks          networks})
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> b12d19602 (lint)
 (def tokens
   [{:token               :snt
     :state               :default
@@ -44,7 +47,11 @@
                           :fiat-value        "€0.00"
                           :percentage-change "0.00"
                           :fiat-change       "€0.00"}}])
+<<<<<<< HEAD
 =======
+=======
+
+>>>>>>> b12d19602 (lint)
 (def collectibles
   [{:image (status.resources/get-mock-image :collectible1)
     :id    1}
