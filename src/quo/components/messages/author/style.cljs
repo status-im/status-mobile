@@ -7,21 +7,20 @@
    :flex-direction :row
    :align-items    :flex-end})
 
-(defn middle-dot-nickname
-  [theme]
-  {:color             (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)
-   :margin-horizontal 4})
+(def name-container
+  {:margin-right   8
+   :flex-direction :row
+   :align-items    :flex-end
+  })
 
-(defn chat-key-text
-  [theme]
-  {:color       (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)
-   :margin-left 8
-   :padding-top 2})
-
-(defn middle-dot-chat-key
+(defn middle-dot
   [theme]
   {:color             (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)
    :margin-horizontal 2})
+
+(defn chat-key-text
+  [theme]
+  {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)})
 
 (defn primary-name
   [muted? theme]
@@ -34,14 +33,13 @@
   [theme]
   {:padding-top 1
    :flex-shrink 999999
-   :min-width   40
    :color       (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})
 
-(def icon-container
-  {:margin-left   4
+(defn icon-container
+  [is-first?]
+  {:margin-left   (if is-first? 4 2)
    :margin-bottom 2})
 
 (defn time-text
   [theme]
-  {:color       (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)
-   :padding-top 2})
+  {:color (colors/theme-colors colors/neutral-40 colors/neutral-50 theme)})
