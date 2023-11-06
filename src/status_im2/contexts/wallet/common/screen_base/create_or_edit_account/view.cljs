@@ -11,7 +11,7 @@
 (defn- view-internal
   [{:keys [margin-top? page-nav-right-side account-name account-color account-emoji on-change-name
            on-change-color
-           on-change-emoji on-focus on-blur error-message section-label bottom-action?
+           on-change-emoji on-focus on-blur section-label bottom-action?
            bottom-action-label bottom-action-props
            custom-bottom-action]} & children]
   (let [{:keys [top bottom]}  (safe-area/get-insets)
@@ -51,17 +51,10 @@
          :blur?           true
          :default-value   account-name
          :on-change-text  on-change-name
-         :container-style (style/title-input-container error-message)
+         :container-style style/title-input-container
          :return-key-type :done
          :on-focus        on-focus
          :on-blur         on-blur}]
-       (when error-message
-         [quo/info-message
-          {:type  :error
-           :size  :default
-           :icon  :i/info
-           :style style/error-container}
-          (i18n/label error-message)])
        [quo/divider-line {:container-style style/divider-1}]
        [quo/section-label
         {:section         (i18n/label :t/colour)
