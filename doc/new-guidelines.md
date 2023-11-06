@@ -467,9 +467,9 @@ Prefer the pure version of `:json-rpc/call` (no callbacks).
 
 ### Registering event handlers
 
-Register events with `re-frame.core/reg-event-fx` and follow [re-frame's best
+Register events with `utils.re-frame/reg-event-fx` and follow [re-frame's best
 practice](https://github.com/day8/re-frame/blob/39adca93673f334dc751ee2d99d340b51a9cc6db/docs/FAQs/BestPractice.md#use-the-fx-effect)
-so use only `:db` and `:fx` effects. `rf/merge` is deprecated and should not be
+so use only `:db` and `:fx` effects. `utils.re-frame/merge` and `utils.re-frame/defn` are deprecated and should not be
 used in the new code in `src/status_im2/`. Don't use
 `re-frame.core/reg-event-db`.
 
