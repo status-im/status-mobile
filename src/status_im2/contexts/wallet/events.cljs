@@ -125,11 +125,11 @@
 (rf/reg-event-fx :wallet/clear-stored-collectibles clear-stored-collectibles)
 
 (rf/reg-event-fx :wallet/request-collectibles
- (fn [{:keys [db]} [{:keys [offset new-request?]}]]
+ (fn [{:keys [db]} [{:keys [start-at-index new-request?]}]]
    (let [request-params [0
                          [(chain/chain-id db)]
                          (map :address (:profile/wallet-accounts db))
-                         offset
+                         start-at-index
                          collectibles-request-batch-size]]
      {:json-rpc/call [{:method     "wallet_filterOwnedCollectiblesAsync"
                        :params     request-params
@@ -148,11 +148,10 @@
    (let [response                               (cske/transform-keys csk/->kebab-case-keyword
                                                                      (types/json->clj message))
          {:keys [collectibles has-more offset]} response
-         next-offset                            (+ offset (count collectibles))]
+         start-at-index                         (+ offset (count collectibles))]
      {:fx
       [[:dispatch [:wallet/store-collectibles collectibles]]
        (when has-more
          [:dispatch
           [:wallet/request-collectibles
-           {:offset next-offset}]])]})))
-
+           {:start-at-index start-at-index}]])]})))
