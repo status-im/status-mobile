@@ -26,12 +26,6 @@
           constants/path-default-wallet]
          (fn [result]
            (let [derived-data (multiaccounts.create/normalize-derived-data-keys
-                               (types/json->clj result))
-                 public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
-             (native-module/gfycat-identicon-async
-              public-key
-              (fn [name _]
-                (let [derived-data-extended
-                      (update derived-data constants/path-whisper-keyword assoc :name name)]
-                  (re-frame/dispatch [success-event root-data derived-data-extended]))))))))))))
+                               (types/json->clj result))]
+             (re-frame/dispatch [success-event root-data derived-data])))))))))
 

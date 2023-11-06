@@ -2,7 +2,6 @@
   (:require
     [clojure.string :as string]
     [re-frame.core :as re-frame]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
     [status-im2.constants :as constants]
     [utils.i18n :as i18n]))
@@ -52,20 +51,16 @@
 (re-frame/reg-sub
  :communities/sorted-community-members
  (fn [[_ community-id]]
-   (let [contacts     (re-frame/subscribe [:contacts/contacts])
-         multiaccount (re-frame/subscribe [:profile/profile])
-         members      (re-frame/subscribe [:communities/community-members community-id])]
-     [contacts multiaccount members]))
- (fn [[contacts multiaccount members] _]
+   (let [profile (re-frame/subscribe [:profile/profile])
+         members (re-frame/subscribe [:communities/community-members community-id])]
+     [profile members]))
+ (fn [[profile members] _]
    (let [names (reduce (fn [acc contact-identity]
-                         (let [me?     (= (:public-key multiaccount) contact-identity)
-                               contact (when-not me?
-                                         (multiaccounts/contact-by-identity contacts contact-identity))
-                               name    (first (multiaccounts/contact-two-names-by-identity
-                                               contact
-                                               multiaccount
-                                               contact-identity))]
-                           (assoc acc contact-identity name)))
+                         (assoc acc
+                                contact-identity
+                                (when (= (:public-key profile) contact-identity)
+                                  (:primary-name profile)
+                                  contact-identity)))
                        {}
                        (keys members))]
      (->> members

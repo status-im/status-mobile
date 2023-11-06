@@ -37,14 +37,15 @@
       (let [{:keys [group-chat chat-id public-key color
                     profile-picture name]} context
             id                             (or chat-id public-key)
-            contact-name-by-identity       (when-not group-chat
-                                             (rf/sub [:contacts/contact-name-by-identity id]))
+            [primary-name _]               (when-not group-chat
+                                             (rf/sub [:contacts/contact-two-names-by-identity id]))
             display-name                   (cond
-                                             (= contact-name-by-identity
-                                                "Unknown") name
-                                             (= contact-name-by-identity
-                                                nil)       name
-                                             :else         contact-name-by-identity)
+                                             (= primary-name "Unknown")
+                                             name
+                                             (= primary-name nil)
+                                             name
+                                             :else
+                                             primary-name)
             photo-path                     (or profile-picture (rf/sub [:chats/photo-path id]))]
         [rn/view
          {:style               {:margin-horizontal 20}

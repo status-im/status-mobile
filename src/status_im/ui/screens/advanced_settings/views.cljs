@@ -92,7 +92,7 @@
      :container-margin-bottom 8
      :on-press
      #(re-frame/dispatch
-       [:multiaccounts.ui/switch-webview-debug (not webview-debug)])
+       [:profile.settings/change-webview-debug (not webview-debug)])
      :accessory :switch
      :active webview-debug}
     {:size :small

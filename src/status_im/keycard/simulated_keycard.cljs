@@ -265,16 +265,10 @@
            constants/path-default-wallet]
           (fn [result]
             (let [derived-data (multiaccounts.create/normalize-derived-data-keys
-                                (types/json->clj result))
-                  public-key   (get-in derived-data [constants/path-whisper-keyword :public-key])]
-              (native-module/gfycat-identicon-async
-               public-key
-               (fn [name _]
-                 (let [derived-data-extended
-                       (update derived-data constants/path-whisper-keyword assoc :name name)]
-                   (reset! derived-acc
-                     {:root-key root-data
-                      :derived  derived-data-extended})))))))))))
+                                (types/json->clj result))]
+              (reset! derived-acc
+                {:root-key root-data
+                 :derived  derived-data}))))))))
   (when (= password (get @state :password))
     (swap! state assoc-in [:application-info :paired?] true)
     (later #(on-success (str (rand-int 10000000))))))

@@ -465,9 +465,7 @@
                       {:from               (wallet.utils/get-default-account (:profile/wallet-accounts
                                                                               db))
                        :to                 (or (get-in db [:contacts/contacts identity])
-                                               (-> identity
-                                                   contact.db/public-key->new-contact
-                                                   contact.db/enrich-contact))
+                                               (contact.db/enrich-contact {:public-key identity}))
                        :request-parameters request-parameters
                        :chat-id            chat-id
                        :symbol             symbol
@@ -513,9 +511,7 @@
   (let [identity (:current-chat-id db)
         {:keys [ens-verified name] :as contact}
         (or (get-in db [:contacts/contacts identity])
-            (-> identity
-                contact.db/public-key->new-contact
-                contact.db/enrich-contact))]
+            (contact.db/enrich-contact {:public-key identity}))]
     (cond-> {:db       (assoc db
                               :wallet-legacy/prepare-transaction
                               {:from       (wallet.utils/get-default-account
@@ -541,9 +537,7 @@
                       :wallet-legacy/prepare-transaction
                       {:from             (wallet.utils/get-default-account (:profile/wallet-accounts db))
                        :to               (or (get-in db [:contacts/contacts identity])
-                                             (-> identity
-                                                 contact.db/public-key->new-contact
-                                                 contact.db/enrich-contact))
+                                             (contact.db/enrich-contact {:public-key identity}))
                        :symbol           :ETH
                        :from-chat?       true
                        :request-command? true})

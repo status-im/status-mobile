@@ -78,7 +78,7 @@
  (fn [root-id]
    (let [root (get (roots/roots) root-id)]
      (dismiss-all-modals)
-     (re-frame/dispatch [:multiaccounts.ui/switch-theme
+     (re-frame/dispatch [:profile.settings/switch-theme
                          (get roots/themes root-id)
                          root-id])
      (reset! state/root-id (or (get-in root [:root :stack :id]) root-id))

@@ -2,7 +2,7 @@
   (:require
     [camel-snake-kebab.core :as csk]
     [status-im.communities.core :as models.communities]
-    [status-im.multiaccounts.update.core :as multiaccounts.update]
+    [status-im2.contexts.profile.settings.events :as profile.settings.events]
     [taoensso.timbre :as log]
     [utils.collection]
     [utils.re-frame :as rf]))
@@ -15,7 +15,7 @@
   {:events [:chat.ui/cache-link-preview-data]}
   [{{:profile/keys [profile]} :db :as cofx} site data]
   (let [link-previews-cache (get profile :link-previews-cache {})]
-    (multiaccounts.update/optimistic
+    (profile.settings.events/optimistic-profile-update
      cofx
      :link-previews-cache
      (assoc link-previews-cache site (utils.collection/map-keys csk/->kebab-case-keyword data)))))
@@ -35,7 +35,7 @@
 (rf/defn should-suggest-link-preview
   {:events [:chat.ui/should-suggest-link-preview]}
   [{:keys [db] :as cofx} enabled?]
-  (multiaccounts.update/multiaccount-update
+  (profile.settings.events/profile-update
    cofx
    :link-preview-request-enabled
    (boolean enabled?)
@@ -87,7 +87,7 @@
 (rf/defn enable
   {:events [:chat.ui/enable-link-previews]}
   [{{:profile/keys [profile]} :db :as cofx} site enabled?]
-  (multiaccounts.update/multiaccount-update
+  (profile.settings.events/profile-update
    cofx
    :link-previews-enabled-sites
    (if enabled?
@@ -98,7 +98,7 @@
 (rf/defn enable-all
   {:events [:chat.ui/enable-all-link-previews]}
   [cofx link-previews-whitelist enabled?]
-  (multiaccounts.update/multiaccount-update
+  (profile.settings.events/profile-update
    cofx
    :link-previews-enabled-sites
    (if enabled?

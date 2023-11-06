@@ -278,8 +278,8 @@
 (re-frame/reg-sub
  :messages/resolve-mention
  (fn [[_ mention] _]
-   [(re-frame/subscribe [:contacts/contact-name-by-identity mention])])
- (fn [[contact-name] [_ mention]]
+   [(re-frame/subscribe [:contacts/contact-two-names-by-identity mention])])
+ (fn [[contact-names] [_ mention]]
    (if (= mention constants/everyone-mention-id)
      (i18n/label :t/everyone-mention)
-     contact-name)))
+     (first contact-names))))

@@ -167,7 +167,7 @@
     {:set-root (if keycard-account? :multiaccounts-keycard :multiaccounts)}))
 
 (rf/defn dismiss-all-overlays
-  {:events [:dissmiss-all-overlays]}
+  {:events [:dismiss-all-overlays]}
   [{:keys [db]}]
   {:dispatch-n [[:hide-popover]
                 [:hide-visibility-status-popover]

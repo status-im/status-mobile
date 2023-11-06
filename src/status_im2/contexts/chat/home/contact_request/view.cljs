@@ -12,11 +12,11 @@
 
 (defn get-display-name
   [{:keys [chat-id message]}]
-  (let [name        (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-        no-ens-name (string/blank? (get-in message [:content :ens-name]))]
+  (let [[primary-name _] (rf/sub [:contacts/contact-two-names-by-identity chat-id])
+        no-ens-name      (string/blank? (get-in message [:content :ens-name]))]
     (if no-ens-name
-      (first (string/split name " "))
-      name)))
+      (first (string/split primary-name " "))
+      primary-name)))
 
 (defn requests-summary
   [requests]

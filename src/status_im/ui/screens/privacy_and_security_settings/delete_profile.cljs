@@ -3,12 +3,12 @@
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     status-im.keycard.delete-key
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
     [status-im.ui.components.core :as quo]
     [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.react :as react]
     [status-im.ui.screens.privacy-and-security-settings.events :as delete-profile]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.security.core :as security]))
 
@@ -33,10 +33,11 @@
   (let [password       (reagent/atom nil)
         text-input-ref (atom nil)]
     (fn []
-      (let [keycard?              @(re-frame/subscribe [:keycard-multiaccount?])
-            multiaccount          @(re-frame/subscribe [:profile/profile])
+      (let [profile               @(re-frame/subscribe [:profile/profile])
+            keycard?              @(re-frame/subscribe [:keycard-multiaccount?])
             error                 @(re-frame/subscribe [:delete-profile/error])
-            keep-keys-on-keycard? @(re-frame/subscribe [:delete-profile/keep-keys-on-keycard?])]
+            keep-keys-on-keycard? @(re-frame/subscribe
+                                    [:delete-profile/keep-keys-on-keycard?])]
         (when (and @text-input-ref error (not @password))
           (.clear ^js @text-input-ref))
         [react/keyboard-avoiding-view {:style {:flex 1}}
@@ -47,8 +48,8 @@
              :size   :x-large}
             (i18n/label :t/delete-profile)]]
           [list.item/list-item
-           {:title (multiaccounts/displayed-name multiaccount)
-            :icon  [chat-icon.screen/contact-icon-contacts-tab multiaccount]}]
+           {:title (profile.utils/displayed-name profile)
+            :icon  [chat-icon.screen/contact-icon-contacts-tab profile]}]
           (when keycard?
             [react/view
              [quo/list-header (i18n/label :t/actions)]
