@@ -28,7 +28,8 @@
   event keywords under which the function will be registered
   - TODO: add suport for `prepost-map?` (don't forget to add it to arglist)
   - TODO: add validation of macro parameters"
-  {:arglists '([name doc-string? attr-map? [params*] body])}
+  {:arglists '([name doc-string? attr-map? [params*] body])
+   :deprecated true}
   [name & fdecl]
   (let [m             (if (string? (first fdecl))
                         {:doc (first fdecl)}
