@@ -24,31 +24,79 @@
 
 (defn f-view
   [{:keys [theme scroll-y chat chat-screen-loaded? all-loaded? display-name online? photo-path
-           back-icon]}]
-  (let [{:keys [group-chat chat-id]} chat
-        opacity-animation            (reanimated/interpolate scroll-y
-                                                             [style/navigation-bar-height
-                                                              (+ style/navigation-bar-height 30)]
-                                                             [0 1]
-                                                             {:extrapolateLeft  "clamp"
-                                                              :extrapolateRight "extend"})
-        banner-opacity-animation     (reanimated/interpolate scroll-y
-                                                             [(+ style/navigation-bar-height 150)
-                                                              (+ style/navigation-bar-height 200)]
-                                                             [0 1]
-                                                             {:extrapolateLeft  "clamp"
-                                                              :extrapolateRight "extend"})
-        translate-animation          (reanimated/interpolate scroll-y
-                                                             [style/navigation-bar-height
-                                                              (+ style/navigation-bar-height 30)]
-                                                             [50 0]
-                                                             {:extrapolateLeft  "clamp"
-                                                              :extrapolateRight "clamp"})
-        title-opacity-animation      (reanimated/interpolate scroll-y
-                                                             [0 50]
-                                                             [0 1]
-                                                             {:extrapolateLeft  "clamp"
-                                                              :extrapolateRight "clamp"})]
+           back-icon animate-topbar-name? composer-active? big-name-visible? animate-topbar-opacity?
+           on-end-reached?]}]
+  (let [{:keys [group-chat chat-id]}              chat
+        opacity-animation                         (reanimated/use-shared-value 0)
+        banner-opacity-animation                  (reanimated/interpolate
+                                                   scroll-y
+                                                   [(+ style/navigation-bar-height 150)
+                                                    (+ style/navigation-bar-height 200)]
+                                                   [0 1]
+                                                   {:extrapolateLeft  "clamp"
+                                                    :extrapolateRight "clamp"})
+        translate-animation                       (reanimated/use-shared-value
+                                                   title-opacity-interpolation-start)
+        title-opacity-animation                   (reanimated/use-shared-value 0)
+        messages                                  (rf/sub [:chats/raw-chat-messages-stream
+                                                           (:chat-id chat)])
+        more-than-two-messages?                   (<= 2 (count messages))
+        more-than-four-messages?                  (<= 4 (count messages))
+        more-than-eight-messages?                 (<= 8 (count messages))
+        scroll-y-sending-eight-messages-threshold 469]
+    (rn/use-effect
+     (fn []
+       (if
+         (or
+          (and (not composer-active?)
+               more-than-eight-messages?
+               (= :initial-render @big-name-visible?))
+          (and
+           (< minimum-scroll-y-topbar-overlaying-avatar (reanimated/get-shared-value scroll-y))
+           (not @on-end-reached?))
+          (and (if platform/ios? more-than-two-messages? more-than-four-messages?)
+               composer-active?)
+          (and
+           (not @on-end-reached?)
+           @animate-topbar-opacity?)
+
+          (or
+           (< minimum-scroll-y-topbar-overlaying-avatar-2 (reanimated/get-shared-value scroll-y))
+           (and (pos? (count messages))
+                composer-active?
+                (< minimum-scroll-y-topbar-overlaying-avatar-composer-active
+                   (reanimated/get-shared-value scroll-y)))))
+         (reanimated/animate opacity-animation 1)
+         (reanimated/animate opacity-animation 0))
+       (if (when-not (and
+                      @on-end-reached?
+                      (not composer-active?)
+                      (true? @big-name-visible?))
+             (or
+              (and
+               (and composer-active?
+                    (not @big-name-visible?))
+               (< topbar-invisible-scroll-y-value (reanimated/get-shared-value scroll-y)))
+              (<= scroll-y-sending-eight-messages-threshold (reanimated/get-shared-value scroll-y))
+              (and (not composer-active?)
+                   more-than-eight-messages?
+                   (= :initial-render @big-name-visible?))
+              ;; Keyboard height increasing is different between iOS and Android, That's why we have
+              ;; two values.
+              (and (if platform/ios? more-than-two-messages? more-than-four-messages?)
+                   (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
+                   composer-active?)
+              (and (if platform/ios? more-than-two-messages? more-than-four-messages?)
+                   composer-active?)
+              @animate-topbar-name?))
+         (do
+           (reanimated/animate title-opacity-animation 1)
+           (reanimated/animate translate-animation 0))
+         (do
+           (reanimated/animate title-opacity-animation 0)
+           (reanimated/animate translate-animation title-opacity-interpolation-start))))
+     [@animate-topbar-name? @big-name-visible? @animate-topbar-opacity? composer-active?
+      @on-end-reached?])
     [rn/view {:style (style/navigation-view chat-screen-loaded?)}
      [reanimated/view
       {:style (style/animated-background-view all-loaded? opacity-animation nil)}]
