@@ -315,6 +315,7 @@ lint: ##@test Run code style checks
 	sh scripts/lint-direct-require-component-outside-quo.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src $(if $(filter $(CLJ_LINTER_PRINT_WARNINGS),true),,| grep -v ': warning: ') && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
+	scripts/lint_translations.clj && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
 	sh scripts/lint-trailing-newline.sh && \
 	node_modules/.bin/prettier --write .
