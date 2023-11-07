@@ -55,17 +55,14 @@
             networks        (rf/sub [:wallet/network-details])]
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 74f8b4535 (updates)
 =======
 <<<<<<< HEAD
 >>>>>>> 347a673ba (updates)
+=======
+>>>>>>> 22cc56b49 (lint)
         [rn/view {:style {:flex 1}}
-=======
-        (println "tokens" (get tokens (keyword (string/lower-case account-address))))
-=======
->>>>>>> 2286b1f46 (updates)
-        [rn/view {:style style/container}
->>>>>>> 408212e7c (updates)
          [quo/page-nav
           {:type              :wallet-networks
            :background        :blur
