@@ -47,6 +47,7 @@
 
 (defn -main
   [& _args]
+  (println "Linting translations...")
   (let [result                           (kondo/run!
                                           {:lint   src-paths
                                            :config {:output {:analysis {:keywords true}}}})
