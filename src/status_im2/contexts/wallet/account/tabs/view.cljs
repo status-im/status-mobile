@@ -1,10 +1,13 @@
 (ns status-im2.contexts.wallet.account.tabs.view
   (:require
 <<<<<<< HEAD
+<<<<<<< HEAD
     [quo.theme]
 =======
     [clojure.string :as string]
 >>>>>>> 500f66b63 (updates)
+=======
+>>>>>>> df7a5e7cd (review)
     [react-native.core :as rn]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.wallet.account.tabs.about.view :as about]
@@ -13,10 +16,10 @@
     [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
     [status-im2.contexts.wallet.common.token-value.view :as token-value]
-    [status-im2.contexts.wallet.common.utils :as utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+<<<<<<< HEAD
 (defn prepare-token
   [{:keys [symbol marketValuesPerCurrency] :as item} color]
   (let [fiat-value                      (utils/total-per-token item)
@@ -43,12 +46,11 @@
   [{:keys [selected-tab theme]}]
   (case selected-tab
 =======
+=======
+>>>>>>> df7a5e7cd (review)
 (defn view
-  [{:keys [selected-tab account-address account]}]
-  (let [tokens              (rf/sub [:wallet/tokens])
-        account-tokens      (get tokens (keyword (string/lower-case account-address)))
-        customization-color (or (:color-id account) :blue)
-        parsed-tokens       (parse-tokens account-tokens customization-color)]
+  [{:keys [selected-tab account-address]}]
+  (let [parsed-tokens (rf/sub [:wallet/parsed-tokens account-address])]
     (case selected-tab
 <<<<<<< HEAD
 >>>>>>> 500f66b63 (updates)

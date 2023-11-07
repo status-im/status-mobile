@@ -34,8 +34,11 @@
     0))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 (defn total-token-value-in-all-chains
 =======
+=======
+>>>>>>> e41fe5426 (review)
 <<<<<<< HEAD
 (defn- total-token-value-in-all-chains
 >>>>>>> 70e4a2a12 (updates)
@@ -65,11 +68,14 @@
 =======
 =======
 (defn total-per-token
+=======
+(defn sum-token-chains
+>>>>>>> 25ec47428 (review)
   [item]
-  (reduce (fn [ac balances]
+  (reduce (fn [acc balances]
             (+ (calculate-raw-balance (:rawBalance balances)
                                       (:decimals item))
-               ac))
+               acc))
           0
           (vals (:balancesPerChain item))))
 >>>>>>> c8bb0a581 (updates)
