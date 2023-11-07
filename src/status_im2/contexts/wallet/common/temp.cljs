@@ -109,9 +109,9 @@
    :customization-color :blue})
 
 (def network-names
-  [{:name :ethereum :short-name "eth"}
-   {:name :optimism :short-name "opt"}
-   {:name :arbitrum :short-name "arb1"}])
+  [{:network-name :ethereum :short-name "eth"}
+   {:network-name :optimism :short-name "opt"}
+   {:network-name :arbitrum :short-name "arb1"}])
 
 (def address "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4")
 
@@ -152,9 +152,9 @@
 (def account-data
   {:title                "Trip to Vegas"
    :type                 :account
-   :networks             [{:name :ethereum :short-name "eth"}
-                          {:name :optimism :short-name "opt"}
-                          {:name :arbitrum :short-name "arb1"}]
+   :networks             [{:network-name :ethereum :short-name "eth"}
+                          {:network-name :optimism :short-name "opt"}
+                          {:network-name :arbitrum :short-name "arb1"}]
    :description          "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4"
    :account-avatar-emoji "🍑"
    :customization-color  :purple})
@@ -164,13 +164,13 @@
     :emoji               "🍿"
     :name                "New House"
     :address             "0x21af6E0Ba4C4530735616e1Ee7ff5FbCB726f493"
-    :networks            [{:name :ethereum :short-name "eth"}
-                          {:name :optimism :short-name "opt"}]}
+    :networks            [{:network-name :ethereum :short-name "eth"}
+                          {:network-name :optimism :short-name "opt"}]}
    {:customization-color :blue
     :emoji               "🎮"
     :name                "My savings"
     :address             "0x43cf6E0Ba4C4530735616e1Ee7ff5FbCB726f98d"
-    :networks            [{:name :ethereum :short-name "eth"}]}])
+    :networks            [{:network-name :ethereum :short-name "eth"}]}])
 
 (def asset-snt
   {:size       24
@@ -268,3 +268,27 @@
     :image             :icon-avatar
     :image-props       {:icon (status.resources/get-service-image :latamex)}
     :on-press          #(rn/open-url "https://latamex.com")}])
+
+(defn bridge-token-list
+  [networks-list]
+  [{:token               (quo.resources/get-token :snt)
+    :label               "Status"
+    :token-value         "0.00 SNT"
+    :fiat-value          "€0.00"
+    :networks            networks-list
+    :state               :default
+    :customization-color :blue}
+   {:token               (quo.resources/get-token :eth)
+    :label               "Ethereum"
+    :token-value         "0.00 ETH"
+    :fiat-value          "€0.00"
+    :networks            networks-list
+    :state               :default
+    :customization-color :blue}
+   {:token               (quo.resources/get-token :dai)
+    :label               "Dai"
+    :token-value         "0.00 DAI"
+    :fiat-value          "€0.00"
+    :networks            networks-list
+    :state               :default
+    :customization-color :blue}])

@@ -10,10 +10,9 @@
    :padding-horizontal 20
    :align-items        :flex-end})
 
-(defn button-container
-  [bottom]
+(def button-container
   {:position        :absolute
-   :bottom          (+ bottom 12)
+   :bottom          12
    :left            20
    :right           20
    :justify-content :center

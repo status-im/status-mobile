@@ -3,12 +3,12 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]
     [status-im.communities.core :as communities]
-    [status-im.contact.core :as contact]
     [status-im.group-chats.core :as group-chat]
     [status-im.group-chats.db :as group-chats.db]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.composer.constants :as composer.constants]
-    [status-im2.contexts.chat.events :as chat.events]))
+    [status-im2.contexts.chat.events :as chat.events]
+    [status-im2.contexts.profile.utils :as profile.utils]))
 
 (def memo-chats-stack-items (atom nil))
 
@@ -313,10 +313,10 @@
 (re-frame/reg-sub
  :chats/photo-path
  :<- [:contacts/contacts]
- :<- [:profile/multiaccount]
+ :<- [:profile/profile-with-image]
  (fn [[contacts {:keys [public-key] :as multiaccount}] [_ id]]
    (let [contact (or (when (= id public-key) multiaccount) (get contacts id))]
-     (contact/displayed-photo contact))))
+     (profile.utils/photo contact))))
 
 (re-frame/reg-sub
  :chats/unread-messages-number

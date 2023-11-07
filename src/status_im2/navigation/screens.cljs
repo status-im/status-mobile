@@ -37,6 +37,7 @@
     [status-im2.contexts.syncing.scan-sync-code-page.view :as scan-sync-code-page]
     [status-im2.contexts.syncing.setup-syncing.view :as settings-setup-syncing]
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
+    [status-im2.contexts.wallet.account.bridge.view :as bridge]
     [status-im2.contexts.wallet.account.view :as wallet-accounts]
     [status-im2.contexts.wallet.address-watch.view :as wallet-address-watch]
     [status-im2.contexts.wallet.collectible.view :as wallet-collectible]
@@ -44,7 +45,6 @@
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.saved-address.view :as wallet-saved-address]
-    [status-im2.contexts.wallet.saved-addresses.view :as wallet-saved-addresses]
     [status-im2.contexts.wallet.scan-account.view :as scan-address]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im2.navigation.options :as options]
@@ -251,22 +251,27 @@
      :component wallet-edit-account/view}
 
     {:name      :wallet-address-watch
+     :options   {:insets {:top?    true
+                          :bottom? true}}
      :component wallet-address-watch/view}
+
+    {:name      :wallet-bridge
+     :options   {:insets                 {:top? true}
+                 :modalPresentationStyle :overCurrentContext}
+     :component bridge/view}
+
+    {:name      :wallet-edit-derivation-path
+     :component wallet-edit-derivation-path/view}
 
     {:name      :wallet-collectible
      :component wallet-collectible/view}
 
     {:name      :wallet-create-account
+     :options   {:insets {:top? true}}
      :component wallet-create-account/view}
-
-    {:name      :wallet-edit-derivation-path
-     :component wallet-edit-derivation-path/view}
 
     {:name      :wallet-saved-address
      :component wallet-saved-address/view}
-
-    {:name      :wallet-saved-addresses
-     :component wallet-saved-addresses/view}
 
     {:name      :wallet-select-address
      :options   {:modalPresentationStyle :overCurrentContext}

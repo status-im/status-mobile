@@ -1,7 +1,6 @@
 (ns status-im2.contexts.chat.home.chat-list-item.view
   (:require
     [clojure.string :as string]
-    [quo.components.icon :as icons]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -193,7 +192,7 @@
     [rn/view {:style style/notification-container}
      (cond
        muted
-       [icons/icon :i/muted {:color colors/neutral-40}]
+       [quo/icon :i/muted {:color colors/neutral-40}]
 
        (and group-chat unread-mentions?)
        [quo/counter

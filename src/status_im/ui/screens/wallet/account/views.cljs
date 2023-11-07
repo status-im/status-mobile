@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.wallet.account.views
   (:require
-    [quo.components.markdown.text :as quo.text]
     [quo.core :as quo]
     [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
@@ -288,7 +287,7 @@
       :shadow-color            (:shadow-01 @colors/theme)
       :shadow-offset           {:width 0 :height 4}}
      [react/view {:padding 20}
-      [quo.text/text {:size :heading-2 :weight :semi-bold} (str portfolio-value " " (:code currency))]]
+      [quo/text {:size :heading-2 :weight :semi-bold} (str portfolio-value " " (:code currency))]]
      [react/view
       [react/scroll-view {:horizontal true :margin-bottom 32 :showsHorizontalScrollIndicator false}
        [react/view {:width 20}]

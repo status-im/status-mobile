@@ -15,8 +15,7 @@
 
 (defn contact-list-item-fn
   [{:keys [from compressed-key]}]
-  (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity
-                                               from])
+  (let [[primary-name secondary-name] (rf/sub [:contacts/contact-two-names-by-identity from])
         {:keys [ens-verified added?]} (rf/sub [:contacts/contact-by-address from])]
     ^{:key compressed-key}
     [contact-list-item/contact-list-item

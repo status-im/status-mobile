@@ -3,7 +3,6 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.communities.core :as communities]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
     [status-im.ui.components.core :as quo]
     [status-im.ui.components.list.item :as list.item]
@@ -11,6 +10,7 @@
     [status-im.ui.components.topbar :as topbar]
     [status-im.ui.components.unviewed-indicator :as unviewed-indicator]
     [status-im2.constants :as constants]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -69,7 +69,7 @@
       :accessibility-label :member-item
       :icon                [chat-icon/profile-photo-plus-dot-view
                             {:public-key public-key
-                             :photo-path (multiaccounts/displayed-photo member)}]
+                             :photo-path (profile.utils/photo member)}]
       :accessory           (when (not= public-key my-public-key)
                              [quo/button
                               {:on-press

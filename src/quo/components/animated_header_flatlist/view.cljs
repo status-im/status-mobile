@@ -2,7 +2,7 @@
   (:require
     [oops.core :as oops]
     [quo.components.animated-header-flatlist.style :as style]
-    [quo.core :as quo]
+    [quo.components.icon :as icon]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
@@ -73,11 +73,11 @@
       {:active-opacity 1
        :on-press       back-button-on-press
        :style          (style/button-container {:left 20 :theme theme})}
-      [quo/icon :i/arrow-left {:size 20 :color (colors/theme-colors colors/black colors/white theme)}]]
+      [icon/icon :i/arrow-left {:size 20 :color (colors/theme-colors colors/black colors/white theme)}]]
      [rn/touchable-opacity
       {:active-opacity 1
        :style          (style/button-container {:right 20 :theme theme})}
-      [quo/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white theme)}]]
+      [icon/icon :i/options {:size 20 :color (colors/theme-colors colors/black colors/white theme)}]]
      [reanimated/blur-view
       {:blurAmount   32
        :blurType     :light

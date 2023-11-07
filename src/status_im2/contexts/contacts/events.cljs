@@ -129,3 +129,4 @@
                     :on-success  on-success
                     :js-response true
                     :on-error    #(log/error "failed to unblock contact" % contact-id)}]})
+

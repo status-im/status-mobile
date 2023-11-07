@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.profile.user.edit-picture
   (:require
     [re-frame.core :as re-frame]
-    [status-im.multiaccounts.core :as multiaccounts]
     [status-im.ui.components.list.item :as list.item]
     [status-im.ui.components.react :as react]
     [status-im2.config :as config]
+    [status-im2.contexts.profile.settings.events]
     [utils.i18n :as i18n]))
 
 (def crop-size 1000)
@@ -18,14 +18,14 @@
   []
   (re-frame/dispatch [:bottom-sheet/hide-old])
   (react/show-image-picker
-   #(re-frame/dispatch [::multiaccounts/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
+   #(re-frame/dispatch [:profile.settings/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
    crop-opts))
 
 (defn take-pic
   []
   (re-frame/dispatch [:bottom-sheet/hide-old])
   (react/show-image-picker-camera
-   #(re-frame/dispatch [::multiaccounts/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
+   #(re-frame/dispatch [:profile.settings/save-profile-picture (.-path ^js %) 0 0 crop-size crop-size])
    crop-opts))
 
 (defn bottom-sheet
@@ -51,4 +51,4 @@
          :icon                :main-icons/delete
          :theme               :accent
          :title               (i18n/label :t/profile-pic-remove)
-         :on-press            #(re-frame/dispatch [::multiaccounts/delete-profile-picture nil])}])]))
+         :on-press            #(re-frame/dispatch [:profile.settings/delete-profile-picture nil])}])]))

@@ -36,9 +36,8 @@
 (defn deleted-by-message
   [{:keys [deleted-by timestamp-str from on-long-press animation-duration]}]
   (let [;; deleted message with nil deleted-by is deleted by (:from message)
-        display-name (first (rf/sub [:contacts/contact-two-names-by-identity
-                                     (or deleted-by from)]))
-        photo-path   (rf/sub [:chats/photo-path (or deleted-by from)])]
+        [primary-name _] (rf/sub [:contacts/contact-two-names-by-identity (or deleted-by from)])
+        photo-path       (rf/sub [:chats/photo-path (or deleted-by from)])]
     [quo/system-message
      {:type                        :deleted
       :animate-bg-color?           animation-duration
@@ -46,7 +45,7 @@
       :on-long-press               on-long-press
       :timestamp                   timestamp-str
       :child                       [user-xxx-deleted-this-message
-                                    {:display-name display-name :profile-picture photo-path}]}]))
+                                    {:display-name primary-name :profile-picture photo-path}]}]))
 
 (defn deleted-message
   [{:keys [deleted? deleted-for-me? deleted-by pinned timestamp-str from

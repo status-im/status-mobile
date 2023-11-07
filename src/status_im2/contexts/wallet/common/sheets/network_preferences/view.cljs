@@ -1,9 +1,9 @@
-(ns status-im2.contexts.wallet.common.network-preferences.view
+(ns status-im2.contexts.wallet.common.sheets.network-preferences.view
   (:require [quo.core :as quo]
             [quo.foundations.colors :as colors]
             [quo.foundations.resources :as resources]
             [quo.theme :as quo.theme]
-            [status-im2.contexts.wallet.common.network-preferences.style :as style]
+            [status-im2.contexts.wallet.common.sheets.network-preferences.style :as style]
             [utils.i18n :as i18n]))
 
 (def mainnet

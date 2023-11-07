@@ -51,12 +51,10 @@
         derivation-path       (reagent/atom (utils/get-derivation-path number-of-accounts))
         {:keys [public-key]}  (rf/sub [:profile/profile])
         on-change-text        #(reset! account-name %)
-        display-name          (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
+        [primary-name _]      (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
         {window-width :width} (rn/get-window)]
     (fn [{:keys [theme]}]
-      [rn/view
-       {:style {:flex       1
-                :margin-top top}}
+      [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:type       :no-title
          :background :blur
@@ -108,7 +106,7 @@
        [quo/category
         {:list-type :settings
          :label     (i18n/label :t/origin)
-         :data      (get-keypair-data display-name @derivation-path)}]
+         :data      (get-keypair-data primary-name @derivation-path)}]
        [standard-auth/view
         {:size                :size-48
          :track-text          (i18n/label :t/slide-to-create-account)
