@@ -1,7 +1,6 @@
 (ns status-im2.contexts.contacts.drawers.nickname-drawer.view
   (:require
     [clojure.string :as string]
-    [quo.components.icon :as icons]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
@@ -60,7 +59,7 @@
          :on-submit-editing #(add-nickname-and-show-toast primary-name @entered-nickname public-key)}]
        [rn/view
         {:style style/nickname-description-container}
-        [icons/icon :i/info
+        [quo/icon :i/info
          {:size  16
           :color (colors/theme-colors colors/black colors/white)}]
         [quo/text
