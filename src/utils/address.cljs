@@ -63,17 +63,15 @@
   "The goal here is to generate a string that begins with 1st 3
   characters of the compressed public key followed by an ellipsis followed by
   the last 6 characters of the compressed public key"
- ([public-key]
-  (get-shortened-compressed-key public-key 6))
-  ([public-key last-n]
-   (if (and public-key (> (count public-key) 9))
-     (let [first-part-of-public-key (subs public-key 0 3)
-           ellipsis                 "..."
-           public-key-size          (count public-key)
-           last-part-of-public-key  (subs public-key (- public-key-size last-n) public-key-size)
-           abbreviated-public-key   (str first-part-of-public-key ellipsis last-part-of-public-key)]
-       abbreviated-public-key)
-     nil)))
+  [public-key]
+  (if (and public-key (> (count public-key) 9))
+    (let [first-part-of-public-key (subs public-key 0 3)
+          ellipsis                 "..."
+          public-key-size          (count public-key)
+          last-part-of-public-key  (subs public-key (- public-key-size 5) public-key-size)
+          abbreviated-public-key   (str first-part-of-public-key ellipsis last-part-of-public-key)]
+      abbreviated-public-key)
+    nil))
 
 (defn get-short-wallet-address
   [value]

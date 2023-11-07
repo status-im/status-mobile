@@ -43,7 +43,7 @@
          :action              :selector
          :blur?               false
          :details             {:full-name display-name
-                               :address   (utils/get-shortened-compressed-key compressed-key 5)}
+                               :address   (utils/get-shortened-compressed-key compressed-key)}
          :accounts            accounts
          :container-style     {:margin-horizontal 20
                                :margin-vertical   8}})]]))
