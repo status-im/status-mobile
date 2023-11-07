@@ -64,7 +64,7 @@
         unused-translation-keys          (set/difference possibly-unused-translation-keys
                                                          (set (map :name non-namespaced-translations)))]
 
-    ;; delete the following once #17811 and #17813 have both been solved
+    ;; TODO (2023-11-06 akatov): delete the following once #17811 and #17813 have both been solved
     (doseq [k (apply sorted-set (map :name non-namespaced-translations))]
       (when flag-show-non-namespaced-translation-keys
         (println "Probably non-namespaced key" k))
