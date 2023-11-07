@@ -2369,23 +2369,13 @@
     "network-preferences-desc": "Select which network this address is happy to receive funds on",
     "layer-2": "Layer 2",
     "manage-tokens": "Manage tokens",
-<<<<<<< HEAD
-=======
-    "sign transactions": "sign transactions",
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 6f32191f9 (wallet: keypair screen)
-=======
->>>>>>> 5e8313828 (updates)
     "edit-derivation-path": "Edit derivation path",
     "path-format": "Path format",
     "reset": "Reset",
     "reveal-address": "Reveal address",
     "derive-addresses": "Derive addresses",
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "address-activity": "This address has activity",
     "sign transactions": "sign transactions",
+<<<<<<< HEAD
 <<<<<<< HEAD
     "search-assets": "Search assets",
     "account-created": "{{name}} created",
@@ -2411,4 +2401,10 @@
     "keypairs-description": "Select keypair to derive your new account from"
 >>>>>>> 5e8313828 (updates)
 >>>>>>> 8ddac375d (updates)
+=======
+    "search-assets": "Search assets",
+    "address-activity": "This address has activity",
+    "keypairs": "Keypairs",
+    "keypairs-description": "Select keypair to derive your new account from"
+>>>>>>> df3ae753b (lint)
 }
