@@ -7,8 +7,9 @@
     [react-native.core :as rn]))
 
 (def default-props
-  {:button-one-type :primary
-   :button-two-type :grey})
+  {:button-one-type     :primary
+   :button-two-type     :grey
+   :customization-color :blue})
 
 (defn- view-internal
   "Options:
@@ -23,7 +24,7 @@
   :scroll? - bool (default false) - Whether the iOS Home Indicator should be rendered"
   [props]
   (let [{:keys [actions description button-one-label button-two-label
-                button-one-props button-two-props theme scroll?]}
+                button-one-props button-two-props theme scroll? customization-color]}
         (merge default-props props)]
     [:<>
      [rn/view {:style style/buttons-container}
@@ -43,7 +44,8 @@
          :container-style     style/button-container
          :background          (when scroll? :blur)
          :theme               theme
-         :accessibility-label :button-one}
+         :accessibility-label :button-one
+         :customization-color customization-color}
         button-one-props)
        button-one-label]]
      (when description

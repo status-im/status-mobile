@@ -1,20 +1,27 @@
-(ns status-im2.contexts.wallet.address-watch.view
+(ns status-im2.contexts.wallet.select-address-to-watch.view
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
     [quo.theme :as quo.theme]
+    [re-frame.core :as re-frame]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
+    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.contexts.wallet.address-watch.style :as style]
+    [status-im2.contexts.wallet.select-address-to-watch.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn view-internal
   []
-  (let [input-value (reagent/atom "")]
+  (let [top                 (safe-area/get-top)
+        bottom              (safe-area/get-bottom)
+        input-value         (reagent/atom "")
+        customization-color (rf/sub [:profile/customization-color])]
     (fn []
-      [rn/view {:style {:flex 1}}
+      [rn/view
+       {:style {:flex       1
+                :margin-top top}}
        [quo/page-nav
         {:type      :no-title
          :icon-name :i/close
@@ -32,12 +39,18 @@
           :container-style {:margin-right 12
                             :flex         1}
           :weight          :monospace
-          :on-change       #(reset! input-value %)
+          :on-change-text  #(reset! input-value %)
           :default-value   @input-value}]
         [quo/button
          {:icon-only? true
           :type       :outline} :i/scan]]
-       [rn/view {:style style/button-container}
-        [quo/text "[WIP] Bottom Actions"]]])))
+       [quo/button
+        {:customization-color customization-color
+         :disabled?           (clojure.string/blank? @input-value)
+         :on-press            #(re-frame/dispatch [:navigate-to
+                                                   :address-to-watch-edit
+                                                   {:address @input-value}])
+         :container-style     (style/button-container bottom)}
+        (i18n/label :t/continue)]])))
 
 (def view (quo.theme/with-theme view-internal))
