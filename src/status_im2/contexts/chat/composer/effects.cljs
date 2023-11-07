@@ -121,7 +121,12 @@
                               (reset! saved-cursor-position (if (zero? text-value-count)
                                                               (count edit-text)
                                                               text-value-count))
-                              (.setNativeProps ^js @input-ref (clj->js {:text edit-text})))]
+                              (when @input-ref
+                                (let [selection-pos (count edit-text)]
+                                  (.setNativeProps ^js @input-ref
+                                                   (clj->js {:text      edit-text
+                                                             :selection {:start selection-pos
+                                                                         :end   selection-pos}})))))]
        (when (and edit @input-ref)
          ;; NOTE: A small setTimeout is necessary to ensure the focus is enqueued and is executed
          ;; ASAP. Check https://github.com/software-mansion/react-native-screens/issues/472
