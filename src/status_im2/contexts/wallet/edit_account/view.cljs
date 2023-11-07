@@ -11,91 +11,88 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn show-toast
-  [{:keys [type theme]}]
-  (let [message (case type
-                  :name  :t/edit-wallet-account-name-updated-message
-                  :color :t/edit-wallet-account-colour-updated-message
-                  :emoji :t/edit-wallet-account-emoji-updated-message
-                  nil)]
-    (rf/dispatch [:toasts/upsert
-                  {:id         :edit-account
-                   :icon       :i/correct
-                   :icon-color (colors/resolve-color :success theme)
-                   :text       (i18n/label message)}])))
+(defn- save-account
+  [{:keys [theme type value account]}]
+  (let [edited-account-data (assoc account type value)
+        message             (case type
+                              :name  :t/edit-wallet-account-name-updated-message
+                              :color :t/edit-wallet-account-colour-updated-message
+                              :emoji :t/edit-wallet-account-emoji-updated-message
+                              nil)
+        callback            #(rf/dispatch [:toasts/upsert
+                                           {:id         :edit-account
+                                            :icon       :i/correct
+                                            :icon-color (colors/resolve-color :success theme)
+                                            :text       (i18n/label message)}])]
+    (rf/dispatch [:wallet/save-account
+                  {:account  edited-account-data
+                   :callback callback}])))
 
 (defn- view-internal
   [{:keys [theme]}]
-  (let [{:keys [name emoji address color]} (rf/sub [:wallet/current-viewing-account])
-        edited-data                        (reagent/atom {:name  name
-                                                          :color color
-                                                          :emoji emoji})
-        account-name                       (reagent/cursor edited-data [:name])
-        account-color                      (reagent/cursor edited-data [:color])
-        account-emoji                      (reagent/cursor edited-data [:emoji])
-        on-change-name                     (fn [edited-name]
-                                             (swap! edited-data assoc :name edited-name))
-        show-confirm-button?               (reagent/atom false)
-        on-change-color                    (fn [edited-color]
-                                             (swap! edited-data assoc :color edited-color)
-                                             (rf/dispatch [:wallet/save-account
-                                                           {:address     address
-                                                            :edited-data @edited-data}
-                                                           #(show-toast {:type  :color
-                                                                         :theme theme})]))
-        on-change-emoji                    (fn [edited-emoji]
-                                             (swap! edited-data assoc :emoji edited-emoji)
-                                             (rf/dispatch [:wallet/save-account
-                                                           {:address     address
-                                                            :edited-data @edited-data}
-                                                           #(show-toast {:type  :emoji
-                                                                         :theme theme})]))
-        on-confirm                         (fn []
-                                             (rn/dismiss-keyboard!)
-                                             (rf/dispatch [:wallet/save-account
-                                                           {:address     address
-                                                            :edited-data @edited-data}
-                                                           #(show-toast {:type  :name
-                                                                         :theme theme})]))]
+  (let [edited-account-name  (reagent/atom nil)
+        show-confirm-button? (reagent/atom false)
+        on-change-color      (fn [edited-color {:keys [color] :as account}]
+                               (when (not= edited-color color)
+                                 (save-account {:account account
+                                                :type    :color
+                                                :value   edited-color
+                                                :theme   theme})))
+        on-change-emoji      (fn [edited-emoji {:keys [emoji] :as account}]
+                               (when (not= edited-emoji emoji)
+                                 (save-account {:account account
+                                                :type    :emoji
+                                                :value   edited-emoji
+                                                :theme   theme})))
+        on-confirm-name      (fn [account]
+                               (rn/dismiss-keyboard!)
+                               (save-account {:account account
+                                              :type    :name
+                                              :value   @edited-account-name
+                                              :theme   theme}))]
     (fn []
-      [create-or-edit-account/view
-       {:page-nav-right-side [{:icon-name :i/delete
-                               :on-press  #(js/alert "Delete account: to be implemented")}]
-        :account-name        @account-name
-        :account-emoji       @account-emoji
-        :account-color       @account-color
-        :on-change-name      on-change-name
-        :on-change-color     on-change-color
-        :on-change-emoji     on-change-emoji
-        :section-label       :t/account-info
-        :on-focus            #(reset! show-confirm-button? true)
-        :on-blur             #(reset! show-confirm-button? false)
-        :bottom-action?      @show-confirm-button?
-        :bottom-action-label :t/update-account-name
-        :bottom-action-props {:customization-color @account-color
-                              :disabled?           (= name @account-name)
-                              :on-press            on-confirm}}
-       [quo/data-item
-        {:status          :default
-         :size            :default
-         :description     :default
-         :label           :none
-         :blur?           false
-         :icon-right?     true
-         :right-icon      :i/advanced
-         :card?           true
-         :title           (i18n/label :t/address)
-         :custom-subtitle (fn [] [quo/address-text
-                                  {:networks [{:network-name :ethereum :short-name "eth"}
-                                              {:network-name :optimism :short-name "opt"}
-                                              {:network-name :arbitrum :short-name "arb1"}]
-                                   :address  address
-                                   :format   :long}])
-         :on-press        (fn []
-                            (rf/dispatch [:show-bottom-sheet
-                                          {:content (fn [] [network-preferences/view
-                                                            {:on-save #(js/alert
-                                                                        "calling on save")}])}]))
-         :container-style style/data-item}]])))
+      (let [{:keys [name emoji address color]
+             :as   account}  (rf/sub [:wallet/current-viewing-account])
+            account-name     (or @edited-account-name name)
+            button-disabled? (or (nil? @edited-account-name) (= name @edited-account-name))]
+        [create-or-edit-account/view
+         {:page-nav-right-side [{:icon-name :i/delete
+                                 :on-press  #(js/alert "Delete account: to be implemented")}]
+          :account-name        account-name
+          :account-emoji       emoji
+          :account-color       color
+          :on-change-name      #(reset! edited-account-name %)
+          :on-change-color     #(on-change-color % account)
+          :on-change-emoji     #(on-change-emoji % account)
+          :section-label       :t/account-info
+          :on-focus            #(reset! show-confirm-button? true)
+          :on-blur             #(reset! show-confirm-button? false)
+          :bottom-action?      @show-confirm-button?
+          :bottom-action-label :t/update-account-name
+          :bottom-action-props {:customization-color color
+                                :disabled?           button-disabled?
+                                :on-press            #(on-confirm-name account)}}
+         [quo/data-item
+          {:status          :default
+           :size            :default
+           :description     :default
+           :label           :none
+           :blur?           false
+           :icon-right?     true
+           :right-icon      :i/advanced
+           :card?           true
+           :title           (i18n/label :t/address)
+           :custom-subtitle (fn [] [quo/address-text
+                                    {:networks [{:network-name :ethereum :short-name "eth"}
+                                                {:network-name :optimism :short-name "opt"}
+                                                {:network-name :arbitrum :short-name "arb1"}]
+                                     :address  address
+                                     :format   :long}])
+           :on-press        (fn []
+                              (rf/dispatch [:show-bottom-sheet
+                                            {:content (fn [] [network-preferences/view
+                                                              {:on-save #(js/alert
+                                                                          "calling on save")}])}]))
+           :container-style style/data-item}]]))))
 
 (def view (quo.theme/with-theme view-internal))

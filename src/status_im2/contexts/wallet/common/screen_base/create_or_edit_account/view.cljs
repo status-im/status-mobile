@@ -52,7 +52,6 @@
          :default-value   account-name
          :on-change-text  on-change-name
          :container-style style/title-input-container
-         :return-key-type :done
          :on-focus        on-focus
          :on-blur         on-blur}]
        [quo/divider-line {:container-style style/divider-1}]

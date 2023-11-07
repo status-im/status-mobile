@@ -70,21 +70,19 @@
                                    {:error %
                                     :event :wallet/get-accounts})}]]]}))
 
-(rf/reg-event-fx :wallet/save-account
- (fn [{:keys [db]} [{:keys [address edited-data]} callback]]
-   (let [account        (get-in db [:wallet :accounts address])
-         edited-account (-> (merge account edited-data)
-                            data-store/<-account)]
-     {:fx [[:json-rpc/call
-            [{:method     "accounts_saveAccount"
-              :params     [edited-account]
-              :on-success (fn []
-                            (rf/dispatch [:wallet/get-accounts])
-                            (when (fn? callback)
-                              (callback)))
-              :on-error   #(log/info "failed to save account "
-                                     {:error %
-                                      :event :wallet/save-account})}]]]})))
+(rf/reg-event-fx
+ :wallet/save-account
+ (fn [_ [{:keys [account callback]}]]
+   {:fx [[:json-rpc/call
+          [{:method     "accounts_saveAccount"
+            :params     [(data-store/<-account account)]
+            :on-success (fn []
+                          (rf/dispatch [:wallet/get-accounts])
+                          (when (fn? callback)
+                            (callback)))
+            :on-error   #(log/info "failed to save account "
+                                   {:error %
+                                    :event :wallet/save-account})}]]]}))
 
 (rf/reg-event-fx :wallet/get-wallet-token
  (fn [{:keys [db]}]
