@@ -2367,12 +2367,12 @@
     "network-preferences-desc": "Select which network this address is happy to receive funds on",
     "layer-2": "Layer 2",
     "manage-tokens": "Manage tokens",
-    "sign transactions": "sign transactions",
     "edit-derivation-path": "Edit derivation path",
     "path-format": "Path format",
-    "derivation-path": "Derivation path",
     "reset": "Reset",
     "reveal-address": "Reveal address",
     "derive-addresses": "Derive addresses",
-    "address-activity": "This address has activity"
+    "address-activity": "This address has activity",
+    "sign transactions": "sign transactions",
+    "search-assets": "Search assets"
 }
