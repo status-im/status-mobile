@@ -3,7 +3,8 @@
   (:require
     [malli.core :as malli]
     [malli.dev.pretty :as malli.pretty]
-    schema.state))
+    schema.state
+    [taoensso.timbre :as log]))
 
 (defn- ui-reporter
   "Prints to STDOUT and signals a schema error should be displayed on screen."
@@ -51,12 +52,20 @@
   We use a validator cached by `malli.core/validator`, so that validation is
   performed once.
 
-  Do NOT use this function directly, this is only used by the macro
-  `schema.core/instrument`."
+  If `?schema` is invalid, then behave like a nop, log the error and return `f`.
+
+  Do NOT use this function directly, use the macro `schema.core/instrument`."
   [schema-id ?schema f]
-  (let [?schema               (malli/schema ?schema)
-        {schema-input :input} (malli/-function-info ?schema)
-        [validate-input _]    (malli/-vmap malli/validator [schema-input])]
-    (malli/-instrument {:schema ?schema
-                        :report (reporter schema-id {:title (str "Schema error - " schema-id)})}
-                       (with-clear-schema-error schema-id validate-input f))))
+  (try
+    (let [?schema               (malli/schema ?schema)
+          {schema-input :input} (malli/-function-info ?schema)
+          [validate-input _]    (malli/-vmap malli/validator [schema-input])]
+      (malli/-instrument {:schema ?schema
+                          :report (reporter schema-id
+                                            {:title (str "Schema error - " schema-id)})}
+                         (with-clear-schema-error schema-id validate-input f)))
+    (catch js/Error e
+      (log/error "Failed to instrument function"
+                 {:schema-id schema-id
+                  :error     e})
+      f)))
