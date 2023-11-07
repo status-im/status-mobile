@@ -23,7 +23,7 @@ in mkShell {
       # build specific utilities
       clojure maven watchman
       # other nice to have stuff
-      yarn nodejs python310 babashka
+      yarn nodejs python310
     ] # and some special cases
       ++ lib.optionals   stdenv.isDarwin ([ cocoapods clang tcl ] ++ appleSDKFrameworks)
       ++ lib.optionals (!stdenv.isDarwin) [ gcc8 ]
