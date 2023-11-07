@@ -54,9 +54,7 @@
         [primary-name _]      (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))
         {window-width :width} (rn/get-window)]
     (fn [{:keys [theme]}]
-      [rn/view
-       {:style {:flex       1
-                :margin-top top}}
+      [rn/view {:style {:flex 1}}
        [quo/page-nav
         {:type       :no-title
          :background :blur
