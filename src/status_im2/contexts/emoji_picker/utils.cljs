@@ -16,3 +16,7 @@
                        (some #(string/includes? % cleaned-query) tags)))
                  emoji-data)
          (partition-all constants/emojis-per-row))))
+
+(defn random-emoji
+  []
+  (:unicode (rand-nth emoji-data)))
