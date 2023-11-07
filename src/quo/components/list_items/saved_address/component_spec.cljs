@@ -13,7 +13,7 @@
     (h/render [saved-address/view])
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
-                              {:backgroundColor (colors/custom-color :blue 50 5)})))
+                              {:backgroundColor (colors/resolve-color :blue :light 5)})))
 
   (h/test "on-press-in changes state to :pressed with blur? enabled"
     (h/render [saved-address/view {:blur? true}])
@@ -22,24 +22,25 @@
                               {:backgroundColor colors/white-opa-5})))
 
   (h/test "on-press-out changes state to :active"
-    (h/render [saved-address/view])
+    (h/render [saved-address/view {:active-state? true}])
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/fire-event :on-press-out (h/get-by-label-text :container))
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
-                              {:backgroundColor (colors/custom-color :blue 50 10)})))
+                              {:backgroundColor (colors/resolve-color :blue :light 10)})))
 
   (h/test "on-press-out changes state to :active with blur? enabled"
-    (h/render [saved-address/view {:blur? true}])
+    (h/render [saved-address/view
+               {:blur?         true
+                :active-state? true}])
     (h/fire-event :on-press-in (h/get-by-label-text :container))
     (h/fire-event :on-press-out (h/get-by-label-text :container))
     (h/wait-for #(h/has-style (h/query-by-label-text :container)
                               {:backgroundColor colors/white-opa-10})))
 
-  (h/test "on-press-out calls on-press"
+  (h/test "on-press container calls on-press"
     (let [on-press (h/mock-fn)]
       (h/render [saved-address/view {:on-press on-press}])
-      (h/fire-event :on-press-in (h/get-by-label-text :container))
-      (h/fire-event :on-press-out (h/get-by-label-text :container))
+      (h/fire-event :on-press (h/get-by-label-text :container))
       (h/was-called on-press)))
 
   (h/test "renders options button if type :action"

@@ -9,6 +9,7 @@
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [reagent.core :as reagent]
+    [utils.address :as address]
     [utils.i18n :as i18n]))
 
 (defn- account
@@ -30,7 +31,7 @@
     {:size   :paragraph-2
      :weight :monospace
      :style  (style/account-address theme)}
-    address]])
+    (address/get-shortened-key address)]])
 
 (defn- internal-view
   []

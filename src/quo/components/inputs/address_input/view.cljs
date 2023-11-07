@@ -65,22 +65,23 @@
                  ens-regex address-regex
                  valid-ens-or-address?]}]
       (let [on-change              (fn [text]
-                                     (let [ens?     (when ens-regex
-                                                      (boolean (re-matches ens-regex text)))
-                                           address? (when address-regex
-                                                      (boolean (re-matches address-regex text)))]
-                                       (if (> (count text) 0)
-                                         (reset! status :typing)
-                                         (reset! status :active))
-                                       (reset! value text)
-                                       (when on-change-text
-                                         (on-change-text text))
-                                       (when (and ens? on-detect-ens)
-                                         (reset! status :loading)
-                                         (on-detect-ens text))
-                                       (when (and address? on-detect-address)
-                                         (reset! status :loading)
-                                         (on-detect-address text))))
+                                     (when (not= @value text)
+                                       (let [ens?     (when ens-regex
+                                                        (boolean (re-matches ens-regex text)))
+                                             address? (when address-regex
+                                                        (boolean (re-matches address-regex text)))]
+                                         (if (> (count text) 0)
+                                           (reset! status :typing)
+                                           (reset! status :active))
+                                         (reset! value text)
+                                         (when on-change-text
+                                           (on-change-text text))
+                                         (when (and ens? on-detect-ens)
+                                           (reset! status :loading)
+                                           (on-detect-ens text))
+                                         (when (and address? on-detect-address)
+                                           (reset! status :loading)
+                                           (on-detect-address text)))))
             on-paste               (fn []
                                      (clipboard/get-string
                                       (fn [clipboard]
@@ -90,6 +91,8 @@
             on-clear               (fn []
                                      (reset! value "")
                                      (reset! status (if @focused? :active :default))
+                                     (when on-change-text
+                                       (on-change-text ""))
                                      (when on-clear
                                        (on-clear)))
             on-scan                #(when on-scan
@@ -119,6 +122,7 @@
            :auto-complete          (when platform/ios? :none)
            :auto-capitalize        :none
            :auto-correct           false
+           :spell-check            false
            :keyboard-appearance    (quo.theme/theme-value :light :dark theme)
            :on-focus               on-focus
            :on-blur                on-blur

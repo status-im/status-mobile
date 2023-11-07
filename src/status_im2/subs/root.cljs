@@ -156,6 +156,10 @@
 (reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)
 (reg-root-key-sub :wallet/create-account :wallet/create-account)
 (reg-root-key-sub :wallet/networks :wallet/networks)
+(reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)
+(reg-root-key-sub :wallet/local-suggestions :wallet/local-suggestions)
+(reg-root-key-sub :wallet/valid-ens-or-address? :wallet/valid-ens-or-address?)
+(reg-root-key-sub :wallet/send-address :wallet/send-address)
 
 ;;debug
 (when js/goog.DEBUG
