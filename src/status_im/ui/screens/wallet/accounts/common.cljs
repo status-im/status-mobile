@@ -1,12 +1,12 @@
 (ns status-im.ui.screens.wallet.accounts.common
   (:require
-    [quo.components.markdown.text :as quo.text]
+    [quo.core :as quo]
     [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
-    [status-im.ui.components.core :as quo]
+    [status-im.ui.components.core :as components]
     [status-im.ui.components.list.item :as list.item]
     [status-im.ui.screens.wallet.components.views :as wallet.components]
     [status-im.utils.utils :as utils.utils]
@@ -41,13 +41,13 @@
 (defn render-asset
   [{:keys [icon decimals amount color value] :as token} _ _ currency]
   [list.item/list-item
-   {:title               [quo/text {:weight :medium}
-                          [quo/text {:weight :inherit}
+   {:title               [components/text {:weight :medium}
+                          [components/text {:weight :inherit}
                            (str (if amount
                                   (wallet.utils/format-amount amount decimals)
                                   "...")
                                 " ")]
-                          [quo/text
+                          [components/text
                            {:color  :secondary
                             :weight :inherit}
                            (wallet.utils/display-symbol token)]]
@@ -66,11 +66,11 @@
       [chat-icon/custom-icon-view-list (:name token) color])]
    [rn/view {:position :absolute :left 52 :top 8 :right 12}
     [rn/view {:flex-direction :row :justify-content :space-between :align-items :center}
-     [quo.text/text {:weight :semi-bold :style {:height 22}}
+     [quo/text {:weight :semi-bold :style {:height 22}}
       name]
-     [quo.text/text {:size :paragraph-2 :weight :medium}
+     [quo/text {:size :paragraph-2 :weight :medium}
       (str (if value value "...") " " currency)]]
-    [quo.text/text
+    [quo/text
      {:size   :paragraph-2
       :weight :medium
       :style  {:color (quo.colors/theme-colors quo.colors/neutral-50 quo.colors/neutral-40)}}

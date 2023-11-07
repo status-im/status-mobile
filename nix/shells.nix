@@ -21,7 +21,7 @@ let
       buildInputs = with pkgs; [
         clojure flock maven openjdk
         # lint specific utilities
-        clj-kondo zprint clojure-lsp
+        clj-kondo zprint clojure-lsp ripgrep
       ];
       # CLASSPATH from clojure deps with 'src' appended to find local sources.
       shellHook = with pkgs; ''

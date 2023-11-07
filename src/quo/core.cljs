@@ -1,6 +1,7 @@
 (ns quo.core
   (:refer-clojure :exclude [filter])
   (:require
+    quo.components.animated-header-flatlist.view
     quo.components.avatars.account-avatar.view
     quo.components.avatars.channel-avatar.view
     quo.components.avatars.collection-avatar.view
@@ -239,6 +240,7 @@
 
 ;;;; Header
 (def header quo.components.header/header)
+(def animated-header-list quo.components.animated-header-flatlist.view/animated-header-list)
 
 ;;;; Gradient
 (def gradient-cover quo.components.gradient.gradient-cover.view/view)

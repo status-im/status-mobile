@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.wallet.accounts.views
   (:require
-    [quo.components.markdown.text :as quo.text]
     [quo.core :as quo]
     [quo.foundations.colors :as quo.colors]
     [re-frame.core :as re-frame]
@@ -207,8 +206,8 @@
   (views/letsubs [currency        [:wallet-legacy/currency]
                   portfolio-value [:portfolio-value]]
     [react/view {:padding-vertical 12}
-     [quo.text/text (i18n/label :t/wallet-total-value)]
-     [quo.text/text {:size :heading-1 :weight :semi-bold}
+     [quo/text (i18n/label :t/wallet-total-value)]
+     [quo/text {:size :heading-1 :weight :semi-bold}
       (str portfolio-value " " (:code currency))]
      [react/scroll-view {:horizontal true}]]))
 

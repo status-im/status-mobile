@@ -1,6 +1,5 @@
 (ns status-im2.contexts.quo-preview.animated-header-list.animated-header-list
   (:require
-    [quo.components.animated-header-flatlist.view :as animated-header-list]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [re-frame.core :as rf]
@@ -83,4 +82,4 @@
 
 (defn mock-screen
   []
-  [animated-header-list/animated-header-list parameters])
+  [quo/animated-header-list parameters])
