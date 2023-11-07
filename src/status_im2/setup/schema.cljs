@@ -9,7 +9,8 @@
     malli.util
     schema.common
     [schema.core :as schema]
-    schema.registry))
+    schema.registry
+    [taoensso.timbre :as log]))
 
 ;;;; Formatters
 ;; These formatters replace the original ones provided by Malli. They are more
@@ -85,12 +86,19 @@
   manually call `setup!`, otherwise you won't see any changes. It is safe and
   even expected you will call `setup!` multiple times in REPLs."
   []
-  (schema.registry/set-default-registry)
-  (register-schemas)
+  (try
+    (schema.registry/set-default-registry)
+    (register-schemas)
 
-  ;; In theory not necessary, but sometimes in a REPL session the dev needs to
-  ;; call unstrument! manually.
-  (malli.instrument/unstrument!)
+    ;; In theory not necessary, but sometimes in a REPL session the dev needs to
+    ;; call unstrument! manually.
+    (malli.instrument/unstrument!)
 
-  (malli.dev/start! {:report (schema/reporter)})
-  (println "Schemas initialized."))
+    (malli.dev/start! {:report (schema/reporter)})
+    (println "Schemas initialized.")
+
+    ;; It is relatively easy to write invalid schemas, but we don't want to
+    ;; block the app from initializing if such errors happen, at least not until
+    ;; Malli matures in the project.
+    (catch js/Error e
+      (log/error "Failed to initialize schemas" {:error e}))))
