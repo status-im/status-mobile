@@ -115,6 +115,10 @@
 =======
          [tabs/view
           {:selected-tab    @selected-tab
+<<<<<<< HEAD
            :account-address account-address
            :account         account}]]))))
 >>>>>>> e7cf3bcf4 (wallet: account real data)
+=======
+           :account-address account-address}]]))))
+>>>>>>> 49ea0601d (lint)
