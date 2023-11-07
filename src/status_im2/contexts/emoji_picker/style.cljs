@@ -1,13 +1,12 @@
 (ns status-im2.contexts.emoji-picker.style
   (:require
-    [quo.components.profile.showcase-nav.style :as showcase-nav.style]
     [quo.foundations.colors :as colors]
     [react-native.safe-area :as safe-area]
     [status-im2.contexts.emoji-picker.constants :as constants]))
 
 (def flex-spacer {:flex 1})
 
-(def category-nav-height (+ (safe-area/get-bottom) showcase-nav.style/height))
+(def category-nav-height (+ (safe-area/get-bottom) constants/categories-selector-height))
 
 (def search-input-container
   {:padding-horizontal 20
@@ -35,7 +34,7 @@
     (dissoc :margin-right)))
 
 (def list-container
-  {:padding-bottom showcase-nav.style/height})
+  {:padding-bottom constants/categories-selector-height})
 
 (def empty-results
   {:margin-top 100})

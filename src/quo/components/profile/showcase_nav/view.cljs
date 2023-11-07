@@ -25,7 +25,7 @@
 (defn- view-internal
   [{:keys [theme container-style default-active state data on-press active-id]}]
   [rn/view
-   {:style               (merge style/root-container container-style)
+   {:style               container-style
     :accessibility-label :showcase-nav}
    [rn/flat-list
     {:data                              data
