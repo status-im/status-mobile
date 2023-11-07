@@ -112,11 +112,7 @@
        [quo/category
         {:list-type :settings
          :label     (i18n/label :t/origin)
-<<<<<<< HEAD
-         :data      (get-keypair-data primary-name @derivation-path)}]
-=======
-         :data      (get-keypair-data display-name @derivation-path @account-color)}]
->>>>>>> a4f1672b7 (review)
+         :data      (get-keypair-data primary-name @derivation-path @account-color)}]
        [standard-auth/view
         {:size                :size-48
          :track-text          (i18n/label :t/slide-to-create-account)

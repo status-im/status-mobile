@@ -33,7 +33,8 @@
   (let [path (get-derivation-path number-of-accounts)]
     (format-derivation-path path)))
 
-(defn get-initials [name]
+(defn get-initials
+  [name]
   (->> (clojure.string/split name #"\s+")
        (map first)
        (clojure.string/join " ")))

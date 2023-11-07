@@ -22,7 +22,8 @@
 (defn view
   []
   (let [{:keys [public-key compressed-key]} (rf/sub [:profile/profile])
-        display-name         (first (rf/sub [:contacts/contact-two-names-by-identity public-key]))]
+        display-name                        (first (rf/sub [:contacts/contact-two-names-by-identity
+                                                            public-key]))]
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close
@@ -36,14 +37,14 @@
        :button-on-press #(js/alert "not implemented")}]
      [quo/keypair
       (merge
-        {:customization-color :blue
-         :type                :default-keypair
-         :stored              :on-device
-         :on-options-press    #(js/alert "Options pressed")
-         :action              :selector
-         :blur?               false
-         :details             {:full-name display-name
-                               :address   (utils/get-shortened-compressed-key compressed-key)}
-         :accounts            accounts
-         :container-style     {:margin-horizontal 20
-                               :margin-vertical   8}})]]))
+       {:customization-color :blue
+        :type                :default-keypair
+        :stored              :on-device
+        :on-options-press    #(js/alert "Options pressed")
+        :action              :selector
+        :blur?               false
+        :details             {:full-name display-name
+                              :address   (utils/get-shortened-compressed-key compressed-key)}
+        :accounts            accounts
+        :container-style     {:margin-horizontal 20
+                              :margin-vertical   8}})]]))
