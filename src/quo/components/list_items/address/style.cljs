@@ -31,4 +31,5 @@
    :align-items    :center})
 
 (def account-container
-  {:margin-left 8})
+  {:margin-left   8
+   :padding-right 56})

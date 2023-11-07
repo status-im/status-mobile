@@ -1,13 +1,13 @@
 (ns quo.components.list-items.address.view
   (:require
-    [clojure.string :as string]
     [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
     [quo.components.list-items.address.style :as style]
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [utils.address :as address]))
 
 (defn- left-container
   [{:keys [theme address networks blur?]}]
@@ -25,7 +25,8 @@
             [text/text
              {:size   :paragraph-1
               :weight :semi-bold
-              :style  {:color (colors/resolve-color network)}} (str (subs (name network) 0 3) ":")])
+              :style  {:color (colors/resolve-color network theme)}}
+             (str (subs (name network) 0 3) ":")])
           networks)
      [text/text
       {:size   :paragraph-1
@@ -33,7 +34,7 @@
        :style  {:color (if blur?
                          colors/white
                          (colors/theme-colors colors/neutral-100 colors/white theme))}}
-      (string/replace address "x" "×")]]]])
+      (address/get-shortened-key address)]]]])
 
 (defn- internal-view
   []
@@ -60,6 +61,7 @@
          [left-container
           {:theme    theme
            :networks networks
-           :address  address}]]))))
+           :address  address
+           :blur?    blur?}]]))))
 
 (def view (quo.theme/with-theme internal-view))
