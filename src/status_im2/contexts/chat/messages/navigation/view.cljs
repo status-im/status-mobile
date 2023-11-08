@@ -81,8 +81,8 @@
               (and (not composer-active?)
                    more-than-eight-messages?
                    (= :initial-render @big-name-visible?))
-              ;; Keyboard height increasing is different between iOS and Android, That's why we have two
-              ;; values.
+              ;; Keyboard height increasing is different between iOS and Android, That's why we have
+              ;; two values.
               (and (if platform/ios? more-than-two-messages? more-than-four-messages?)
                    (< title-opacity-interpolation-start (reanimated/get-shared-value scroll-y))
                    composer-active?)
