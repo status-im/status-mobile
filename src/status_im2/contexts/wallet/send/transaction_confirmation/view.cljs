@@ -98,7 +98,23 @@
         search-text     (reagent/atom "")
         account-address (string/lower-case (or account-address
                                                (rf/sub [:get-screen-params :wallet-accounts])))
-        on-close        #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])]
+        on-close        #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])
+        #_status-account-props
+        #_{:customization-color :purple
+           :size                32
+           :emoji               "🍑"
+           :type                :default
+           :name                "Collectibles vault"
+           :address             "0x0ah...78b"}
+        #_user-props
+        #_{:full-name           "M L"
+           :status-indicator?   false
+           :size                :small
+           :ring-background     (resources/get-mock-image :ring)
+           :customization-color :blue
+           :name                "Mark Libot"
+           :address             "0x0ah...78b"
+           :status-account      (merge status-account-props {:size 16})}]
     (fn []
       [rn/scroll-view
        {:content-container-style      (style/container margin-top)
@@ -117,17 +133,41 @@
         {:title                     (i18n/label :t/select-asset)
          :container-style           style/title-container
          :title-accessibility-label :title-label}]
-       [quo/segmented-control
-        {:size            32
-         :blur?           false
-         :symbol          false
-         :default-active  :tab/assets
-         :container-style {:margin-horizontal 20
-                           :margin-vertical   8}
-         :data            tabs-data
-         :on-change       #(reset! selected-tab %)}]
-       [search-input search-text]
-       [tab-view account-address @search-text @selected-tab]])))
+       #_[quo/summary-info
+          {:type          :status-account
+           :networks?     true
+           :values        {:ethereum 150
+                           :optimism 50
+                           :arbitrum 25}
+           :account-props user-props}]
+       #_[quo/summary-info
+          {:type          :status-account
+           :networks?     true
+           :values        {:ethereum 150
+                           :optimism 50
+                           :arbitrum 25}
+           :account-props status-account-props}]
+       #_[rn/view
+          [quo/data-item]
+          [quo/data-item]
+          [quo/data-item]]
+       #_[quo/slide-button
+          {:size                size
+           :container-style     container-style
+           :customization-color customization-color
+           :on-reset            (when @reset-slider? #(reset! reset-slider? false))
+           :on-complete         #(authorize {:on-close              on-close
+                                             :auth-button-icon-left auth-button-icon-left
+                                             :theme                 theme
+                                             :blur?                 blur?
+                                             :customization-color   customization-color
+                                             :on-enter-password     on-enter-password
+                                             :biometric-auth?       biometric-auth?
+                                             :on-auth-success       on-auth-success
+                                             :on-auth-fail          on-auth-fail
+                                             :auth-button-label     auth-button-label})
+           :track-icon          (if biometric-auth? :i/face-id :password)
+           :track-text          track-text}]])))
 
 (defn- view-internal
   [{:keys [account-address]}]
