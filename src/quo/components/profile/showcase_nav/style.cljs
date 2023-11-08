@@ -2,11 +2,6 @@
   (:require
     [quo.foundations.colors :as colors]))
 
-(def height 56)
-
-(def root-container
-  {:height height})
-
 (defn container
   [state theme]
   {:padding-top      12
