@@ -5,8 +5,8 @@
     [status-im.multiaccounts.update.core :as multiaccounts.update]
     [status-im.ui.components.list-selection :as list-selection]
     [status-im.ui.components.react :as react]
-    [status-im.utils.universal-links.utils :as universal-links]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.universal-links :as universal-links]))
 
 (re-frame/reg-fx
  :copy-to-clipboard

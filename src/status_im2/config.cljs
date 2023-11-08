@@ -2,7 +2,7 @@
   (:require
     [clojure.string :as string]
     [react-native.config :as react-native-config]
-    [status-im.ethereum.ens :as ens]
+    [utils.ens.core :as utils.ens]
     [utils.ethereum.chain :as chain]))
 
 (def get-config react-native-config/get-config)
@@ -67,7 +67,7 @@
     goerli-rpc-url))
 (def verify-ens-contract-address
   (get-config :VERIFY_ENS_CONTRACT_ADDRESS
-              ((chain/chain-id->chain-keyword verify-ens-chain-id) ens/ens-registries)))
+              ((chain/chain-id->chain-keyword verify-ens-chain-id) utils.ens/ens-registries)))
 
 (def fast-create-community-enabled?
   (enabled? (get-config :FAST_CREATE_COMMUNITY_ENABLED "0")))

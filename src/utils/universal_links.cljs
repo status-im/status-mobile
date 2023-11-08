@@ -1,4 +1,4 @@
-(ns status-im.utils.universal-links.utils
+(ns utils.universal-links
   (:require
     [goog.string :as gstring]
     [status-im2.constants :as constants]))

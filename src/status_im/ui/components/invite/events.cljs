@@ -2,9 +2,9 @@
   (:require
     [re-frame.core :as re-frame]
     [status-im.ui.components.react :as react]
-    [status-im.utils.universal-links.utils :as universal-links]
     [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.re-frame :as rf]
+    [utils.universal-links :as universal-links]))
 
 (re-frame/reg-fx
  ::share

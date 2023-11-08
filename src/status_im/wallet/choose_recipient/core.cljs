@@ -1,20 +1,21 @@
 (ns status-im.wallet.choose-recipient.core
   (:require
+    [clojure.string :as string]
     [re-frame.core :as re-frame]
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.contact.db :as contact.db]
-    [status-im.ethereum.eip681 :as eip681]
     [status-im.ethereum.ens :as ens]
+    [status-im.ethereum.tokens :as tokens]
     [status-im.qr-scanner.core :as qr-scaner]
-    [status-im.router.core :as router]
-    [status-im.utils.universal-links.utils :as links]
     [status-im.utils.wallet-connect :as wallet-connect]
     [status-im.wallet.utils :as wallet.utils]
+    [status-im2.common.router :as router]
     [status-im2.navigation.events :as navigation]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
     [utils.money :as money]
     [utils.re-frame :as rf]
+    [utils.universal-links :as links]
     [utils.url :as url]))
 
 ;; FIXME(Ferossgp): Should be part of QR scanner not wallet
@@ -79,6 +80,31 @@
                               (str value)))
            sym       (assoc :symbol sym))))
 
+(defn parse-eth-value
+  "Takes a map as returned by `parse-uri` and returns value as BigNumber"
+  [s]
+  (when (string? s)
+    (let [eth?  (string/ends-with? s "ETH")
+          ^js n (money/bignumber (string/replace s "ETH" ""))]
+      (if eth? (.times n 1e18) n))))
+
+(defn extract-request-details
+  "Return a map encapsulating request details (with keys `value`, `address` and `symbol`) from a parsed URI.
+   Supports ethereum and erc20 token."
+  [{:keys [value address function-name function-arguments] :as details} all-tokens]
+  (when address
+    (merge details
+           (case function-name
+             nil
+             {:value   (parse-eth-value value)
+              :symbol  :ETH
+              :address address}
+             "transfer"
+             {:value   (money/bignumber (:uint256 function-arguments))
+              :symbol  (:symbol (tokens/address->token all-tokens address))
+              :address (:address function-arguments)}
+             nil))))
+
 (rf/defn request-uri-parsed
   {:events [:wallet-legacy/request-uri-parsed]}
   [{{:networks/keys      [networks current-network]
@@ -88,7 +114,7 @@
    {:keys [chain-id] :as data}
    uri]
   (let [{:keys [address gasPrice] :as details}
-        (eip681/extract-request-details data all-tokens)]
+        (extract-request-details data all-tokens)]
     (if address
       (if (:wallet-legacy/recipient db)
         {:db (update db
