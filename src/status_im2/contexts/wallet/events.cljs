@@ -201,8 +201,9 @@
 
 (rf/reg-event-fx :wallet/request-collectibles
  (fn [{:keys [db]} [{:keys [start-at-index new-request?]}]]
-   (let [collectibles-filter nil
-         request-params      [0
+   (let [request-id          0
+         collectibles-filter nil
+         request-params      [request-id
                               [(chain/chain-id db)]
                               (map :address (:profile/wallet-accounts db))
                               collectibles-filter
