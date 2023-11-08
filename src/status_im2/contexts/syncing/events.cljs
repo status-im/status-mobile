@@ -68,7 +68,12 @@
                                                :deviceType platform/os
                                                :deviceName
                                                (native-module/get-installation-name)}}))
-                includes-error? #(string/includes? res "error")]
+                includes-error? (fn [json-str]
+                                  (let [data (-> json-str
+                                                 js/JSON.parse
+                                                 (js->clj :keywordize-keys true))]
+                                    (let [error-value (get data :error)]
+                                      (and (not (nil? error-value)) (not (empty? error-value))))))]
             (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
             (native-module/input-connection-string-for-bootstrapping
              connection-string

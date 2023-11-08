@@ -42,7 +42,7 @@
                                                 constants/local-pairing-event-connection-success)
                                              (= action
                                                 constants/local-pairing-action-connect))
-        error-on-pairing?               (get constants/local-pairing-event-errors type :generic-error)
+        error-on-pairing?               (contains? constants/local-pairing-event-errors type)
         completed-pairing?              (and (= type
                                                 constants/local-pairing-event-transfer-success)
                                              (= action
