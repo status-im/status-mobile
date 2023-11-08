@@ -133,30 +133,43 @@
     :balance
     (utils/get-balance-by-address balances account-address))))
 
-(defn- prepare-token
-  [{:keys [symbol marketValuesPerCurrency] :as item}]
+(defn- calc-token-value
+  [{:keys [symbol market-values-per-currency] :as item}]
   (let [fiat-value                      (utils/sum-token-chains item)
-        market-values                   (:usd marketValuesPerCurrency)
-        {:keys [price changePct24hour]} market-values
-        fiat-change                     (* fiat-value (/ changePct24hour (+ 100 changePct24hour)))]
+        market-values                   (:usd market-values-per-currency)
+        {:keys [price change-pct-24-hour]} market-values
+        fiat-change                     (* fiat-value (/ change-pct-24-hour (+ 100 change-pct-24-hour)))]
     {:token               (keyword (string/lower-case symbol))
      :state               :default
      :status              (cond
-                            (pos? changePct24hour) :positive
-                            (neg? changePct24hour) :negative
+                            (pos? change-pct-24-hour) :positive
+                            (neg? change-pct-24-hour) :negative
                             :else                  :empty)
      :customization-color :blue
      :values              {:crypto-value      (.toFixed (* fiat-value price) 2)
                            :fiat-value        (utils/prettify-balance fiat-value)
-                           :percentage-change (.toFixed changePct24hour 2)
+                           :percentage-change (.toFixed change-pct-24-hour 2)
                            :fiat-change       (utils/prettify-balance fiat-change)}}))
 
 (re-frame/reg-sub
- :wallet/parsed-tokens
+ :wallet/token-values
  :<- [:wallet/tokens]
  (fn [tokens [_ account-address]]
+<<<<<<< HEAD
    (mapv prepare-token (get tokens (keyword (string/lower-case account-address))))))
 >>>>>>> 19c75e91d (review)
+<<<<<<< HEAD
 >>>>>>> 25ec47428 (review)
+<<<<<<< HEAD
 >>>>>>> e41fe5426 (review)
+<<<<<<< HEAD
 >>>>>>> aaf682999 (review)
+=======
+=======
+=======
+=======
+   (mapv calc-token-value (get tokens (keyword (string/lower-case account-address))))))
+>>>>>>> 5ec5c0e69 (review)
+>>>>>>> af0d365b4 (review)
+>>>>>>> fd4728c35 (review)
+>>>>>>> 3c3a704c6 (review)
