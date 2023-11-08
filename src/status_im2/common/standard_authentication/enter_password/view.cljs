@@ -9,10 +9,10 @@
     [utils.re-frame :as rf]))
 
 (defn view
-  [{:keys [on-enter-password button-label button-icon-left customization-color]}]
-  (let [{:keys [key-uid] :as profile}       (rf/sub [:profile/profile-with-image])
-        {:keys [error processing password]} (rf/sub [:profile/login])
-        sign-in-enabled?                    (rf/sub [:sign-in-enabled?])]
+  [{:keys [on-enter-password button-label button-icon-left]}]
+  (let [{:keys [key-uid customization-color] :as profile} (rf/sub [:profile/profile-with-image])
+        {:keys [error processing password]}               (rf/sub [:profile/login])
+        sign-in-enabled?                                  (rf/sub [:sign-in-enabled?])]
     [:<>
      [rn/view {:style style/enter-password-container}
       [rn/view

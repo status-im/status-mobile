@@ -27,6 +27,10 @@
    :padding-top        12
    :padding-bottom     16})
 
+(def error-container
+  {:margin-horizontal 20
+   :margin-bottom     16})
+
 (def divider-1
   {:margin-bottom 12})
 

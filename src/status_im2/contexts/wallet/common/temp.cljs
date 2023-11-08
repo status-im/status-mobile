@@ -149,16 +149,6 @@
     :action        :icon
     :on-press-icon on-press-icon}])
 
-(def account-data
-  {:title                "Trip to Vegas"
-   :type                 :account
-   :networks             [{:network-name :ethereum :short-name "eth"}
-                          {:network-name :optimism :short-name "opt"}
-                          {:network-name :arbitrum :short-name "arb1"}]
-   :description          "0x39cf6E0Ba4C4530735616e1Ee7ff5FbCB726fBd4"
-   :account-avatar-emoji "🍑"
-   :customization-color  :purple})
-
 (def other-accounts
   [{:customization-color :flamingo
     :emoji               "🍿"
