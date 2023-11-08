@@ -153,6 +153,7 @@
     [status-im2.contexts.quo-preview.tags.number-tag :as number-tag]
     [status-im2.contexts.quo-preview.tags.permission-tag :as permission-tag]
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
+    [status-im2.contexts.quo-preview.tags.summary-tag :as summary-tag]
     [status-im2.contexts.quo-preview.tags.tag :as tag]
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.tiny-tag :as tiny-tag]
@@ -433,6 +434,8 @@
                         :component permission-tag/view}
                        {:name      :status-tags
                         :component status-tags/view}
+                       {:name      :summary-tag
+                        :component summary-tag/view}
                        {:name      :tag
                         :component tag/view}
                        {:name      :tags

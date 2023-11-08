@@ -73,6 +73,7 @@
     [quo.components.switchers.group-messaging-card.component-spec]
     [quo.components.tags.network-tags.component-spec]
     [quo.components.tags.status-tags-component-spec]
+    [quo.components.tags.summary-tag.component-spec]
     [quo.components.tags.tiny-tag.component-spec]
     [quo.components.wallet.account-card.component-spec]
     [quo.components.wallet.account-origin.component-spec]

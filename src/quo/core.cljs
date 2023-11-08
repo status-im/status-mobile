@@ -131,6 +131,7 @@
     quo.components.tags.number-tag.view
     quo.components.tags.permission-tag
     quo.components.tags.status-tags
+    quo.components.tags.summary-tag.view
     quo.components.tags.tag
     quo.components.tags.tags
     quo.components.tags.tiny-tag.view
@@ -360,6 +361,7 @@
 (def number-tag quo.components.tags.number-tag.view/view)
 (def permission-tag quo.components.tags.permission-tag/tag)
 (def status-tag quo.components.tags.status-tags/status-tag)
+(def summary-tag quo.components.tags.summary-tag.view/view)
 (def tag quo.components.tags.tag/tag)
 (def tags quo.components.tags.tags/tags)
 (def tiny-tag quo.components.tags.tiny-tag.view/view)
