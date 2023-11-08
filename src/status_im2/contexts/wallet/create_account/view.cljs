@@ -6,13 +6,13 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
+    [status-im2.constants :as constants]
+    [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
     [status-im2.contexts.wallet.common.utils :as utils]
     [status-im2.contexts.wallet.create-account.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]))
-
-(def diamond-emoji "\uD83D\uDC8E")
 
 (defn keypair-string
   [full-name]
@@ -44,8 +44,8 @@
   (let [top                   (safe-area/get-top)
         bottom                (safe-area/get-bottom)
         account-color         (reagent/atom :blue)
-        emoji                 (reagent/atom diamond-emoji)
-        number-of-accounts    (count (rf/sub [:profile/wallet-accounts]))
+        emoji                 (reagent/atom (emoji-picker.utils/random-emoji))
+        number-of-accounts    (count (rf/sub [:wallet/accounts]))
         account-name          (reagent/atom (i18n/label :t/default-account-name
                                                         {:number (inc number-of-accounts)}))
         derivation-path       (reagent/atom (utils/get-derivation-path number-of-accounts))
@@ -84,7 +84,7 @@
         {:customization-color @account-color
          :placeholder         "Type something here"
          :on-change-text      on-change-text
-         :max-length          24
+         :max-length          constants/wallet-account-name-max-length
          :blur?               true
          :disabled?           false
          :default-value       @account-name

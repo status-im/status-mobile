@@ -3,6 +3,7 @@
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
+            [status-im2.constants :as constants]
             [status-im2.contexts.wallet.common.screen-base.create-or-edit-account.style :as style]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
@@ -10,7 +11,8 @@
 (defn- view-internal
   [{:keys [margin-top? page-nav-right-side account-name account-color account-emoji on-change-name
            on-change-color
-           on-change-emoji section-label bottom-action? bottom-action-label bottom-action-props
+           on-change-emoji on-focus on-blur section-label bottom-action?
+           bottom-action-label bottom-action-props
            custom-bottom-action]} & children]
   (let [{:keys [top bottom]}  (safe-area/get-insets)
         margin-top            (if (false? margin-top?) 0 top)
@@ -45,12 +47,13 @@
          :i/reaction]]
        [quo/title-input
         {:placeholder     (i18n/label :t/account-name-input-placeholder)
-         :max-length      24
+         :max-length      constants/wallet-account-name-max-length
          :blur?           true
          :default-value   account-name
          :on-change-text  on-change-name
          :container-style style/title-input-container
-         :return-key-type :done}]
+         :on-focus        on-focus
+         :on-blur         on-blur}]
        [quo/divider-line {:container-style style/divider-1}]
        [quo/section-label
         {:section         (i18n/label :t/colour)

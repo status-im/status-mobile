@@ -17,7 +17,7 @@
 
 (defn authorize
   [{:keys [on-enter-password biometric-auth? on-auth-success on-auth-fail on-close
-           auth-button-label theme blur? customization-color auth-button-icon-left]}]
+           auth-button-label theme blur? auth-button-icon-left]}]
   (biometric/get-supported-type
    (fn [biometric-type]
      (if (and biometric-auth? biometric-type)
@@ -43,10 +43,9 @@
                         :shell?   blur?
                         :content  (fn []
                                     [enter-password/view
-                                     {:customization-color customization-color
-                                      :on-enter-password   on-enter-password
-                                      :button-icon-left    auth-button-icon-left
-                                      :button-label        auth-button-label}])}]))))))
+                                     {:on-enter-password on-enter-password
+                                      :button-icon-left  auth-button-icon-left
+                                      :button-label      auth-button-label}])}]))))))
 
 (defn- view-internal
   [_]
@@ -74,7 +73,6 @@
                                            :auth-button-icon-left auth-button-icon-left
                                            :theme                 theme
                                            :blur?                 blur?
-                                           :customization-color   customization-color
                                            :on-enter-password     on-enter-password
                                            :biometric-auth?       biometric-auth?
                                            :on-auth-success       on-auth-success

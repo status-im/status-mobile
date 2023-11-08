@@ -1190,7 +1190,8 @@
     ::enable-local-notifications nil
     :dispatch-n                  [(when (or (not (utils.mobile-sync/syncing-allowed? cofx))
                                             (chain/binance-chain? db))
-                                    [:transaction/get-fetched-transfers])]}
+                                    [:transaction/get-fetched-transfers])]
+    :dispatch                    [:wallet/get-accounts-success accounts]}
    (check-invalid-ens)
    (initialize-tokens tokens custom-tokens)
    (initialize-favourites favourites)
