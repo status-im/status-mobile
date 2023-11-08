@@ -60,14 +60,14 @@
                                      (string/starts-with? (string/lower-case (:symbol %))
                                                           (string/lower-case search-text)))
                                 sorted-tokens)]
-    [rn/view {:style {:flex 1}}
-     [rn/flat-list
-      {:data                         filtered-tokens
-       :content-container-style      {:padding-horizontal 8}
-       :keyboard-should-persist-taps :handled
-       :key-fn                       :id
-       :on-scroll-to-index-failed    identity
-       :render-fn                    asset-component}]]))
+    [rn/flat-list
+     {:data                         filtered-tokens
+      :style                        {:flex 1}
+      :content-container-style      {:padding-horizontal 8}
+      :keyboard-should-persist-taps :handled
+      :key-fn                       :id
+      :on-scroll-to-index-failed    identity
+      :render-fn                    asset-component}]))
 
 (defn- tab-view
   [account search-text selected-tab]
