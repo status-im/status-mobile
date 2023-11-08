@@ -204,6 +204,7 @@
    (let [request-params [0
                          [(chain/chain-id db)]
                          (map :address (:profile/wallet-accounts db))
+                         nil
                          start-at-index
                          collectibles-request-batch-size]]
      {:json-rpc/call [{:method     "wallet_filterOwnedCollectiblesAsync"
