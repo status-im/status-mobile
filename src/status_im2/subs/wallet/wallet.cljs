@@ -135,16 +135,17 @@
 
 (defn- calc-token-value
   [{:keys [symbol market-values-per-currency] :as item}]
-  (let [fiat-value                      (utils/sum-token-chains item)
-        market-values                   (:usd market-values-per-currency)
+  (let [fiat-value                         (utils/sum-token-chains item)
+        market-values                      (:usd market-values-per-currency)
         {:keys [price change-pct-24-hour]} market-values
-        fiat-change                     (* fiat-value (/ change-pct-24-hour (+ 100 change-pct-24-hour)))]
+        fiat-change                        (* fiat-value
+                                              (/ change-pct-24-hour (+ 100 change-pct-24-hour)))]
     {:token               (keyword (string/lower-case symbol))
      :state               :default
      :status              (cond
                             (pos? change-pct-24-hour) :positive
                             (neg? change-pct-24-hour) :negative
-                            :else                  :empty)
+                            :else                     :empty)
      :customization-color :blue
      :values              {:crypto-value      (.toFixed (* fiat-value price) 2)
                            :fiat-value        (utils/prettify-balance fiat-value)
