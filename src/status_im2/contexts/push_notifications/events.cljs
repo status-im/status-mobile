@@ -20,8 +20,9 @@
 (defn handle-notification-press
   [{{deep-link :deepLink} :userInfo
     interaction           :userInteraction}]
-  (async-storage/set-item! (str :chat-id) nil)
+  (async-storage/set-item! (str :chat-id) nil #(rf/dispatch [:universal-links/remove-handling]))
   (when (and deep-link (or platform/ios? (and platform/android? interaction)))
+    (rf/dispatch [:universal-links/handling])
     (rf/dispatch [:universal-links/handle-url deep-link])))
 
 (defn listen-notifications
