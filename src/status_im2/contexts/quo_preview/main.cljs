@@ -172,6 +172,7 @@
     [status-im2.contexts.quo-preview.wallet.progress-bar :as progress-bar]
     [status-im2.contexts.quo-preview.wallet.summary-info :as summary-info]
     [status-im2.contexts.quo-preview.wallet.token-input :as token-input]
+    [status-im2.contexts.quo-preview.wallet.transaction-progress :as transaction-progress]
     [status-im2.contexts.quo-preview.wallet.transaction-summary :as
      transaction-summary]
     [status-im2.contexts.quo-preview.wallet.wallet-activity :as wallet-activity]
@@ -459,6 +460,7 @@
                        {:name :summary-info :component summary-info/view}
                        {:name :token-input :component token-input/view}
                        {:name :wallet-activity :component wallet-activity/view}
+                       {:name :transaction-progress :component transaction-progress/view}
                        {:name :transaction-summary :component transaction-summary/view}
                        {:name      :wallet-overview
                         :component wallet-overview/view}]

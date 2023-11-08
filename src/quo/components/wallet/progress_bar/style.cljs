@@ -25,9 +25,11 @@
   [{:keys [customization-color state theme]}]
   (let [{:keys [background-color border-color]} (get-in (border-and-background-color customization-color)
                                                         [theme state])]
-    {:height           12
-     :width            8
-     :border-radius    3
-     :border-width     1
-     :border-color     border-color
-     :background-color background-color}))
+   {:height            12
+    :width             8
+    :border-radius     3
+    :border-width      1
+    :border-color      border-color
+    :background-color  background-color
+    :margin-horizontal 1
+    :margin-vertical   2}))
