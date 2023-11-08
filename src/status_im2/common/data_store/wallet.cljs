@@ -2,13 +2,14 @@
   (:require
     [clojure.set :as set]
     [clojure.string :as string]
-    [status-im2.constants :as constants]))
+    [status-im2.constants :as constants]
+    [utils.number :as utils.number]))
 
 (defn chain-ids-string->set
   [ids-string]
-  (->> (string/split ids-string constants/chain-id-separator)
-       (map js/parseInt)
-       (into #{})))
+  (into #{}
+        (map utils.number/parse-int)
+        (string/split ids-string constants/chain-id-separator)))
 
 (defn chain-ids-set->string
   [ids]

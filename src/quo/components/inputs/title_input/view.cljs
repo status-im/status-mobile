@@ -53,11 +53,11 @@
           :on-focus (fn []
                       (when (fn? on-focus)
                         (on-focus))
-                      (swap! focused? (constantly true)))
+                      (reset! focused? true))
           :on-blur (fn []
                      (when (fn? on-blur)
                        (on-blur))
-                     (swap! focused? (constantly false)))
+                     (reset! focused? false))
           :auto-focus auto-focus
           :input-mode :text
           :on-change-text on-change

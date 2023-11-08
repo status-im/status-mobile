@@ -33,9 +33,10 @@
 (re-frame/reg-sub
  :wallet/accounts
  :<- [:wallet]
- (fn [{:keys [accounts]}]
-   (->> (vals accounts)
-        (sort-by :position))))
+ :-> #(->> %
+           :accounts
+           vals
+           (sort-by :position)))
 
 (re-frame/reg-sub
  :wallet/balances
@@ -51,5 +52,6 @@
  :<- [:wallet]
  :<- [:wallet/balances]
  (fn [[{:keys [current-viewing-account-address] :as wallet} balances]]
-   (-> (get-in wallet [:accounts current-viewing-account-address])
+   (-> wallet
+       (get-in [:accounts current-viewing-account-address])
        (assoc :balance (utils/get-balance-by-address balances current-viewing-account-address)))))
