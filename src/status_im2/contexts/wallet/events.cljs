@@ -201,12 +201,13 @@
 
 (rf/reg-event-fx :wallet/request-collectibles
  (fn [{:keys [db]} [{:keys [start-at-index new-request?]}]]
-   (let [request-params [0
-                         [(chain/chain-id db)]
-                         (map :address (:profile/wallet-accounts db))
-                         nil
-                         start-at-index
-                         collectibles-request-batch-size]]
+   (let [collectibles-filter nil
+         request-params      [0
+                              [(chain/chain-id db)]
+                              (map :address (:profile/wallet-accounts db))
+                              collectibles-filter
+                              start-at-index
+                              collectibles-request-batch-size]]
      {:json-rpc/call [{:method     "wallet_filterOwnedCollectiblesAsync"
                        :params     request-params
                        :on-success #()
