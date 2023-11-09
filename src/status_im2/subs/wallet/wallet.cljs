@@ -1,8 +1,20 @@
 (ns status-im2.subs.wallet.wallet
+<<<<<<< HEAD
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
+=======
+<<<<<<< HEAD
+  (:require [re-frame.core :as rf]
+>>>>>>> af0e5cc43 (review)
             [status-im2.contexts.wallet.common.utils :as utils]
             [utils.number]))
+=======
+  (:require
+    [clojure.string :as string]
+    [re-frame.core :as re-frame]
+    [status-im2.contexts.wallet.common.utils :as utils]
+    [utils.number]))
+>>>>>>> aeda1e4a7 (review)
 
 <<<<<<< HEAD
 (rf/reg-sub
@@ -30,7 +42,7 @@
         result (reduce
                 (fn [acc item]
                   (let [total-values (* (utils/sum-token-chains item)
-                                        (get-in item [:marketValuesPerCurrency :USD :price]))]
+                                        (get-in item [:market-values-per-currency :USD :price]))]
                     (+ acc total-values)))
                 0
                 token)]
@@ -80,7 +92,6 @@
  :wallet/current-viewing-account
  :<- [:wallet]
  :<- [:wallet/balances]
-<<<<<<< HEAD
  (fn [[{:keys [current-viewing-account-address] :as wallet} balances]]
    (-> wallet
        (get-in [:accounts current-viewing-account-address])
@@ -126,35 +137,30 @@
 =======
 =======
        (assoc :balance (utils/get-balance-by-address balances current-viewing-account-address)))))
-=======
- (fn [[accounts balances] [_ account-address]]
-   (assoc
-    (utils/get-account-by-address accounts account-address)
-    :balance
-    (utils/get-balance-by-address balances account-address))))
 
 (defn- calc-token-value
   [{:keys [symbol market-values-per-currency] :as item}]
-  (let [fiat-value                         (utils/sum-token-chains item)
-        market-values                      (:usd market-values-per-currency)
-        {:keys [price change-pct-24-hour]} market-values
-        fiat-change                        (* fiat-value
-                                              (/ change-pct-24-hour (+ 100 change-pct-24-hour)))]
+  (let [fiat-value                        (utils/sum-token-chains item)
+        market-values                     (:usd market-values-per-currency)
+        {:keys [price change-pct-24hour]} market-values
+        fiat-change                       (utils/calculate-fiat-change fiat-value change-pct-24hour)]
     {:token               (keyword (string/lower-case symbol))
      :state               :default
      :status              (cond
-                            (pos? change-pct-24-hour) :positive
-                            (neg? change-pct-24-hour) :negative
-                            :else                     :empty)
+                            (pos? change-pct-24hour) :positive
+                            (neg? change-pct-24hour) :negative
+                            :else                    :empty)
      :customization-color :blue
      :values              {:crypto-value      (.toFixed (* fiat-value price) 2)
                            :fiat-value        (utils/prettify-balance fiat-value)
-                           :percentage-change (.toFixed change-pct-24-hour 2)
+                           :percentage-change (.toFixed change-pct-24hour 2)
                            :fiat-change       (utils/prettify-balance fiat-change)}}))
 
 (re-frame/reg-sub
- :wallet/token-values
+ :wallet/account-token-values
+ :<- [:wallet]
  :<- [:wallet/tokens]
+<<<<<<< HEAD
  (fn [tokens [_ account-address]]
 <<<<<<< HEAD
    (mapv prepare-token (get tokens (keyword (string/lower-case account-address))))))
@@ -172,5 +178,15 @@
    (mapv calc-token-value (get tokens (keyword (string/lower-case account-address))))))
 >>>>>>> 5ec5c0e69 (review)
 >>>>>>> af0d365b4 (review)
+<<<<<<< HEAD
 >>>>>>> fd4728c35 (review)
+<<<<<<< HEAD
 >>>>>>> 3c3a704c6 (review)
+=======
+=======
+=======
+ (fn [[{:keys [current-viewing-account-address]} tokens]]
+   (mapv calc-token-value (get tokens (keyword (string/lower-case current-viewing-account-address))))))
+>>>>>>> aeda1e4a7 (review)
+>>>>>>> af0e5cc43 (review)
+>>>>>>> fa6b6eb69 (review)

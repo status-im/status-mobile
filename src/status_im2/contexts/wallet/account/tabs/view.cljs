@@ -49,8 +49,8 @@
 =======
 >>>>>>> df7a5e7cd (review)
 (defn view
-  [{:keys [selected-tab account-address]}]
-  (let [tokens (rf/sub [:wallet/token-values account-address])]
+  [{:keys [selected-tab]}]
+  (let [tokens (rf/sub [:wallet/account-token-values])]
     (case selected-tab
 <<<<<<< HEAD
 >>>>>>> 500f66b63 (updates)

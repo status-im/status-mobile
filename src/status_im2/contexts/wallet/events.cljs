@@ -27,7 +27,6 @@
               :icon-color colors/success-50
               :text       (i18n/label :t/account-created {:name (:name account)})}]]]})))
 
-<<<<<<< HEAD
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]
    {:db (assoc-in db [:wallet :current-viewing-account-address] address)
@@ -135,8 +134,11 @@
 (rf/reg-event-fx :wallet/get-wallet-token-success
  (fn [{:keys [db]} [tokens]]
    {:db (assoc db
-               :wallet/tokens          tokens
+               :wallet/tokens          (into {}
+                                             (for [[k v] tokens]
+                                               [k (cske/transform-keys csk/->kebab-case-keyword v)]))
                :wallet/tokens-loading? false)}))
+<<<<<<< HEAD
 =======
 (rf/defn get-wallet-token-success
   {:events [:wallet/get-wallet-token-success]}
@@ -146,6 +148,8 @@
               :wallet/tokens-loading? false)})
 >>>>>>> 5ec5c0e69 (review)
 >>>>>>> af0d365b4 (review)
+=======
+>>>>>>> aeda1e4a7 (review)
 
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}
