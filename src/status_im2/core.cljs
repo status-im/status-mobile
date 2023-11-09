@@ -15,8 +15,8 @@
     [reagent.impl.batching :as batching]
     status-im.events
     status-im.subs.root
-    [status-im.utils.universal-links.core :as utils.universal-links]
     [status-im2.common.log :as log]
+    [status-im2.common.universal-links :as universal-links]
     [status-im2.config :as config]
     [status-im2.contexts.push-notifications.events :as notifications]
     [status-im2.contexts.shell.jump-to.state :as shell.state]
@@ -47,7 +47,7 @@
   (i18n/set-language "en")
   (i18n-resources/load-language "en")
   (react-native-shake/add-shake-listener #(re-frame/dispatch [:shake-event]))
-  (utils.universal-links/initialize)
+  (universal-links/initialize)
   (interceptors/register-global-interceptors)
 
   ;; Shell

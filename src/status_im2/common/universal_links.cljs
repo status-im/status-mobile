@@ -1,21 +1,14 @@
-(ns status-im.utils.universal-links.core
+(ns status-im2.common.universal-links
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.group-chats.core :as group-chats]
-    [status-im.multiaccounts.model :as multiaccounts.model]
-    [status-im.router.core :as router]
-    [status-im.ui.components.react :as react]
-    [status-im.wallet.choose-recipient.core :as choose-recipient]
+    [react-native.core :as rn]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
-
-;; TODO(yenda) investigate why `handle-universal-link` event is
-;; dispatched 7 times for the same link
 
 ;; domains should be without the trailing slash
 (def domains
@@ -31,21 +24,21 @@
    :browse             "%s/b/%s"})
 
 (rf/defn handle-browse
-  [cofx {:keys [url]}]
+  [_ {:keys [url]}]
   (log/info "universal-links: handling browse" url)
   {:browser/show-browser-selection url})
 
 (rf/defn handle-group-chat
-  [cofx params]
+  [_ params]
   (log/info "universal-links: handling group" params)
-  (group-chats/create-from-link cofx params))
+  {:dispatch [:group-chats/create-from-link params]})
 
 (defn own-public-key?
   [{:keys [profile/profile]} public-key]
   (= (:public-key profile) public-key))
 
 (rf/defn handle-private-chat
-  [{:keys [db] :as cofx} {:keys [chat-id]}]
+  [{:keys [db]} {:keys [chat-id]}]
   (log/info "universal-links: handling private chat" chat-id)
   (when chat-id
     (if-not (own-public-key? db chat-id)
@@ -72,7 +65,7 @@
    (navigation/pop-to-root :shell-stack)))
 
 (rf/defn handle-desktop-community
-  [cofx {:keys [community-id]}]
+  [_ {:keys [community-id]}]
   (native-module/deserialize-and-compress-key
    community-id
    (fn [deserialized-key]
@@ -99,7 +92,7 @@
 (rf/defn handle-eip681
   [cofx data]
   (rf/merge cofx
-            (choose-recipient/parse-eip681-uri-and-resolve-ens data true)
+            {:dispatch [:wallet-legacy/parse-eip681-uri-and-resolve-ens data true]}
             (navigation/navigate-to :wallet-legacy nil)))
 
 (defn existing-account?
@@ -147,10 +140,10 @@
 (rf/defn route-url
   "Match a url against a list of routes and handle accordingly"
   [{:keys [db]} url]
-  {::router/handle-uri {:chain (chain/chain-keyword db)
-                        :chats (:chats db)
-                        :uri   url
-                        :cb    #(re-frame/dispatch [::match-value url %])}})
+  {:router/handle-uri {:chain (chain/chain-keyword db)
+                       :chats (:chats db)
+                       :uri   url
+                       :cb    #(re-frame/dispatch [::match-value url %])}})
 
 (rf/defn store-url-for-later
   "Store the url in the db to be processed on login"
@@ -163,7 +156,7 @@
   on login, otherwise just handle it."
   {:events [:universal-links/handle-url]}
   [{:keys [db] :as cofx} url]
-  (if (multiaccounts.model/logged-in? db)
+  (if (:profile/profile db)
     (route-url cofx url)
     (store-url-for-later cofx url)))
 
@@ -193,10 +186,10 @@
   ;;NOTE: https://github.com/facebook/react-native/issues/15961
   ;; workaround for getInitialURL returning null when opening the
   ;; app from a universal link after closing it with the back button
-  (js/setTimeout #(-> (.getInitialURL ^js react/linking)
+  (js/setTimeout #(-> (.getInitialURL ^js rn/linking)
                       (.then dispatch-url))
                  200)
-  (.addEventListener ^js react/linking "url" url-event-listener)
+  (.addEventListener ^js rn/linking "url" url-event-listener)
   ;;StartSearchForLocalPairingPeers() shouldn't be called ATM from the UI It can be called after the
   ;;error "route ip+net: netlinkrib: permission denied" is fixed on status-go side
   #_(native-module/start-searching-for-local-pairing-peers
@@ -206,4 +199,4 @@
   "Remove event listener for url"
   []
   (log/debug "universal-links: finalizing")
-  (.removeEventListener ^js react/linking "url" url-event-listener))
+  (.removeEventListener ^js rn/linking "url" url-event-listener))

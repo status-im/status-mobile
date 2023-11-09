@@ -1,7 +1,7 @@
-(ns status-im.utils.universal-links.utils-test
+(ns utils.universal-links-test
   (:require
     [cljs.test :refer-macros [deftest is testing]]
-    [status-im.utils.universal-links.utils :as links]))
+    [utils.universal-links :as links]))
 
 (deftest universal-link-test
   (testing "status-app://blah"

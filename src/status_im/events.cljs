@@ -41,7 +41,6 @@
     status-im.ui.screens.privacy-and-security-settings.events
     [status-im.utils.dimensions :as dimensions]
     status-im.utils.logging.core
-    [status-im.utils.universal-links.core :as universal-links]
     [status-im.utils.utils :as utils]
     status-im.visibility-status-popover.core
     status-im.visibility-status-updates.core
@@ -53,6 +52,7 @@
     status-im.wallet.custom-tokens.core
     [status-im2.common.biometric.events :as biometric]
     [status-im2.common.theme.core :as theme]
+    [status-im2.common.universal-links :as universal-links]
     [status-im2.constants :as constants]
     status-im2.contexts.chat.home.events
     status-im2.contexts.communities.home.events

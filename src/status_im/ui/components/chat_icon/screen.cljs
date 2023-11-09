@@ -6,13 +6,13 @@
     [quo.theme :as theme]
     [re-frame.core :as re-frame.core]
     [react-native.core :as rn]
-    [status-im.ethereum.ens :as ens]
     [status-im.ui.components.chat-icon.styles :as styles]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.icons.icons :as icons]
     [status-im.ui.screens.chat.photos :as photos]
     [status-im.ui.screens.profile.visibility-status.utils :as visibility-status-utils]
-    [status-im2.contexts.profile.utils :as profile.utils]))
+    [status-im2.contexts.profile.utils :as profile.utils]
+    [utils.ens.core :as utils.ens]))
 
 ;;TODO REWORK THIS NAMESPACE
 
@@ -78,7 +78,7 @@
                 :indicator-color  "#000000"
                 :color            (get text-style :color)
                 :length           2
-                :ring?            (not (ens/is-valid-eth-name? full-name))
+                :ring?            (not (utils.ens/is-valid-eth-name? full-name))
                 :ring-width       2})}
         {:size size}]
        [photos/photo photo-path {:size size}])
@@ -221,7 +221,7 @@
                              :indicator-color  "#000000"
                              :color            (get-in styles [:default-chat-icon-text :color])
                              :length           2
-                             :ring?            (not (ens/is-valid-eth-name? name))
+                             :ring?            (not (utils.ens/is-valid-eth-name? name))
                              :ring-width       2})}
                      photo-path)]
     [rn/view (:container styles)
