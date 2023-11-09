@@ -17,12 +17,6 @@
 (def detail-container
   {:flex 1})
 
-(defn stats-count-container
-  []
-  {:flex-direction :row
-   :align-items    :center
-   :margin-right   16})
-
 (defn card-stats-container
   []
   {:flex-direction :row})

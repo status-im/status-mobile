@@ -31,6 +31,7 @@
     quo.components.community.channel-actions
     quo.components.community.community-card-view
     quo.components.community.community-list-view
+    quo.components.community.community-stat.view
     quo.components.community.community-view
     quo.components.community.icon
     quo.components.community.token-gating
@@ -199,7 +200,7 @@
 (def communities-membership-list-item
   quo.components.community.community-list-view/communities-membership-list-item)
 (def community-stats-column quo.components.community.community-view/community-stats-column)
-(def community-stats quo.components.community.community-view/community-stats)
+(def community-stat quo.components.community.community-stat.view/view)
 (def community-tags quo.components.community.community-view/community-tags)
 (def community-title quo.components.community.community-view/community-title)
 (def permission-tag-container quo.components.community.community-view/permission-tag-container)
