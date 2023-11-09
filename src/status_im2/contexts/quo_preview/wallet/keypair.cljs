@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.wallet.keypair
   (:require
     [quo.core :as quo]
+    [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.quo-preview.preview :as preview]))
 
@@ -101,8 +102,9 @@
         :component-container-style {:padding-vertical 30
                                     :flex-direction   :row
                                     :justify-content  :center}}
-       [quo/keypair
-        (merge
-         @state
-         {:details  (if (= (:type @state) :default-keypair) default-details other-details)
-          :accounts (get-accounts (:blur? @state))})]])))
+       [rn/view {:style {:flex 1}}
+        [quo/keypair
+         (merge
+           @state
+           {:details  (if (= (:type @state) :default-keypair) default-details other-details)
+            :accounts (get-accounts (:blur? @state))})]]])))

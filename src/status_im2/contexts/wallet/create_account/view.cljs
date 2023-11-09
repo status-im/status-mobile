@@ -1,6 +1,7 @@
 (ns status-im2.contexts.wallet.create-account.view
   (:require
     [clojure.string :as string]
+    [utils.string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
@@ -25,7 +26,7 @@
   [name derivation-path account-color]
   [{:title             (keypair-string name)
     :image             :avatar
-    :image-props       {:full-name           (utils/get-initials name)
+    :image-props       {:full-name           (utils.string/get-initials name 1)
                         :size                :xxs
                         :customization-color account-color}
     :action            :button

@@ -2,6 +2,7 @@
   (:require
     [quo.core :as quo]
     [react-native.core :as rn]
+    [status-im2.contexts.profile.utils :as profile.utils]
     [status-im2.contexts.wallet.create-account.select-keypair.style :as style]
     [utils.address :as utils]
     [utils.i18n :as i18n]
@@ -14,16 +15,18 @@
                     :type                :default
                     :name                "Trip to Vegas"
                     :address             "0x0ah...71a"}
-    :networks      [{:name :ethereum :short-name "eth"}
-                    {:name :optimism :short-name "opt"}]
+    :networks      [{:network-name :ethereum :short-name "eth"}
+                    {:network-name :optimism :short-name "opt"}]
     :state         :default
     :action        :none}])
 
 (defn view
   []
-  (let [{:keys [public-key compressed-key]} (rf/sub [:profile/profile])
+  (let [{:keys [public-key compressed-key customization-color] :as profile} (rf/sub [:profile/profile])
         display-name                        (first (rf/sub [:contacts/contact-two-names-by-identity
-                                                            public-key]))]
+                                                            public-key]))
+        profile-with-image (rf/sub [:profile/profile-with-image])
+        profile-picture (profile.utils/photo profile-with-image)]
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close
@@ -34,10 +37,13 @@
        :title           (i18n/label :t/keypairs)
        :description     (i18n/label :t/keypairs-description)
        :button-icon     :i/add
-       :button-on-press #(js/alert "not implemented")}]
+       :button-on-press #(js/alert "not implemented")
+       :customization-color customization-color}]
      [quo/keypair
       (merge
-       {:customization-color :blue
+       {:customization-color customization-color
+        :profile-picture profile-picture
+        :status-indicator false
         :type                :default-keypair
         :stored              :on-device
         :on-options-press    #(js/alert "Options pressed")

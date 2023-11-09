@@ -26,7 +26,8 @@
            description
            description-accessibility-label
            button-icon
-           button-on-press]}]
+           button-on-press
+           customization-color]}]
   [rn/view {:style container-style}
    [rn/view
     {:style {:flex-direction  :row
@@ -46,6 +47,7 @@
       [button/button
        {:icon-only? true
         :on-press   button-on-press
+        :customization-color customization-color
         :size       32} button-icon])]
    (when description
      [text/text
