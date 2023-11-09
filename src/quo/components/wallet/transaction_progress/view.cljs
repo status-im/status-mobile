@@ -17,40 +17,40 @@
     {:color color}]])
 
 (def total-box 85)
-(def interval-ms 50)
+;; (def interval-ms 50)
 
 (def lcounter (reagent/atom 0))
-(def interval-id (reagent/atom nil))
+;; (def interval-id (reagent/atom nil))
 
-(defn stop-interval
-  []
-  (when @interval-id
-    (js/clearInterval @interval-id)
-    (reset! interval-id nil)))
+;; (defn stop-interval
+;;   []
+;;   (when @interval-id
+;;     (js/clearInterval @interval-id)
+;;     (reset! interval-id nil)))
 
-(defn clear-counter
-  []
-  (reset! lcounter 0))
+;; (defn clear-counter
+;;   []
+;;   (reset! lcounter 0))
 
-(defn update-counter
-  [network-state]
-  (let [new-counter-value (-> @lcounter inc)]
-    (if (or (and (= network-state :pending) (> new-counter-value 0))
-            (and (= network-state :sending) (> new-counter-value 2))
-            (and (= network-state :confirmed) (> new-counter-value 4))
-            (and (= network-state :finalising) (> new-counter-value 18))
-            (and (= network-state :finalized) (> new-counter-value total-box))
-            (and (= network-state :error) (> new-counter-value 2)))
-      (stop-interval)
-      (swap! lcounter (fn [_] new-counter-value)))))
+;; (defn update-counter
+;;   [network-state]
+;;   (let [new-counter-value (-> @lcounter inc)]
+;;     (if (or (and (= network-state :pending) (> new-counter-value 0))
+;;             (and (= network-state :sending) (> new-counter-value 2))
+;;             (and (= network-state :confirmed) (> new-counter-value 4))
+;;             (and (= network-state :finalising) (> new-counter-value 18))
+;;             (and (= network-state :finalized) (> new-counter-value total-box))
+;;             (and (= network-state :error) (> new-counter-value 2)))
+;;       (stop-interval)
+;;       (swap! lcounter (fn [_] new-counter-value)))))
 
-(defn start-interval
-  [network-state]
-  (reset! interval-id
-          (js/setInterval
-           (fn []
-             (update-counter network-state))
-           interval-ms)))
+;; (defn start-interval
+;;   [network-state]
+;;   (reset! interval-id
+;;           (js/setInterval
+;;            (fn []
+;;              (update-counter network-state))
+;;            interval-ms)))
 
 (defn calculate-box-state
   [network-state counter index]
