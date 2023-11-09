@@ -1,5 +1,6 @@
 (ns schema.view
   (:require
+    [quo.core :as quo]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     schema.state
@@ -13,5 +14,7 @@
         [rn/pressable
          {:on-press on-press
           :style    (style/container {:bottom-inset (safe-area/get-bottom)})}
+         [quo/icon :i/close {:size 12 :color "#ddd" :container-style style/icon}]
          [rn/text {:style style/text}
-          "Schema error"]]))))
+          "Schema error(s)"
+          [rn/text {:style (merge style/text style/text-suffix)} " check logs"]]]))))
