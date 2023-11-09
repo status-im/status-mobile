@@ -57,7 +57,7 @@ For schemas we want to conveniently access from the global registry, like
 `:schema.common/theme`, they must be registered before Malli tries to use them.
 
 ```clojure
-;; bad, will throw error if :schema.common/bar is not registered.
+;; bad, will fail if :schema.common/bar is not registered.
 (def ^:private ?foo
   (malli.util/select-keys :schema.common/bar [:id :name]))
 
