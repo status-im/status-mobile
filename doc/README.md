@@ -10,9 +10,9 @@
 
 [Coding guidelines](new-guidelines.md)
 
-[Release Checklist](release-checklist.md)
+[Debugging](debugging.md)
 
-[Release Guide](release-guide.md)
+[Using custom `status-go` version](custom-status-go.md)
 
 [Merging PR process](merging-pr-process.md)
 
@@ -20,7 +20,10 @@
 
 [Working on PR together with QA team](pipeline_process.md)
 
-[Debugging](debugging.md)
+[Release Checklist](release-checklist.md)
+
+[Release Guide](release-guide.md)
+
 
 [Patching](patching.md)
 
