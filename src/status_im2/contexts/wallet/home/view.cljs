@@ -46,7 +46,7 @@
          (fn [{:keys [color address] :as account}]
            (assoc account
                   :customization-color color
-                  :type                :empty
+                  :type                (if (= (:type account) :watch) :watch-only :default)
                   :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
                   :loading?            loading?
                   :balance             (utils/prettify-balance
