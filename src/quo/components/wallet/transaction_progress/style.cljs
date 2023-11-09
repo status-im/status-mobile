@@ -5,7 +5,7 @@
   {:flex 1})
 
 (def icon
-  {:margin-right 6})
+  {:margin-right 4})
 
 (def box-style
   {:border-radius 16
