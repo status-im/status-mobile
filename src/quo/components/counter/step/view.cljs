@@ -40,7 +40,6 @@
     [:value [:maybe [:or :string :int]]]]
    :any])
 
-(def ^:private view-internal-instrumented
-  (schema/instrument ::step ?schema #'view-internal))
-
-(def view (quo.theme/with-theme #'view-internal-instrumented))
+(def view
+  (quo.theme/with-theme
+   (schema/instrument #'view-internal ?schema)))

@@ -1,4 +1,5 @@
 (ns schema.core
+  (:require-macros schema.core)
   (:require
     [malli.core :as malli]
     [malli.dev.pretty :as malli.pretty]
@@ -45,21 +46,37 @@
   We use a validator cached by `malli.core/validator`, so that validation is
   performed once.
 
-  If `?schema` is invalid, then behave like a nop, log the error and return `f`."
-  [schema-id ?schema f]
-  (if ^boolean js/goog.DEBUG
-    (try
-      (let [?schema               (malli/schema ?schema)
-            {schema-input :input} (malli/-function-info ?schema)
-            [validate-input _]    (malli/-vmap malli/validator [schema-input])]
-        (malli/-instrument {:schema ?schema
-                            :report (reporter schema-id
-                                              {:title (str "Schema error - " schema-id)})}
-                           (with-clear-schema-error schema-id validate-input f)))
-      (catch js/Error e
-        (log/error "Failed to instrument function"
-                   {:schema-id schema-id
-                    :error     e
-                    :function  f})
-        f))
-    f))
+  If `?schema` is invalid, then behave like a nop, log the error and return `f`.
+
+  `schema-id` is optional, but should be passed when instrumenting anonymous
+  functions. Consider using a namespaced keyword. For example:
+
+    (schema/instrument ::foo
+                       (fn [x] (inc x))
+                       [:=> [:cat :int] :int])
+  "
+  ([f ?schema]
+   (if ^boolean js/goog.DEBUG
+     (let [schema-id (when (var? f) (symbol f))]
+       (when-not schema-id
+         (log/warn "Anonymous function instrumented without an explicit identifier."
+                   {:schema ?schema}))
+       (instrument schema-id f ?schema))
+     f))
+  ([schema-id f ?schema]
+   (if ^boolean js/goog.DEBUG
+     (try
+       (let [?schema               (malli/schema ?schema)
+             {schema-input :input} (malli/-function-info ?schema)
+             [validate-input _]    (malli/-vmap malli/validator [schema-input])]
+         (malli/-instrument {:schema ?schema
+                             :report (reporter schema-id
+                                               {:title (str "Schema error at " schema-id)})}
+                            (with-clear-schema-error schema-id validate-input f)))
+       (catch js/Error e
+         (log/error "Failed to instrument function"
+                    {:schema-id schema-id
+                     :error     e
+                     :function  f})
+         f))
+     f)))
