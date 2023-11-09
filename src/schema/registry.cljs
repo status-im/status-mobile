@@ -7,8 +7,7 @@
 (defonce ^:private registry
   (atom (malli/default-schemas)))
 
-(defn set-default-registry
-  "Initializes global registry."
+(defn init-global-registry
   []
   (malli.registry/set-default-registry! (malli.registry/mutable-registry registry)))
 

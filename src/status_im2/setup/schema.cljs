@@ -87,7 +87,7 @@
   even expected you will call `setup!` multiple times in REPLs."
   []
   (try
-    (schema.registry/set-default-registry)
+    (schema.registry/init-global-registry)
     (register-schemas)
 
     ;; In theory not necessary, but sometimes in a REPL session the dev needs to
