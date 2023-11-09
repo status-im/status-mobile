@@ -44,7 +44,7 @@
         {:customization-color customization-color
          :disabled?           (clojure.string/blank? @input-value)
          :on-press            #(re-frame/dispatch [:navigate-to
-                                                   :edit-address-to-watch
+                                                   :confirm-address-to-watch
                                                    {:address @input-value}])
          :container-style     style/button-container}
         (i18n/label :t/continue)]])))

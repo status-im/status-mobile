@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.add-address-to-watch.edit-address.view
+(ns status-im2.contexts.wallet.add-address-to-watch.confirm-address.view
   (:require
     [clojure.string :as string]
     [quo.core :as quo]

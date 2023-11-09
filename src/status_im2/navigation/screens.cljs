@@ -39,7 +39,7 @@
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
     [status-im2.contexts.wallet.account.bridge.view :as bridge]
     [status-im2.contexts.wallet.account.view :as wallet-accounts]
-    [status-im2.contexts.wallet.add-address-to-watch.edit-address.view :as edit-address-to-watch]
+    [status-im2.contexts.wallet.add-address-to-watch.confirm-address.view :as confirm-address-to-watch]
     [status-im2.contexts.wallet.add-address-to-watch.view :as add-address-to-watch]
     [status-im2.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
@@ -256,8 +256,8 @@
                           :bottom? true}}
      :component add-address-to-watch/view}
 
-    {:name      :edit-address-to-watch
-     :component edit-address-to-watch/view}
+    {:name      :confirm-address-to-watch
+     :component confirm-address-to-watch/view}
 
     {:name      :wallet-bridge
      :options   {:insets                 {:top? true}

@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.add-address-to-watch.edit-address.style)
+(ns status-im2.contexts.wallet.add-address-to-watch.confirm-address.style)
 
 (def container
   {:flex 1})
