@@ -1,11 +1,8 @@
 (ns quo.components.wallet.transaction-progress.style
   (:require [quo.foundations.colors :as colors]))
 
-(def title-container
+(def title-text-container
   {:flex 1})
-
-(def title
-  {:line-height 18.2})
 
 (def icon
   {:margin-right 6})
@@ -15,12 +12,13 @@
    :border-width  1
    :border-color  colors/neutral-10})
 
-(def title-item-container
+(def title-container
   {:align-items        :center
    :flex-direction     :row
-   :padding-horizontal 12
+   :padding-left       12
    :padding-top        8
-   :padding-bottom     5})
+   :padding-right      8
+   :padding-bottom     4})
 
 (def item-container
   {:align-items    :center
@@ -42,9 +40,6 @@
    :border-color       colors/neutral-5
    :padding-top        8
    :padding-bottom     4})
-
-(def inner-container
-  {:flex-direction :row})
 
 (def padding-row
   {:padding-horizontal 12

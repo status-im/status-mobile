@@ -10,7 +10,7 @@
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 
-(defn load-icon
+(defn icon-internal
   [icon color]
   [rn/view {:style style/icon}
    [icons/icon icon
@@ -193,16 +193,15 @@
 
 (defn title-internal
   [network-state title theme btn-title]
-  [rn/view {:style style/title-item-container}
-   [rn/view {:style style/inner-container}
-    [load-icon :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)]
-    [rn/view {:style style/title-container}
+  [rn/view {:style style/title-container} 
+    [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)]
+    [rn/view {:style style/title-text-container}
      [text-internal title]]
     (when (= network-state :error)
       [button/button
        {:size      24
         :icon-left :i/refresh
-        :type      :primary} btn-title])]])
+        :type      :primary} btn-title])])
 
 (defn render-tag
   [tag-photo tag-name]
@@ -226,9 +225,9 @@
                    :border-color
                    (colors/theme-colors colors/neutral-10 colors/neutral-80 override-theme))}
     (let [[status-icon color] (get-status-icon override-theme network-type network-state)]
-      [load-icon status-icon color])
+      [icon-internal status-icon color])
     [rn/view
-     {:style style/title-container}
+     {:style style/title-text-container}
      [text-internal (str (network-type-text network-type network-state) (get-network-text network-type))
       override-theme
       :typography
