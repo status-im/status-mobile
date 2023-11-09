@@ -74,7 +74,7 @@
    (sort-by :name (vals (:featured contract-communities)))))
 
 (re-frame/reg-sub
- :communities/other-contract-communities
+ :communities/other-contract-communities ;; This is the subscription for the curated communities
  :<- [:contract-communities]
  (fn [contract-communities]
    (sort-by :name (vals (:other contract-communities)))))

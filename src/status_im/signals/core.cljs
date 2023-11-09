@@ -144,7 +144,7 @@
       "localPairing"               (handle-local-pairing-signals
                                     cofx
                                     (js->clj event-js :keywordize-keys true))
-      "curated.communities.update" (rf/dispatch [:fetched-contract-communities
+      "curated.communities.update" (rf/dispatch [:fetched-contract-communities ;; Fetched signal
                                                  (js->clj event-js :keywordize-keys true)])
       "waku.backedup.profile"      (rf/dispatch [:profile/update-profile-from-backup
                                                  (js->clj event-js :keywordize-keys true)])

@@ -127,6 +127,8 @@
 
 (defn other-communities-list
   [{:keys [communities communities-ids view-type]}]
+  (tap> "HERE")
+  (tap> communities)
   [rn/view {:style style/other-communities-container}
    (if (and communities (pos? (count communities)))
      (map-indexed
@@ -154,7 +156,7 @@
      [:<>
       [rn/view {:margin-bottom 16} [quo/community-card-view-item {:loading? true}]]
       [rn/view {:margin-bottom 16} [quo/community-card-view-item {:loading? true}]]
-      [quo/community-card-view-item {:loading? true}]])])
+      [quo/community-card-view-item {:loading? true}]])]) ;; This is the loading cards
 
 (defn communities-lists
   [selected-tab view-type]
@@ -241,6 +243,8 @@
 
 (defn- internal-discover-view
   [params]
+  (rf/dispatch [:fetch-contract-communities]) ;; this was removed in this PR -
+                                              ;; https://github.com/status-im/status-mobile/pull/17094
   [:f> f-view-internal params])
 
 (def view (quo.theme/with-theme internal-discover-view))

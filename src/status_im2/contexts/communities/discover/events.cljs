@@ -61,9 +61,23 @@
                  :other    (select-keys (:communities cc) other)})}))
 
 (rf/defn fetch-contract-communities
-  {:events [:fetch-contract-communities]}
+  {:events [:fetch-contract-communities]} ;; It looks like this event is never dispatched
   [_]
   {:json-rpc/call [{:method     "wakuext_curatedCommunities"
                     :params     []
                     :on-success #(rf/dispatch [:fetched-contract-communities %])
                     :on-error   #(log/error "failed to fetch contract communities" %)}]})
+
+(comment
+  (rf/defn fetch-contract-communities1
+    {:events [:fetch-contract-communities]}
+    [_]
+    {:json-rpc/call [{:method     "wakuext_curatedCommunities"
+                      ;; :params     []
+                      :on-success #(tap> %)
+                      :on-error   #(tap> "failed to fetch contract communities")}]})
+)
+
+(comment
+  (rf/dispatch [:fetch-contract-communities])
+)
