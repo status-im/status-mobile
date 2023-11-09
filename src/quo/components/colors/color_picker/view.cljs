@@ -36,6 +36,8 @@
                                    50))
     [rn/flat-list
      {:ref                               #(reset! ref %)
+      ;; TODO: using :feng-shui? temporarily while b & w is being developed.
+      ;; https://github.com/status-im/status-mobile/discussions/16676
       :data                              (if feng-shui?
                                            (conj colors/account-colors :feng-shui)
                                            colors/account-colors)
