@@ -1,0 +1,54 @@
+version: "3"
+services:
+  tests:
+    build: ./clojure
+    volumes:
+      - "../../:/srv"
+    command: lein test-protocol
+    working_dir: "/srv"
+    environment:
+      WNODE_ADDRESS: "http://172.16.238.11:8545"
+    links:
+      - wnode
+    networks:
+      cluster:
+        ipv4_address: 172.16.238.12
+  bootnode:
+    image: ethereum/client-go:alltools-latest
+    entrypoint: bootnode
+    command: -addr=:30303 -nodekey /static/keys/bootnode.key
+    volumes:
+      - ./bootnode/static:/static/keys
+    ports:
+      - 30303
+    networks:
+      cluster:
+        ipv4_address: 172.16.238.10
+  wnode:
+    build: ./status-go
+    command:
+      - "-shh"
+      - "-listenaddr=:30303"
+      - "-discovery=true"
+      - "-standalone=false"
+      - "-bootnodes=enode://3f04db09bedc8d85a198de94c84da73aa7782fafc61b28c525ec5cca5a6cc16be7ebbb5cd001780f71d8408d35a2f6326faa1e524d9d8875294172ebec988743@172.16.238.10:30303"
+      - "-http"
+      - "-httpport=8545"
+      - "-httphost=0.0.0.0"
+      - "-log=DEBUG"
+    ports:
+      - 8080
+      - 8545
+      - 30303
+    depends_on:
+      - bootnode
+    networks:
+      cluster:
+        ipv4_address: 172.16.238.11
+networks:
+  cluster:
+    driver: overlay
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.238.0/24
