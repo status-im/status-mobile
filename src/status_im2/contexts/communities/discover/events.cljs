@@ -73,7 +73,7 @@
     {:events [:fetch-contract-communities]}
     [_]
     {:json-rpc/call [{:method     "wakuext_curatedCommunities"
-                      ;; :params     []
+                      :params     []
                       :on-success #(tap> %)
                       :on-error   #(tap> "failed to fetch contract communities")}]})
 )
