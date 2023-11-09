@@ -250,32 +250,32 @@
       {:color (colors/theme-colors colors/neutral-50 colors/neutral-60 override-theme)}]]]])
 
 (defn view
-  [{:keys [title on-press accessibility-label network-type network-state start-interval-now override-theme tag-photo tag-name btn-title]}]
-  (rn/use-effect
-   (fn []
-     (when start-interval-now
-       (start-interval network-state))
-     (clear-counter)
-     (fn []
-       (stop-interval)))
-   [network-state])
+  [{:keys [title on-press accessibility-label network-type network-state start-interval-now theme tag-photo tag-name btn-title]}]
+  ;; (rn/use-effect
+  ;;  (fn []
+  ;;    (when start-interval-now
+  ;;      (start-interval network-state))
+  ;;    (clear-counter)
+  ;;    (fn []
+  ;;      (stop-interval)))
+  ;;  [network-state])
   [rn/view
    [rn/touchable-without-feedback
     {:on-press            on-press
      :accessibility-label accessibility-label}
     [rn/view
      {:style style/box-style}
-     [render-title network-state title override-theme btn-title]
+     [render-title network-state title theme btn-title]
      [render-tag tag-photo tag-name]
      (when (= network-type :mainnet)
-       [render-status-row override-theme network-state network-type])
+       [render-status-row theme network-state network-type])
      (when (= network-type :optimism-arbitrum)
-       [render-status-row override-theme network-state :arbitrum])
+       [render-status-row theme network-state :arbitrum])
      (when (= network-type :optimism-arbitrum)
-       [progress-boxes-arbitrum override-theme network-state :arbitrum])
+       [progress-boxes-arbitrum theme network-state :arbitrum])
      (when (= network-type :optimism-arbitrum)
-       [render-status-row override-theme network-state :optimism])
+       [render-status-row theme network-state :optimism])
      (when (= network-type :optimism-arbitrum)
-       [progress-boxes-arbitrum override-theme network-state :optimism])
+       [progress-boxes-arbitrum theme network-state :optimism])
      (when (= network-type :mainnet)
        [progress-boxes network-state])]]])
