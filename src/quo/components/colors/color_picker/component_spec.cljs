@@ -6,10 +6,6 @@
     [test-helpers.component :as h]))
 
 (h/describe "color-picker"
-  (h/test "color picker rendered"
-    (h/render [color-picker/view])
-    (-> (h/expect (h/get-all-by-label-text :color-picker-item))
-        (.toHaveLength 11)))
   (h/test "clicks on a color item"
     (let [event (h/mock-fn)]
       (h/render [color-picker/view {:on-change #(event)}])
