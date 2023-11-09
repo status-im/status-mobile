@@ -6,6 +6,7 @@
             [quo.components.wallet.progress-bar.view :as progress-box]
             [quo.components.wallet.transaction-progress.style :as style] 
             [quo.foundations.colors :as colors]
+            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]))
 
@@ -91,40 +92,36 @@
     :else                            0))
 
 (defn progress-boxes-arbitrum
-  [override-theme network-state network-type]
+  [theme network-state network-type]
   [rn/view
    {:style style/progress-box-container}
    [progress-box/view
     {:state               (calculate-box-state-arbitrum network-state network-type)
      :customization-color :blue}]
    [rn/view
-    {:style (style/progress-box-arbitrum override-theme)}
+    {:style (style/progress-box-arbitrum theme)}
     [rn/view
      (assoc
       (let [box-style (cond
-                        (= network-state :finalising) (assoc {:style style/progress-box-arbitrum-abs}
-                                                             :right (str (calculate-box-width true) "%")
-                                                             :background-color
-                                                             (colors/theme-colors
-                                                              (colors/custom-color :blue 50)
-                                                              (colors/custom-color :blue 60)
-                                                              override-theme))
-                        (= network-state :finalized)  (assoc {:style style/progress-box-arbitrum-abs}
-                                                             :right (str (calculate-box-width false) "%")
-                                                             :background-color
-                                                             (colors/theme-colors
-                                                              (colors/custom-color :blue 50)
-                                                              (colors/custom-color :blue 60)
-                                                              override-theme))
-                        :else                         (assoc {:style style/progress-box-arbitrum-abs}
-                                                             :background-color
-                                                             (colors/theme-colors colors/neutral-5
-                                                                                  colors/neutral-70
-                                                                                  override-theme)))]
+                        (= network-state :finalising)
+                        (assoc {:style style/progress-box-arbitrum-abs}
+                               :right (str (calculate-box-width true) "%")
+                               :background-color (colors/resolve-color :blue theme))
+
+                        (= network-state :finalized)
+                        (assoc {:style style/progress-box-arbitrum-abs}
+                               :right (str (calculate-box-width false) "%")
+                               :background-color (colors/resolve-color :blue theme))
+
+                        :else
+                        (assoc {:style style/progress-box-arbitrum-abs}
+                               :background-color (colors/theme-colors colors/neutral-5
+                                                                      colors/neutral-70
+                                                                      theme)))]
         box-style)
       :align-self "flex-end"
       :border-color
-      (colors/theme-colors colors/neutral-10 colors/neutral-80 override-theme))]]])
+      (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))]]])
 
 (defn render-text
   [title override-theme &
@@ -249,7 +246,7 @@
       :typography/font-regular :weight :regular :size :paragraph-2 :style
       {:color (colors/theme-colors colors/neutral-50 colors/neutral-60 override-theme)}]]]])
 
-(defn view
+(defn view-internal
   [{:keys [title on-press accessibility-label network-type network-state start-interval-now theme tag-photo tag-name btn-title]}]
   ;; (rn/use-effect
   ;;  (fn []
@@ -279,3 +276,5 @@
        [progress-boxes-arbitrum theme network-state :optimism])
      (when (= network-type :mainnet)
        [progress-boxes network-state])]]])
+
+(def view (quo.theme/with-theme view-internal))
