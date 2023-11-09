@@ -107,39 +107,40 @@
   [{:keys [input-ref]}
    {:keys [text-value saved-cursor-position]}
    {:keys [edit input-with-mentions]}]
-  (rn/use-effect
-   (fn []
-     (let [mention?         (some #(= :mention (first %)) (seq input-with-mentions))
-           mention-text     (reduce (fn [acc item]
-                                      (str acc (second item)))
-                                    ""
-                                    input-with-mentions)
-           edit-text        (if mention? mention-text (get-in edit [:content :text]))
-           text-value-count (count @text-value)
-           inject-edit-text (fn []
-                              (reset! text-value edit-text)
-                              (reset! saved-cursor-position (if (zero? text-value-count)
-                                                              (count edit-text)
-                                                              text-value-count))
-                              (when @input-ref
-                                (let [selection-pos (count edit-text)]
-                                  (.setNativeProps ^js @input-ref
-                                                   (clj->js {:text      edit-text
-                                                             :selection {:start selection-pos
-                                                                         :end   selection-pos}})))))]
-       (when (and edit @input-ref)
-         ;; NOTE: A small setTimeout is necessary to ensure the focus is enqueued and is executed
-         ;; ASAP. Check https://github.com/software-mansion/react-native-screens/issues/472
-         ;;
-         ;; The nested setTimeout is necessary to avoid both `on-focus` and `on-content-size-change`
-         ;; handlers triggering the height animation simultaneously, as this causes a jump in the
-         ;; UI. This way, `on-focus` will trigger first without changing the height, after which
-         ;; `on-content-size-change` will animate the height of the input based on the injected
-         ;; text.
-         (js/setTimeout #(do (.focus ^js @input-ref)
-                             (js/setTimeout inject-edit-text 250))
-                        100))))
-   [(:message-id edit)]))
+  (let [mention? (some #(= :mention (first %)) (seq input-with-mentions))]
+    (rn/use-effect
+     (fn []
+       (let [mention-text     (reduce (fn [acc item]
+                                        (str acc (second item)))
+                                      ""
+                                      input-with-mentions)
+             edit-text        (if mention? mention-text (get-in edit [:content :text]))
+             text-value-count (count @text-value)
+             inject-edit-text (fn []
+                                (reset! text-value edit-text)
+                                (reset! saved-cursor-position (if (zero? text-value-count)
+                                                                (count edit-text)
+                                                                text-value-count))
+                                (when @input-ref
+                                  (let [selection-pos (count edit-text)]
+                                    (.setNativeProps ^js @input-ref
+                                                     (clj->js {:text      edit-text
+                                                               :selection {:start selection-pos
+                                                                           :end   selection-pos}})))))]
+         (when (and edit @input-ref)
+           ;; NOTE: A small setTimeout is necessary to ensure the focus is enqueued and is executed
+           ;; ASAP. Check https://github.com/software-mansion/react-native-screens/issues/472
+           ;;
+           ;; The nested setTimeout is necessary to avoid both `on-focus` and
+           ;; `on-content-size-change` handlers triggering the height animation simultaneously, as
+           ;; this causes a jump in the
+           ;; UI. This way, `on-focus` will trigger first without changing the height, after which
+           ;; `on-content-size-change` will animate the height of the input based on the injected
+           ;; text.
+           (js/setTimeout #(do (.focus ^js @input-ref)
+                               (js/setTimeout inject-edit-text 250))
+                          100))))
+     [(:message-id edit) mention?])))
 
 (defn use-reply
   [{:keys [input-ref]}
