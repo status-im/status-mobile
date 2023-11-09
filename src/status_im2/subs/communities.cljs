@@ -243,8 +243,10 @@
  (fn [[_ community-id]]
    [(re-frame/subscribe [:communities/community community-id])
     (re-frame/subscribe [:chats/chats])
-    (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])])
- (fn [[{:keys [joined categories chats]} full-chats-data collapsed-categories] [_ community-id]]
+    (re-frame/subscribe [:communities/collapsed-categories-for-community community-id])
+    (re-frame/subscribe [:communities/community community-id])])
+ (fn [[{:keys [joined categories chats]} full-chats-data collapsed-categories
+       {:keys [token-permissions]}] [_ community-id]]
    (let [reduce-fn (reduce-over-categories
                     community-id
                     joined
@@ -260,8 +262,9 @@
            (sort-by (comp :position second))
            (map (fn [[k v]]
                   [k (update v :chats #(sort-by :position %))])))]
-
-     categories-and-chats)))
+     (when (or (and token-permissions joined)
+               (not token-permissions))
+       categories-and-chats))))
 
 (re-frame/reg-sub
  :communities/collapsed-categories-for-community
