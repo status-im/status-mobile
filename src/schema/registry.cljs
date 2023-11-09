@@ -1,5 +1,5 @@
 (ns schema.registry
-  (:refer-clojure :exclude [merge def])
+  (:refer-clojure :exclude [merge])
   (:require
     [malli.core :as malli]
     malli.registry))
