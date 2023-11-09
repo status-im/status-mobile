@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
@@ -20,7 +21,7 @@
         account-name       (reagent/atom (i18n/label :t/default-account-name
                                                      {:number (inc number-of-accounts)}))
         address-title      (i18n/label :t/watch-address)
-        account-color      (reagent/atom :blue)
+        account-color      (reagent/atom (rand-nth colors/account-colors))
         account-emoji      (reagent/atom (emoji-picker.utils/random-emoji))
         on-change-name     #(reset! account-name %)
         on-change-color    #(reset! account-color %)

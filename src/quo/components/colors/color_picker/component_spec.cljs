@@ -1,6 +1,7 @@
 (ns quo.components.colors.color-picker.component-spec
   (:require
     [quo.components.colors.color-picker.view :as color-picker]
+    [quo.foundations.colors :as colors]
     [reagent.core :as reagent]
     [test-helpers.component :as h]))
 
@@ -25,6 +26,6 @@
     (h/render [color-picker/view])
     (js/Promise.all (map (fn [color]
                            (h/is-truthy (h/get-all-by-label-text color)))
-                         color-picker/color-list))))
+                         colors/account-colors))))
 
 

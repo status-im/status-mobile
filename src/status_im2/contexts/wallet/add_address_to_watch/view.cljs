@@ -17,7 +17,7 @@
         customization-color (rf/sub [:profile/customization-color])]
     (fn []
       [rn/view
-       {:style {:flex       1}}
+       {:style {:flex 1}}
        [quo/page-nav
         {:type      :no-title
          :icon-name :i/close

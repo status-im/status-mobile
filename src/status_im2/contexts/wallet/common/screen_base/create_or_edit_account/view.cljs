@@ -58,7 +58,8 @@
        [quo/section-label
         {:section         (i18n/label :t/colour)
          :container-style style/section-container}]
-       [rn/view {:style style/color-picker-container}
+       [rn/view
+        {:style style/color-picker-container}
         [quo/color-picker
          {:default-selected account-color
           :on-change        on-change-color
