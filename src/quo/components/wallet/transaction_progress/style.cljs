@@ -41,9 +41,10 @@
    :padding-top        8
    :padding-bottom     4})
 
-(def padding-row
-  {:padding-horizontal 12
-   :flex-direction     :row})
+(def context-tag-container
+  {:margin-horizontal 12
+   :margin-bottom     8
+   :flex-direction    :row})
 
 (def progress-box
   {:width             8

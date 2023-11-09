@@ -200,14 +200,17 @@
     (when (= network-state :error)
       [button/button
        {:size      24
-        :icon-left :i/refresh
-        :type      :primary} btn-title])])
+        :icon-left :i/refresh} 
+       btn-title])])
 
-(defn render-tag
-  [tag-photo tag-name]
-  [rn/view
-   {:style style/padding-row}
-   [context-tag/view {:blur? [false]} tag-photo tag-name]])
+(defn tag-internal
+  [tag-photo tag-name tag-number]
+  [rn/view {:style style/context-tag-container}
+   [context-tag/view {:size 24
+                      :collectible tag-photo
+                      :collectible-name tag-name
+                      :collectible-number tag-number 
+                      :type :collectible}]])
 
 (defn get-network-text
   [network-type]
@@ -238,7 +241,7 @@
       {:color (colors/theme-colors colors/neutral-50 colors/neutral-60 override-theme)}]]]])
 
 (defn view-internal
-  [{:keys [title on-press accessibility-label network-type network-state start-interval-now theme tag-photo tag-name btn-title]}]
+  [{:keys [title on-press accessibility-label network-type network-state start-interval-now theme tag-photo tag-name btn-title tag-number]}]
   ;; (rn/use-effect
   ;;  (fn []
   ;;    (when start-interval-now
@@ -253,7 +256,7 @@
      :accessibility-label accessibility-label}
     [rn/view {:style style/box-style}
      [title-internal network-state title theme btn-title]
-     [render-tag tag-photo tag-name]
+     [tag-internal tag-photo tag-name tag-number]
      (case network-type
        :mainnet [:<>
                  [render-status-row theme network-state :mainnet]

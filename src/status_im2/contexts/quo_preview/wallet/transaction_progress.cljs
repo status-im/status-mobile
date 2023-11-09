@@ -10,6 +10,8 @@
     :key     :title}
    {:type    :text
     :key     :tag-name}
+   {:type    :text
+    :key     :tag-number}
    {:type    :select
     :key     :network-type
     :options [{:key :mainnet}
@@ -26,7 +28,8 @@
 (defn view
   []
   (let [state (reagent/atom {:title "Title"
-                             :tag-name "Doodle #120"
+                             :tag-name "Doodle"
+                             :tag-number "120"
                              :network-type :mainnet
                              :network-state :pending
                              :accessibility-label :transaction-progress-item
