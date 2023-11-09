@@ -2,11 +2,11 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [status-im.data-store.settings :as data-store.settings]
     [status-im.node.core :as node]
-    [status-im.signals.core :as signals]
     [status-im2.config :as config]
     [status-im2.constants :as constants]
     [status-im2.contexts.syncing.utils :as sync-utils]
@@ -37,6 +37,26 @@
                                        :custom-bootnodes-enabled? false}}]
     (node/get-multiaccount-node-config db)))
 
+(defn- extract-error
+  [json-str]
+  (-> json-str
+      transforms/json->clj
+      (get :error "")
+      not-empty))
+
+(defn- input-connection-string-callback
+  [res]
+  (log/info "[local-pairing] input-connection-string-for-bootstrapping callback"
+            {:response res
+             :event    :syncing/input-connection-string-for-bootstrapping})
+  (let [error (when (extract-error res)
+                (str "generic-error: " res))]
+    (when (some? error)
+      (rf/dispatch [:toasts/upsert
+                    {:icon       :i/alert
+                     :icon-color colors/danger-50
+                     :text       error}]))))
+
 (rf/defn preflight-outbound-check-for-local-pairing
   {:events [:syncing/preflight-outbound-check]}
   [_ set-checks-passed]
@@ -53,40 +73,26 @@
 (rf/defn initiate-local-pairing-with-connection-string
   {:events       [:syncing/input-connection-string-for-bootstrapping]
    :interceptors [(re-frame/inject-cofx :random-guid-generator)]}
-  [{:keys [random-guid-generator db] :as cofx} connection-string]
+  [{:keys [random-guid-generator db]} connection-string]
   (let [installation-id (random-guid-generator)
         default-node-config (get-default-node-config installation-id)
         default-node-config-string (.stringify js/JSON (clj->js default-node-config))
         callback
         (fn [final-node-config]
-          (let [config-map      (.stringify js/JSON
-                                            (clj->js
-                                             {:receiverConfig
-                                              {:kdfIterations config/default-kdf-iterations
-                                               :nodeConfig final-node-config
-                                               :settingCurrentNetwork config/default-network
-                                               :deviceType platform/os
-                                               :deviceName
-                                               (native-module/get-installation-name)}}))
-                includes-error? (fn [json-str]
-                                  (let [data (-> json-str
-                                                 js/JSON.parse
-                                                 (js->clj :keywordize-keys true))]
-                                    (let [error-value (get data :error)]
-                                      (and (not (nil? error-value)) (not (empty? error-value))))))]
+          (let [config-map (.stringify js/JSON
+                                       (clj->js
+                                        {:receiverConfig
+                                         {:kdfIterations config/default-kdf-iterations
+                                          :nodeConfig final-node-config
+                                          :settingCurrentNetwork config/default-network
+                                          :deviceType platform/os
+                                          :deviceName
+                                          (native-module/get-installation-name)}}))]
             (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
             (native-module/input-connection-string-for-bootstrapping
              connection-string
              config-map
-             (fn [res]
-               (signals/handle-local-pairing-signals
-                cofx
-                {:error             (when (includes-error? res)
-                                      (str "generic-error: " res))
-                 :receiving-device? true})
-               (log/info "Initiated local pairing"
-                         {:response res
-                          :event    :syncing/input-connection-string-for-bootstrapping})))))]
+             input-connection-string-callback)))]
     (native-module/prepare-dir-and-update-config "" default-node-config-string callback)))
 
 (rf/defn preparations-for-connection-string
