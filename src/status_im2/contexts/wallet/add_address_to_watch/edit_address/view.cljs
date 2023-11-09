@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.add-watch-only-account.views
+(ns status-im2.contexts.wallet.add-address-to-watch.edit-address.view
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
@@ -7,7 +7,7 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
-    [status-im2.contexts.wallet.add-watch-only-account.style :as style]
+    [status-im2.contexts.wallet.add-address-to-watch.edit-address.style :as style]
     [status-im2.contexts.wallet.common.screen-base.create-or-edit-account.view :as
      create-or-edit-account]
     [utils.i18n :as i18n]
@@ -20,7 +20,7 @@
         account-name       (reagent/atom (i18n/label :t/default-account-name
                                                      {:number (inc number-of-accounts)}))
         address-title      (i18n/label :t/watch-address)
-        account-color      (reagent/atom :blue)
+        account-color      (reagent/atom :flamingo)
         account-emoji      (reagent/atom (emoji-picker.utils/random-emoji))
         on-change-name     #(reset! account-name %)
         on-change-color    #(reset! account-color %)
@@ -57,4 +57,4 @@
           :container-style style/data-item
           :on-press        #(js/alert "To be implemented")}]]])))
 
-(def address-add-edit (quo.theme/with-theme view-internal))
+(def view (quo.theme/with-theme view-internal))

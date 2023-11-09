@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.add-watch-only-account.style)
+(ns status-im2.contexts.wallet.add-address-to-watch.edit-address.style)
 
 (def container
   {:flex 1})

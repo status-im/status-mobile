@@ -39,14 +39,14 @@
     [status-im2.contexts.syncing.syncing-devices-list.view :as settings-syncing]
     [status-im2.contexts.wallet.account.bridge.view :as bridge]
     [status-im2.contexts.wallet.account.view :as wallet-accounts]
-    [status-im2.contexts.wallet.add-watch-only-account.views :as address-add-edit]
     [status-im2.contexts.wallet.collectible.view :as wallet-collectible]
     [status-im2.contexts.wallet.create-account.edit-derivation-path.view :as wallet-edit-derivation-path]
     [status-im2.contexts.wallet.create-account.view :as wallet-create-account]
     [status-im2.contexts.wallet.edit-account.view :as wallet-edit-account]
     [status-im2.contexts.wallet.saved-address.view :as wallet-saved-address]
     [status-im2.contexts.wallet.scan-account.view :as scan-address]
-    [status-im2.contexts.wallet.select-address-to-watch.view :as wallet-address-watch]
+    [status-im2.contexts.wallet.add-address-to-watch.edit-address.view :as edit-address-to-watch]
+    [status-im2.contexts.wallet.add-address-to-watch.view :as add-address-to-watch]
     [status-im2.contexts.wallet.send.select-address.view :as wallet-select-address]
     [status-im2.navigation.options :as options]
     [status-im2.navigation.transitions :as transitions]))
@@ -248,16 +248,16 @@
      :options   {:insets {:top? true}}
      :component wallet-accounts/view}
 
-    {:name      :address-to-watch-edit
-     :component address-add-edit/address-add-edit}
-
     {:name      :wallet-edit-account
      :component wallet-edit-account/view}
 
-    {:name      :wallet-address-watch
+    {:name      :add-address-to-watch
      :options   {:insets {:top?    true
                           :bottom? true}}
-     :component wallet-address-watch/view}
+     :component add-address-to-watch/view}
+
+    {:name      :edit-address-to-watch
+     :component edit-address-to-watch/view}
 
     {:name      :wallet-bridge
      :options   {:insets                 {:top? true}

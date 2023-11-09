@@ -1,4 +1,4 @@
-(ns status-im2.contexts.wallet.select-address-to-watch.view
+(ns status-im2.contexts.wallet.add-address-to-watch.view
   (:require
     [clojure.string :as string]
     [quo.core :as quo]
@@ -6,22 +6,18 @@
     [re-frame.core :as re-frame]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.contexts.wallet.select-address-to-watch.style :as style]
+    [status-im2.contexts.wallet.add-address-to-watch.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
 (defn view-internal
   []
-  (let [top                 (safe-area/get-top)
-        bottom              (safe-area/get-bottom)
-        input-value         (reagent/atom "")
+  (let [input-value         (reagent/atom "")
         customization-color (rf/sub [:profile/customization-color])]
     (fn []
       [rn/view
-       {:style {:flex       1
-                :margin-top top}}
+       {:style {:flex       1}}
        [quo/page-nav
         {:type      :no-title
          :icon-name :i/close
@@ -48,9 +44,9 @@
         {:customization-color customization-color
          :disabled?           (clojure.string/blank? @input-value)
          :on-press            #(re-frame/dispatch [:navigate-to
-                                                   :address-to-watch-edit
+                                                   :edit-address-to-watch
                                                    {:address @input-value}])
-         :container-style     (style/button-container bottom)}
+         :container-style     style/button-container}
         (i18n/label :t/continue)]])))
 
 (def view (quo.theme/with-theme view-internal))
