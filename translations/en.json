@@ -1565,7 +1565,8 @@
     "delete-account": "Delete account",
     "delete-keys-keycard": "Delete keys from Keycard",
     "watch-only": "Watch-only",
-    "watch-address": "Watch address",
+    "watched-address": "Watched address",
+    "add-watched-address": "Add watched address",
     "cant-report-bug": "Can't report a bug",
     "mail-should-be-configured": "Mail client should be configured",
     "check-on-block-explorer": "Check on block explorer",
@@ -2384,5 +2385,9 @@
     "address-activity": "This address has activity",
     "keypairs": "Keypairs",
     "keypairs-description": "Select keypair to derive your new account from",
-    "confirm-account-origin": "Confirm account origin"
+    "confirm-account-origin": "Confirm account origin",
+    "address-placeholder": "0x123abc... or bob.eth",
+    "invalid-address": "It’s not Ethereum address or ENS name",
+    "address-already-in-use": "Address already being used",
+    "address-copied": "Address copied"
 }

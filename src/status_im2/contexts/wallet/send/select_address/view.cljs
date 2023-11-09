@@ -48,7 +48,7 @@
   (fn []
     (let [scanned-address       (rf/sub [:wallet/scanned-address])
           send-address          (rf/sub [:wallet/send-address])
-          valid-ens-or-address? (boolean (rf/sub [:wallet/valid-ens-or-address?]))]
+          valid-ens-or-address? (rf/sub [:wallet/valid-ens-or-address?])]
       [quo/address-input
        {:on-focus              #(reset! input-focused? true)
         :on-blur               #(reset! input-focused? false)
