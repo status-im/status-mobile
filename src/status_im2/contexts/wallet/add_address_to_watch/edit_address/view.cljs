@@ -20,7 +20,7 @@
         account-name       (reagent/atom (i18n/label :t/default-account-name
                                                      {:number (inc number-of-accounts)}))
         address-title      (i18n/label :t/watch-address)
-        account-color      (reagent/atom :flamingo)
+        account-color      (reagent/atom :blue)
         account-emoji      (reagent/atom (emoji-picker.utils/random-emoji))
         on-change-name     #(reset! account-name %)
         on-change-color    #(reset! account-color %)
