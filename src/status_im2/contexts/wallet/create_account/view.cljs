@@ -1,7 +1,6 @@
 (ns status-im2.contexts.wallet.create-account.view
   (:require
     [clojure.string :as string]
-    [utils.string]
     [quo.core :as quo]
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
@@ -15,7 +14,8 @@
     [status-im2.contexts.wallet.create-account.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]))
+    [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
+    [utils.string]))
 
 (defn keypair-string
   [full-name]

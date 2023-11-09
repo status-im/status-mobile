@@ -45,10 +45,10 @@
       title]]
     (when button-icon
       [button/button
-       {:icon-only? true
-        :on-press   button-on-press
+       {:icon-only?          true
+        :on-press            button-on-press
         :customization-color customization-color
-        :size       32} button-icon])]
+        :size                32} button-icon])]
    (when description
      [text/text
       {:accessibility-label description-accessibility-label

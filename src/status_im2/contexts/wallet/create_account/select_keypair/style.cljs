@@ -4,3 +4,9 @@
   {:margin-horizontal 20
    :margin-top        12
    :margin-bottom     20})
+
+(defn bottom-action-container
+  {:position :absolute
+   :bottom   0
+   :left     0
+   :right    0})

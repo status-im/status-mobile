@@ -105,6 +105,6 @@
        [rn/view {:style {:flex 1}}
         [quo/keypair
          (merge
-           @state
-           {:details  (if (= (:type @state) :default-keypair) default-details other-details)
-            :accounts (get-accounts (:blur? @state))})]]])))
+          @state
+          {:details  (if (= (:type @state) :default-keypair) default-details other-details)
+           :accounts (get-accounts (:blur? @state))})]]])))

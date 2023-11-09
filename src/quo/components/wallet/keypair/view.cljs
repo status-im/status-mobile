@@ -28,15 +28,15 @@
   [{{:keys [full-name]} :details
     avatar-type         :type
     customization-color :customization-color
-    profile-picture :profile-picture}]
+    profile-picture     :profile-picture}]
   (if (= avatar-type :default-keypair)
     [user-avatar/user-avatar
      {:full-name           full-name
       :ring?               true
       :size                :small
-      :status-indicator? false
+      :status-indicator?   false
       :customization-color customization-color
-      :profile-picture profile-picture}]
+      :profile-picture     profile-picture}]
     [icon-avatar/icon-avatar
      {:size    :size-32
       :icon    :i/placeholder
