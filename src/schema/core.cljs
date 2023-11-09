@@ -6,6 +6,8 @@
     schema.state
     [taoensso.timbre :as log]))
 
+(goog-define throw-on-error? false)
+
 (defn- ui-reporter
   "Prints to STDOUT and signals a schema error should be displayed on screen."
   [schema-id printer]
@@ -13,6 +15,17 @@
     (fn [type data]
       (report type data)
       (swap! schema.state/errors conj schema-id))))
+
+(defn- thrower
+  "Similar to `malli.dev.pretty/thrower`, but this reporter uses js/Error instead
+  of ex-info, otherwise invalid schema errors will be printed in one long and
+  incomprehensible line in unit test failures."
+  ([] (thrower (malli.pretty/-printer)))
+  ([printer]
+   (let [report (malli.pretty/reporter printer)]
+     (fn [type data]
+       (let [message (with-out-str (report type data))]
+         (throw (js/Error. (str "\n" message))))))))
 
 (defn reporter
   ([]
@@ -26,9 +39,9 @@
                           :print-level  3
                           :print-meta   false}
                          opts))]
-     (if (exists? js/jest)
-       ;; Report schema errors as an exception to signal a failure to Jest.
-       (malli.pretty/thrower printer)
+     (if throw-on-error?
+       ;; The thrower reporter should be used to short-circuit tests on schema errors.
+       (thrower printer)
        (ui-reporter schema-id printer)))))
 
 (defn- with-clear-schema-error
