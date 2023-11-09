@@ -1,52 +1,30 @@
 (ns quo.components.community.community-view
   (:require
+    [quo.components.community.community-stat.view :as community-stat]
     [quo.components.community.style :as style]
-    [quo.components.icon :as icons]
     [quo.components.markdown.text :as text]
     [quo.components.tags.permission-tag :as permission]
     [quo.components.tags.tag :as tag]
     [quo.foundations.colors :as colors]
     [quo.theme :as theme]
     [react-native.core :as rn]
-    [react-native.gesture :as gesture]
-    utils.money))
-
-(defn community-stats
-  [{:keys [icon members-count icon-color accessibility-label]}]
-  [rn/view
-   {:accessibility-label accessibility-label
-    :style               (style/stats-count-container)}
-   [rn/view {:margin-right 2}
-    [icons/icon icon
-     {:container-style {:align-items     :center
-                        :justify-content :center}
-      :resize-mode     :center
-      :size            16
-      :color           icon-color}]]
-   [text/text
-    {:weight :regular
-     :size   :paragraph-2}
-    members-count]])
+    [react-native.gesture :as gesture]))
 
 (defn community-stats-column
-  [{:keys [type theme blur? members-count active-count]}]
-  (let [icon-color (if (and (= :dark theme) blur?)
-                     colors/white-opa-40
-                     (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))]
-    [rn/view
-     (if (= type :card-view)
-       (style/card-stats-container)
-       (style/list-stats-container))
-     [community-stats
-      {:accessibility-label :stats-members-count
-       :icon                :i/group
-       :members-count       (utils.money/format-amount members-count)
-       :icon-color          icon-color}]
-     [community-stats
-      {:accessibility-label :stats-active-count
-       :icon                :i/active-members
-       :members-count       (utils.money/format-amount active-count)
-       :icon-color          icon-color}]]))
+  [{:keys [type members-count active-count]}]
+  [rn/view
+   (if (= type :card-view)
+     (style/card-stats-container)
+     (style/list-stats-container))
+   [community-stat/view
+    {:accessibility-label :stats-members-count
+     :icon                :i/group
+     :value               members-count
+     :style               {:margin-right 12}}]
+   [community-stat/view
+    {:accessibility-label :stats-active-count
+     :icon                :i/active-members
+     :value               active-count}]])
 
 (defn community-tags
   [{:keys [tags container-style last-item-style]}]
