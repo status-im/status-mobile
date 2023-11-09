@@ -28,16 +28,17 @@
   changes to make it appear seamless during transitions between keyboard types when maximized."
   [event
    {:keys [emoji-kb-extra-height]}
-   {:keys [text-value]}
+   {:keys [text-value kb-height]}
    {:keys [height saved-height]}
    {:keys [max-height]}]
-  (let [start-h          (oops/oget event "startCoordinates.height")
-        end-h            (oops/oget event "endCoordinates.height")
-        diff             (- end-h start-h)
-        max-height-diff  (- max-height diff)
-        curr-text        @text-value
-        almost-expanded? (> (reanimated/get-shared-value height) max-height-diff)]
-    (if (and almost-expanded? (pos? diff))
+  (let [start-h                 (oops/oget event "startCoordinates.height")
+        end-h                   (oops/oget event "endCoordinates.height")
+        diff                    (- end-h start-h)
+        max-height-diff         (- max-height diff)
+        curr-text               @text-value
+        bigger-than-default-kb? (> end-h @kb-height)
+        almost-expanded?        (> (reanimated/get-shared-value height) max-height-diff)]
+    (if (and almost-expanded? bigger-than-default-kb? (pos? diff))
       (do
         (reanimated/set-shared-value height (- (reanimated/get-shared-value height) diff))
         (reanimated/set-shared-value saved-height (- (reanimated/get-shared-value saved-height) diff))
