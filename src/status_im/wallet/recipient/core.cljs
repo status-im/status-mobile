@@ -3,13 +3,14 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]
     [status-im.ethereum.ens :as ens]
-    [status-im.ethereum.stateofus :as stateofus]
     [status-im.ui.components.react :as react]
     [status-im.utils.random :as random]
     [status-im.utils.utils :as utils]
     [status-im2.common.json-rpc.events :as json-rpc]
     [status-im2.navigation.events :as navigation]
     [utils.address :as address]
+    [utils.ens.core :as utils.ens]
+    [utils.ens.stateofus :as stateofus]
     [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
@@ -61,11 +62,11 @@
              :db            (assoc-in db [:wallet-legacy/recipient :searching] false)}))
         (and (not (string/blank? recipient))
              (not (string/starts-with? recipient "0x"))
-             (ens/valid-eth-name-prefix? recipient))
+             (utils.ens/valid-eth-name-prefix? recipient))
         (let [ens-name (if (= (.indexOf ^js recipient ".") -1)
                          (stateofus/subdomain recipient)
                          recipient)]
-          (if (ens/is-valid-eth-name? ens-name)
+          (if (utils.ens/is-valid-eth-name? ens-name)
             (do
               (reset! resolve-last-id (random/id))
               {::resolve-address

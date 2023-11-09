@@ -4,8 +4,6 @@
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
     [status-im.ens.core :as ens]
-    [status-im.ethereum.ens :as ethereum.ens]
-    [status-im.ethereum.stateofus :as stateofus]
     [status-im.ethereum.tokens :as tokens]
     [status-im.react-native.resources :as resources]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
@@ -22,8 +20,11 @@
     [status-im.ui.screens.profile.components.views :as profile.components]
     [status-im.ui.screens.wallet.send.sheets :as sheets]
     [status-im.utils.utils :as utils]
+    [status-im2.config :as config]
     [utils.address :as address]
     [utils.debounce :as debounce]
+    [utils.ens.core :as utils.ens]
+    [utils.ens.stateofus :as stateofus]
     [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
@@ -343,7 +344,12 @@
                       :typography :main-medium}}
              (domain-label custom-domain?)]
             [react/view {:flex 1 :min-width 24}]]]
-          [registration checked? (stateofus/get-cached-registrar chain) address public-key]]
+          [registration
+           checked?
+           (when (or (not= chain :goerli) config/test-stateofus?)
+             (stateofus/get-cached-registrar chain))
+           address
+           public-key]]
          [toolbar/toolbar
           {:show-border? true
            :size         :large
@@ -512,7 +518,7 @@
        (i18n/label :t/ens-terms-point-10)]
       [react/view {:style {:align-items :center :margin-top 16 :margin-bottom 8}}
        [link
-        {:on-press #(.openURL ^js react/linking (etherscan-url (:mainnet ethereum.ens/ens-registries)))}
+        {:on-press #(.openURL ^js react/linking (etherscan-url (:mainnet utils.ens/ens-registries)))}
         (i18n/label :t/etherscan-lookup)]]]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

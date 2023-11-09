@@ -6,7 +6,6 @@
     [re-frame.core :as re-frame]
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.ethereum.ens :as ens]
-    [status-im.ethereum.stateofus :as stateofus]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
     [status-im.utils.random :as random]
     [status-im.wallet.utils :as wallet.utils]
@@ -14,6 +13,8 @@
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
+    [utils.ens.core :as utils.ens]
+    [utils.ens.stateofus :as stateofus]
     [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.re-frame :as rf]))
@@ -158,7 +159,7 @@
     (cond
 
       ;; No address for a stateofus subdomain: it can be registered
-      (and (= response ens/default-address) (not custom-domain?))
+      (and (= response utils.ens/default-address) (not custom-domain?))
       (re-frame/dispatch [::name-resolved username :available])
 
       ;; if we get an address back, we try to get the public key associated
@@ -205,7 +206,7 @@
 
 (defn- valid-custom-domain?
   [username]
-  (and (ens/is-valid-eth-name? username)
+  (and (utils.ens/is-valid-eth-name? username)
        (stateofus/lower-case? username)))
 
 (defn- valid-username?

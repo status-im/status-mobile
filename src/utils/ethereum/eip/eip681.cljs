@@ -1,4 +1,4 @@
-(ns status-im.ethereum.eip681
+(ns utils.ethereum.eip.eip681
   "Utility function related to [EIP681](https://eips.ethereum.org/EIPS/eip-681)
 
    This EIP standardize how ethereum payment request can be represented as URI (say to embed them in a QR code).
@@ -6,11 +6,9 @@
    e.g. ethereum:0x1234@1/transfer?to=0x5678&value=1e18&gas=5000"
   (:require
     [clojure.string :as string]
-    [status-im.ethereum.ens :as ens]
-    [status-im.ethereum.tokens :as tokens]
     [utils.address :as address]
-    [utils.ethereum.chain :as chain]
-    [utils.money :as money]))
+    [utils.ens.core :as utils.ens]
+    [utils.ethereum.chain :as chain]))
 
 (def scheme "ethereum")
 (def scheme-separator ":")
@@ -20,7 +18,6 @@
 (def parameter-separator "&")
 (def key-value-separator "=")
 
-;;TODO(goranjovic) - rewrite all of these with something more readable than regex
 (def uri-pattern
   (re-pattern (str scheme scheme-separator "([^" query-separator "]*)(?:\\" query-separator "(.*))?")))
 (def authority-path-pattern
@@ -71,10 +68,10 @@
       (let [[_ authority-path query] (re-find uri-pattern s)]
         (when authority-path
           (let [[_ raw-address chain-id function-name] (re-find authority-path-pattern authority-path)]
-            (when (or (or (ens/is-valid-eth-name? raw-address) (address/address? raw-address))
+            (when (or (or (utils.ens/is-valid-eth-name? raw-address) (address/address? raw-address))
                       (when (string/starts-with? raw-address "pay-")
                         (let [pay-address (string/replace-first raw-address "pay-" "")]
-                          (or (ens/is-valid-eth-name? pay-address)
+                          (or (utils.ens/is-valid-eth-name? pay-address)
                               (address/address? pay-address)))))
               (let [address (if (string/starts-with? raw-address "pay-")
                               (string/replace-first raw-address "pay-" "")
@@ -82,7 +79,7 @@
                 (when-let [arguments (parse-arguments function-name query)]
                   (let [contract-address (get-in arguments [:function-arguments :address])]
                     (if-not (or (not contract-address)
-                                (or (ens/is-valid-eth-name? contract-address)
+                                (or (utils.ens/is-valid-eth-name? contract-address)
                                     (address/address? contract-address)))
                       nil
                       (merge {:address  address
@@ -90,31 +87,6 @@
                                           (js/parseInt chain-id)
                                           (chain/chain-keyword->chain-id :mainnet))}
                              arguments))))))))))))
-
-(defn parse-eth-value
-  "Takes a map as returned by `parse-uri` and returns value as BigNumber"
-  [s]
-  (when (string? s)
-    (let [eth?  (string/ends-with? s "ETH")
-          ^js n (money/bignumber (string/replace s "ETH" ""))]
-      (if eth? (.times n 1e18) n))))
-
-(defn extract-request-details
-  "Return a map encapsulating request details (with keys `value`, `address` and `symbol`) from a parsed URI.
-   Supports ethereum and erc20 token."
-  [{:keys [value address function-name function-arguments] :as details} all-tokens]
-  (when address
-    (merge details
-           (case function-name
-             nil
-             {:value   (parse-eth-value value)
-              :symbol  :ETH
-              :address address}
-             "transfer"
-             {:value   (money/bignumber (:uint256 function-arguments))
-              :symbol  (:symbol (tokens/address->token all-tokens address))
-              :address (:address function-arguments)}
-             nil))))
 
 (defn- generate-query-string
   [m]
@@ -142,12 +114,3 @@
                     (let [native-parameters (dissoc parameters :function-name :function-arguments)]
                       (generate-query-string (merge function-arguments native-parameters))))
                (str query-separator (generate-query-string parameters))))))))
-
-(defn generate-erc20-uri
-  "Generate a EIP 681 URI encapsulating ERC20 token transfer"
-  [address {sym :symbol value :value :as m} all-tokens]
-  (when-let [token (tokens/symbol->token all-tokens sym)]
-    (generate-uri (:address token)
-                  (merge (dissoc m :value :symbol)
-                         {:function-name      "transfer"
-                          :function-arguments {:uint256 value :address address}}))))

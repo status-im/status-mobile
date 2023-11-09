@@ -77,6 +77,7 @@
                       :on-success  #(re-frame/dispatch [:chat-updated %])}]}))
 
 (rf/defn create-from-link
+  {:events [:group-chats/create-from-link]}
   [cofx {:keys [chat-id invitation-admin chat-name]}]
   (if (get-in cofx [:db :chats chat-id])
     {:dispatch [:chat/navigate-to-chat chat-id]}

@@ -1,9 +1,8 @@
-(ns status-im.utils.universal-links.core-test
+(ns status-im2.common.universal-links-test
   (:require
     [cljs.test :refer-macros [deftest is testing]]
     [re-frame.core :as re-frame]
-    [status-im.router.core :as router]
-    [status-im.utils.universal-links.core :as links]))
+    [status-im2.common.universal-links :as links]))
 
 (deftest handle-url-test
   (testing "the user is not logged in"
@@ -19,7 +18,7 @@
                           [:db :universal-links/url]))))
       (testing "Handle a custom string"
         (is (= (get-in (links/handle-url {:db db} "https://status.app/u#statuse2e")
-                       [::router/handle-uri :uri])
+                       [:router/handle-uri :uri])
                "https://status.app/u#statuse2e"))))))
 
 (deftest url-event-listener

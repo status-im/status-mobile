@@ -2,7 +2,6 @@
   (:require
     [re-frame.core :as re-frame]
     [status-im.group-chats.core :as group-chats]
-    [status-im.router.core :as router]
     [status-im.utils.utils :as utils]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
@@ -111,7 +110,7 @@
 (rf/defn on-scan
   {:events [::on-scan-success]}
   [{:keys [db]} uri]
-  {::router/handle-uri {:chain (chain/chain-keyword db)
-                        :chats (get db :chats)
-                        :uri   uri
-                        :cb    #(re-frame/dispatch [::match-scanned-value %])}})
+  {:router/handle-uri {:chain (chain/chain-keyword db)
+                       :chats (get db :chats)
+                       :uri   uri
+                       :cb    #(re-frame/dispatch [::match-scanned-value %])}})

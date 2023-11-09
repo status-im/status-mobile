@@ -16,16 +16,17 @@
     [status-im.ui.components.list-selection :as list-selection]
     [status-im.utils.deprecated-types :as types]
     [status-im.utils.random :as random]
-    [status-im.utils.universal-links.utils :as links]
     [status-im2.constants :as constants]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.address :as address]
     [utils.debounce :as debounce]
+    [utils.ens.core :as utils.ens]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
+    [utils.universal-links :as links]
     [utils.url :as url]))
 
 (rf/defn update-browser-option
@@ -90,7 +91,7 @@
   (when (not error?)
     (let [current-url (get-current-url (get-current-browser db))
           host        (url/url-host current-url)]
-      (if (and (not resolved-url) (ens/is-valid-eth-name? host))
+      (if (and (not resolved-url) (utils.ens/is-valid-eth-name? host))
         {:db                              (update db :browser/options assoc :resolving? true)
          :browser/resolve-ens-contenthash {:chain-id (chain/chain-id db)
                                            :ens-name host

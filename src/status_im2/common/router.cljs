@@ -1,18 +1,18 @@
-(ns status-im.router.core
+(ns status-im2.common.router
   (:require
     [bidi.bidi :as bidi]
     [clojure.string :as string]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
-    [status-im.ethereum.eip681 :as eip681]
     [status-im.ethereum.ens :as ens]
-    [status-im.ethereum.stateofus :as stateofus]
-    [status-im.utils.wallet-connect :as wallet-connect]
     [status-im2.constants :as constants]
     [status-im2.contexts.chat.events :as chat.events]
     [taoensso.timbre :as log]
     [utils.address :as address]
+    [utils.ens.core :as utils.ens]
+    [utils.ens.stateofus :as stateofus]
     [utils.ethereum.chain :as chain]
+    [utils.ethereum.eip.eip681 :as eip681]
     [utils.security.core :as security]
     [utils.transforms :as transforms]
     [utils.url :as url]
@@ -81,7 +81,7 @@
 
         ;; fragment is the one after `#`, usually user-id, ens-name, community-id
         fragment (parse-fragment uri)
-        ens? (ens/is-valid-eth-name? fragment)
+        ens? (utils.ens/is-valid-eth-name? fragment)
 
         {:keys [handler route-params] :as parsed}
         (assoc (bidi/match-route routes uri-without-equal-in-path)
@@ -119,7 +119,7 @@
 (defn match-contact-async
   [chain {:keys [user-id ens-name]} callback]
   (let [valid-public-key?     (and (validators/valid-public-key? user-id)
-                                   (not= user-id ens/default-key))
+                                   (not= user-id utils.ens/default-key))
         valid-compressed-key? (validators/valid-compressed-key? user-id)]
     (cond
       valid-public-key?
@@ -230,7 +230,7 @@
     (let [{:keys [paths ens-names]}
           (reduce (fn [acc path]
                     (let [address (get-in message path)]
-                      (if (ens/is-valid-eth-name? address)
+                      (if (utils.ens/is-valid-eth-name? address)
                         (-> acc
                             (update :paths conj path)
                             (update :ens-names conj address))
@@ -318,9 +318,6 @@
       (url/url? uri)
       (cb (match-browser-string uri))
 
-      (wallet-connect/url? uri)
-      (cb {:type :wallet-connect :data uri})
-
       (string/starts-with? uri constants/local-pairing-connection-string-identifier)
       (cb {:type :localpairing :data uri})
 
@@ -329,6 +326,6 @@
            :data uri}))))
 
 (re-frame/reg-fx
- ::handle-uri
+ :router/handle-uri
  (fn [{:keys [chain chats uri cb]}]
    (handle-uri chain chats uri cb)))
