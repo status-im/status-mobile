@@ -14,11 +14,6 @@
       (swap! schema.state/errors conj schema-id))))
 
 (defn reporter
-  "Build custom reporter.
-
-  We might need to use `malli.dev.pretty/thrower` instead of
-  `malli.dev.pretty/report`, otherwise calls to memoized functions won't fail on
-  subsequent calls after the first failure."
   ([]
    (reporter nil nil))
   ([schema-id]
