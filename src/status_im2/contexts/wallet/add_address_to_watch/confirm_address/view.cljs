@@ -8,7 +8,7 @@
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
-    [status-im2.contexts.wallet.add-address-to-watch.edit-address.style :as style]
+    [status-im2.contexts.wallet.add-address-to-watch.confirm-address.style :as style]
     [status-im2.contexts.wallet.common.screen-base.create-or-edit-account.view :as
      create-or-edit-account]
     [utils.i18n :as i18n]
