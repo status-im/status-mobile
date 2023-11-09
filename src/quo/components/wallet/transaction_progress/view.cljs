@@ -260,21 +260,18 @@
    [rn/touchable-without-feedback
     {:on-press            on-press
      :accessibility-label accessibility-label}
-    [rn/view
-     {:style style/box-style}
+    [rn/view {:style style/box-style}
      [render-title network-state title theme btn-title]
      [render-tag tag-photo tag-name]
-     (when (= network-type :mainnet)
-       [render-status-row theme network-state network-type])
-     (when (= network-type :optimism-arbitrum)
-       [render-status-row theme network-state :arbitrum])
-     (when (= network-type :optimism-arbitrum)
-       [progress-boxes-arbitrum theme network-state :arbitrum])
-     (when (= network-type :optimism-arbitrum)
-       [render-status-row theme network-state :optimism])
-     (when (= network-type :optimism-arbitrum)
-       [progress-boxes-arbitrum theme network-state :optimism])
-     (when (= network-type :mainnet)
-       [progress-boxes network-state])]]])
+     (case network-type
+       :mainnet [:<>
+                 [render-status-row theme network-state :mainnet]
+                 [progress-boxes network-state]]
+       :optimism-arbitrum [:<>
+                           [render-status-row theme network-state :arbitrum]
+                           [progress-boxes-arbitrum theme network-state :arbitrum]
+                           [render-status-row theme network-state :optimism]
+                           [progress-boxes-arbitrum theme network-state :optimism]]
+       nil)]]])
 
 (def view (quo.theme/with-theme view-internal))
