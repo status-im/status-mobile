@@ -1,5 +1,4 @@
 (ns schema.core
-  (:require-macros schema.core)
   (:require
     [malli.core :as malli]
     [malli.dev.pretty :as malli.pretty]
@@ -44,28 +43,28 @@
       (swap! schema.state/errors disj schema-id))
     (apply f args)))
 
-(defn -instrument
-  "Similar to `malli/-instrument`, but can be used to instrument anonymous
-  functions (e.g. subscriptions) and will automatically clear up visible schema
+(defn instrument
+  "Similar to `malli/-instrument`, but will automatically clear up visible schema
   errors if `f` is called with valid arguments.
 
   We use a validator cached by `malli.core/validator`, so that validation is
   performed once.
 
-  If `?schema` is invalid, then behave like a nop, log the error and return `f`.
-
-  Do NOT use this function directly, use the macro `schema.core/instrument`."
+  If `?schema` is invalid, then behave like a nop, log the error and return `f`."
   [schema-id ?schema f]
-  (try
-    (let [?schema               (malli/schema ?schema)
-          {schema-input :input} (malli/-function-info ?schema)
-          [validate-input _]    (malli/-vmap malli/validator [schema-input])]
-      (malli/-instrument {:schema ?schema
-                          :report (reporter schema-id
-                                            {:title (str "Schema error - " schema-id)})}
-                         (with-clear-schema-error schema-id validate-input f)))
-    (catch js/Error e
-      (log/error "Failed to instrument function"
-                 {:schema-id schema-id
-                  :error     e})
-      f)))
+  (if ^boolean js/goog.DEBUG
+    (try
+      (let [?schema               (malli/schema ?schema)
+            {schema-input :input} (malli/-function-info ?schema)
+            [validate-input _]    (malli/-vmap malli/validator [schema-input])]
+        (malli/-instrument {:schema ?schema
+                            :report (reporter schema-id
+                                              {:title (str "Schema error - " schema-id)})}
+                           (with-clear-schema-error schema-id validate-input f)))
+      (catch js/Error e
+        (log/error "Failed to instrument function"
+                   {:schema-id schema-id
+                    :error     e
+                    :function  f})
+        f))
+    f))
