@@ -123,19 +123,14 @@
       :border-color
       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))]]])
 
-(defn render-text
-  [title override-theme &
-   {:keys [typography weight size style]
-    :or   {typography :main-semibold
-           weight     :semi-bold
-           size       :paragraph-1
-           style      style/title}}]
+(defn text-internal
+  [title
+   {:keys [weight size accessibility-label]
+    :or   {weight     :semi-bold
+           size       :paragraph-1}}]
   [text/text
-   {:typography          typography
-    :accessibility-label :title-name-text
+   {:accessibility-label accessibility-label
     :ellipsize-mode      :tail
-    :style               style
-    :override-theme      override-theme
     :number-of-lines     1
     :weight              weight
     :size                size}
@@ -196,16 +191,13 @@
                                                              colors/danger-60
                                                              override-theme)]))
 
-(defn render-title
-  [network-state title override-theme btn-title]
-  [rn/view
-   {:style style/title-item-container}
-   [rn/view
-    {:style style/inner-container}
-    [load-icon "placeholder" (colors/theme-colors colors/neutral-50 colors/neutral-60 override-theme)]
-    [rn/view
-     {:style style/title-container}
-     [render-text title override-theme]]
+(defn title-internal
+  [network-state title theme btn-title]
+  [rn/view {:style style/title-item-container}
+   [rn/view {:style style/inner-container}
+    [load-icon :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)]
+    [rn/view {:style style/title-container}
+     [text-internal title]]
     (when (= network-state :error)
       [button/button
        {:size      24
@@ -237,12 +229,12 @@
       [load-icon status-icon color])
     [rn/view
      {:style style/title-container}
-     [render-text (str (network-type-text network-type network-state) (get-network-text network-type))
+     [text-internal (str (network-type-text network-type network-state) (get-network-text network-type))
       override-theme
       :typography
       :typography/font-regular :weight :regular :size :paragraph-2]]
     [rn/view
-     [render-text (steps-text network-type network-state) override-theme :typography
+     [text-internal (steps-text network-type network-state) override-theme :typography
       :typography/font-regular :weight :regular :size :paragraph-2 :style
       {:color (colors/theme-colors colors/neutral-50 colors/neutral-60 override-theme)}]]]])
 
@@ -261,7 +253,7 @@
     {:on-press            on-press
      :accessibility-label accessibility-label}
     [rn/view {:style style/box-style}
-     [render-title network-state title theme btn-title]
+     [title-internal network-state title theme btn-title]
      [render-tag tag-photo tag-name]
      (case network-type
        :mainnet [:<>
