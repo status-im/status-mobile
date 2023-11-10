@@ -104,8 +104,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702782)
     def test_1_1_chat_emoji_send_reply_and_open_link(self):
-        for chat in self.chat_1, self.chat_2:
-            chat.navigate_back_to_chat_view()
+        self.chat_1.navigate_back_to_chat_view()
+        self.chat_2.navigate_back_to_chat_view()
         self.home_1.just_fyi("Check that can send emoji in 1-1 chat")
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
@@ -282,8 +282,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_2.navigate_back_to_home_view()
         self.home_2.jump_to_card_by_text(self.username_1)
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
-        [self.chat_2.send_message(message) for message in messages]
         for message in messages:
+            self.chat_2.send_message(message)
             if not self.chat_1.chat_element_by_text(message).is_element_displayed(10):
                 self.errors.append("Message with text '%s' was not received" % message)
 
@@ -318,7 +318,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     def test_1_1_chat_push_emoji(self):
         message_no_pn, message = 'No PN', 'Text push notification'
 
-        [home.navigate_back_to_home_view() for home in self.homes]
+        self.home_1.navigate_back_to_home_view()
+        self.home_2.navigate_back_to_home_view()
         self.home_2.profile_button.click()
         self.home_1.chats_tab.click()
 
@@ -368,7 +369,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702855)
     def test_1_1_chat_edit_message(self):
-        [home.navigate_back_to_home_view() for home in self.homes]
+        self.home_1.navigate_back_to_home_view()
+        self.home_2.navigate_back_to_home_view()
         self.chat_2.jump_to_card_by_text(self.username_1)
         self.chat_1.jump_to_card_by_text(self.username_2)
 
@@ -512,7 +514,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if pn_to_disappear:
             if not pn_to_disappear.is_element_disappeared(90):
                 self.errors.append("Push notification was not removed after initial message deletion")
-        [device.navigate_back_to_home_view() for device in (self.device_1, self.device_2)]
+        self.device_1.navigate_back_to_home_view()
+        self.device_2.navigate_back_to_home_view()
         self.errors.verify_no_errors()
 
 
