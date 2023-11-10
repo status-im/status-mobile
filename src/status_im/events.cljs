@@ -158,7 +158,9 @@
 
 (rf/defn on-going-in-background
   [{:keys [db now]}]
-  {:db (assoc db :app-in-background-since now)})
+  {:db (-> db
+           (assoc :app-in-background-since now)
+           (dissoc :universal-links/handling))})
    ;; event not implemented
    ;; :dispatch-n [[:audio-recorder/on-background] [:audio-message/on-background]]
 

@@ -113,8 +113,9 @@
                         (fn [accounts tokens custom-tokens favourites]
                           (re-frame/dispatch [:wallet-legacy/initialize-wallet
                                               accounts tokens custom-tokens favourites]))]
-                       :check-eip1559-activation {:network-id network-id}
-                       :chat/open-last-chat (get-in db [:profile/profile :key-uid])}
+                       :check-eip1559-activation {:network-id network-id}}
+                (not (:universal-links/handling db))
+                (assoc :chat/open-last-chat (get-in db [:profile/profile :key-uid]))
                 notifications-enabled?
                 (assoc :effects/push-notifications-enable nil))
               (transport/start-messenger)
