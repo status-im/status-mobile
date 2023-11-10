@@ -11,6 +11,7 @@
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
+    [utils.number]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
     [utils.transforms :as types]))
@@ -96,11 +97,27 @@
                                       :event  :wallet/get-wallet-token
                                       :params addresses})}]]]})))
 
-(rf/reg-event-fx :wallet/get-wallet-token-success
- (fn [{:keys [db]} [tokens]]
-   {:db (assoc db
-               :wallet/tokens          tokens
-               :wallet/tokens-loading? false)}))
+(defn- fix-chain-id-keys
+  [token]
+  (update token :balances-per-chain update-keys (comp utils.number/parse-int name)))
+
+(rf/reg-event-fx
+ :wallet/store-wallet-token
+ (fn [{:keys [db]} [raw-tokens-data]]
+   (let [tokens     (-> raw-tokens-data
+                        (update-keys name)
+                        (update-vals #(cske/transform-keys csk/->kebab-case %))
+                        (update-vals #(mapv fix-chain-id-keys %)))
+         add-tokens (fn [stored-accounts tokens-per-account]
+                      (reduce-kv (fn [accounts address tokens-data]
+                                   (if (accounts address)
+                                     (update accounts address assoc :tokens tokens-data)
+                                     accounts))
+                                 stored-accounts
+                                 tokens-per-account))]
+     {:db (-> db
+              (update-in [:wallet :accounts] add-tokens tokens)
+              (assoc-in [:wallet :ui :tokens-loading?] false))})))
 
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}
