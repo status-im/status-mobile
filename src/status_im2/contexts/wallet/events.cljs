@@ -72,14 +72,14 @@
 
 (rf/reg-event-fx
  :wallet/save-account
- (fn [_ [{:keys [account callback]}]]
+ (fn [_ [{:keys [account on-success]}]]
    {:fx [[:json-rpc/call
           [{:method     "accounts_saveAccount"
             :params     [(data-store/<-account account)]
             :on-success (fn []
                           (rf/dispatch [:wallet/get-accounts])
-                          (when (fn? callback)
-                            (callback)))
+                          (when (fn? on-success)
+                            (on-success)))
             :on-error   #(log/info "failed to save account "
                                    {:error %
                                     :event :wallet/save-account})}]]]}))
