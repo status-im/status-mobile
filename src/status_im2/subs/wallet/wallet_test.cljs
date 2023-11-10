@@ -82,14 +82,10 @@
 
 (h/deftest-sub :wallet/balances
   [sub-name]
-  (testing "returns seq of maps containing :address and :balance"
-    (swap! rf-db/app-db #(-> %
-                             (assoc-in [:wallet :accounts] accounts)
-                             (assoc :wallet/tokens tokens)))
-    (is (= `({:address "0x1"
-              :balance 3250}
-             {:address "0x2"
-              :balance 2100})
+  (testing "a map: address->balance"
+    (swap! rf-db/app-db #(assoc-in % [:wallet :accounts] accounts))
+
+    (is (= {"0x1" 3250 "0x2" 2100}
            (rf/sub [sub-name])))))
 
 (h/deftest-sub :wallet/accounts
