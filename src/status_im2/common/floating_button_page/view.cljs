@@ -26,6 +26,30 @@
     (let [height (oops/oget event "nativeEvent.layout.height")]
       (reset! ratom height))))
 
+(defn- init-keyboard-listeners
+  [{:keys [on-did-show]}]
+  (let [keyboard-will-show? (reagent/atom false)
+        keyboard-did-show?  (reagent/atom false)
+        add-listener        (fn [listener callback]
+                              (oops/ocall rn/keyboard "addListener" listener callback))
+        will-show-listener  (add-listener "keyboardWillShow"
+                                          #(reset! keyboard-will-show? true))
+        did-show-listener   (add-listener "keyboardDidShow"
+                                          (fn [e]
+                                            (reset! keyboard-did-show? true)
+                                            (when on-did-show (on-did-show e))))
+        will-hide-listener  (add-listener "keyboardWillHide"
+                                          #(reset! keyboard-will-show? false))
+        did-hide-listener   (add-listener "keyboardDidHide"
+                                          #(reset! keyboard-did-show? false))
+        remove-listeners    (fn []
+                              (doseq [listener [will-show-listener will-hide-listener
+                                                did-show-listener did-hide-listener]]
+                                (oops/ocall listener "remove")))]
+    {:keyboard-will-show? keyboard-will-show?
+     :keyboard-did-show?  keyboard-did-show?
+     :remove-listeners    remove-listeners}))
+
 (defn view
   [{:keys [header footer]} & children]
   (reagent/with-let [window-height                (:height (rn/get-window))
@@ -34,27 +58,13 @@
                      content-container-height     (reagent/atom 0)
                      content-scroll-y             (reagent/atom 0)
                      keyboard-height              (reagent/atom 0)
-                     keyboard-will-show?          (reagent/atom false)
-                     keyboard-did-show?           (reagent/atom false)
-                     will-show-listener           (oops/ocall rn/keyboard
-                                                              "addListener"
-                                                              "keyboardWillShow"
-                                                              #(reset! keyboard-will-show? true))
-                     did-show-listener            (oops/ocall rn/keyboard
-                                                              "addListener"
-                                                              "keyboardDidShow"
-                                                              (fn [e]
-                                                                (reset! keyboard-height
-                                                                  (oops/oget e "endCoordinates.height"))
-                                                                (reset! keyboard-did-show? true)))
-                     will-hide-listener           (oops/ocall rn/keyboard
-                                                              "addListener"
-                                                              "keyboardWillHide"
-                                                              #(reset! keyboard-will-show? false))
-                     did-hide-listener            (oops/ocall rn/keyboard
-                                                              "addListener"
-                                                              "keyboardDidHide"
-                                                              #(reset! keyboard-did-show? false))
+                     {:keys [keyboard-will-show?
+                             keyboard-did-show?
+                             remove-listeners]}   (init-keyboard-listeners
+                                                   {:on-did-show
+                                                    (fn [e]
+                                                      (reset! keyboard-height
+                                                        (oops/oget e "endCoordinates.height")))})
                      set-header-height            (set-height-on-layout header-height)
                      set-content-container-height (set-height-on-layout content-container-height)
                      set-footer-container-height  (set-height-on-layout footer-container-height)
@@ -89,5 +99,4 @@
           :blur?           show-background?}
          footer]]])
     (finally
-     (doseq [listener [will-show-listener will-hide-listener did-show-listener did-hide-listener]]
-       (oops/ocall listener "remove")))))
+     (remove-listeners))))
