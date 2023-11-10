@@ -2,7 +2,8 @@
   (:require [quo.foundations.colors :as colors]
             [react-native.safe-area :as safe-area]))
 
-(defn container []
+(defn container
+  []
   {:flex       1
    :margin-top (safe-area/get-top)})
 

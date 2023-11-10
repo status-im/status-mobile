@@ -9,7 +9,7 @@ jest.mock('@react-native-async-storage/async-storage', () => mockAsyncStorage);
 
 jest.mock('react-native-navigation', () => ({
   getNavigationConstants: () => ({ constants: [] }),
-  Navigation: { constants: async () => { } },
+  Navigation: { constants: async () => {} },
 }));
 
 jest.mock('react-native-background-timer', () => ({}));
@@ -29,7 +29,8 @@ jest.mock('react-native-static-safe-area-insets', () => ({
   default: {
     safeAreaInsetsTop: 0,
     safeAreaInsetsBottom: 0,
-  }}));
+  },
+}));
 
 jest.mock('react-native-permissions', () => require('react-native-permissions/mock'));
 
@@ -68,11 +69,6 @@ jest.mock('@react-native-community/audio-toolkit', () => ({
     SoloAmbient: 3,
   },
 }));
-
-jest.mock("react-native", () => ({
-  ...jest.requireActual("react-native"),
-  "Keyboard"
-}))
 
 jest.mock('i18n-js', () => ({
   ...jest.requireActual('i18n-js'),

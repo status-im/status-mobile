@@ -66,7 +66,7 @@
           :background :blur
           :on-press   #(rf/dispatch [:navigate-back])
           :right-side [{:icon-left :i/info
-                        :label     "swap button"
+                        :label     (i18n/label :t/how-to-pair)
                         :on-press  #(rf/dispatch [:open-modal :how-to-pair])}]}]
         [rn/view {:style style/page-container}
          [rn/view {:style style/title-container}
