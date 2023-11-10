@@ -14,7 +14,8 @@
            transactions-management-enabled?
            wakuv2-flag
            current-fleet
-           webview-debug]}]
+           webview-debug
+           test-networks-enabled?]}]
   (keep
    identity
    [{:size :small
@@ -96,6 +97,15 @@
      :accessory :switch
      :active webview-debug}
     {:size :small
+     :title "Test Networks Enabled"
+     :accessibility-label :test-networks-enabled
+     :container-margin-bottom 8
+     :on-press
+     #(re-frame/dispatch
+       [:profile.settings/change-test-networks-enabled (not test-networks-enabled?)])
+     :accessory :switch
+     :active test-networks-enabled?}
+    {:size :small
      :title (i18n/label :t/waku-bloom-filter-mode)
      :accessibility-label :waku-bloom-filter-mode-settings-switch
      :container-margin-bottom 8
@@ -117,7 +127,8 @@
 
 (views/defview advanced-settings
   []
-  (views/letsubs [{:keys [webview-debug]}          [:profile/profile]
+  (views/letsubs [{:keys [webview-debug
+                          test-networks-enabled?]} [:profile/profile]
                   network-name                     [:network-name]
                   waku-bloom-filter-mode           [:waku/bloom-filter-mode]
                   wakuv2-flag                      [:waku/v2-flag]
@@ -133,6 +144,7 @@
                    :dev-mode?                        false
                    :wakuv2-flag                      wakuv2-flag
                    :waku-bloom-filter-mode           waku-bloom-filter-mode
-                   :webview-debug                    webview-debug})
+                   :webview-debug                    webview-debug
+                   :test-networks-enabled?           test-networks-enabled?})
       :key-fn    (fn [_ i] (str i))
       :render-fn render-item}]))

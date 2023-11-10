@@ -14,6 +14,7 @@
                       :on-success #(log/debug "sent contact update")}]}))
 
 (rf/defn profile-update
+  {:events [:profile.settings/profile-update]}
   [{:keys [db] :as cofx}
    setting setting-value
    {:keys [dont-sync? on-success] :or {on-success #()}}]
@@ -55,6 +56,10 @@
   (rf/merge cofx
             {:profile.settings/webview-debug-changed value}
             (profile-update :webview-debug (boolean value) {})))
+
+(rf/reg-event-fx :profile.settings/change-test-networks-enabled
+ (fn [_ [value]]
+   {:fx [[:dispatch [:profile.settings/profile-update :test-networks-enabled? (boolean value) {}]]]}))
 
 (rf/defn change-preview-privacy-flag
   {:events [:profile.settings/change-preview-privacy]}
