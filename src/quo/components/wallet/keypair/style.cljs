@@ -4,7 +4,7 @@
 
 (defn container
   [{:keys [blur? customization-color theme selected?]}]
-  {:border-radius  20
+  {:border-radius  16
    :border-width   1
    :border-color   (if selected?
                      (if blur?
