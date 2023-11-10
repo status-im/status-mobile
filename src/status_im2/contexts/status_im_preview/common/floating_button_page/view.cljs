@@ -2,7 +2,6 @@
   (:require [quo.core :as quo]
             [re-frame.core :as rf]
             [react-native.core :as rn]
-            [react-native.safe-area :as safe-area]
             [reagent.core :as reagent]
             [status-im2.common.floating-button-page.view :as floating-button-page]
             [status-im2.common.resources :as resources]
@@ -13,9 +12,7 @@
   (let [content-height (reagent/atom 450)
         slide?         (reagent/atom false)]
     (fn []
-      [rn/view
-       {:flex       1
-        :margin-top (safe-area/get-top)}
+      [rn/view {:style (style/container)}
        (when-not @slide?
          [rn/image
           {:style  style/background-image
@@ -43,8 +40,7 @@
                     {:container-style {:z-index 2}
                      :on-press        #(js/alert "button pressed")}
                     "Save address"])}
-        [rn/view
-         {:style (style/page-content @content-height)}
+        [rn/view {:style (style/page-content @content-height)}
          [quo/text {:size :heading-1} "Page Content"]
          [quo/input
           {:auto-focus true
