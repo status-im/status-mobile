@@ -3,6 +3,7 @@
     [clojure.string :as string]
     [native-module.core :as native-module]
     [re-frame.core :as re-frame]
+    [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
@@ -118,7 +119,10 @@
   "Dispatch url so we can get access to re-frame/db"
   [url]
   (if-not (nil? url)
-    (re-frame/dispatch [:universal-links/handle-url url])
+    (do
+      (async-storage/set-item! (str :chat-id) nil #(rf/dispatch [:universal-links/remove-handling]))
+      (re-frame/dispatch [:universal-links/handling])
+      (re-frame/dispatch [:universal-links/handle-url url]))
     (log/debug "universal-links: no url")))
 
 (rf/defn on-handle
@@ -150,6 +154,16 @@
   [{:keys [db]} url]
   (log/info :store-url-for-later)
   {:db (assoc db :universal-links/url url)})
+
+(rf/defn handling
+  {:events [:universal-links/handling]}
+  [{:keys [db]}]
+  {:db (assoc db :universal-links/handling true)})
+
+(rf/defn remove-handling
+  {:events [:universal-links/remove-handling]}
+  [{:keys [db]}]
+  {:db (dissoc db :universal-links/handling)})
 
 (rf/defn handle-url
   "Store url in the database if the user is not logged in, to be processed
