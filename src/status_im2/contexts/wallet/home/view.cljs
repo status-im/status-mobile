@@ -8,7 +8,6 @@
     [status-im2.contexts.wallet.common.activity-tab.view :as activity]
     [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im2.contexts.wallet.common.temp :as temp]
-    [status-im2.contexts.wallet.common.utils :as utils]
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -28,9 +27,9 @@
       :on-press            #(rf/dispatch [:navigate-to :add-address-to-watch])
       :add-divider?        true}]]])
 
-(defn- add-account-placeholder
-  [color]
-  {:customization-color color
+(defn- new-account-card-data
+  []
+  {:customization-color (rf/sub [:profile/customization-color])
    :on-press            #(rf/dispatch [:show-bottom-sheet {:content new-account}])
    :type                :add-account})
 
@@ -38,21 +37,6 @@
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
-
-(defn account-cards
-  [{:keys [accounts loading? balances profile-color]}]
-  (let [accounts-with-balances
-        (mapv
-         (fn [{:keys [color address] :as account}]
-           (assoc account
-                  :customization-color color
-                  :type                :empty
-                  :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
-                  :loading?            loading?
-                  :balance             (utils/prettify-balance
-                                        (utils/get-balance-by-address balances address))))
-         accounts)]
-    (conj accounts-with-balances (add-account-placeholder profile-color))))
 
 (defn view
   []
@@ -62,14 +46,10 @@
   (let [top          (safe-area/get-top)
         selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      (let [accounts      (rf/sub [:wallet/accounts])
-            loading?      (rf/sub [:wallet/tokens-loading?])
-            balances      (rf/sub [:wallet/balances])
-            profile-color (rf/sub [:profile/customization-color])
-            networks      (rf/sub [:wallet/network-details])]
-        [rn/view
-         {:style {:margin-top top
-                  :flex       1}}
+      (let [networks           (rf/sub [:wallet/network-details])
+            account-cards-data (rf/sub [:wallet/account-cards-data])
+            cards              (conj account-cards-data (new-account-card-data))]
+        [rn/view {:style {:margin-top top :flex 1}}
          [common.top-nav/view]
          [rn/view {:style style/overview-container}
           [quo/wallet-overview (temp/wallet-overview-state networks)]]
@@ -80,10 +60,7 @@
          [rn/flat-list
           {:style                             style/accounts-list
            :content-container-style           style/accounts-list-container
-           :data                              (account-cards {:accounts      accounts
-                                                              :loading?      loading?
-                                                              :balances      balances
-                                                              :profile-color profile-color})
+           :data                              cards
            :horizontal                        true
            :separator                         [rn/view {:style {:width 12}}]
            :render-fn                         quo/account-card

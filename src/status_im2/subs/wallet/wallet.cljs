@@ -28,7 +28,21 @@
    (zipmap (map :address accounts)
            (map #(-> % :tokens utils/calculate-balance) accounts))))
 
-(re-frame/reg-sub
+(rf/reg-sub
+ :wallet/account-cards-data
+ :<- [:wallet/accounts]
+ :<- [:wallet/balances]
+ :<- [:wallet/tokens-loading?]
+ (fn [[accounts balances tokens-loading?]]
+   (mapv (fn [{:keys [color address] :as account}]
+           (assoc account
+                  :customization-color color
+                  :type                :empty
+                  :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
+                  :loading?            tokens-loading?
+                  :balance             (utils/prettify-balance (get balances address))))
+         accounts)))
+
 (rf/reg-sub
  :wallet/current-viewing-account
  :<- [:wallet]
