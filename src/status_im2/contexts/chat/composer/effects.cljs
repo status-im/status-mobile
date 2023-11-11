@@ -106,12 +106,17 @@
 (defn use-edit
   [{:keys [input-ref]}
    {:keys [text-value saved-cursor-position]}
-   {:keys [edit]}]
+   {:keys [edit]}
+   message-list-rendered?]
   (rn/use-effect
    (fn []
      (let [edit-text        (get-in edit [:content :text])
            text-value-count (count @text-value)]
-       (when (and edit @input-ref)
+       (when (and edit @input-ref @message-list-rendered?)
+         ;; A small setTimeout is necessary to ensure the statement is enqueued and will get executed
+         ;; ASAP.
+         ;; https://github.com/software-mansion/react-native-screens/issues/472
+         (js/setTimeout #(.focus ^js @input-ref) 250)
          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
          (reset! text-value edit-text)
          (reset! saved-cursor-position (if (zero? text-value-count)
@@ -122,7 +127,8 @@
 (defn use-reply
   [_
    {:keys [container-opacity]}
-   {:keys [reply]}]
+   {:keys [reply]}
+   message-list-rendered?]
   (rn/use-effect
    (fn []
      (when reply

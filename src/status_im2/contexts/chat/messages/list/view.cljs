@@ -298,7 +298,7 @@
 
 (defn f-messages-list-content
   [{:keys [chat insets scroll-y content-height cover-bg-color keyboard-shown? inner-state-atoms
-           big-name-visible? animate-topbar-opacity? composer-active?
+           big-name-visible? animate-topbar-opacity? composer-active? message-list-rendered?
            on-end-reached? animate-topbar-name?]}]
   (rn/use-effect (fn []
                    (if (and (not @on-end-reached?)
@@ -412,6 +412,7 @@
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
        :inverted                          (when platform/ios? true)
        :on-layout                         (fn [e]
+                                            (reset! message-list-rendered? true)
                                             (let [layout-height (oops/oget e
                                                                            "nativeEvent.layout.height")]
                                               (reset! messages-view-height layout-height)))

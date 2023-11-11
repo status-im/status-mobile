@@ -15,7 +15,7 @@
 
 (defn f-chat
   [{:keys [show-floating-scroll-down-button? animate-topbar-name?
-           big-name-visible? animate-topbar-opacity? on-end-reached?]
+           big-name-visible? animate-topbar-opacity? on-end-reached? message-list-rendered?]
     :as   inner-state-atoms}]
   (let [insets                   (safe-area/get-insets)
         scroll-y                 (reanimated/use-shared-value 0)
@@ -64,7 +64,8 @@
        :big-name-visible?       big-name-visible?
        :animate-topbar-opacity? animate-topbar-opacity?
        :composer-active?        focused?
-       :on-end-reached?         on-end-reached?}]
+       :on-end-reached?         on-end-reached?
+       :message-list-rendered?  message-list-rendered?}]
 
      [messages.navigation/navigation-view
       {:scroll-y                scroll-y
@@ -86,7 +87,8 @@
          [:f> composer.view/composer
           {:insets                            insets
            :scroll-to-bottom-fn               list.view/scroll-to-bottom
-           :show-floating-scroll-down-button? show-floating-scroll-down-button?}]
+           :show-floating-scroll-down-button? show-floating-scroll-down-button?
+           :message-list-rendered?            message-list-rendered?}]
          [contact-requests.bottom-drawer/view chat-id contact-request-state group-chat]))]))
 
 (defn chat
@@ -99,5 +101,6 @@
          :animate-topbar-name?              (reagent/atom false)
          :big-name-visible?                 (reagent/atom :initial-render)
          :animate-topbar-opacity?           (reagent/atom false)
-         :on-end-reached?                   (reagent/atom false)}]
+         :on-end-reached?                   (reagent/atom false)
+         :message-list-rendered?            (reagent/atom false)}]
     [:f> f-chat inner-state-atoms]))
