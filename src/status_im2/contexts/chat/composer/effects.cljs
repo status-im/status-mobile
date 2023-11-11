@@ -125,15 +125,17 @@
    [(:message-id edit)]))
 
 (defn use-reply
-  [_
+  [{:keys [input-ref]}
    {:keys [container-opacity]}
    {:keys [reply]}
    message-list-rendered?]
   (rn/use-effect
    (fn []
      (when reply
-       (reanimated/animate container-opacity 1)))
-   [(:message-id reply)]))
+       (reanimated/animate container-opacity 1))
+     (when (and reply @input-ref @message-list-rendered?)
+       (js/setTimeout #(.focus ^js @input-ref) 250))))
+   [(:message-id reply)])
 
 (defn edit-mentions
   [{:keys [input-ref]} {:keys [text-value cursor-position]} {:keys [input-with-mentions]}]
