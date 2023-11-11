@@ -44,7 +44,7 @@
 
 (defn navigation-view
   [loaded?]
-  {:z-index  1
+  {:z-index  1000
    :top      0
    :right    0
    :left     0
