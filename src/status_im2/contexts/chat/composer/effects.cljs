@@ -111,25 +111,19 @@
    (fn []
      (let [edit-text (get-in edit [:content :text])]
        (when (and edit @input-ref)
-         ;; A small setTimeout is necessary to ensure the statement is enqueued and will get executed
-         ;; ASAP.
-         ;; https://github.com/software-mansion/react-native-screens/issues/472
-         (js/setTimeout #(.focus ^js @input-ref) 250)
          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
          (reset! text-value edit-text)
          (reset! saved-cursor-position (count edit-text)))))
    [(:message-id edit)]))
 
 (defn use-reply
-  [{:keys [input-ref]}
+  [_
    {:keys [container-opacity]}
    {:keys [reply]}]
   (rn/use-effect
    (fn []
      (when reply
-       (reanimated/animate container-opacity 1))
-     (when (and reply @input-ref)
-       (js/setTimeout #(.focus ^js @input-ref) 250)))
+       (reanimated/animate container-opacity 1)))
    [(:message-id reply)]))
 
 (defn edit-mentions
