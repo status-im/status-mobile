@@ -73,8 +73,7 @@
 
 (defn progress-boxes
   [network-state]
-  [rn/view
-   {:style style/progress-box-container}
+  [rn/view {:style style/progress-box-container}
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view

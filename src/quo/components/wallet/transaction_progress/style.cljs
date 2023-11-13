@@ -36,6 +36,7 @@
 (defn progress-container
   [theme]
   {:flex-direction     :row
+   :align-items        :center
    :border-top-width   1
    :padding-horizontal 12
    :border-color       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
