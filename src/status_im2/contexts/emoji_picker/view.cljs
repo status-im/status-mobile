@@ -153,8 +153,8 @@
 
 (defn f-view
   [{:keys [render-emojis search-text on-change-text clear-states active-category scroll-ref theme] :as sheet-opts}]
-  (js/setTimeout #(reset! render-emojis true) 200)
   (let [search-active? (pos? (count @search-text))]
+    (rn/use-effect #(js/setTimeout (fn [] (reset! render-emojis true)) 200))
     [rn/keyboard-avoiding-view
      {:style                    style/flex-spacer
       :keyboard-vertical-offset 8}
