@@ -1,10 +1,10 @@
 (ns quo.components.colors.color-picker.view
   (:require
+    [quo.components.colors.color.constants :as constants]
     [quo.components.colors.color.view :as color]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [reagent.core :as reagent]
-    [quo.components.colors.color.constants :as constants]))
+    [reagent.core :as reagent]))
 
 (defn- on-change-handler
   [selected color-name on-change]

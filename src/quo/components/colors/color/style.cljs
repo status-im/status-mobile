@@ -1,8 +1,8 @@
 (ns quo.components.colors.color.style
   (:require
+    [quo.components.colors.color.constants :as constants]
     [quo.foundations.colors :as colors]
-    [utils.responsiveness :as responsiveness]
-    [quo.components.colors.color.constants :as constants]))
+    [utils.responsiveness :as responsiveness]))
 
 (defn color-button-common
   [window-width]
