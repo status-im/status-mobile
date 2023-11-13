@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [native-module.core :as native-module]
+    [quo.foundations.colors :as colors]
     [re-frame.core :as re-frame]
     [react-native.platform :as platform]
     [status-im.data-store.settings :as data-store.settings]
@@ -36,6 +37,26 @@
                                        :custom-bootnodes-enabled? false}}]
     (node/get-multiaccount-node-config db)))
 
+(defn- extract-error
+  [json-str]
+  (-> json-str
+      transforms/json->clj
+      (get :error "")
+      not-empty))
+
+(defn- input-connection-string-callback
+  [res]
+  (log/info "[local-pairing] input-connection-string-for-bootstrapping callback"
+            {:response res
+             :event    :syncing/input-connection-string-for-bootstrapping})
+  (let [error (when (extract-error res)
+                (str "generic-error: " res))]
+    (when (some? error)
+      (rf/dispatch [:toasts/upsert
+                    {:icon       :i/alert
+                     :icon-color colors/danger-50
+                     :text       error}]))))
+
 (rf/defn preflight-outbound-check-for-local-pairing
   {:events [:syncing/preflight-outbound-check]}
   [_ set-checks-passed]
@@ -60,19 +81,18 @@
         (fn [final-node-config]
           (let [config-map (.stringify js/JSON
                                        (clj->js
-                                        {:receiverConfig {:kdfIterations config/default-kdf-iterations
-                                                          :nodeConfig final-node-config
-                                                          :settingCurrentNetwork config/default-network
-                                                          :deviceType platform/os
-                                                          :deviceName
-                                                          (native-module/get-installation-name)}}))]
+                                        {:receiverConfig
+                                         {:kdfIterations config/default-kdf-iterations
+                                          :nodeConfig final-node-config
+                                          :settingCurrentNetwork config/default-network
+                                          :deviceType platform/os
+                                          :deviceName
+                                          (native-module/get-installation-name)}}))]
             (rf/dispatch [:syncing/update-role constants/local-pairing-role-receiver])
             (native-module/input-connection-string-for-bootstrapping
              connection-string
              config-map
-             #(log/info "Initiated local pairing"
-                        {:response %
-                         :event    :syncing/input-connection-string-for-bootstrapping}))))]
+             input-connection-string-callback)))]
     (native-module/prepare-dir-and-update-config "" default-node-config-string callback)))
 
 (rf/defn preparations-for-connection-string

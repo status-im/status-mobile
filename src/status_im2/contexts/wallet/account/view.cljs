@@ -62,10 +62,11 @@
                                          {:content buy-drawer}])
            :bridge-action #(rf/dispatch [:open-modal :wallet-bridge])}]
          [quo/tabs
-          {:style          style/tabs
-           :size           32
-           :default-active @selected-tab
-           :data           tabs-data
-           :on-change      #(reset! selected-tab %)
-           :scrollable?    true}]
+          {:style            style/tabs
+           :size             32
+           :default-active   @selected-tab
+           :data             tabs-data
+           :on-change        #(reset! selected-tab %)
+           :scrollable?      true
+           :scroll-on-press? true}]
          [tabs/view {:selected-tab @selected-tab}]]))))

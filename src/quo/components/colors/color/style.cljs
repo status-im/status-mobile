@@ -1,12 +1,13 @@
 (ns quo.components.colors.color.style
   (:require
+    [quo.components.colors.color.constants :as constants]
     [quo.foundations.colors :as colors]
     [utils.responsiveness :as responsiveness]))
 
 (defn color-button-common
   [window-width]
-  {:width         48
-   :height        48
+  {:width         constants/color-size
+   :height        constants/color-size
    :border-width  4
    :border-radius 24
    :margin-right  (-> window-width

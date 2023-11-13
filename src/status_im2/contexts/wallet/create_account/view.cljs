@@ -1,6 +1,8 @@
 (ns status-im2.contexts.wallet.create-account.view
   (:require
+    [clojure.string :as string]
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -12,7 +14,8 @@
     [status-im2.contexts.wallet.create-account.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]
-    [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]))
+    [utils.responsiveness :refer [iphone-11-Pro-20-pixel-from-width]]
+    [utils.string]))
 
 (defn keypair-string
   [full-name]
@@ -20,30 +23,34 @@
     (i18n/label :t/keypair-title {:name first-name})))
 
 (defn get-keypair-data
-  [name derivation-path]
+  [name derivation-path account-color]
   [{:title             (keypair-string name)
-    :left-icon         :i/placeholder
+    :image             :avatar
+    :image-props       {:full-name           (utils.string/get-initials name 1)
+                        :size                :xxs
+                        :customization-color account-color}
     :action            :button
-    :action-props      {:on-press    #(js/alert "Button pressed!")
+    :action-props      {:on-press    #(rf/dispatch [:navigate-to :wallet-select-keypair])
                         :button-text (i18n/label :t/edit)
                         :alignment   :flex-start}
     :description       :text
     :description-props {:text (i18n/label :t/on-device)}}
    {:title             (i18n/label :t/derivation-path)
+    :image             :icon
+    :image-props       :i/derivated-path
     :action            :button
-    :action-props      {:on-press    #(rf/dispatch [:navigate-to :wallet-edit-derivation-path])
+    :action-props      {:on-press    #(js/alert "Button pressed!")
                         :button-text (i18n/label :t/edit)
                         :icon-left   :i/placeholder
                         :alignment   :flex-start}
-    :left-icon         :i/derivated-path
     :description       :text
-    :description-props {:text derivation-path}}])
+    :description-props {:text (string/replace derivation-path #"/" " / ")}}])
 
 (defn- view-internal
   []
   (let [top                   (safe-area/get-top)
         bottom                (safe-area/get-bottom)
-        account-color         (reagent/atom :blue)
+        account-color         (reagent/atom (rand-nth colors/account-colors))
         emoji                 (reagent/atom (emoji-picker.utils/random-emoji))
         number-of-accounts    (count (rf/sub [:wallet/accounts]))
         account-name          (reagent/atom (i18n/label :t/default-account-name
@@ -106,7 +113,7 @@
        [quo/category
         {:list-type :settings
          :label     (i18n/label :t/origin)
-         :data      (get-keypair-data primary-name @derivation-path)}]
+         :data      (get-keypair-data primary-name @derivation-path @account-color)}]
        [standard-auth/view
         {:size                :size-48
          :track-text          (i18n/label :t/slide-to-create-account)

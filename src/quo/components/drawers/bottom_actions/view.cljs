@@ -24,9 +24,9 @@
   :scroll? - bool (default false) - Whether the iOS Home Indicator should be rendered"
   [props]
   (let [{:keys [actions description button-one-label button-two-label
-                button-one-props button-two-props theme scroll? customization-color]}
+                button-one-props button-two-props theme scroll? customization-color container-style]}
         (merge default-props props)]
-    [:<>
+    [rn/view {:style container-style}
      [rn/view {:style style/buttons-container}
       (when (= actions :2-actions)
         [button/button
