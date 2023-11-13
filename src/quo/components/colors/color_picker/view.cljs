@@ -3,7 +3,8 @@
     [quo.components.colors.color.view :as color]
     [quo.foundations.colors :as colors]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    [quo.components.colors.color.constants :as constants]))
 
 (defn- on-change-handler
   [selected color-name on-change]
@@ -13,8 +14,8 @@
 (defn get-item-layout
   [_ index]
   #js
-   {:length 48
-    :offset (* (+ 48 8) index)
+   {:length constants/color-size
+    :offset (* (+ constants/color-size 8) index)
     :index  index})
 
 (defn- view-internal
