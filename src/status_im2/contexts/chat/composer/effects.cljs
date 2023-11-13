@@ -107,12 +107,12 @@
   [{:keys [input-ref]}
    {:keys [text-value saved-cursor-position]}
    {:keys [edit]}
-   message-list-rendered?]
+   messages-list-on-layout-finished?]
   (rn/use-effect
    (fn []
      (let [edit-text        (get-in edit [:content :text])
            text-value-count (count @text-value)]
-       (when (and edit @input-ref @message-list-rendered?)
+       (when (and edit @input-ref @messages-list-on-layout-finished?)
          ;; A small setTimeout is necessary to ensure the statement is enqueued and will get executed
          ;; ASAP.
          ;; https://github.com/software-mansion/react-native-screens/issues/472
@@ -128,12 +128,12 @@
   [{:keys [input-ref]}
    {:keys [container-opacity]}
    {:keys [reply]}
-   message-list-rendered?]
+   messages-list-on-layout-finished?]
   (rn/use-effect
    (fn []
      (when reply
        (reanimated/animate container-opacity 1))
-     (when (and reply @input-ref @message-list-rendered?)
+     (when (and reply @input-ref @messages-list-on-layout-finished?)
        (js/setTimeout #(.focus ^js @input-ref) 250))))
   [(:message-id reply)])
 
