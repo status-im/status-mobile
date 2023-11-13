@@ -1,6 +1,7 @@
 (ns status-im2.contexts.wallet.create-account.view
   (:require
     [quo.core :as quo]
+    [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
@@ -43,7 +44,7 @@
   []
   (let [top                   (safe-area/get-top)
         bottom                (safe-area/get-bottom)
-        account-color         (reagent/atom :blue)
+        account-color         (reagent/atom (rand-nth colors/account-colors))
         emoji                 (reagent/atom (emoji-picker.utils/random-emoji))
         number-of-accounts    (count (rf/sub [:wallet/accounts]))
         account-name          (reagent/atom (i18n/label :t/default-account-name

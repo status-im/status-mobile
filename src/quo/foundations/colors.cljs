@@ -4,6 +4,9 @@
     [quo.theme :as theme]
     [react-native.platform :as platform]))
 
+(def account-colors
+  [:blue :yellow :purple :turquoise :magenta :sky :orange :army :flamingo :camel :copper])
+
 (defn alpha
   [value opacity]
   (when value

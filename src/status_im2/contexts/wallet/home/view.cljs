@@ -25,7 +25,7 @@
       :accessibility-label :add-a-contact
       :label               (i18n/label :t/add-address)
       :sub-label           (i18n/label :t/add-address-description)
-      :on-press            #(rf/dispatch [:navigate-to :wallet-address-watch])
+      :on-press            #(rf/dispatch [:navigate-to :add-address-to-watch])
       :add-divider?        true}]]])
 
 (defn- add-account-placeholder
