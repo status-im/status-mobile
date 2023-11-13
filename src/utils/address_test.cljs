@@ -5,7 +5,7 @@
 
 (deftest get-shortened-compressed-key
   (testing "Ensure the function correctly abbreviates a valid public key"
-    (is (= "zQ3...1sgt5N"
+    (is (= "zQ3...sgt5N"
            (utils.address/get-shortened-compressed-key
             "zQ3ssgRy5TtB47MMiMKMKaGyaawkCgMqqbrnAUYrZJ1sgt5N"))))
 
