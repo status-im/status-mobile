@@ -11,15 +11,17 @@
             [reagent.core :as reagent]))
 
 (defn icon-internal
+  ([icon]
+   (icon-internal icon nil 20))
   ([icon color]
    (icon-internal icon color 20))
   ([icon color size]
    [rn/view {:style style/icon}
     [icons/icon
      icon
-     {:color (if (= color :no-color) nil color)
+     {:color color
       :size  size
-      :no-color (= color :no-color)}]]))
+      :no-color (when (not color) true)}]]))
 
 (def total-box 85)
 ;; (def interval-ms 50)
@@ -188,8 +190,7 @@
                                         (colors/theme-colors colors/success-50
                                                              colors/success-60
                                                              theme)]
-    (= network-state :finalized)       [:i/diamond
-                                        :no-color]
+    (= network-state :finalized)       [:i/diamond]
     (= network-state :error)           [:i/negative-state
                                         (colors/theme-colors colors/danger-50
                                                              colors/danger-60
