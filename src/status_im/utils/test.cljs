@@ -15,6 +15,8 @@
 
 (def test-dir (.mkdtempSync fs test-dir-prefix))
 
+(def initialized? (atom false))
+
 (defn signal-received-callback
   [a]
   (re-frame/dispatch [:signals/signal-received a]))
@@ -22,10 +24,12 @@
 ;; We poll for signals, could not get callback working
 (defn init!
   []
-  (.setSignalEventCallback native-status)
-  (js/setInterval (fn []
-                    (.pollSignal native-status signal-received-callback)
-                    100)))
+  (when-not @initialized?
+    (.setSignalEventCallback native-status)
+    (reset! initialized? true)
+    (js/setInterval (fn []
+                      (.pollSignal native-status signal-received-callback)
+                      100))))
 
 (def status
   (clj->js
