@@ -68,7 +68,7 @@
     (let [first-part-of-public-key (subs public-key 0 3)
           ellipsis                 "..."
           public-key-size          (count public-key)
-          last-part-of-public-key  (subs public-key (- public-key-size 6) public-key-size)
+          last-part-of-public-key  (subs public-key (- public-key-size 5) public-key-size)
           abbreviated-public-key   (str first-part-of-public-key ellipsis last-part-of-public-key)]
       abbreviated-public-key)
     nil))
