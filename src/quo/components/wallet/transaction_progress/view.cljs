@@ -243,31 +243,31 @@
          :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]]))
 
 (defn view-internal
-  [{:keys [title on-press accessibility-label network-type network-state start-interval-now theme tag-photo tag-name btn-title tag-number]}]
+  [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name btn-title tag-number]}]
   ;; (rn/use-effect
   ;;  (fn []
   ;;    (when start-interval-now
-  ;;      (start-interval network-state))
+  ;;      (start-interval state))
   ;;    (clear-counter)
   ;;    (fn []
   ;;      (stop-interval)))
-  ;;  [network-state])
+  ;;  [state])
   [rn/view
    [rn/touchable-without-feedback
     {:on-press            on-press
      :accessibility-label accessibility-label}
     [rn/view {:style style/box-style}
-     [title-internal network-state title theme btn-title]
+     [title-internal state title theme btn-title]
      [tag-internal tag-photo tag-name tag-number]
-     (case network-type
+     (case network
        :mainnet [:<>
-                 [render-status-row theme network-state :mainnet]
-                 [progress-boxes network-state]]
+                 [render-status-row theme state :mainnet]
+                 [progress-boxes state]]
        :optimism-arbitrum [:<>
-                           [render-status-row theme network-state :arbitrum]
-                           [progress-boxes-arbitrum theme network-state :arbitrum]
-                           [render-status-row theme network-state :optimism]
-                           [progress-boxes-arbitrum theme network-state :optimism]]
+                           [render-status-row theme state :arbitrum]
+                           [progress-boxes-arbitrum theme state :arbitrum]
+                           [render-status-row theme state :optimism]
+                           [progress-boxes-arbitrum theme state :optimism]]
        nil)]]])
 
 (def view (quo.theme/with-theme view-internal))

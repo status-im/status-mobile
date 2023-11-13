@@ -13,11 +13,11 @@
    {:type    :text
     :key     :tag-number}
    {:type    :select
-    :key     :network-type
+    :key     :network
     :options [{:key :mainnet}
               {:key :optimism-arbitrum}]}
    {:type    :select
-    :key     :network-state
+    :key     :state
     :options [{:key :pending}
               {:key :sending}
               {:key :confirmed}
@@ -30,9 +30,8 @@
   (let [state (reagent/atom {:title "Title"
                              :tag-name "Doodle"
                              :tag-number "120"
-                             :network-type :mainnet
-                             :network-state :pending
-                             :accessibility-label :transaction-progress-item
+                             :network :mainnet
+                             :state :pending
                              :start-interval-now  true
                              :btn-title           "Retry"
                              :tag-photo           (resources/get-mock-image :collectible)
@@ -57,14 +56,14 @@
 ;;     :key   :tag-name
 ;;     :type  :text}
 ;;    {:label   "Network Type:"
-;;     :key     :network-type
+;;     :key     :network
 ;;     :type    :select
 ;;     :options [{:key   :mainnet
 ;;                :value "mainnet"}
 ;;               {:key   :optimism-arbitrum
 ;;                :value "optimism/arbitrum"}]}
 ;;    {:label   "Network State:"
-;;     :key     :network-state
+;;     :key     :state
 ;;     :type    :select
 ;;     :options [{:key   :pending
 ;;                :value "pending"}
@@ -105,8 +104,8 @@
 ;;   []
 ;;   (let [state (reagent/atom {:title               :Title
 ;;                              :accessibility-label :transaction-progress-item
-;;                              :network-state       :pending
-;;                              :network-type        :mainnet
+;;                              :state       :pending
+;;                              :network        :mainnet
 ;;                              :start-interval-now  true
 ;;                              :btn-title           "Retry"
 ;;                              :tag-name            "Doodle #120"
