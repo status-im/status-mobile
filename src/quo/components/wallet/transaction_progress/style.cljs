@@ -33,11 +33,12 @@
    :padding-bottom 6
    :flex-wrap      :wrap})
 
-(def progress-container
+(defn progress-container
+  [theme]
   {:flex-direction     :row
    :border-top-width   1
    :padding-horizontal 12
-   :border-color       colors/neutral-5
+   :border-color       (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)
    :padding-top        8
    :padding-bottom     4})
 

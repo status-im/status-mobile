@@ -11,10 +11,15 @@
             [reagent.core :as reagent]))
 
 (defn icon-internal
-  [icon color]
-  [rn/view {:style style/icon}
-   [icons/icon icon
-    {:color color}]])
+  ([icon color]
+   (icon-internal icon color 20))
+  ([icon color size]
+   [rn/view {:style style/icon}
+    [icons/icon
+     icon
+     {:color (if (= color :no-color) nil color)
+      :size  size
+      :no-color (= color :no-color)}]]))
 
 (def total-box 85)
 ;; (def interval-ms 50)
@@ -125,7 +130,7 @@
 
 (defn text-internal
   [title
-   {:keys [weight size accessibility-label]
+   {:keys [weight size accessibility-label color]
     :or   {weight     :semi-bold
            size       :paragraph-1}}]
   [text/text
@@ -133,7 +138,8 @@
     :ellipsize-mode      :tail
     :number-of-lines     1
     :weight              weight
-    :size                size}
+    :size                size
+    :style               {:color color}}
    title])
 
 (defn network-type-text
@@ -145,7 +151,7 @@
     (= network-state :finalized)                                    "Finalized on "
     (= network-state :error)                                        "Failed on "))
 
-(defn steps-text
+(defn text-steps
   [network-type network-state]
   (cond
     (and (= network-type :mainnet)
@@ -165,31 +171,29 @@
     (not= network-type :mainnet)            "0/1"))
 
 (defn get-status-icon
-  [override-theme network-type network-state]
+  [theme network-type network-state]
   (cond
     (and (= network-type :arbitrum)
-         (= network-state :sending))   ["positive-state"
+         (= network-state :sending))   [:i/positive-state
                                         (colors/theme-colors colors/success-50
                                                              colors/success-60
-                                                             override-theme)]
+                                                             theme)]
     (or (= network-state :pending)
-        (= network-state :sending))    ["pending-state"
+        (= network-state :sending))    [:i/pending-state
                                         (colors/theme-colors colors/neutral-50
                                                              colors/neutral-60
-                                                             override-theme)]
+                                                             theme)]
     (or (= network-state :confirmed)
-        (= network-state :finalising)) ["positive-state"
+        (= network-state :finalising)) [:i/positive-state
                                         (colors/theme-colors colors/success-50
                                                              colors/success-60
-                                                             override-theme)]
-    (= network-state :finalized)       ["diamond"
-                                        (colors/theme-colors colors/success-50
-                                                             colors/success-60
-                                                             override-theme)]
-    (= network-state :error)           ["negative-state"
+                                                             theme)]
+    (= network-state :finalized)       [:i/diamond
+                                        :no-color]
+    (= network-state :error)           [:i/negative-state
                                         (colors/theme-colors colors/danger-50
                                                              colors/danger-60
-                                                             override-theme)]))
+                                                             theme)]))
 
 (defn title-internal
   [network-state title theme btn-title]
@@ -220,25 +224,22 @@
     (= network-type :optimism) "Optimism"))
 
 (defn render-status-row
-  [override-theme network-state network-type]
-  [rn/view
-   {:style style/item-container}
-   [rn/view
-    {:style (assoc style/progress-container
-                   :border-color
-                   (colors/theme-colors colors/neutral-10 colors/neutral-80 override-theme))}
-    (let [[status-icon color] (get-status-icon override-theme network-type network-state)]
-      [icon-internal status-icon color])
-    [rn/view
-     {:style style/title-text-container}
-     [text-internal (str (network-type-text network-type network-state) (get-network-text network-type))
-      override-theme
-      :typography
-      :typography/font-regular :weight :regular :size :paragraph-2]]
-    [rn/view
-     [text-internal (steps-text network-type network-state) override-theme :typography
-      :typography/font-regular :weight :regular :size :paragraph-2 :style
-      {:color (colors/theme-colors colors/neutral-50 colors/neutral-60 override-theme)}]]]])
+  [theme network-state network-type]
+  (let [[status-icon color] (get-status-icon theme network-type network-state)]
+    [rn/view {:style style/item-container}
+     [rn/view {:style (style/progress-container theme)}
+      [icon-internal status-icon color 16]
+      [rn/view {:style style/title-text-container}
+       [text-internal
+        (str (network-type-text network-type network-state) (get-network-text network-type))
+        {:weight :regular
+         :size :paragraph-2}]]
+      [rn/view
+       [text-internal
+        (text-steps network-type network-state)
+        {:weight :regular
+         :size   :paragraph-2
+         :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]]))
 
 (defn view-internal
   [{:keys [title on-press accessibility-label network-type network-state start-interval-now theme tag-photo tag-name btn-title tag-number]}]
