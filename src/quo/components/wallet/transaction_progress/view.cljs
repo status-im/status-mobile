@@ -103,30 +103,34 @@
    [progress-box/view
     {:state               (calculate-box-state-arbitrum network-state network-type)
      :customization-color :blue}]
-   [rn/view
-    {:style (style/progress-box-arbitrum theme)}
-    [rn/view
-     (assoc
-      (let [box-style (cond
-                        (= network-state :finalising)
-                        (assoc {:style style/progress-box-arbitrum-abs}
-                               :right (str (calculate-box-width true) "%")
-                               :background-color (colors/resolve-color :blue theme))
+   [progress-box/view
+    {:state               (calculate-box-state-arbitrum network-state network-type)
+     :full-width?         true
+     :customization-color :blue}]
+  ;;  [rn/view {:style (style/progress-box-arbitrum theme)}
+  ;;   [rn/view
+  ;;    (assoc
+  ;;     (let [box-style (cond
+  ;;                       (= network-state :finalising)
+  ;;                       (assoc {:style style/progress-box-arbitrum-abs}
+  ;;                              :right (str (calculate-box-width true) "%")
+  ;;                              :background-color (colors/resolve-color :blue theme))
 
-                        (= network-state :finalized)
-                        (assoc {:style style/progress-box-arbitrum-abs}
-                               :right (str (calculate-box-width false) "%")
-                               :background-color (colors/resolve-color :blue theme))
+  ;;                       (= network-state :finalized)
+  ;;                       (assoc {:style style/progress-box-arbitrum-abs}
+  ;;                              :right (str (calculate-box-width false) "%")
+  ;;                              :background-color (colors/resolve-color :blue theme))
 
-                        :else
-                        (assoc {:style style/progress-box-arbitrum-abs}
-                               :background-color (colors/theme-colors colors/neutral-5
-                                                                      colors/neutral-70
-                                                                      theme)))]
-        box-style)
-      :align-self "flex-end"
-      :border-color
-      (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))]]])
+  ;;                       :else
+  ;;                       (assoc {:style style/progress-box-arbitrum-abs}
+  ;;                              :background-color (colors/theme-colors colors/neutral-5
+  ;;                                                                     colors/neutral-70
+  ;;                                                                     theme)))]
+  ;;       box-style)
+  ;;     :align-self "flex-end"
+  ;;     :border-color
+  ;;     (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))]]
+      ])
 
 (defn text-internal
   [title

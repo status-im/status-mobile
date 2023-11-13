@@ -22,11 +22,12 @@
                        :background-color (colors/custom-color :danger 60)}}})
 
 (defn root-container
-  [{:keys [customization-color state theme]}]
+  [{:keys [customization-color state theme full-width?]}]
   (let [{:keys [background-color border-color]} (get-in (border-and-background-color customization-color)
                                                         [theme state])]
    {:height            12
-    :width             8
+    :flex              (when full-width? 1)
+    :width             (when (not full-width?) 8)
     :border-radius     3
     :border-width      1
     :border-color      border-color
