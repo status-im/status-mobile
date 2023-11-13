@@ -83,7 +83,6 @@
                                            {:content buy-drawer}])
              :bridge-action #(rf/dispatch [:open-modal :wallet-bridge])}])
          [quo/tabs
-<<<<<<< HEAD
           {:style            style/tabs
            :size             32
            :default-active   @selected-tab
@@ -92,29 +91,3 @@
            :scrollable?      true
            :scroll-on-press? true}]
          [tabs/view {:selected-tab @selected-tab}]]))))
-=======
-          {:style          style/tabs
-           :size           32
-           :default-active @selected-tab
-           :data           tabs-data
-           :on-change      #(reset! selected-tab %)
-           :scrollable?    true}]
-<<<<<<< HEAD
-<<<<<<< HEAD
-         [tabs/view {:selected-tab @selected-tab
-                     :account-address account-address
-                     :account account}]]))))
->>>>>>> 731614145 (updates)
-=======
-         [tabs/view
-          {:selected-tab    @selected-tab
-<<<<<<< HEAD
-           :account-address account-address
-           :account         account}]]))))
->>>>>>> e7cf3bcf4 (wallet: account real data)
-=======
-           :account-address account-address}]]))))
->>>>>>> 49ea0601d (lint)
-=======
-         [tabs/view {:selected-tab @selected-tab}]]))))
->>>>>>> 160fad80a (review)
