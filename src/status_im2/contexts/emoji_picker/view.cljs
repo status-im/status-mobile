@@ -152,10 +152,10 @@
   (reset! search-text ""))
 
 (defn f-view
-  [{:keys [render-emojis search-text on-change-text clear-states active-category scroll-ref theme]
+  [{:keys [render-emojis? search-text on-change-text clear-states active-category scroll-ref theme]
     :as   sheet-opts}]
   (let [search-active? (pos? (count @search-text))]
-    (rn/use-effect #(js/setTimeout (fn [] (reset! render-emojis true)) 200))
+    (rn/use-effect #(js/setTimeout (fn [] (reset! render-emojis? true)) 200))
     [rn/keyboard-avoiding-view
      {:style                    style/flex-spacer
       :keyboard-vertical-offset 8}
@@ -169,7 +169,7 @@
          :on-change-text on-change-text
          :clearable?     search-active?
          :on-clear       clear-states}]]
-      (when @render-emojis
+      (when @render-emojis?
         [render-list sheet-opts])
       (when-not search-active?
         [footer
@@ -184,7 +184,7 @@
         set-scroll-ref            #(reset! scroll-ref %)
         search-text               (reagent/atom "")
         filtered-data             (reagent/atom nil)
-        render-emojis             (reagent/atom false)
+        render-emojis?             (reagent/atom false)
         active-category           (reagent/atom constants/default-category)
         clear-states              #(clear {:active-category active-category
                                            :filtered-data   filtered-data
@@ -209,7 +209,7 @@
     (fn [sheet-opts]
       [:f> f-view
        (merge sheet-opts
-              {:render-emojis             render-emojis
+              {:render-emojis?            render-emojis?
                :search-text               search-text
                :on-change-text            on-change-text
                :clear-states              clear-states
