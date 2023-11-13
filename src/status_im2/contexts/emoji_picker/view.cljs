@@ -155,6 +155,7 @@
   [{:keys [render-emojis? search-text on-change-text clear-states active-category scroll-ref theme]
     :as   sheet-opts}]
   (let [search-active? (pos? (count @search-text))]
+    ;; rendering emojis is heavy on the UI thread, we need to delay rendering until the navigation animation completes
     (rn/use-effect #(js/setTimeout (fn [] (reset! render-emojis? true)) 250))
     [rn/keyboard-avoiding-view
      {:style                    style/flex-spacer
