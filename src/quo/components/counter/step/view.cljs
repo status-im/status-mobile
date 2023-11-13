@@ -7,6 +7,19 @@
     [schema.core :as schema]
     [utils.number]))
 
+(def ?schema
+  [:=>
+   [:catn
+    [:props
+     [:map {:closed true}
+      [:accessibility-label {:optional true} [:maybe :keyword]]
+      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
+      [:in-blur-view? {:optional true} [:maybe :boolean]]
+      [:theme :schema.common/theme]
+      [:type {:optional true} [:enum :active :complete :neutral]]]]
+    [:value [:maybe [:or :string :int]]]]
+   :any])
+
 (defn- view-internal
   [{:keys [type accessibility-label theme in-blur-view? customization-color]} value]
   (let [type  (or type :neutral)
@@ -26,19 +39,6 @@
        :size   :label
        :style  {:color (style/text-color type theme)}}
       label]]))
-
-(def ?schema
-  [:=>
-   [:catn
-    [:props
-     [:map {:closed true}
-      [:accessibility-label {:optional true} [:maybe :keyword]]
-      [:customization-color {:optional true} [:maybe :schema.common/customization-color]]
-      [:in-blur-view? {:optional true} [:maybe :boolean]]
-      [:theme :schema.common/theme]
-      [:type {:optional true} [:enum :active :complete :neutral]]]]
-    [:value [:maybe [:or :string :int]]]]
-   :any])
 
 (def view
   (quo.theme/with-theme
