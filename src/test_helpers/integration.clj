@@ -4,21 +4,19 @@
 
 (defmacro with-app-initialized
   [& body]
-  `(if (app-initialized)
+  `(if (test-helpers.integration/app-initialized)
      (do ~@body)
      (do
        (rf/dispatch [:app-started])
-       (rf-test/wait-for
-         [:profile/get-profiles-overview-success]
+       (rf-test/wait-for [:profile/get-profiles-overview-success]
          ~@body))))
 
 (defmacro with-account
   [& body]
-  `(if (messenger-started)
+  `(if (test-helpers.integration/messenger-started)
      (do ~@body)
      (do
-       (create-multiaccount!)
-       (rf-test/wait-for
-         [:status-im.transport.core/messenger-started]
-         (assert-messenger-started)
+       (test-helpers.integration/create-multiaccount!)
+       (rf-test/wait-for [:status-im.transport.core/messenger-started]
+         (test-helpers.integration/assert-messenger-started)
          ~@body))))
