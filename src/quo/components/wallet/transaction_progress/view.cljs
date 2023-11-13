@@ -73,7 +73,7 @@
 
 (defn progress-boxes
   [network-state]
-  [rn/view {:style style/progress-box-container}
+  [rn/view {:style (style/progress-box-container true)}
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view
@@ -98,9 +98,8 @@
     :else                            0))
 
 (defn progress-boxes-arbitrum
-  [theme network-state network-type]
-  [rn/view
-   {:style style/progress-box-container}
+  [theme network-state network-type bottom-large?]
+  [rn/view {:style (style/progress-box-container bottom-large?)}
    [progress-box/view
     {:state               (calculate-box-state-arbitrum network-state network-type)
      :customization-color :blue}]
@@ -208,8 +207,8 @@
        btn-title])])
 
 (defn tag-internal
-  [tag-photo tag-name tag-number]
-  [rn/view {:style style/context-tag-container}
+  [tag-photo tag-name tag-number theme]
+  [rn/view {:style (style/context-tag-container theme)}
    [context-tag/view {:size 24
                       :collectible tag-photo
                       :collectible-name tag-name
@@ -223,11 +222,10 @@
     (= network-type :mainnet)  "Mainnet"
     (= network-type :optimism) "Optimism"))
 
-(defn render-status-row
+(defn status-row
   [theme network-state network-type]
   (let [[status-icon color] (get-status-icon theme network-type network-state)]
-    [rn/view {:style style/item-container}
-     [rn/view {:style (style/progress-container theme)}
+     [rn/view {:style style/status-row-container}
       [icon-internal status-icon color 16]
       [rn/view {:style style/title-text-container}
        [text-internal
@@ -239,7 +237,7 @@
         (text-steps network-type network-state)
         {:weight :regular
          :size   :paragraph-2
-         :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]]))
+         :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]))
 
 (defn view-internal
   [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name btn-title tag-number]}]
@@ -257,16 +255,16 @@
      :accessibility-label accessibility-label}
     [rn/view {:style style/box-style}
      [title-internal state title theme btn-title]
-     [tag-internal tag-photo tag-name tag-number]
+     [tag-internal tag-photo tag-name tag-number theme]
      (case network
        :mainnet [:<>
-                 [render-status-row theme state :mainnet]
+                 [status-row theme state :mainnet]
                  [progress-boxes state]]
        :optimism-arbitrum [:<>
-                           [render-status-row theme state :arbitrum]
-                           [progress-boxes-arbitrum theme state :arbitrum]
-                           [render-status-row theme state :optimism]
-                           [progress-boxes-arbitrum theme state :optimism]]
+                           [status-row theme state :arbitrum]
+                           [progress-boxes-arbitrum theme state :arbitrum false]
+                           [status-row theme state :optimism]
+                           [progress-boxes-arbitrum theme state :optimism true]]
        nil)]]])
 
 (def view (quo.theme/with-theme view-internal))
