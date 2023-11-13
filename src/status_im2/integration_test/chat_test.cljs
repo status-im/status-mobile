@@ -19,7 +19,7 @@
   "0x0402905bed83f0bbf993cee8239012ccb1a8bc86907ead834c1e38476a0eda71414eed0e25f525f270592a2eebb01c9119a4ed6429ba114e51f5cb0a28dae1adfd")
 
 (deftest one-to-one-chat-test
-  (h/log-headline one-to-one-chat-test)
+  (h/log-headline :one-to-one-chat-test)
   (rf-test/run-test-async
    (h/with-app-initialized
     (h/with-account
