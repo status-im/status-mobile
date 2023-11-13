@@ -23,12 +23,11 @@
 (defn view
   []
   (let [{:keys [public-key compressed-key
-                customization-color]
-         :as   profile}    (rf/sub [:profile/profile])
-        display-name       (first (rf/sub [:contacts/contact-two-names-by-identity
-                                           public-key]))
-        profile-with-image (rf/sub [:profile/profile-with-image])
-        profile-picture    (profile.utils/photo profile-with-image)]
+                customization-color]} (rf/sub [:profile/profile])
+        display-name                  (first (rf/sub [:contacts/contact-two-names-by-identity
+                                                      public-key]))
+        profile-with-image            (rf/sub [:profile/profile-with-image])
+        profile-picture               (profile.utils/photo profile-with-image)]
     [rn/view {:style {:flex 1}}
      [quo/page-nav
       {:icon-name           :i/close
