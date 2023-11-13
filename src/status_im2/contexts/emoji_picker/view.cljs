@@ -24,8 +24,8 @@
   (reset! active-category id)
   (some-> ^js @scroll-ref
           (.scrollToIndex #js
-                                  {:index    (emoji-picker.data/get-section-header-index-in-data index)
-                                   :animated false})))
+                           {:index    (emoji-picker.data/get-section-header-index-in-data index)
+                            :animated false})))
 
 (defn- handle-on-viewable-items-changed
   [{:keys [event active-category should-update-active-category?]}]
@@ -46,9 +46,9 @@
 (defn- get-item-layout
   [_ index]
   #js
-          {:length constants/item-height
-           :offset (* constants/item-height index)
-           :index  index})
+   {:length constants/item-height
+    :offset (* constants/item-height index)
+    :index  index})
 
 (defn- section-header
   [{:keys [title]} {:keys [theme]}]
@@ -78,10 +78,10 @@
   [row-data {:keys [on-select close]}]
   (into [rn/view {:style style/emoji-row-container}]
         (map-indexed
-          (fn [col-index {:keys [hexcode] :as emoji}]
-            ^{:key hexcode}
-            [emoji-item emoji col-index on-select close])
-          row-data)))
+         (fn [col-index {:keys [hexcode] :as emoji}]
+           ^{:key hexcode}
+           [emoji-item emoji col-index on-select close])
+         row-data)))
 
 (defn- render-item
   [item _ _ render-data]
@@ -127,10 +127,10 @@
   [{:keys [theme active-category scroll-ref]}]
   (let [on-press (fn [id index]
                    (on-press-category
-                     {:id              id
-                      :index           index
-                      :active-category active-category
-                      :scroll-ref      scroll-ref}))]
+                    {:id              id
+                     :index           index
+                     :active-category active-category
+                     :scroll-ref      scroll-ref}))]
     (fn []
       [rn/view {:style style/category-container}
        [blur/view
@@ -152,7 +152,8 @@
   (reset! search-text ""))
 
 (defn f-view
-  [{:keys [render-emojis search-text on-change-text clear-states active-category scroll-ref theme] :as sheet-opts}]
+  [{:keys [render-emojis search-text on-change-text clear-states active-category scroll-ref theme]
+    :as   sheet-opts}]
   (let [search-active? (pos? (count @search-text))]
     (rn/use-effect #(js/setTimeout (fn [] (reset! render-emojis true)) 200))
     [rn/keyboard-avoiding-view
@@ -178,7 +179,7 @@
 
 (defn- view-internal
   [_]
-  (let [{:keys [on-select]} (rf/sub [:get-screen-params])
+  (let [{:keys [on-select]}       (rf/sub [:get-screen-params])
         scroll-ref                (atom nil)
         set-scroll-ref            #(reset! scroll-ref %)
         search-text               (reagent/atom "")
@@ -189,11 +190,11 @@
                                            :filtered-data   filtered-data
                                            :search-text     search-text})
         search-emojis             (debounce/debounce
-                                    (fn []
-                                      (when (pos? (count @search-text))
-                                        (reset! filtered-data (emoji-picker.utils/search-emoji
-                                                                @search-text))))
-                                    constants/search-debounce-ms)
+                                   (fn []
+                                     (when (pos? (count @search-text))
+                                       (reset! filtered-data (emoji-picker.utils/search-emoji
+                                                              @search-text))))
+                                   constants/search-debounce-ms)
         on-change-text            (fn [text]
                                     (if (string/blank? text)
                                       (clear-states)
@@ -202,19 +203,21 @@
                                         (search-emojis))))
         on-viewable-items-changed (fn [event]
                                     (handle-on-viewable-items-changed
-                                      {:event                          event
-                                       :active-category                active-category
-                                       :should-update-active-category? (nil? @filtered-data)}))]
+                                     {:event                          event
+                                      :active-category                active-category
+                                      :should-update-active-category? (nil? @filtered-data)}))]
     (fn [sheet-opts]
-      [:f> f-view (merge sheet-opts {:render-emojis render-emojis
-                                     :search-text search-text
-                                     :on-change-text on-change-text
-                                     :clear-states clear-states
-                                     :filtered-data @filtered-data
-                                     :set-scroll-ref set-scroll-ref
-                                     :on-select on-select
-                                     :on-viewable-items-changed on-viewable-items-changed
-                                     :active-category active-category
-                                     :scroll-ref scroll-ref})])))
+      [:f> f-view
+       (merge sheet-opts
+              {:render-emojis             render-emojis
+               :search-text               search-text
+               :on-change-text            on-change-text
+               :clear-states              clear-states
+               :filtered-data             @filtered-data
+               :set-scroll-ref            set-scroll-ref
+               :on-select                 on-select
+               :on-viewable-items-changed on-viewable-items-changed
+               :active-category           active-category
+               :scroll-ref                scroll-ref})])))
 
 (def view (quo.theme/with-theme view-internal))
