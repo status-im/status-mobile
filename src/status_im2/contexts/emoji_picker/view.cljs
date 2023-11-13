@@ -105,7 +105,7 @@
      {:ref                             set-scroll-ref
       :scroll-enabled                  @scroll-enabled
       :data                            data
-      :initial-num-to-render           20
+      :initial-num-to-render           0
       :max-to-render-per-batch         20
       :render-fn                       render-item
       :get-item-layout                 get-item-layout
