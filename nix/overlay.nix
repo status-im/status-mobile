@@ -51,6 +51,17 @@ in {
     });
   };
 
+  zprint = super.zprint.override rec {
+    buildGraalvmNativeImage = args: super.buildGraalvmNativeImage (args // rec {
+      inherit (args) pname;
+      version = "1.2.8";
+      src = super.fetchurl {
+        url = "https://github.com/kkinnear/${pname}/releases/download/${version}/${pname}-filter-${version}";
+        sha256 = "sha256-o0yoW45a5r+sTGvjEqr5VZgQKm72qsPH/kbLTbMTgEM=";
+      };
+    });
+  };
+
   # Checks fail on darwin.
   git-lfs = super.git-lfs.overrideAttrs (old: {
     doCheck = false;
