@@ -127,17 +127,28 @@
 
 (rf/reg-event-fx :wallet/get-wallet-token-success
  (fn [{:keys [db]} [tokens]]
-   (let [token-with-networks
+   (let [tokens
          (into
           {}
           (map (fn [[k v]]
                  [k
-                  (map (fn [token-map]
-                         (assoc token-map :networks (wallet-utils/network-names token-map)))
+                  (map (fn [token]
+                         (let [total-balance       (reduce +
+                                                           (map #(js/parseFloat (:balance %))
+                                                                (vals (:balancesPerChain token))))
+                               currency            :usd
+                               price-fiat-currency (get-in token
+                                                           [:marketValuesPerCurrency currency
+                                                            :price])
+                               balance-fiat        (* total-balance price-fiat-currency)]
+                           (assoc token
+                                  :networks           (wallet-utils/network-names token)
+                                  :total-balance      total-balance
+                                  :total-balance-fiat balance-fiat)))
                        v)])
                tokens))]
      {:db (assoc db
-                 :wallet/tokens          token-with-networks
+                 :wallet/tokens          tokens
                  :wallet/tokens-loading? false)})))
 
 (rf/defn scan-address-success

@@ -19,15 +19,9 @@
   []
   (fn [token _ _ _]
     (let [on-press                #(js/alert "Not implemented yet")
-          total-balance           (reduce +
-                                          (map #(js/parseFloat (:balance %))
-                                               (vals (:balancesPerChain token))))
-          total-balance-formatted (.toFixed total-balance 2)
-          currency                :usd
-          currency-symbol         "$"
-          price-fiat-currency     (get-in token [:marketValuesPerCurrency currency :price])
-          balance-fiat            (* total-balance price-fiat-currency)
-          balance-fiat-formatted  (.toFixed balance-fiat 2)]
+          total-balance-formatted (.toFixed (:total-balance token) 2)
+          balance-fiat-formatted  (.toFixed (:total-balance-fiat token) 2)
+          currency-symbol         "$"]
       [quo/token-network
        {:token       (quo.resources/get-token (keyword (string/lower-case (:symbol token))))
         :label       (:name token)
@@ -38,14 +32,7 @@
 
 (defn- asset-list
   [account-address search-text]
-  (let [tokens          (rf/sub [:wallet/tokens])
-        account-tokens  (get tokens (keyword account-address))
-        sorted-tokens   (sort-by :name compare account-tokens)
-        filtered-tokens (filter #(or (string/starts-with? (string/lower-case (:name %))
-                                                          (string/lower-case search-text))
-                                     (string/starts-with? (string/lower-case (:symbol %))
-                                                          (string/lower-case search-text)))
-                                sorted-tokens)]
+  (let [filtered-tokens (rf/sub [:wallet/tokens-filtered account-address search-text])]
     [rn/flat-list
      {:data                         filtered-tokens
       :style                        {:flex 1}

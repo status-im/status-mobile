@@ -1,5 +1,6 @@
 (ns status-im2.subs.wallet.wallet
-  (:require [re-frame.core :as rf]
+  (:require [clojure.string :as string]
+            [re-frame.core :as rf]
             [status-im2.contexts.wallet.common.utils :as utils]
             [utils.number]))
 
@@ -59,3 +60,16 @@
    (-> wallet
        (get-in [:accounts current-viewing-account-address])
        (assoc :balance (get balances current-viewing-account-address)))))
+
+(rf/reg-sub
+ :wallet/tokens-filtered
+ :<- [:wallet/tokens]
+ (fn [tokens [_ account-address query]]
+   (let [account-tokens  (get tokens (keyword account-address))
+         sorted-tokens   (sort-by :name compare account-tokens)
+         filtered-tokens (filter #(or (string/starts-with? (string/lower-case (:name %))
+                                                           (string/lower-case query))
+                                      (string/starts-with? (string/lower-case (:symbol %))
+                                                           (string/lower-case query)))
+                                 sorted-tokens)]
+     filtered-tokens)))
