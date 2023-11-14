@@ -56,7 +56,7 @@
            :customization-color color}]
          [quo/wallet-graph {:time-frame :empty}]
          [quo/wallet-ctas
-          {:send-action   #(rf/dispatch [:open-modal :wallet-select-address (:address account)])
+          {:send-action   #(rf/dispatch [:open-modal :wallet-select-address])
            :buy-action    #(rf/dispatch [:show-bottom-sheet
                                          {:content buy-drawer}])
            :bridge-action #(rf/dispatch [:open-modal :wallet-bridge])}]

@@ -15,19 +15,6 @@
   [{:id :tab/assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
    {:id :tab/collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}])
 
-(defn- network-names
-  [balances-per-chain]
-  (mapv (fn [chain-id-keyword]
-          (let [chain-id-str (name chain-id-keyword)
-                chain-id     (js/parseInt chain-id-str)]
-            (case chain-id
-              10    {:source (quo.resources/get-network :optimism)}
-              42161 {:source (quo.resources/get-network :arbitrum)}
-              5     {:source (quo.resources/get-network :ethereum)}
-              1     {:source (quo.resources/get-network :ethereum)}
-              :unknown))) ; Default case if the chain-id is not recognized
-        (keys balances-per-chain)))
-
 (defn- asset-component
   []
   (fn [token _ _ _]
@@ -40,14 +27,13 @@
           currency-symbol         "$"
           price-fiat-currency     (get-in token [:marketValuesPerCurrency currency :price])
           balance-fiat            (* total-balance price-fiat-currency)
-          balance-fiat-formatted  (.toFixed balance-fiat 2)
-          networks-list           (network-names (:balancesPerChain token))]
+          balance-fiat-formatted  (.toFixed balance-fiat 2)]
       [quo/token-network
        {:token       (quo.resources/get-token (keyword (string/lower-case (:symbol token))))
         :label       (:name token)
         :token-value (str total-balance-formatted " " (:symbol token))
         :fiat-value  (str currency-symbol balance-fiat-formatted)
-        :networks    networks-list
+        :networks    (:networks token)
         :on-press    on-press}])))
 
 (defn- asset-list
@@ -92,13 +78,14 @@
          :on-change-text on-change-text}]])))
 
 (defn- f-view-internal
-  [account-address]
-  (let [margin-top      (safe-area/get-top)
-        selected-tab    (reagent/atom (:id (first tabs-data)))
-        search-text     (reagent/atom "")
-        account-address (string/lower-case (or account-address
-                                               (rf/sub [:get-screen-params :wallet-accounts])))
-        on-close        #(rf/dispatch [:navigate-back-within-stack :wallet-select-asset])]
+  []
+  (let [{:keys [address]} (rf/sub [:wallet/current-viewing-account])
+        margin-top        (safe-area/get-top)
+        selected-tab      (reagent/atom (:id (first tabs-data)))
+        search-text       (reagent/atom "")
+        account-address   (string/lower-case address)
+        on-close          #(rf/dispatch [:navigate-back-within-stack
+                                         :wallet-select-asset])]
     (fn []
       [rn/scroll-view
        {:content-container-style      (style/container margin-top)
@@ -130,7 +117,7 @@
        [tab-view account-address @search-text @selected-tab]])))
 
 (defn- view-internal
-  [{:keys [account-address]}]
-  [:f> f-view-internal account-address])
+  []
+  [:f> f-view-internal])
 
 (def view (quo.theme/with-theme view-internal))
