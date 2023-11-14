@@ -136,6 +136,7 @@
     quo.components.tags.tags
     quo.components.tags.tiny-tag.view
     quo.components.tags.token-tag.view
+    quo.components.text-combinations.channel-name.view
     quo.components.text-combinations.view
     quo.components.wallet.account-card.view
     quo.components.wallet.account-origin.view
@@ -369,6 +370,7 @@
 
 ;;;; Text combinations
 (def text-combinations quo.components.text-combinations.view/view)
+(def channel-name quo.components.text-combinations.channel-name.view/view)
 
 ;;;; Wallet
 (def account-card quo.components.wallet.account-card.view/view)
