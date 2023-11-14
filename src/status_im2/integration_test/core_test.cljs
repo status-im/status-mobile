@@ -12,11 +12,10 @@
     status-im2.subs.root
     [test-helpers.integration :as h]))
 
-(utils.test/init!)
-
 (deftest initialize-app-test
   (h/log-headline :initialize-app-test)
   (rf-test/run-test-async
+   (utils.test/init!)
    (rf/dispatch [:app-started])
    (rf-test/wait-for
      ;; use initialize-view because it has the longest avg. time and

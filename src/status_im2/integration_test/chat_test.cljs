@@ -6,14 +6,11 @@
     status-im.events
     [status-im.multiaccounts.logout.core :as logout]
     status-im.subs.root
-    [status-im.utils.test :as utils.test]
     [status-im2.constants :as constants]
     status-im2.events
     status-im2.navigation.core
     status-im2.subs.root
     [test-helpers.integration :as h]))
-
-(utils.test/init!)
 
 (def chat-id
   "0x0402905bed83f0bbf993cee8239012ccb1a8bc86907ead834c1e38476a0eda71414eed0e25f525f270592a2eebb01c9119a4ed6429ba114e51f5cb0a28dae1adfd")

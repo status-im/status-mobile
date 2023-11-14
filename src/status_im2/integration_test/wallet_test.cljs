@@ -7,13 +7,10 @@
     status-im.events
     [status-im.multiaccounts.logout.core :as logout]
     status-im.subs.root
-    [status-im.utils.test :as utils.test]
     status-im2.events
     status-im2.navigation.core
     status-im2.subs.root
     [test-helpers.integration :as h]))
-
-(utils.test/init!)
 
 (deftest create-wallet-account-test
   (h/log-headline :create-wallet-account-test)

@@ -3,11 +3,8 @@
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
             [status-im.multiaccounts.logout.core :as logout]
-            [status-im.utils.test :as utils.test]
             [status-im2.integration-test.constants :as constants]
             [test-helpers.integration :as h]))
-
-(utils.test/init!)
 
 (deftest create-community-test
   (h/log-headline :create-community-test)

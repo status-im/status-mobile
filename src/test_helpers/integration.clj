@@ -4,12 +4,14 @@
 
 (defmacro with-app-initialized
   [& body]
-  `(if (test-helpers.integration/app-initialized)
-     (do ~@body)
-     (do
-       (rf/dispatch [:app-started])
-       (rf-test/wait-for [:profile/get-profiles-overview-success]
-         ~@body))))
+  `(do
+     (status-im.utils.test/init!)
+     (if (test-helpers.integration/app-initialized)
+       (do ~@body)
+       (do
+         (rf/dispatch [:app-started])
+         (rf-test/wait-for [:profile/get-profiles-overview-success]
+           ~@body)))))
 
 (defmacro with-account
   [& body]
