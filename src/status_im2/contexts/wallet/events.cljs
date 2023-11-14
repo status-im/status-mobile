@@ -11,6 +11,7 @@
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
+    [utils.number]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
     [utils.transforms :as types]))
@@ -40,7 +41,8 @@
    {:db (update db :wallet dissoc :current-viewing-account-address)
     :fx [[:dispatch [:navigate-back]]]}))
 
-(rf/reg-event-fx :wallet/get-accounts-success
+(rf/reg-event-fx
+ :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
    (let [wallet-db           (get db :wallet)
          new-account?        (:new-account? wallet-db)
@@ -61,7 +63,8 @@
                  {:dispatch [:wallet/navigate-to-account navigate-to-account]
                   :ms       300}]])))))
 
-(rf/reg-event-fx :wallet/get-accounts
+(rf/reg-event-fx
+ :wallet/get-accounts
  (fn [_]
    {:fx [[:json-rpc/call
           [{:method     "accounts_getAccounts"
@@ -72,35 +75,54 @@
 
 (rf/reg-event-fx
  :wallet/save-account
- (fn [_ [{:keys [account callback]}]]
+ (fn [_ [{:keys [account on-success]}]]
    {:fx [[:json-rpc/call
           [{:method     "accounts_saveAccount"
             :params     [(data-store/<-account account)]
             :on-success (fn []
                           (rf/dispatch [:wallet/get-accounts])
-                          (when (fn? callback)
-                            (callback)))
+                          (when (fn? on-success)
+                            (on-success)))
             :on-error   #(log/info "failed to save account "
                                    {:error %
                                     :event :wallet/save-account})}]]]}))
 
-(rf/reg-event-fx :wallet/get-wallet-token
+(rf/reg-event-fx
+ :wallet/get-wallet-token
  (fn [{:keys [db]}]
-   (let [addresses (map :address (vals (get-in db [:wallet :accounts])))]
+   (let [addresses (->> (get-in db [:wallet :accounts])
+                        vals
+                        (map :address))]
      {:fx [[:json-rpc/call
             [{:method     "wallet_getWalletToken"
               :params     [addresses]
-              :on-success [:wallet/get-wallet-token-success]
+              :on-success [:wallet/store-wallet-token]
               :on-error   #(log/info "failed to get wallet token "
                                      {:error  %
                                       :event  :wallet/get-wallet-token
                                       :params addresses})}]]]})))
 
-(rf/reg-event-fx :wallet/get-wallet-token-success
- (fn [{:keys [db]} [tokens]]
-   {:db (assoc db
-               :wallet/tokens          tokens
-               :wallet/tokens-loading? false)}))
+(defn- fix-chain-id-keys
+  [token]
+  (update token :balances-per-chain update-keys (comp utils.number/parse-int name)))
+
+(rf/reg-event-fx
+ :wallet/store-wallet-token
+ (fn [{:keys [db]} [raw-tokens-data]]
+   (let [tokens     (-> raw-tokens-data
+                        (update-keys name)
+                        (update-vals #(cske/transform-keys csk/->kebab-case %))
+                        (update-vals #(mapv fix-chain-id-keys %)))
+         add-tokens (fn [stored-accounts tokens-per-account]
+                      (reduce-kv (fn [accounts address tokens-data]
+                                   (if (accounts address)
+                                     (update accounts address assoc :tokens tokens-data)
+                                     accounts))
+                                 stored-accounts
+                                 tokens-per-account))]
+     {:db (-> db
+              (update-in [:wallet :accounts] add-tokens tokens)
+              (assoc-in [:wallet :ui :tokens-loading?] false))})))
 
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}
@@ -122,7 +144,8 @@
               :on-success on-success
               :on-error   #(log/info "failed to derive address " %)}]]]})))
 
-(rf/reg-event-fx :wallet/add-account
+(rf/reg-event-fx
+ :wallet/add-account
  (fn [{:keys [db]} [password {:keys [emoji account-name color]} {:keys [public-key address path]}]]
    (let [key-uid        (get-in db [:profile/profile :key-uid])
          sha3-pwd       (native-module/sha3 (security/safe-unmask-data password))
@@ -146,11 +169,12 @@
               :on-success [:wallet/get-accounts]
               :on-error   #(log/info "failed to create account " %)}]]]})))
 
-(rf/reg-event-fx :wallet/derive-address-and-add-account
+(rf/reg-event-fx
+ :wallet/derive-address-and-add-account
  (fn [_ [password account-details]]
-   (let [on-success (fn [derived-adress-details]
+   (let [on-success (fn [derived-address-details]
                       (rf/dispatch [:wallet/add-account password account-details
-                                    (first derived-adress-details)]))]
+                                    (first derived-address-details)]))]
      {:fx [[:dispatch [:wallet/create-derived-addresses password account-details on-success]]]})))
 
 (rf/defn get-ethereum-chains
@@ -199,7 +223,8 @@
 
 (rf/reg-event-fx :wallet/clear-stored-collectibles clear-stored-collectibles)
 
-(rf/reg-event-fx :wallet/request-collectibles
+(rf/reg-event-fx
+ :wallet/request-collectibles
  (fn [{:keys [db]} [{:keys [start-at-index new-request?]}]]
    (let [request-id          0
          collectibles-filter nil

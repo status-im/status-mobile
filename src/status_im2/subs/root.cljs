@@ -145,10 +145,6 @@
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
 (reg-root-key-sub :contract-communities :contract-communities)
 
-;;wallet
-(reg-root-key-sub :wallet/tokens :wallet/tokens)
-(reg-root-key-sub :wallet/tokens-loading? :wallet/tokens-loading?)
-
 ;;activity center
 (reg-root-key-sub :activity-center :activity-center)
 
