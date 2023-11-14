@@ -81,12 +81,20 @@
                 :customization-color :blue
                 :key                 n}])))])
 
-(defn calculate-box-state-arbitrum
+(defn calculate-box-state-arbitrum-left
   [network-state network-type]
   (cond
     (= network-state :error)                                    :error
     (and (= network-type :arbitrum) (= network-state :sending)) :confirmed
     (or (= network-state :confirmed) (= network-state :finalising) (= network-state :finalized))  :confirmed
+    :else                                                       :pending))
+
+(defn calculate-box-state-arbitrum-right
+  [network-state network-type]
+  (cond
+    (= network-state :error)                                    :error
+    (and (= network-type :arbitrum) (= network-state :sending)) :confirmed
+    (or (= network-state :confirmed) (= network-state :finalising) (= network-state :finalized))  :finalized
     :else                                                       :pending))
 
 (defn calculate-box-width
@@ -97,15 +105,23 @@
     (< @lcounter total-box)          (- total-box @lcounter)
     :else                            0))
 
+(defn calculate-progressed-value
+  [state value]
+  (case state
+    :finalising value
+    :finalized  "100"
+    0))
+
 (defn progress-boxes-arbitrum
-  [theme network-state network-type bottom-large?]
+  [theme state network bottom-large? progressed-value]
   [rn/view {:style (style/progress-box-container bottom-large?)}
    [progress-box/view
-    {:state               (calculate-box-state-arbitrum network-state network-type)
+    {:state               (calculate-box-state-arbitrum-left state network)
      :customization-color :blue}]
    [progress-box/view
-    {:state               (calculate-box-state-arbitrum network-state network-type)
+    {:state               (calculate-box-state-arbitrum-right state network)
      :full-width?         true
+     :progressed-value    (calculate-progressed-value state progressed-value)
      :customization-color :blue}]
   ;;  [rn/view {:style (style/progress-box-arbitrum theme)}
   ;;   [rn/view
@@ -244,7 +260,7 @@
          :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]))
 
 (defn view-internal
-  [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name btn-title tag-number]}]
+  [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name btn-title tag-number progressed-value-optimism progressed-value-arbitrum]}]
   ;; (rn/use-effect
   ;;  (fn []
   ;;    (when start-interval-now
@@ -266,9 +282,9 @@
                  [progress-boxes state]]
        :optimism-arbitrum [:<>
                            [status-row theme state :arbitrum]
-                           [progress-boxes-arbitrum theme state :arbitrum false]
+                           [progress-boxes-arbitrum theme state :arbitrum false progressed-value-arbitrum]
                            [status-row theme state :optimism]
-                           [progress-boxes-arbitrum theme state :optimism true]]
+                           [progress-boxes-arbitrum theme state :optimism true progressed-value-optimism]]
        nil)]]])
 
 (def view (quo.theme/with-theme view-internal))

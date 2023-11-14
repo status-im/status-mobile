@@ -11,6 +11,10 @@
    {:type    :text
     :key     :tag-name}
    {:type    :text
+    :key     :progressed-value-arbitrum}
+   {:type    :text
+    :key     :progressed-value-optimism}
+   {:type    :text
     :key     :tag-number}
    {:type    :select
     :key     :network
@@ -32,6 +36,8 @@
                              :tag-number "120"
                              :network :mainnet
                              :state :pending
+                             :progressed-value-arbitrum "0" 
+                             :progressed-value-optimism "0"
                              :start-interval-now  true
                              :btn-title           "Retry"
                              :tag-photo           (resources/get-mock-image :collectible)
