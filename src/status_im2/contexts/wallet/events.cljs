@@ -57,8 +57,13 @@
 (rf/reg-event-fx
  :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
+<<<<<<< HEAD
    (let [wallet-accounts     (filter #(not (:chat %)) accounts)
          wallet-db           (get db :wallet)
+=======
+   (println "aaaa" accounts)
+   (let [wallet-db           (get db :wallet)
+>>>>>>> c1d06ad1d (wallet: add color and emoji)
          new-account?        (:new-account? wallet-db)
          navigate-to-account (:navigate-to-account wallet-db)]
      {:db (reduce (fn [db {:keys [address] :as account}]
@@ -390,6 +395,7 @@
  (fn [{:keys [db]} [address]]
    {:db (assoc db :wallet/send-address address)}))
 
+<<<<<<< HEAD
 (rf/reg-event-fx :wallet/get-address-details-success
  (fn [{:keys [db]} [{:keys [hasActivity]}]]
    {:db (assoc-in db
@@ -410,3 +416,10 @@
             :on-error   #(log/info "failed to get address details"
                                    {:error %
                                     :event :wallet/get-address-details})}]]]}))
+=======
+(rf/reg-event-fx
+ :wallet/initialize
+ (fn [{:keys [db]}]
+   (println "WALLET INIT")
+   {:db db}))
+>>>>>>> c1d06ad1d (wallet: add color and emoji)

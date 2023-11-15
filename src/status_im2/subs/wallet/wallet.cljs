@@ -48,7 +48,12 @@
  :<- [:wallet/balances]
  :<- [:wallet/tokens-loading?]
  (fn [[accounts balances tokens-loading?]]
+<<<<<<< HEAD
    (mapv (fn [{:keys [color address type] :as account}]
+=======
+   (println "accountsx" accounts)
+   (mapv (fn [{:keys [color address] :as account}]
+>>>>>>> c1d06ad1d (wallet: add color and emoji)
            (assoc account
                   :customization-color color
                   :type                (if (= type :watch) :watch-only :empty)

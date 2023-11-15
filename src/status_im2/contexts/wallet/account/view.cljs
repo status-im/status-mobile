@@ -35,8 +35,22 @@
   []
   (let [selected-tab (reagent/atom first-tab-id)]
     (fn []
+<<<<<<< HEAD
       (let [{:keys [name color balance type]} (rf/sub [:wallet/current-viewing-account])
             watch-only?                       (= type :watch)]
+=======
+<<<<<<< HEAD
+      (let [{:keys [name color balance]} (rf/sub [:wallet/current-viewing-account])
+           ]
+=======
+      (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
+            networks                           (rf/sub [:wallet/network-details])
+            profile1                           (rf/sub [:profile/wallet-accounts])
+            profile2                           (rf/sub [:wallet/accounts])]
+        ;(println "profile1: " profile1)
+        ;(println "profile2: " profile2)
+>>>>>>> 8bcb90b41 (wallet: add color and emoji)
+>>>>>>> c1d06ad1d (wallet: add color and emoji)
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview
