@@ -11,7 +11,6 @@
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
     [status-im2.constants :as c]
-    [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
     [status-im2.contexts.onboarding.create-profile.style :as style]
     [status-im2.contexts.onboarding.select-photo.method-menu.view :as method-menu]
     [utils.i18n :as i18n]
@@ -222,8 +221,7 @@
                                   (rf/dispatch [:onboarding/profile-data-set
                                                 {:image-path   @profile-pic
                                                  :display-name @full-name
-                                                 :color        @custom-color
-                                                 :emoji        (emoji-picker.utils/random-emoji)}]))
+                                                 :color        @custom-color}]))
            :container-style     style/continue-button
            :disabled?           (or (not valid-name?) (not (seq @full-name)))}
           (i18n/label :t/continue)]]]])
