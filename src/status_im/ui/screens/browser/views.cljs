@@ -227,7 +227,7 @@
         :on-error                                   #(re-frame/dispatch [:browser/error-occured])
         :injected-java-script-before-content-loaded (js-res/ethereum-provider (str network-id))
         ;; https://github.com/status-im/status-mobile/issues/17854
-        :allowsInlineMediaPlayback                  true}])]
+        :allows-inline-media-playback               true}])]
    [navigation
     {:url             url-original
      :name            name
