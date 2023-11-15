@@ -112,11 +112,12 @@
    (fn []
      (let [edit-text        (get-in edit [:content :text])
            text-value-count (count @text-value)]
-       (when (and edit @input-ref @messages-list-on-layout-finished?)
-         ;; A small setTimeout is necessary to ensure the statement is enqueued and will get executed
-         ;; ASAP.
-         ;; https://github.com/software-mansion/react-native-screens/issues/472
-         (js/setTimeout #(.focus ^js @input-ref) 250)
+       (when @messages-list-on-layout-finished?
+         ;; A small setTimeout is necessary to ensure the statement is enqueued and will get
+         ;; executed
+         ;; ASAP. Https://github.com/software-mansion/react-native-screens/issues/472
+         (js/setTimeout #(.focus ^js @input-ref) 250))
+       (when (and edit @input-ref)
          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
          (reset! text-value edit-text)
          (reset! saved-cursor-position (if (zero? text-value-count)
