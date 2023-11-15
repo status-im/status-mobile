@@ -7,7 +7,6 @@
     [quo.foundations.colors :as colors]
     [react-native.background-timer :as background-timer]
     [status-im2.common.data-store.wallet :as data-store]
-    [status-im2.contexts.wallet.common.utils :as wallet-utils]
     [status-im2.contexts.wallet.temp :as temp]
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
@@ -124,32 +123,6 @@
      {:db (-> db
               (update-in [:wallet :accounts] add-tokens tokens)
               (assoc-in [:wallet :ui :tokens-loading?] false))})))
-
-(rf/reg-event-fx :wallet/get-wallet-token-success
- (fn [{:keys [db]} [tokens]]
-   (let [tokens
-         (into
-          {}
-          (map (fn [[k v]]
-                 [k
-                  (map (fn [token]
-                         (let [total-balance       (reduce +
-                                                           (map #(js/parseFloat (:balance %))
-                                                                (vals (:balancesPerChain token))))
-                               currency            :usd
-                               price-fiat-currency (get-in token
-                                                           [:marketValuesPerCurrency currency
-                                                            :price])
-                               balance-fiat        (* total-balance price-fiat-currency)]
-                           (assoc token
-                                  :networks           (wallet-utils/network-names token)
-                                  :total-balance      total-balance
-                                  :total-balance-fiat balance-fiat)))
-                       v)])
-               tokens))]
-     {:db (assoc db
-                 :wallet/tokens          tokens
-                 :wallet/tokens-loading? false)})))
 
 (rf/defn scan-address-success
   {:events [:wallet/scan-address-success]}

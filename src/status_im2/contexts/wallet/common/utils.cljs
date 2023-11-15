@@ -1,6 +1,5 @@
 (ns status-im2.contexts.wallet.common.utils
   (:require [clojure.string :as string]
-            [quo.foundations.resources :as quo.resources]
             [status-im2.constants :as constants]
             [utils.number]))
 
@@ -30,7 +29,7 @@
     (/ n (Math/pow 10 (utils.number/parse-int decimals)))
     0))
 
-(defn- total-token-value-in-all-chains
+(defn total-token-value-in-all-chains
   [{:keys [balances-per-chain decimals]}]
   (->> balances-per-chain
        (vals)
@@ -46,15 +45,7 @@
        (reduce +)))
 
 (defn network-names
-  [token]
-  (let [balances-per-chain (:balancesPerChain token)]
-    (mapv (fn [chain-id-keyword]
-            (let [chain-id-str (name chain-id-keyword)
-                  chain-id     (js/parseInt chain-id-str)]
-              (case chain-id
-                10    {:source (quo.resources/get-network :optimism)}
-                42161 {:source (quo.resources/get-network :arbitrum)}
-                5     {:source (quo.resources/get-network :ethereum)}
-                1     {:source (quo.resources/get-network :ethereum)}
-                :unknown))) ; Default case if the chain-id is not recognized
-          (keys balances-per-chain))))
+  [{:keys [balances-per-chain]} networks]
+  (mapv (fn [chain-id]
+          (first (filter #(= (:chain-id %) chain-id) networks)))
+        (keys balances-per-chain)))

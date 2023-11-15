@@ -63,13 +63,22 @@
 
 (rf/reg-sub
  :wallet/tokens-filtered
- :<- [:wallet/tokens]
- (fn [tokens [_ account-address query]]
-   (let [account-tokens  (get tokens (keyword account-address))
-         sorted-tokens   (sort-by :name compare account-tokens)
-         filtered-tokens (filter #(or (string/starts-with? (string/lower-case (:name %))
-                                                           (string/lower-case query))
-                                      (string/starts-with? (string/lower-case (:symbol %))
-                                                           (string/lower-case query)))
-                                 sorted-tokens)]
+ :<- [:wallet/current-viewing-account]
+ :<- [:wallet/network-details]
+ (fn [[account networks] [_ query]]
+   (let [tokens (map (fn [token]
+                       (assoc token
+                              :networks           (utils/network-names token networks)
+                              :total-balance      (utils/total-token-value-in-all-chains token)
+                              :total-balance-fiat (utils/calculate-balance token)))
+                     (:tokens account))
+
+         sorted-tokens
+         (sort-by :name compare tokens)
+         filtered-tokens
+         (filter #(or (string/starts-with? (string/lower-case (:name %))
+                                           (string/lower-case query))
+                      (string/starts-with? (string/lower-case (:symbol %))
+                                           (string/lower-case query)))
+                 sorted-tokens)]
      filtered-tokens)))

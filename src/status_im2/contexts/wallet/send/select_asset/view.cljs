@@ -31,8 +31,8 @@
         :on-press    on-press}])))
 
 (defn- asset-list
-  [account-address search-text]
-  (let [filtered-tokens (rf/sub [:wallet/tokens-filtered account-address search-text])]
+  [search-text]
+  (let [filtered-tokens (rf/sub [:wallet/tokens-filtered search-text])]
     [rn/flat-list
      {:data                         filtered-tokens
       :style                        {:flex 1}
@@ -43,9 +43,9 @@
       :render-fn                    asset-component}]))
 
 (defn- tab-view
-  [account search-text selected-tab]
+  [search-text selected-tab]
   (case selected-tab
-    :tab/assets       [asset-list account search-text]
+    :tab/assets       [asset-list search-text]
     :tab/collectibles [quo/empty-state
                        {:title           (i18n/label :t/no-collectibles)
                         :description     (i18n/label :t/no-collectibles-description)
@@ -66,12 +66,10 @@
 
 (defn- f-view-internal
   []
-  (let [{:keys [address]} (rf/sub [:wallet/current-viewing-account])
-        selected-tab      (reagent/atom (:id (first tabs-data)))
-        search-text       (reagent/atom "")
-        account-address   (string/lower-case address)
-        on-close          #(rf/dispatch [:navigate-back-within-stack
-                                         :wallet-select-asset])]
+  (let [selected-tab (reagent/atom (:id (first tabs-data)))
+        search-text  (reagent/atom "")
+        on-close     #(rf/dispatch [:navigate-back-within-stack
+                                    :wallet-select-asset])]
     (fn []
       [rn/safe-area-view {:style {:flex 1}}
        [rn/scroll-view
@@ -101,7 +99,7 @@
           :data            tabs-data
           :on-change       #(reset! selected-tab %)}]
         [search-input search-text]
-        [tab-view account-address @search-text @selected-tab]]])))
+        [tab-view @search-text @selected-tab]]])))
 
 (defn- view-internal
   []
