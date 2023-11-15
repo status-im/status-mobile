@@ -1,4 +1,4 @@
-(ns status-im2.integration-test.core
+(ns status-im2.integration-test.core-test
   (:require
     [cljs.test :refer [deftest]]
     [day8.re-frame.test :as rf-test]
@@ -8,17 +8,14 @@
     status-im.subs.root
     [status-im.utils.test :as utils.test]
     status-im2.events
-    status-im2.integration-test.chat
-    status-im2.integration-test.wallet
     status-im2.navigation.core
     status-im2.subs.root
     [test-helpers.integration :as h]))
 
-(utils.test/init!)
-
 (deftest initialize-app-test
   (h/log-headline :initialize-app-test)
   (rf-test/run-test-async
+   (utils.test/init!)
    (rf/dispatch [:app-started])
    (rf-test/wait-for
      ;; use initialize-view because it has the longest avg. time and
