@@ -161,6 +161,40 @@ def is_uploaded():
             return True
 
 
+@contextmanager
+def _upload_time_limit(seconds):
+    def signal_handler(signum, frame):
+        raise TimeoutError("Apk upload took more than %s seconds" % seconds)
+
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+
+class UploadApkException(Exception):
+    pass
+
+def _upload_and_check_response(apk_file_path):
+    with _upload_time_limit(600):
+        with open(apk_file_path, 'rb') as f:
+            resp = sauce.storage._session.request('post', '/v1/storage/upload', files={'payload': f})
+
+    try:
+        if resp['item']['name'] != test_suite_data.apk_name:
+            raise UploadApkException("Incorrect apk was uploaded to Sauce storage, response:\n%s" % resp)
+    except KeyError:
+        raise UploadApkException("Error when uploading apk to Sauce storage, response:\n%s" % resp)
+
+def _upload_and_check_response_with_retries(apk_file_path, retries=3):
+    for _ in range(retries):
+        try:
+            _upload_and_check_response(apk_file_path)
+            break
+        except (ConnectionError, RemoteDisconnected):
+            sleep(10)
+
 def pytest_configure(config):
     global option
     option = config.option
@@ -180,75 +214,51 @@ def pytest_configure(config):
         apibase = 'eu-central-1.saucelabs.com'
     else:
         raise NotImplementedError("Unknown SauceLabs datacenter")
+
     global sauce
     sauce = SauceLab('https://api.' + apibase + '/', sauce_username, sauce_access_key)
     if config.getoption('log_steps'):
         import logging
         logging.basicConfig(level=logging.INFO)
-    if config.getoption('env') != 'api':
-        test_suite_data.apk_name = ([i for i in [i for i in config.getoption('apk').split('/')
-                                                 if '.apk' in i]])[0]
-        if is_master(config):
-            pr_number = config.getoption('pr_number')
-            if config.getoption('testrail_report'):
-                if pr_number:
-                    run_number = len(testrail_report.get_runs(pr_number)) + 1
-                    run_name = 'PR-%s run #%s' % (pr_number, run_number)
-                else:
-                    run_name = test_suite_data.apk_name
-                testrail_report.add_run(run_name)
-            if pr_number:
-                from github import Github
-                repo = Github(github_token).get_user('status-im').get_repo('status-mobile')
-                pull = repo.get_pull(int(pr_number))
-                pull.get_commits()[0].create_status(state='pending', context='Mobile e2e tests',
-                                                    description='e2e tests are running')
-            if config.getoption('env') == 'sauce':
-                if not is_uploaded():
-                    def _upload_and_check_response(apk_file_path):
-                        @contextmanager
-                        def _upload_time_limit(seconds):
-                            def signal_handler(signum, frame):
-                                raise TimeoutError("Apk upload took more than %s seconds" % seconds)
+    if config.getoption('env') == 'api':
+        return
 
-                            signal.signal(signal.SIGALRM, signal_handler)
-                            signal.alarm(seconds)
-                            try:
-                                yield
-                            finally:
-                                signal.alarm(0)
+    test_suite_data.apk_name = ([i for i in [i for i in config.getoption('apk').split('/')
+                                             if '.apk' in i]])[0]
+    if not is_master(config):
+        return
 
-                        with _upload_time_limit(600):
-                            class UploadApkException(Exception):
-                                pass
+    pr_number = config.getoption('pr_number')
+    if config.getoption('testrail_report'):
+        if pr_number:
+            run_number = len(testrail_report.get_runs(pr_number)) + 1
+            run_name = 'PR-%s run #%s' % (pr_number, run_number)
+        else:
+            run_name = test_suite_data.apk_name
+        testrail_report.add_run(run_name)
 
-                            with open(apk_file_path, 'rb') as f:
-                                resp = sauce.storage._session.request('post', '/v1/storage/upload',
-                                                                      files={'payload': f})
-                                try:
-                                    if resp['item']['name'] != test_suite_data.apk_name:
-                                        raise UploadApkException(
-                                            "Incorrect apk was uploaded to Sauce storage, response:\n%s" % resp)
-                                except KeyError:
-                                    raise UploadApkException(
-                                        "Error when uploading apk to Sauce storage, response:\n%s" % resp)
+    if pr_number:
+        from github import Github
+        repo = Github(github_token).get_user('status-im').get_repo('status-mobile')
+        pull = repo.get_pull(int(pr_number))
+        pull.get_commits()[0].create_status(
+            state='pending',
+            context='Mobile e2e tests',
+            description='e2e tests are running'
+        )
 
-                    if 'http' in config.getoption('apk'):
-                        # it works with just a file_name, but I've added full path because not sure how it'll behave on the remote run (Jenkins)
-                        file_path, to_remove = os.path.join(os.path.dirname(__file__), test_suite_data.apk_name), True
-                        urllib.request.urlretrieve(config.getoption('apk'),
-                                                   filename=file_path)  # if url is not valid it raises an error
-                    else:
-                        file_path, to_remove = config.getoption('apk'), False
+    if config.getoption('env') == 'sauce' and not is_uploaded():
+        apk_src = config.getoption('apk')
+        if apk_src.startsWith('http'):
+            # Absolute path adde to handle CI runs.
+            apk_path = os.path.join(os.path.dirname(__file__), test_suite_data.apk_name)
+            urllib.request.urlretrieve(apk_src, filename=apk_path)
+        else:
+            apk_path = apk_src
 
-                    for _ in range(3):
-                        try:
-                            _upload_and_check_response(apk_file_path=file_path)
-                            break
-                        except (ConnectionError, RemoteDisconnected):
-                            sleep(10)
-                    if to_remove:
-                        os.remove(file_path)
+        _upload_and_check_response_with_retries(apk_path)
+        if apk_src.startsWith('http'):
+            os.remove(apk_path)
 
 
 def pytest_unconfigure(config):
