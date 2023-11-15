@@ -152,7 +152,7 @@
 ;; E.g. for Ether, it's smallest part is wei or 10^(-18) of 1 ether
 ;; for arbitrary ERC20 token the smallest part is 10^(-decimals) of 1 token
 ;;
-;; Different tokens can have different number of allowed decimals, so it's neccessary to include the
+;; Different tokens can have different number of allowed decimals, so it's necessary to include the
 ;; decimals parameter
 ;; to get the amount scale right.
 
@@ -205,9 +205,13 @@
       (with-precision 2)
       str))
 
-(defn add
+(defn- add*
   [bn1 n2]
   (.add ^js bn1 n2))
+
+(def add
+  "Add with defaults, this version is able to receive `nil` and takes them as 0."
+  (fnil add* (bignumber 0) (bignumber 0)))
 
 (defn mul
   [bn1 bn2]
