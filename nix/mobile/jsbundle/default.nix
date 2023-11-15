@@ -68,8 +68,8 @@ stdenv.mkDerivation {
   buildPhase = ''
     # Assemble CLASSPATH from available clojure dependencies.
     # We append 'src' so it can find the local sources.
-    export CLASS_PATH="$(find ${deps.clojure} \
-      -iname '*.jar' | tr '\n' ':')src"
+    export CLASS_PATH="src:$(find ${deps.clojure} \
+      -iname '*.jar' | tr '\n' ':')"
 
     # target must be one of the builds defined in shadow-cljs.edn
     java -cp "$CLASS_PATH" clojure.main \
