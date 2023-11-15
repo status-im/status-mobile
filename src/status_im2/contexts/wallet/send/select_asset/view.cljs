@@ -50,7 +50,7 @@
                        {:title           (i18n/label :t/no-collectibles)
                         :description     (i18n/label :t/no-collectibles-description)
                         :placeholder?    true
-                        :container-style style/empty-container-style}]))
+                        :container-style (style/empty-container-style (safe-area/get-top))}]))
 
 (defn- search-input
   [search-text]
@@ -67,41 +67,41 @@
 (defn- f-view-internal
   []
   (let [{:keys [address]} (rf/sub [:wallet/current-viewing-account])
-        margin-top        (safe-area/get-top)
         selected-tab      (reagent/atom (:id (first tabs-data)))
         search-text       (reagent/atom "")
         account-address   (string/lower-case address)
         on-close          #(rf/dispatch [:navigate-back-within-stack
                                          :wallet-select-asset])]
     (fn []
-      [rn/scroll-view
-       {:content-container-style      (style/container margin-top)
-        :keyboard-should-persist-taps :handled
-        :scroll-enabled               false}
-       [quo/page-nav
-        {:icon-name           :i/arrow-left
-         :on-press            on-close
-         :accessibility-label :top-bar
-         :right-side          :account-switcher
-         :account-switcher    {:customization-color :purple
-                               :on-press            #(js/alert "Not implemented yet")
-                               :state               :default
-                               :emoji               "🍑"}}]
-       [quo/text-combinations
-        {:title                     (i18n/label :t/select-asset)
-         :container-style           style/title-container
-         :title-accessibility-label :title-label}]
-       [quo/segmented-control
-        {:size            32
-         :blur?           false
-         :symbol          false
-         :default-active  :tab/assets
-         :container-style {:margin-horizontal 20
-                           :margin-vertical   8}
-         :data            tabs-data
-         :on-change       #(reset! selected-tab %)}]
-       [search-input search-text]
-       [tab-view account-address @search-text @selected-tab]])))
+      [rn/safe-area-view {:style {:flex 1}}
+       [rn/scroll-view
+        {:content-container-style      {:flex 1}
+         :keyboard-should-persist-taps :handled
+         :scroll-enabled               false}
+        [quo/page-nav
+         {:icon-name           :i/arrow-left
+          :on-press            on-close
+          :accessibility-label :top-bar
+          :right-side          :account-switcher
+          :account-switcher    {:customization-color :purple
+                                :on-press            #(js/alert "Not implemented yet")
+                                :state               :default
+                                :emoji               "🍑"}}]
+        [quo/text-combinations
+         {:title                     (i18n/label :t/select-asset)
+          :container-style           style/title-container
+          :title-accessibility-label :title-label}]
+        [quo/segmented-control
+         {:size            32
+          :blur?           false
+          :symbol          false
+          :default-active  :tab/assets
+          :container-style {:margin-horizontal 20
+                            :margin-vertical   8}
+          :data            tabs-data
+          :on-change       #(reset! selected-tab %)}]
+        [search-input search-text]
+        [tab-view account-address @search-text @selected-tab]]])))
 
 (defn- view-internal
   []
