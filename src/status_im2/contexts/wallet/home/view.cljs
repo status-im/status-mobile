@@ -43,7 +43,6 @@
   (rf/dispatch [:wallet/request-collectibles
                 {:start-at-index 0
                  :new-request?   true}])
-  (rf/dispatch [:wallet/initialize])
   (let [top          (safe-area/get-top)
         selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []

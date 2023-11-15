@@ -129,8 +129,11 @@
                 notifications-enabled?
                 (assoc :effects/push-notifications-enable nil))
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
               (rf/dispatch [:wallet/initialize])
+=======
+>>>>>>> 02bd47b16 (lint)
               (transport/start-messenger)
 >>>>>>> 2699d7224 (wallet: add color and emoji)
               (contacts/initialize-contacts)

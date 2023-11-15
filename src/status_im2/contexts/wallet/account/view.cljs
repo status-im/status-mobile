@@ -44,13 +44,20 @@
            ]
 =======
       (let [{:keys [name color emoji balance]} (rf/sub [:wallet/current-viewing-account])
+<<<<<<< HEAD
             networks                           (rf/sub [:wallet/network-details])
             profile1                           (rf/sub [:profile/wallet-accounts])
             profile2                           (rf/sub [:wallet/accounts])]
         ;(println "profile1: " profile1)
         ;(println "profile2: " profile2)
 >>>>>>> 8bcb90b41 (wallet: add color and emoji)
+<<<<<<< HEAD
 >>>>>>> c1d06ad1d (wallet: add color and emoji)
+=======
+=======
+            networks                           (rf/sub [:wallet/network-details])]
+>>>>>>> aa35edaf6 (lint)
+>>>>>>> 9c3ec27ba (lint)
         [rn/view {:style {:flex 1}}
          [account-switcher/view {:on-press #(rf/dispatch [:wallet/close-account-page])}]
          [quo/account-overview

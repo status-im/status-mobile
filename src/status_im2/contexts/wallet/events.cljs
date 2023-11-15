@@ -58,10 +58,13 @@
  :wallet/get-accounts-success
  (fn [{:keys [db]} [accounts]]
 <<<<<<< HEAD
+<<<<<<< HEAD
    (let [wallet-accounts     (filter #(not (:chat %)) accounts)
          wallet-db           (get db :wallet)
 =======
    (println "aaaa" accounts)
+=======
+>>>>>>> 9c3ec27ba (lint)
    (let [wallet-db           (get db :wallet)
 >>>>>>> c1d06ad1d (wallet: add color and emoji)
          new-account?        (:new-account? wallet-db)
@@ -394,6 +397,7 @@
 (rf/reg-event-fx :wallet/select-send-address
  (fn [{:keys [db]} [address]]
    {:db (assoc db :wallet/send-address address)}))
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 (rf/reg-event-fx :wallet/get-address-details-success
@@ -423,3 +427,5 @@
    (println "WALLET INIT")
    {:db db}))
 >>>>>>> c1d06ad1d (wallet: add color and emoji)
+=======
+>>>>>>> 9c3ec27ba (lint)
