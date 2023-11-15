@@ -40,7 +40,7 @@
  :<- [:wallet/accounts]
  (fn [accounts]
    (zipmap (map :address accounts)
-           (map #(-> % :tokens utils/calculate-balance) accounts))))
+           (map utils/calculate-balance-for-account accounts))))
 
 (rf/reg-sub
  :wallet/account-cards-data
