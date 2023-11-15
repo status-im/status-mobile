@@ -1,4 +1,5 @@
 (ns test-helpers.integration
+  (:require-macros [test-helpers.integration])
   (:require
     [cljs.test :refer [is]]
     [native-module.core :as native-module]
