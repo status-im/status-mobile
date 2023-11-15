@@ -152,17 +152,10 @@
                        (update :chats-home-list disj chat-id)
                        (assoc :current-chat-id nil))
     :json-rpc/call [{:method     "wakuext_deactivateChat"
-                     :params     [{:id chat-id}]
+                     :params     [{:id chat-id :preserveHistory true}]
                      :on-success #()
                      :on-error   #(log/error "failed to create public chat" chat-id %)}]}
    (clear-history chat-id true)))
-
-(rf/defn remove-chat
-  "Removes chat with provided id from the chat list"
-  [{:keys [db]} chat-id]
-  {:db (-> db
-           (update :chats-home-list disj chat-id)
-           (assoc :current-chat-id nil))})
 
 (rf/defn offload-messages
   {:events [:chat/offload-messages]}
@@ -296,8 +289,9 @@
   (rf/merge cofx
             {:effects/push-notifications-clear-message-notifications [chat-id]
              :dispatch                                               [:shell/close-switcher-card
-                                                                      chat-id]}
-            (remove-chat chat-id)))
+                                                                      chat-id]} 
+            (deactivate-chat chat-id)
+            (offload-messages chat-id)))
 
 (rf/defn unmute-chat-community
   {:events [:chat/unmute-chat-community]}
