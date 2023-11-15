@@ -1,5 +1,6 @@
 (ns status-im2.subs.wallet.wallet
 <<<<<<< HEAD
+<<<<<<< HEAD
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
 =======
@@ -9,13 +10,26 @@
             [status-im2.contexts.wallet.common.utils :as utils]
             [utils.number]))
 =======
+=======
+>>>>>>> 6acd5d275 (rebase)
   (:require
     [clojure.string :as string]
-    [re-frame.core :as re-frame]
+    [re-frame.core :as rf]
     [status-im2.contexts.wallet.common.utils :as utils]
     [utils.number]))
->>>>>>> aeda1e4a7 (review)
 
+(rf/reg-sub
+  :wallet/ui
+  :<- [:wallet]
+  :-> :ui)
+
+(rf/reg-sub
+  :wallet/tokens-loading?
+  :<- [:wallet/ui]
+  :-> :tokens-loading?)
+
+(rf/reg-sub
+<<<<<<< HEAD
 <<<<<<< HEAD
 (rf/reg-sub
  :wallet/ui
@@ -59,6 +73,8 @@
            (sort-by :position)))
 
 (rf/reg-sub
+=======
+>>>>>>> 97b751fe9 (rebase)
  :wallet/addresses
  :<- [:wallet]
  :-> #(->> %
@@ -72,6 +88,7 @@
  (fn [accounts]
    (zipmap (map :address accounts)
            (map #(-> % :tokens utils/calculate-balance) accounts))))
+<<<<<<< HEAD
 
 (rf/reg-sub
  :wallet/account-cards-data
@@ -136,11 +153,50 @@
 =======
 =======
 =======
-       (assoc :balance (utils/get-balance-by-address balances current-viewing-account-address)))))
+>>>>>>> 6acd5d275 (rebase)
+=======
+  :wallet/accounts
+  :<- [:wallet]
+  :-> #(->> %
+            :accounts
+            vals
+            (sort-by :position)))
+>>>>>>> 206a158a1 (rebase)
+
+(rf/reg-sub
+  :wallet/balances
+  :<- [:wallet/accounts]
+  (fn [accounts]
+    (zipmap (map :address accounts)
+            (map #(-> % :tokens utils/calculate-balance) accounts))))
+
+(rf/reg-sub
+  :wallet/account-cards-data
+  :<- [:wallet/accounts]
+  :<- [:wallet/balances]
+  :<- [:wallet/tokens-loading?]
+  (fn [[accounts balances tokens-loading?]]
+    (mapv (fn [{:keys [color address] :as account}]
+            (assoc account
+              :customization-color color
+              :type                :empty
+              :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
+              :loading?            tokens-loading?
+              :balance             (utils/prettify-balance (get balances address))))
+          accounts)))
+
+(rf/reg-sub
+  :wallet/current-viewing-account
+  :<- [:wallet]
+  :<- [:wallet/balances]
+  (fn [[{:keys [current-viewing-account-address] :as wallet} balances]]
+    (-> wallet
+        (get-in [:accounts current-viewing-account-address])
+        (assoc :balance (get balances current-viewing-account-address)))))
 
 (defn- calc-token-value
   [{:keys [symbol market-values-per-currency] :as item}]
-  (let [fiat-value                        (utils/sum-token-chains item)
+  (let [fiat-value                        (utils/total-token-value-in-all-chains item)
         market-values                     (:usd market-values-per-currency)
         {:keys [price change-pct-24hour]} market-values
         fiat-change                       (utils/calculate-fiat-change fiat-value change-pct-24hour)]
@@ -156,6 +212,7 @@
                            :percentage-change (.toFixed change-pct-24hour 2)
                            :fiat-change       (utils/prettify-balance fiat-change)}}))
 
+<<<<<<< HEAD
 (re-frame/reg-sub
  :wallet/account-token-values
  :<- [:wallet]
@@ -189,4 +246,15 @@
    (mapv calc-token-value (get tokens (keyword (string/lower-case current-viewing-account-address))))))
 >>>>>>> aeda1e4a7 (review)
 >>>>>>> af0e5cc43 (review)
+<<<<<<< HEAD
 >>>>>>> fa6b6eb69 (review)
+=======
+=======
+(rf/reg-sub
+  :wallet/account-token-values
+  :<- [:wallet]
+  :<- [:wallet/tokens]
+  (fn [[{:keys [current-viewing-account-address]} tokens]]
+    (mapv calc-token-value (get tokens (keyword (string/lower-case current-viewing-account-address))))))
+>>>>>>> 6acd5d275 (rebase)
+>>>>>>> d33622510 (rebase)

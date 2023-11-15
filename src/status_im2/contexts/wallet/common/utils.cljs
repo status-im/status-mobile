@@ -23,16 +23,13 @@
   (let [path (get-derivation-path number-of-accounts)]
     (format-derivation-path path)))
 
-<<<<<<< HEAD
 (defn- calculate-raw-balance
-=======
-(defn calculate-raw-balance
->>>>>>> c8bb0a581 (updates)
   [raw-balance decimals]
   (if-let [n (utils.number/parse-int raw-balance nil)]
     (/ n (Math/pow 10 (utils.number/parse-int decimals)))
     0))
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -43,6 +40,8 @@
 =======
 >>>>>>> af0e5cc43 (review)
 <<<<<<< HEAD
+=======
+>>>>>>> 6acd5d275 (rebase)
 (defn- total-token-value-in-all-chains
 >>>>>>> 70e4a2a12 (updates)
   [{:keys [balances-per-chain decimals]}]
@@ -59,6 +58,7 @@
                  (-> token :market-values-per-currency :usd :price))))
        (reduce +)))
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 (defn network-list
   [{:keys [balances-per-chain]} networks]
@@ -73,10 +73,14 @@
 (defn total-per-token
 =======
 =======
+=======
+
+>>>>>>> 6acd5d275 (rebase)
 (defn calculate-fiat-change
   [fiat-value change-pct-24hour]
   (* fiat-value (/ change-pct-24hour (+ 100 change-pct-24hour))))
 
+<<<<<<< HEAD
 >>>>>>> aeda1e4a7 (review)
 (defn sum-token-chains
 >>>>>>> 25ec47428 (review)
@@ -89,3 +93,12 @@
           (vals (:balancesPerChain item))))
 >>>>>>> c8bb0a581 (updates)
 >>>>>>> 70e4a2a12 (updates)
+=======
+(defn get-balance-by-address
+  [balances address]
+  (->> balances
+       (filter #(= (:address %) address))
+       first
+       :balance))
+
+>>>>>>> 6acd5d275 (rebase)
