@@ -251,7 +251,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Check that can login with different user")
         self.home.reopen_app(sign_in=False)
-        self.sign_in.show_profiles_button.click()
+        self.sign_in.show_profiles_button.wait_and_click()
         self.sign_in.element_by_text(self.username).click()
         self.sign_in.sign_in()
         self.home.communities_tab.click()
@@ -260,7 +260,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Check that can remove user from logged out state")
         self.home.reopen_app(sign_in=False)
-        self.sign_in.show_profiles_button.click()
+        self.sign_in.show_profiles_button.wait_and_click()
         user_card = self.sign_in.get_user(username=self.username)
         user_card.open_user_options()
         self.sign_in.remove_profile_button.click()
@@ -270,7 +270,7 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
 
         self.home.just_fyi("Check that removed user is not shown in the list anymore")
         self.home.reopen_app(sign_in=False)
-        self.sign_in.show_profiles_button.click()
+        self.sign_in.show_profiles_button.wait_and_click()
         if self.sign_in.element_by_text(self.username).is_element_displayed():
             self.errors.append("Removed user is re-appeared after relogin!")
 
