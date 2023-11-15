@@ -38,8 +38,14 @@
   {:color (colors/theme-colors colors/white colors/neutral-100 theme)})
 
 (defn icon
-  [theme]
-  {:color           (colors/theme-colors colors/white colors/neutral-100 theme)
+  [type theme]
+  {:color           (condp = type
+                      :negative (colors/resolve-color :danger theme)
+                      :positive (colors/resolve-color :success theme)
+                      (colors/theme-colors colors/white-opa-40
+                                           colors/neutral-80-opa-40
+                                           theme)
+                    )
    :container-style {:width 20 :height 20}})
 
 (def left-side-container {:padding 2})

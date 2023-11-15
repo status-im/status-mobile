@@ -3,7 +3,6 @@
     [camel-snake-kebab.core :as csk]
     [camel-snake-kebab.extras :as cske]
     [clojure.string :as string]
-    [quo.foundations.colors :as colors]
     [react-native.background-timer :as background-timer]
     [status-im.common.data-store.wallet :as data-store]
     [status-im.contexts.wallet.item-types :as item-types]
@@ -23,10 +22,10 @@
      {:db (update db :wallet dissoc :navigate-to-account :new-account?)
       :fx [[:dispatch
             [:toasts/upsert
-             {:id         :new-wallet-account-created
-              :icon       :i/correct
-              :icon-color colors/success-50
-              :text       (i18n/label :t/account-created {:name (:name account)})}]]]})))
+             {:id   :new-wallet-account-created
+              :icon :i/correct
+              :type :positive
+              :text (i18n/label :t/account-created {:name name})}]]]})))
 
 (rf/reg-event-fx :wallet/navigate-to-account
  (fn [{:keys [db]} [address]]

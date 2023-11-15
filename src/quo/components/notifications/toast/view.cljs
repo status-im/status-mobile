@@ -69,15 +69,17 @@
 (def ^:private toast-container (quo.theme/with-theme toast-container-internal))
 
 (defn toast
-  [{:keys [icon icon-color title text action undo-duration undo-on-press container-style theme user]}]
+  "Options:
+   
+   :type => :neutral/:negative/:positive
+   "
+  [{:keys [icon type title text action undo-duration undo-on-press container-style theme user]
+    :or   {type :neutral}}]
   (let [context-theme (or theme (quo.theme/get-theme))]
     [quo.theme/provider {:theme context-theme}
      [toast-container
       {:left            (cond icon
-                              [icon/icon icon
-                               (cond-> (style/icon context-theme)
-                                 icon-color
-                                 (assoc :color icon-color))]
+                              [icon/icon icon (style/icon type context-theme)]
                               user
                               [user-avatar/user-avatar user])
        :title           title

@@ -232,10 +232,10 @@
         (on-failed-scan)
         (debounce/debounce-and-dispatch
          [:toasts/upsert
-          {:icon       :i/info
-           :icon-color colors/danger-50
-           :theme      :dark
-           :text       (i18n/label :t/error-this-is-not-a-sync-qr-code)}]
+          {:icon  :i/info
+           :type  :negative
+           :theme :dark
+           :text  (i18n/label :t/error-this-is-not-a-sync-qr-code)}]
          300)))))
 
 (defn- render-camera

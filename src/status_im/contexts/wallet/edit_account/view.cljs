@@ -1,6 +1,5 @@
 (ns status-im.contexts.wallet.edit-account.view
   (:require [quo.core :as quo]
-            [quo.foundations.colors :as colors]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [reagent.core :as reagent]
@@ -13,7 +12,7 @@
             [utils.re-frame :as rf]))
 
 (defn- show-save-account-toast
-  [updated-key theme]
+  [updated-key]
   (let [message (case updated-key
                   :name                     :t/edit-wallet-account-name-updated-message
                   :color                    :t/edit-wallet-account-colour-updated-message
@@ -21,10 +20,10 @@
                   :prod-preferred-chain-ids :t/edit-wallet-network-preferences-updated-message
                   nil)]
     (rf/dispatch [:toasts/upsert
-                  {:id         :edit-account
-                   :icon       :i/correct
-                   :icon-color (colors/resolve-color :success theme)
-                   :text       (i18n/label message)}])))
+                  {:id   :edit-account
+                   :icon :i/correct
+                   :type :positive
+                   :text (i18n/label message)}])))
 
 (defn- save-account
   [{:keys [account updated-key new-value theme]}]

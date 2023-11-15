@@ -109,10 +109,10 @@
               {:on-press        (fn []
                                   (clipboard/set-string @code)
                                   (rf/dispatch [:toasts/upsert
-                                                {:icon       :correct
-                                                 :icon-color colors/success-50
-                                                 :text       (i18n/label
-                                                              :t/sharing-copied-to-clipboard)}]))
+                                                {:icon :correct
+                                                 :type :positive
+                                                 :text (i18n/label
+                                                        :t/sharing-copied-to-clipboard)}]))
                :type            :grey
                :container-style {:margin-top 12}
                :icon-left       :i/copy}

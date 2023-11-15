@@ -1,7 +1,6 @@
 (ns status-im.contexts.chat.photo-selector.view
   (:require
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [react-native.gesture :as gesture]
     [react-native.linear-gradient :as linear-gradient]
@@ -23,7 +22,7 @@
   (rf/dispatch [:toasts/upsert
                 {:id              :random-id
                  :icon            :i/info
-                 :icon-color      colors/danger-50-opa-40
+                 :type            :negative
                  :container-style {:top (when platform/ios? 20)}
                  :text            (i18n/label :t/only-6-images)}]))
 

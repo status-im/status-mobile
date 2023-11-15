@@ -1,6 +1,5 @@
 (ns status-im.common.device-permissions
   (:require
-    [quo.foundations.colors :as colors]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
@@ -12,7 +11,7 @@
      :on-allowed  on-allowed
      :on-denied   #(rf/dispatch
                     [:toasts/upsert
-                     {:icon       :i/info
-                      :icon-color colors/danger-50
-                      :theme      :dark
-                      :text       (i18n/label :t/camera-permission-denied)}])}]))
+                     {:icon  :i/info
+                      :type  :negative
+                      :theme :dark
+                      :text  (i18n/label :t/camera-permission-denied)}])}]))

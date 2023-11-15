@@ -1,7 +1,6 @@
 (ns status-im.contexts.quo-preview.notifications.toast
   (:require
     [quo.core :as quo]
-    [quo.foundations.colors :as colors]
     [react-native.core :as rn]
     [reagent.core :as reagent]
     [status-im.common.resources :as resources]
@@ -25,22 +24,22 @@
   []
   [toast-button
    "Toast: basic"
-   {:icon :placeholder :icon-color "white" :text "This is an example toast"}])
+   {:icon :placeholder :text "This is an example toast"}])
 
 (defn toast-button-with-undo-action
   []
   [toast-button
    "Toast: with undo action"
    {:icon          :info
-    :icon-color    colors/danger-50-opa-40
+    :type          :negative
     :text          "This is an example toast"
     :duration      4000
     :undo-duration 4
     :undo-on-press #(do
                       (rf/dispatch [:toasts/upsert
-                                    {:icon       :i/correct
-                                     :icon-color colors/success-50-opa-40
-                                     :text       "Undo pressed"}])
+                                    {:icon :i/correct
+                                     :type :success
+                                     :text "Undo pressed"}])
                       (rf/dispatch [:toasts/close
                                     "Toast: with undo action"]))}])
 
@@ -49,7 +48,7 @@
   [toast-button
    "Toast: multiline"
    {:icon :correct
-    :icon-color colors/success-50-opa-40
+    :type :positive
     :text
     "This is an example multiline toast This is an example multiline toast This is an example multiline toast"
     :undo-duration 4
@@ -57,17 +56,17 @@
     #(do
        (rf/dispatch
         [:toasts/upsert
-         {:icon :i/correct :icon-color colors/success-50-opa-40 :text "Undo pressed"}])
+         {:icon :i/correct :type :positive :text "Undo pressed"}])
        (rf/dispatch [:toasts/close "Toast: with undo action"]))}])
 
 (defn toast-button-30s-duration
   []
   [toast-button
    "Toast: 30s duration"
-   {:icon       :correct
-    :icon-color colors/success-50-opa-40
-    :text       "This is an example toast"
-    :duration   30000}])
+   {:icon     :correct
+    :type     :positive
+    :text     "This is an example toast"
+    :duration 30000}])
 
 (defn toast-button-with-user-avatar
   []
@@ -89,11 +88,11 @@
              :on-press
              #(rf/dispatch
                [:toasts/upsert
-                {:id         "Toast: 30s duration"
-                 :icon       :i/info
-                 :icon-color colors/danger-50-opa-40
-                 :text       (str "This is an updated example toast" " - " (swap! suffix inc))
-                 :duration   3000}])}
+                {:id       "Toast: 30s duration"
+                 :icon     :i/info
+                 :type     :negative
+                 :text     (str "This is an updated example toast" " - " (swap! suffix inc))
+                 :duration 3000}])}
             "update above toast"]])))))
 
 (defn view
