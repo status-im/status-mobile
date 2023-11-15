@@ -1,6 +1,5 @@
 (ns quo.components.list-items.saved-address.view
   (:require
-    [clojure.string :as string]
     [quo.components.avatars.wallet-user-avatar.view :as wallet-user-avatar]
     [quo.components.icon :as icon]
     [quo.components.list-items.saved-address.style :as style]
@@ -13,27 +12,23 @@
 
 (defn- left-container
   [{:keys [blur? theme name ens address customization-color]}]
-  (let [names      (remove string/blank? (string/split name " "))
-        first-name (if (> (count names) 0) (first names) "")
-        last-name  (if (> (count names) 1) (last names) "")]
-    [rn/view {:style style/left-container}
-     [wallet-user-avatar/wallet-user-avatar
-      {:size                :medium
-       :f-name              first-name
-       :l-name              last-name
-       :customization-color customization-color}]
-     [rn/view {:style style/account-container}
-      [text/text
-       {:weight :semi-bold
-        :size   :paragraph-1
-        :style  style/name-text}
-       name]
-      [text/text {:size :paragraph-2}
-       [text/text
-        {:size   :paragraph-2
-         :weight :monospace
-         :style  (style/account-address blur? theme)}
-        (or ens (address/get-shortened-key address))]]]]))
+  [rn/view {:style style/left-container}
+   [wallet-user-avatar/wallet-user-avatar
+    {:size                :size-32
+     :full-name           name
+     :customization-color customization-color}]
+   [rn/view {:style style/account-container}
+    [text/text
+     {:weight :semi-bold
+      :size   :paragraph-1
+      :style  style/name-text}
+     name]
+    [text/text {:size :paragraph-2}
+     [text/text
+      {:size   :paragraph-2
+       :weight :monospace
+       :style  (style/account-address blur? theme)}
+      (or ens (address/get-shortened-key address))]]]])
 
 (defn- internal-view
   []

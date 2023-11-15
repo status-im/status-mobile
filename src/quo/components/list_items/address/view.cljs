@@ -13,11 +13,11 @@
   [{:keys [theme address networks blur?]}]
   [rn/view {:style style/left-container}
    [wallet-user-avatar/wallet-user-avatar
-    {:size       :medium
-     :f-name     "0"
-     :l-name     "x"
-     :monospace? true
-     :uppercase? false}]
+    {:size                :size-32
+     :full-name           "0 x"
+     :monospace?          true
+     :lowercase?          true
+     :customization-color :neutral}]
    [rn/view {:style style/account-container}
     [text/text {:size :paragraph-1}
      (map (fn [network]
@@ -25,8 +25,8 @@
             [text/text
              {:size   :paragraph-1
               :weight :semi-bold
-              :style  {:color (colors/resolve-color network theme)}}
-             (str (subs (name network) 0 3) ":")])
+              :style  {:color (colors/resolve-color (:network-name network) theme)}}
+             (str (:short-name network) ":")])
           networks)
      [text/text
       {:size   :paragraph-1

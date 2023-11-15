@@ -69,7 +69,7 @@
                                  300)
         :on-change-text        (fn [text]
                                  (let [starts-like-eth-address (re-matches
-                                                                constants/regx-address-fragment
+                                                                constants/regx-full-or-partial-address
                                                                 text)]
                                    (when-not (= scanned-address text)
                                      (rf/dispatch [:wallet/clean-scanned-address]))
@@ -89,8 +89,8 @@
           ^{:key (str network)}
           [quo/text
            {:size  :paragraph-2
-            :style {:color (colors/resolve-color network theme)}}
-           (str (subs (name network) 0 3) ":")])
+            :style {:color (colors/resolve-color (:network-name network) theme)}}
+           (str (:short-name network) ":")])
         networks)
    [quo/text
     {:size   :paragraph-2
