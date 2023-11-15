@@ -1,7 +1,7 @@
 import os
 import re
 import signal
-import urllib.request
+import requests
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
@@ -195,6 +195,23 @@ def _upload_and_check_response_with_retries(apk_file_path, retries=3):
         except (ConnectionError, RemoteDisconnected):
             sleep(10)
 
+def _download_apk(url):
+    # Absolute path adde to handle CI runs.
+    apk_path = os.path.join(os.path.dirname(__file__), test_suite_data.apk_name)
+
+    print('Downloading: %s' % url)
+    try:
+        resp = requests.get(url)
+        resp.raise_for_status()
+    except requests.RequestException as err:
+        print(resp.text)
+        raise err
+
+    with open(apk_path, 'wb') as f:
+        f.write(resp.content)
+
+    return apk_path
+
 def pytest_configure(config):
     global option
     option = config.option
@@ -249,15 +266,13 @@ def pytest_configure(config):
 
     if config.getoption('env') == 'sauce' and not is_uploaded():
         apk_src = config.getoption('apk')
-        if apk_src.startsWith('http'):
-            # Absolute path adde to handle CI runs.
-            apk_path = os.path.join(os.path.dirname(__file__), test_suite_data.apk_name)
-            urllib.request.urlretrieve(apk_src, filename=apk_path)
+        if apk_src.startswith('http'):
+            apk_path = _download_apk(apk_src)
         else:
             apk_path = apk_src
 
         _upload_and_check_response_with_retries(apk_path)
-        if apk_src.startsWith('http'):
+        if apk_src.startswith('http'):
             os.remove(apk_path)
 
 
