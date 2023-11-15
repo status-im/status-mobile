@@ -116,13 +116,13 @@
          ;; A small setTimeout is necessary to ensure the statement is enqueued and will get
          ;; executed
          ;; ASAP. Https://github.com/software-mansion/react-native-screens/issues/472
+         (reset! saved-cursor-position (if edit-text
+                                         (count edit-text)
+                                         text-value-count))
          (js/setTimeout #(.focus ^js @input-ref) 250))
        (when (and edit @input-ref)
          (.setNativeProps ^js @input-ref (clj->js {:text edit-text}))
-         (reset! text-value edit-text)
-         (reset! saved-cursor-position (if (zero? text-value-count)
-                                         (count edit-text)
-                                         text-value-count)))))
+         (reset! text-value edit-text))))
    [(:message-id edit)]))
 
 (defn use-reply
