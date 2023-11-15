@@ -67,7 +67,10 @@ stdenv.mkDerivation {
   '';
   buildPhase = ''
     # Assemble CLASSPATH from available clojure dependencies.
-    # We append 'src' so it can find the local sources.
+    # We prepend 'src' so it can find the local sources and prioritize
+    # our own namespaces over dependencies, given that indirect dependencies
+    # can also cause naming conflicts (e.g. prismatic/schema already uses
+    # namespace schema.core).
     export CLASS_PATH="src:$(find ${deps.clojure} \
       -iname '*.jar' | tr '\n' ':')"
 
