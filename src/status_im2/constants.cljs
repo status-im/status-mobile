@@ -382,13 +382,6 @@
 (def ^:const mainnet-network-name :ethereum)
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
-(def ^:const goerli-network-name :goerli)
-
-(def ^:const networks-map
-  {mainnet-chain-id  mainnet-network-name
-   optimism-chain-id optimism-network-name
-   arbitrum-chain-id arbitrum-network-name
-   goerli-chain-id   goerli-network-name})
 
 (def ^:const chain-id-separator ":")
 
