@@ -98,7 +98,7 @@
         [sub-view/bar]
         (when chat-screen-loaded?
           [:<>
-           [reply/view state]
+           [reply/view state (:input-ref props)]
            [edit/view
             {:text-value (:text-value state)
              :input-ref  (:input-ref props)}]])

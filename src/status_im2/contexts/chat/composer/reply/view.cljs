@@ -9,6 +9,7 @@
     [status-im2.constants :as constant]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.reply.style :as style]
+    [status-im2.contexts.chat.composer.utils :as utils]
     [utils.ens.stateofus :as stateofus]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -85,7 +86,7 @@
 (defn quoted-message
   [{:keys [from content-type contentType parsed-text content deleted? deleted-for-me?
            album-images-count]}
-   in-chat-input? pin? recording-audio?]
+   in-chat-input? pin? recording-audio? input-ref]
   (let [[primary-name _]   (rf/sub [:contacts/contact-two-names-by-identity from])
         current-public-key (rf/sub [:multiaccount/public-key])
         content-type       (or content-type contentType)
@@ -136,7 +137,7 @@
         {:icon-only?          true
          :size                24
          :accessibility-label :reply-cancel-button
-         :on-press            #(rf/dispatch [:chat.ui/cancel-message-reply])
+         :on-press            #(utils/cancel-reply-message input-ref)
          :type                :outline}
         :i/close])
      (when (and in-chat-input? recording-audio?)
@@ -148,13 +149,13 @@
          :style  style/gradient}])]))
 
 (defn- f-view
-  [recording?]
+  [recording? input-ref]
   (let [reply  (rf/sub [:chats/reply-message])
         height (reanimated/use-shared-value (if reply constants/reply-container-height 0))]
     (rn/use-effect #(reanimated/animate height (if reply constants/reply-container-height 0)) [reply])
     [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
-     (when reply [quoted-message reply true false recording?])]))
+     (when reply [quoted-message reply true false recording? input-ref])]))
 
 (defn view
-  [{:keys [recording?]}]
-  [:f> f-view @recording?])
+  [{:keys [recording?]} input-ref]
+  [:f> f-view @recording? input-ref])

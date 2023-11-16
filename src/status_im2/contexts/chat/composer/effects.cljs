@@ -159,8 +159,8 @@
      (when reply
        (reanimated/animate container-opacity 1))
      (when (and reply @input-ref @messages-list-on-layout-finished?)
-       (js/setTimeout #(.focus ^js @input-ref) 250))))
-  [(:message-id reply)])
+       (js/setTimeout #(.focus ^js @input-ref) 600)))
+   [(:message-id reply)]))
 
 (defn update-input-mention
   [{:keys [input-ref]}
