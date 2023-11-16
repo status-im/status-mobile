@@ -255,7 +255,7 @@
 (defn community-content
   [community]
   (rf/dispatch [:communities/check-all-community-channels-permissions (:id community)])
-  (fn [{:keys [name description joined images tags color id] :as community}
+  (fn [{:keys [name description joined images tags color id token-permissions] :as community}
        pending?
        {:keys [on-category-layout
                collapsed?
@@ -273,12 +273,14 @@
             :last-item-style style/last-community-tag
             :container-style style/community-tag-container}])
         [join-community community pending?]]
-       [channel-list-component
-        {:on-category-layout              on-category-layout
-         :community-id                    id
-         :community-color                 color
-         :on-first-channel-height-changed on-first-channel-height-changed}
-        (add-handlers-to-categorized-chats id chats-by-category joined)]])))
+       (when (or (and (seq token-permissions) joined)
+                 (empty? token-permissions))
+         [channel-list-component
+          {:on-category-layout              on-category-layout
+           :community-id                    id
+           :community-color                 color
+           :on-first-channel-height-changed on-first-channel-height-changed}
+          (add-handlers-to-categorized-chats id chats-by-category joined)])])))
 
 (defn sticky-category-header
   [_]
