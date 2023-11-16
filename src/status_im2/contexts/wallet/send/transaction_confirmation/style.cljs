@@ -34,3 +34,8 @@
    :right    20
    :left     20
    :bottom   20})
+
+(defn section-label
+  [theme]
+  {:margin-bottom 8
+   :color         (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)})

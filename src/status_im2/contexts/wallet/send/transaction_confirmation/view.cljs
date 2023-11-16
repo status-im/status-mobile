@@ -55,14 +55,14 @@
       :customization-color :magenta}]]])
 
 (defn- transaction-from
-  [status-account-props]
+  [status-account-props theme]
   [rn/view
    {:style {:padding-horizontal 20
             :padding-bottom     16}}
    [quo/text
     {:size                :paragraph-2
      :weight              :medium
-     :style               {:margin-bottom 8}
+     :style               (style/section-label theme)
      :accessibility-label :summary-from-label}
     (i18n/label :t/from-capitalized)]
    [quo/summary-info
@@ -74,14 +74,14 @@
      :account-props status-account-props}]])
 
 (defn- transaction-to
-  [user-props]
+  [user-props theme]
   [rn/view
    {:style {:padding-horizontal 20
             :padding-bottom     16}}
    [quo/text
     {:size                :paragraph-2
      :weight              :medium
-     :style               {:margin-bottom 8}
+     :style               (style/section-label theme)
      :accessibility-label :summary-from-label}
     (i18n/label :t/to-capitalized)]
    [quo/summary-info
@@ -100,7 +100,7 @@
    [quo/text
     {:size                :paragraph-2
      :weight              :medium
-     :style               {:margin-bottom 8}
+     :style               (style/section-label theme)
      :accessibility-label :summary-from-label}
     (i18n/label :t/details)]
    [rn/view
@@ -183,8 +183,8 @@
                                 :state               :default
                                 :emoji               "🍑"}}]
         [transaction-title]
-        [transaction-from status-account-props]
-        [transaction-to user-props]
+        [transaction-from status-account-props theme]
+        [transaction-to user-props theme]
         [transaction-details theme]
         [rn/safe-area-view
          {:style style/slide-button-container}
