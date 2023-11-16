@@ -144,7 +144,7 @@
             :label           :none
             :status          :default
             :size            :small
-            :title           "Est. time"
+            :title           (i18n/label :t/est-time)
             :subtitle        "3-5 min"}]
           [quo/data-item
            {:container-style {:flex   1
@@ -156,7 +156,7 @@
             :label           :none
             :status          :default
             :size            :small
-            :title           "Max fees"
+            :title           (i18n/label :t/max-fees)
             :subtitle        "€188,70"}]
           [quo/data-item
            {:container-style {:flex   1
@@ -168,7 +168,7 @@
             :label           :none
             :status          :default
             :size            :small
-            :title           "Mark gets"
+            :title           (i18n/label :t/user-gets {:name "Mark"})
             :subtitle        "149.99 ETH"}]]]
         [rn/safe-area-view
          {:style style/slide-button-container}
@@ -178,7 +178,7 @@
            :on-reset            (when @reset-slider? #(reset! reset-slider? false))
            :on-complete         #(js/alert "Not implemented yet")
            :track-icon          (if biometric-auth? :i/face-id :password)
-           :track-text          "Slide to send"}]]]])))
+           :track-text          (i18n/label :t/slide-to-send)}]]]])))
 
 (defn- view-internal
   [{:keys [theme]}]

@@ -2399,5 +2399,8 @@
     "searching-for-activity": "Searching for activity...",
     "this-address-has-no-activity": "This address has no activity",
     "this-address-has-activity": "This address has activity",
-    "details": "Details"
+    "details": "Details",
+    "est-time": "Est. time",
+    "user-gets": "{{name}} gets",
+    "slide-to-send": "Slide to send"
 }
