@@ -275,8 +275,18 @@
 =======
  :wallet/account-token-values
  :<- [:wallet]
+<<<<<<< HEAD
  :<- [:wallet/tokens]
  (fn [[{:keys [current-viewing-account-address]} tokens]]
    (mapv calc-token-value (get tokens (keyword (string/lower-case current-viewing-account-address))))))
 >>>>>>> a61095482 (lint)
+<<<<<<< HEAD
 >>>>>>> c5e853c4e (lint)
+=======
+=======
+ :<- [:wallet/accounts]
+ (fn [[{:keys [current-viewing-account-address]} accounts]]
+   (let [current-account (first (filter #(= current-viewing-account-address (:address %)) accounts))]
+   (mapv calc-token-value (:tokens current-account)))))
+>>>>>>> 30509f66a (fix)
+>>>>>>> 2a4f6150e (fix)
