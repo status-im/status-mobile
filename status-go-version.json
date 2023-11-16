@@ -1,0 +1,9 @@
+{
+    "_comment": "THIS SHOULD NOT BE EDITED BY HAND.",
+    "_comment": "Instead use: scripts/update-status-go.sh <rev>",
+    "owner": "status-im",
+    "repo": "status-go",
+    "version": "debug/revert-logout",
+    "commit-sha1": "cdb4bb30af634776cafaed25f1586684ffe39ed9",
+    "src-sha256": "1zcxfk07ldllmwv7vr9ki1w2lgx3jd6i5kw8mq5c3pgiclw84gn5"
+}
