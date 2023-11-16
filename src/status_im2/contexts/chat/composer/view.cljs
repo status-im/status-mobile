@@ -33,7 +33,8 @@
            blur-height
            opacity
            background-y
-           theme]} props state]
+           theme
+           messages-list-on-layout-finished?]} props state]
   (let [{:keys [chat-screen-loaded?]
          :as   subscriptions}    (utils/init-subs)
         content-height           (reagent/atom (or (:input-content-height ; Actual text height
@@ -73,8 +74,8 @@
                         animations
                         dimensions
                         subscriptions)
-    (effects/use-edit props state subscriptions)
-    (effects/use-reply props animations subscriptions)
+    (effects/use-edit props state subscriptions messages-list-on-layout-finished?)
+    (effects/use-reply props animations subscriptions messages-list-on-layout-finished?)
     (effects/update-input-mention props state subscriptions)
     (effects/link-previews props state animations subscriptions)
     (effects/use-images props state animations subscriptions)
@@ -148,7 +149,8 @@
          subscriptions]]]]]))
 
 (defn composer
-  [{:keys [insets scroll-to-bottom-fn show-floating-scroll-down-button?]}]
+  [{:keys [insets scroll-to-bottom-fn show-floating-scroll-down-button?
+           messages-list-on-layout-finished?]}]
   (let [window-height (:height (rn/get-window))
         theme         (quo.theme/use-theme-value)
         opacity       (reanimated/use-shared-value 0)
@@ -163,7 +165,8 @@
                        :blur-height                       blur-height
                        :opacity                           opacity
                        :background-y                      background-y
-                       :theme                             theme}
+                       :theme                             theme
+                       :messages-list-on-layout-finished? messages-list-on-layout-finished?}
         props         (utils/init-non-reactive-state)
         state         (utils/init-reactive-state)]
     [rn/view (when platform/ios? {:style {:z-index 1}})

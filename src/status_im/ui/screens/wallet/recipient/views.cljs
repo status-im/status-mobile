@@ -3,7 +3,6 @@
     [clojure.string :as string]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im.ethereum.stateofus :as stateofus]
     [status-im.ui.components.chat-icon.screen :as chat-icon]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.core :as quo]
@@ -18,6 +17,7 @@
     [status-im.utils.utils :as utils]
     [utils.address :as address]
     [utils.debounce :as debounce]
+    [utils.ens.stateofus :as stateofus]
     [utils.i18n :as i18n]
     [utils.string :as utils.string])
   (:require-macros [status-im.utils.views :as views]))

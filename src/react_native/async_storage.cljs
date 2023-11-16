@@ -18,12 +18,14 @@
          (log/error e))))
 
 (defn set-item!
-  [k value]
-  (-> ^js async-storage
-      (.setItem (str k)
-                (clj->transit value))
-      (.catch (fn [error]
-                (log/error "[async-storage]" error)))))
+  ([k value] (set-item! k value identity))
+  ([k value cb]
+   (-> ^js async-storage
+       (.setItem (str k)
+                 (clj->transit value))
+       (.then (fn [_] (cb)))
+       (.catch (fn [error]
+                 (log/error "[async-storage]" error))))))
 
 (defn set-item-factory
   []

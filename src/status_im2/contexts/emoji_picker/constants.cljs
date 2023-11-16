@@ -16,6 +16,8 @@
 
 (def ^:const emoji-row-separator-height 16)
 
+(def ^:const categories-selector-height 56)
+
 (def ^:const emoji-item-margin-right
   (/ (- (:width (rn/get-window))
         (* emoji-row-padding-horizontal 2)

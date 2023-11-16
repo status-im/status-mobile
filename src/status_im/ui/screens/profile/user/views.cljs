@@ -4,7 +4,6 @@
     [quo.theme :as theme]
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im.ethereum.stateofus :as stateofus]
     [status-im.ui.components.colors :as colors]
     [status-im.ui.components.common.common :as components.common]
     [status-im.ui.components.copyable-text :as copyable-text]
@@ -17,12 +16,13 @@
     [status-im.ui.screens.profile.user.edit-picture :as edit]
     [status-im.ui.screens.profile.user.styles :as styles]
     [status-im.ui.screens.profile.visibility-status.views :as visibility-status]
-    [status-im.utils.universal-links.utils :as universal-links]
     [status-im.utils.utils :as utils]
     [status-im2.common.qr-codes.view :as qr-codes]
     [status-im2.config :as config]
     [status-im2.contexts.profile.utils :as profile.utils]
-    [utils.i18n :as i18n])
+    [utils.ens.stateofus :as stateofus]
+    [utils.i18n :as i18n]
+    [utils.universal-links :as universal-links])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview share-chat-key
@@ -79,7 +79,8 @@
         @(re-frame/subscribe [:profile/profile])
         active-contacts-count @(re-frame/subscribe [:contacts/active-count])
         chain @(re-frame/subscribe [:chain-keyword])
-        registrar (stateofus/get-cached-registrar chain)
+        registrar (when (or (not= chain :goerli) config/test-stateofus?)
+                    (stateofus/get-cached-registrar chain))
         local-pairing-mode-enabled? config/local-pairing-mode-enabled?]
     [:<>
      [visibility-status/visibility-status-button

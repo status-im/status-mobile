@@ -143,6 +143,14 @@
 (def ^:const community-invitation-only-access 2)
 (def ^:const community-on-request-access 3)
 
+(def ^:const community-token-permission-unknown 0)
+(def ^:const community-token-permission-become-admin 1)
+(def ^:const community-token-permission-become-member 2)
+(def ^:const community-token-permission-can-view-channel 3)
+(def ^:const community-token-permission-can-view-and-post-channel 4)
+(def ^:const community-token-permission-become-token-master 5)
+(def ^:const community-token-permission-become-token-owner 6)
+
 ;; Community rules for joining
 (def ^:const community-rule-ens-only "ens-only")
 
@@ -185,6 +193,7 @@
 (def regx-address #"^0x[a-fA-F0-9]{40}$")
 (def regx-address-contains #"(?i)0x[a-fA-F0-9]{40}")
 (def regx-starts-with-uuid #"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+(def regx-address-fragment #"^0x[a-fA-F0-9]{1,40}$")
 
 (def ^:const dapp-permission-contact-code "contact-code")
 (def ^:const dapp-permission-web3 "web3")
@@ -373,3 +382,9 @@
 (def ^:const mainnet-network-name :ethereum)
 (def ^:const optimism-network-name :optimism)
 (def ^:const arbitrum-network-name :arbitrum)
+
+(def ^:const chain-id-separator ":")
+
+(def ^:const account-default-customization-color :blue)
+
+(def ^:const wallet-account-name-max-length 20)

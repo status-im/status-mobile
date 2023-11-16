@@ -26,6 +26,8 @@
 
 [Creating a pixel perfect UI](pixel-perfection.md)
 
+[Contributing to status-go](status-go-changes.md)
+
 ## Testing
 
 [How to run local tests](testing.md)

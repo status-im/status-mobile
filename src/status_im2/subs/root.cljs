@@ -136,6 +136,7 @@
 (reg-root-key-sub :communities :communities)
 (reg-root-key-sub :communities/create :communities/create)
 (reg-root-key-sub :communities/create-channel :communities/create-channel)
+(reg-root-key-sub :communities/channels-permissions :community-channels-permissions)
 (reg-root-key-sub :communities/requests-to-join :communities/requests-to-join)
 (reg-root-key-sub :communities/community-id-input :communities/community-id-input)
 (reg-root-key-sub :communities/resolve-community-info :communities/resolve-community-info)
@@ -143,10 +144,6 @@
 (reg-root-key-sub :communities/collapsed-categories :communities/collapsed-categories)
 (reg-root-key-sub :communities/selected-tab :communities/selected-tab)
 (reg-root-key-sub :contract-communities :contract-communities)
-
-;;wallet
-(reg-root-key-sub :wallet/tokens :wallet/tokens)
-(reg-root-key-sub :wallet/tokens-loading? :wallet/tokens-loading?)
 
 ;;activity center
 (reg-root-key-sub :activity-center :activity-center)
@@ -156,6 +153,10 @@
 (reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)
 (reg-root-key-sub :wallet/create-account :wallet/create-account)
 (reg-root-key-sub :wallet/networks :wallet/networks)
+(reg-root-key-sub :wallet/scanned-address :wallet/scanned-address)
+(reg-root-key-sub :wallet/local-suggestions :wallet/local-suggestions)
+(reg-root-key-sub :wallet/valid-ens-or-address? :wallet/valid-ens-or-address?)
+(reg-root-key-sub :wallet/send-address :wallet/send-address)
 
 ;;debug
 (when js/goog.DEBUG

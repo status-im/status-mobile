@@ -106,7 +106,8 @@
 (defn use-edit
   [{:keys [input-ref]}
    {:keys [text-value saved-cursor-position]}
-   {:keys [edit input-with-mentions]}]
+   {:keys [edit input-with-mentions]}
+   messages-list-on-layout-finished?]
   (let [mention? (some #(= :mention (first %)) (seq input-with-mentions))]
     (rn/use-effect
      (fn []
@@ -118,7 +119,7 @@
              text-value-count (count @text-value)
              inject-edit-text (fn []
                                 (reset! text-value edit-text)
-                                (reset! saved-cursor-position (if (zero? text-value-count)
+                                (reset! saved-cursor-position (if (seq edit-text)
                                                                 (count edit-text)
                                                                 text-value-count))
                                 (when @input-ref
@@ -137,7 +138,7 @@
            ;; UI. This way, `on-focus` will trigger first without changing the height, after which
            ;; `on-content-size-change` will animate the height of the input based on the injected
            ;; text.
-           (js/setTimeout #(do (.focus ^js @input-ref)
+           (js/setTimeout #(do (when @messages-list-on-layout-finished? (.focus ^js @input-ref))
                                (js/setTimeout inject-edit-text 250))
                           100))))
      [(:message-id edit) mention?])))
@@ -145,14 +146,15 @@
 (defn use-reply
   [{:keys [input-ref]}
    {:keys [container-opacity]}
-   {:keys [reply]}]
+   {:keys [reply]}
+   messages-list-on-layout-finished?]
   (rn/use-effect
    (fn []
      (when reply
        (reanimated/animate container-opacity 1))
-     (when (and reply @input-ref)
-       (js/setTimeout #(.focus ^js @input-ref) 250)))
-   [(:message-id reply)]))
+     (when (and reply @input-ref @messages-list-on-layout-finished?)
+       (js/setTimeout #(.focus ^js @input-ref) 250))))
+  [(:message-id reply)])
 
 (defn update-input-mention
   [{:keys [input-ref]}

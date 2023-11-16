@@ -8,7 +8,6 @@
     [status-im2.contexts.wallet.common.activity-tab.view :as activity]
     [status-im2.contexts.wallet.common.collectibles-tab.view :as collectibles]
     [status-im2.contexts.wallet.common.temp :as temp]
-    [status-im2.contexts.wallet.common.utils :as utils]
     [status-im2.contexts.wallet.home.style :as style]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
@@ -25,12 +24,12 @@
       :accessibility-label :add-a-contact
       :label               (i18n/label :t/add-address)
       :sub-label           (i18n/label :t/add-address-description)
-      :on-press            #(rf/dispatch [:navigate-to :wallet-address-watch])
+      :on-press            #(rf/dispatch [:navigate-to :add-address-to-watch])
       :add-divider?        true}]]])
 
-(defn- add-account-placeholder
-  [color]
-  {:customization-color color
+(defn- new-account-card-data
+  []
+  {:customization-color (rf/sub [:profile/customization-color])
    :on-press            #(rf/dispatch [:show-bottom-sheet {:content new-account}])
    :type                :add-account})
 
@@ -39,38 +38,18 @@
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}])
 
-(defn account-cards
-  [{:keys [accounts loading? balances profile]}]
-  (let [accounts-with-balances
-        (mapv
-         (fn [account]
-           (assoc account
-                  :type                :empty
-                  :customization-color (:customization-color profile)
-                  :on-press            #(rf/dispatch [:navigate-to :wallet-accounts (:address account)])
-                  :loading?            loading?
-                  :balance             (utils/prettify-balance
-                                        (utils/get-balance-by-address balances (:address account)))))
-         accounts)]
-    (conj accounts-with-balances (add-account-placeholder (:customization-color profile)))))
-
 (defn view
   []
-  (rf/dispatch [:wallet/get-wallet-token])
   (rf/dispatch [:wallet/request-collectibles
                 {:start-at-index 0
                  :new-request?   true}])
-  (let [selected-tab (reagent/atom (:id (first tabs-data)))]
+  (let [top          (safe-area/get-top)
+        selected-tab (reagent/atom (:id (first tabs-data)))]
     (fn []
-      (let [accounts (rf/sub [:profile/wallet-accounts])
-            top      (safe-area/get-top)
-            loading? (rf/sub [:wallet/tokens-loading?])
-            balances (rf/sub [:wallet/balances])
-            profile  (rf/sub [:profile/profile])
-            networks (rf/sub [:wallet/network-details])]
-        [rn/view
-         {:style {:margin-top top
-                  :flex       1}}
+      (let [networks           (rf/sub [:wallet/network-details])
+            account-cards-data (rf/sub [:wallet/account-cards-data])
+            cards              (conj account-cards-data (new-account-card-data))]
+        [rn/view {:style {:margin-top top :flex 1}}
          [common.top-nav/view]
          [rn/view {:style style/overview-container}
           [quo/wallet-overview (temp/wallet-overview-state networks)]]
@@ -79,14 +58,13 @@
                                          {:content temp/wallet-temporary-navigation}])}
           [quo/wallet-graph {:time-frame :empty}]]
          [rn/flat-list
-          {:style      style/accounts-list
-           :data       (account-cards {:accounts accounts
-                                       :loading? loading?
-                                       :balances balances
-                                       :profile  profile})
-           :horizontal true
-           :separator  [rn/view {:style {:width 12}}]
-           :render-fn  quo/account-card}]
+          {:style                             style/accounts-list
+           :content-container-style           style/accounts-list-container
+           :data                              cards
+           :horizontal                        true
+           :separator                         [rn/view {:style {:width 12}}]
+           :render-fn                         quo/account-card
+           :shows-horizontal-scroll-indicator false}]
          [quo/tabs
           {:style          style/tabs
            :size           32

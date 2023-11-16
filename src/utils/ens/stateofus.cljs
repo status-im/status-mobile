@@ -1,8 +1,7 @@
-(ns status-im.ethereum.stateofus
+(ns utils.ens.stateofus
   (:require
     [clojure.string :as string]
-    [status-im.ethereum.ens :as ens]
-    [status-im2.config :as config]))
+    [utils.ens.core :as utils.ens]))
 
 (def domain "stateofus.eth")
 
@@ -29,9 +28,8 @@
 
 (def old-registrars
   (merge
-   {:mainnet "0xDB5ac1a559b02E12F29fC0eC0e37Be8E046DEF49"}
-   (when config/test-stateofus?
-     {:goerli "0xD1f7416F91E7Eb93dD96A61F12FC092aD6B67B11"})))
+   {:mainnet "0xDB5ac1a559b02E12F29fC0eC0e37Be8E046DEF49"
+    :goerli  "0xD1f7416F91E7Eb93dD96A61F12FC092aD6B67B11"}))
 
 (defn get-cached-registrar
   [chain]
@@ -51,6 +49,6 @@
   [contact-identity]
   (when (string? contact-identity)
     (string/lower-case
-     (if (ens/is-valid-eth-name? contact-identity)
+     (if (utils.ens/is-valid-eth-name? contact-identity)
        contact-identity
        (subdomain contact-identity)))))

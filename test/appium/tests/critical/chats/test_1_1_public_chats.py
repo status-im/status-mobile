@@ -103,8 +103,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702782)
     def test_1_1_chat_emoji_send_reply_and_open_link(self):
-        for chat in self.chat_1, self.chat_2:
-            chat.navigate_back_to_chat_view()
+        self.chat_1.navigate_back_to_chat_view()
+        self.chat_2.navigate_back_to_chat_view()
         self.home_1.just_fyi("Check that can send emoji in 1-1 chat")
         emoji_name = random.choice(list(emoji.EMOJI_UNICODE))
         emoji_unicode = emoji.EMOJI_UNICODE[emoji_name]
@@ -159,16 +159,18 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
             self.errors.append("Link message reaction is not shown for the sender")
 
         self.home_2.just_fyi("Check 'Open in Status' option")
-        url_message = 'http://status.im'
-        self.chat_1.send_message(url_message)
-        try:
-            element = self.chat_2.chat_view_element_starts_with_text(url_message)
-            element.wait_for_visibility_of_element(120)
-            element.click_inside_element_by_coordinate(0.2, 0.5)
+        # url_to_open = 'http://status.im' # ToDo: enable when a bug with Status link is fixed
+        url_to_open = 'https://coinmarketcap.com/'
+        self.chat_1.send_message(url_to_open)
+        chat_element = self.chat_2.chat_element_by_text(url_to_open)
+        if chat_element.is_element_displayed(120):
+            chat_element.click_on_link_inside_message_body()
             web_view = self.chat_2.open_in_status_button.click()
-            if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
+            # if not web_view.element_by_text('Private, Secure Communication').is_element_displayed(60):
+            if not web_view.element_by_text_part(
+                    "Today's Cryptocurrency Prices by Market Cap").is_element_displayed(30):
                 self.errors.append('URL was not opened from 1-1 chat')
-        except TimeoutException:
+        else:
             self.errors.append("Message with URL was not received")
 
         self.errors.verify_no_errors()
@@ -279,8 +281,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         self.home_2.navigate_back_to_home_view()
         self.home_2.jump_to_card_by_text(self.username_1)
         messages = ['hello', '¿Cómo estás tu año?', 'ё, доброго вечерочка', '®	æ ç ♥']
-        [self.chat_2.send_message(message) for message in messages]
         for message in messages:
+            self.chat_2.send_message(message)
             if not self.chat_1.chat_element_by_text(message).is_element_displayed(10):
                 self.errors.append("Message with text '%s' was not received" % message)
 
@@ -315,7 +317,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
     def test_1_1_chat_push_emoji(self):
         message_no_pn, message = 'No PN', 'Text push notification'
 
-        [home.navigate_back_to_home_view() for home in self.homes]
+        self.home_1.navigate_back_to_home_view()
+        self.home_2.navigate_back_to_home_view()
         self.home_2.profile_button.click()
         self.home_1.chats_tab.click()
 
@@ -365,7 +368,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
 
     @marks.testrail_id(702855)
     def test_1_1_chat_edit_message(self):
-        [home.navigate_back_to_home_view() for home in self.homes]
+        self.home_1.navigate_back_to_home_view()
+        self.home_2.navigate_back_to_home_view()
         self.chat_2.jump_to_card_by_text(self.username_1)
         self.chat_1.jump_to_card_by_text(self.username_2)
 
@@ -509,7 +513,8 @@ class TestOneToOneChatMultipleSharedDevicesNewUi(MultipleSharedDeviceTestCase):
         if pn_to_disappear:
             if not pn_to_disappear.is_element_disappeared(90):
                 self.errors.append("Push notification was not removed after initial message deletion")
-        [device.navigate_back_to_home_view() for device in (self.device_1, self.device_2)]
+        self.device_1.navigate_back_to_home_view()
+        self.device_2.navigate_back_to_home_view()
         self.errors.verify_no_errors()
 
 

@@ -292,6 +292,7 @@
     "create-profile": "Create profile",
     "create-profile-password-info-box-title": "About your profile password",
     "create-profile-password-info-box-description": "Your Status keys are the foundation of your self-sovereign identity in Web3. You have complete control over these keys, which you can use to sign transactions, access your data, and interact with Web3 services.\n\nYour keys are always securely stored on your device and protected by your Status profile password. Status doesn't know your password and can't reset it for you. If you forget your password, you may lose access to your Status profile and wallet funds.\n\nRemember your Status password and don't share it with anyone.",
+    "create-account": "Create account",
     "create-a-pin": "Create a 6-digit passcode",
     "create-a-puk": "Create a 12-digit PUK",
     "create-group-chat": "Create group chat",
@@ -1564,6 +1565,7 @@
     "delete-account": "Delete account",
     "delete-keys-keycard": "Delete keys from Keycard",
     "watch-only": "Watch-only",
+    "watch-address": "Watch address",
     "cant-report-bug": "Can't report a bug",
     "mail-should-be-configured": "Mail client should be configured",
     "check-on-block-explorer": "Check on block explorer",
@@ -2372,7 +2374,15 @@
     "reset": "Reset",
     "reveal-address": "Reveal address",
     "derive-addresses": "Derive addresses",
-    "address-activity": "This address has activity",
     "sign transactions": "sign transactions",
-    "search-assets": "Search assets"
+    "account-created": "{{name}} created",
+    "update-account-name": "Update account name",
+    "edit-wallet-account-emoji-updated-message": "Account emoji has been updated",
+    "edit-wallet-account-name-updated-message": "Account name has been updated",
+    "edit-wallet-account-colour-updated-message": "Account colour has been updated",
+    "search-assets": "Search assets",
+    "address-activity": "This address has activity",
+    "keypairs": "Keypairs",
+    "keypairs-description": "Select keypair to derive your new account from",
+    "confirm-account-origin": "Confirm account origin"
 }

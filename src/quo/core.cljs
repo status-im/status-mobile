@@ -31,6 +31,7 @@
     quo.components.community.channel-actions
     quo.components.community.community-card-view
     quo.components.community.community-list-view
+    quo.components.community.community-stat.view
     quo.components.community.community-view
     quo.components.community.icon
     quo.components.community.token-gating
@@ -130,6 +131,7 @@
     quo.components.tags.number-tag.view
     quo.components.tags.permission-tag
     quo.components.tags.status-tags
+    quo.components.tags.summary-tag.view
     quo.components.tags.tag
     quo.components.tags.tags
     quo.components.tags.tiny-tag.view
@@ -199,7 +201,7 @@
 (def communities-membership-list-item
   quo.components.community.community-list-view/communities-membership-list-item)
 (def community-stats-column quo.components.community.community-view/community-stats-column)
-(def community-stats quo.components.community.community-view/community-stats)
+(def community-stat quo.components.community.community-stat.view/view)
 (def community-tags quo.components.community.community-view/community-tags)
 (def community-title quo.components.community.community-view/community-title)
 (def permission-tag-container quo.components.community.community-view/permission-tag-container)
@@ -359,6 +361,7 @@
 (def number-tag quo.components.tags.number-tag.view/view)
 (def permission-tag quo.components.tags.permission-tag/tag)
 (def status-tag quo.components.tags.status-tags/status-tag)
+(def summary-tag quo.components.tags.summary-tag.view/view)
 (def tag quo.components.tags.tag/tag)
 (def tags quo.components.tags.tags/tags)
 (def tiny-tag quo.components.tags.tiny-tag.view/view)

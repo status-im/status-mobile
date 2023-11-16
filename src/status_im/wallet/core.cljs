@@ -8,7 +8,6 @@
     [status-im.bottom-sheet.events :as bottom-sheet]
     [status-im.contact.db :as contact.db]
     [status-im.ethereum.ens :as ens]
-    [status-im.ethereum.stateofus :as stateofus]
     [status-im.ethereum.tokens :as tokens]
     [status-im.multiaccounts.update.core :as multiaccounts.update]
     [status-im.popover.core :as popover.core]
@@ -27,6 +26,7 @@
     [status-im2.navigation.events :as navigation]
     [taoensso.timbre :as log]
     [utils.datetime :as datetime]
+    [utils.ens.stateofus :as stateofus]
     [utils.ethereum.chain :as chain]
     [utils.ethereum.eip.eip55 :as eip55]
     [utils.i18n :as i18n]
@@ -1190,7 +1190,8 @@
     ::enable-local-notifications nil
     :dispatch-n                  [(when (or (not (utils.mobile-sync/syncing-allowed? cofx))
                                             (chain/binance-chain? db))
-                                    [:transaction/get-fetched-transfers])]}
+                                    [:transaction/get-fetched-transfers])]
+    :dispatch                    [:wallet/get-accounts-success accounts]}
    (check-invalid-ens)
    (initialize-tokens tokens custom-tokens)
    (initialize-favourites favourites)

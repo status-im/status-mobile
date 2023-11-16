@@ -39,6 +39,7 @@
      community-card]
     [status-im2.contexts.quo-preview.community.community-membership-list-view
      :as community-membership-list-view]
+    [status-im2.contexts.quo-preview.community.community-stat :as community-stat]
     [status-im2.contexts.quo-preview.community.discover-card :as discover-card]
     [status-im2.contexts.quo-preview.community.token-gating :as token-gating]
     [status-im2.contexts.quo-preview.counter.counter :as counter]
@@ -152,6 +153,7 @@
     [status-im2.contexts.quo-preview.tags.number-tag :as number-tag]
     [status-im2.contexts.quo-preview.tags.permission-tag :as permission-tag]
     [status-im2.contexts.quo-preview.tags.status-tags :as status-tags]
+    [status-im2.contexts.quo-preview.tags.summary-tag :as summary-tag]
     [status-im2.contexts.quo-preview.tags.tag :as tag]
     [status-im2.contexts.quo-preview.tags.tags :as tags]
     [status-im2.contexts.quo-preview.tags.tiny-tag :as tiny-tag]
@@ -231,6 +233,8 @@
                         :component community-card/view}
                        {:name      :community-membership-list-view
                         :component community-membership-list-view/view}
+                       {:name      :community-stat
+                        :component community-stat/view}
                        {:name      :discover-card
                         :component discover-card/view}
                        {:name      :token-gating
@@ -430,6 +434,8 @@
                         :component permission-tag/view}
                        {:name      :status-tags
                         :component status-tags/view}
+                       {:name      :summary-tag
+                        :component summary-tag/view}
                        {:name      :tag
                         :component tag/view}
                        {:name      :tags

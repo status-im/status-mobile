@@ -6,10 +6,10 @@
     [react-native.core :as rn]
     [react-native.linear-gradient :as linear-gradient]
     [react-native.reanimated :as reanimated]
-    [status-im.ethereum.stateofus :as stateofus]
     [status-im2.constants :as constant]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.reply.style :as style]
+    [utils.ens.stateofus :as stateofus]
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 

@@ -2,12 +2,12 @@
   (:require
     [re-frame.core :as re-frame]
     [reagent.core :as reagent]
-    [status-im.ethereum.eip681 :as eip681]
     [status-im.ui.components.copyable-text :as copyable-text]
     [status-im.ui.components.core :as quo]
     [status-im.ui.components.react :as react]
     [status-im2.common.qr-codes.view :as qr-codes]
     [utils.ethereum.eip.eip55 :as eip55]
+    [utils.ethereum.eip.eip681 :as eip681]
     [utils.i18n :as i18n])
   (:require-macros [status-im.utils.views :as views]))
 
