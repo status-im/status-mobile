@@ -24,40 +24,40 @@
       :no-color (when (not color) true)}]]))
 
 (def total-box 85)
-;; (def interval-ms 50)
+(def interval-ms 50)
 
 (def lcounter (reagent/atom 0))
-;; (def interval-id (reagent/atom nil))
+(def interval-id (reagent/atom nil))
 
-;; (defn stop-interval
-;;   []
-;;   (when @interval-id
-;;     (js/clearInterval @interval-id)
-;;     (reset! interval-id nil)))
+(defn stop-interval
+  []
+  (when @interval-id
+    (js/clearInterval @interval-id)
+    (reset! interval-id nil)))
 
-;; (defn clear-counter
-;;   []
-;;   (reset! lcounter 0))
+(defn clear-counter
+  []
+  (reset! lcounter 0))
 
-;; (defn update-counter
-;;   [network-state]
-;;   (let [new-counter-value (-> @lcounter inc)]
-;;     (if (or (and (= network-state :pending) (> new-counter-value 0))
-;;             (and (= network-state :sending) (> new-counter-value 2))
-;;             (and (= network-state :confirmed) (> new-counter-value 4))
-;;             (and (= network-state :finalising) (> new-counter-value 18))
-;;             (and (= network-state :finalized) (> new-counter-value total-box))
-;;             (and (= network-state :error) (> new-counter-value 2)))
-;;       (stop-interval)
-;;       (swap! lcounter (fn [_] new-counter-value)))))
+(defn update-counter
+  [network-state]
+  (let [new-counter-value (-> @lcounter inc)]
+    (if (or (and (= network-state :pending) (> new-counter-value 0))
+            (and (= network-state :sending) (> new-counter-value 2))
+            (and (= network-state :confirmed) (> new-counter-value 4))
+            (and (= network-state :finalising) (> new-counter-value 18))
+            (and (= network-state :finalized) (> new-counter-value total-box))
+            (and (= network-state :error) (> new-counter-value 2)))
+      (stop-interval)
+      (swap! lcounter (fn [_] new-counter-value)))))
 
-;; (defn start-interval
-;;   [network-state]
-;;   (reset! interval-id
-;;           (js/setInterval
-;;            (fn []
-;;              (update-counter network-state))
-;;            interval-ms)))
+(defn start-interval
+  [network-state]
+  (reset! interval-id
+          (js/setInterval
+           (fn []
+             (update-counter network-state))
+           interval-ms)))
 
 (defn calculate-box-state
   [network-state counter index]
@@ -92,18 +92,25 @@
 (defn calculate-box-state-arbitrum-right
   [network-state network-type]
   (cond
-    (= network-state :error)                                    :error
-    (and (= network-type :arbitrum) (= network-state :sending)) :confirmed
-    (or (= network-state :confirmed) (= network-state :finalising) (= network-state :finalized))  :finalized
-    :else                                                       :pending))
+    (= network-state :error)                                    
+    :error
+    (and (= network-type :arbitrum) 
+         (= network-state :sending)) 
+    :confirmed
+    (or (= network-state :confirmed) 
+        (= network-state :finalising) 
+        (= network-state :finalized))  
+    :finalized
+    :else                                                       
+    :pending))
 
-(defn calculate-box-width
-  [showHalf?]
-  (cond
-    (and showHalf? (< @lcounter 30)) (- total-box @lcounter)
-    showHalf?                        30
-    (< @lcounter total-box)          (- total-box @lcounter)
-    :else                            0))
+;; (defn calculate-box-width
+;;   [showHalf?]
+;;   (cond
+;;     (and showHalf? (< @lcounter 30)) (- total-box @lcounter)
+;;     showHalf?                        30
+;;     (< @lcounter total-box)          (- total-box @lcounter)
+;;     :else                            0))
 
 (defn calculate-progressed-value
   [state value]
@@ -113,7 +120,7 @@
     0))
 
 (defn progress-boxes-arbitrum
-  [theme state network bottom-large? progressed-value]
+  [state network bottom-large? progressed-value]
   [rn/view {:style (style/progress-box-container bottom-large?)}
    [progress-box/view
     {:state               (calculate-box-state-arbitrum-left state network)
@@ -259,17 +266,16 @@
          :size   :paragraph-2
          :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]))
 
-(defn view-internal
+(defn f-view-internal
   [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name btn-title tag-number progressed-value-optimism progressed-value-arbitrum]}]
-  ;; (rn/use-effect
-  ;;  (fn []
-  ;;    (when start-interval-now
-  ;;      (start-interval state))
-  ;;    (clear-counter)
-  ;;    (fn []
-  ;;      (stop-interval)))
-  ;;  [state])
-  [rn/view
+  (rn/use-effect
+   (fn []
+     (when start-interval-now
+       (start-interval state))
+     (clear-counter)
+     (fn []
+       (stop-interval)))
+   [state]) 
    [rn/touchable-without-feedback
     {:on-press            on-press
      :accessibility-label accessibility-label}
@@ -282,9 +288,13 @@
                  [progress-boxes state]]
        :optimism-arbitrum [:<>
                            [status-row theme state :arbitrum]
-                           [progress-boxes-arbitrum theme state :arbitrum false progressed-value-arbitrum]
+                           [progress-boxes-arbitrum state :arbitrum false progressed-value-arbitrum]
                            [status-row theme state :optimism]
-                           [progress-boxes-arbitrum theme state :optimism true progressed-value-optimism]]
-       nil)]]])
+                           [progress-boxes-arbitrum state :optimism true progressed-value-optimism]]
+       nil)]])
+
+(defn view-internal
+  [props]
+  [:f> f-view-internal props])
 
 (def view (quo.theme/with-theme view-internal))
