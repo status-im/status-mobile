@@ -175,13 +175,9 @@
          {:icon-name           :i/arrow-left
           :on-press            on-close
           :accessibility-label :top-bar
-          :right-side          {:icon-name           :i/advanced
-                                :on-press            (fn callback [] nil)
-                                :accessibility-label "Advanced"}
-          :account-switcher    {:customization-color :purple
-                                :on-press            #(js/alert "Not implemented yet")
-                                :state               :default
-                                :emoji               "🍑"}}]
+          :right-side          [{:icon-name           :i/advanced
+                                 :on-press            (fn callback [] nil)
+                                 :accessibility-label "Advanced"}]}]
         [transaction-title]
         [transaction-from status-account-props theme]
         [transaction-to user-props theme]
