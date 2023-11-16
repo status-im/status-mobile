@@ -311,13 +311,14 @@ endef
 lint: export TARGET := clojure
 lint: export CLJ_LINTER_PRINT_WARNINGS ?= false
 lint: ##@test Run code style checks
-	@sh scripts/lint-re-frame-in-quo-components.sh && \
-	sh scripts/lint-direct-require-component-outside-quo.sh && \
+	@sh scripts/lint/re-frame-in-quo-components.sh && \
+	sh scripts/lint/direct-require-component-outside-quo.sh && \
+	sh scripts/lint/require-i18n-resource-first.sh && \
 	clj-kondo --config .clj-kondo/config.edn --cache false --fail-level error --lint src $(if $(filter $(CLJ_LINTER_PRINT_WARNINGS),true),,| grep -v ': warning: ') && \
 	ALL_CLOJURE_FILES=$(call find_all_clojure_files) && \
-	scripts/lint_translations.clj && \
+	scripts/lint/translations.clj && \
 	zprint '{:search-config? true}' -sfc $$ALL_CLOJURE_FILES && \
-	sh scripts/lint-trailing-newline.sh && \
+	sh scripts/lint/trailing-newline.sh && \
 	node_modules/.bin/prettier --write .
 
 # NOTE: We run the linter twice because of https://github.com/kkinnear/zprint/issues/271
@@ -327,7 +328,7 @@ lint-fix: ##@test Run code style checks and fix issues
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	zprint '{:search-config? true}' -sw $$ALL_CLOJURE_FILES && \
 	clojure-lsp --ns-exclude-regex ".*/src/status_im2/core\.cljs$$" clean-ns && \
-	sh scripts/lint-trailing-newline.sh --fix && \
+	sh scripts/lint/trailing-newline.sh --fix && \
 	node_modules/.bin/prettier --write .
 
 shadow-server: export TARGET := clojure
