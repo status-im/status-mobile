@@ -1,19 +1,36 @@
-(ns status-im2.contexts.wallet.send.transaction-confirmation.style)
+(ns status-im2.contexts.wallet.send.transaction-confirmation.style
+  (:require [quo.foundations.colors :as colors]))
 
 (defn container
   [margin-top]
-  {:flex       1
-   :margin-top margin-top})
+  {:position :absolute
+   :top      margin-top
+   :right    0
+   :left     0
+   :bottom   0})
+
+(def content-container
+  {:padding-top        12
+   :padding-horizontal 20
+   :padding-bottom     32})
 
 (def title-container
-  {:margin-horizontal 20
-   :margin-vertical   12})
+  {:margin-right 4})
 
-(def empty-container-style
-  {:justify-content :center
-   :flex            1
-   :margin-bottom   44})
+(defn details-container
+  [theme]
+  {:flex-direction     :row
+   :justify-content    :space-between
+   :height             52
+   :padding-horizontal 12
+   :padding-top        7
+   :padding-bottom     8
+   :border-radius      16
+   :border-width       1
+   :border-color       (colors/theme-colors colors/neutral-10 colors/neutral-90 theme)})
 
-(def search-input-container
-  {:padding-horizontal 20
-   :padding-vertical   8})
+(def slide-button-container
+  {:position :absolute
+   :right    20
+   :left     20
+   :bottom   20})
