@@ -412,7 +412,15 @@
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
        :inverted                          (when platform/ios? true)
        :on-layout                         (fn [e]
-                                            (reset! messages-list-on-layout-finished? true)
+                                            ;; FIXME: the 1s timeout is to assure all effects with
+                                            ;; timeouts that depend on the value are considered.
+                                            ;; Hacky, but we're heavily relying on timeouts in the
+                                            ;; composer and need to react to differently (e.g.
+                                            ;; inside effects/use-edit) when the chat has just
+                                            ;; opened and the subsequent times.
+                                            (js/setTimeout #(reset! messages-list-on-layout-finished?
+                                                              true)
+                                                           1000)
                                             (let [layout-height (oops/oget e
                                                                            "nativeEvent.layout.height")]
                                               (reset! messages-view-height layout-height)))

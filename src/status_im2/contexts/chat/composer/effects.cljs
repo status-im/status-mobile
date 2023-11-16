@@ -6,6 +6,7 @@
     [react-native.core :as rn]
     [react-native.platform :as platform]
     [react-native.reanimated :as reanimated]
+    [reagent.core :as reagent]
     [status-im2.contexts.chat.composer.constants :as constants]
     [status-im2.contexts.chat.composer.keyboard :as kb]
     [status-im2.contexts.chat.composer.utils :as utils]
@@ -105,29 +106,34 @@
 
 (defn use-edit
   [{:keys [input-ref]}
-   {:keys [text-value saved-cursor-position]}
+   {:keys [text-value saved-cursor-position cursor-position]}
    {:keys [edit input-with-mentions]}
    messages-list-on-layout-finished?]
-  (let [mention? (some #(= :mention (first %)) (seq input-with-mentions))]
+  (let [mention?              (some #(= :mention (first %)) (seq input-with-mentions))
+        composer-just-opened? (not @messages-list-on-layout-finished?)]
     (rn/use-effect
      (fn []
        (let [mention-text     (reduce (fn [acc item]
                                         (str acc (second item)))
                                       ""
                                       input-with-mentions)
-             edit-text        (if mention? mention-text (get-in edit [:content :text]))
-             text-value-count (count @text-value)
+             edit-text        (cond
+                                mention? mention-text
+                                ;; NOTE: using text-value for cases when the user
+                                ;; leaves the app with an unfinished edit and re-opens
+                                ;; the chat.
+                                (and (seq @text-value) composer-just-opened?)
+                                @text-value
+                                :else (get-in edit [:content :text]))
+             selection-pos    (count edit-text)
              inject-edit-text (fn []
                                 (reset! text-value edit-text)
-                                (reset! saved-cursor-position (if (seq edit-text)
-                                                                (count edit-text)
-                                                                text-value-count))
+                                (reset! cursor-position selection-pos)
+                                (reset! saved-cursor-position selection-pos)
                                 (when @input-ref
-                                  (let [selection-pos (count edit-text)]
-                                    (.setNativeProps ^js @input-ref
-                                                     (clj->js {:text      edit-text
-                                                               :selection {:start selection-pos
-                                                                           :end   selection-pos}})))))]
+                                  (.setNativeProps ^js @input-ref
+                                                   (clj->js {:text edit-text}))))]
+
          (when (and edit @input-ref)
            ;; NOTE: A small setTimeout is necessary to ensure the focus is enqueued and is executed
            ;; ASAP. Check https://github.com/software-mansion/react-native-screens/issues/472
@@ -139,9 +145,9 @@
            ;; `on-content-size-change` will animate the height of the input based on the injected
            ;; text.
            (js/setTimeout #(do (when @messages-list-on-layout-finished? (.focus ^js @input-ref))
-                               (js/setTimeout inject-edit-text 250))
-                          100))))
-     [(:message-id edit) mention?])))
+                               (reagent/next-tick inject-edit-text))
+                          600))))
+     [(:message-id edit)])))
 
 (defn use-reply
   [{:keys [input-ref]}
