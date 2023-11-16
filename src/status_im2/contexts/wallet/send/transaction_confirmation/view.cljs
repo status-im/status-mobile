@@ -11,6 +11,137 @@
     [utils.i18n :as i18n]
     [utils.re-frame :as rf]))
 
+(defn- transaction-title
+  []
+  [rn/view {:style style/content-container}
+   [rn/view {:style {:flex-direction :row}}
+    [quo/text
+     {:size                :heading-1
+      :weight              :semi-bold
+      :style               style/title-container
+      :accessibility-label :send-label}
+     (i18n/label :t/send)]
+    [quo/summary-tag
+     {:label        "150 ETH"
+      :type         :token
+      :image-source (quo.resources/get-token :eth)}]]
+   [rn/view
+    {:style {:flex-direction :row
+             :margin-top     4}}
+    [quo/text
+     {:size                :heading-1
+      :weight              :semi-bold
+      :style               style/title-container
+      :accessibility-label :send-label}
+     (i18n/label :t/from)]
+    [quo/summary-tag
+     {:label               "Collectibles vault"
+      :type                :account
+      :emoji               "🍑"
+      :customization-color :purple}]]
+   [rn/view
+    {:style {:flex-direction :row
+             :margin-top     4}}
+    [quo/text
+     {:size                :heading-1
+      :weight              :semi-bold
+      :style               style/title-container
+      :accessibility-label :send-label}
+     (i18n/label :t/to)]
+    [quo/summary-tag
+     {:label               "Mark Libot"
+      :type                :user
+      :image-source        (resources/get-mock-image :user-picture-male4)
+      :customization-color :magenta}]]])
+
+(defn- transaction-from
+  [status-account-props]
+  [rn/view
+   {:style {:padding-horizontal 20
+            :padding-bottom     16}}
+   [quo/text
+    {:size                :paragraph-2
+     :weight              :medium
+     :style               {:margin-bottom 8}
+     :accessibility-label :summary-from-label}
+    (i18n/label :t/from-capitalized)]
+   [quo/summary-info
+    {:type          :status-account
+     :networks?     true
+     :values        {:ethereum 150
+                     :optimism 50
+                     :arbitrum 25}
+     :account-props status-account-props}]])
+
+(defn- transaction-to
+  [user-props]
+  [rn/view
+   {:style {:padding-horizontal 20
+            :padding-bottom     16}}
+   [quo/text
+    {:size                :paragraph-2
+     :weight              :medium
+     :style               {:margin-bottom 8}
+     :accessibility-label :summary-from-label}
+    (i18n/label :t/to-capitalized)]
+   [quo/summary-info
+    {:type          :user
+     :networks?     true
+     :values        {:ethereum 150
+                     :optimism 50
+                     :arbitrum 25}
+     :account-props user-props}]])
+
+(defn- transaction-details
+  [theme]
+  [rn/view
+   {:style {:padding-horizontal 20
+            :padding-bottom     16}}
+   [quo/text
+    {:size                :paragraph-2
+     :weight              :medium
+     :style               {:margin-bottom 8}
+     :accessibility-label :summary-from-label}
+    (i18n/label :t/details)]
+   [rn/view
+    {:style (style/details-container theme)}
+    [quo/data-item
+     {:container-style {:flex   1
+                        :height 36}
+      :blur?           false
+      :description     :default
+      :icon-right?     false
+      :card?           false
+      :label           :none
+      :status          :default
+      :size            :small
+      :title           (i18n/label :t/est-time)
+      :subtitle        "3-5 min"}]
+    [quo/data-item
+     {:container-style {:flex   1
+                        :height 36}
+      :blur?           false
+      :description     :default
+      :icon-right?     false
+      :card?           false
+      :label           :none
+      :status          :default
+      :size            :small
+      :title           (i18n/label :t/max-fees)
+      :subtitle        "€188,70"}]
+    [quo/data-item
+     {:container-style {:flex   1
+                        :height 36}
+      :blur?           false
+      :description     :default
+      :icon-right?     false
+      :card?           false
+      :label           :none
+      :status          :default
+      :size            :small
+      :title           (i18n/label :t/user-gets {:name "Mark"})
+      :subtitle        "149.99 ETH"}]]])
+
 (defn- f-view-internal
   [theme]
   (let [reset-slider?        (reagent/atom false)
@@ -51,125 +182,10 @@
                                 :on-press            #(js/alert "Not implemented yet")
                                 :state               :default
                                 :emoji               "🍑"}}]
-        [rn/view {:style style/content-container}
-         [rn/view {:style {:flex-direction :row}}
-          [quo/text
-           {:size                :heading-1
-            :weight              :semi-bold
-            :style               style/title-container
-            :accessibility-label :send-label}
-           (i18n/label :t/send)]
-          [quo/summary-tag
-           {:label        "150 ETH"
-            :type         :token
-            :image-source (quo.resources/get-token :eth)}]]
-         [rn/view
-          {:style {:flex-direction :row
-                   :margin-top     4}}
-          [quo/text
-           {:size                :heading-1
-            :weight              :semi-bold
-            :style               style/title-container
-            :accessibility-label :send-label}
-           (i18n/label :t/from)]
-          [quo/summary-tag
-           {:label               "Collectibles vault"
-            :type                :account
-            :emoji               "🍑"
-            :customization-color :purple}]]
-         [rn/view
-          {:style {:flex-direction :row
-                   :margin-top     4}}
-          [quo/text
-           {:size                :heading-1
-            :weight              :semi-bold
-            :style               style/title-container
-            :accessibility-label :send-label}
-           (i18n/label :t/to)]
-          [quo/summary-tag
-           {:label               "Mark Libot"
-            :type                :user
-            :image-source        (resources/get-mock-image :user-picture-male4)
-            :customization-color :magenta}]]]
-        [rn/view
-         {:style {:padding-horizontal 20
-                  :padding-bottom     16}}
-         [quo/text
-          {:size                :paragraph-2
-           :weight              :medium
-           :style               {:margin-bottom 8}
-           :accessibility-label :summary-from-label}
-          (i18n/label :t/from-capitalized)]
-         [quo/summary-info
-          {:type          :status-account
-           :networks?     true
-           :values        {:ethereum 150
-                           :optimism 50
-                           :arbitrum 25}
-           :account-props status-account-props}]]
-        [rn/view
-         {:style {:padding-horizontal 20
-                  :padding-bottom     16}}
-         [quo/text
-          {:size                :paragraph-2
-           :weight              :medium
-           :style               {:margin-bottom 8}
-           :accessibility-label :summary-from-label}
-          (i18n/label :t/to-capitalized)]
-         [quo/summary-info
-          {:type          :user
-           :networks?     true
-           :values        {:ethereum 150
-                           :optimism 50
-                           :arbitrum 25}
-           :account-props user-props}]]
-        [rn/view
-         {:style {:padding-horizontal 20
-                  :padding-bottom     16}}
-         [quo/text
-          {:size                :paragraph-2
-           :weight              :medium
-           :style               {:margin-bottom 8}
-           :accessibility-label :summary-from-label}
-          (i18n/label :t/details)]
-         [rn/view
-          {:style (style/details-container theme)}
-          [quo/data-item
-           {:container-style {:flex   1
-                              :height 36}
-            :blur?           false
-            :description     :default
-            :icon-right?     false
-            :card?           false
-            :label           :none
-            :status          :default
-            :size            :small
-            :title           (i18n/label :t/est-time)
-            :subtitle        "3-5 min"}]
-          [quo/data-item
-           {:container-style {:flex   1
-                              :height 36}
-            :blur?           false
-            :description     :default
-            :icon-right?     false
-            :card?           false
-            :label           :none
-            :status          :default
-            :size            :small
-            :title           (i18n/label :t/max-fees)
-            :subtitle        "€188,70"}]
-          [quo/data-item
-           {:container-style {:flex   1
-                              :height 36}
-            :blur?           false
-            :description     :default
-            :icon-right?     false
-            :card?           false
-            :label           :none
-            :status          :default
-            :size            :small
-            :title           (i18n/label :t/user-gets {:name "Mark"})
-            :subtitle        "149.99 ETH"}]]]
+        [transaction-title]
+        [transaction-from status-account-props]
+        [transaction-to user-props]
+        [transaction-details theme]
         [rn/safe-area-view
          {:style style/slide-button-container}
          [quo/slide-button
