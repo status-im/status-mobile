@@ -1,0 +1,13 @@
+name: 'Check status-go-version.json'
+
+on:
+  pull_request_target:
+    branches:
+      - develop
+
+jobs:
+  check-status-go-version:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          sh scripts/lint/status-go-version.sh
