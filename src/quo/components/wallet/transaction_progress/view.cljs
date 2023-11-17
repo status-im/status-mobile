@@ -40,77 +40,69 @@
   (reset! lcounter 0))
 
 (defn update-counter
-  [network-state]
+  [state]
   (let [new-counter-value (-> @lcounter inc)]
-    (if (or (and (= network-state :pending) (> new-counter-value 0))
-            (and (= network-state :sending) (> new-counter-value 2))
-            (and (= network-state :confirmed) (> new-counter-value 4))
-            (and (= network-state :finalising) (> new-counter-value 18))
-            (and (= network-state :finalized) (> new-counter-value total-box))
-            (and (= network-state :error) (> new-counter-value 2)))
+    (if (or (and (= state :pending) (> new-counter-value 0))
+            (and (= state :sending) (> new-counter-value 2))
+            (and (= state :confirmed) (> new-counter-value 4))
+            (and (= state :finalising) (> new-counter-value 18))
+            (and (= state :finalized) (> new-counter-value total-box))
+            (and (= state :error) (> new-counter-value 2)))
       (stop-interval)
       (swap! lcounter (fn [_] new-counter-value)))))
 
 (defn start-interval
-  [network-state]
+  [state]
   (reset! interval-id
           (js/setInterval
            (fn []
-             (update-counter network-state))
+             (update-counter state))
            interval-ms)))
 
 (defn calculate-box-state
-  [network-state counter index]
+  [state counter index]
   (cond
-    (and (= network-state :sending) (>= counter index) (< index 3))                 :confirmed
-    (and (= network-state :confirmed) (>= counter index) (< index 5))               :confirmed
-    (and (= network-state :finalising) (>= counter index) (< index 5))              :confirmed
-    (and (= network-state :finalising) (>= counter index) (> index 4) (< index 20)) :finalized
-    (and (= network-state :finalized) (>= counter index) (< index 5))               :confirmed
-    (and (= network-state :finalized) (>= counter index) (> index 4))               :finalized
-    (and (= network-state :error) (>= counter index) (< index 2))                   :error
+    (and (= state :sending) (>= counter index) (< index 3))                 :confirmed
+    (and (= state :confirmed) (>= counter index) (< index 5))               :confirmed
+    (and (= state :finalising) (>= counter index) (< index 5))              :confirmed
+    (and (= state :finalising) (>= counter index) (> index 4) (< index 20)) :finalized
+    (and (= state :finalized) (>= counter index) (< index 5))               :confirmed
+    (and (= state :finalized) (>= counter index) (> index 4))               :finalized
+    (and (= state :error) (>= counter index) (< index 2))                   :error
     :else                                                                           :pending))
 
 (defn progress-boxes
-  [network-state]
+  [state]
   [rn/view {:style (style/progress-box-container true)}
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view
-               {:state               (calculate-box-state network-state @lcounter n)
+               {:state               (calculate-box-state state @lcounter n)
                 :customization-color :blue
                 :key                 n}])))])
 
 (defn calculate-box-state-arbitrum-left
-  [network-state network-type]
+  [state network]
   (cond
-    (= network-state :error)                                    :error
-    (and (= network-type :arbitrum) (= network-state :sending)) :confirmed
-    (or (= network-state :confirmed) (= network-state :finalising) (= network-state :finalized))  :confirmed
+    (= state :error)                                    :error
+    (and (= network :arbitrum) (= state :sending)) :confirmed
+    (or (= state :confirmed) (= state :finalising) (= state :finalized))  :confirmed
     :else                                                       :pending))
 
 (defn calculate-box-state-arbitrum-right
-  [network-state network-type]
+  [state network]
   (cond
-    (= network-state :error)                                    
+    (= state :error)                                    
     :error
-    (and (= network-type :arbitrum) 
-         (= network-state :sending)) 
+    (and (= network :arbitrum) 
+         (= state :sending)) 
     :confirmed
-    (or (= network-state :confirmed) 
-        (= network-state :finalising) 
-        (= network-state :finalized))  
+    (or (= state :confirmed) 
+        (= state :finalising) 
+        (= state :finalized))  
     :finalized
     :else                                                       
     :pending))
-
-;; (defn calculate-box-width
-;;   [showHalf?]
-;;   (cond
-;;     (and showHalf? (< @lcounter 30)) (- total-box @lcounter)
-;;     showHalf?                        30
-;;     (< @lcounter total-box)          (- total-box @lcounter)
-;;     :else                            0))
 
 (defn calculate-progressed-value
   [state network]
@@ -129,31 +121,7 @@
     {:state               (calculate-box-state-arbitrum-right state network)
      :full-width?         true
      :progressed-value    (calculate-progressed-value state network)
-     :customization-color :blue}]
-  ;;  [rn/view {:style (style/progress-box-arbitrum theme)}
-  ;;   [rn/view
-  ;;    (assoc
-  ;;     (let [box-style (cond
-  ;;                       (= network-state :finalising)
-  ;;                       (assoc {:style style/progress-box-arbitrum-abs}
-  ;;                              :right (str (calculate-box-width true) "%")
-  ;;                              :background-color (colors/resolve-color :blue theme))
-
-  ;;                       (= network-state :finalized)
-  ;;                       (assoc {:style style/progress-box-arbitrum-abs}
-  ;;                              :right (str (calculate-box-width false) "%")
-  ;;                              :background-color (colors/resolve-color :blue theme))
-
-  ;;                       :else
-  ;;                       (assoc {:style style/progress-box-arbitrum-abs}
-  ;;                              :background-color (colors/theme-colors colors/neutral-5
-  ;;                                                                     colors/neutral-70
-  ;;                                                                     theme)))]
-  ;;       box-style)
-  ;;     :align-self "flex-end"
-  ;;     :border-color
-  ;;     (colors/theme-colors colors/neutral-10 colors/neutral-80 theme))]]
-      ])
+     :customization-color :blue}]])
 
 (defn text-internal
   [title
@@ -170,13 +138,13 @@
    title])
 
 (defn network-type-text
-  [network-type network-state]
+  [network state]
   (cond
-    (and (= network-state :sending) (= network-type :arbitrum))     "Confirmed on "
-    (or (= network-state :sending) (= network-state :pending))      "Pending on "
-    (or (= network-state :confirmed) (= network-state :finalising)) "Confirmed on "
-    (= network-state :finalized)                                    "Finalized on "
-    (= network-state :error)                                        "Failed on "))
+    (and (= state :sending) (= network :arbitrum))     "Confirmed on "
+    (or (= state :sending) (= state :pending))      "Pending on "
+    (or (= state :confirmed) (= state :finalising)) "Confirmed on "
+    (= state :finalized)                                    "Finalized on "
+    (= state :error)                                        "Failed on "))
 
 (defn text-steps
   [network state epoch-number]
@@ -199,36 +167,36 @@
     (not= network :mainnet)            "0/1"))
 
 (defn get-status-icon
-  [theme network-type network-state]
+  [theme network state]
   (cond
-    (and (= network-type :arbitrum)
-         (= network-state :sending))   [:i/positive-state
+    (and (= network :arbitrum)
+         (= state :sending))   [:i/positive-state
                                         (colors/theme-colors colors/success-50
                                                              colors/success-60
                                                              theme)]
-    (or (= network-state :pending)
-        (= network-state :sending))    [:i/pending-state
+    (or (= state :pending)
+        (= state :sending))    [:i/pending-state
                                         (colors/theme-colors colors/neutral-50
                                                              colors/neutral-60
                                                              theme)]
-    (or (= network-state :confirmed)
-        (= network-state :finalising)) [:i/positive-state
+    (or (= state :confirmed)
+        (= state :finalising)) [:i/positive-state
                                         (colors/theme-colors colors/success-50
                                                              colors/success-60
                                                              theme)]
-    (= network-state :finalized)       [:i/diamond]
-    (= network-state :error)           [:i/negative-state
+    (= state :finalized)       [:i/diamond]
+    (= state :error)           [:i/negative-state
                                         (colors/theme-colors colors/danger-50
                                                              colors/danger-60
                                                              theme)]))
 
 (defn title-internal
-  [network-state title theme btn-title]
+  [state title theme btn-title]
   [rn/view {:style style/title-container} 
     [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)]
     [rn/view {:style style/title-text-container}
      [text-internal title]]
-    (when (= network-state :error)
+    (when (= state :error)
       [button/button
        {:size      24
         :icon-left :i/refresh} 
@@ -244,11 +212,11 @@
                       :type :collectible}]])
 
 (defn get-network-text
-  [network-type]
+  [network]
   (cond
-    (= network-type :arbitrum) "Arbitrum"
-    (= network-type :mainnet)  "Mainnet"
-    (= network-type :optimism) "Optimism"))
+    (= network :arbitrum) "Arbitrum"
+    (= network :mainnet)  "Mainnet"
+    (= network :optimism) "Optimism"))
 
 (defn status-row
   [theme state network epoch-number]
