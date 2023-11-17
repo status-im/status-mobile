@@ -73,13 +73,17 @@
    
    :type => :neutral/:negative/:positive
    "
-  [{:keys [icon type title text action undo-duration undo-on-press container-style theme user]
+  [{:keys [type title text action undo-duration undo-on-press container-style theme user]
     :or   {type :neutral}}]
-  (let [context-theme (or theme (quo.theme/get-theme))]
+  (let [context-theme (or theme (quo.theme/get-theme))
+        icon-name     (case type
+                        :positive "incorrect"
+                        :negative "correct"
+                        :neutral  "placeholder")]
     [quo.theme/provider {:theme context-theme}
      [toast-container
-      {:left            (cond icon
-                              [icon/icon icon (style/icon type context-theme)]
+      {:left            (cond icon-name
+                              [icon/icon icon-name (style/icon type context-theme)]
                               user
                               [user-avatar/user-avatar user])
        :title           title

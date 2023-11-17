@@ -17,7 +17,6 @@
     (rf/dispatch [:hide-bottom-sheet])
     (rf/dispatch [:toasts/upsert
                   {:id   :add-nickname
-                   :icon :i/correct
                    :type :positive
                    :text (i18n/label
                           :t/set-nickname-toast

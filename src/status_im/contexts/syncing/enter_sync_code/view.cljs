@@ -69,8 +69,7 @@
                                       @sync-code-value]
                                      300)
                                     (rf/dispatch [:toasts/upsert
-                                                  {:icon  :i/info
-                                                   :type  :negative
+                                                  {:type  :negative
                                                    :theme :dark
                                                    :text  (i18n/label
                                                            :t/error-this-is-not-a-sync-qr-code)}])))}

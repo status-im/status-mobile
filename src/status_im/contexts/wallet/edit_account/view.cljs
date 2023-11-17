@@ -21,7 +21,6 @@
                   nil)]
     (rf/dispatch [:toasts/upsert
                   {:id   :edit-account
-                   :icon :i/correct
                    :type :positive
                    :text (i18n/label message)}])))
 

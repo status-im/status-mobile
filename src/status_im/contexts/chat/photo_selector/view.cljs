@@ -21,7 +21,6 @@
   []
   (rf/dispatch [:toasts/upsert
                 {:id              :random-id
-                 :icon            :i/info
                  :type            :negative
                  :container-style {:top (when platform/ios? 20)}
                  :text            (i18n/label :t/only-6-images)}]))

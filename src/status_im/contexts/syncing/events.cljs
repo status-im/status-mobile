@@ -51,8 +51,7 @@
                 (str "generic-error: " res))]
     (when (some? error)
       (rf/dispatch [:toasts/upsert
-                    {:icon :i/alert
-                     :type :negative
+                    {:type :negative
                      :text error}]))))
 
 (rf/defn preflight-outbound-check-for-local-pairing

@@ -109,8 +109,7 @@
               {:on-press        (fn []
                                   (clipboard/set-string @code)
                                   (rf/dispatch [:toasts/upsert
-                                                {:icon :correct
-                                                 :type :positive
+                                                {:type :positive
                                                  :text (i18n/label
                                                         :t/sharing-copied-to-clipboard)}]))
                :type            :grey

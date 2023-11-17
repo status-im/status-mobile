@@ -141,8 +141,7 @@
         (on-failed-scan)
         (debounce/debounce-and-dispatch
          [:toasts/upsert
-          {:icon  :i/info
-           :type  :negative
+          {:type  :negative
            :theme :dark
            :text  error-message}]
          300)))))

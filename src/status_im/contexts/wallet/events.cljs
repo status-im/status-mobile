@@ -23,7 +23,6 @@
       :fx [[:dispatch
             [:toasts/upsert
              {:id   :new-wallet-account-created
-              :icon :i/correct
               :type :positive
               :text (i18n/label :t/account-created {:name name})}]]]})))
 

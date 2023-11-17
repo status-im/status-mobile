@@ -24,21 +24,19 @@
   []
   [toast-button
    "Toast: basic"
-   {:icon :placeholder :text "This is an example toast"}])
+   {:text "This is an example toast"}])
 
 (defn toast-button-with-undo-action
   []
   [toast-button
    "Toast: with undo action"
-   {:icon          :info
-    :type          :negative
+   {:type          :negative
     :text          "This is an example toast"
     :duration      4000
     :undo-duration 4
     :undo-on-press #(do
                       (rf/dispatch [:toasts/upsert
-                                    {:icon :i/correct
-                                     :type :success
+                                    {:type :success
                                      :text "Undo pressed"}])
                       (rf/dispatch [:toasts/close
                                     "Toast: with undo action"]))}])
@@ -47,8 +45,7 @@
   []
   [toast-button
    "Toast: multiline"
-   {:icon :correct
-    :type :positive
+   {:type :positive
     :text
     "This is an example multiline toast This is an example multiline toast This is an example multiline toast"
     :undo-duration 4
@@ -56,15 +53,14 @@
     #(do
        (rf/dispatch
         [:toasts/upsert
-         {:icon :i/correct :type :positive :text "Undo pressed"}])
+         {:type :positive :text "Undo pressed"}])
        (rf/dispatch [:toasts/close "Toast: with undo action"]))}])
 
 (defn toast-button-30s-duration
   []
   [toast-button
    "Toast: 30s duration"
-   {:icon     :correct
-    :type     :positive
+   {:type     :positive
     :text     "This is an example toast"
     :duration 30000}])
 
@@ -89,7 +85,6 @@
              #(rf/dispatch
                [:toasts/upsert
                 {:id       "Toast: 30s duration"
-                 :icon     :i/info
                  :type     :negative
                  :text     (str "This is an updated example toast" " - " (swap! suffix inc))
                  :duration 3000}])}
