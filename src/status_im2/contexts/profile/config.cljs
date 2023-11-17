@@ -8,8 +8,7 @@
 
 (defn login
   []
-  {;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is
-   ;; resolved
+  {;; Temporary fix until https://github.com/status-im/status-go/issues/3024 is resolved
    :wakuV2Nameserver            "8.8.8.8"
    :openseaAPIKey               config/opensea-api-key
    :poktToken                   config/POKT_TOKEN

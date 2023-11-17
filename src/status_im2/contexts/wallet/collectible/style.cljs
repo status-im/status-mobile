@@ -4,9 +4,14 @@
   {:margin-top    100
    :margin-bottom 34})
 
-(def preview
+(def preview-container
   {:margin-horizontal 8
    :margin-top        12})
+
+(def preview
+  {:width         "100%"
+   :aspect-ratio  1
+   :border-radius 16})
 
 (def header
   {:margin-horizontal 20
@@ -16,6 +21,9 @@
 (def collection-container
   {:flex-direction :row
    :margin-top     6})
+
+(def collection-avatar-container
+  {:margin-right 8})
 
 (def buttons-container
   {:flex-direction    :row
@@ -50,13 +58,13 @@
   {:margin-left 6
    :flex        1})
 
-(def traits-section
-  {:margin-horizontal 20
-   :margin-top        8})
+(def traits-title-container
+  {:margin-left 20
+   :margin-top  8})
 
 (def traits-item
-  {:margin-horizontal 6
-   :flex              1})
+  {:margin 6
+   :flex   1})
 
 (def traits-container
   {:margin-horizontal 14
