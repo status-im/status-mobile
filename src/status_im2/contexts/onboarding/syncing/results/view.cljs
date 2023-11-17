@@ -54,7 +54,7 @@
      {:on-press            (fn []
                              (when on-press
                                (on-press))
-                             (rf/dispatch [:open-modal :enable-notifications]))
+                             (rf/dispatch [:onboarding-2/navigate-to-enable-biometrics]))
       :accessibility-label :continue-button
       :customization-color profile-color
       :container-style     style/continue-button}

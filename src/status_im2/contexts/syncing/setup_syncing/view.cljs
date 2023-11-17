@@ -8,7 +8,7 @@
     [reagent.core :as reagent]
     [status-im2.common.qr-codes.view :as qr-codes]
     [status-im2.common.resources :as resources]
-    [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
+    [status-im2.common.standard-authentication.core :as standard-auth]
     [status-im2.contexts.syncing.setup-syncing.style :as style]
     [status-im2.contexts.syncing.utils :as sync-utils]
     [utils.datetime :as datetime]
@@ -119,7 +119,7 @@
               (i18n/label :t/copy-qr)]])
           (when-not (sync-utils/valid-connection-string? @code)
             [rn/view {:style style/standard-auth}
-             [standard-auth/view
+             [standard-auth/slide-button
               {:blur?                 true
                :size                  :size-40
                :track-text            (i18n/label :t/slide-to-reveal-code)
