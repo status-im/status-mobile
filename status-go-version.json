@@ -3,7 +3,7 @@
     "_comment": "Instead use: scripts/update-status-go.sh <rev>",
     "owner": "status-im",
     "repo": "status-go",
-    "version": "v0.171.11",
-    "commit-sha1": "8a4c2d8d2f17117aa0a00338e83b0f753ebf1328",
-    "src-sha256": "160qnl9dsl1ypvqg9w6z8wps4fvgq3qxi16piymhrlzgssdwkz8h"
+    "version": "feat/#4200-no-scanning-for-empty-accounts",
+    "commit-sha1": "a9fde916c31f526a6587dd645c86ee497d9fbf38",
+    "src-sha256": "1fl8ymvkawifcac0vpnykg1p2si7wfzfdwmlzx4sq605c5hbz1n1"
 }
