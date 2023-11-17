@@ -7,7 +7,7 @@
     [react-native.core :as rn]
     [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
-    [status-im2.common.standard-authentication.standard-auth.view :as standard-auth]
+    [status-im2.common.standard-authentication.core :as standard-auth]
     [status-im2.constants :as constants]
     [status-im2.contexts.emoji-picker.utils :as emoji-picker.utils]
     [status-im2.contexts.wallet.common.utils :as utils]
@@ -114,7 +114,7 @@
         {:list-type :settings
          :label     (i18n/label :t/origin)
          :data      (get-keypair-data primary-name @derivation-path @account-color)}]
-       [standard-auth/view
+       [standard-auth/slide-button
         {:size                :size-48
          :track-text          (i18n/label :t/slide-to-create-account)
          :customization-color @account-color

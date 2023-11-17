@@ -161,11 +161,15 @@
      :component create-password/create-password}
 
     {:name      :enable-biometrics
-     :options   {:theme      :dark
-                 :layout     options/onboarding-transparent-layout
-                 :animations transitions/push-animations-for-transparent-background
-                 :popGesture false}
-     :component enable-biometrics/enable-biometrics}
+     :options   {:theme                  :dark
+                 :layout                 options/onboarding-transparent-layout
+                 :animations             (merge transitions/new-to-status-modal-animations
+                                                transitions/push-animations-for-transparent-background)
+                 :popGesture             false
+                 :modalPresentationStyle :overCurrentContext
+                 :hardwareBackButton     {:dismissModalOnPress false
+                                          :popStackOnPress     false}}
+     :component enable-biometrics/view}
 
     {:name      :generating-keys
      :options   {:theme              :dark
