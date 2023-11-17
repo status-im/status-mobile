@@ -9,11 +9,9 @@
   [{:type    :text
     :key     :title}
    {:type    :text
-    :key     :tag-name}
+    :key     :tag-name} 
    {:type    :text
-    :key     :progressed-value-arbitrum}
-   {:type    :text
-    :key     :progressed-value-optimism}
+    :key     :epoch-number} 
    {:type    :text
     :key     :tag-number}
    {:type    :select
@@ -34,10 +32,9 @@
   (let [state (reagent/atom {:title "Title"
                              :tag-name "Doodle"
                              :tag-number "120"
+                             :epoch-number "181,329"
                              :network :mainnet
                              :state :pending
-                             :progressed-value-arbitrum "0" 
-                             :progressed-value-optimism "0"
                              :start-interval-now  true
                              :btn-title           "Retry"
                              :tag-photo           (resources/get-mock-image :collectible)

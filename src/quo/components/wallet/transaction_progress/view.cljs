@@ -179,23 +179,24 @@
     (= network-state :error)                                        "Failed on "))
 
 (defn text-steps
-  [network-type network-state]
+  [network state epoch-number]
   (cond
-    (and (= network-type :mainnet)
-         (not= network-state :finalized)
-         (not= network-state :error))       (str (if (< @lcounter 4)
+    (and (= network :mainnet)
+         (not= state :finalized)
+         (not= state :error))       (str (if (< @lcounter 4)
                                                    @lcounter
                                                    "4")
                                                  "/4")
-    (= network-state :finalized)            "Epoch 181,329"
-    (and (= network-type :mainnet)
-         (= network-state :error))          "0/4"
-    (and (not= network-type :mainnet)
-         (or (= network-state :finalising)
-             (= network-state :confirmed))) "1/1"
-    (and (= network-type :arbitrum)
-         (= network-state :sending))        "1/1"
-    (not= network-type :mainnet)            "0/1"))
+    (= state :finalized)            (str "Epoch" epoch-number)
+    (and (= network :mainnet)
+         (= state :error))          "0/4"
+    (and (= network :arbitrum)
+         (= state :confirmed))      "0/1"
+    (and (not= network :mainnet)
+         (= state :finalising))     "1/1"
+    (and (= network :arbitrum)
+         (= state :sending))        "0/1"
+    (not= network :mainnet)            "0/1"))
 
 (defn get-status-icon
   [theme network-type network-state]
@@ -250,7 +251,7 @@
     (= network-type :optimism) "Optimism"))
 
 (defn status-row
-  [theme network-state network-type]
+  [theme network-state network-type epoch-number]
   (let [[status-icon color] (get-status-icon theme network-type network-state)]
      [rn/view {:style style/status-row-container}
       [icon-internal status-icon color 16]
@@ -261,13 +262,13 @@
          :size :paragraph-2}]]
       [rn/view
        [text-internal
-        (text-steps network-type network-state)
+        (text-steps network-type network-state epoch-number)
         {:weight :regular
          :size   :paragraph-2
          :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]))
 
 (defn f-view-internal
-  [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name btn-title tag-number]}]
+  [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name btn-title tag-number epoch-number]}]
   (rn/use-effect
    (fn []
      (when start-interval-now
@@ -287,9 +288,9 @@
                  [status-row theme state :mainnet]
                  [progress-boxes state]]
        :optimism-arbitrum [:<>
-                           [status-row theme state :arbitrum]
+                           [status-row theme state :arbitrum epoch-number]
                            [progress-boxes-arbitrum state :arbitrum false]
-                           [status-row theme state :optimism]
+                           [status-row theme state :optimism epoch-number]
                            [progress-boxes-arbitrum state :optimism true]]
        nil)]])
 
