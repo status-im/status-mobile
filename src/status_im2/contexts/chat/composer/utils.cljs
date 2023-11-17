@@ -16,11 +16,10 @@
   (max min-v (min v max-v)))
 
 (defn update-height?
-  [content-size height max-height maximized?]
-  (when-not @maximized?
-    (let [diff (Math/abs (- content-size (reanimated/get-shared-value height)))]
-      (and (not= (reanimated/get-shared-value height) max-height)
-           (> diff constants/content-change-threshold)))))
+  [content-size height max-height]
+  (let [diff (Math/abs (- content-size (reanimated/get-shared-value height)))]
+    (and (not= (reanimated/get-shared-value height) max-height)
+         (> diff constants/content-change-threshold))))
 
 (defn show-top-gradient?
   [y lines max-lines gradient-opacity focused?]
@@ -100,10 +99,28 @@
        (not reply?)
        (not audio?)))
 
+(defn blur-input
+  [input-ref]
+  (when @input-ref
+    (rf/dispatch [:chat.ui/set-input-focused false])
+    (.blur ^js @input-ref)))
+
+(defn cancel-reply-message
+  [input-ref]
+  (js/setTimeout #(blur-input input-ref) 100)
+  (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
+  (rf/dispatch [:chat.ui/cancel-message-reply]))
+
 (defn cancel-edit-message
-  [{:keys [text-value]}]
+  [text-value input-ref]
   (reset! text-value "")
-  (rf/dispatch [:chat.ui/set-input-content-height constants/input-height]))
+  ;; NOTE: adding a timeout to assure the input is blurred on the next tick
+  ;; after the `text-value` was cleared. Otherwise the height will be calculated
+  ;; with the old `text-value`, leading to wrong composer height after blur.
+  (js/setTimeout #(blur-input input-ref) 100)
+  (.setNativeProps ^js @input-ref (clj->js {:text ""}))
+  (rf/dispatch [:chat.ui/set-input-content-height constants/input-height])
+  (rf/dispatch [:chat.ui/cancel-message-edit]))
 
 (defn count-lines
   [s]
