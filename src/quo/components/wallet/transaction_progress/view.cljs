@@ -113,14 +113,14 @@
 ;;     :else                            0))
 
 (defn calculate-progressed-value
-  [state value]
+  [state network]
   (case state
-    :finalising value
-    :finalized  "100"
+    :finalising (if (= network :arbitrum) 26 16)
+    :finalized  100
     0))
 
 (defn progress-boxes-arbitrum
-  [state network bottom-large? progressed-value]
+  [state network bottom-large?]
   [rn/view {:style (style/progress-box-container bottom-large?)}
    [progress-box/view
     {:state               (calculate-box-state-arbitrum-left state network)
@@ -128,7 +128,7 @@
    [progress-box/view
     {:state               (calculate-box-state-arbitrum-right state network)
      :full-width?         true
-     :progressed-value    (calculate-progressed-value state progressed-value)
+     :progressed-value    (calculate-progressed-value state network)
      :customization-color :blue}]
   ;;  [rn/view {:style (style/progress-box-arbitrum theme)}
   ;;   [rn/view
@@ -267,7 +267,7 @@
          :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]))
 
 (defn f-view-internal
-  [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name btn-title tag-number progressed-value-optimism progressed-value-arbitrum]}]
+  [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name btn-title tag-number]}]
   (rn/use-effect
    (fn []
      (when start-interval-now
@@ -288,9 +288,9 @@
                  [progress-boxes state]]
        :optimism-arbitrum [:<>
                            [status-row theme state :arbitrum]
-                           [progress-boxes-arbitrum state :arbitrum false progressed-value-arbitrum]
+                           [progress-boxes-arbitrum state :arbitrum false]
                            [status-row theme state :optimism]
-                           [progress-boxes-arbitrum state :optimism true progressed-value-optimism]]
+                           [progress-boxes-arbitrum state :optimism true]]
        nil)]])
 
 (defn view-internal
