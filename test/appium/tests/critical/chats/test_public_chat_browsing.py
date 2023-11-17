@@ -36,6 +36,8 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.channel = self.community_view.get_channel(self.channel_name).click()
 
     @marks.testrail_id(703503)
+    @marks.xfail(reason="Curated communities not loading, https://github.com/status-im/status-mobile/issues/17852",
+                 run=False)
     def test_community_discovery(self):
         self.home.navigate_back_to_home_view()
         self.home.communities_tab.click()
@@ -193,8 +195,6 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
         self.home.just_fyi("Restore user with predefined communities and contacts")
         self.sign_in.recover_access(passphrase=waku_user.seed, second_user=True)
 
-        self.home.just_fyi("Restore user with predefined communities and contacts")
-
         self.home.just_fyi("Check contacts/blocked users")
         self.home.chats_tab.click()
         self.home.contacts_tab.click()
@@ -203,10 +203,9 @@ class TestCommunityOneDeviceMerged(MultipleSharedDeviceTestCase):
             self.errors.append(
                 "Incorrect contacts number restored: %s instead of %s" % (contacts_number, len(waku_user.contacts)))
         else:
-            for i in range(contacts_number):
-                key = waku_user.contacts[i]
-                if not self.home.element_by_text(key).is_element_displayed(30):
-                    self.errors.append('%s was not restored as a contact from waku backup!' % key)
+            for contact in waku_user.contacts:
+                if not self.home.element_by_text(contact).is_element_displayed(30):
+                    self.errors.append('%s was not restored as a contact from waku backup!' % contact)
                 # Disabled for simple check as sometimes from waku-backup users restored with 3-random names
                 # self.home.click_system_back_button_until_element_is_shown()
                 # contact_row = self.home.contact_details_row(index=i + 1)
