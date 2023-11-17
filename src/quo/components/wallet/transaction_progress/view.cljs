@@ -213,10 +213,10 @@
 
 (defn get-network-text
   [network]
-  (cond
-    (= network :arbitrum) "Arbitrum"
-    (= network :mainnet)  "Mainnet"
-    (= network :optimism) "Optimism"))
+  (case network
+    :arbitrum "Arbitrum"
+    :mainnet  "Mainnet"
+    :optimism "Optimism"))
 
 (defn status-row
   [theme state network epoch-number]
