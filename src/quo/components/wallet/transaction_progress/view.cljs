@@ -182,7 +182,7 @@
     (= state :error)           [:i/negative-state (colors/resolve-color :danger theme)]))
 
 (defn title-internal
-  [state title theme btn-title]
+  [state title theme]
   [rn/view {:style style/title-container} 
     [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)]
     [rn/view {:style style/title-text-container}
@@ -191,7 +191,7 @@
       [button/button
        {:size      24
         :icon-left :i/refresh} 
-       btn-title])])
+       (i18n/label :t/retry)])])
 
 (defn tag-internal
   [tag-photo tag-name tag-number theme]
@@ -227,7 +227,7 @@
          :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]))
 
 (defn f-view-internal
-  [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name btn-title tag-number epoch-number]}]
+  [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name tag-number epoch-number]}]
   (rn/use-effect
    (fn []
      (when start-interval-now
@@ -240,7 +240,7 @@
     {:on-press            on-press
      :accessibility-label accessibility-label}
     [rn/view {:style style/box-style}
-     [title-internal state title theme btn-title]
+     [title-internal state title theme]
      [tag-internal tag-photo tag-name tag-number theme]
      (case network
        :mainnet [:<>

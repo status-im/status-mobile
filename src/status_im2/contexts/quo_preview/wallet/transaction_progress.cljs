@@ -36,7 +36,6 @@
                              :network :mainnet
                              :state :pending
                              :start-interval-now  true
-                             :btn-title           "Retry"
                              :tag-photo           (resources/get-mock-image :collectible)
                              :on-press            (fn []
                                                     (js/alert "Transaction progress item pressed"))})]
