@@ -187,7 +187,7 @@
                                                    @lcounter
                                                    "4")
                                                  "/4")
-    (= state :finalized)            (str "Epoch" epoch-number)
+    (= state :finalized)            (str "Epoch " epoch-number)
     (and (= network :mainnet)
          (= state :error))          "0/4"
     (and (= network :arbitrum)
@@ -251,18 +251,18 @@
     (= network-type :optimism) "Optimism"))
 
 (defn status-row
-  [theme network-state network-type epoch-number]
-  (let [[status-icon color] (get-status-icon theme network-type network-state)]
+  [theme state network epoch-number]
+  (let [[status-icon color] (get-status-icon theme network state)]
      [rn/view {:style style/status-row-container}
       [icon-internal status-icon color 16]
       [rn/view {:style style/title-text-container}
        [text-internal
-        (str (network-type-text network-type network-state) (get-network-text network-type))
+        (str (network-type-text network state) (get-network-text network))
         {:weight :regular
          :size :paragraph-2}]]
       [rn/view
        [text-internal
-        (text-steps network-type network-state epoch-number)
+        (text-steps network state epoch-number)
         {:weight :regular
          :size   :paragraph-2
          :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]))
@@ -285,7 +285,7 @@
      [tag-internal tag-photo tag-name tag-number theme]
      (case network
        :mainnet [:<>
-                 [status-row theme state :mainnet]
+                 [status-row theme state :mainnet epoch-number]
                  [progress-boxes state]]
        :optimism-arbitrum [:<>
                            [status-row theme state :arbitrum epoch-number]
