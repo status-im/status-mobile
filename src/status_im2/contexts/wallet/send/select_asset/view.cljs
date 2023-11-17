@@ -71,7 +71,7 @@
         on-close     #(rf/dispatch [:navigate-back-within-stack
                                     :wallet-select-asset])]
     (fn []
-      [rn/safe-area-view {:style {:flex 1}}
+      [rn/safe-area-view {:style style/container}
        [rn/scroll-view
         {:content-container-style      {:flex 1}
          :keyboard-should-persist-taps :handled

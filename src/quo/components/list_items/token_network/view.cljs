@@ -15,7 +15,10 @@
     {:source (or (:source token) token)
      :style  style/token-image}]
    [rn/view {:style style/token-info}
-    [text/text {:weight :semi-bold} label]
+    [text/text
+     {:weight          :semi-bold
+      :number-of-lines 1}
+     (if-not (empty? label) label "-")]
     [preview-list/view
      {:type   :network
       :size   :size-14

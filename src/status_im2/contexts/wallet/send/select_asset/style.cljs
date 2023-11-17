@@ -1,4 +1,10 @@
-(ns status-im2.contexts.wallet.send.select-asset.style)
+(ns status-im2.contexts.wallet.send.select-asset.style
+  (:require [react-native.navigation :as navigation]
+            [react-native.platform :as platform]))
+
+(def container
+  {:flex        1
+   :padding-top (when platform/android? (navigation/status-bar-height))})
 
 (def title-container
   {:margin-horizontal 20

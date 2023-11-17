@@ -13,11 +13,11 @@
   [{:keys [theme address networks blur?]}]
   [rn/view {:style style/left-container}
    [wallet-user-avatar/wallet-user-avatar
-    {:size                :size-32
-     :full-name           "0 x"
-     :monospace?          true
-     :lowercase?          true
-     :customization-color :neutral}]
+    {:size       :size-32
+     :full-name  "0 x"
+     :monospace? true
+     :lowercase? true
+     :neutral?   true}]
    [rn/view {:style style/account-container}
     [text/text {:size :paragraph-1}
      (map (fn [network]

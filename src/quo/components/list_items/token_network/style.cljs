@@ -26,18 +26,21 @@
 
 (def info
   {:flex-direction :row
-   :align-items    :center})
+   :align-items    :center
+   :width          "70%"})
 
 (def token-info
-  {:height 40})
+  {:height 40
+   :flex   1})
 
 (def token-image
-  {:width         32
-   :height        32
-   :border-width  1
-   :border-radius 16
-   :border-color  colors/neutral-80-opa-5
-   :margin-right  8})
+  {:width            32
+   :height           32
+   :border-width     1
+   :border-radius    16
+   :border-color     colors/neutral-80-opa-5
+   :margin-right     8
+   :background-color colors/neutral-80-opa-5})
 
 (def values-container
   {:align-items :flex-end})
