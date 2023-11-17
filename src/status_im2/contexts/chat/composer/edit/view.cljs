@@ -11,7 +11,7 @@
     [utils.re-frame :as rf]))
 
 (defn edit-message
-  [state]
+  [{:keys [text-value input-ref]}]
   [rn/view
    {:style               style/container
     :accessibility-label :edit-message}
@@ -30,20 +30,18 @@
     {:size                24
      :icon-only?          true
      :accessibility-label :edit-cancel-button
-     :on-press            (fn []
-                            (utils/cancel-edit-message state)
-                            (rf/dispatch [:chat.ui/cancel-message-edit]))
+     :on-press            #(utils/cancel-edit-message text-value input-ref)
      :type                :outline}
     :i/close]])
 
 (defn- f-view
-  [state]
+  [props]
   (let [edit   (rf/sub [:chats/edit-message])
         height (reanimated/use-shared-value (if edit constants/edit-container-height 0))]
     (rn/use-effect #(reanimated/animate height (if edit constants/edit-container-height 0)) [edit])
     [reanimated/view {:style (reanimated/apply-animations-to-style {:height height} {})}
-     (when edit [edit-message state])]))
+     (when edit [edit-message props])]))
 
 (defn view
-  [state]
-  [:f> f-view state])
+  [props]
+  [:f> f-view props])
