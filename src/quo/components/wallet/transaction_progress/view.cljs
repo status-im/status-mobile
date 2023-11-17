@@ -170,25 +170,15 @@
   [theme network state]
   (cond
     (and (= network :arbitrum)
-         (= state :sending))   [:i/positive-state
-                                        (colors/theme-colors colors/success-50
-                                                             colors/success-60
-                                                             theme)]
+         (= state :sending))   [:i/positive-state (colors/resolve-color :success theme)]
     (or (= state :pending)
-        (= state :sending))    [:i/pending-state
-                                        (colors/theme-colors colors/neutral-50
-                                                             colors/neutral-60
-                                                             theme)]
+        (= state :sending))    [:i/pending-state (colors/theme-colors colors/neutral-50
+                                                                      colors/neutral-60
+                                                                      theme)]
     (or (= state :confirmed)
-        (= state :finalising)) [:i/positive-state
-                                        (colors/theme-colors colors/success-50
-                                                             colors/success-60
-                                                             theme)]
+        (= state :finalising)) [:i/positive-state (colors/resolve-color :success theme)]
     (= state :finalized)       [:i/diamond]
-    (= state :error)           [:i/negative-state
-                                        (colors/theme-colors colors/danger-50
-                                                             colors/danger-60
-                                                             theme)]))
+    (= state :error)           [:i/negative-state (colors/resolve-color :danger theme)]))
 
 (defn title-internal
   [state title theme btn-title]
