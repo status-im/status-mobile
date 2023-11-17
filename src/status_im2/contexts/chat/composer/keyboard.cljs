@@ -4,7 +4,8 @@
     [react-native.async-storage :as async-storage]
     [react-native.core :as rn]
     [react-native.platform :as platform]
-    [react-native.reanimated :as reanimated]))
+    [react-native.reanimated :as reanimated]
+    [status-im2.contexts.chat.composer.utils :as utils]))
 
 (defn get-kb-height
   [curr-height default-height]
@@ -20,18 +21,24 @@
       (async-storage/set-item! :kb-default-height (str height)))))
 
 (defn handle-emoji-kb-ios
-  "Opening emoji KB on iOS while maximized will cause a flicker up and down. This method handles that."
+  "Opening emoji KB on iOS will cause a flicker up and down due to height differences.
+  This method handles that by adding the extra difference between the keyboards. When the input is
+  expanded to a point where the added difference will make the composer go beyond the screen causing a flicker,
+  we're subtracting the difference so it only reaches the allowed max-height. We're not animating these
+  changes to make it appear seamless during transitions between keyboard types when maximized."
   [event
    {:keys [emoji-kb-extra-height]}
-   {:keys [text-value]}
+   {:keys [text-value kb-height]}
    {:keys [height saved-height]}
    {:keys [max-height]}]
-  (let [start-h         (oops/oget event "startCoordinates.height")
-        end-h           (oops/oget event "endCoordinates.height")
-        diff            (- end-h start-h)
-        max-height-diff (- max-height diff)
-        curr-text       @text-value]
-    (if (> (reanimated/get-shared-value height) max-height-diff)
+  (let [start-h                 (oops/oget event "startCoordinates.height")
+        end-h                   (oops/oget event "endCoordinates.height")
+        diff                    (- end-h start-h)
+        max-height-diff         (- max-height diff)
+        curr-text               @text-value
+        bigger-than-default-kb? (> end-h @kb-height)
+        almost-expanded?        (> (reanimated/get-shared-value height) max-height-diff)]
+    (if (and almost-expanded? bigger-than-default-kb? (pos? diff))
       (do
         (reanimated/set-shared-value height (- (reanimated/get-shared-value height) diff))
         (reanimated/set-shared-value saved-height (- (reanimated/get-shared-value saved-height) diff))
@@ -58,8 +65,8 @@
                                    #(handle-emoji-kb-ios % props state animations dimensions)))
   (reset! keyboard-hide-listener (.addListener rn/keyboard
                                                "keyboardDidHide"
-                                               #(when (and platform/android? @input-ref)
-                                                  (.blur ^js @input-ref)))))
+                                               #(when platform/android?
+                                                  (utils/blur-input input-ref)))))
 
 (defn handle-refocus-emoji-kb-ios
   [{:keys [saved-emoji-kb-extra-height]}

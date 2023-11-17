@@ -23,12 +23,14 @@
    show-floating-scroll-down-button?]
   (reset! focused? true)
   (rf/dispatch [:chat.ui/set-input-focused true])
-  (reanimated/animate height (reanimated/get-shared-value last-height))
-  (reanimated/set-shared-value saved-height (reanimated/get-shared-value last-height))
-  (reanimated/animate container-opacity 1)
-  (when (> (reanimated/get-shared-value last-height) (* constants/background-threshold max-height))
-    (reanimated/animate opacity 1)
-    (reanimated/set-shared-value background-y 0))
+  (let [last-height-value (reanimated/get-shared-value last-height)]
+    (reanimated/animate height last-height-value)
+    (reanimated/set-shared-value saved-height last-height-value)
+    (reanimated/animate container-opacity 1)
+    (when (> last-height-value (* constants/background-threshold max-height))
+      (reanimated/animate opacity 1)
+      (reanimated/set-shared-value background-y 0)))
+
   (js/setTimeout #(reset! lock-selection? false) 300)
   (when (and (not-empty @text-value) @input-ref)
     (.setNativeProps ^js @input-ref
@@ -72,7 +74,7 @@
   "Save new text height, expand composer if possible, show background overlay if needed"
   [event
    {:keys [maximized? lock-layout? text-value]}
-   {:keys [height saved-height opacity background-y]}
+   {:keys [height saved-height last-height opacity background-y]}
    {:keys [content-height window-height max-height]}
    keyboard-shown]
   (when keyboard-shown
@@ -87,8 +89,9 @@
                                                     max-height)
           new-height   (min new-height max-height)]
       (reset! content-height content-size)
-      (when (utils/update-height? content-size height max-height maximized?)
+      (when (utils/update-height? content-size height max-height)
         (reanimated/animate height new-height)
+        (reanimated/set-shared-value last-height new-height)
         (reanimated/set-shared-value saved-height new-height))
       (when (= new-height max-height)
         (reset! maximized? true)
