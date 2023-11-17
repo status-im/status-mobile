@@ -4,9 +4,11 @@
     [quo.components.graph.wallet-graph.style :as style]
     [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
+    [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]
     [react-native.charts :as charts]
     [react-native.core :as rn]
+    [react-native.fast-image :as fast-image]
     [react-native.linear-gradient :as linear-gradient]))
 
 (defn- time-frame->max-data-points
@@ -42,11 +44,10 @@
         gradient-colors [(colors/alpha line-color 0.1) (colors/alpha line-color 0)]
         fill-color      (colors/theme-colors colors/white colors/neutral-95)]
     (if (= time-frame :empty)
-      [rn/view
-       {:accessibility-label :illustration
-        :style               style/illustration}
-       [text/text {:style {:color colors/white}}
-        "Illustration here"]]
+      [fast-image/fast-image
+       {:style  style/empty-state
+        :source (resources/get-image
+                  (quo.theme/theme-value :no-funds-light :no-funds-dark theme))}]
       [rn/view
        [linear-gradient/linear-gradient
         {:colors gradient-colors

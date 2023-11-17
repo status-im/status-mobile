@@ -3,6 +3,7 @@
     [quo.core :as quo]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [status-im2.common.resources :as resources]
     [status-im2.contexts.wallet.account.tabs.dapps.style :as style]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
     [status-im2.contexts.wallet.common.temp :as temp]
@@ -23,13 +24,13 @@
 
 (defn- view-internal
   [{:keys [theme]}]
-  (let [dapps-list (temp/dapps-list {:on-press-icon #(rf/dispatch [:show-bottom-sheet
-                                                                   {:content dapp-options}])})]
+  (let [dapps-list []]
     (if (empty? dapps-list)
       [empty-tab/view
-       {:title        (i18n/label :t/no-dapps)
-        :description  (i18n/label :t/no-collectibles-description)
-        :placeholder? true}]
+       {:title       (i18n/label :t/no-dapps)
+        :description (i18n/label :t/no-collectibles-description)
+        :image       (resources/get-image
+                       (quo.theme/theme-value :no-dapps-light :no-dapps-dark theme))}]
       [rn/view {:style style/dapps-container}
        [rn/flat-list
         {:data      dapps-list

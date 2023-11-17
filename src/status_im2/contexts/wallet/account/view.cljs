@@ -25,7 +25,8 @@
   [{:id :assets :label (i18n/label :t/assets) :accessibility-label :assets-tab}
    {:id :collectibles :label (i18n/label :t/collectibles) :accessibility-label :collectibles-tab}
    {:id :activity :label (i18n/label :t/activity) :accessibility-label :activity-tab}
-   {:id :permissions :label (i18n/label :t/permissions) :accessibility-label :permissions}
+   ;; Disabled for new wallet MVP
+   ;{:id :permissions :label (i18n/label :t/permissions) :accessibility-label :permissions}
    {:id :dapps :label (i18n/label :t/dapps) :accessibility-label :dapps}
    {:id :about :label (i18n/label :t/about) :accessibility-label :about}])
 

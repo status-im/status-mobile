@@ -19,3 +19,7 @@
    :background-color colors/danger-50
    :align-items      :center
    :justify-content  :center})
+
+(def empty-state
+  {:width  375
+   :height 116})
