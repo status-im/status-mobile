@@ -29,8 +29,7 @@
       [empty-tab/view
        {:title       (i18n/label :t/no-dapps)
         :description (i18n/label :t/no-collectibles-description)
-        :image       (resources/get-image
-                       (quo.theme/theme-value :no-dapps-light :no-dapps-dark theme))}]
+        :image       (resources/get-themed-image :no-dapps theme)}]
       [rn/view {:style style/dapps-container}
        [rn/flat-list
         {:data      dapps-list

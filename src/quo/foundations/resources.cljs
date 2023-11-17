@@ -10,6 +10,10 @@
    {:light (js/require "../resources/images/ui2/no-funds-light.png")
     :dark  (js/require "../resources/images/ui2/no-funds-dark.png")}})
 
+(defn get-themed-image
+  [k theme]
+  (get-in ui [k theme]))
+
 (defn get-image
   [k]
   (get ui k))

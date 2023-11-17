@@ -14,8 +14,7 @@
       [empty-tab/view
        {:title       (i18n/label :t/no-collectibles)
         :description (i18n/label :t/no-collectibles-description)
-        :image       (resources/get-image
-                       (quo.theme/theme-value :no-collectibles-light :no-collectibles-dark theme))}]
+        :image       (resources/get-themed-image :no-collectibles theme)}]
       [rn/flat-list
        {:data                    collectible-list
         :style                   {:flex 1}

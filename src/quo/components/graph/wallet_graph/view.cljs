@@ -46,8 +46,7 @@
     (if (= time-frame :empty)
       [fast-image/fast-image
        {:style  style/empty-state
-        :source (resources/get-image
-                  (quo.theme/theme-value :no-funds-light :no-funds-dark theme))}]
+        :source (resources/get-themed-image :no-funds theme)}]
       [rn/view
        [linear-gradient/linear-gradient
         {:colors gradient-colors

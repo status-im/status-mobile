@@ -22,8 +22,7 @@
       [empty-tab/view
        {:title       (i18n/label :t/no-activity)
         :description (i18n/label :t/empty-tab-description)
-        :image       (resources/get-image
-                       (quo.theme/theme-value :no-activity-light :no-activity-dark theme))}]
+        :image       (resources/get-themed-image :no-activity theme)}]
       [rn/flat-list
        {:data      activity-list
         :style     {:flex 1}
