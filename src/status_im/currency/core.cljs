@@ -11,9 +11,10 @@
 (rf/defn set-currency
   {:events [:wallet-legacy.settings.ui/currency-selected]}
   [{:keys [db] :as cofx} currency]
+  (prn "CUrrency" currency)
   (rf/merge cofx
             (multiaccounts.update/multiaccount-update
              :currency
-             currency
+             "USD"
              {})
             (prices/update-prices)))

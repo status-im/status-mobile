@@ -11,10 +11,15 @@
     [taoensso.timbre :as log]
     [utils.ethereum.chain :as chain]
     [utils.i18n :as i18n]
+    [utils.money]
     [utils.number]
     [utils.re-frame :as rf]
     [utils.security.core :as security]
-    [utils.transforms :as types]))
+    [utils.transforms :as types]
+    [status-im.ui.screens.network.views :as network]
+    [status-im2.contexts.wallet.common.sheets.network-preferences.view :as network-preferences]
+    [status-im2.contexts.quo-preview.wallet.transaction-summary :as transaction-summary]
+    [utils.money :as money]))
 
 (rf/reg-event-fx :wallet/show-account-created-toast
  (fn [{:keys [db]} [address]]
@@ -44,6 +49,15 @@
            {:dispatch [:navigate-to :wallet-accounts address]
             :ms       300}]]
          [:dispatch [:wallet/show-account-created-toast address]]]}))
+
+(rf/reg-event-fx :wallet/navigate-to-account
+ (fn [{:keys [db]} [address]]
+   (let [new-account? (get-in db [:wallet :new-account?])]
+     (cond-> {:db (assoc-in db [:wallet :current-viewing-account-address] address)
+              :fx [[:dispatch [:navigate-to :wallet-accounts address]]]}
+
+       new-account?
+       (update :fx conj [:dispatch [:wallet/show-account-created-toast address]])))))
 
 (rf/reg-event-fx :wallet/close-account-page
  (fn [{:keys [db]}]
@@ -384,3 +398,104 @@
             :on-error   #(log/info "failed to get address details"
                                    {:error %
                                     :event :wallet/get-address-details})}]]]}))
+
+(rf/reg-event-fx :wallet/get-suggested-routes
+ (fn [{:keys [db]} {:keys []}]
+   (let [wallet-address      (get-in db [:wallet :current-viewing-account-address])
+         tokens              (get-in db [:wallet :accounts])
+         account             (get-in db [:wallet :accounts wallet-address])
+         token-decimal       18
+         token-id            "ETH"
+         value_              0.005
+         network-preferences [5]
+         gas-rates           0 ;low
+         amount-in           (utils.money/mul (utils.money/bignumber value_)
+                                              (utils.money/from-decimal token-decimal))
+         from-address        wallet-address
+         to-address          wallet-address
+         request-params      [0
+                              from-address
+                              to-address
+                              (utils.money/to-hex amount-in)
+                              token-id
+                              []
+                              []
+                              network-preferences
+                              gas-rates
+                              {}]]
+
+     {:json-rpc/call [{:method     "wallet_getSuggestedRoutes"
+                       :params     request-params
+                       :on-success #(rf/dispatch [:wallet/send-transaction % from-address to-address])
+                       :on-error   (fn [error]
+                                     (log/error "failed to get suggested routes"
+                                                {:event  :wallet/get-suggested-routes
+                                                 :error  error
+                                                 :params request-params}))}]})))
+
+(rf/reg-event-fx :wallet/send-transaction
+ (fn [{:keys [db]} [transaction from-address to-address]]
+   (let [best (first (:Best transaction))
+         from (:From best)
+         to (:To best)
+         from-asset (:nativeCurrencySymbol from)
+         to-asset (:nativeCurrencySymbol to)
+         bridge-name (:BridgeName best)
+         chain-id (:chainId from)
+         multi-transaction-command {:from-address from-address
+                                    :to-address   to-address
+                                    :from-asset   from-asset
+                                    :to-asset     to-asset
+                                    :from-amount  (:AmountOut best)
+                                    :type         0}
+
+         transaction-bridge
+         [{:BridgeName bridge-name
+           :ChainID    chain-id
+           :TransferTx {:From                 from-address
+                        :To                   to-address
+                        :Gas                  (money/to-hex (:GasAmount best))
+                        :GasPrice             (money/to-hex (money/->wei :gwei
+                                                                         (:gasPrice (:GasFees best))))
+                        :Value                (:AmountOut best)
+                        :Nonce                nil
+                        :MaxFeePerGas         (money/to-hex
+                                               (money/->wei :gwei (:maxFeePerGasMedium (:GasFees best))))
+                        :MaxPriorityFeePerGas (money/to-hex (money/->wei :gwei
+                                                                         (:maxPriorityFeePerGas (:GasFees
+                                                                                                 best))))
+                        :Input                ""
+                        :Data                 "0x"}}]
+         sha3-pwd (native-module/sha3 (str (security/safe-unmask-data "mmmmmmmmmm")))
+         request-params [multi-transaction-command transaction-bridge sha3-pwd]]
+     (prn "=====" request-params)
+     {:json-rpc/call [{:method     "wallet_createMultiTransaction"
+                       :params     request-params
+                       :on-success #(prn % "======+++++++++========++++++++")
+                       :on-error   (fn [error]
+                                     (log/error "failed to send transaction"
+                                                {:event  :wallet/send-transaction
+                                                 :error  error
+                                                 :params request-params}))}]})))
+
+
+[{:from-address "0x5ffa75ce51c3a7ebe23bde37b5e3a0143dfbcee0"
+  :to-address   "0x5ffa75ce51c3a7ebe23bde37b5e3a0143dfbcee0"
+  :from-asset   "ETH"
+  :to-asset     "ETH"
+  :from-amount  "0x11c37937e08000"
+  :type         0}
+
+ [{:BridgeName "Transfer"
+   :ChainID    5
+   :TransferTx {:MaxFeePerGas         "0x3b9aca00"
+                :From                 "0x5ffa75ce51c3a7ebe23bde37b5e3a0143dfbcee0"
+                :MaxPriorityFeePerGas "0x5f5e100"
+                :Gas                  "0x5bbf"
+                :Input                ""
+                :Data                 ""
+                :GasPrice             "0x5f5e108"
+                :Nonce                nil
+                :Value                "0x11c37937e08000"
+                :To                   "0x5ffa75ce51c3a7ebe23bde37b5e3a0143dfbcee0"}}]
+ "0x46484c15b50121d38bc5811f4b09ae60fc95a7c8b4d913105a3085fcadcb967e"]

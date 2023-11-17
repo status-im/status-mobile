@@ -53,7 +53,7 @@
                   :customization-color color
                   :type                (if (= type :watch) :watch-only :empty)
                   :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
-                  :loading?            tokens-loading?
+                  :loading?            false
                   :balance             (utils/prettify-balance (get balances address))))
          accounts)))
 
