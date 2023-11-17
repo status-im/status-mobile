@@ -8,7 +8,8 @@
             [quo.foundations.colors :as colors]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [utils.i18n :as i18n]))
 
 (defn icon-internal
   ([icon]
@@ -140,11 +141,11 @@
 (defn network-type-text
   [network state]
   (cond
-    (and (= state :sending) (= network :arbitrum))     "Confirmed on "
-    (or (= state :sending) (= state :pending))      "Pending on "
-    (or (= state :confirmed) (= state :finalising)) "Confirmed on "
-    (= state :finalized)                                    "Finalized on "
-    (= state :error)                                        "Failed on "))
+    (and (= state :sending) (= network :arbitrum))     (i18n/label :t/confirmed-on)
+    (or (= state :sending) (= state :pending))      (i18n/label :t/pending-on)
+    (or (= state :confirmed) (= state :finalising)) (i18n/label :t/confirmed-on)
+    (= state :finalized)                                    (i18n/label :t/finalized-on)
+    (= state :error)                                        (i18n/label :t/failed-on)))
 
 (defn text-steps
   [network state epoch-number]
@@ -155,7 +156,7 @@
                                                    @lcounter
                                                    "4")
                                                  "/4")
-    (= state :finalized)            (str "Epoch " epoch-number)
+    (= state :finalized)            (i18n/label :t/epoch-number {:number epoch-number})
     (and (= network :mainnet)
          (= state :error))          "0/4"
     (and (= network :arbitrum)
@@ -204,9 +205,9 @@
 (defn get-network-text
   [network]
   (case network
-    :arbitrum "Arbitrum"
-    :mainnet  "Mainnet"
-    :optimism "Optimism"))
+    :arbitrum (i18n/label :t/arbitrum)
+    :mainnet  (i18n/label :t/mainnet)
+    :optimism (i18n/label :t/optimism)))
 
 (defn status-row
   [theme state network epoch-number]
@@ -215,7 +216,7 @@
       [icon-internal status-icon color 16]
       [rn/view {:style style/title-text-container}
        [text-internal
-        (str (network-type-text network state) (get-network-text network))
+        (str (network-type-text network state) " " (get-network-text network))
         {:weight :regular
          :size :paragraph-2}]]
       [rn/view

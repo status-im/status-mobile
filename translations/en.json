@@ -2384,5 +2384,12 @@
     "address-activity": "This address has activity",
     "keypairs": "Keypairs",
     "keypairs-description": "Select keypair to derive your new account from",
-    "confirm-account-origin": "Confirm account origin"
+    "confirm-account-origin": "Confirm account origin",
+    "confirmed-on": "Confirmed on",
+    "pending-on": "Pending on",
+    "finalized-on": "Finalized on",
+    "failed-on": "Failed on",
+    "epoch-number": "Epoch {{number}}",
+    "arbitrum": "Arbitrum",
+    "optimism": "Optimism"
 }
