@@ -2,7 +2,9 @@
   (:require
     [re-frame.core :as re-frame]
     [react-native.core :as rn]
-    [reagent.core :as reagent]))
+    [reagent.core :as reagent]
+    schema.state
+    [status-im2.setup.schema :as schema]))
 
 (defonce cnt (reagent/atom 0))
 (defonce reload-locked? (atom false))
@@ -19,6 +21,8 @@
   (reset! visible true)
   (reset! label "reloading UI")
   (re-frame/clear-subscription-cache!)
+  (schema/setup!)
+  (schema.state/clear-errors)
   (swap! cnt inc))
 
 (defn before-reload

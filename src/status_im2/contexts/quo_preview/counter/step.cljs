@@ -26,4 +26,4 @@
         :descriptor            descriptor
         :blur?                 (:in-blur-view? @state)
         :show-blur-background? (:in-blur-view? @state)}
-       [quo/step @state (:value @state)]])))
+       [quo/step (dissoc @state :value) (:value @state)]])))

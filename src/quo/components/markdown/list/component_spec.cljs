@@ -22,9 +22,10 @@
     (h/is-truthy (h/get-by-text "test description")))
 
   (h/test "renders step component when step-number is valid and type is step"
-    (h/render [list/view
-               {:type        :step
-                :step-number 1}])
+    (h/render-with-theme-provider [list/view
+                                   {:type        :step
+                                    :step-number 1}]
+                                  :dark)
     (h/is-truthy (h/get-by-label-text :step-counter)))
 
   (h/test "renders decription with a context tag component and description after the tag"
