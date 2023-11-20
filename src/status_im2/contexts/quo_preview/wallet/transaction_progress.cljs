@@ -1,6 +1,7 @@
 (ns status-im2.contexts.quo-preview.wallet.transaction-progress
   (:require
    [quo.core :as quo]
+   [react-native.core :as rn]
    [reagent.core :as reagent]
    [status-im2.common.resources :as resources]
    [status-im2.contexts.quo-preview.preview :as preview]))
@@ -9,9 +10,9 @@
   [{:type    :text
     :key     :title}
    {:type    :text
-    :key     :tag-name} 
+    :key     :tag-name}
    {:type    :text
-    :key     :epoch-number} 
+    :key     :epoch-number}
    {:type    :text
     :key     :tag-number}
    {:type    :select
@@ -27,18 +28,63 @@
               {:key :finalized}
               {:key :error}]}])
 
+(def total-box 85)
+(def counter (reagent/atom 0))
+(def interval-id (reagent/atom nil))
+(def interval-ms 50)
+
+(defn stop-interval
+  []
+  (when @interval-id
+    (js/clearInterval @interval-id)
+    (reset! interval-id nil)))
+
+(defn clear-counter
+  []
+  (reset! counter 0))
+
+(defn update-counter
+  [state]
+  (let [new-counter-value (-> @counter inc)]
+    (if (or (and (= state :pending) (> new-counter-value 0))
+            (and (= state :sending) (> new-counter-value 2))
+            (and (= state :confirmed) (> new-counter-value 4))
+            (and (= state :finalising) (> new-counter-value 18))
+            (and (= state :finalized) (> new-counter-value total-box))
+            (and (= state :error) (> new-counter-value 2)))
+      (stop-interval)
+      (swap! counter (fn [_] new-counter-value)))))
+
+(defn start-interval
+  [state]
+  (reset! interval-id
+          (js/setInterval
+           (fn []
+             (update-counter state))
+           interval-ms)))
+
 (defn view
   []
   (let [state (reagent/atom {:title "Title"
+                             :counter counter
+                             :total-box total-box
                              :tag-name "Doodle"
                              :tag-number "120"
                              :epoch-number "181,329"
                              :network :mainnet
                              :state :pending
-                             :start-interval-now  true
                              :tag-photo           (resources/get-mock-image :collectible)
                              :on-press            (fn []
-                                                    (js/alert "Transaction progress item pressed"))})]
+                                                    (js/alert "Transaction progress item pressed"))})
+        network-state     (reagent/cursor state [:state])]
+    [:f>
     (fn []
+      (rn/use-effect
+       (fn []
+         (start-interval state)
+         (clear-counter)
+         (fn []
+           (stop-interval)))
+       [@network-state])
       [preview/preview-container {:state state :descriptor descriptor}
-       [quo/transaction-progress @state]])))
+       [quo/transaction-progress @state]])]))

@@ -8,7 +8,6 @@
             [quo.foundations.colors :as colors]
             [quo.theme :as quo.theme]
             [react-native.core :as rn]
-            [reagent.core :as reagent]
             [utils.i18n :as i18n]))
 
 (defn icon-internal
@@ -24,42 +23,6 @@
       :size  size
       :no-color (when (not color) true)}]]))
 
-(def total-box 85)
-(def interval-ms 50)
-
-(def lcounter (reagent/atom 0))
-(def interval-id (reagent/atom nil))
-
-(defn stop-interval
-  []
-  (when @interval-id
-    (js/clearInterval @interval-id)
-    (reset! interval-id nil)))
-
-(defn clear-counter
-  []
-  (reset! lcounter 0))
-
-(defn update-counter
-  [state]
-  (let [new-counter-value (-> @lcounter inc)]
-    (if (or (and (= state :pending) (> new-counter-value 0))
-            (and (= state :sending) (> new-counter-value 2))
-            (and (= state :confirmed) (> new-counter-value 4))
-            (and (= state :finalising) (> new-counter-value 18))
-            (and (= state :finalized) (> new-counter-value total-box))
-            (and (= state :error) (> new-counter-value 2)))
-      (stop-interval)
-      (swap! lcounter (fn [_] new-counter-value)))))
-
-(defn start-interval
-  [state]
-  (reset! interval-id
-          (js/setInterval
-           (fn []
-             (update-counter state))
-           interval-ms)))
-
 (defn calculate-box-state
   [state counter index]
   (cond
@@ -73,12 +36,12 @@
     :else                                                                           :pending))
 
 (defn progress-boxes
-  [state]
+  [state counter total-box]
   [rn/view {:style (style/progress-box-container true)}
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view
-               {:state               (calculate-box-state state @lcounter n)
+               {:state               (calculate-box-state state @counter n)
                 :customization-color :blue
                 :key                 n}])))])
 
@@ -148,12 +111,12 @@
     (= state :error)                                        (i18n/label :t/failed-on)))
 
 (defn text-steps
-  [network state epoch-number]
+  [network state epoch-number counter]
   (cond
     (and (= network :mainnet)
          (not= state :finalized)
-         (not= state :error))       (str (if (< @lcounter 4)
-                                                   @lcounter
+         (not= state :error))       (str (if (< @counter 4)
+                                                   @counter
                                                    "4")
                                                  "/4")
     (= state :finalized)            (i18n/label :t/epoch-number {:number epoch-number})
@@ -210,7 +173,7 @@
     :optimism (i18n/label :t/optimism)))
 
 (defn status-row
-  [theme state network epoch-number]
+  [theme state network epoch-number counter]
   (let [[status-icon color] (get-status-icon theme network state)]
      [rn/view {:style style/status-row-container}
       [icon-internal status-icon color 16]
@@ -221,21 +184,13 @@
          :size :paragraph-2}]]
       [rn/view
        [text-internal
-        (text-steps network state epoch-number)
+        (text-steps network state epoch-number counter)
         {:weight :regular
          :size   :paragraph-2
          :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
 (defn f-view-internal
-  [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name tag-number epoch-number]}]
-  (rn/use-effect
-   (fn []
-     (when start-interval-now
-       (start-interval state))
-     (clear-counter)
-     (fn []
-       (stop-interval)))
-   [state]) 
+  [{:keys [title on-press accessibility-label network state theme tag-photo tag-name tag-number epoch-number counter total-box]}]
    [rn/touchable-without-feedback
     {:on-press            on-press
      :accessibility-label accessibility-label}
@@ -244,12 +199,12 @@
      [tag-internal tag-photo tag-name tag-number theme]
      (case network
        :mainnet [:<>
-                 [status-row theme state :mainnet epoch-number]
-                 [progress-boxes state]]
+                 [status-row theme state :mainnet epoch-number counter]
+                 [progress-boxes state counter total-box]]
        :optimism-arbitrum [:<>
-                           [status-row theme state :arbitrum epoch-number]
+                           [status-row theme state :arbitrum epoch-number counter]
                            [progress-boxes-arbitrum state :arbitrum false]
-                           [status-row theme state :optimism epoch-number]
+                           [status-row theme state :optimism epoch-number counter]
                            [progress-boxes-arbitrum state :optimism true]]
        nil)]])
 
