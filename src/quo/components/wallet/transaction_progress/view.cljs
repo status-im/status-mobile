@@ -37,7 +37,8 @@
 
 (defn progress-boxes
   [state counter total-box]
-  [rn/view {:style (style/progress-box-container true)}
+  [rn/view {:accessibility-label :mainnet-progress-box
+            :style (style/progress-box-container true)}
    (let [numbers (range 1 total-box)]
      (doall (for [n numbers]
               [progress-box/view
@@ -77,7 +78,8 @@
 
 (defn progress-boxes-arbitrum
   [state network bottom-large?]
-  [rn/view {:style (style/progress-box-container bottom-large?)}
+  [rn/view {:accessibility-label :arbitrum-progress-box
+            :style (style/progress-box-container bottom-large?)}
    [progress-box/view
     {:state               (calculate-box-state-arbitrum-left state network)
      :customization-color :blue}]
