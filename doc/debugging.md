@@ -7,13 +7,13 @@
 
 To start `re-frisk`, execute the following command:
 ```bash
-$ yarn shadow-cljs run re-frisk-remote.core/start
+yarn shadow-cljs run re-frisk-remote.core/start
 ```
 
 or you can also use make:
 
 ```bash
-$ make run-re-frisk
+make run-re-frisk
 ```
 
 A server will be started at http://localhost:4567. It might show "not connected" at first. Don't worry and just start using the app. The events and state will populate.

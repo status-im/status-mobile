@@ -73,10 +73,6 @@
            :accessibility-label :link-to-profile
            :event-name          :press
            :callback-prop-key   :on-share-press}
-          {:test-name           "Info icon pressed"
-           :accessibility-label :share-qr-code-info-icon
-           :event-name          :press
-           :callback-prop-key   :on-info-press}
           {:test-name           "Legacy tab pressed"
            :accessibility-label :share-qr-code-legacy-tab
            :event-name          :press
@@ -101,10 +97,6 @@
            :accessibility-label :link-to-profile
            :event-name          :press
            :callback-prop-key   :on-share-press}
-          {:test-name           "Info icon pressed"
-           :accessibility-label :share-qr-code-info-icon
-           :event-name          :press
-           :callback-prop-key   :on-info-press}
           {:test-name           "Legacy tab pressed"
            :accessibility-label :share-qr-code-legacy-tab
            :event-name          :press

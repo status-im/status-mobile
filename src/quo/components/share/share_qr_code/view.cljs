@@ -2,14 +2,12 @@
   (:require [clojure.set]
             [clojure.string :as string]
             [oops.core :as oops]
+            [quo.components.avatars.account-avatar.view :as account-avatar]
             [quo.components.buttons.button.view :as button]
-            [quo.components.icon :as icon]
-            [quo.components.list-items.preview-list.view :as preview-list]
             [quo.components.markdown.text :as text]
             [quo.components.share.qr-code.view :as qr-code]
             [quo.components.share.share-qr-code.style :as style]
             [quo.components.tabs.tab.view :as tab]
-            [quo.foundations.resources :as quo.resources]
             [quo.theme]
             [react-native.blur :as blur]
             [react-native.core :as rn]
@@ -17,52 +15,60 @@
             [reagent.core :as reagent]
             [utils.i18n :as i18n]))
 
-(defn- line [] [rn/view {:style style/line}])
-(defn- space [] [rn/view {:style style/line-space}])
-
-(defn- dashed-line
-  [width]
-  (into [rn/view {:style style/dashed-line}]
-        (take (style/number-lines-and-spaces-to-fill width))
-        (cycle [[line] [space]])))
+(defn- share-button
+  [{:keys [alignment on-press]}]
+  [rn/view {:style (style/share-button-container alignment)}
+   [button/button
+    {:icon-only?          true
+     :type                :grey
+     :background          :blur
+     :size                style/share-button-size
+     :accessibility-label :link-to-profile
+     :on-press            on-press}
+    :i/share]])
 
 (defn- header
-  [{:keys [share-qr-type on-info-press on-legacy-press on-multichain-press]}]
+  [{:keys [share-qr-type on-share-press on-legacy-press on-multichain-press
+           component-width full-name]
+    :as   props}]
   [rn/view {:style style/header-container}
-   [tab/view
-    {:accessibility-label         :share-qr-code-legacy-tab
-     :id                          :wallet-legacy-tab
-     :active-item-container-style style/header-tab-active
-     :item-container-style        style/header-tab-inactive
-     :size                        24
-     :active                      (= :wallet-legacy share-qr-type)
-     :on-press                    on-legacy-press}
-    (i18n/label :t/legacy)]
-   [rn/view {:style style/space-between-tabs}]
-   [tab/view
-    {:accessibility-label         :share-qr-code-multichain-tab
-     :id                          :wallet-multichain-tab
-     :active-item-container-style style/header-tab-active
-     :item-container-style        style/header-tab-inactive
-     :size                        24
-     :active                      (= :wallet-multichain share-qr-type)
-     :on-press                    on-multichain-press}
-    (i18n/label :t/multichain)]
-   [rn/pressable
-    {:accessibility-label :share-qr-code-info-icon
-     :style               style/info-icon
-     :on-press            on-info-press
-     :hit-slop            6}
-    [icon/icon :i/info
-     {:size  20
-      :color style/info-icon-color}]]])
-
-(defn- info-label
-  [share-qr-code-type]
-  [text/text {:size :paragraph-2 :weight :medium :style style/title}
-   (if (= share-qr-code-type :profile)
-     (i18n/label :t/link-to-profile)
-     (i18n/label :t/wallet-address))])
+   [rn/view
+    {:style style/header-title-container}
+    [rn/view
+     {:style style/header-and-avatar-container}
+     [account-avatar/view
+      (assoc props
+             :size 32
+             :type :default)]
+     [text/text
+      {:size            :heading-2
+       :weight          :semi-bold
+       :style           (style/header-title component-width)
+       :number-of-lines 1}
+      full-name]]
+    [share-button
+     {:alignment :top
+      :on-press  on-share-press}]]
+   [rn/view {:style style/flex-direction-row}
+    [tab/view
+     {:accessibility-label         :share-qr-code-legacy-tab
+      :id                          :wallet-legacy-tab
+      :active-item-container-style style/header-tab-active
+      :item-container-style        style/header-tab-inactive
+      :size                        24
+      :active                      (= :wallet-legacy share-qr-type)
+      :on-press                    on-legacy-press}
+     (i18n/label :t/legacy)]
+    [rn/view {:style style/space-between-tabs}]
+    [tab/view
+     {:accessibility-label         :share-qr-code-multichain-tab
+      :id                          :wallet-multichain-tab
+      :active-item-container-style style/header-tab-active
+      :item-container-style        style/header-tab-inactive
+      :size                        24
+      :active                      (= :wallet-multichain share-qr-type)
+      :on-press                    on-multichain-press}
+     (i18n/label :t/multichain)]]])
 
 (defn- info-text
   [{:keys [width on-press on-long-press ellipsize?]} qr-data-text]
@@ -77,18 +83,6 @@
       ellipsize? (assoc :number-of-lines 1
                         :ellipsize-mode  :middle))
     qr-data-text]])
-
-(defn- share-button
-  [{:keys [alignment on-press]}]
-  [rn/view {:style (style/share-button-container alignment)}
-   [button/button
-    {:icon-only?          true
-     :type                :grey
-     :background          :blur
-     :size                style/share-button-size
-     :accessibility-label :link-to-profile
-     :on-press            on-press}
-    :i/share]])
 
 (defn- network-colored-text
   [network-short-name]
@@ -106,10 +100,10 @@
       (conj $ address))))
 
 (defn- profile-bottom
-  [{:keys [component-width qr-data on-text-press on-text-long-press on-share-press share-qr-type]}]
+  [{:keys [component-width qr-data on-text-press on-text-long-press on-share-press]}]
   [:<>
    [rn/view
-    [info-label share-qr-type]
+    [text/text {:size :paragraph-2 :weight :medium :style style/title} (i18n/label :t/link-to-profile)]
     [info-text
      {:width         component-width
       :ellipsize?    true
@@ -121,32 +115,26 @@
      :on-press  on-share-press}]])
 
 (defn- wallet-legacy-bottom
-  [{:keys [share-qr-type component-width qr-data on-text-press on-text-long-press on-share-press]}]
+  [{:keys [component-width qr-data on-text-press on-text-long-press]}]
   [rn/view {:style style/wallet-legacy-container}
-   [info-label share-qr-type]
    [rn/view {:style style/wallet-data-and-share-container}
     [info-text
      {:width         component-width
       :on-press      on-text-press
       :on-long-press on-text-long-press}
      qr-data]
-    [share-button
-     {:alignment :top
-      :on-press  on-share-press}]]])
-
-(def ^:private known-networks #{:ethereum :optimism :arbitrum})
-
-(defn- get-network-image-source
-  [network]
-  {:source (quo.resources/get-network (get known-networks network :unknown))})
+   ]])
 
 (defn wallet-multichain-bottom
-  [{:keys [share-qr-type component-width qr-data on-text-press on-text-long-press
-           on-share-press networks on-settings-press]}]
+  [{:keys [component-width qr-data on-text-press on-text-long-press
+           on-settings-press]}]
   [rn/view {:style style/wallet-multichain-container}
-   [rn/view {:style style/wallet-multichain-networks}
-    [preview-list/view {:type :network :size :size-32}
-     (map get-network-image-source networks)]
+   [rn/view {:style style/wallet-data-and-share-container}
+    [info-text
+     {:width         component-width
+      :on-press      on-text-press
+      :on-long-press on-text-long-press}
+     [wallet-multichain-colored-address qr-data]]
     [button/button
      {:icon-only?          true
       :type                :grey
@@ -154,20 +142,7 @@
       :size                32
       :accessibility-label :share-qr-code-settings
       :on-press            on-settings-press}
-     :i/advanced]]
-   [rn/view {:style style/divider-container}
-    [dashed-line component-width]]
-   [rn/view {:style style/wallet-multichain-data-container}
-    [info-label share-qr-type]
-    [rn/view {:style style/wallet-data-and-share-container}
-     [info-text
-      {:width         component-width
-       :on-press      on-text-press
-       :on-long-press on-text-long-press}
-      [wallet-multichain-colored-address qr-data]]
-     [share-button
-      {:alignment :top
-       :on-press  on-share-press}]]]])
+     :i/advanced]]])
 
 (defn- share-qr-code
   [{:keys [share-qr-type qr-image-uri component-width customization-color full-name
@@ -211,14 +186,12 @@
      - profile-picture: map ({:source image-source}) or any image source.
    `:wallet-legacy`
      - emoji:               Emoji in a string to show in the QR code.
-     - on-info-press:       Callback for the info icon.
      - on-legacy-press:     Callback for the legacy tab.
      - on-multichain-press: Callback for the multichain tab.
    `:wallet-multichain`
      - networks:            A vector of network names as keywords (`[:ethereum, :my-net, ...]`).
      - on-settings-press:   Callback for the settings button.
      - emoji:               Emoji in a string to show in the QR code.
-     - on-info-press:       Callback for the info icon.
      - on-legacy-press:     Callback for the legacy tab.
      - on-multichain-press: Callback for the multichain tab.
 
