@@ -40,7 +40,7 @@
         :icon-left           :i/face-id
         :customization-color profile-color
         :button-label        (i18n/label :t/biometric-enable-button {:bio-type-label bio-type-label})}
-       {:on-press #(rf/dispatch [:onboarding-2/enable-biometrics])})]
+       {:on-press #(rf/dispatch [:onboarding-2/sync-enable-biometrics])})]
      [quo/button
       {:accessibility-label :maybe-later-button
        :background          :blur

@@ -42,11 +42,19 @@
     {:db     (assoc-in db [:profile/login :processing] true)
      ::login [key-uid (native-module/sha3 (security/safe-unmask-data password))]}))
 
+(rf/defn biometry-login
+  {:events [:profile.login/biometry-login]}
+  [{:keys [db]}]
+  (let [{:keys [key-uid password]} (:profile/login db)]
+    {:db     (assoc-in db [:profile/login :processing] true)
+     ::login [key-uid (security/safe-unmask-data password)]}))
+
 (rf/defn login-local-paired-user
   {:events [:profile.login/local-paired-user]}
   [{:keys [db]}]
   (let [{:keys [key-uid password]} (get-in db [:syncing :profile])]
-    {::login [key-uid password]}))
+    {:db     (assoc-in db [:onboarding-2/profile :password] (security/mask-data password))
+     ::login [key-uid password]}))
 
 (rf/defn redirect-to-root
   [{:keys [db] :as cofx}]
@@ -172,7 +180,7 @@
   [{:keys [db] :as cofx}]
   (let [key-uid (get-in db [:profile/login :key-uid])]
     (keychain/get-user-password cofx
-                                (str key-uid "-hashed" key-uid)
+                                (str key-uid "-hashed")
                                 #(if (nil? %)
                                    (rf/dispatch [:profile.login/backwards-compatible-biometric-success])
                                    (rf/dispatch [:profile.login/get-user-password-success %])))))
@@ -186,7 +194,7 @@
      cofx
      {:db (assoc-in db [:profile/login :password] password)}
      (navigation/init-root :progress)
-     (login))))
+     (biometry-login))))
 
 (rf/defn biometric-auth-fail
   {:events [:profile.login/biometric-auth-fail]}

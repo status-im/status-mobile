@@ -78,7 +78,7 @@
     (fn [can-save?]
       (if can-save?
         (keychain/get-credentials
-         (str key-uid "-auth")
+         (str key-uid "-hashed" "-auth")
          #(callback (if % (oops/oget % "password") auth-method-none)))
         (callback nil))))))
 
@@ -86,7 +86,7 @@
   [key-uid password]
   (keychain/save-credentials key-uid
                              key-uid
-                             (native-module/sha3 (security/safe-unmask-data password))
+                             (security/safe-unmask-data password)
                              #()))
 
 (re-frame/reg-fx

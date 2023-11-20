@@ -35,11 +35,10 @@
   {:biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
                             :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
 
-(rf/defn authenticate-enable-biometrics
-  {:events [:onboarding-2/authenticate-enable-biometrics]}
+(rf/defn sync-enable-biometrics
+  {:events [:onboarding-2/sync-enable-biometrics]}
   [{:keys [db]} password]
   {:db                     (-> db
-                               (assoc-in [:onboarding-2/profile :password] password)
                                (assoc-in [:onboarding-2/profile :syncing?] true))
    :biometric/authenticate {:on-success #(rf/dispatch [:onboarding-2/biometrics-done])
                             :on-fail    #(rf/dispatch [:onboarding-2/biometrics-fail %])}})
@@ -145,17 +144,16 @@
 (rf/defn onboarding-new-account-finalize-setup
   {:events [:onboarding-2/finalize-setup]}
   [{:keys [db]}]
-  (let [syncing?               (get-in db [:onboarding-2/profile :syncing?])
-        masked-password        (get-in db [:onboarding-2/profile :password])
-        masked-hashed-password (get-in db [:syncing :profile :password])
-        key-uid                (get-in db [:profile/profile :key-uid])
-        biometric-enabled?     (= (get-in db [:onboarding-2/profile :auth-method])
-                                  constants/auth-method-biometric)]
+  (let [syncing?           (get-in db [:onboarding-2/profile :syncing?])
+        masked-password    (get-in db [:onboarding-2/profile :password])
+        key-uid            (get-in db [:profile/profile :key-uid])
+        biometric-enabled? (= (get-in db [:onboarding-2/profile :auth-method])
+                              constants/auth-method-biometric)]
     (cond-> {:db (assoc db :onboarding-2/generated-keys? true)}
       biometric-enabled?
       (assoc :keychain/save-password-and-auth-method
              {:key-uid         (if syncing? (str key-uid "-hashed") key-uid)
-              :masked-password (if syncing? masked-hashed-password masked-password)
+              :masked-password masked-password
               :on-success      (fn []
                                  (if syncing?
                                    (rf/dispatch [:onboarding-2/navigate-to-enable-notifications])
