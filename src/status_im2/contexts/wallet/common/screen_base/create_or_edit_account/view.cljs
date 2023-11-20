@@ -1,6 +1,5 @@
 (ns status-im2.contexts.wallet.common.screen-base.create-or-edit-account.view
   (:require [quo.core :as quo]
-            [quo.theme :as quo.theme]
             [react-native.core :as rn]
             [react-native.safe-area :as safe-area]
             [status-im2.constants :as constants]
@@ -8,12 +7,12 @@
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn- view-internal
+(defn view
   [{:keys [margin-top? page-nav-right-side account-name account-color account-emoji on-change-name
            on-change-color
            on-change-emoji on-focus on-blur section-label bottom-action?
            bottom-action-label bottom-action-props
-           custom-bottom-action]} & children]
+           custom-bottom-action watch-only?]} & children]
   (let [{:keys [top bottom]}  (safe-area/get-insets)
         margin-top            (if (false? margin-top?) 0 top)
         {window-width :width} (rn/get-window)]
@@ -36,7 +35,7 @@
          {:customization-color account-color
           :size                80
           :emoji               account-emoji
-          :type                :default}]
+          :type                (if watch-only? :watch-only :default)}]
         [quo/button
          {:size            32
           :type            :grey
@@ -81,5 +80,3 @@
              :type :primary}
             bottom-action-props)
            (i18n/label bottom-action-label)])])]))
-
-(def view (quo.theme/with-theme view-internal))
