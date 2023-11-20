@@ -7,10 +7,11 @@
 (def icon
   {:margin-right 4})
 
-(def box-style
+(defn box-style
+  [theme]
   {:border-radius 16
    :border-width  1
-   :border-color  colors/neutral-10})
+   :border-color  (colors/theme-colors colors/neutral-10 colors/neutral-80 theme)})
 
 (def title-container
   {:align-items        :center

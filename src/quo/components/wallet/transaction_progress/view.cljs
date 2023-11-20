@@ -239,7 +239,7 @@
    [rn/touchable-without-feedback
     {:on-press            on-press
      :accessibility-label accessibility-label}
-    [rn/view {:style style/box-style}
+    [rn/view {:style (style/box-style theme)}
      [title-internal state title theme]
      [tag-internal tag-photo tag-name tag-number theme]
      (case network
