@@ -214,37 +214,51 @@
          :accessibility-label :new-message-counter}
         unviewed-messages-count])]))
 
-(defn chat-list-item
+(defn chat-item
   [{:keys [chat-id group-chat color name last-message timestamp muted]
-    :as   item} theme]
-  (let [customization-color (rf/sub [:profile/customization-color])
-        [primary-name secondary-name]
+    :as   item}]
+  (let [[primary-name secondary-name]
         (if group-chat
           [name ""]
           (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
         {:keys [ens-verified added?] :as contact} (when-not group-chat
                                                     (rf/sub [:contacts/contact-by-address chat-id]))]
+    [:<>
+     [avatar-view
+      {:contact   contact
+       :chat-id   chat-id
+       :full-name primary-name
+       :color     color
+       :muted?    muted}]
+     [rn/view {:style style/chat-data-container}
+      [quo/author
+       {:primary-name   primary-name
+        :secondary-name secondary-name
+        :size           15
+        :verified?      ens-verified
+        :contact?       added?
+        :muted?         muted
+        :time-str       (datetime/to-short-str timestamp)}]
+      [last-message-preview group-chat last-message muted]]
+     [notification item]]))
+
+(defn chat-user
+  [item]
+  [rn/view
+   {:style (merge style/container {:margin-horizontal 0})}
+   [chat-item item]])
+
+(defn chat-list-item
+  [{:keys [chat-id chat-type]
+    :as   item} theme]
+  (let [customization-color (rf/sub [:profile/customization-color])]
     [rn/touchable-highlight
-     {:style          (style/container)
+     {:style          style/container
       :on-press       (open-chat chat-id)
       :underlay-color (colors/resolve-color customization-color theme 5)
       :on-long-press  #(rf/dispatch [:show-bottom-sheet
-                                     {:content (fn [] [actions/chat-actions item false])}])}
-     [:<>
-      [avatar-view
-       {:contact   contact
-        :chat-id   chat-id
-        :full-name primary-name
-        :color     color
-        :muted?    muted}]
-      [rn/view {:style style/chat-data-container}
-       [quo/author
-        {:primary-name   primary-name
-         :secondary-name secondary-name
-         :size           15
-         :verified?      ens-verified
-         :contact?       added?
-         :muted?         muted
-         :time-str       (datetime/to-short-str timestamp)}]
-       [last-message-preview group-chat last-message muted]]
-      [notification item]]]))
+                                     (cond-> {:content (fn [] [actions/chat-actions item false])}
+                                       (= chat-type constants/one-to-one-chat-type)
+                                       (assoc :selected-item
+                                              (fn [] [chat-user item])))])}
+     [chat-item item]]))

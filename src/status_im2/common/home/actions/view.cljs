@@ -418,11 +418,11 @@
      (leave-group-entry item nil))])
 
 (defn notification-actions
-  [{:keys [chat-id public? chat-type muted-till group-chat]} inside-chat? needs-divider?]
+  [{:keys [chat-id public? chat-type muted-till]} inside-chat? needs-divider?]
   [(mark-as-read-entry chat-id needs-divider?)
    (mute-chat-entry chat-id chat-type muted-till)
    (notifications-entry false)
-   (when (and inside-chat? group-chat)
+   (when inside-chat?
      (fetch-messages-entry))
    (when public?
      (show-qr-entry))
