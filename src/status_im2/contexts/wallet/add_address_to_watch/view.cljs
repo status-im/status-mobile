@@ -4,8 +4,8 @@
     [quo.core :as quo]
     [react-native.clipboard :as clipboard]
     [react-native.core :as rn]
-    [react-native.safe-area :as safe-area]
     [reagent.core :as reagent]
+    [status-im2.common.floating-button-page.view :as floating-button-page]
     [status-im2.contexts.wallet.add-address-to-watch.style :as style]
     [status-im2.contexts.wallet.common.validation :as validation]
     [utils.i18n :as i18n]
@@ -83,34 +83,37 @@
     (fn []
       [rn/view
        {:style {:flex 1}}
-       [quo/page-nav
-        {:type      :no-title
-         :icon-name :i/close
-         :on-press  (fn []
-                      (rf/dispatch [:wallet/clean-scanned-address])
-                      (rf/dispatch [:navigate-back]))}]
-       [quo/text-combinations
-        {:container-style style/header-container
-         :title           (i18n/label :t/add-address)
-         :description     (i18n/label :t/enter-eth)}]
-       [:f> address-input
-        {:input-value    input-value
-         :validate       validate
-         :validation-msg validation-msg
-         :clear-input    clear-input}]
-       (when @validation-msg
-         [quo/info-message
-          {:accessibility-label :error-message
-           :size                :default
-           :icon                :i/info
-           :type                :error
-           :style               style/info-message}
-          @validation-msg])
-       [quo/button
-        {:customization-color customization-color
-         :disabled?           (string/blank? @input-value)
-         :on-press            #(rf/dispatch [:navigate-to
-                                             :confirm-address-to-watch
-                                             {:address @input-value}])
-         :container-style     style/button-container}
-        (i18n/label :t/continue)]])))
+       [floating-button-page/view
+        {:header [:<>
+                  [quo/page-nav
+                   {:type      :no-title
+                    :icon-name :i/close
+                    :on-press  (fn []
+                                 (rf/dispatch [:wallet/clean-scanned-address])
+                                 (rf/dispatch [:navigate-back]))}]]
+         :footer
+         [quo/button
+          {:customization-color customization-color
+           :disabled?           (string/blank? @input-value)
+           :on-press            #(rf/dispatch [:navigate-to
+                                               :confirm-address-to-watch
+                                               {:address @input-value}])
+           :container-style     {:z-index 2}}
+          (i18n/label :t/continue)]}
+        [quo/text-combinations
+         {:container-style style/header-container
+          :title           (i18n/label :t/add-address)
+          :description     (i18n/label :t/enter-eth)}]
+        [:f> address-input
+         {:input-value    input-value
+          :validate       validate
+          :validation-msg validation-msg
+          :clear-input    clear-input}]
+        (when @validation-msg
+          [quo/info-message
+           {:accessibility-label :error-message
+            :size                :default
+            :icon                :i/info
+            :type                :error
+            :style               style/info-message}
+           @validation-msg])]])))
