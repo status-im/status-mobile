@@ -84,13 +84,12 @@
       [rn/view
        {:style {:flex 1}}
        [floating-button-page/view
-        {:header [:<>
-                  [quo/page-nav
-                   {:type      :no-title
-                    :icon-name :i/close
-                    :on-press  (fn []
-                                 (rf/dispatch [:wallet/clean-scanned-address])
-                                 (rf/dispatch [:navigate-back]))}]]
+        {:header [quo/page-nav
+                  {:type      :no-title
+                   :icon-name :i/close
+                   :on-press  (fn []
+                                (rf/dispatch [:wallet/clean-scanned-address])
+                                (rf/dispatch [:navigate-back]))}]
          :footer
          [quo/button
           {:customization-color customization-color
