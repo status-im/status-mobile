@@ -22,6 +22,14 @@
            (sort-by :position)))
 
 (rf/reg-sub
+ :wallet/addresses
+ :<- [:wallet]
+ :-> #(->> %
+           :accounts
+           keys
+           set))
+
+(rf/reg-sub
  :wallet/balances
  :<- [:wallet/accounts]
  (fn [accounts]

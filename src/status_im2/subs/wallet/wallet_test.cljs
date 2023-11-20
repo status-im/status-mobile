@@ -167,3 +167,17 @@
          :balance                  3250
          :tokens                   tokens-0x1}
         (rf/sub [sub-name])))))
+
+
+(h/deftest-sub :wallet/addresses
+  [sub-name]
+  (testing "returns all addresses"
+    (swap! rf-db/app-db
+      #(-> %
+           (assoc-in [:wallet :accounts] accounts)
+           (assoc-in [:wallet :current-viewing-account-address] "0x1")))
+
+    (is
+     (= (set ["0x1" "0x2"])
+        (rf/sub [sub-name])))))
+
