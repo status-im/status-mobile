@@ -26,7 +26,7 @@
     (if (empty? dapps-list)
       [empty-tab/view
        {:title       (i18n/label :t/no-dapps)
-        :description (i18n/label :t/no-collectibles-description)
+        :description (i18n/label :t/no-dapps-description)
         :image       (resources/get-themed-image :no-dapps theme)}]
       [rn/view {:style style/dapps-container}
        [rn/flat-list

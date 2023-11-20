@@ -2389,5 +2389,6 @@
     "address-placeholder": "0x123abc... or bob.eth",
     "invalid-address": "It’s not Ethereum address or ENS name",
     "address-already-in-use": "Address already being used",
-    "address-copied": "Address copied"
+    "address-copied": "Address copied",
+    "no-dapps-description": "We want dApps!"
 }
