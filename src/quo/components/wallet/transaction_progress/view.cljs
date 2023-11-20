@@ -174,7 +174,7 @@
          (= state :sending))   [:i/positive-state (colors/resolve-color :success theme)]
     (or (= state :pending)
         (= state :sending))    [:i/pending-state (colors/theme-colors colors/neutral-50
-                                                                      colors/neutral-60
+                                                                      colors/neutral-40
                                                                       theme)]
     (or (= state :confirmed)
         (= state :finalising)) [:i/positive-state (colors/resolve-color :success theme)]
@@ -184,7 +184,7 @@
 (defn title-internal
   [state title theme]
   [rn/view {:style style/title-container} 
-    [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)]
+    [icon-internal :i/placeholder (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)]
     [rn/view {:style style/title-text-container}
      [text-internal title]]
     (when (= state :error)
@@ -224,7 +224,7 @@
         (text-steps network state epoch-number)
         {:weight :regular
          :size   :paragraph-2
-         :color  (colors/theme-colors colors/neutral-50 colors/neutral-60 theme)}]]]))
+         :color  (colors/theme-colors colors/neutral-50 colors/neutral-40 theme)}]]]))
 
 (defn f-view-internal
   [{:keys [title on-press accessibility-label network state start-interval-now theme tag-photo tag-name tag-number epoch-number]}]
