@@ -42,7 +42,8 @@
 (rf/defn buy-pack
   {:events [:stickers/buy-pack]}
   [{db :db} pack-id]
-  {:json-rpc/call [{:method     "stickers_buyPrepareTx" ;; probably it should be changed https://github.com/status-im/status-go/pull/4286
+  {:json-rpc/call [{:method     "stickers_buyPrepareTx" ;; probably it should be changed
+                                                        ;; https://github.com/status-im/status-go/pull/4286
                     :params     [(chain/chain-id db) (wallet.utils/default-address db) (int pack-id)]
                     :on-success #(re-frame/dispatch [:signing.ui/sign
                                                      {:tx-obj    %
