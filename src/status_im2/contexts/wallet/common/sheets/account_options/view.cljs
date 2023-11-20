@@ -1,13 +1,16 @@
 (ns status-im2.contexts.wallet.common.sheets.account-options.view
   (:require [quo.core :as quo]
+            [quo.foundations.colors :as colors]
+            quo.theme
+            [react-native.clipboard :as clipboard]
             [react-native.core :as rn]
             [status-im2.contexts.wallet.common.sheets.account-options.style :as style]
             [status-im2.contexts.wallet.common.temp :as temp]
             [utils.i18n :as i18n]
             [utils.re-frame :as rf]))
 
-(defn view
-  []
+(defn- view-internal
+  [{:keys [theme]}]
   (let [{:keys [name color emoji address]} (rf/sub [:wallet/current-viewing-account])]
     [:<>
      [quo/drawer-top
@@ -26,7 +29,13 @@
          :on-press            #(rf/dispatch [:navigate-to :wallet-edit-account])}
         {:icon                :i/copy
          :accessibility-label :copy-address
-         :label               (i18n/label :t/copy-address)}
+         :label               (i18n/label :t/copy-address)
+         :on-press            (fn []
+                                (rf/dispatch [:toasts/upsert
+                                              {:icon       :i/correct
+                                               :icon-color (colors/resolve-color :success theme)
+                                               :text       (i18n/label :t/address-copied)}])
+                                (clipboard/set-string address))}
         {:icon                :i/share
          :accessibility-label :share-account
          :label               (i18n/label :t/share-account)}
@@ -42,3 +51,5 @@
       {:data      temp/other-accounts
        :render-fn (fn [account] [quo/account-item {:account-props account}])
        :style     {:margin-horizontal 8}}]]))
+
+(def view (quo.theme/with-theme view-internal))

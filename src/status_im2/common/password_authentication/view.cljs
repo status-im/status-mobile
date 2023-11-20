@@ -31,10 +31,10 @@
            :on-change-text #(reset! entered-password %)}]
          (when (not-empty error)
            [quo/info-message
-            {:type  :error
-             :size  :default
-             :icon  :i/info
-             :style {:margin-top 8}}
+            {:type         :error
+             :size         :default
+             :icon         :i/info
+             :containstyle {:margin-top 8}}
             (i18n/label :t/oops-wrong-password)])
          [quo/button
           {:container-style {:margin-bottom 12 :margin-top 40}
