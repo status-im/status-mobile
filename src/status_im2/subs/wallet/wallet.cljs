@@ -19,16 +19,17 @@
     [utils.number]))
 
 (rf/reg-sub
-  :wallet/ui
-  :<- [:wallet]
-  :-> :ui)
+ :wallet/ui
+ :<- [:wallet]
+ :-> :ui)
 
 (rf/reg-sub
-  :wallet/tokens-loading?
-  :<- [:wallet/ui]
-  :-> :tokens-loading?)
+ :wallet/tokens-loading?
+ :<- [:wallet/ui]
+ :-> :tokens-loading?)
 
 (rf/reg-sub
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -81,6 +82,8 @@
 >>>>>>> a209a1368 (lint)
 =======
 >>>>>>> 2cd7438de (review)
+=======
+>>>>>>> 411271469 (lint)
  :wallet/addresses
  :<- [:wallet]
  :-> #(->> %
@@ -169,45 +172,53 @@
             :accounts
             vals
             (sort-by :position)))
+=======
+ :wallet/accounts
+ :<- [:wallet]
+ :-> #(->> %
+           :accounts
+           vals
+           (sort-by :position)))
+>>>>>>> aed578b59 (lint)
 
 (rf/reg-sub
-  :wallet/addresses
-  :<- [:wallet]
-  :-> #(->> %
-            :accounts
-            keys
-            set))
+ :wallet/addresses
+ :<- [:wallet]
+ :-> #(->> %
+           :accounts
+           keys
+           set))
 
 (rf/reg-sub
-  :wallet/balances
-  :<- [:wallet/accounts]
-  (fn [accounts]
-    (zipmap (map :address accounts)
-            (map #(-> % :tokens utils/calculate-balance) accounts))))
+ :wallet/balances
+ :<- [:wallet/accounts]
+ (fn [accounts]
+   (zipmap (map :address accounts)
+           (map #(-> % :tokens utils/calculate-balance) accounts))))
 
 (rf/reg-sub
-  :wallet/account-cards-data
-  :<- [:wallet/accounts]
-  :<- [:wallet/balances]
-  :<- [:wallet/tokens-loading?]
-  (fn [[accounts balances tokens-loading?]]
-    (mapv (fn [{:keys [color address] :as account}]
-            (assoc account
-              :customization-color color
-              :type                :empty
-              :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
-              :loading?            tokens-loading?
-              :balance             (utils/prettify-balance (get balances address))))
-          accounts)))
+ :wallet/account-cards-data
+ :<- [:wallet/accounts]
+ :<- [:wallet/balances]
+ :<- [:wallet/tokens-loading?]
+ (fn [[accounts balances tokens-loading?]]
+   (mapv (fn [{:keys [color address] :as account}]
+           (assoc account
+                  :customization-color color
+                  :type                :empty
+                  :on-press            #(rf/dispatch [:wallet/navigate-to-account address])
+                  :loading?            tokens-loading?
+                  :balance             (utils/prettify-balance (get balances address))))
+         accounts)))
 
 (rf/reg-sub
-  :wallet/current-viewing-account
-  :<- [:wallet]
-  :<- [:wallet/balances]
-  (fn [[{:keys [current-viewing-account-address] :as wallet} balances]]
-    (-> wallet
-        (get-in [:accounts current-viewing-account-address])
-        (assoc :balance (get balances current-viewing-account-address)))))
+ :wallet/current-viewing-account
+ :<- [:wallet]
+ :<- [:wallet/balances]
+ (fn [[{:keys [current-viewing-account-address] :as wallet} balances]]
+   (-> wallet
+       (get-in [:accounts current-viewing-account-address])
+       (assoc :balance (get balances current-viewing-account-address)))))
 
 (defn- calc-token-value
   [{:keys [symbol market-values-per-currency] :as item} chain-id]
@@ -220,7 +231,7 @@
      :status              (cond
                             (pos? change-pct-24hour) :positive
                             (neg? change-pct-24hour) :negative
-                            :else :empty)
+                            :else                    :empty)
      :customization-color :blue
      :values              {:crypto-value      (.toFixed (* fiat-value price) 2)
                            :fiat-value        (utils/prettify-balance fiat-value)

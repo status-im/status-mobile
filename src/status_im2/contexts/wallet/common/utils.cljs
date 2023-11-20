@@ -1,7 +1,6 @@
 (ns status-im2.contexts.wallet.common.utils
   (:require [clojure.string :as string]
             [status-im2.constants :as constants]
-            [utils.ethereum.chain :as chain]
             [utils.money :as money]
             [utils.number]))
 
