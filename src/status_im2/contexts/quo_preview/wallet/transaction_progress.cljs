@@ -1,20 +1,20 @@
 (ns status-im2.contexts.quo-preview.wallet.transaction-progress
   (:require
-   [quo.core :as quo]
-   [react-native.core :as rn]
-   [reagent.core :as reagent]
-   [status-im2.common.resources :as resources]
-   [status-im2.contexts.quo-preview.preview :as preview]))
+    [quo.core :as quo]
+    [react-native.core :as rn]
+    [reagent.core :as reagent]
+    [status-im2.common.resources :as resources]
+    [status-im2.contexts.quo-preview.preview :as preview]))
 
 (def descriptor
-  [{:type    :text
-    :key     :title}
-   {:type    :text
-    :key     :tag-name}
-   {:type    :text
-    :key     :epoch-number}
-   {:type    :text
-    :key     :tag-number}
+  [{:type :text
+    :key  :title}
+   {:type :text
+    :key  :tag-name}
+   {:type :text
+    :key  :epoch-number}
+   {:type :text
+    :key  :tag-number}
    {:type    :select
     :key     :network
     :options [{:key :mainnet}
@@ -58,33 +58,33 @@
 (defn start-interval
   [state]
   (reset! interval-id
-          (js/setInterval
-           (fn []
-             (update-counter state))
-           interval-ms)))
+    (js/setInterval
+     (fn []
+       (update-counter state))
+     interval-ms)))
 
 (defn view
   []
-  (let [state (reagent/atom {:title "Title"
-                             :counter counter
-                             :total-box total-box
-                             :tag-name "Doodle"
-                             :tag-number "120"
-                             :epoch-number "181,329"
-                             :network :mainnet
-                             :state :pending
-                             :tag-photo           (resources/get-mock-image :collectible)
-                             :on-press            (fn []
-                                                    (js/alert "Transaction progress item pressed"))})
-        network-state     (reagent/cursor state [:state])]
+  (let [state         (reagent/atom {:title        "Title"
+                                     :counter      counter
+                                     :total-box    total-box
+                                     :tag-name     "Doodle"
+                                     :tag-number   "120"
+                                     :epoch-number "181,329"
+                                     :network      :mainnet
+                                     :state        :pending
+                                     :tag-photo    (resources/get-mock-image :collectible)
+                                     :on-press     (fn []
+                                                     (js/alert "Transaction progress item pressed"))})
+        network-state (reagent/cursor state [:state])]
     [:f>
-    (fn []
-      (rn/use-effect
-       (fn []
-         (start-interval state)
-         (clear-counter)
-         (fn []
-           (stop-interval)))
-       [@network-state])
-      [preview/preview-container {:state state :descriptor descriptor}
-       [quo/transaction-progress @state]])]))
+     (fn []
+       (rn/use-effect
+        (fn []
+          (start-interval state)
+          (clear-counter)
+          (fn []
+            (stop-interval)))
+        [@network-state])
+       [preview/preview-container {:state state :descriptor descriptor}
+        [quo/transaction-progress @state]])]))

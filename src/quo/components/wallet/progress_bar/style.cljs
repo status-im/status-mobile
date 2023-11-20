@@ -25,22 +25,22 @@
   [{:keys [customization-color state theme full-width?]}]
   (let [{:keys [background-color border-color]} (get-in (border-and-background-color customization-color)
                                                         [theme (if full-width? :pending state)])]
-   {:height            12
-    :flex              (when full-width? 1)
-    :width             (when (not full-width?) 8)
-    :border-radius     3
-    :border-width      1
-    :border-color      border-color
-    :background-color  background-color
-    :margin-horizontal 1
-    :margin-vertical   2}))
+    {:height            12
+     :flex              (when full-width? 1)
+     :width             (when (not full-width?) 8)
+     :border-radius     3
+     :border-width      1
+     :border-color      border-color
+     :background-color  background-color
+     :margin-horizontal 1
+     :margin-vertical   2}))
 
 (defn progressed-bar
   [{:keys [customization-color state theme progressed-value]}]
   (let [{:keys [background-color]} (get-in (border-and-background-color customization-color)
-                                                        [theme state])]
-  {:height 12
-   :margin-top -1
-   :width (str progressed-value "%")
-   :border-radius     3
-   :background-color  background-color}))
+                                           [theme state])]
+    {:height           12
+     :margin-top       -1
+     :width            (str progressed-value "%")
+     :border-radius    3
+     :background-color background-color}))
