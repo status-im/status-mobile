@@ -5,14 +5,16 @@
    :keycard-chip-light (js/require "../resources/images/ui2/keycard-chip-light.png")
    :keycard-chip-dark  (js/require "../resources/images/ui2/keycard-chip-dark.png")
    :keycard-watermark  (js/require "../resources/images/ui2/keycard-watermark.png")
-   :bored-ape          (js/require "../resources/images/mock2/bored-ape.png")
-   :no-funds
+   :bored-ape          (js/require "../resources/images/mock2/bored-ape.png")})
+
+(def ui-themed
+  {:no-funds
    {:light (js/require "../resources/images/ui2/no-funds-light.png")
     :dark  (js/require "../resources/images/ui2/no-funds-dark.png")}})
 
 (defn get-themed-image
   [k theme]
-  (get-in ui [k theme]))
+  (get-in ui-themed [k theme]))
 
 (defn get-image
   [k]

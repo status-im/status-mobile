@@ -2,7 +2,6 @@
   (:require
     [quo.components.graph.utils :as utils]
     [quo.components.graph.wallet-graph.style :as style]
-    [quo.components.markdown.text :as text]
     [quo.foundations.colors :as colors]
     [quo.foundations.resources :as resources]
     [quo.theme :as quo.theme]

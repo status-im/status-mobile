@@ -1,10 +1,10 @@
 (ns status-im2.contexts.wallet.common.activity-tab.view
   (:require
     [quo.core :as quo]
+    [quo.theme]
     [react-native.core :as rn]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
-    [status-im2.contexts.wallet.common.temp :as temp]
     [utils.i18n :as i18n]))
 
 (defn activity-item

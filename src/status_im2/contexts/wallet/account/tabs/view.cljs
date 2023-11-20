@@ -1,5 +1,6 @@
 (ns status-im2.contexts.wallet.account.tabs.view
   (:require
+    [quo.theme]
     [react-native.core :as rn]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.wallet.account.tabs.about.view :as about]
@@ -24,7 +25,9 @@
                    {:title       (i18n/label :t/no-permissions)
                     :description (i18n/label :t/no-collectibles-description)
                     :image       (resources/get-image
-                                   (quo.theme/theme-value :no-permissions-light :no-permissions-dark theme))}]
+                                  (quo.theme/theme-value :no-permissions-light
+                                                         :no-permissions-dark
+                                                         theme))}]
     :dapps        [dapps/view]
     [about/view]))
 

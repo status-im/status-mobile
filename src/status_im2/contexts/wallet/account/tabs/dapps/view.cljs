@@ -6,9 +6,7 @@
     [status-im2.common.resources :as resources]
     [status-im2.contexts.wallet.account.tabs.dapps.style :as style]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
-    [status-im2.contexts.wallet.common.temp :as temp]
-    [utils.i18n :as i18n]
-    [utils.re-frame :as rf]))
+    [utils.i18n :as i18n]))
 
 (defn dapp-options
   []

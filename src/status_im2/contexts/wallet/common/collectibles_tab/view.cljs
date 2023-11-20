@@ -1,6 +1,7 @@
 (ns status-im2.contexts.wallet.common.collectibles-tab.view
   (:require
     [quo.core :as quo]
+    [quo.theme]
     [react-native.core :as rn]
     [status-im2.common.resources :as resources]
     [status-im2.contexts.wallet.common.empty-tab.view :as empty-tab]
