@@ -60,6 +60,6 @@
                             :image-url   "https://..."}
           expected-db      {:wallet {:last-collectible-details {:description "Pandaria"
                                                                 :image-url   "https://..."}}}
-          effects          (events/store-last-collectible-details {:db db} last-collectible)
+          effects          (events/store-last-collectible-details {:db db} [last-collectible])
           result-db        (:db effects)]
       (is (= result-db expected-db)))))
