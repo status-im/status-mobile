@@ -145,16 +145,17 @@
 (rf/defn onboarding-new-account-finalize-setup
   {:events [:onboarding-2/finalize-setup]}
   [{:keys [db]}]
-  (let [masked-password    (get-in db [:onboarding-2/profile :password])
-        key-uid            (get-in db [:profile/profile :key-uid])
-        syncing?           (get-in db [:onboarding-2/profile :syncing?])
-        biometric-enabled? (= (get-in db [:onboarding-2/profile :auth-method])
-                              constants/auth-method-biometric)]
+  (let [syncing?               (get-in db [:onboarding-2/profile :syncing?])
+        masked-password        (get-in db [:onboarding-2/profile :password])
+        masked-hashed-password (get-in db [:syncing :profile :password])
+        key-uid                (get-in db [:profile/profile :key-uid])
+        biometric-enabled?     (= (get-in db [:onboarding-2/profile :auth-method])
+                                  constants/auth-method-biometric)]
     (cond-> {:db (assoc db :onboarding-2/generated-keys? true)}
       biometric-enabled?
       (assoc :keychain/save-password-and-auth-method
-             {:key-uid         key-uid
-              :masked-password masked-password
+             {:key-uid         (if syncing? (str key-uid "-hashed") key-uid)
+              :masked-password (if syncing? masked-hashed-password masked-password)
               :on-success      (fn []
                                  (if syncing?
                                    (rf/dispatch [:onboarding-2/navigate-to-enable-notifications])

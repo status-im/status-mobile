@@ -158,13 +158,24 @@
             {:on-success #(rf/dispatch [:profile.login/biometric-success])
              :on-faile   #(rf/dispatch [:profile.login/biometric-auth-fail])}})))
 
-(rf/defn biometric-auth-success
-  {:events [:profile.login/biometric-success]}
+;; TODO store the password in the hash keychain
+(rf/defn backwards-compatible-biometric-auth-success
+  {:events [:profile.login/backwards-compatible-biometric-success]}
   [{:keys [db] :as cofx}]
   (let [key-uid (get-in db [:profile/login :key-uid])]
     (keychain/get-user-password cofx
                                 key-uid
                                 #(rf/dispatch [:profile.login/get-user-password-success %]))))
+
+(rf/defn biometric-auth-success
+  {:events [:profile.login/biometric-success]}
+  [{:keys [db] :as cofx}]
+  (let [key-uid (get-in db [:profile/login :key-uid])]
+    (keychain/get-user-password cofx
+                                (str key-uid "-hashed" key-uid)
+                                #(if (nil? %)
+                                   (rf/dispatch [:profile.login/backwards-compatible-biometric-success])
+                                   (rf/dispatch [:profile.login/get-user-password-success %])))))
 
 ;; result of :keychain/get-auth-method above
 (rf/defn get-user-password-success

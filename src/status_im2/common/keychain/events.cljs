@@ -84,7 +84,10 @@
 
 (defn save-user-password!
   [key-uid password]
-  (keychain/save-credentials key-uid key-uid (security/safe-unmask-data password) #()))
+  (keychain/save-credentials key-uid
+                             key-uid
+                             (native-module/sha3 (security/safe-unmask-data password))
+                             #()))
 
 (re-frame/reg-fx
  :keychain/get-user-password
