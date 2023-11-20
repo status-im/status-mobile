@@ -151,35 +151,10 @@
                                                             custom-domain? %])
                                     nil))}])]
         (when-not in-progress?
-          (cond-> {:db (update db :signing/sign assoc :error nil :in-progress? true)}
-            (nil? action)                                 (assoc :signing/send-transaction-fx
-                                                                 {:tx-obj          tx-obj-to-send
-                                                                  :hashed-password hashed-password
-                                                                  :cb              cb})
-            (= action constants/ens-action-type-register) (assoc :json-rpc/call
-                                                                 [{:method "ens_register"
-                                                                   :params [chain-id tx-obj-to-send
-                                                                            hashed-password username
-                                                                            public-key]
-                                                                   :on-success
-                                                                   #(do
-                                                                      (cb (types/clj->json
-                                                                           {:result %}))
-                                                                      (watch-ens-tx-fn %))
-                                                                   :on-error #(cb (types/clj->json
-                                                                                   {:error %}))}])
-            (= action
-               constants/ens-action-type-set-pub-key)     (assoc :json-rpc/call
-                                                                 [{:method     "ens_setPubKey"
-                                                                   :params     [chain-id tx-obj-to-send
-                                                                                hashed-password username
-                                                                                public-key]
-                                                                   :on-success #(do (cb (types/clj->json
-                                                                                         {:result %}))
-                                                                                    (watch-ens-tx-fn %))
-                                                                   :on-error   #(cb (types/clj->json
-                                                                                     {:error
-                                                                                      %}))}])))))))
+          {:db                          (update db :signing/sign assoc :error nil :in-progress? true)
+           :signing/send-transaction-fx {:tx-obj          tx-obj-to-send
+                                         :hashed-password hashed-password
+                                         :cb              cb}})))))
 
 (rf/defn prepare-unconfirmed-transaction
   [{:keys [db now]} new-tx-hash
