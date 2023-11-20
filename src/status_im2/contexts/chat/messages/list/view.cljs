@@ -41,14 +41,14 @@
   []
   (some-> ^js @messages-list-ref
           (.scrollToOffset #js
-                            {:animated true})))
+                                   {:animated true})))
 
 (defn on-scroll
   [evt show-floating-scroll-down-button?]
-  (let [y                  (oops/oget evt "nativeEvent.contentOffset.y")
-        layout-height      (oops/oget evt "nativeEvent.layoutMeasurement.height")
-        threshold-height   (* (/ layout-height 100)
-                              threshold-percentage-to-show-floating-scroll-down-button)
+  (let [y (oops/oget evt "nativeEvent.contentOffset.y")
+        layout-height (oops/oget evt "nativeEvent.layoutMeasurement.height")
+        threshold-height (* (/ layout-height 100)
+                            threshold-percentage-to-show-floating-scroll-down-button)
         reached-threshold? (> y threshold-height)]
     (when (not= reached-threshold? @show-floating-scroll-down-button?)
       (rn/configure-next (:ease-in-ease-out rn/layout-animation-presets))
@@ -58,16 +58,16 @@
   [e]
   (when @messages-list-ref
     (reset! state/first-not-visible-item
-      (when-let [last-visible-element (aget (oops/oget e "viewableItems")
-                                            (dec (oops/oget e "viewableItems.length")))]
-        (let [index             (oops/oget last-visible-element "index")
-              ;; Get first not visible element, if it's a datemark/gap
-              ;; we might add messages on receiving as they do not have
-              ;; a clock value, but usually it will be a message
-              first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
-          (when (and first-not-visible
-                     (= :message (:type first-not-visible)))
-            first-not-visible))))))
+            (when-let [last-visible-element (aget (oops/oget e "viewableItems")
+                                                  (dec (oops/oget e "viewableItems.length")))]
+              (let [index (oops/oget last-visible-element "index")
+                    ;; Get first not visible element, if it's a datemark/gap
+                    ;; we might add messages on receiving as they do not have
+                    ;; a clock value, but usually it will be a message
+                    first-not-visible (aget (oops/oget @messages-list-ref "props.data") (inc index))]
+                (when (and first-not-visible
+                           (= :message (:type first-not-visible)))
+                  first-not-visible))))))
 
 (defn list-on-end-reached
   [scroll-y on-end-reached?]
@@ -95,9 +95,9 @@
         {:no-color true
          :size     20
          :color    (colors/theme-colors
-                    (colors/custom-color :success 50)
-                    (colors/custom-color :success 60)
-                    theme)}]
+                     (colors/custom-color :success 50)
+                     (colors/custom-color :success 60)
+                     theme)}]
        (when added?
          [quo/icon :i/contact
           {:no-color true
@@ -116,17 +116,17 @@
 
 (defn loading-view
   [chat-id messages-view-height messages-view-header-height]
-  (let [loading-messages?   (rf/sub [:chats/loading-messages? chat-id])
-        all-loaded?         (rf/sub [:chats/all-loaded? chat-id])
-        messages            (rf/sub [:chats/raw-chat-messages-stream chat-id])
+  (let [loading-messages? (rf/sub [:chats/loading-messages? chat-id])
+        all-loaded? (rf/sub [:chats/all-loaded? chat-id])
+        messages (rf/sub [:chats/raw-chat-messages-stream chat-id])
         loading-first-page? (= (count messages) 0)
-        top-spacing         (if loading-first-page? 0 navigation.style/navigation-bar-height)
-        parent-height       (if loading-first-page?
-                              (- @messages-view-height
-                                 @messages-view-header-height
-                                 composer.constants/composer-default-height
-                                 loading-indicator-extra-spacing)
-                              loading-indicator-page-loading-height)]
+        top-spacing (if loading-first-page? 0 navigation.style/navigation-bar-height)
+        parent-height (if loading-first-page?
+                        (- @messages-view-height
+                           @messages-view-header-height
+                           composer.constants/composer-default-height
+                           loading-indicator-extra-spacing)
+                        loading-indicator-page-loading-height)]
     (when (or loading-messages? (not all-loaded?))
       [rn/view {:padding-top top-spacing}
        ;; Only use animated loading skeleton for ios
@@ -147,14 +147,14 @@
 
 (defn f-list-footer-avatar
   [{:keys [scroll-y display-name online? profile-picture]}]
-  (let [image-scale-animation       (reanimated/interpolate scroll-y
-                                                            scroll-animation-input-range
-                                                            [1 0.5]
-                                                            header-extrapolation-option)
-        image-top-margin-animation  (reanimated/interpolate scroll-y
-                                                            scroll-animation-input-range
-                                                            [0 40]
-                                                            header-extrapolation-option)
+  (let [image-scale-animation (reanimated/interpolate scroll-y
+                                                      scroll-animation-input-range
+                                                      [1 0.5]
+                                                      header-extrapolation-option)
+        image-top-margin-animation (reanimated/interpolate scroll-y
+                                                           scroll-animation-input-range
+                                                           [0 40]
+                                                           header-extrapolation-option)
         image-side-margin-animation (reanimated/interpolate scroll-y
                                                             scroll-animation-input-range
                                                             [0 -20]
@@ -177,13 +177,13 @@
 (defn- add-inverted-y-android
   [style]
   (cond-> style
-    platform/android?
-    (assoc :scale-y -1)))
+          platform/android?
+          (assoc :scale-y -1)))
 
 (defn actions
   [chat-id cover-bg-color]
   (let [latest-pin-text (rf/sub [:chats/last-pinned-message-text chat-id])
-        pins-count      (rf/sub [:chats/pin-messages-count chat-id])]
+        pins-count (rf/sub [:chats/pin-messages-count chat-id])]
     [quo/channel-actions
      {:style   {:margin-top 16}
       :actions [{:accessibility-label :action-button-pinned
@@ -202,46 +202,46 @@
            messages-view-header-height big-name-visible?]}]
   (let [{:keys [chat-id chat-name emoji chat-type
                 group-chat]} chat
-        all-loaded?          (rf/sub [:chats/all-loaded? chat-id])
-        display-name         (cond
-                               (= chat-type constants/one-to-one-chat-type)
-                               (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
-                               (= chat-type constants/community-chat-type)
-                               (str (when emoji (str emoji " ")) "# " chat-name)
-                               :else (str emoji chat-name))
-        {:keys [bio]}        (rf/sub [:contacts/contact-by-identity chat-id])
-        online?              (rf/sub [:visibility-status-updates/online? chat-id])
-        contact              (when-not group-chat
-                               (rf/sub [:contacts/contact-by-address chat-id]))
-        photo-path           (rf/sub [:chats/photo-path chat-id])]
+        all-loaded? (rf/sub [:chats/all-loaded? chat-id])
+        display-name (cond
+                       (= chat-type constants/one-to-one-chat-type)
+                       (first (rf/sub [:contacts/contact-two-names-by-identity chat-id]))
+                       (= chat-type constants/community-chat-type)
+                       (str (when emoji (str emoji " ")) "# " chat-name)
+                       :else (str emoji chat-name))
+        {:keys [bio]} (rf/sub [:contacts/contact-by-identity chat-id])
+        online? (rf/sub [:visibility-status-updates/online? chat-id])
+        contact (when-not group-chat
+                  (rf/sub [:contacts/contact-by-address chat-id]))
+        photo-path (rf/sub [:chats/photo-path chat-id])]
     [top-bar/abstract-list-header
-      {:inverted-y-on-android? true
-       :show?                  all-loaded?
-       :theme                  theme
-       :cover-bg-color         cover-bg-color
-       :scroll-y               scroll-y
-       :on-layout              on-layout
-       :avatar-component       (fn [] (when-not group-chat
-                                        [list-footer-avatar
-                                         {:scroll-y        scroll-y
-                                          :display-name    display-name
-                                          :online?         online?
-                                          :profile-picture photo-path}]))
-       :title-component        (fn [] [rnio/view
-         {:on-change (fn [view-visible?]
-                       (reset! big-name-visible? view-visible?))
-                                       :style {:flex-direction :row
-                                                :margin-top     (if group-chat 54 12)}}
-                                       [quo/text
-                                        {:weight          :semi-bold
-                                         :size            :heading-1
-                                         :style           {:flex-shrink 1}
-                                         :number-of-lines 1}
-                                        display-name]
-                                       [contact-icon contact theme]])
-       :description            bio
-       :actions-component      (fn [] [actions chat-id cover-bg-color])
-       :loading-component      (fn [] [loading-view chat-id messages-view-height messages-view-header-height])}]))
+     {:inverted-y-on-android? true
+      :show?                  all-loaded?
+      :theme                  theme
+      :cover-bg-color         cover-bg-color
+      :scroll-y               scroll-y
+      :on-layout              on-layout
+      :avatar-component       (fn [] (when-not group-chat
+                                       [list-footer-avatar
+                                        {:scroll-y        scroll-y
+                                         :display-name    display-name
+                                         :online?         online?
+                                         :profile-picture photo-path}]))
+      :title-component        (fn [] [rnio/view
+                                      {:on-change (fn [view-visible?]
+                                                    (reset! big-name-visible? view-visible?))
+                                       :style     {:flex-direction :row
+                                                   :margin-top     (if group-chat 54 12)}}
+                                      [quo/text
+                                       {:weight          :semi-bold
+                                        :size            :heading-1
+                                        :style           {:flex-shrink 1}
+                                        :number-of-lines 1}
+                                       display-name]
+                                      [contact-icon contact theme]])
+      :description            bio
+      :actions-component      (fn [] [actions chat-id cover-bg-color])
+      :loading-component      (fn [] [loading-view chat-id messages-view-height messages-view-header-height])}]))
 
 (defn list-footer
   [props]
@@ -255,7 +255,7 @@
 (defn footer-on-layout
   [e messages-view-header-height]
   (let [height (oops/oget e "nativeEvent.layout.height")
-        y      (oops/oget e "nativeEvent.layout.y")]
+        y (oops/oget e "nativeEvent.layout.y")]
     (reset! messages-view-header-height (+ height y))))
 
 (defn render-fn
@@ -264,7 +264,7 @@
   (when (not= content-type constants/content-type-contact-request)
     [rn/view
      (add-inverted-y-android
-      {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
+       {:background-color (colors/theme-colors colors/white colors/neutral-95 theme)})
      (cond
        (= type :datemark)
        [quo/divider-date value]
@@ -277,9 +277,9 @@
 
 (defn scroll-handler
   [event scroll-y animate-topbar-opacity? on-end-reached? animate-topbar-name?]
-  (let [content-size-y  (- (oops/oget event "nativeEvent.contentSize.height")
-                           (oops/oget event "nativeEvent.layoutMeasurement.height"))
-        current-y       (oops/oget event "nativeEvent.contentOffset.y")
+  (let [content-size-y (- (oops/oget event "nativeEvent.contentSize.height")
+                          (oops/oget event "nativeEvent.layoutMeasurement.height"))
+        current-y (oops/oget event "nativeEvent.contentOffset.y")
         scroll-distance (- content-size-y current-y)]
     (when (and @on-end-reached? (pos? scroll-distance))
       (reset! on-end-reached? false))
@@ -301,13 +301,13 @@
                      (reset! animate-topbar-opacity? true)
                      (reset! animate-topbar-opacity? false)))
                  [composer-active? @on-end-reached? @animate-topbar-opacity?])
-  (let [theme                                 (quo.theme/use-theme-value)
-        {window-height :height}               (rn/get-window)
-        {:keys [keyboard-height]}             (hooks/use-keyboard)
-        context                               (rf/sub [:chats/current-chat-message-list-view-context])
-        messages                              (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
-        recording?                            (rf/sub [:chats/recording?])
-        all-loaded?                           (rf/sub [:chats/all-loaded? (:chat-id chat)])
+  (let [theme (quo.theme/use-theme-value)
+        {window-height :height} (rn/get-window)
+        {:keys [keyboard-height]} (hooks/use-keyboard)
+        context (rf/sub [:chats/current-chat-message-list-view-context])
+        messages (rf/sub [:chats/raw-chat-messages-stream (:chat-id chat)])
+        recording? (rf/sub [:chats/recording?])
+        all-loaded? (rf/sub [:chats/all-loaded? (:chat-id chat)])
         {:keys [show-floating-scroll-down-button?
                 messages-view-height
                 messages-view-header-height]} inner-state-atoms]
@@ -329,8 +329,8 @@
                                             :scroll-y                    scroll-y
                                             :cover-bg-color              cover-bg-color
                                             :on-layout                   #(footer-on-layout
-                                                                           %
-                                                                           messages-view-header-height)
+                                                                            %
+                                                                            messages-view-header-height)
                                             :messages-view-header-height messages-view-header-height
                                             :messages-view-height        messages-view-height
                                             :big-name-visible?           big-name-visible?}]
@@ -343,26 +343,26 @@
        :on-viewable-items-changed         on-viewable-items-changed
        :on-content-size-change            (fn [_ y]
                                             (if (or
-                                                 (< minimum-scroll-y-topbar-overlaying-avatar
-                                                    (reanimated/get-shared-value scroll-y))
-                                                 (< topbar-visible-scroll-y-value
-                                                    (reanimated/get-shared-value scroll-y)))
+                                                  (< minimum-scroll-y-topbar-overlaying-avatar
+                                                     (reanimated/get-shared-value scroll-y))
+                                                  (< topbar-visible-scroll-y-value
+                                                     (reanimated/get-shared-value scroll-y)))
                                               (reset! animate-topbar-opacity? true)
                                               (reset! animate-topbar-opacity? false))
                                             (when-not (or
-                                                       (not @big-name-visible?)
-                                                       (= :initial-render @big-name-visible?)
-                                                       (pos? (reanimated/get-shared-value
-                                                              scroll-y)))
+                                                        (not @big-name-visible?)
+                                                        (= :initial-render @big-name-visible?)
+                                                        (pos? (reanimated/get-shared-value
+                                                                scroll-y)))
                                               (reset! on-end-reached? false))
                                             ;; NOTE(alwx): here we set the initial value of
                                             ;; `scroll-y` which is needed because by default the
                                             ;; chat is scrolled to the bottom and no initial
                                             ;; `on-scroll` event is getting triggered
-                                            (let [scroll-y-shared       (reanimated/get-shared-value
-                                                                         scroll-y)
+                                            (let [scroll-y-shared (reanimated/get-shared-value
+                                                                    scroll-y)
                                                   content-height-shared (reanimated/get-shared-value
-                                                                         content-height)]
+                                                                          content-height)]
                                               (when (or (= scroll-y-shared 0)
                                                         (> (Math/abs (- content-height-shared y))
                                                            min-message-height))
@@ -393,19 +393,19 @@
                                                             animate-topbar-name?)
                                             (on-scroll event show-floating-scroll-down-button?))
        :style                             (add-inverted-y-android
-                                           {:background-color (if all-loaded?
-                                                                (colors/theme-colors
-                                                                 (colors/custom-color cover-bg-color
-                                                                                      50
-                                                                                      20)
-                                                                 (colors/custom-color cover-bg-color
-                                                                                      50
-                                                                                      40)
-                                                                 theme)
-                                                                (colors/theme-colors
-                                                                 colors/white
-                                                                 colors/neutral-95
-                                                                 theme))})
+                                            {:background-color (if all-loaded?
+                                                                 (colors/theme-colors
+                                                                   (colors/custom-color cover-bg-color
+                                                                                        50
+                                                                                        20)
+                                                                   (colors/custom-color cover-bg-color
+                                                                                        50
+                                                                                        40)
+                                                                   theme)
+                                                                 (colors/theme-colors
+                                                                   colors/white
+                                                                   colors/neutral-95
+                                                                   theme))})
        ;;TODO(rasom) https://github.com/facebook/react-native/issues/30034
        :inverted                          (when platform/ios? true)
        :on-layout                         (fn [e]
@@ -427,9 +427,9 @@
 (defn message-list-content-view
   [props]
   (let [chat-screen-loaded? (rf/sub [:shell/chat-screen-loaded?])
-        window-height       (:height (rn/get-window))
-        content-height      (- window-height composer.constants/composer-default-height)
-        top-spacing         (when (not chat-screen-loaded?) navigation.style/navigation-bar-height)]
+        window-height (:height (rn/get-window))
+        content-height (- window-height composer.constants/composer-default-height)
+        top-spacing (when (not chat-screen-loaded?) navigation.style/navigation-bar-height)]
     (if chat-screen-loaded?
       [:f> f-messages-list-content props]
       [rn/view {:style {:padding-top top-spacing :flex 1}}
