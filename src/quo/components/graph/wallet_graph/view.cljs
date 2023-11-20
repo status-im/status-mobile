@@ -45,7 +45,8 @@
     (if (= time-frame :empty)
       [fast-image/fast-image
        {:style  style/empty-state
-        :source (resources/get-themed-image :no-funds theme)}]
+        :source (resources/get-themed-image :no-funds theme)
+        :accessibility-label :illustration}]
       [rn/view
        [linear-gradient/linear-gradient
         {:colors gradient-colors
