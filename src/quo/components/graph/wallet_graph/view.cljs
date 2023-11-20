@@ -44,8 +44,8 @@
         fill-color      (colors/theme-colors colors/white colors/neutral-95)]
     (if (= time-frame :empty)
       [fast-image/fast-image
-       {:style  style/empty-state
-        :source (resources/get-themed-image :no-funds theme)
+       {:style               style/empty-state
+        :source              (resources/get-themed-image :no-funds theme)
         :accessibility-label :illustration}]
       [rn/view
        [linear-gradient/linear-gradient
