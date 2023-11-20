@@ -286,7 +286,6 @@
                                                      (types/json->clj message))
          {:keys [collectibles]} response
          collectible            (first collectibles)]
-     (log/info "=== RECEIVED: " collectible)
      (if collectible
        {:fx
         [[:dispatch [:wallet/store-last-collectible-details collectible]]]}
@@ -356,12 +355,3 @@
 (rf/reg-event-fx :wallet/select-send-address
  (fn [{:keys [db]} [address]]
    {:db (assoc db :wallet/send-address address)}))
-
-
-(comment
-
-  (require '[native-module.core :as native-module])
-  (native-module/sha3 "*")
-  ; 0x761bd780af40095f2cb44d5cf2d55f84f506779994859a6766d5d706e8a13317
-
-)
