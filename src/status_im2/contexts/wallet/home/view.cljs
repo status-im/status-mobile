@@ -30,7 +30,9 @@
 (defn- new-account-card-data
   []
   {:customization-color (rf/sub [:profile/customization-color])
-   :on-press            #(rf/dispatch [:show-bottom-sheet {:content new-account}])
+   :on-press            #(rf/dispatch [:navigate-to :wallet-send-input-amount
+                                       ] ;[:show-bottom-sheet {:content new-account}]
+                                      )
    :type                :add-account})
 
 (def tabs-data

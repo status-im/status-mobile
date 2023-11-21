@@ -32,7 +32,7 @@
         {:keys [currency]}    (rf/sub [:profile/profile])
         networks              (rf/sub [:wallet/network-details])
         conversion-rate       10
-        limit-crypto          286.32
+        limit-crypto          100000000
         limit-fiat            (* limit-crypto conversion-rate)
         input-value           (reagent/atom "")
         current-limit         (reagent/atom {:amount   limit-crypto

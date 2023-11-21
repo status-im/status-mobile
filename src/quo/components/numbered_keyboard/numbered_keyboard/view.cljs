@@ -60,7 +60,7 @@
         :theme     theme}]
       (if delete-key?
         [keyboard-item
-         {:item      :i/backspace
+         {:item      :i/travel
           :type      :key
           :disabled? disabled?
           :on-press  on-delete

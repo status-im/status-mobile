@@ -14,7 +14,10 @@
    :padding-bottom     4
    :height             36
    :flex-direction     :row
-   :justify-content    :space-between})
+   :justify-content    :space-between
+   ;;
+   :background-color   :pink
+   })
 
 (def token
   {:width  32
@@ -22,14 +25,12 @@
 
 (defn text-input
   [theme]
-  (merge typography/heading-1
-         {:font-weight  "600"
-          :margin-left  8
-          :margin-right (if platform/ios? 6 4)
-          :color        (colors/theme-colors colors/neutral-100 colors/white theme)
-          :padding      0
-          :text-align   :center
-          :height       "100%"}))
+  (assoc typography/heading-1
+    :font-weight "600"
+    :color (colors/theme-colors colors/neutral-100 colors/white theme)
+    :padding 0
+    ;; TODO: fix the padding
+    :height "100%"))
 
 (defn divider
   [width theme]
