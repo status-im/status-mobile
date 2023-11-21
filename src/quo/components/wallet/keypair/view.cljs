@@ -11,6 +11,7 @@
     [quo.foundations.colors :as colors]
     [quo.theme :as quo.theme]
     [react-native.core :as rn]
+    [react-native.platform :as platform]
     [reagent.core :as reagent]
     [utils.i18n :as i18n]))
 
@@ -70,12 +71,17 @@
      {:style {:flex-direction :row
               :align-items    :center}}
      [text/text
-      {:size                :paragraph-2
-       :accessibility-label :details
-       :style               {:color (if blur?
-                                      colors/white-opa-40
-                                      (colors/theme-colors colors/neutral-50 colors/neutral-40 theme))}}
-      (details-string address stored)]
+      {:size  :paragraph-2
+       :style (style/subtitle blur? theme)}
+      address]
+     [text/text
+      {:size  :paragraph-2
+       :style (merge (style/subtitle blur? theme) {:bottom (if platform/ios? 2 -2)})}
+      " ∙ "]
+     [text/text
+      {:size  :paragraph-2
+       :style (style/subtitle blur? theme)}
+      (if (= stored :on-device) (i18n/label :t/on-device) (i18n/label :t/on-keycard))]
      (when (= stored :on-keycard)
        [rn/view {:style {:margin-left 4}}
         [icon/icon :i/keycard-card
